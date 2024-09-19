@@ -1164,7 +1164,51 @@ static class ExtendedPlayerControl
                 Rebirth.Remove(Killed.PlayerId);
                 Rebirth.Add(target.PlayerId);
                 break;
+            case CustomRoles.Prohibited:
+                Prohibited.Remove(Killed.PlayerId);
+                Killed?.RpcSetVentInteraction();
+                Prohibited.Add(target.PlayerId);
+                target?.RpcSetVentInteraction();
+                break;
         }
+    }
+    public static void TaskAfterRemoveAddons(this PlayerControl target, CustomRoles Addon)
+    {
+        var sync = false;
+        switch (Addon)
+        {
+            case CustomRoles.Tired:
+                Tired.Remove(target.PlayerId);
+                break;
+            case CustomRoles.Flash:
+                Flash.SetSpeed(target.PlayerId, true);
+                sync = true;
+                break;
+            case CustomRoles.Sloth:
+                Sloth.SetSpeed(target.PlayerId, true);
+                sync = true;
+                break;
+            case CustomRoles.Lucky:
+                Lucky.Remove(target.PlayerId);
+                break;
+            case CustomRoles.Clumsy:
+                Clumsy.Remove(target.PlayerId);
+                break;
+            case CustomRoles.Statue:
+                Statue.Remove(target.PlayerId);
+                break;
+            case CustomRoles.Glow:
+                Glow.Remove(target.PlayerId);
+                break;
+            case CustomRoles.Rebirth:
+                Rebirth.Remove(target.PlayerId);
+                break;
+            case CustomRoles.Prohibited:
+                Prohibited.Remove(target.PlayerId);
+                target?.RpcSetVentInteraction();
+                break;
+        }
+        if (sync) Utils.MarkEveryoneDirtySettings();
     }
     public static bool RpcCheckAndMurder(this PlayerControl killer, PlayerControl target, bool check = false)
     {

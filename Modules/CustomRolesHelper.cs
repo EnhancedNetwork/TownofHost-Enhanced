@@ -962,6 +962,13 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Prohibited:
+                if (Prohibited.GetCountBlokedVents() <= 0 || !pc.CanUseVents())
+                    return false;
+                if (pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool())
+                    return false;
+                break;
+
             case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Solsticer)

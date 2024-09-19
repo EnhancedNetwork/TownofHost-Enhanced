@@ -918,6 +918,7 @@ public enum CustomRoles
     Onbound,
     Overclocked,
     Paranoia,
+    Prohibited,
     Radar,
     Rainbow,
     Rascal,

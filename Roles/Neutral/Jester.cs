@@ -17,7 +17,7 @@ internal class Jester : RoleBase
     private static OptionItem CanUseMeetingButton;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
-    private static OptionItem CantMoveInVents;
+    public static OptionItem CantMoveInVents;
     private static OptionItem MeetingsNeededForWin;
     private static OptionItem HideJesterVote;
     public static OptionItem SunnyboyChance;
