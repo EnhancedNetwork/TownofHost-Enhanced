@@ -74,7 +74,7 @@ enum CustomRPC : byte // 193/255 USED
     SetLoversPlayers,
     SetExecutionerTarget,
     RemoveExecutionerTarget,
-    BetterCheck, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
+    BetterCheck = 150, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
