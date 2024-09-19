@@ -22,6 +22,7 @@ enum CustomRPC : byte // 193/255 USED
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
+    BetterCheck = 150, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     SetDeathReason = 102,
     EndGame,
     PlaySound,
@@ -74,8 +75,7 @@ enum CustomRPC : byte // 193/255 USED
     SetLoversPlayers,
     SetExecutionerTarget,
     RemoveExecutionerTarget,
-    BetterCheck = 150, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
-    SendFireworkerState,
+    SendFireworkerState = 151, // Skip 150
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
