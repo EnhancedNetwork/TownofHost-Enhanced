@@ -108,7 +108,19 @@ internal static class FFAManager
                 KBScore[pc.PlayerId] = 0;
                 if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill[pc.PlayerId] = now;
             }
-        }, 25f, "Set Chat Visible for Everyone");
+        }, 18f, "Add data after game start");
+    }
+    public static void SetData()
+    {
+        if (Options.CurrentGameMode != CustomGameMode.FFA) return;
+        
+        RoundTime = FFA_GameTime.GetInt() + 8;
+        var now = Utils.GetTimeStamp() + 8;
+        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+        {
+            KBScore[pc.PlayerId] = 0;
+            if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill[pc.PlayerId] = now;
+        }
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {
