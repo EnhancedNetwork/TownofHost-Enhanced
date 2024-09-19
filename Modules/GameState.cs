@@ -114,36 +114,21 @@ public class PlayerState(byte playerId)
         }
 
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
+    public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
-            AllReplace = true;
-        }
-        if (AllReplace)
-        {
-            var sync = false;
+
             foreach (var subRole in SubRoles.ToArray())
             {
-                if (pc.Is(CustomRoles.Flash))
-                {
-                    Flash.SetSpeed(pc.PlayerId, true);
-                    sync = true;
-                }
-                if (pc.Is(CustomRoles.Sloth))
-                {
-                    Sloth.SetSpeed(pc.PlayerId, true);
-                    sync = true;
-                }
-                SubRoles.Remove(subRole);
-
-                if (sync) MarkEveryoneDirtySettings();
+                RemoveSubRole(subRole);
             }
         }
 
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
+
         if (role.IsConverted())
         {
             SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
@@ -224,6 +209,8 @@ public class PlayerState(byte playerId)
     {
         if (SubRoles.Contains(role))
             SubRoles.Remove(role);
+
+        PlayerId.GetPlayer()?.TaskAfterRemoveAddons(role);
 
         if (!AmongUsClient.Instance.AmHost) return;
 

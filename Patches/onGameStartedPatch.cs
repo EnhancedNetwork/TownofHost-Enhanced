@@ -235,6 +235,7 @@ internal class ChangeRoleSettings
             Rebirth.Init();
             Evader.Init();
             Radar.Init();
+            Prohibited.Init();
 
             //FFA
             FFAManager.Init();
@@ -547,6 +548,9 @@ internal class StartGameHostPatch
                             break;
                         case CustomRoles.Spurt:
                             Spurt.Add();
+                            break;
+                        case CustomRoles.Prohibited:
+                            Prohibited.Add(pc.PlayerId);
                             break;
                         default:
                             break;

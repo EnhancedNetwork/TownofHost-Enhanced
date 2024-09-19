@@ -23,7 +23,7 @@ public class Prohibited : IAddon
         CountBlockedVentsInSkeld = IntegerOptionItem.Create(Id + 10, "Prohibited_CountBlockedVentsInSkeld", new(0, 14, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInMira = IntegerOptionItem.Create(Id + 11, "Prohibited_CountBlockedVentsInMira", new(0, 11, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInPolus = IntegerOptionItem.Create(Id + 12, "Prohibited_CountBlockedVentsInPolus", new(0, 12, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
-        CountBlockedVentsInDleks = IntegerOptionItem.Create(Id + 13, "Prohibited_CountBlockedVentsInDleks", new(0, 14, 1), 0, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
+        CountBlockedVentsInDleks = IntegerOptionItem.Create(Id + 13, "Prohibited_CountBlockedVentsInDleks", new(0, 14, 1), 2, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInAirship = IntegerOptionItem.Create(Id + 14, "Prohibited_CountBlockedVentsInAirship", new(0, 12, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
         CountBlockedVentsInFungle = IntegerOptionItem.Create(Id + 15, "Prohibited_CountBlockedVentsInFungle", new(0, 10, 1), 4, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Prohibited]);
     }
@@ -34,20 +34,12 @@ public class Prohibited : IAddon
     }
     public static void Add(byte playerId)
     {
-        var coutBlokedVents = Utils.GetActiveMapName() switch
-        {
-            MapNames.Skeld => CountBlockedVentsInSkeld.GetInt(),
-            MapNames.Mira => CountBlockedVentsInMira.GetInt(),
-            MapNames.Polus => CountBlockedVentsInPolus.GetInt(),
-            MapNames.Dleks => CountBlockedVentsInDleks.GetInt(),
-            MapNames.Airship => CountBlockedVentsInAirship.GetInt(),
-            MapNames.Fungle => CountBlockedVentsInFungle.GetInt(),
-            _ => 0
-        };
+        var coutBlokedVents = GetCountBlokedVents();
 
         if (coutBlokedVents <= 0) return;
         var allVents = ShipStatus.Instance.AllVents.ToList();
-        var allVentsCount = allVents.Count;
+
+        RememberBlokcedVents[playerId] = [];
 
         for (int i = 0; i < coutBlokedVents; i++)
         {
@@ -66,5 +58,18 @@ public class Prohibited : IAddon
             CustomRoleManager.BlockedVentsList[playerId].Remove(ventId);
         }
         RememberBlokcedVents.Remove(playerId);
+    }
+    public static int GetCountBlokedVents()
+    {
+        return Utils.GetActiveMapName() switch
+        {
+            MapNames.Skeld => CountBlockedVentsInSkeld.GetInt(),
+            MapNames.Mira => CountBlockedVentsInMira.GetInt(),
+            MapNames.Polus => CountBlockedVentsInPolus.GetInt(),
+            MapNames.Dleks => CountBlockedVentsInDleks.GetInt(),
+            MapNames.Airship => CountBlockedVentsInAirship.GetInt(),
+            MapNames.Fungle => CountBlockedVentsInFungle.GetInt(),
+            _ => 0
+        };
     }
 }
