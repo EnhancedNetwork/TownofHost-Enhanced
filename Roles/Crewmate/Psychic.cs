@@ -23,6 +23,7 @@ internal class Psychic : RoleBase
     private static OptionItem NEshowEvil;
     private static OptionItem NCshowEvil;
     private static OptionItem NAshowEvil;
+    private static OptionItem NKshowEvil;
 
     private readonly HashSet<byte> RedPlayer = [];
 
@@ -32,11 +33,12 @@ internal class Psychic : RoleBase
         CanSeeNum = IntegerOptionItem.Create(Id + 2, "PsychicCanSeeNum", new(1, 15, 1), 3, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic])
             .SetValueFormat(OptionFormat.Pieces);
         Fresh = BooleanOptionItem.Create(Id + 6, "PsychicFresh", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
-        CkshowEvil = BooleanOptionItem.Create(Id + 3, "CrewKillingRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
-        NBshowEvil = BooleanOptionItem.Create(Id + 4, "NBareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
-        NEshowEvil = BooleanOptionItem.Create(Id + 5, "NEareRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
-        NCshowEvil = BooleanOptionItem.Create(Id + 7, "NCareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
-        NAshowEvil = BooleanOptionItem.Create(Id + 8, "NAareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        CkshowEvil = BooleanOptionItem.Create(Id + 3, "Psychic_CrewKillingRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NBshowEvil = BooleanOptionItem.Create(Id + 4, "Psychic_NBareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NEshowEvil = BooleanOptionItem.Create(Id + 5, "Psychic_NEareRed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NCshowEvil = BooleanOptionItem.Create(Id + 7, "Psychic_NCareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NAshowEvil = BooleanOptionItem.Create(Id + 8, "Psychic_NAareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        NKshowEvil = BooleanOptionItem.Create(Id + 9, "Psychic_NKareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
     }
     public override void Init()
     {
@@ -44,11 +46,10 @@ internal class Psychic : RoleBase
     }
     public override void Add(byte playerId)
     {
-        _ = new LateTask(() =>
+        if (!Fresh.GetBool())
         {
-            if (!Fresh.GetBool())
-                GetRedName();
-        }, 2f, $"Get Red Name for {_state.PlayerId}");
+            _ = new LateTask(GetRedName, 10f, $"Get Red Name For {_state.PlayerId}");
+        }
     }
     private void SendRPC()
     {
@@ -84,11 +85,13 @@ internal class Psychic : RoleBase
         if (!_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
         List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x =>
-        x.Is(Custom_Team.Impostor)  && !x.Is(CustomRoles.Trickster) || !x.Is(CustomRoles.Admired) || x.IsAnySubRole(x => x.IsConverted()) ||
+        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
+        x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNE() && NEshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNC() && NCshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNB() && NBshowEvil.GetBool()) ||
+        (x.GetCustomRole().IsNK() && NKshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNA() && NAshowEvil.GetBool())
         ).ToList();
 

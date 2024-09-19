@@ -265,6 +265,8 @@ class CoBeginPatch
         GameStates.InGame = true;
         RPC.RpcVersionCheck();
 
+        FFAManager.SetData();
+
         if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
         {
             RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch

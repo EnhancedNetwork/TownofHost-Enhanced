@@ -99,16 +99,28 @@ internal static class FFAManager
             FFAEnterVentTime = [];
         }
 
-        _ = new LateTask( ()=>
+        _ = new LateTask(()=>
         {
             RoundTime = FFA_GameTime.GetInt() + 8;
             var now = Utils.GetTimeStamp() + 8;
             foreach (PlayerControl pc in Main.AllAlivePlayerControls)
             {
-                KBScore.TryAdd(pc.PlayerId, 0);
-                if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill.TryAdd(pc.PlayerId, now);
+                KBScore[pc.PlayerId] = 0;
+                if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill[pc.PlayerId] = now;
             }
-        }, 15f, "Set Chat Visible for Everyone");
+        }, 18f, "Add data after game start");
+    }
+    public static void SetData()
+    {
+        if (Options.CurrentGameMode != CustomGameMode.FFA) return;
+        
+        RoundTime = FFA_GameTime.GetInt() + 8;
+        var now = Utils.GetTimeStamp() + 8;
+        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+        {
+            KBScore[pc.PlayerId] = 0;
+            if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill[pc.PlayerId] = now;
+        }
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {
@@ -151,7 +163,7 @@ internal static class FFAManager
     public static string GetDisplayScore(byte playerId)
     {
         int rank = GetRankOfScore(playerId);
-        string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "Invalid";
+        string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "0";
         string text = string.Format(GetString("FFADisplayScore"), rank.ToString(), score);
         Color color = Utils.GetRoleColor(CustomRoles.Killer);
         return Utils.ColorString(color, text);
