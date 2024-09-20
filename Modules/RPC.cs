@@ -19,6 +19,7 @@ enum CustomRPC : byte // 193/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
+    BetterCheck = 150, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -74,7 +75,7 @@ enum CustomRPC : byte // 193/255 USED
     SetLoversPlayers,
     SetExecutionerTarget,
     RemoveExecutionerTarget,
-    SendFireworkerState,
+    SendFireworkerState = 151, // Skip 150
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
@@ -143,7 +144,8 @@ internal class RPCHandlerPatch
         or CustomRPC.PresidentEnd
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
-        or CustomRPC.SetFriendCode;
+        or CustomRPC.SetFriendCode
+        or CustomRPC.BetterCheck;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -499,6 +501,30 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.RemoveExecutionerTarget:
                 Executioner.ReceiveRPC(reader, SetTarget: false);
+                break;
+            case CustomRPC.BetterCheck: // Better Among Us RPC
+                {
+                    var SetBetterUser = reader.ReadBoolean(); // Used to set player as better user, boolean is used for a future for BAU later on.
+                    var IsBetterHost = reader.ReadBoolean(); // Used to set the player as better host, this should never be flagged for a TOHE lobby, if it is it's a spoofed RPC
+                    var Signature = reader.ReadString(); // Used to verify that the RPC isn't spoofed, only possible in BAU mod due to a special signature that can't really be replicated easily
+                    var Version = reader.ReadString(); // Used to read players BAU version
+
+                    if (IsBetterHost)
+                    {
+                        EAC.Report(__instance, "BetterCheck set as BetterHost");
+                        EAC.HandleCheat(__instance, "BetterCheck set as BetterHost");
+                        break;
+                    }
+
+                    if (string.IsNullOrEmpty(Signature) || string.IsNullOrEmpty(Version))
+                    {
+                        EAC.Report(__instance, "BetterCheck invalid info");
+                        EAC.HandleCheat(__instance, "BetterCheck invalid info");
+                        break;
+                    }
+
+                    Main.BAUPlayers[__instance.Data] = __instance.Data.Puid;
+                }
                 break;
             case CustomRPC.SendFireworkerState:
                 Fireworker.ReceiveRPC(reader);
