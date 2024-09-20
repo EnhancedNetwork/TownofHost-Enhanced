@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System.Text;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -60,6 +61,7 @@ internal class Baker : RoleBase
         FamineList[playerId] = [];
         CanUseAbility = true;
         StarvedNonBreaded = false;
+        BreadID = 0;
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
@@ -79,7 +81,7 @@ internal class Baker : RoleBase
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.Baker);
+        writer.WriteNetObject(player);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
