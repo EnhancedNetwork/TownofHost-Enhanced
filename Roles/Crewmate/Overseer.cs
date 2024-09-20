@@ -253,8 +253,11 @@ internal class Overseer : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (_Player == null) return;
-        var farTarget = OverseerTimer[_Player.PlayerId].Item1;
-        farTarget?.RpcSetSpecificScanner(_Player, false);
+        if (OverseerTimer.TryGetValue(_Player.PlayerId, out var data))
+        {
+            var farTarget = data.Item1;
+            farTarget?.RpcSetSpecificScanner(_Player, false);
+        }
 
         OverseerTimer.Clear();
         SendTimerRPC(0, byte.MaxValue);

@@ -126,6 +126,8 @@ internal class Merchant : RoleBase
                 &&
                 (!x.Is(CustomRoles.Stubborn))
                 &&
+                !addon.IsConverted()
+                &&
                 CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
                 &&
                 (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))

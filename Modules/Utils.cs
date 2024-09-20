@@ -1841,6 +1841,7 @@ public static class Utils
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || OnPlayerLeftPatch.StartingProcessing) return;
+        if (Main.MeetingIsStarted && !isForMeeting) return;
         if (Main.AllPlayerControls == null) return;
 
         //Do not update NotifyRoles during meetings
@@ -1857,6 +1858,7 @@ public static class Utils
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || OnPlayerLeftPatch.StartingProcessing) return Task.CompletedTask;
+        if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
@@ -2285,7 +2287,6 @@ public static class Utils
             _ => true,
         };
     }
-    public static HashSet<Action<bool>> LateExileTask = [];
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
@@ -2313,13 +2314,6 @@ public static class Utils
                 Prohibited.AfterMeetingTasks(player.PlayerId);
             }
         }
-
-        if (LateExileTask.Any())
-        {
-            LateExileTask.Do(t => t.Invoke(true));
-            LateExileTask.Clear();
-        }
-
 
         if (Statue.IsEnable) Statue.AfterMeetingTasks();
         if (Burst.IsEnable) Burst.AfterMeetingTasks();

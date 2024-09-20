@@ -46,6 +46,7 @@ internal class Ghastly : RoleBase
         AbilityLimit = MaxPossesions.GetInt();
 
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -111,10 +112,8 @@ internal class Ghastly : RoleBase
 
         return false;
     }
-    private bool CheckConflicts(PlayerControl target)
-    {
-        return target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
-    }
+    private bool CheckConflicts(PlayerControl target) => target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
+    
     public override void OnFixedUpdate(PlayerControl pc)
     {
         var speed = Main.AllPlayerSpeed[pc.PlayerId];
@@ -161,38 +160,36 @@ internal class Ghastly : RoleBase
 
     public override string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        var IsMeeting = GameStates.IsMeeting || isForMeeting;
-        if (IsMeeting || (seer != seen && seer.IsAlive())) return "";
+        if (isForMeeting || (seer != seen && seer.IsAlive())) return string.Empty;
 
-        var killer = killertarget.Item1;
-        var target = killertarget.Item2;
+        var (killer, target) = killertarget;
 
         if (killer == seen.PlayerId && target != byte.MaxValue)
         {
             var arrows = TargetArrow.GetArrows(GetPlayerById(killer), target);
-            var tar = GetPlayerById(target).GetRealName();
-            if (tar == null) return "";
+            var tar = target.GetPlayer().GetRealName();
+            if (tar == null) return string.Empty;
 
             var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" + tar + arrows);
             return colorstring;
         }
-
-
-        return "";
+        return string.Empty;
     }
-    public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
+        if (inMeeting) return;
+
         var tuple = killertarget;
-        if (DeadPlayer.PlayerId == tuple.Item1 || DeadPlayer.PlayerId == tuple.Item2)
+        if (target.PlayerId == tuple.Item1 || target.PlayerId == tuple.Item2)
         {
-            _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", Utils.GetPlayerById(killertarget.Item1)));
+            _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", GetPlayerById(killertarget.Item1)));
             TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
-            LastTime.Remove(DeadPlayer.PlayerId);
+            LastTime.Remove(target.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);
         }
     }
 
-    public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
+    public override string GetProgressText(byte playerId, bool cooms)
+        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }

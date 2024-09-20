@@ -358,9 +358,6 @@ class OnPlayerLeftPatch
         {
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
-
-                CustomRoleManager.AllEnabledRoles.ForEach(r => r.OnOtherTargetsReducedToAtoms(data.Character));
-
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
                     foreach (var lovers in Main.LoversPlayers.ToArray())

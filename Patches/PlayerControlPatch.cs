@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core.AssignManager;
@@ -17,7 +18,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
-using TOHE.Patches;
 
 namespace TOHE;
 
@@ -1804,32 +1804,6 @@ public static class PlayerControlDiePatch
         // Skip Tasks while Anti Blackout but not for real exiled
         if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != __instance.PlayerId) return;
 
-        try
-        {
-            if (GameStates.IsNormalGame && GameStates.IsInGame && !GameEndCheckerForNormal.ForEndGame)
-            {
-                CustomRoleManager.AllEnabledRoles.Do(x => x.OnOtherTargetsReducedToAtoms(__instance));
-
-                var playerclass = __instance.GetRoleClass();
-
-                Action<bool> SelfExile = Utils.LateExileTask.FirstOrDefault(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId) ?? playerclass.OnSelfReducedToAtoms;
-                if (GameStates.IsInTask && !GameStates.IsExilling)
-                {
-                    SelfExile(false);
-                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
-                }
-                else
-                {
-                    Utils.LateExileTask.RemoveWhere(x => x.Target is RoleBase rb && rb._state.PlayerId == __instance.PlayerId);
-                    Utils.LateExileTask.Add(SelfExile);
-                }
-            }
-        }
-        catch (Exception exx)
-        {
-            Logger.Error($"Error after Targetreducedtoatoms: {exx}", "PlayerControl.Die");
-        }
-
         __instance.RpcRemovePet();
     }
 }
@@ -1854,10 +1828,7 @@ class PlayerControlSetRolePatch
         {
             try
             {
-               Action<bool> SelfExile = __instance.GetRoleClass().OnSelfReducedToAtoms;
                GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
-
-               if (target.GetCustomRole().IsGhostRole()) Utils.LateExileTask.Add(SelfExile);
             }
             catch (Exception error)
             {

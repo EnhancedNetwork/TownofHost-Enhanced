@@ -76,7 +76,6 @@ internal class ChangeRoleSettings
             Main.UnShapeShifter.Clear();
             Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
-            Utils.LateExileTask.Clear();
 
             Main.LastNotifyNames.Clear();
             Main.PlayerColors.Clear();

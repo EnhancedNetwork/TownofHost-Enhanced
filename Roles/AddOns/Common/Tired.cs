@@ -74,8 +74,6 @@ public class Tired : IAddon
 
         _ = new LateTask(() =>
         {
-            if (!playerIdList.ContainsKey(player.PlayerId)) return;
-
             Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - SetSpeed.GetFloat() + tmpSpeed;
             player.MarkDirtySettings();
             playerIdList[player.PlayerId] = false;

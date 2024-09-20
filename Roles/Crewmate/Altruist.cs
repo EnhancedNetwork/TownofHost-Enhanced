@@ -61,6 +61,8 @@ internal class Altruist : RoleBase
 
         if (reporter.Is(CustomRoles.Altruist) && _Player?.PlayerId == reporter.PlayerId)
         {
+            if (!IsRevivingMode) return true;
+
             var deadPlayer = deadBody.Object;
             var deadPlayerId = deadPlayer.PlayerId;
             var deadBodyObject = deadBody.GetDeadBody();
