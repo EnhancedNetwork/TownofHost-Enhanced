@@ -62,8 +62,7 @@ internal class Lighter : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad) return;
-        if (Timer.TryGetValue(player.PlayerId, out var ltime) && ltime + LighterSkillDuration.GetInt() < nowTime)
+        if (!lowLoad && Timer.TryGetValue(player.PlayerId, out var ltime) && ltime + LighterSkillDuration.GetInt() < nowTime)
         {
             Timer.Remove(player.PlayerId);
             if (!Options.DisableShieldAnimations.GetBool())

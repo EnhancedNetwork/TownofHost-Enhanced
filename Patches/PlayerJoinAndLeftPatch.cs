@@ -6,7 +6,6 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
-using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;

@@ -102,10 +102,9 @@ internal class Spy : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad) return;
-        if (!SpyRedNameList.Any()) return;
+        if (lowLoad || !SpyRedNameList.Any()) return;
+        
         change = false;
-
         foreach (var x in SpyRedNameList)
         {
             if (x.Value + SpyRedNameDur.GetInt() < nowTime)

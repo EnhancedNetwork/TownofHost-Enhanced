@@ -218,7 +218,7 @@ internal class Alchemist : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!lowLoad || !IsInvis(player.PlayerId)) return;
+        if (lowLoad || !IsInvis(player.PlayerId)) return;
 
         var needSync = false;
         foreach (var AlchemistInfo in InvisTime)

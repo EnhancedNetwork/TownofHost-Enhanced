@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
-using System.Linq;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Patches;

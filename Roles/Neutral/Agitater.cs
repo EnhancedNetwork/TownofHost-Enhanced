@@ -68,8 +68,7 @@ internal class Agitater : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!lowLoad) return;
-        if (CurrentBombedPlayer == 254)
+        if (!lowLoad && CurrentBombedPlayer == 254)
         {
             SendRPC(CurrentBombedPlayer, LastBombedPlayer);
             CurrentBombedPlayer = byte.MaxValue;

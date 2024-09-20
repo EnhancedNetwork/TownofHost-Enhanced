@@ -126,7 +126,7 @@ internal class Ghastly : RoleBase
     }
     public void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (killertarget.Item1 == player.PlayerId 
+        if (!lowLoad && killertarget.Item1 == player.PlayerId 
             && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= nowTime)
         {
             _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));

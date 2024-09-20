@@ -83,7 +83,7 @@ internal class BloodKnight : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad && TimeStamp < nowTime && TimeStamp != 0)
+        if (!lowLoad && TimeStamp < nowTime && TimeStamp != 0)
         {
             TimeStamp = 0;
             player.Notify(GetString("BKProtectOut"), sendInLog: false);
