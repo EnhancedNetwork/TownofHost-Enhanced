@@ -595,7 +595,7 @@ class CheckForEndVotingPatch
         var AddedIdList = new List<byte>();
         foreach (var playerId in playerIds)
         {
-            var pc = GetPlayerById(playerId);
+            var pc = playerId.GetPlayer();
             if (pc == null) return;
             if (pc.Is(CustomRoles.Susceptible))
             {
@@ -610,23 +610,22 @@ class CheckForEndVotingPatch
     }
     private static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
-        Witch.OnCheckForEndVoting(deathReason, playerIds);
-        HexMaster.OnCheckForEndVoting(deathReason, playerIds);
-        Virus.OnCheckForEndVoting(deathReason, playerIds);
-        Famine.OnCheckForEndVoting(deathReason, playerIds);
-        Death.OnCheckForEndVoting(deathReason, playerIds);
+        foreach (var roleClass in CustomRoleManager.AllEnabledRoles.ToArray())
+        {
+            roleClass?.OnCheckForEndVoting(deathReason, playerIds);
+        }
 
         foreach (var playerId in playerIds)
         {
-            if (CustomRoles.Lovers.IsEnable() && !Main.isLoversDead && Main.LoversPlayers.Any(lp => lp.PlayerId == playerId))
+            if (CustomRoles.Lovers.IsEnable() && deathReason == PlayerState.DeathReason.Vote && !Main.isLoversDead && Main.LoversPlayers.FirstOrDefault(lp => lp.PlayerId == playerId) != null)
             {
                 FixedUpdateInNormalGamePatch.LoversSuicide(playerId, true);
             }
 
-            RevengeOnExile(playerId/*, deathReason*/);
+            RevengeOnExile(playerId);
         }
     }
-    private static void RevengeOnExile(byte playerId/*, PlayerState.DeathReason deathReason*/)
+    private static void RevengeOnExile(byte playerId)
     {
         var player = GetPlayerById(playerId);
         if (player == null) return;
@@ -638,12 +637,12 @@ class CheckForEndVotingPatch
 
         Logger.Info($"{player.GetNameWithRole()} revenge:{target.GetNameWithRole()}", "RevengeOnExile");
     }
-    private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer)//道連れ先選定
+    private static PlayerControl PickRevengeTarget(PlayerControl exiledplayer)
     {
         List<PlayerControl> TargetList = [];
         foreach (var candidate in Main.AllAlivePlayerControls)
         {
-            if (candidate == exiledplayer || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
+            if (candidate.PlayerId == exiledplayer.PlayerId || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
         }
         if (TargetList == null || TargetList.Count == 0) return null;
         var rand = IRandom.Instance;
@@ -692,7 +691,7 @@ class CastVotePatch
             }
 
 
-            if (!voter.GetRoleClass().HasVoted && !voter.GetRoleClass().CheckVote(voter, target))
+            if (!voter.GetRoleClass().HasVoted && voter.GetRoleClass().CheckVote(voter, target) == false)
             {
                 Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch.RoleBase.CheckVote");
                 voter.GetRoleClass().HasVoted = true;

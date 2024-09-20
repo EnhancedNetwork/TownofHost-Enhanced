@@ -339,6 +339,11 @@ public abstract class RoleBase
     public virtual string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target) => string.Empty;
 
     /// <summary>
+    /// Used when player should be dead after meeting
+    /// </summary>
+    public virtual void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    { }
+    /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
     public virtual void NotifyAfterMeeting()

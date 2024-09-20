@@ -175,31 +175,6 @@ internal class SoulCollector : RoleBase
             }
         }
     }
-    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
-    {
-        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
-        if (!CustomRoles.Death.RoleExist()) return;
-        if (exileIds.Contains(playerIdList.First())) return;
-        var deathList = new List<byte>();
-        PlayerControl sc = Utils.GetPlayerById(playerIdList.First());
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.IsNeutralApocalypse()) continue;
-            if (sc != null && sc.IsAlive())
-            {
-                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
-                {
-                    pc.SetRealKiller(sc);
-                    deathList.Add(pc.PlayerId);
-                }
-            }
-            else
-            {
-                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
-            }
-        }
-        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
-    }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
@@ -226,9 +201,30 @@ internal class Death : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => SoulCollector.SoulCollectorCanVent.GetBool();
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => false;
  
-    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        SoulCollector.OnCheckForEndVoting(deathReason, exileIds);
+        if (_Player == null || deathReason != PlayerState.DeathReason.Vote) return;
+        if (exileIds.Contains(_Player.PlayerId)) return;
+        
+        var deathList = new List<byte>();
+        var death = _Player;
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (pc.IsNeutralApocalypse()) continue;
+            if (death.IsAlive())
+            {
+                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
+                {
+                    pc.SetRealKiller(death);
+                    deathList.Add(pc.PlayerId);
+                }
+            }
+            else
+            {
+                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
+            }
+        }
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {

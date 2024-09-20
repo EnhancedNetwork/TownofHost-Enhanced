@@ -158,7 +158,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 1.1f, "Restore IsDead Task");
+            }, 0.7f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
