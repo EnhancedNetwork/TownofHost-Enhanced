@@ -15,7 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 193/255 USED
+enum CustomRPC : byte // 192/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -74,8 +74,8 @@ enum CustomRPC : byte // 193/255 USED
     SniperSync,
     SetLoversPlayers,
     SetExecutionerTarget,
-    RemoveExecutionerTarget,
-    SendFireworkerState = 151, // Skip 150
+    RemoveExecutionerTarget = 149,
+    SendFireworkerState = 151, // BetterCheck used 150
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
