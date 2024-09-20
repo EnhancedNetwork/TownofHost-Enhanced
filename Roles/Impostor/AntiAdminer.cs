@@ -50,14 +50,15 @@ internal class AntiAdminer : RoleBase
     }
 
     private static int Count = 0;
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 3;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
         {
-            if (Pelican.IsEaten(pc.PlayerId) || pc.inVent || pc.GetCustomRole().IsImpostor()) continue;
+            if (pc.inVent || pc.GetCustomRole().IsImpostor()) continue;
 
             try
             {
@@ -138,12 +139,12 @@ internal class AntiAdminer : RoleBase
         {
             foreach (var pc in playerIdList.ToArray())
             {
-                var antiAdminer = GetPlayerById(pc);
+                var antiAdminer = pc.GetPlayer();
                 NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
             }
         }
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 

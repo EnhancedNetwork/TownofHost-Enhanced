@@ -21,7 +21,7 @@ internal class Wildling : RoleBase
     private static OptionItem ShapeshiftCD;
     private static OptionItem ShapeshiftDur;
 
-    private long? TimeStamp;
+    private long TimeStamp;
 
     public override void SetupCustomOption()
     {
@@ -33,18 +33,19 @@ internal class Wildling : RoleBase
         ShapeshiftDur = FloatOptionItem.Create(Id + 16, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wildling])
             .SetValueFormat(OptionFormat.Seconds);
     }
-
-    private void SendRPC(byte playerId)
+    public override void Init()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        TimeStamp = 0;
+    }
+    private void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);
-        writer.Write(playerId);
         writer.Write(TimeStamp.ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte PlayerId = reader.ReadByte();
         string Time = reader.ReadString();
         TimeStamp = long.Parse(Time);
     }
@@ -56,11 +57,11 @@ internal class Wildling : RoleBase
     }
 
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
-    private bool InProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp(DateTime.Now);
+    private bool InProtect() => TimeStamp > Utils.GetTimeStamp(DateTime.Now);
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (InProtect(target.PlayerId))
+        if (InProtect())
         {
             killer.RpcGuardAndKill(target);
             if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
@@ -75,16 +76,16 @@ internal class Wildling : RoleBase
         if (inMeeting || isSuicide) return;
 
         TimeStamp = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
-        SendRPC(killer.PlayerId);
+        SendRPC();
 
         killer.Notify(Translator.GetString("BKInProtect"));
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (TimeStamp != null && TimeStamp < Utils.GetTimeStamp(DateTime.Now))
+        if (!lowLoad && TimeStamp != 0 && TimeStamp < nowTime)
         {
             TimeStamp = 0;
-            pc.Notify(Translator.GetString("BKProtectOut"));
+            player.Notify(Translator.GetString("BKProtectOut"));
         }
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
@@ -92,7 +93,7 @@ internal class Wildling : RoleBase
         if (seer == null || isForMeeting || !isForHud || !seer.IsAlive()) return string.Empty;
 
         var str = new StringBuilder();
-        if (InProtect(seer.PlayerId))
+        if (InProtect())
         {
             var remainTime = TimeStamp - Utils.GetTimeStamp(DateTime.Now);
             str.Append(string.Format(Translator.GetString("BKSkillTimeRemain"), remainTime));

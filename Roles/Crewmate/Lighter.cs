@@ -60,21 +60,22 @@ internal class Lighter : RoleBase
         playerIdList.Remove(playerId);
         LighterNumOfUsed.Remove(playerId);
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (Timer.TryGetValue(pc.PlayerId, out var ltime) && ltime + LighterSkillDuration.GetInt() < GetTimeStamp())
+        if (lowLoad) return;
+        if (Timer.TryGetValue(player.PlayerId, out var ltime) && ltime + LighterSkillDuration.GetInt() < nowTime)
         {
-            Timer.Remove(pc.PlayerId);
+            Timer.Remove(player.PlayerId);
             if (!Options.DisableShieldAnimations.GetBool())
             {
-                pc.RpcGuardAndKill();
+                player.RpcGuardAndKill();
             }
             else
             {
-                pc.RpcResetAbilityCooldown();
+                player.RpcResetAbilityCooldown();
             }
-            pc.Notify(GetString("LighterSkillStop"));
-            pc.MarkDirtySettings();
+            player.Notify(GetString("LighterSkillStop"));
+            player.MarkDirtySettings();
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)

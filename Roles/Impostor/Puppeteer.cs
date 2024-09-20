@@ -47,7 +47,7 @@ internal class Puppeteer : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
     }
 
@@ -96,13 +96,12 @@ internal class Puppeteer : RoleBase
                 SendRPC(killer.PlayerId, target.PlayerId, 1);
                 killer.RPCPlayCustomSound("Line");
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-            }
-        );
+            });
     }
 
-    private void OnFixedUpdateOthers(PlayerControl puppet)
+    private void OnFixedUpdateOthers(PlayerControl puppet, bool lowLoad, long nowTime)
     {
-        if (!PuppetIsActive(puppet.PlayerId)) return;
+        if (lowLoad || !PuppetIsActive(puppet.PlayerId)) return;
 
         if (!puppet.IsAlive() || Pelican.IsEaten(puppet.PlayerId))
         {

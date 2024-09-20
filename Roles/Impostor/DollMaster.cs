@@ -58,7 +58,6 @@ internal class DollMaster : RoleBase
         DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(CheckIfPlayerDC);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -73,24 +72,41 @@ internal class DollMaster : RoleBase
     public static bool IsDoll(byte id) => ReducedVisionPlayers.Contains(id);
 
     // Set Vision and Speed to 0 for possessed Target.
-    public static void ApplySettingsToDoll(IGameOptions opt, PlayerControl target)
+    public static void ApplySettingsToDoll(IGameOptions opt)
     {
         opt.SetVision(false);
         opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
     }
 
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (controllingTarget != null && DollMasterTarget != null)
         {
             // If DollMaster can't be teleported start waiting to unpossess.
             WaitToUnPossessUpdate(DollMasterTarget, controllingTarget);
         }
-    }
+        if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
+        {
+            ReducedVisionPlayers.Clear();
 
-    private static void OnFixedUpdateOthers(PlayerControl target)
+            if (controllingTarget != null)
+            {
+                Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
+                controllingTarget.MarkDirtySettings();
+            }
+
+            DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
+            controllingTarget?.ResetPlayerOutfit();
+
+            IsControllingPlayer = false;
+            ResetPlayerSpeed = true;
+        }
+    }
+    private static void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (controllingTarget != null && target == controllingTarget)
         {
             // Boot Possessed Player from vent if inside of a vent and if waiting.
@@ -228,7 +244,7 @@ internal class DollMaster : RoleBase
     {
         var CanUseAbility = true;
         var cRole = player.GetCustomRole();
-        var subRoles = player.GetCustomSubRoles(); // May use later on!
+        //var subRoles = player.GetCustomSubRoles(); // May use later on!
 
         switch (cRole) // Check role.
         {
@@ -345,29 +361,8 @@ internal class DollMaster : RoleBase
         return false;
     }
 
-    // A fix when the DollMaster or Possessed Player DC's from the game.
-    public static void CheckIfPlayerDC(PlayerControl player)
-    {
-        if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
-        {
-            ReducedVisionPlayers.Clear();
-
-            if (controllingTarget != null)
-            {
-                Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
-                controllingTarget.MarkDirtySettings();
-            }
-
-            DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
-            controllingTarget?.ResetPlayerOutfit();
-
-            IsControllingPlayer = false;
-            ResetPlayerSpeed = true;
-        }
-    }
-
     // Possess Player
-    private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
+    private static void Possess(PlayerControl pc, PlayerControl target)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(target, false);
@@ -378,7 +373,7 @@ internal class DollMaster : RoleBase
     }
 
     // UnPossess Player
-    private static void UnPossess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
+    private static void UnPossess(PlayerControl pc, PlayerControl target)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);

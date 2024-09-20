@@ -131,7 +131,7 @@ internal class Arsonist : RoleBase
         _Player.RpcSetVentInteraction();
         _ = new LateTask(() => { NotifyRoles(SpecifySeer: _Player, ForceLoop: false); }, 1f, $"Update name for Arsonist {_Player?.PlayerId}", shoudLog: false);
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (ArsonistTimer.TryGetValue(player.PlayerId, out var arsonistTimerData))
         {

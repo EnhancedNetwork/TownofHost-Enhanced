@@ -138,9 +138,9 @@ internal class Chameleon : RoleBase
         }
         return true;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var nowTime = GetTimeStamp();
+        if (lowLoad) return;
         var playerId = player.PlayerId;
         var needSync = false;
 
@@ -154,7 +154,7 @@ internal class Chameleon : RoleBase
         foreach (var chameleonInfo in InvisDuration)
         {
             var chameleonId = chameleonInfo.Key;
-            var chameleon = GetPlayerById(chameleonId);
+            var chameleon = chameleonId.GetPlayer();
             if (chameleon == null) continue;
 
             var remainTime = chameleonInfo.Value + (long)ChameleonDuration.GetFloat() - nowTime;

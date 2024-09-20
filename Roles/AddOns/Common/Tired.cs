@@ -45,9 +45,9 @@ public class Tired : IAddon
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        if (!playerIdList.ContainsKey(player.PlayerId)) return;
+        if (!playerIdList.TryGetValue(player.PlayerId, out var isTired)) return;
 
-        if (playerIdList.TryGetValue(player.PlayerId, out var isTired) && isTired)
+        if (isTired)
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, SetVision.GetFloat());

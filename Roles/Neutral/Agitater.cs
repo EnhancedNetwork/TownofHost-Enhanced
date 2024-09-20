@@ -56,7 +56,7 @@ internal class Agitater : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
     }
 
     public static void ResetBomb()
@@ -66,8 +66,9 @@ internal class Agitater : RoleBase
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (!lowLoad) return;
         if (CurrentBombedPlayer == 254)
         {
             SendRPC(CurrentBombedPlayer, LastBombedPlayer);
@@ -133,9 +134,9 @@ internal class Agitater : RoleBase
         ResetBomb();
         Logger.Info($"{killer.GetRealName()} bombed {target.GetRealName()} on report", "Agitater");
     }
-    private void OnFixedUpdateOthers(PlayerControl player)
+    private void OnFixedUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!AgitaterHasBombed || CurrentBombedPlayer != player.PlayerId) return;
+        if (lowLoad || !AgitaterHasBombed || CurrentBombedPlayer != player.PlayerId) return;
 
         if (!player.IsAlive())
         {
@@ -159,9 +160,9 @@ internal class Agitater : RoleBase
             if (targetDistance.Any())
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
-                var target = Utils.GetPlayerById(min.Key);
+                var target = min.Key.GetPlayer();
                 var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
-                if (min.Value <= KillRange && !player.inVent && !target.inVent && player.RpcCheckAndMurder(target, true))
+                if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat && player.RpcCheckAndMurder(target, true))
                 {
                     PassBomb(player, target);
                 }

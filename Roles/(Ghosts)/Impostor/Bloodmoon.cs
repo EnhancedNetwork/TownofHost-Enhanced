@@ -103,12 +103,14 @@ internal class Bloodmoon : RoleBase
     public override string GetProgressText(byte playerId, bool cooms)
         => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     
-    private void OnFixedUpdateOther(PlayerControl player)
+    private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad || _Player == null) return;
+
         var playerid = player.PlayerId;
-        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp())
+        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= nowTime)
         {
-            LastTime[playerid] = GetTimeStamp();
+            LastTime[playerid] = nowTime;
             PlayerDie[playerid]--;
             if (PlayerDie[playerid] <= 0)
             {

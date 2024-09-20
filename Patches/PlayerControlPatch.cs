@@ -1138,7 +1138,9 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask)
             {
-                CustomRoleManager.OnFixedUpdate(player);
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
+
+                player.OnFixedAddonUpdate(lowLoad);
 
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())
                 {
@@ -1147,12 +1149,8 @@ class FixedUpdateInNormalGamePatch
                     Logger.Info($"Reset {player.GetRealName()}'s outfit", "LateOutfits..OnFixedUpdate");
                 }
 
-                player.OnFixedAddonUpdate(lowLoad);
-
                 if (!lowLoad)
                 {
-                    CustomRoleManager.OnFixedUpdateLowLoad(player);
-
                     if (Options.LadderDeath.GetBool() && player.IsAlive())
                         FallFromLadder.FixedUpdate(player);
 

@@ -154,7 +154,7 @@ internal class PlagueDoctor : RoleBase
     {
         InfectActive = false;
     }
-    private void OnCheckPlayerPosition(PlayerControl player)
+    private void OnCheckPlayerPosition(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (LateCheckWin)
         {

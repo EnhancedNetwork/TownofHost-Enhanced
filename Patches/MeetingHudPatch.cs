@@ -1094,8 +1094,15 @@ class MeetingHudStartPatch
         if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
         TemplateManager.SendTemplate("OnMeeting", noErr: true);
 
-        if (AmongUsClient.Instance.AmHost)
-            NotifyRoleSkillOnMeetingStart();
+        try
+        {
+            if (AmongUsClient.Instance.AmHost)
+                NotifyRoleSkillOnMeetingStart();
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Error after notify {error}", "NotifyRoleSkillOnMeetingStart");
+        }
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -1197,7 +1204,6 @@ class MeetingHudUpdatePatch
         {
             __instance.CheckForEndVoting();
         }
-        //
 
         if (AmongUsClient.Instance.AmHost && Input.GetMouseButtonUp(1) && Input.GetKey(KeyCode.LeftControl))
         {
@@ -1218,14 +1224,12 @@ class MeetingHudUpdatePatch
             });
         }
 
-        //投票结束时销毁全部技能按钮
         if (!GameStates.IsVoting && __instance.lastSecond < 1)
         {
             if (GameObject.Find("ShootButton") != null) ClearShootButton(__instance, true);
             return;
         }
 
-        //会议技能UI处理
         bufferTime--;
         if (bufferTime < 0 && __instance.discussionTimer > 0)
         {

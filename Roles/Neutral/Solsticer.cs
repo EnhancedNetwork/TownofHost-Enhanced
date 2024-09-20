@@ -165,30 +165,32 @@ internal class Solsticer : RoleBase
         MurderMessage = "";
         patched = false;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (patched && GameStates.IsInTask)
+        if (lowLoad) return;
+        if (patched)
         {
             Count--;
 
             if (Count > 0) return;
 
-            Count = 15;
+            Count = 4;
 
             var pos = ExtendedPlayerControl.GetBlackRoomPosition();
-            var dis = Utils.GetDistance(pos, pc.GetCustomPosition());
+            var dis = Utils.GetDistance(pos, player.GetCustomPosition());
             if (dis < 1f)
                 return;
 
-            if (GameStates.IsMeeting || !patched) return;
-            pc.RpcTeleport(pos);
+            if (!patched) return;
+            player.RpcTeleport(pos);
         }
         else if (GameStates.IsInGame)
         {
-            if (Main.AllPlayerSpeed[pc.PlayerId] != SolsticerSpeed.GetFloat())
+            var playerId = player.PlayerId;
+            if (Main.AllPlayerSpeed[playerId] != SolsticerSpeed.GetFloat())
             {
-                Main.AllPlayerSpeed[pc.PlayerId] = SolsticerSpeed.GetFloat();
-                pc.MarkDirtySettings();
+                Main.AllPlayerSpeed[playerId] = SolsticerSpeed.GetFloat();
+                player.MarkDirtySettings();
             }
         }
     }

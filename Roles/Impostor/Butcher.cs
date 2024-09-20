@@ -91,15 +91,15 @@ internal class Butcher : RoleBase
     public override void AfterMeetingTasks() => MurderTargetLateTask = [];
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => MurderTargetLateTask.Clear();
 
-    public static void OnFixedUpdateOthers(PlayerControl target)
+    public static void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
     {
-        if (!MurderTargetLateTask.ContainsKey(target.PlayerId)) return;
-        if (target == null || !target.Data.IsDead) return;
-        var ops = MurderTargetLateTask[target.PlayerId].Item3;
+        if (!target.IsAlive()) return;
+        if (!MurderTargetLateTask.TryGetValue(target.PlayerId, out var data)) return;
+        var ops = data.Item3;
 
-        if (MurderTargetLateTask[target.PlayerId].Item1 > 19) //on fix update updates 30 times pre second
+        if (data.Item1 > 19) //on fix update updates 30 times pre second
         {
-            if (MurderTargetLateTask[target.PlayerId].Item2 < 5)
+            if (data.Item2 < 5)
             {
                 var rd = IRandom.Instance;
 
@@ -107,12 +107,12 @@ internal class Butcher : RoleBase
                 target.RpcTeleport(location);
                 target.RpcMurderPlayer(target);
                 target.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()), true);
-                MurderTargetLateTask[target.PlayerId] = (0, MurderTargetLateTask[target.PlayerId].Item2 + 1, ops);
+                MurderTargetLateTask[target.PlayerId] = (0, data.Item2 + 1, ops);
             }
             else MurderTargetLateTask.Remove(target.PlayerId);
         }
         else
-            MurderTargetLateTask[target.PlayerId] = (MurderTargetLateTask[target.PlayerId].Item1 + 1, MurderTargetLateTask[target.PlayerId].Item2, ops);
+            MurderTargetLateTask[target.PlayerId] = (data.Item1 + 1, data.Item2, ops);
     }
 
 }

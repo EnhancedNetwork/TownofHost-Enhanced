@@ -100,30 +100,30 @@ internal class Wraith : RoleBase
             SendRPC(wraith);
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var now = Utils.GetTimeStamp();
+        if (lowLoad) return;
 
-        if (lastTime.TryGetValue(player.PlayerId, out var time) && time + (long)WraithCooldown.GetFloat() < now)
+        if (lastTime.TryGetValue(player.PlayerId, out var time) && time + (long)WraithCooldown.GetFloat() < nowTime)
         {
             lastTime.Remove(player.PlayerId);
             if (!player.IsModded()) player.Notify(GetString("WraithCanVent"));
             SendRPC(player);
         }
 
-        if (lastFixedTime != now)
+        if (lastFixedTime != nowTime)
         {
-            lastFixedTime = now;
+            lastFixedTime = nowTime;
             Dictionary<byte, long> newList = [];
             List<byte> refreshList = [];
             foreach (var it in InvisTime)
             {
-                var pc = Utils.GetPlayerById(it.Key);
+                var pc = it.Key.GetPlayer();
                 if (pc == null) continue;
-                var remainTime = it.Value + (long)WraithDuration.GetFloat() - now;
+                var remainTime = it.Value + (long)WraithDuration.GetFloat() - nowTime;
                 if (remainTime < 0 || !pc.IsAlive())
                 {
-                    lastTime.Add(pc.PlayerId, now);
+                    lastTime.Add(pc.PlayerId, nowTime);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
                     ventedId.Remove(pc.PlayerId);
                     pc.Notify(GetString("WraithInvisStateOut"));

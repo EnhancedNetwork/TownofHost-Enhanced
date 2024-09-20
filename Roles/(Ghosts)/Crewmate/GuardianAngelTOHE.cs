@@ -76,9 +76,9 @@ internal class GuardianAngelTOHE : RoleBase
     {
         PlayerShield.Clear();
     }
-    private void OnOthersFixedUpdate(PlayerControl player)
+    private void OnOthersFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (PlayerShield.TryGetValue(player.PlayerId, out var timer) && timer + ProtectDur.GetInt() <= Utils.GetTimeStamp())
+        if (PlayerShield.TryGetValue(player.PlayerId, out var timer) && timer + ProtectDur.GetInt() <= nowTime)
         {
             PlayerShield.Remove(player.PlayerId);
         }

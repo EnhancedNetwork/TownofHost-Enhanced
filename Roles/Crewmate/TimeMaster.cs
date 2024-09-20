@@ -67,9 +67,9 @@ internal class TimeMaster : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.AbilityButton.buttonLabelText.text = GetString("TimeMasterVentButtonText");
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (TimeMasterInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + TimeMasterSkillDuration.GetInt() < GetTimeStamp())
+        if (!lowLoad && TimeMasterInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + TimeMasterSkillDuration.GetInt() < nowTime)
         {
             TimeMasterInProtect.Remove(player.PlayerId);
             if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill();

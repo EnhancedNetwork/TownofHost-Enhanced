@@ -83,9 +83,10 @@ internal class YinYanger : RoleBase
 
         return seen.PlayerId == yin?.PlayerId || seen.PlayerId == yang?.PlayerId ? ColorString(col, "☯") : string.Empty;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var (yin, yang) = Yanged[pc.PlayerId];
+        if (lowLoad) return;
+        var (yin, yang) = Yanged[player.PlayerId];
         if (!yin || !yang) return;
 
         if (GetDistance(yin.GetCustomPosition(), yang.GetCustomPosition()) < 1.5f)
@@ -95,7 +96,7 @@ internal class YinYanger : RoleBase
 
             yang.SetDeathReason(PlayerState.DeathReason.Equilibrium);
             yang.RpcMurderPlayer(yin);
-            Yanged[pc.PlayerId] = new();
+            Yanged[player.PlayerId] = new();
         }
     }
 

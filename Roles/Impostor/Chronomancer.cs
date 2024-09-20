@@ -129,21 +129,21 @@ internal class Chronomancer : RoleBase
         killer.SetKillCooldown();
         return true;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (GameStates.IsMeeting || !Main.IntroDestroyed) return;
+        if (!Main.IntroDestroyed) return;
 
         var oldChargedTime = ChargedTime;
         if (LastCD != GetCharge())
         {
             LastCD = GetCharge();
-            Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
+            Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
         }
 
         if (ChargedTime != FullCharge
-            && now + 1 <= Utils.GetTimeStamp() && !IsInMassacre)
+            && now + 1 <= nowTime && !IsInMassacre)
         {
-            now = Utils.GetTimeStamp();
+            now = nowTime;
             ChargedTime++;
         }
         else if (IsInMassacre && ChargedTime > 0 && countnowF >= LastNowF)
@@ -155,7 +155,7 @@ internal class Chronomancer : RoleBase
         if (IsInMassacre && ChargedTime < 1)
         {
             IsInMassacre = false;
-            pc.MarkDirtySettings();
+            player.MarkDirtySettings();
         }
 
         if (oldChargedTime != ChargedTime)

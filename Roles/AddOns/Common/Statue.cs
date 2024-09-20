@@ -1,4 +1,6 @@
-﻿namespace TOHE.Roles.AddOns.Common;
+﻿using AmongUs.GameOptions;
+
+namespace TOHE.Roles.AddOns.Common;
 
 public class Statue : IAddon
 {
@@ -48,12 +50,12 @@ public class Statue : IAddon
 
     public static void AfterMeetingTasks()
     {
-        foreach (var Statue in TempSpeed.Keys.ToArray())
+        foreach (var (statue, speed) in TempSpeed)
         {
-            var pc = Utils.GetPlayerById(Statue);
+            var pc = statue.GetPlayer();
             if (pc == null) continue;
-            float tmpFloat = TempSpeed[Statue];
-            Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - Main.AllPlayerSpeed[Statue] + tmpFloat;
+
+            Main.AllPlayerSpeed[statue] = Main.AllPlayerSpeed[statue] - SlowDown.GetFloat() + speed;
             pc.MarkDirtySettings();
         }
         Active = false;
@@ -66,10 +68,25 @@ public class Statue : IAddon
 
     public void OnFixedUpdate(PlayerControl victim) 
     {
-        if (!victim.Is(CustomRoles.Statue) || !victim.IsAlive()) return;
-
-        foreach (var PVC in Main.AllAlivePlayerControls)
+        if (!victim.Is(CustomRoles.Statue)) return;
+        if (!victim.IsAlive() && victim != null)
         {
+            var currentSpeed = Main.AllPlayerSpeed[victim.PlayerId];
+            var normalSpeed = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+            if (currentSpeed != normalSpeed)
+            {
+                Main.AllPlayerSpeed[victim.PlayerId] = normalSpeed;
+                victim?.MarkDirtySettings();
+            }
+            return;
+        }
+
+        foreach (var PVC in Main.AllPlayerControls)
+        {
+            if (!PVC.IsAlive())
+            {
+                CountNearplr.Remove(PVC.PlayerId);
+            }
             if (CountNearplr.Contains(PVC.PlayerId) && Utils.GetDistance(PVC.transform.position, victim.transform.position) > 2f)
             {
                 CountNearplr.Remove(PVC.PlayerId);

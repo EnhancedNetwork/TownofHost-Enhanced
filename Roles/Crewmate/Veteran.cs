@@ -95,22 +95,22 @@ internal class Veteran : RoleBase
             }
         return true;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (VeteranInProtect.TryGetValue(pc.PlayerId, out var vtime) && vtime + VeteranSkillDuration.GetInt() < GetTimeStamp())
+        if (!lowLoad && VeteranInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + VeteranSkillDuration.GetInt() < nowTime)
         {
-            VeteranInProtect.Remove(pc.PlayerId);
+            VeteranInProtect.Remove(player.PlayerId);
 
             if (!DisableShieldAnimations.GetBool())
             {
-                pc.RpcGuardAndKill();
+                player.RpcGuardAndKill();
             }
             else
             {
-                pc.RpcResetAbilityCooldown();
+                player.RpcResetAbilityCooldown();
             }
 
-            pc.Notify(string.Format(GetString("VeteranOffGuard"), AbilityLimit));
+            player.Notify(string.Format(GetString("VeteranOffGuard"), AbilityLimit));
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)

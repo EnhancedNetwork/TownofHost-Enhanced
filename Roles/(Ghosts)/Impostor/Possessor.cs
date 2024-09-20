@@ -3,6 +3,7 @@ using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles._Ghosts_.Impostor;
 
@@ -48,7 +49,7 @@ internal class Possessor : RoleBase
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
 
-    private void OnFixedUpdateOther(PlayerControl target)
+    private void OnFixedUpdateOther(PlayerControl target, bool lowLoad, long nowTime)
     {
         if (_Player == null) return;
 

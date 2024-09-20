@@ -115,9 +115,9 @@ internal class Swooper : RoleBase
         }, 0.8f, "Swooper Vent");
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var nowTime = Utils.GetTimeStamp();
+        if (lowLoad) return;
         var playerId = player.PlayerId;
         var needSync = false;
 

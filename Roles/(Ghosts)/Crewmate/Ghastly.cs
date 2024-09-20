@@ -114,19 +114,20 @@ internal class Ghastly : RoleBase
     }
     private bool CheckConflicts(PlayerControl target) => target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
     
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var speed = Main.AllPlayerSpeed[pc.PlayerId];
+        if (lowLoad) return;
+        var speed = Main.AllPlayerSpeed[player.PlayerId];
         if (speed != GhastlySpeed.GetFloat())
         {
-            Main.AllPlayerSpeed[pc.PlayerId] = GhastlySpeed.GetFloat();
-            pc.MarkDirtySettings();
+            Main.AllPlayerSpeed[player.PlayerId] = GhastlySpeed.GetFloat();
+            player.MarkDirtySettings();
         }
     }
-    public void OnFixUpdateOthers(PlayerControl player)
+    public void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (killertarget.Item1 == player.PlayerId 
-            && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= GetTimeStamp())
+            && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= nowTime)
         {
             _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
             TargetArrow.Remove(killertarget.Item1, killertarget.Item2);

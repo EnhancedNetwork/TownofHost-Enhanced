@@ -133,8 +133,9 @@ internal class Glitch : RoleBase
         }
         else return false;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (HackCDTimer > 180 || HackCDTimer < 0) HackCDTimer = 0;
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
@@ -143,7 +144,7 @@ internal class Glitch : RoleBase
         bool change = false;
         foreach (var pc in hackedIdList)
         {
-            if (pc.Value + HackDuration.GetInt() < Utils.GetTimeStamp())
+            if (pc.Value + HackDuration.GetInt() < nowTime)
             {
                 hackedIdList.Remove(pc.Key);
                 change = true;
@@ -162,7 +163,7 @@ internal class Glitch : RoleBase
             MimicCDTimer = 0;
             MimicDurTimer = 0;
 
-            if (lastRpcSend <= Utils.GetTimeStamp() + 500)
+            if (lastRpcSend <= nowTime + 500)
             {
                 SendRPC();
                 lastRpcSend += 9999;
@@ -172,7 +173,7 @@ internal class Glitch : RoleBase
 
         if (MimicDurTimer > 0)
         {
-            try { MimicDurTimer = (int)(MimicDuration.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
+            try { MimicDurTimer = (int)(MimicDuration.GetInt() - (nowTime - LastMimic)); }
             catch { MimicDurTimer = 0; }
             if (MimicDurTimer > 180) MimicDurTimer = 0;
         }
@@ -195,15 +196,15 @@ internal class Glitch : RoleBase
 
         if (HackCDTimer <= 0 && KCDTimer <= 0 && MimicCDTimer <= 0 && MimicDurTimer <= 0) return;
 
-        try { HackCDTimer = (int)(HackCooldown.GetInt() - (Utils.GetTimeStamp() - LastHack)); }
+        try { HackCDTimer = (int)(HackCooldown.GetInt() - (nowTime - LastHack)); }
         catch { HackCDTimer = 0; }
         if (HackCDTimer > 180 || HackCDTimer < 0) HackCDTimer = 0;
 
-        try { KCDTimer = (int)(KillCooldown.GetInt() - (Utils.GetTimeStamp() - LastKill)); }
+        try { KCDTimer = (int)(KillCooldown.GetInt() - (nowTime - LastKill)); }
         catch { KCDTimer = 0; }
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
 
-        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (Utils.GetTimeStamp() - LastMimic)); }
+        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (nowTime - LastMimic)); }
         catch { MimicCDTimer = 0; }
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
@@ -214,10 +215,10 @@ internal class Glitch : RoleBase
         }
         if (player.IsNonHostModdedClient()) // For mooded non host players, sync kcd per second
         {
-            if (lastRpcSend < Utils.GetTimeStamp())
+            if (lastRpcSend < nowTime)
             {
                 SendRPC();
-                lastRpcSend = Utils.GetTimeStamp();
+                lastRpcSend = nowTime;
             }
         }
     }

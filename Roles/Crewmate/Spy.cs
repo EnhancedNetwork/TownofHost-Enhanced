@@ -100,15 +100,15 @@ internal class Spy : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
         => OnKillAttempt(killer, target);
 
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (pc == null) return;
-        if (SpyRedNameList.Count == 0) return;
+        if (lowLoad) return;
+        if (!SpyRedNameList.Any()) return;
         change = false;
 
         foreach (var x in SpyRedNameList)
         {
-            if (x.Value + SpyRedNameDur.GetInt() < GetTimeStamp() || !GameStates.IsInTask)
+            if (x.Value + SpyRedNameDur.GetInt() < nowTime)
             {
                 if (SpyRedNameList.ContainsKey(x.Key))
                 {
@@ -118,7 +118,7 @@ internal class Spy : RoleBase
                 }
             }
         }
-        if (change && GameStates.IsInTask) { NotifyRoles(SpecifySeer: pc, ForceLoop: true); }
+        if (change) { NotifyRoles(SpecifySeer: player, ForceLoop: true); }
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {

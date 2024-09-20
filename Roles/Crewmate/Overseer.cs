@@ -188,15 +188,15 @@ internal class Overseer : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!OverseerTimer.ContainsKey(player.PlayerId)) return;
+        if (!OverseerTimer.TryGetValue(player.PlayerId, out var data)) return;
 
         var playerId = player.PlayerId;
         if (!player.IsAlive() || Pelican.IsEaten(playerId))
         {
 
-            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
+            data.Item1.RpcSetSpecificScanner(player, false);
             OverseerTimer.Remove(playerId);
             SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
@@ -204,7 +204,7 @@ internal class Overseer : RoleBase
         }
         else
         {
-            var (farTarget, farTime) = OverseerTimer[playerId];
+            var (farTarget, farTime) = data;
             
             if (!farTarget.IsAlive())
             {

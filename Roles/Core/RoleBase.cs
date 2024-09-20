@@ -135,12 +135,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl pc)
-    { }
-    /// <summary>
-    /// A local method to check conditions during gameplay, which aren't prioritized
-    /// </summary>
-    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     { }
 
     /// <summary>

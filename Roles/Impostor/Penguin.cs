@@ -191,10 +191,8 @@ internal class Penguin : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl penguin)
+    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime)
     {
-        if (GameStates.IsMeeting) return;
-
         if (!stopCount)
             AbductTimer -= Time.fixedDeltaTime;
 

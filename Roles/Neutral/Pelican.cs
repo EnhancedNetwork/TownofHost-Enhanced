@@ -25,7 +25,7 @@ internal class Pelican : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
 
-    private static readonly Dictionary<byte, List<byte>> eatenList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
     public static Dictionary<byte, Vector2> PelicanLastPosition = [];
 
@@ -81,7 +81,7 @@ internal class Pelican : RoleBase
         {
             int eatenNum = reader.ReadInt32();
             eatenList.Remove(playerId);
-            List<byte> list = [];
+            HashSet<byte> list = [];
             for (int i = 0; i < eatenNum; i++)
                 list.Add(reader.ReadByte());
             eatenList.Add(playerId, list);
@@ -263,20 +263,22 @@ internal class Pelican : RoleBase
         GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl pelican)
-    {        
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (lowLoad) return;
+
         Count--;
         
         if (Count > 0) return; 
         
-        Count = 2;
+        Count = 4;
 
-        foreach (var pc in eatenList.Values)
+        if (eatenList.TryGetValue(player.PlayerId, out var playerList))
         {
-            foreach (var tar in pc.ToArray())
+            foreach (var tar in playerList.ToArray())
             {
-                var target = Utils.GetPlayerById(tar);
-                if (target == null) continue;
+                var target = tar.GetPlayer();
+                if (!target.IsAlive()) continue;
 
                 var pos = GetBlackRoomPSForPelican();
                 var dis = Utils.GetDistance(pos, target.GetCustomPosition());

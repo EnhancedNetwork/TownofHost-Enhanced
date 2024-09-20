@@ -82,9 +82,7 @@ public class Glow : IAddon
             MarkedOnce[player.PlayerId] = false;
             return;
         }
-        if (!InRadius.ContainsKey(player.PlayerId)) InRadius[player.PlayerId] = [];
         var prevList = InRadius[player.PlayerId];
-        if (!MarkedOnce.ContainsKey(player.PlayerId)) MarkedOnce[player.PlayerId] = false;
         InRadius[player.PlayerId] = Main.AllAlivePlayerControls
             .Where(target => target != null 
                 && !target.Is(CustomRoles.Glow) 

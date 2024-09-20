@@ -254,9 +254,9 @@ internal class Baker : RoleBase
         if (playerIdList.Any())
             BarrierList[playerIdList.First()].Clear();
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!AllHasBread(player) || player.Is(CustomRoles.Famine)) return;
+        if (!lowLoad || !AllHasBread(player) || player.Is(CustomRoles.Famine)) return;
 
         player.RpcSetCustomRole(CustomRoles.Famine);
         player.Notify(GetString("BakerToFamine"));

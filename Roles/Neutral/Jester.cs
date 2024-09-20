@@ -31,7 +31,7 @@ internal class Jester : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
         CanVent = BooleanOptionItem.Create(Id + 3, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
-        CantMoveInVents = BooleanOptionItem.Create(Id + 10, GeneralOption.CantMoveOnVents, false, TabGroup.NeutralRoles, false)
+        CantMoveInVents = BooleanOptionItem.Create(Id + 10, GeneralOption.CantMoveOnVents, true, TabGroup.NeutralRoles, false)
             .SetParent(CanVent);
         HasImpostorVision = BooleanOptionItem.Create(Id + 4, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);

@@ -23,7 +23,7 @@ internal class BloodKnight : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem ProtectDuration;
 
-    private long? TimeStamp;
+    private long TimeStamp;
 
     public override void SetupCustomOption()
     {
@@ -39,17 +39,15 @@ internal class BloodKnight : RoleBase
     {
         TimeStamp = 0;
     }
-    private void SendRPC(byte playerId)
+    private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);
-        writer.Write(playerId);
         writer.Write(TimeStamp.ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte PlayerId = reader.ReadByte();
         string Time = reader.ReadString();
         TimeStamp = long.Parse(Time);
     }
@@ -57,11 +55,11 @@ internal class BloodKnight : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
-    private bool InProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp();
+    private bool InProtect() => TimeStamp > Utils.GetTimeStamp();
     
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (InProtect(target.PlayerId))
+        if (InProtect())
         {
             killer.RpcGuardAndKill(target);
             if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill();
@@ -76,27 +74,27 @@ internal class BloodKnight : RoleBase
         if (inMeeting || isSuicide) return;
 
         TimeStamp = Utils.GetTimeStamp() + (long)ProtectDuration.GetFloat();
-        SendRPC(killer.PlayerId);
+        SendRPC();
         killer.Notify(GetString("BKInProtect"));
     }
 
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => true;
 
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (TimeStamp < Utils.GetTimeStamp() && TimeStamp != 0)
+        if (lowLoad && TimeStamp < nowTime && TimeStamp != 0)
         {
             TimeStamp = 0;
-            pc.Notify(GetString("BKProtectOut"), sendInLog: false);
+            player.Notify(GetString("BKProtectOut"), sendInLog: false);
         }
     }
-    public override string GetLowerText(PlayerControl pc, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
-        if (pc == null || isForMeeting || !isForHud || !pc.IsAlive()) return string.Empty;
+        if (!seer.IsAlive() || seer.PlayerId != seen.PlayerId || isForMeeting || !isForHud) return string.Empty;
 
         var str = new StringBuilder();
-        if (InProtect(pc.PlayerId))
+        if (InProtect())
         {
             var remainTime = TimeStamp - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("BKSkillTimeRemain"), remainTime));

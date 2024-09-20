@@ -73,7 +73,7 @@ internal class Pitfall : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
     }
 
@@ -114,11 +114,11 @@ internal class Pitfall : RoleBase
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
     }
 
-    private void OnFixedUpdateOthers(PlayerControl player)
+    private void OnFixedUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
+        if (lowLoad || Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
 
-        if (player.GetCustomRole().IsImpostor())
+        if (player.Is(Custom_Team.Impostor))
         {
             var traps = Traps.Where(a => a.PitfallPlayerId == player.PlayerId && a.IsActive).ToArray();
             foreach (var trap in traps)
