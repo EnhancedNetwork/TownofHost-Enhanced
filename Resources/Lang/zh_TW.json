@@ -2242,7 +2242,7 @@
   "Poll.Tied": "喔不，投票在 {0} 之間打成了平手，它們都獲得了 {1} 票。",
   "Poll.MissingPlayers": "你不能自己發起投票，笨蛋;3",
   "Poll.Begin": "您可以使用 /pv [答案] 進行投票，提示: 也可以使用數字。",
-  "Poll.TimeInfo": "The results will be final in 2 minutes",
+  "Poll.TimeInfo": "最終結果將在2分鐘內出爐",
   "Poll.OnlyInLobby": "<#ab4f75>抱歉，該指令只能在大廳使用</color>",
   "Poll.Inactive": "目前沒有任何活躍的投票活動。",
   "Poll.AlreadyVoted": "你已經投過票了，所以不會被計算在內",
@@ -2255,7 +2255,7 @@
   "WarningTitle": "警告!",
   "Warning.BrokenVentsInDleksSendInGame": "警告! 該地圖的管道系統損壞",
   "Warning.BrokenVentsInDleksMessage": "<b> dlekS ehT 中的管道系統損壞</b>，這是一個原版問題並且無法被H系模組修復，<b>因此所有使用管道觸發技能的職業將會失效，請見諒</b>",
-  "Warning.NoGameEndIsEnabled": "Warning: <b>{0}</b> is enabled!",
+  "Warning.NoGameEndIsEnabled": "警告: <b>{0}</b> 已啟用!",
   "AntiBlackoutProtectionTitle": "反黑屏",
   "Warning.AntiBlackoutProtectionMsg": "<size=110%>警告</size>\n\n<b>防黑屏機制已啟用</b>，由於場上存活的<color=#ff1919>偽裝者</color>、<color=#8cffff>船員</color>以及<color=#7f8c8d>帶刀中立</color>的數量太少，<b>投票結果將顯示為平票(只會影響視覺，不會影響真正的投票結果)</b>\n<size=70%>有模組的玩家可以正常看到投票結果</size>",
   "Warning.ShowAntiBlackExiledPlayer": "<b>上次會議觸發了防黑屏措施\n以下顯示被逐出玩家的訊息:</b>\n",
@@ -3600,5 +3600,5 @@
   "WardenWarn": "危險! 快跑!",
   "MinionAbilityTime": "技能持續時間",
   "Minion_Blind": "致盲",
-  "Evader_ChanceNotExiled": "Chance not be exiled"
+  "Evader_ChanceNotExiled": "逃過逐出的機率"
 }
