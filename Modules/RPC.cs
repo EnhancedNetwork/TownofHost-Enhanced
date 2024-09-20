@@ -13,7 +13,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 192/255 USED
+enum CustomRPC : byte // 187/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -60,11 +60,6 @@ enum CustomRPC : byte // 192/255 USED
     SetKillOrSpell,
     SetKillOrHex,
     SetKillOrCurse,
-    SetCaptainTargetSpeed,
-    RevertCaptainTargetSpeed,
-    RevertCaptainAllTargetSpeed,
-    SetCaptainVotedTarget,
-    RevertCaptainVoteRemove,
     SetDousedPlayer,
     DoSpell,
     DoHex,
@@ -72,13 +67,13 @@ enum CustomRPC : byte // 192/255 USED
     SniperSync,
     SetLoversPlayers,
     SetExecutionerTarget,
-    RemoveExecutionerTarget = 149,
-    SendFireworkerState = 151, // BetterCheck used 150
+    RemoveExecutionerTarget,
+    SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
-    SetCurrentDrawTarget,
+    SetCurrentDrawTarget = 151, // BetterCheck used 150
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
@@ -445,21 +440,6 @@ internal class RPCHandlerPatch
                 {
                     HudManager.Instance.Chat.SetVisible(show);
                 }
-                break;
-            case CustomRPC.SetCaptainTargetSpeed:
-                Captain.ReceiveRPCSetSpeed(reader);
-                break;
-            case CustomRPC.RevertCaptainTargetSpeed:
-                Captain.ReceiveRPCRevertSpeed(reader);
-                break;
-            case CustomRPC.RevertCaptainAllTargetSpeed:
-                Captain.ReceiveRPCRevertAllSpeed();
-                break;
-            case CustomRPC.SetCaptainVotedTarget:
-                Captain.ReceiveRPCVoteAdd(reader);
-                break;
-            case CustomRPC.RevertCaptainVoteRemove:
-                Captain.ReceiveRPCVoteRemove(reader);
                 break;
             case CustomRPC.SetDrawPlayer:
                 Revolutionist.ReceiveDrawPlayerRPC(reader);
