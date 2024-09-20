@@ -55,7 +55,7 @@ internal class Terrorist : RoleBase
     private static void CheckTerroristWin(NetworkedPlayerInfo terrorist)
     {
         var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
-        if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
+        if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()) && (Main.PlayerStates[terrorist.PlayerId].deathReason != PlayerState.DeathReason.Armageddon))
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
             {
