@@ -247,7 +247,7 @@ class ShipStatusBeginPatch
     {
         Logger.CurrentMethod();
 
-        if (RolesIsAssigned && !Main.IntroDestroyed && GameStates.IsNormalGame)
+        if (RolesIsAssigned && GameStates.IsNormalGame)
         {
             foreach (var player in Main.AllPlayerControls)
             {

@@ -128,6 +128,15 @@ public class PlayerState(byte playerId)
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
 
+        if (CustomRoleManager.AddonClasses.TryGetValue(role, out var IAddOn))
+        {
+            var target = PlayerId.GetPlayer();
+            if (target != null)
+            {
+                IAddOn?.Add(target.PlayerId, !Main.IntroDestroyed);
+            }
+        }
+
         if (role.IsConverted())
         {
             SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());

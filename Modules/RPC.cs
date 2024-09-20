@@ -992,11 +992,6 @@ internal static class RPC
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             Main.PlayerStates[targetId].SetSubRole(role);
-            
-            if (CustomRoleManager.AddonClasses.TryGetValue(role, out var IAddon))
-            {
-                IAddon?.Add(targetId);
-            }
 
             switch (role)
             {
