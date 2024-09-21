@@ -97,23 +97,19 @@ internal class SoulCollector : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl ryuak, NetworkedPlayerInfo iscute)
     {
-        if (_Player == null) return;
-        PlayerControl sc = _Player;
-
-        if (GetPassiveSouls.GetBool() && sc.IsAlive())
+        if (!_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
+        
+        AbilityLimit++;
+        _ = new LateTask(() =>
         {
-            AbilityLimit++;
-            _ = new LateTask(() =>
-            {
-                Utils.SendMessage(GetString("PassiveSoulGained"), sc.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+            Utils.SendMessage(GetString("PassiveSoulGained"), _Player.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
 
-            }, 3f, "Passive Soul Gained");
-            SendRPC();
-        }
+        }, 3f, "Passive Soul Gained");
+        SendRPC();
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        if (_Player == null) return;
+        if (!_Player.IsAlive()) return;
         if (TargetId == byte.MaxValue) return;
 
         var playerId = _Player.PlayerId;
@@ -147,7 +143,7 @@ internal class SoulCollector : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        if (_Player == null) return;
+        if (!_Player.IsAlive()) return;
         TargetId = byte.MaxValue;
 
         if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
