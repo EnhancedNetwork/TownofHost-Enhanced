@@ -27,7 +27,7 @@ public class FallFromLadder
     }
     public static void FixedUpdate(PlayerControl player)
     {
-        if (player.Data.Disconnected) return;
+        if (player.Data.Disconnected || Main.MeetingIsStarted) return;
         if (TargetLadderData.ContainsKey(player.PlayerId))
         {
             if (Utils.GetDistance(TargetLadderData[player.PlayerId], player.transform.position) < 0.5f)
