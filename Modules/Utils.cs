@@ -2221,6 +2221,24 @@ public static class Utils
     {
         VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>());
     }
+    public static void CheckAndSetVentInteractions()
+    {
+        bool shouldPerformVentInteractions = false;
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (VentSystemDeterioratePatch.BlockVentInteraction(pc))
+            {
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                shouldPerformVentInteractions = true;
+            }
+        }
+
+        if (shouldPerformVentInteractions)
+        {
+            SetAllVentInteractions();
+        }
+    }
     public static bool DeathReasonIsEnable(this PlayerState.DeathReason reason, bool checkbanned = false)
     {
         static bool BannedReason(PlayerState.DeathReason rso)

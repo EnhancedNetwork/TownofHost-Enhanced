@@ -108,6 +108,9 @@ static class ExtendedPlayerControl
         var oldRoleIsDesync = playerRole.IsDesyncRole();
         var newRoleIsDesync = newCustomRole.IsDesyncRole();
 
+        var newVanillaRole = newCustomRole.GetVNRole();
+        var newDesyncRole = newCustomRole.GetDYRole();
+
         switch (oldRoleIsDesync, newRoleIsDesync)
         {
             // Desync role to normal role
@@ -121,7 +124,7 @@ static class ExtendedPlayerControl
                         var self = player.PlayerId == seer.PlayerId;
 
                         if (!self && seer.HasDesyncRole() && !seerIsHost)
-                            remeberRoleType = newCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
+                            remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                         else remeberRoleType = newRoleType;
 
                         // Set role type for seer
@@ -140,10 +143,8 @@ static class ExtendedPlayerControl
                         }
                         else
                         {
-                            var playerIsKiller = playerRole.IsImpostor() || newRoleIsDesync;
-                            
                             remeberRoleType = RoleTypes.CrewmateGhost;
-                            if (!playerIsKiller && seer.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
+                            if (!newCustomRole.IsImpostor() && seer.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
 
                             RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.IsDesyncRole() ? seerIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist : seerRoleType, seerCustomRole);
                             seer.RpcSetRoleDesync(remeberRoleType, playerClientId);
@@ -171,12 +172,12 @@ static class ExtendedPlayerControl
                             remeberRoleType = player.IsHost() ? RoleTypes.Crewmate : RoleTypes.Impostor;
 
                             // For Desync Shapeshifter
-                            if (newCustomRole.GetDYRole() is RoleTypes.Shapeshifter)
+                            if (newDesyncRole is RoleTypes.Shapeshifter)
                                 remeberRoleType = RoleTypes.Shapeshifter;
                         }
                         else
                         {
-                            if (newRoleIsDesync) remeberRoleType = newCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
+                            if (newRoleIsDesync) remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                             else remeberRoleType = newRoleType;
                         }
 
@@ -188,16 +189,11 @@ static class ExtendedPlayerControl
                         var seerCustomRole = seer.GetRoleMap().CustomRole;
                         if (seer.IsAlive())
                         {
-                            if (newCustomRole.IsDesyncRole())
-                                remeberRoleType = newCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
+                            remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                         }
                         else
                         {
-                            var playerIsKiller = playerRole.IsImpostor() || newRoleIsDesync;
-
                             remeberRoleType = RoleTypes.CrewmateGhost;
-                            if (!playerIsKiller && seer.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
-
                             RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist, seerCustomRole);
                             seer.RpcSetRoleDesync(remeberRoleType, playerClientId);
                             continue;

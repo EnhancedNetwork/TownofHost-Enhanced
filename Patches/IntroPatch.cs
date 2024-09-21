@@ -685,20 +685,7 @@ class IntroCutsceneDestroyPatch
                 Logger.Error($"Error: {error}", "FFA chat visible");
             }
 
-            bool shouldPerformVentInteractions = false;
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                if (pc.BlockVentInteraction())
-                {
-                    VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                    shouldPerformVentInteractions = true;
-                }
-            }
-
-            if (shouldPerformVentInteractions)
-            {
-                Utils.SetAllVentInteractions();
-            }
+            Utils.CheckAndSetVentInteractions();
         }
 
         Logger.Info("OnDestroy", "IntroCutscene");

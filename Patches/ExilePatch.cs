@@ -105,20 +105,7 @@ class ExileControllerWrapUpPatch
         FallFromLadder.Reset();
         Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode is CustomGameMode.Standard);
         Utils.SyncAllSettings();
-
-        bool shouldPerformVentInteractions = false;
-        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            if (pc.BlockVentInteraction())
-            {
-                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                shouldPerformVentInteractions = true;
-            }
-        }
-        if (shouldPerformVentInteractions)
-        {
-            Utils.SetAllVentInteractions();
-        }
+        Utils.CheckAndSetVentInteractions();
 
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
