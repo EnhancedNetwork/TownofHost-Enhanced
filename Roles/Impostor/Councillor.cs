@@ -162,7 +162,7 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
                     return true;
                 }
-                else if (Medic.InProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                else if (Medic.IsProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;

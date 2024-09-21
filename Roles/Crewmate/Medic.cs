@@ -27,8 +27,8 @@ internal class Medic : RoleBase
     private static OptionItem ResetCooldown;
     public static OptionItem GuesserIgnoreShield;
 
-    public static readonly HashSet<byte> GlobalProtectedList = [];
-    public static readonly Dictionary<byte, HashSet<byte>> ProtectedPlayers = [];
+    private static readonly HashSet<byte> GlobalProtectedList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> ProtectedPlayers = [];
 
     private readonly HashSet<byte> ProtectedList = [];
     private readonly HashSet<byte> TempMarkProtected = [];
@@ -110,10 +110,10 @@ internal class Medic : RoleBase
             ProtectedList.Add(reader.ReadByte());
     }
 
-    public static bool InProtected(byte id)
+    public static bool IsProtected(byte id)
         => GlobalProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    private bool InProtect(byte id)
+    private bool IsProtect(byte id)
         => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
     public bool CheckKillButton() => AbilityLimit > 0;
@@ -160,7 +160,7 @@ internal class Medic : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || _Player == null) return true;
-        if (!ProtectedList.Contains(target.PlayerId)) return false;
+        if (!IsProtect(target.PlayerId)) return false;
 
         var medic = _Player;
         SendRPC();
@@ -239,11 +239,11 @@ internal class Medic : RoleBase
     {
         if (WhoCanSeeProtectOpt.GetInt() is 0 or 1)
         {
-            if (seer.PlayerId == target.PlayerId && (InProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)))
+            if (seer.PlayerId == target.PlayerId && (IsProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
-            else if (seer.PlayerId != target.PlayerId && (InProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
+            else if (seer.PlayerId != target.PlayerId && (IsProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
@@ -256,11 +256,11 @@ internal class Medic : RoleBase
         if (!seer.Is(CustomRoles.Medic))
         {
             // The seer sees protect on himself
-            if (seer.PlayerId == target.PlayerId && (InProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
+            if (seer.PlayerId == target.PlayerId && (IsProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
-            else if (seer.PlayerId != target.PlayerId && !seer.IsAlive() && (InProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
+            else if (seer.PlayerId != target.PlayerId && !seer.IsAlive() && (IsProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
             {
                 // Dead players see protect
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
