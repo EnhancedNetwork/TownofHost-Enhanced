@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using System.Text;
-using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 

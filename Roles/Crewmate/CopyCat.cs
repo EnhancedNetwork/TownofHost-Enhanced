@@ -99,62 +99,33 @@ internal class CopyCat : RoleBase
         }
         if (CopyCrewVar.GetBool())
         {
-            switch (role)
+            role = role switch
             {
-                case CustomRoles.Eraser:
-                    role = CustomRoles.Cleanser;
-                    break;
-                case CustomRoles.Nemesis:
-                    role = CustomRoles.Retributionist;
-                    break;
-                case CustomRoles.Visionary:
-                    role = CustomRoles.Oracle;
-                    break;
-                case CustomRoles.Workaholic:
-                    role = CustomRoles.Snitch;
-                    break;
-                case CustomRoles.Sunnyboy:
-                    role = CustomRoles.Doctor;
-                    break;
-                case CustomRoles.Vindicator:
-                case CustomRoles.Pickpocket:
-                    role = CustomRoles.Mayor;
-                    break;
-                case CustomRoles.Councillor:
-                    role = CustomRoles.Judge;
-                    break;
-                case CustomRoles.Arrogance:
-                case CustomRoles.Juggernaut:
-                case CustomRoles.Berserker:
-                    role = CustomRoles.Reverie;
-                    break;
-                case CustomRoles.Taskinator:
-                    role = CustomRoles.Benefactor;
-                    break;
-                case CustomRoles.EvilTracker:
-                    role = CustomRoles.TrackerTOHE;
-                    break;
-                case CustomRoles.AntiAdminer:
-                    role = CustomRoles.Telecommunication;
-                    break;
-                case CustomRoles.Pursuer:
-                    role = CustomRoles.Deceiver;
-                    break;
-                case CustomRoles.Baker:
-                    switch (Baker.CurrentBread())
-                    {
-                        case 0:
-                            role = CustomRoles.Overseer;
-                            break;
-                        case 1:
-                            role = CustomRoles.Deputy;
-                            break;    
-                        case 2:
-                            role = CustomRoles.Medic;
-                            break;
-                    }
-                    break;
-            }
+                CustomRoles.Swooper or CustomRoles.Wraith => CustomRoles.Chameleon,
+                CustomRoles.Stealth => CustomRoles.Grenadier,
+                CustomRoles.TimeThief => CustomRoles.TimeManager,
+                CustomRoles.Consigliere => CustomRoles.Overseer,
+                CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
+                CustomRoles.SerialKiller => CustomRoles.Addict,
+                CustomRoles.Miner => CustomRoles.Mole,
+                CustomRoles.Twister => CustomRoles.TimeMaster,
+                CustomRoles.Disperser => CustomRoles.Transporter,
+                CustomRoles.Eraser => CustomRoles.Cleanser,
+                CustomRoles.Visionary => CustomRoles.Oracle,
+                CustomRoles.Workaholic => CustomRoles.Snitch,
+                CustomRoles.Sunnyboy => CustomRoles.Doctor,
+                CustomRoles.Councillor => CustomRoles.Judge,
+                CustomRoles.Vindicator or CustomRoles.Pickpocket => CustomRoles.Mayor,
+                CustomRoles.Arrogance or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
+                CustomRoles.Taskinator => CustomRoles.Benefactor,
+                CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
+                CustomRoles.AntiAdminer => CustomRoles.Telecommunication,
+                CustomRoles.Pursuer => CustomRoles.Deceiver,
+                CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
+                CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,
+                CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
+                _ => role
+            };
         }
         if (role.IsCrewmate())
         {

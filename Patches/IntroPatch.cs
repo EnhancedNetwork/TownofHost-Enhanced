@@ -6,7 +6,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Modules;
-using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Neutral;
@@ -80,15 +79,21 @@ class SetUpRoleTextPatch
             Utils.DoNotifyRoles(NoCache: true);
         }
 
-        // Show role map
-        /*foreach (var seer in Main.AllPlayerControls)
+        var mapName = Utils.GetActiveMapName();
+        Logger.Msg($"{mapName}", "Map");
+        if (AmongUsClient.Instance.AmHost && RandomSpawn.IsRandomSpawn() && RandomSpawn.CanSpawnInFirstRound())
         {
-            foreach (var target in Main.AllPlayerControls)
+            RandomSpawn.SpawnMap spawnMap = mapName switch
             {
-                RpcSetRoleReplacer.RoleMap.TryGetValue((seer.PlayerId, target.PlayerId), out var map);
-                Logger.Info($"seer {seer?.Data?.PlayerName}-{seer.PlayerId}, target {target?.Data?.PlayerName}-{target.PlayerId} => {map.roleType}, {map.customRole}", "Role Map");
-            }
-        }*/
+                MapNames.Skeld => new RandomSpawn.SkeldSpawnMap(),
+                MapNames.Mira => new RandomSpawn.MiraHQSpawnMap(),
+                MapNames.Polus => new RandomSpawn.PolusSpawnMap(),
+                MapNames.Dleks => new RandomSpawn.DleksSpawnMap(),
+                MapNames.Fungle => new RandomSpawn.FungleSpawnMap(),
+                _ => null,
+            };
+            if (spawnMap != null) Main.AllPlayerControls.Do(spawnMap.RandomTeleport);
+        }
 
         _ = new LateTask(() =>
         {
@@ -266,20 +271,6 @@ class CoBeginPatch
         RPC.RpcVersionCheck();
 
         FFAManager.SetData();
-
-        if (AmongUsClient.Instance.AmHost && GameStates.IsHideNSeek && RandomSpawn.IsRandomSpawn())
-        {
-            RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
-            {
-                0 => new RandomSpawn.SkeldSpawnMap(),
-                1 => new RandomSpawn.MiraHQSpawnMap(),
-                2 => new RandomSpawn.PolusSpawnMap(),
-                3 => new RandomSpawn.DleksSpawnMap(),
-                5 => new RandomSpawn.FungleSpawnMap(),
-                _ => null,
-            };
-            if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
-        }
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
@@ -587,22 +578,6 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.DoNotifyRoles(NoCache: true);
-
-            if (GameStates.IsNormalGame && (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA))
-            {
-                var mapId = Utils.GetActiveMapId();
-                Logger.Msg($"Check map {mapId}", "Map");
-                RandomSpawn.SpawnMap map = mapId switch
-                {
-                    0 => new RandomSpawn.SkeldSpawnMap(),
-                    1 => new RandomSpawn.MiraHQSpawnMap(),
-                    2 => new RandomSpawn.PolusSpawnMap(),
-                    3 => new RandomSpawn.DleksSpawnMap(),
-                    5 => new RandomSpawn.FungleSpawnMap(),
-                    _ => null,
-                };
-                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
-            }
         }
     }
     public static void Postfix()

@@ -1,6 +1,5 @@
 ﻿using AmongUs.Data;
 using System;
-using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -12,6 +11,10 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
+        public static void Prefix()
+        {
+            CheckAndDoRandomSpawn();
+        }
         public static void Postfix(ExileController __instance)
         {
             try
@@ -32,6 +35,10 @@ class ExileControllerWrapUpPatch
     [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
     class AirshipExileControllerPatch
     {
+        public static void Prefix()
+        {
+            CheckAndDoRandomSpawn();
+        }
         public static void Postfix(AirshipExileController __instance)
         {
             try
@@ -48,7 +55,23 @@ class ExileControllerWrapUpPatch
             }
         }
     }
-    static void WrapUpPostfix(NetworkedPlayerInfo exiled)
+    private static void CheckAndDoRandomSpawn()
+    {
+        if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
+        {
+            RandomSpawn.SpawnMap spawnMap = Utils.GetActiveMapName() switch
+            {
+                MapNames.Skeld => new RandomSpawn.SkeldSpawnMap(),
+                MapNames.Mira => new RandomSpawn.MiraHQSpawnMap(),
+                MapNames.Polus => new RandomSpawn.PolusSpawnMap(),
+                MapNames.Dleks => new RandomSpawn.DleksSpawnMap(),
+                MapNames.Fungle => new RandomSpawn.FungleSpawnMap(),
+                _ => null,
+            };
+            if (spawnMap != null) Main.AllPlayerControls.Do(spawnMap.RandomTeleport);
+        }
+    }
+    private static void WrapUpPostfix(NetworkedPlayerInfo exiled)
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
 
@@ -102,31 +125,12 @@ class ExileControllerWrapUpPatch
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
 
-        FallFromLadder.Reset();
         Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode is CustomGameMode.Standard);
         Utils.SyncAllSettings();
         Utils.CheckAndSetVentInteractions();
-
-        if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
-        {
-            _ = new LateTask(() =>
-            {
-                RandomSpawn.SpawnMap map = Utils.GetActiveMapId() switch
-                {
-                    0 => new RandomSpawn.SkeldSpawnMap(),
-                    1 => new RandomSpawn.MiraHQSpawnMap(),
-                    2 => new RandomSpawn.PolusSpawnMap(),
-                    3 => new RandomSpawn.DleksSpawnMap(),
-                    5 => new RandomSpawn.FungleSpawnMap(),
-                    _ => null,
-                };
-                if (map != null) Main.AllPlayerControls.Do(map.RandomTeleport);
-
-            }, 0.8f, "Random Spawn After Meeting");
-        }
     }
 
-    static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
+    private static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
     {
         // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably.
         if (AmongUsClient.Instance.AmHost)

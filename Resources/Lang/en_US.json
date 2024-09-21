@@ -1276,6 +1276,7 @@
   "DisableAirshipGapRoomLightsPanel": "Disable Gap Room Lights Panel (<color=#ed0007>Airship</color>)",
   "DisableAirshipCargoLightsPanel": "Disable Cargo Lights Panel (<color=#ed0007>Airship</color>)",
   "RandomSpawnMode": "Random Spawns Mode",
+  "RandomSpawn_SpawnInFirstRound": "Active On Round One",
   "RandomSpawn_SpawnRandomLocation": "Random Spawns In Locations",
   "RandomSpawn_AirshipAdditionalSpawn": "Additional Spawn Locations (<color=#ed0007>Airship</color>)",
   "RandomSpawn_SpawnRandomVents": "Random Spawns On Vents",

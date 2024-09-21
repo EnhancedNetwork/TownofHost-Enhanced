@@ -1839,7 +1839,7 @@ public static class Utils
     private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || OnPlayerLeftPatch.StartingProcessing) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro || OnPlayerLeftPatch.StartingProcessing) return;
         if (Main.MeetingIsStarted && !isForMeeting) return;
         if (Main.AllPlayerControls == null) return;
 
@@ -1856,7 +1856,7 @@ public static class Utils
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || OnPlayerLeftPatch.StartingProcessing) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro || OnPlayerLeftPatch.StartingProcessing) return Task.CompletedTask;
         if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
 
@@ -2307,6 +2307,7 @@ public static class Utils
     public static void AfterMeetingTasks()
     {
         ChatManager.ClearLastSysMsg();
+        FallFromLadder.Reset();
 
         if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
         if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
