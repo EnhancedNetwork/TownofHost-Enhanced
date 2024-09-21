@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System;
 using InnerNet;
+using System.Text;
 using UnityEngine;
 using TOHE.Patches;
 using TOHE.Modules;
@@ -123,14 +124,20 @@ internal class ChangeRoleSettings
             Camouflage.Init();
             CustomRoleManager.Initialize();
 
-            var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
-            if (invalidColor.Any())
+            if (AmongUsClient.Instance.AmHost)
             {
-                var msg = GetString("Error.InvalidColor");
-                Logger.SendInGame(msg);
-                msg += " " + string.Join(", ", invalidColor.Select(p => $"{p.Data.PlayerName}"));
-                Utils.SendMessage(msg);
-                Logger.Error(msg, "CoStartGame");
+                var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
+                if (invalidColor.Any())
+                {
+                    StringBuilder sb = new();
+                    sb.Append(GetString("Error.InvalidColor"));
+                    Logger.SendInGame(sb.ToString());
+                    sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc != null).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
+                    var msg = sb.ToString();
+                    Utils.SendMessage(msg);
+                    Utils.ErrorEnd("Player Have Invalid Color");
+                    Logger.Error(msg, "CoStartGame");
+                }
             }
 
             foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -157,9 +164,9 @@ internal class ChangeRoleSettings
                     }
                     else
                     {
-                        string realName = Main.AllPlayerNames.TryGetValue(pc.PlayerId, out var name) ? name : "";
+                        string realName = Main.AllPlayerNames.GetValueOrDefault(pc.PlayerId, string.Empty);
                         //Logger.Info($"player id: {pc.PlayerId} {realName}", "FinallyBegin");
-                        if (realName == "") continue;
+                        if (realName == string.Empty) continue;
 
                         currentName = realName;
                         pc.RpcSetName(realName);

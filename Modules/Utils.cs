@@ -69,9 +69,9 @@ public static class Utils
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
             writer.Write(text);
-            writer.EndMessage();
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
 
             Logger.Fatal($"Error: {text} - I'm triggering critical error", "Anti-black");
 

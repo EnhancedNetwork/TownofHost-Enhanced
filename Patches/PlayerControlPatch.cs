@@ -1579,7 +1579,7 @@ class CoExitVentPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CompleteTask))]
 class PlayerControlCompleteTaskPatch
 {
-    public static bool Prefix(PlayerControl __instance, object[] __args)
+    public static bool Prefix(PlayerControl __instance, uint idx)
     {
         if (GameStates.IsHideNSeek) return true;
 
@@ -1601,14 +1601,10 @@ class PlayerControlCompleteTaskPatch
             }
 
             // Check others complete task
-            if (player != null && __args != null && __args.Any())
-            {
-                int taskIndex = Convert.ToInt32(__args.First());
-                var playerTask = player.myTasks.ToArray().FirstOrDefault(task => (int)task.Id == taskIndex);
+            var playerTask = player.myTasks.ToArray().FirstOrDefault(task => task.Id == idx);
 
-                if (playerTask != null)
-                    CustomRoleManager.OthersCompleteThisTask(player, playerTask);
-            }
+            if (playerTask != null)
+                CustomRoleManager.OthersCompleteThisTask(player, playerTask);
 
             var playerSubRoles = player.GetCustomSubRoles();
             
@@ -1819,7 +1815,7 @@ class PlayerControlSetRolePatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] ref RoleTypes roleType, [HarmonyArgument(1)] ref bool canOverrideRole)
     {
         // Skip first assign
-        if (RpcSetRoleReplacer.BlockSetRole) return true;
+        if (RpcSetRoleReplacer.BlockSetRole || GameStates.IsHideNSeek) return true;
 
         canOverrideRole = true;
         if (GameStates.IsHideNSeek || __instance == null) return true;
