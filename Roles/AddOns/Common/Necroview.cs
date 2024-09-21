@@ -33,7 +33,7 @@ public class Necroview : IAddon
                 return Main.roleColors[CustomRoles.Knight];
         }
 
-        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
+        if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired))
         {
             return Main.roleColors[CustomRoles.Impostor];
         }
