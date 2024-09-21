@@ -47,16 +47,23 @@ internal class CopyCat : RoleBase
         playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
-    public static bool NoHaveTask(byte playerId) => playerIdList.Contains(playerId);
+    public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => playerIdList.Contains(pc.PlayerId);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Utils.GetPlayerById(id).IsAlive() ? CurrentKillCooldown : 300f;
     public static void UnAfterMeetingTasks()
     {
-        foreach (var player in playerIdList.ToArray())
+        foreach (var playerId in playerIdList.ToArray())
         {
-            var pc = Utils.GetPlayerById(player);
-            if (!pc.IsAlive()) continue;
+            var pc = playerId.GetPlayer();
+            if (!pc.IsAlive())
+            {
+                if (!pc.HasGhostRole())
+                {
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
+                }
+                continue;
+            }
             ////////////           /*remove the settings for current role*/             /////////////////////
             
             var pcRole = pc.GetCustomRole();
@@ -67,6 +74,7 @@ internal class CopyCat : RoleBase
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                 }
                 pc.RpcSetCustomRole(CustomRoles.CopyCat);
+                pc.RpcChangeRoleBasis(CustomRoles.CopyCat, loggerRoleMap: true);
             }
             pc.ResetKillCooldown();
         }
@@ -75,23 +83,9 @@ internal class CopyCat : RoleBase
     private static bool BlackList(CustomRoles role)
     {
         return role is CustomRoles.CopyCat or
-            //bcoz of vent cd
-            CustomRoles.Grenadier or
-            CustomRoles.Lighter or
-            CustomRoles.Pacifist or
-            CustomRoles.Veteran or
-            CustomRoles.Bastion or
-            CustomRoles.Addict or
-            CustomRoles.Chameleon or
-            CustomRoles.Alchemist or
             CustomRoles.Doomsayer or // CopyCat cannot guessed roles because he can be know others roles players
             CustomRoles.EvilGuesser or
-            CustomRoles.NiceGuesser or
-            CustomRoles.Captain or
-            CustomRoles.TimeMaster or
-            CustomRoles.Mole;
-        //bcoz of single role
-        // Other
+            CustomRoles.NiceGuesser;
     }
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -134,16 +128,12 @@ internal class CopyCat : RoleBase
                 case CustomRoles.Berserker:
                     role = CustomRoles.Reverie;
                     break;
-                //case CustomRoles.EvilGuesser:
-                //case CustomRoles.Doomsayer:
-                //    role = CustomRoles.NiceGuesser;
-                //    break;
                 case CustomRoles.Taskinator:
                     role = CustomRoles.Benefactor;
                     break;
-                //case CustomRoles.EvilTracker:
-                //    role = CustomRoles.Tracker;
-                //    break;
+                case CustomRoles.EvilTracker:
+                    role = CustomRoles.TrackerTOHE;
+                    break;
                 case CustomRoles.AntiAdminer:
                     role = CustomRoles.Telecommunication;
                     break;
@@ -171,7 +161,10 @@ internal class CopyCat : RoleBase
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcSetCustomRole(role);
+                killer.RpcChangeRoleBasis(role, loggerRoleMap: true);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+                killer.SyncSettings();
+                Main.PlayerStates[killer.PlayerId].InitTask(killer);
             }
             if (CopyTeamChangingAddon.GetBool())
             {

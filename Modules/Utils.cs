@@ -636,7 +636,7 @@ public static class Utils
 
             }
 
-        if (CopyCat.NoHaveTask(playerData.PlayerId)) hasTasks = false;
+        if (CopyCat.NoHaveTask(playerData.PlayerId, ForRecompute)) hasTasks = false;
         if (Main.TasklessCrewmate.Contains(playerData.PlayerId)) hasTasks = false;
 
         return hasTasks;

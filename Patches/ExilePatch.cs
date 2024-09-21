@@ -104,9 +104,7 @@ class ExileControllerWrapUpPatch
 
         FallFromLadder.Reset();
         Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode is CustomGameMode.Standard);
-        Utils.AfterMeetingTasks();
         Utils.SyncAllSettings();
-        Utils.NotifyRoles(NoCache: true);
 
         bool shouldPerformVentInteractions = false;
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
@@ -181,6 +179,8 @@ class ExileControllerWrapUpPatch
 
                 Main.AfterMeetingDeathPlayers.Clear();
                 AntiBlackout.ResetAfterMeeting();
+                Utils.AfterMeetingTasks();
+                Utils.NotifyRoles(NoCache: true);
             }, 1.2f, "AfterMeetingDeathPlayers Task");
         }
         //This should happen shortly after the Exile Controller wrap up finished for clients
