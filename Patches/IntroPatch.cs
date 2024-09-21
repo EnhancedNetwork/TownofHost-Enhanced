@@ -61,7 +61,7 @@ class CoShowIntroPatch
             {
                 Logger.Warn($"Game ended? {AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd}", "ShipStatus.Begin");
             }
-        }, 5f, "Assing Task For All");
+        }, 4f, "Assing Task For All");
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]

@@ -247,18 +247,21 @@ class ShipStatusBeginPatch
     {
         Logger.CurrentMethod();
 
-        if (RolesIsAssigned && GameStates.IsNormalGame)
+        _ = new LateTask(() =>
         {
-            foreach (var player in Main.AllPlayerControls)
+            if (RolesIsAssigned && GameStates.IsNormalGame)
             {
-                Main.PlayerStates[player.PlayerId].InitTask(player);
+                foreach (var player in Main.AllPlayerControls)
+                {
+                    Main.PlayerStates[player.PlayerId].InitTask(player);
+                }
+
+                GameData.Instance.RecomputeTaskCounts();
+                TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
+
+                Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
             }
-
-            GameData.Instance.RecomputeTaskCounts();
-            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
-            Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
-        }
+        }, 1f, "Assign Custom Tasks"); 
     }
 }
 
