@@ -162,7 +162,7 @@ internal class Judge : RoleBase
                 }
                 else if (target.IsTransformedNeutralApocalypse()) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
-                else if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                else if (Medic.InProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;

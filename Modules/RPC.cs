@@ -92,7 +92,6 @@ enum CustomRPC : byte // 187/255 USED
     SetSwapperVotes,
     SetMarkedPlayer,
     SetConcealerTimer,
-    SetMedicalerProtectList,
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
@@ -562,9 +561,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetMarkedPlayer:
                 Ninja.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetMedicalerProtectList:
-                Medic.ReceiveRPCForProtectList(reader);
                 break;
             case CustomRPC.SyncGeneralOptions:
                 byte paciefID = reader.ReadByte();

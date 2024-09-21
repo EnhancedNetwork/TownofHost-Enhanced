@@ -88,7 +88,6 @@ internal class CopyCat : RoleBase
             CustomRoles.EvilGuesser or
             CustomRoles.NiceGuesser or
             CustomRoles.Captain or
-            CustomRoles.Medic or // Bcz the medic is limited to only one player
             CustomRoles.TimeMaster or
             CustomRoles.Mole;
         //bcoz of single role
@@ -161,7 +160,7 @@ internal class CopyCat : RoleBase
                             role = CustomRoles.Deputy;
                             break;    
                         case 2:
-                            role = CustomRoles.Crusader; // medic would make more sense but medic cant be used
+                            role = CustomRoles.Medic;
                             break;
                     }
                     break;

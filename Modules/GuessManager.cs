@@ -214,7 +214,7 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessedAsMundane"));
                     return true;
                 }
-                if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                if (Medic.InProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;

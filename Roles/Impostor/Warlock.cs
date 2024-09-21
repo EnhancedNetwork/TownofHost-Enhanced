@@ -105,7 +105,7 @@ internal class Warlock : RoleBase
                     if (p.PlayerId == cp.PlayerId) continue;
                     if (!WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;
                     if (!WarlockCanKillAllies.GetBool() && p.GetCustomRole().IsImpostor()) continue;
-                    if (Pelican.IsEaten(p.PlayerId) || Medic.ProtectList.Contains(p.PlayerId)) continue;
+                    if (Pelican.IsEaten(p.PlayerId) || Medic.InProtected(p.PlayerId)) continue;
                     if (p.Is(CustomRoles.Glitch) || p.Is(CustomRoles.Pestilence)) continue;
                     
                     dis = Utils.GetDistance(cppos, p.transform.position);

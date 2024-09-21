@@ -85,8 +85,7 @@ internal class Puppeteer : RoleBase
     {
         if (target.Is(CustomRoles.LazyGuy) 
             || target.Is(CustomRoles.Lazy)
-            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18
-            || Medic.ProtectList.Contains(target.PlayerId))
+            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
             return false;
 
             return killer.CheckDoubleTrigger(target, () => 
