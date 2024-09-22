@@ -104,7 +104,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Stealth => CustomRoles.Grenadier,
                 CustomRoles.TimeThief => CustomRoles.TimeManager,
                 CustomRoles.Consigliere => CustomRoles.Overseer,
-                CustomRoles.SerialKiller => CustomRoles.Addict,
+                CustomRoles.Mercenary => CustomRoles.Addict,
                 CustomRoles.Miner => CustomRoles.Mole,
                 CustomRoles.PotionMaster => CustomRoles.Overseer,
                 CustomRoles.Twister => CustomRoles.TimeMaster,
