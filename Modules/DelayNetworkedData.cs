@@ -49,33 +49,26 @@ public class InnerNetClientPatch
         return false;
     }
 
+    // InnerSloth vanilla officials send PlayerInfo in spilt reliable packets
     private static void DelaySpawnPlayerInfo(InnerNetClient __instance, int clientId)
     {
         List<NetworkedPlayerInfo> players = GameData.Instance.AllPlayers.ToArray().ToList();
 
-        // We send 5 players at a time to prevent too huge packet
-        while (players.Count > 0)
+        foreach (var player in players)
         {
-            var batch = players.Take(5).ToList();
-
-            MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
-            messageWriter.StartMessage(6);
-            messageWriter.Write(__instance.GameId);
-            messageWriter.WritePacked(clientId);
-
-            foreach (var player in batch)
+            if (player != null && player.ClientId != clientId && !player.Disconnected)
             {
-                if (messageWriter.Length > 1600) break;
-                if (player !=  null && player.ClientId != clientId && !player.Disconnected)
-                {
-                    __instance.WriteSpawnMessage(player, player.OwnerId, player.SpawnFlags, messageWriter);
-                }
-                players.Remove(player);
+                MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
+                messageWriter.StartMessage(6);
+                messageWriter.Write(__instance.GameId);
+                messageWriter.WritePacked(clientId);
+
+                __instance.WriteSpawnMessage(player, player.OwnerId, player.SpawnFlags, messageWriter);
+                messageWriter.EndMessage();
+
+                __instance.SendOrDisconnect(messageWriter);
+                messageWriter.Recycle();
             }
-            messageWriter.EndMessage();
-            // Logger.Info($"send delayed network data to {clientId} , size is {messageWriter.Length}", "SendInitialDataPrefix");
-            __instance.SendOrDisconnect(messageWriter);
-            messageWriter.Recycle();
         }
     }
 
@@ -135,56 +128,54 @@ public class InnerNetClientPatch
         return false;
     }
 
-    private static byte timer = 0;
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.FixedUpdate))]
     [HarmonyPostfix]
     public static void FixedUpdatePostfix(InnerNetClient __instance)
     {
-        // Send a networked data pre 2 fixed update should be a good practice?
+        // Just send with None calls. Who cares?
         if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance.NetworkMode != NetworkModes.OnlineGame) return;
         if (!__instance.AmHost || __instance.Streams == null) return;
 
-        if (timer == 0)
+        var players = GameData.Instance.AllPlayers.ToArray().Where(x => x.IsDirty).ToList();
+        if (players != null)
         {
-            timer = 1;
-            return;
-        }
-
-        var player = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(x => x.IsDirty);
-        if (player != null)
-        {
-            timer = 0;
-            MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
-            messageWriter.StartMessage(5);
-            messageWriter.Write(__instance.GameId);
-            messageWriter.StartMessage(1);
-            messageWriter.WritePacked(player.NetId);
-            try
+            foreach (var player in players)
             {
-                if (player.Serialize(messageWriter, false))
+                MessageWriter messageWriter = MessageWriter.Get(SendOption.None);
+                messageWriter.StartMessage(5);
+                messageWriter.Write(__instance.GameId);
+                messageWriter.StartMessage(1);
+                messageWriter.WritePacked(player.NetId);
+                try
                 {
+                    if (player.Serialize(messageWriter, false))
+                    {
+                        messageWriter.EndMessage();
+                    }
+                    else
+                    {
+                        messageWriter.CancelMessage();
+                        player.ClearDirtyBits();
+                        continue;
+                    }
                     messageWriter.EndMessage();
+                    __instance.SendOrDisconnect(messageWriter);
+                    messageWriter.Recycle();
                 }
-                else
+                catch (Exception ex)
                 {
+                    Logger.Exception(ex, "FixedUpdatePostfix");
                     messageWriter.CancelMessage();
                     player.ClearDirtyBits();
-                    return;
+                    continue;
                 }
-                messageWriter.EndMessage();
-                __instance.SendOrDisconnect(messageWriter);
-                messageWriter.Recycle();
-            }
-            catch (Exception ex)
-            {
-                Logger.Exception(ex, "FixedUpdatePostfix");
-                messageWriter.CancelMessage();
-                player.ClearDirtyBits();
             }
         }
     }
 }
 
+// Seems like there is no need to patch this if we are always sending with None calls
+/*
 [HarmonyPatch(typeof(GameData), nameof(GameData.DirtyAllData))]
 internal class DirtyAllDataPatch
 {
@@ -197,3 +188,4 @@ internal class DirtyAllDataPatch
         return false;
     }
 }
+*/
