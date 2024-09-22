@@ -1633,6 +1633,7 @@
   "VentguardInfoLong": "(Crewmates):\nAs the Ventguard, you can enter vents to block them. No one can enter blocked vents, except Crewmates, if the setting is on. Blocked vents can be resets every meeting.",
   "VentguardVentButtonText": "Block",
   "Ventguard_MaxGuards": "Max number of Vent Blocks",
+  "Ventguard_BlockVentCooldown": "Block Vent Cooldown",
   "Ventguard_BlockDoesNotAffectCrew": "<color=#8cffff>Crewmates</color> can use blocked vents",
   "Ventguard_BlocksResetOnMeeting": "Reset Blocked Vents Every Meeting",
   "VentIsBlocked": "This Vent Is Now Blocked!",
