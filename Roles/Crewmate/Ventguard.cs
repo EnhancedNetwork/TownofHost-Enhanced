@@ -13,10 +13,11 @@ internal class Ventguard : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    public static OptionItem BlockDoesNotAffectCrew;
-    public static OptionItem AbilityUseGainWithEachTaskCompleted;
     public static OptionItem MaxGuards;
+    public static OptionItem BlockVentCooldown;
+    public static OptionItem BlockDoesNotAffectCrew;
     public static OptionItem BlocksResetOnMeeting;
+    public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<int> BlockedVents = [];
 
@@ -25,11 +26,14 @@ internal class Ventguard : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Ventguard);
         MaxGuards = IntegerOptionItem.Create(Id + 10, "Ventguard_MaxGuards", new(1, 30, 1), 3, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
-        BlockDoesNotAffectCrew = BooleanOptionItem.Create(Id + 11, "Ventguard_BlockDoesNotAffectCrew", true, TabGroup.CrewmateRoles, false)
+        BlockVentCooldown = IntegerOptionItem.Create(Id + 11, "Ventguard_BlockVentCooldown", new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
+            .SetValueFormat(OptionFormat.Seconds);
+        BlockDoesNotAffectCrew = BooleanOptionItem.Create(Id + 12, "Ventguard_BlockDoesNotAffectCrew", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
-        BlocksResetOnMeeting = BooleanOptionItem.Create(Id + 12, "Ventguard_BlocksResetOnMeeting", true, TabGroup.CrewmateRoles, false)
+        BlocksResetOnMeeting = BooleanOptionItem.Create(Id + 13, "Ventguard_BlocksResetOnMeeting", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
-        AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
+        AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
             .SetValueFormat(OptionFormat.Times);
     }
@@ -45,8 +49,8 @@ internal class Ventguard : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
+        AURoleOptions.EngineerCooldown = BlockVentCooldown.GetInt();
         AURoleOptions.EngineerInVentMaxTime = 1f;
-        AURoleOptions.EngineerCooldown = 15f;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
