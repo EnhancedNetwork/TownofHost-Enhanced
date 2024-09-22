@@ -13,12 +13,12 @@ internal class Ventguard : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    public readonly HashSet<int> BlockedVents = [];
-
     public static OptionItem BlockDoesNotAffectCrew;
     public static OptionItem AbilityUseGainWithEachTaskCompleted;
     public static OptionItem MaxGuards;
     public static OptionItem BlocksResetOnMeeting;
+
+    private readonly HashSet<int> BlockedVents = [];
 
     public override void SetupCustomOption()
     {
