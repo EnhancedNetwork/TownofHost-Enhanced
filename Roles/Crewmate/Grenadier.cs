@@ -113,7 +113,7 @@ internal class Grenadier : RoleBase
             }
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("FlashBang");
-            pc.Notify(GetString("GrenadierSkillInUse"), GrenadierSkillDuration.GetFloat());
+            pc.Notify(GetString("AbilityInUse"), GrenadierSkillDuration.GetFloat());
             AbilityLimit -= 1;
             SendSkillRPC();
             MarkEveryoneDirtySettings();
@@ -152,7 +152,7 @@ internal class Grenadier : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
-            player.Notify(GetString("GrenadierSkillStop"));
+            player.Notify(GetString("AbilityExpired"));
             MarkEveryoneDirtySettings();
             stopGrenadierSkill = false;
             stopMadGrenadierSkill = false;

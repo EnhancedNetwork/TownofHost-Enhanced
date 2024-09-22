@@ -73,7 +73,7 @@ internal class Lighter : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
-            player.Notify(GetString("LighterSkillStop"));
+            player.Notify(GetString("AbilityExpired"));
             player.MarkDirtySettings();
         }
     }
@@ -84,7 +84,7 @@ internal class Lighter : RoleBase
             Timer.Remove(pc.PlayerId);
             Timer.Add(pc.PlayerId, GetTimeStamp());
             if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
-            pc.Notify(GetString("LighterSkillInUse"), LighterSkillDuration.GetFloat());
+            pc.Notify(GetString("AbilityInUse"), LighterSkillDuration.GetFloat());
             LighterNumOfUsed[pc.PlayerId] -= 1;
             pc.MarkDirtySettings();
         }

@@ -110,7 +110,7 @@ internal class Veteran : RoleBase
                 player.RpcResetAbilityCooldown();
             }
 
-            player.Notify(string.Format(GetString("VeteranOffGuard"), AbilityLimit));
+            player.Notify(string.Format(GetString("AbilityExpired"), AbilityLimit));
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
@@ -131,7 +131,7 @@ internal class Veteran : RoleBase
             SendSkillRPC();
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("Gunload");
-            pc.Notify(GetString("VeteranOnGuard"), VeteranSkillDuration.GetFloat());
+            pc.Notify(GetString("AbilityInUse"), VeteranSkillDuration.GetFloat());
         }
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
