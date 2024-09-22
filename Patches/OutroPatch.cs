@@ -145,6 +145,9 @@ class EndGamePatch
         ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;
+        Main.GameIsLoaded = false;
+        Main.IntroDestroyed = false;
+
         if (AmongUsClient.Instance.AmHost)
         {
             Main.RealOptionsData.Restore(GameOptionsManager.Instance.CurrentGameOptions);
@@ -355,6 +358,8 @@ class SetEverythingUpPatch
         Logger.Info($"{CustomWinnerHolder.WinnerTeam}", "Winner Team");
         Logger.Info($"{LastWinsReason}", "Wins Reason");
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
+
+        Utils.ShowLastRoles(sendMessage: false);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

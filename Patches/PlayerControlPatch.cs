@@ -1162,7 +1162,7 @@ class FixedUpdateInNormalGamePatch
                         if (CustomRoles.Lovers.IsEnable())
                             LoversSuicide();
 
-                        if (Rainbow.IsEnabled)
+                        if (Rainbow.IsEnabled && Main.IntroDestroyed)
                             Rainbow.OnFixedUpdate();
 
                         if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
@@ -1711,7 +1711,20 @@ class PlayerControlCheckNamePatch
         }, 0.6f, "Retry Version Check", false);
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetColor))]
+class RpcSetColorPatch
+{
+    public static void Postfix(PlayerControl __instance, byte bodyColor)
+    {
+        if (Main.IntroDestroyed) return;
 
+        Logger.Info($"PlayerId: {__instance.PlayerId} - playerColor: {bodyColor}", "RpcSetColor");
+        if (bodyColor == 255) return;
+
+        Main.PlayerColors.Remove(__instance.PlayerId);
+        Main.PlayerColors[__instance.PlayerId] = Palette.PlayerColors[bodyColor];
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CmdCheckName))]
 class CmdCheckNameVersionCheckPatch
 {

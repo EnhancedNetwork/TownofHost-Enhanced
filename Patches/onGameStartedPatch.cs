@@ -76,7 +76,6 @@ internal class ChangeRoleSettings
             Main.GameIsLoaded = false;
 
             Main.LastNotifyNames.Clear();
-            Main.PlayerColors.Clear();
 
             Main.FirstDiedPrevious = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
@@ -176,8 +175,6 @@ internal class ChangeRoleSettings
                 {
                     NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
                 };
-
-                Main.PlayerColors[pc.PlayerId] = colorId != 1 ? Palette.PlayerColors[colorId] : new Color32(255, 255, 255, 255);
 
                 if (GameStates.IsNormalGame)
                     Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);

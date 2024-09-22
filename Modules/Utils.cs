@@ -904,7 +904,7 @@ public static class Utils
             if (opt.Value.GetBool()) ShowChildrenSettings(opt.Value, ref sb, deep + 1);
         }
     }
-    public static void ShowLastRoles(byte PlayerId = byte.MaxValue)
+    public static void ShowLastRoles(byte PlayerId = byte.MaxValue, bool sendMessage = true)
     {
         if (AmongUsClient.Instance.IsGameStarted)
         {
@@ -947,14 +947,19 @@ public static class Utils
                 }
                 break;
         }
-        try
+        if (sendMessage)
         {
-            SendMessage("\n", PlayerId, $"<size=75%>{sb}</size>");
+            try
+            {
+                SendMessage("\n", PlayerId, $"<size=75%>{sb}</size>");
+            }
+            catch (Exception err)
+            {
+                Logger.Warn($"Error after try split the msg {sb} at: {err}", "Utils.ShowLastRoles..LastRoles");
+            }
         }
-        catch (Exception err)
-        {
-            Logger.Warn($"Error after try split the msg {sb} at: {err}", "Utils.ShowLastRoles..LastRoles");
-        }
+        else
+            Main.LastSummaryMessage = $"<size=75%>{sb}</size>";
     }
     public static void ShowKillLog(byte PlayerId = byte.MaxValue)
     {
