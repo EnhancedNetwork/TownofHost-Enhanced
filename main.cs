@@ -778,6 +778,7 @@ public enum CustomRoles
     TimeMaster,
     Tracefinder,
     Transporter,
+    Ventguard,
     Veteran,
     Vigilante,
     Witness,

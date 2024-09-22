@@ -118,7 +118,7 @@ internal class Veteran : RoleBase
         // Ability use limit reached
         if (AbilityLimit <= 0)
         {
-            pc.Notify(GetString("VeteranMaxUsage"));
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
             return;
         }
 

@@ -99,7 +99,7 @@ internal class TimeMaster : RoleBase
             }
         return true;
     }
-    public override void OnEnterVent(PlayerControl pc, Vent AirConditioning)
+    public override void OnEnterVent(PlayerControl pc, Vent currentVent)
     {
         if (AbilityLimit >= 1)
         {
@@ -135,6 +135,10 @@ internal class TimeMaster : RoleBase
                     TimeMasterBackTrack[player.PlayerId] = player.GetCustomPosition();
                 }
             }
+        }
+        else
+        {
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
     }
     public override string GetProgressText(byte playerId, bool comms)

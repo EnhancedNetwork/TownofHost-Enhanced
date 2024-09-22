@@ -118,6 +118,10 @@ internal class Grenadier : RoleBase
             SendSkillRPC();
             MarkEveryoneDirtySettings();
         }
+        else
+        {
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
+        }
     }
 
     public static bool stopGrenadierSkill = false;
