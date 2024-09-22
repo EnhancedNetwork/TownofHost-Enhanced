@@ -58,10 +58,10 @@ class CheckProtectPatch
 
         if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
         {
-                Logger.Info("Blocked protection", "CheckProtect");
-                return false; // What is this for? sheriff dosen't become guardian angel lmao
+            Logger.Info("Blocked protection", "CheckProtect");
+            return false; // What is this for? sheriff dosen't become guardian angel lmao
         }
-        
+
         return true;
     }
 
@@ -154,7 +154,7 @@ class CheckMurderPatch
 
         // Is the target in a killable state?
         if (target.Data == null // Check if PlayerData is not null
-            // Check target status
+                                // Check target status
             || target.inVent
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
@@ -364,13 +364,13 @@ class MurderPlayerPatch
         {
             Logger.Info("Murder triggered in lobby, so murder canceled", "MurderPlayer Prefix");
             return false;
-        }    
+        }
 
         var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
         var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
         var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
         var isSucceeded = __state = !isProtectedByClient && !isProtectedByHost && !isFailed;
-        
+
         if (isProtectedByClient)
         {
             Logger.Info("The kill will fail because it has DecisonByHost and target is protected", "MurderPlayer Prefix");
@@ -493,7 +493,7 @@ class MurderPlayerPatch
 
         // When target death, activate ability for others roles
         AfterPlayerDeathTasks(killer, target, false);
-        
+
         // Check Kill Flash
         Utils.TargetDies(__instance, target);
 
@@ -577,7 +577,7 @@ public static class CheckShapeshiftPatch
             if (shapeshifterRoleClass.CanDesyncShapeshift)
             {
                 shapeshifter.RpcSpecificRejectShapeshift(target, shouldAnimate);
-                
+
                 if (resetCooldown)
                     shapeshifter.RpcResetAbilityCooldown();
             }
@@ -637,7 +637,7 @@ public static class CheckShapeshiftPatch
             instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
             logger.Info($"Cancel shapeshifting because {target.GetRealName()} is protected by the game");
             return false;
-        }     
+        }
         if (Pelican.IsEaten(instance.PlayerId))
         {
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
@@ -646,7 +646,7 @@ public static class CheckShapeshiftPatch
 
         if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
         {
-            if(!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
+            if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
             instance.RpcResetAbilityCooldown(); // Just incase
             logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
             return false;
@@ -774,7 +774,7 @@ class ReportDeadBodyPatch
                 foreach (var player in Main.PlayerStates.Values.ToArray())
                 {
                     var playerRoleClass = player.RoleClass;
-                    if (player == null ||  playerRoleClass == null) continue;
+                    if (player == null || playerRoleClass == null) continue;
 
                     if (playerRoleClass.OnCheckReportDeadBody(__instance, target, killer) == false)
                     {
@@ -814,9 +814,9 @@ class ReportDeadBodyPatch
 
                 if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
                 {
-                    if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody)) 
+                    if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody))
                         return false;
-                   
+
                 }
             }
 
@@ -829,7 +829,7 @@ class ReportDeadBodyPatch
                     return false;
                 }
                 else Options.UsedButtonCount++;
-                
+
                 if (Options.SyncedButtonCount.GetFloat() == Options.UsedButtonCount)
                 {
                     Logger.Info("The maximum number of meeting buttons has been reached", "ReportDeadBody");
@@ -1200,7 +1200,7 @@ class FixedUpdateInNormalGamePatch
                     {
                         if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
-                        
+
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
                     }
@@ -1234,7 +1234,7 @@ class FixedUpdateInNormalGamePatch
                         __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
                     else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
-                if (Main.BAUPlayers.TryGetValue(__instance.Data, out var puid)) // Set name color for BAU users
+                else if (Main.BAUPlayers.TryGetValue(__instance.Data, out var puid)) // Set name color for BAU users
                 {
                     if (puid == __instance.Data.Puid)
                     {
@@ -1249,11 +1249,11 @@ class FixedUpdateInNormalGamePatch
                 RoleText.text = RoleTextData.Item1;
                 RoleText.color = RoleTextData.Item2;
                 if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
-                
+
                 if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
                 else RoleText.enabled = false;
-                
+
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster))
                 {
                     RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
@@ -1300,7 +1300,7 @@ class FixedUpdateInNormalGamePatch
 
                 RealName = RealName.ApplyNameColorData(seer, target, false);
                 var seerRole = seer.GetCustomRole();
-                
+
                 // Add protected player icon from ShieldPersonDiedFirst
                 if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
                 {
@@ -1607,7 +1607,7 @@ class PlayerControlCompleteTaskPatch
                 CustomRoleManager.OthersCompleteThisTask(player, playerTask);
 
             var playerSubRoles = player.GetCustomSubRoles();
-            
+
             // Add-Ons
             if (playerSubRoles.Any())
             {
@@ -1829,7 +1829,7 @@ class PlayerControlSetRolePatch
         {
             try
             {
-               GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+                GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
             }
             catch (Exception error)
             {
