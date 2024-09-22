@@ -42,8 +42,6 @@ class CoShowIntroPatch
             {
                 if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
                 {
-                    ShipStatusBeginPatch.RolesIsAssigned = true;
-
                     // Assign tasks after assign all roles, as it should be
                     ShipStatus.Instance.Begin();
 
@@ -63,6 +61,17 @@ class CoShowIntroPatch
         }, 4f, "Assing Task For All");
     }
 }
+[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
+class CoBeginPatch
+{
+    public static void Prefix()
+    {
+        GameStates.InGame = true;
+        RPC.RpcVersionCheck();
+
+        FFAManager.SetData();
+    }
+}
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
 class SetUpRoleTextPatch
 {
@@ -77,6 +86,17 @@ class SetUpRoleTextPatch
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
             Utils.DoNotifyRoles(NoCache: true);
+        }
+
+        if (GameStates.IsNormalGame)
+        {
+            foreach (var player in Main.AllPlayerControls)
+            {
+                Main.PlayerStates[player.PlayerId].InitTask(player);
+            }
+
+            GameData.Instance.RecomputeTaskCounts();
+            TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
         }
 
         var mapName = Utils.GetActiveMapName();
@@ -262,17 +282,6 @@ class SetUpRoleTextPatch
         Logger.Info(sb.ToString(), "GameInfo", multiLine: true);
     }
 }
-[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.CoBegin))]
-class CoBeginPatch
-{
-    public static void Prefix()
-    {
-        GameStates.InGame = true;
-        RPC.RpcVersionCheck();
-
-        FFAManager.SetData();
-    }
-}
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.BeginCrewmate))]
 class BeginCrewmatePatch
 {
@@ -309,9 +318,10 @@ class BeginCrewmatePatch
         {
             var exeTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             exeTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var execution in Executioner.Target.Values)
+            foreach (var executionId in Executioner.TargetList)
             {
-                PlayerControl executing = execution.GetPlayer();
+                PlayerControl executing = executionId.GetPlayer();
+                if (executing == null) continue;
                 exeTeam.Add(executing);
             }
             teamToDisplay = exeTeam;
@@ -320,10 +330,11 @@ class BeginCrewmatePatch
         {
             var lawyerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             lawyerTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var help in Lawyer.Target.Values)
+            foreach (var lawyerTargetId in Lawyer.TargetList)
             {
-                PlayerControl helping = help.GetPlayer();
-                lawyerTeam.Add(helping);
+                PlayerControl lawyerTarget = lawyerTargetId.GetPlayer();
+                if (lawyerTarget == null) continue;
+                lawyerTeam.Add(lawyerTarget);
             }
             teamToDisplay = lawyerTeam;
         }

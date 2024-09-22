@@ -10,14 +10,14 @@ namespace TOHE.Modules.ChatManager
     public class ChatManager
     {
         public static bool cancel = false;
-        private static List<Dictionary<byte, string>> chatHistory = [];
-        private static Dictionary<byte, string> LastSystemChatMsg = [];
+        private static readonly List<Dictionary<byte, string>> chatHistory = [];
+        private static readonly Dictionary<byte, string> LastSystemChatMsg = [];
         private const int maxHistorySize = 20;
         public static List<string> ChatSentBySystem = [];
         public static void ResetHistory()
         {
-            chatHistory = [];
-            LastSystemChatMsg = [];
+            chatHistory.Clear();
+            LastSystemChatMsg.Clear();
         }
         public static void ClearLastSysMsg()
         {

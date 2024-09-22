@@ -169,7 +169,7 @@ internal class BountyHunter : RoleBase
             && ((Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId))) return false;
 
         if (target.Is(CustomRoles.Lawyer)
-            && (Lawyer.Target.TryGetValue(target.PlayerId, out byte lawyerTarget) && lawyerTarget == player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
+            && Lawyer.TargetList.Contains(player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
 
         if (player.Is(CustomRoles.Charmed)
             && (target.Is(CustomRoles.Cultist) || (target.Is(CustomRoles.Charmed) && Cultist.TargetKnowOtherTargets))) return false;

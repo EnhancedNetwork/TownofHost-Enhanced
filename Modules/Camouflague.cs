@@ -68,7 +68,7 @@ public static class Camouflage
     {
         IsCamouflage = false;
         PlayerSkins.Clear();
-        ResetSkinAfterDeathPlayers = [];
+        ResetSkinAfterDeathPlayers.Clear();
 
         IsActive = Options.CommsCamouflage.GetBool() && !(Options.DisableOnSomeMaps.GetBool() &&
             (

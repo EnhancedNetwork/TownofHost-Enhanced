@@ -31,7 +31,7 @@ static class PerformVentOpPatch
 [HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.Deteriorate))]
 static class VentSystemDeterioratePatch
 {
-    public static Dictionary<byte, int> LastClosestVent;
+    public static Dictionary<byte, int> LastClosestVent = [];
     public static void Postfix(VentilationSystem __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;

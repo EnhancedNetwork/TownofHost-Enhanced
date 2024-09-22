@@ -351,10 +351,16 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(Romantic.BetPlayer[pc.PlayerId]);
                             AdditionalWinnerTeams.Add(AdditionalWinners.VengefulRomantic);
                             break;
-                        case CustomRoles.Lawyer when Lawyer.Target.TryGetValue(pc.PlayerId, out var lawyertarget) 
-                            && (WinnerIds.Contains(lawyertarget) || (Main.PlayerStates.TryGetValue(lawyertarget, out var lawyerTargetPS) && WinnerRoles.Contains(lawyerTargetPS.MainRole))):
-                            WinnerIds.Add(pc.PlayerId);
-                            AdditionalWinnerTeams.Add(AdditionalWinners.Lawyer);
+                        case CustomRoles.Lawyer:
+                            if (pc.GetRoleClass() is Lawyer lawerClass)
+                            {
+                                var lawyertarget = lawerClass.GetTargetId();
+                                if (WinnerIds.Contains(lawyertarget)
+                                    || (Main.PlayerStates.TryGetValue(lawyertarget, out var lawyerTargetPS) && WinnerRoles.Contains(lawyerTargetPS.MainRole)))
+                                    WinnerIds.Add(pc.PlayerId);
+
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Lawyer);
+                            }
                             break;
                         case CustomRoles.Follower when Follower.BetPlayer.TryGetValue(pc.PlayerId, out var followerTarget)
                             && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):

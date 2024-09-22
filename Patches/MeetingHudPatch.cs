@@ -1236,20 +1236,16 @@ class MeetingHudUpdatePatch
             bufferTime = 10;
             var myRole = PlayerControl.LocalPlayer.GetCustomRole();
 
-            //若某玩家死亡则修复会议该玩家状态
             __instance.playerStates.Where(x => (!Main.PlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
 
-            //若玩家死亡则销毁技能按钮
             if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser or CustomRoles.Swapper && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);
             
-            //若黑手党死亡则创建技能按钮
             if (myRole is CustomRoles.Nemesis && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
                 Nemesis.CreateJudgeButton(__instance);
             if (myRole is CustomRoles.Retributionist && !PlayerControl.LocalPlayer.IsAlive() && GameObject.Find("ShootButton") == null)
                 Retributionist.CreateJudgeButton(__instance);
 
-            //销毁死亡玩家身上的技能按钮
             ClearShootButton(__instance);
 
         }

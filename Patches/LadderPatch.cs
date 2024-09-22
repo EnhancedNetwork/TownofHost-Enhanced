@@ -4,11 +4,11 @@ namespace TOHE;
 
 public class FallFromLadder
 {
-    public static Dictionary<byte, Vector3> TargetLadderData;
+    public static Dictionary<byte, Vector3> TargetLadderData = [];
     private static int Chance => (Options.LadderDeathChance as StringOptionItem).GetChance();
     public static void Reset()
     {
-        TargetLadderData = [];
+        TargetLadderData.Clear();
     }
     public static void OnClimbLadder(PlayerPhysics player, Ladder source)
     {

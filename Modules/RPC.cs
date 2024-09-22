@@ -51,6 +51,7 @@ enum CustomRPC : byte // 187/255 USED
     SyncShieldPersonDiedFirst,
     RemoveSubRole,
     SyncGeneralOptions,
+    SyncSpeedPlayer,
     Arrow,
 
     //Roles 
@@ -66,15 +67,13 @@ enum CustomRPC : byte // 187/255 USED
     DoCurse,
     SniperSync,
     SetLoversPlayers,
-    SetExecutionerTarget,
-    RemoveExecutionerTarget,
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
-    SetCurrentDrawTarget = 151, // BetterCheck used 150
-    RpcPassBomb,
+    SetCurrentDrawTarget,
+    RpcPassBomb = 151, // BetterCheck used 150
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
     SetJailerTarget,
@@ -473,12 +472,6 @@ internal class RPCHandlerPatch
                 for (int i = 0; i < count; i++)
                     Main.LoversPlayers.Add(Utils.GetPlayerById(reader.ReadByte()));
                 break;
-            case CustomRPC.SetExecutionerTarget:
-                Executioner.ReceiveRPC(reader, SetTarget: true);
-                break;
-            case CustomRPC.RemoveExecutionerTarget:
-                Executioner.ReceiveRPC(reader, SetTarget: false);
-                break;
             case CustomRPC.BetterCheck: // Better Among Us RPC
                 {
                     var SetBetterUser = reader.ReadBoolean(); // Used to set player as better user, boolean is used for a future for BAU later on.
@@ -584,6 +577,11 @@ internal class RPCHandlerPatch
 
                 Main.AllPlayerKillCooldown[paciefID] = Killcd;
                 Main.AllPlayerSpeed[paciefID] = speed;
+                break;
+            case CustomRPC.SyncSpeedPlayer:
+                byte readerPlayerId = reader.ReadByte();
+                float newSpeed = reader.ReadSingle();
+                Main.AllPlayerSpeed[readerPlayerId] = newSpeed;
                 break;
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();

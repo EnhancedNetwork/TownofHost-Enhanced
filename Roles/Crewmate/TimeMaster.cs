@@ -58,8 +58,10 @@ internal class TimeMaster : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
+        {
             AbilityLimit += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
-
+            SendSkillRPC();
+        }
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
@@ -102,6 +104,8 @@ internal class TimeMaster : RoleBase
         if (AbilityLimit >= 1)
         {
             AbilityLimit -= 1;
+            SendSkillRPC();
+
             TimeMasterInProtect.Remove(pc.PlayerId);
             TimeMasterInProtect.Add(pc.PlayerId, GetTimeStamp());
 
@@ -128,7 +132,7 @@ internal class TimeMaster : RoleBase
                 }
                 else
                 {
-                    TimeMasterBackTrack.Add(player.PlayerId, player.GetCustomPosition());
+                    TimeMasterBackTrack[player.PlayerId] = player.GetCustomPosition();
                 }
             }
         }

@@ -44,7 +44,7 @@ public static class Utils
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }, 3f, "Anti-Black Msg SendInGame Error During Loading");
+            }, 6f, "Anti-Black Msg SendInGame Error During Loading");
 
             if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
             {
@@ -53,7 +53,7 @@ public static class Utils
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                     GameManager.Instance.LogicFlow.CheckEndCriteria();
                     RPC.ForceEndGame(CustomWinner.Error);
-                }, 5.5f, "Anti-Black End Game As Critical Error");
+                }, 9f, "Anti-Black End Game As Critical Error");
             }
             else if (GameStartManager.Instance != null)
             {
@@ -80,14 +80,14 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
-                }, 3f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
+                }, 6f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
-                }, 3f, "Anti-Black Msg SendInGame Host Reject Force End");
+                }, 6f, "Anti-Black Msg SendInGame Host Reject Force End");
                 
                 _ = new LateTask(() =>
                 {
@@ -96,7 +96,7 @@ public static class Utils
                         AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
                         Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
                     }
-                }, 8f, "Anti-Black Exit Game Due Critical Error");
+                }, 11f, "Anti-Black Exit Game Due Critical Error");
             }
         }
     }
@@ -406,13 +406,22 @@ public static class Utils
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncGeneralOptions, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncGeneralOptions, SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.WritePacked((int)player.GetCustomRole());
         writer.Write(Main.PlayerStates[player.PlayerId].IsDead);
         writer.Write(Main.PlayerStates[player.PlayerId].Disconnected);
         writer.WritePacked((int)Main.PlayerStates[player.PlayerId].deathReason);
         writer.Write(Main.AllPlayerKillCooldown[player.PlayerId]);
+        writer.Write(Main.AllPlayerSpeed[player.PlayerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncSpeed(this PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedPlayer, SendOption.Reliable);
+        writer.Write(player.PlayerId);
         writer.Write(Main.AllPlayerSpeed[player.PlayerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -1054,7 +1063,7 @@ public static class Utils
             StackFrame firstFrame = stFrames.FirstOrDefault();
 
             var sb = new StringBuilder();
-            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineNumber}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {firstFrame.GetFileLineNumber()}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
 
             bool skip = true;
             foreach (StackFrame sf in stFrames)

@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -110,12 +111,16 @@ internal class Jester : RoleBase
                 }
 
                 // Check exile target Executioner
-                foreach (var executioner in Executioner.playerIdList)
+                foreach (var executionerId in Executioner.playerIdList)
                 {
-                    if (Executioner.IsTarget(executioner, exiled.PlayerId))
+                    var executioner = executionerId.GetPlayer();
+                    if (executioner.IsAlive() && executioner.GetRoleClass() is Executioner executionerClass)
                     {
-                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
-                        CustomWinnerHolder.WinnerIds.Add(executioner);
+                        if (executionerClass.IsTarget(exiled.PlayerId))
+                        {
+                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
+                            CustomWinnerHolder.WinnerIds.Add(executionerId);
+                        }
                     }
                 }
                 DecidedWinner = true;

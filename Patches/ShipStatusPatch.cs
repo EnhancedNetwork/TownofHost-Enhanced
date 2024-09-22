@@ -218,7 +218,7 @@ class StartPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]
 class StartMeetingPatch
 {
-    public static void Prefix(ShipStatus __instance, PlayerControl reporter, NetworkedPlayerInfo target)
+    public static void Prefix([HarmonyArgument(1)] NetworkedPlayerInfo target)
     {
         if (GameStates.IsHideNSeek) return;
 
@@ -237,31 +237,9 @@ class StartMeetingPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class ShipStatusBeginPatch
 {
-    //Prevent code from running twice as it gets activated later in LateTask
-    public static bool RolesIsAssigned = false;
-    public static bool Prefix()
-    {
-        return RolesIsAssigned;
-    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
-
-        _ = new LateTask(() =>
-        {
-            if (RolesIsAssigned && GameStates.IsNormalGame)
-            {
-                foreach (var player in Main.AllPlayerControls)
-                {
-                    Main.PlayerStates[player.PlayerId].InitTask(player);
-                }
-
-                GameData.Instance.RecomputeTaskCounts();
-                TaskState.InitialTotalTasks = GameData.Instance.TotalTasks;
-
-                Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
-            }
-        }, 1f, "Assign Custom Tasks"); 
     }
 }
 

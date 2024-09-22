@@ -98,17 +98,6 @@ internal static class FFAManager
             FFAVentDuration = [];
             FFAEnterVentTime = [];
         }
-
-        _ = new LateTask(()=>
-        {
-            RoundTime = FFA_GameTime.GetInt() + 8;
-            var now = Utils.GetTimeStamp() + 8;
-            foreach (PlayerControl pc in Main.AllAlivePlayerControls)
-            {
-                KBScore[pc.PlayerId] = 0;
-                if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill[pc.PlayerId] = now;
-            }
-        }, 18f, "Add data after game start");
     }
     public static void SetData()
     {

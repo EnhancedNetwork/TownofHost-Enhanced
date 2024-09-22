@@ -605,7 +605,6 @@ public static class GuessManager
     }
     public static void CreateGuesserButton(MeetingHud __instance)
     {
-
         foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
@@ -952,6 +951,7 @@ public static class GuessManager
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
                     or CustomRoles.Sloth
+                    or CustomRoles.Apocalypse
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);

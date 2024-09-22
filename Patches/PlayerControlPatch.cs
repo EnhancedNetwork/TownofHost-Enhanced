@@ -712,7 +712,7 @@ class ShapeshiftPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ReportDeadBody))]
 class ReportDeadBodyPatch
 {
-    public static Dictionary<byte, bool> CanReport;
+    public static Dictionary<byte, bool> CanReport = [];
     public static Dictionary<byte, List<NetworkedPlayerInfo>> WaitReport = [];
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] NetworkedPlayerInfo target)
     {

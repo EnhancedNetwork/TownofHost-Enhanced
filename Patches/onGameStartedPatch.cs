@@ -90,12 +90,11 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
-            VentSystemDeterioratePatch.LastClosestVent = [];
+            VentSystemDeterioratePatch.LastClosestVent.Clear();
 
             ChatManager.ResetHistory();
-            ReportDeadBodyPatch.CanReport = [];
+            ReportDeadBodyPatch.CanReport.Clear();
             Options.UsedButtonCount = 0;
-            ShipStatusBeginPatch.RolesIsAssigned = false;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
@@ -140,16 +139,16 @@ internal class ChangeRoleSettings
                 }
             }
 
-            foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var target in Main.AllPlayerControls)
             {
-                foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var seer in Main.AllPlayerControls)
                 {
                     var pair = (target.PlayerId, seer.PlayerId);
                     Main.LastNotifyNames[pair] = target.name;
                 }
             }
 
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var pc in Main.AllPlayerControls)
             {
                 var outfit = pc.Data.DefaultOutfit;
                 var colorId = pc.Data.DefaultOutfit.ColorId;
@@ -178,7 +177,7 @@ internal class ChangeRoleSettings
                     NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
                 };
 
-                Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
+                Main.PlayerColors[pc.PlayerId] = colorId != 1 ? Palette.PlayerColors[colorId] : new Color32(255, 255, 255, 255);
 
                 if (GameStates.IsNormalGame)
                     Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
@@ -207,12 +206,12 @@ internal class ChangeRoleSettings
             // Initialize all roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
-                var RoleClass = CustomRoleManager.GetStaticRoleClass(role);
+                var RoleClass = role.GetStaticRoleClass();
                 RoleClass?.OnInit();
             }
 
             // Initialize all add-ons
-            foreach (var addOn in CustomRoleManager.AddonClasses.Values.ToArray())
+            foreach (var addOn in CustomRoleManager.AddonClasses.Values)
             {
                 addOn?.Init();
             }
@@ -275,7 +274,6 @@ internal class StartGameHostPatch
     {
         if (GameStates.IsHideNSeek)
         {
-            ShipStatusBeginPatch.RolesIsAssigned = true;
             return true;
         }
 
