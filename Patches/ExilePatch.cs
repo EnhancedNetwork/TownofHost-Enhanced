@@ -126,8 +126,6 @@ class ExileControllerWrapUpPatch
         Main.MeetingsPassed++;
 
         Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode is CustomGameMode.Standard);
-        Utils.SyncAllSettings();
-        Utils.CheckAndSetVentInteractions();
     }
 
     private static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
@@ -170,7 +168,10 @@ class ExileControllerWrapUpPatch
 
                 Main.AfterMeetingDeathPlayers.Clear();
                 AntiBlackout.ResetAfterMeeting();
+
                 Utils.AfterMeetingTasks();
+                Utils.SyncAllSettings();
+                Utils.CheckAndSetVentInteractions();
                 Utils.NotifyRoles(NoCache: true);
             }, 1.2f, "AfterMeetingDeathPlayers Task");
         }

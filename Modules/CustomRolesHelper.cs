@@ -967,7 +967,8 @@ public static class CustomRolesHelper
             case CustomRoles.Prohibited:
                 if (Prohibited.GetCountBlokedVents() <= 0 || !pc.CanUseVents())
                     return false;
-                if (pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool())
+                if (pc.Is(CustomRoles.Ventguard)
+                    || pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool())
                     return false;
                 break;
 
