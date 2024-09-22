@@ -1053,17 +1053,24 @@ public static class Utils
         return name;
     }
     // From EHR by Gurge44
-    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string callerMemberName = "")
+    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerMemberName] string callerMemberName = "")
     {
         try
         {
+            // Get stack trace for the exception with source file information
+            var stEx = new StackTrace(ex, true);
+            // Get the top stack frame
+            var frame = stEx.GetFrame(0);
+            // Get the line number from the stack frame
+            var lineEx = frame.GetFileLineNumber();
+
             StackTrace st = new(0, true);
             StackFrame[] stFrames = st.GetFrames();
 
             StackFrame firstFrame = stFrames.FirstOrDefault();
 
             var sb = new StringBuilder();
-            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {firstFrame.GetFileLineNumber()}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineEx}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
 
             bool skip = true;
             foreach (StackFrame sf in stFrames)
@@ -2221,10 +2228,26 @@ public static class Utils
         PlayerGameOptionsSender.SetDirtyToAll();
         GameOptionsSender.SendAllGameOptions();
     }
-    public static void MarkAllDirtyGameData()
+    public static void SendGameData()
     {
-        foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
-            playerInfo.MarkDirty();
+        foreach (var playerinfo in GameData.Instance.AllPlayers)
+        {
+            MessageWriter writer = MessageWriter.Get();
+            writer.StartMessage(5); //0x05 GameData
+            writer.Write(AmongUsClient.Instance.GameId);
+            {
+                writer.StartMessage(1); //0x01 Data
+                {
+                    writer.WritePacked(playerinfo.NetId);
+                    playerinfo.Serialize(writer, true);
+                }
+                writer.EndMessage();
+            }
+            writer.EndMessage();
+
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+        }
     }
     public static void SetAllVentInteractions()
     {
