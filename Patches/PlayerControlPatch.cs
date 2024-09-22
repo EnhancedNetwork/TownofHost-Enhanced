@@ -1716,7 +1716,7 @@ class RpcSetColorPatch
 {
     public static void Postfix(PlayerControl __instance, byte bodyColor)
     {
-        if (Main.IntroDestroyed) return;
+        if (Main.IntroDestroyed || __instance == null) return;
 
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerColor: {bodyColor}", "RpcSetColor");
         if (bodyColor == 255) return;
