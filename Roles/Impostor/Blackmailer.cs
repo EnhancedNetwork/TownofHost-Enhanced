@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
@@ -36,6 +38,22 @@ internal class Blackmailer : RoleBase
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
+    private void SendRPC(byte target = byte.MaxValue)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(_Player);
+        writer.Write(target);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        var targetId = reader.ReadByte();
+
+        if (targetId == byte.MaxValue)
+            ForBlackmailer.Clear();
+        else
+            ForBlackmailer.Add(targetId);
+    }
     public override bool OnCheckShapeshift(PlayerControl blackmailer, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (ShowShapeshiftAnimationsOpt.GetBool() || blackmailer.PlayerId == target.PlayerId) return true;
@@ -51,7 +69,7 @@ internal class Blackmailer : RoleBase
             DoBlackmaile(blackmailer, target);
         }
     }
-    private static void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
+    private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {
         if (!target.IsAlive())
         {
@@ -61,6 +79,7 @@ internal class Blackmailer : RoleBase
 
         ClearBlackmaile();
         ForBlackmailer.Add(target.PlayerId);
+        SendRPC(target.PlayerId);
     }
 
     public override void AfterMeetingTasks()
@@ -71,7 +90,11 @@ internal class Blackmailer : RoleBase
     {
         ClearBlackmaile();
     }
-    private static void ClearBlackmaile() => ForBlackmailer.Clear();
+    private void ClearBlackmaile()
+    {
+        ForBlackmailer.Clear();
+        SendRPC();
+    }
     
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
 
