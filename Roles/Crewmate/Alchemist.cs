@@ -34,7 +34,6 @@ internal class Alchemist : RoleBase
     public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
     private static byte PotionID = 10;
-    private static string PlayerName = string.Empty;
     private static bool VisionPotionActive = false;
     private static bool FixNextSabo = false;
     private static bool IsProtected = false;
@@ -64,7 +63,6 @@ internal class Alchemist : RoleBase
         playerIdList.Clear();
         BloodthirstList.Clear();
         PotionID = 10;
-        PlayerName = string.Empty;
         ventedId.Clear();
         InvisTime.Clear();
         FixNextSabo = false;
@@ -73,7 +71,6 @@ internal class Alchemist : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        PlayerName = Utils.GetPlayerById(playerId).GetRealName();
 
         if (AmongUsClient.Instance.AmHost)
         {

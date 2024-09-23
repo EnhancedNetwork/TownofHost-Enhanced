@@ -73,7 +73,7 @@ internal class Lighter : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
-            player.Notify(GetString("AbilityExpired"));
+            player.Notify(string.Format(GetString("AbilityExpired"), LighterNumOfUsed[player.PlayerId]));
             player.MarkDirtySettings();
         }
     }

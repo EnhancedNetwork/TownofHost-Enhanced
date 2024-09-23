@@ -42,27 +42,24 @@ internal class SoulCollector : RoleBase
     public override void Add(byte playerId)
     {
         TargetId = byte.MaxValue;
-        AbilityLimit = 0;
+        playerId.SetAbilityUseLimit(0);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
-    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f),  $"({AbilityLimit}/{SoulCollectorPointsOpt.GetInt()})");
+    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f),  $"({playerId.GetAbilityUseLimit()}/{SoulCollectorPointsOpt.GetInt()})");
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("SoulCollectorKillButtonText"));
+    
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(TargetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        var limit = reader.ReadSingle();
         byte target = reader.ReadByte();
-
-        AbilityLimit = limit;
         TargetId =  target;
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
@@ -91,6 +88,7 @@ internal class SoulCollector : RoleBase
             return false;
         }
         TargetId = target.PlayerId;
+        SendRPC();
         Logger.Info($"{killer.GetNameWithRole()} predicted the death of {target.GetNameWithRole()}", "SoulCollector");
         killer.Notify(string.Format(GetString("SoulCollectorTarget"), target.GetRealName()));
         return false;
@@ -98,14 +96,13 @@ internal class SoulCollector : RoleBase
     public override void OnReportDeadBody(PlayerControl ryuak, NetworkedPlayerInfo iscute)
     {
         if (!_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
-        
-        AbilityLimit++;
+
+        _Player.RpcIncreaseAbilityUseLimitBy(1);
         _ = new LateTask(() =>
         {
             Utils.SendMessage(GetString("PassiveSoulGained"), _Player.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
 
         }, 3f, "Passive Soul Gained");
-        SendRPC();
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
@@ -117,7 +114,7 @@ internal class SoulCollector : RoleBase
         if (TargetId == deadPlayer.PlayerId && playerState.IsDead && !playerState.Disconnected)
         {
             TargetId = byte.MaxValue;
-            AbilityLimit++;
+            _Player.RpcIncreaseAbilityUseLimitBy(1);
             if (GameStates.IsMeeting)
             {
                 _ = new LateTask(() =>
@@ -130,7 +127,7 @@ internal class SoulCollector : RoleBase
             SendRPC();
             _Player.Notify(GetString("SoulCollectorSoulGained"));
         }
-        if (AbilityLimit >= SoulCollectorPointsOpt.GetInt())
+        if (_Player.GetAbilityUseLimit() >= SoulCollectorPointsOpt.GetInt())
         {
             if (!GameStates.IsMeeting)
             {
@@ -145,8 +142,9 @@ internal class SoulCollector : RoleBase
     {
         if (!_Player.IsAlive()) return;
         TargetId = byte.MaxValue;
+        SendRPC();
 
-        if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
+        if (_Player.GetAbilityUseLimit() >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
         {
             _Player.RpcSetCustomRole(CustomRoles.Death);
             _Player.Notify(GetString("SoulCollectorToDeath"));

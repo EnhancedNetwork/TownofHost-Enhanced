@@ -1,12 +1,9 @@
 ﻿using AmongUs.GameOptions;
-using System;
-using System.Text;
-using UnityEngine;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -27,7 +24,6 @@ internal class Grenadier : RoleBase
     private static OptionItem GrenadierCauseVision;
     private static OptionItem GrenadierCanAffectNeutral;
     private static OptionItem GrenadierSkillMaxOfUseage;
-    private static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
 
     public override void SetupCustomOption() 
     {
@@ -52,8 +48,7 @@ internal class Grenadier : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = GrenadierSkillMaxOfUseage.GetFloat();
-        //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnGrenaderFixOthers);
+        playerId.SetAbilityUseLimit(GrenadierSkillMaxOfUseage.GetFloat());
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -75,16 +70,6 @@ internal class Grenadier : RoleBase
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, GrenadierCauseVision.GetFloat());
         }
     }
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-        { 
-            AbilityLimit += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendSkillRPC();
-        }
-
-        return true;
-    }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         GrenadierBlinding.Clear();
@@ -93,7 +78,7 @@ internal class Grenadier : RoleBase
 
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (AbilityLimit >= 1)
+        if (pc.GetAbilityUseLimit() >= 1)
         {
             if (pc.Is(CustomRoles.Madmate))
             {
@@ -114,8 +99,7 @@ internal class Grenadier : RoleBase
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("FlashBang");
             pc.Notify(GetString("AbilityInUse"), GrenadierSkillDuration.GetFloat());
-            AbilityLimit -= 1;
-            SendSkillRPC();
+            pc.RpcRemoveAbilityUse();
             MarkEveryoneDirtySettings();
         }
         else
@@ -152,31 +136,12 @@ internal class Grenadier : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
-            player.Notify(GetString("AbilityExpired"));
+            player.Notify(string.Format(GetString("AbilityExpired"), player.GetAbilityUseLimit()));
             MarkEveryoneDirtySettings();
             stopGrenadierSkill = false;
             stopMadGrenadierSkill = false;
         }
     }
-
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState3 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor3;
-        var TaskCompleteColor3 = Color.green;
-        var NonCompleteColor3 = Color.yellow;
-        var NormalColor3 = taskState3.IsTaskFinished ? TaskCompleteColor3 : NonCompleteColor3;
-        TextColor3 = comms ? Color.gray : NormalColor3;
-        string Completed3 = comms ? "?" : $"{taskState3.CompletedTasksCount}";
-        Color TextColor31;
-        if (AbilityLimit < 1) TextColor31 = Color.red;
-        else TextColor31 = Color.white;
-        ProgressText.Append(ColorString(TextColor3, $"({Completed3}/{taskState3.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor31, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
-    }
-
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.AbilityButton.buttonLabelText.text = GetString("GrenadierVentButtonText");

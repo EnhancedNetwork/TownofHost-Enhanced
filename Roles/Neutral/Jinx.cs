@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
-using UnityEngine;
-using static TOHE.Options;
 using TOHE.Roles.Core;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
 
@@ -36,23 +35,21 @@ internal class Jinx : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = JinxSpellTimes.GetInt();
+        playerId.SetAbilityUseLimit(JinxSpellTimes.GetInt());
     }
+    private static bool CanJinx(byte id) => id.GetAbilityUseLimit() > 0;
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit <= 0) return true;
-        if (killer.IsTransformedNeutralApocalypse()) return true;
+        if (!CanJinx(killer.PlayerId) || killer.IsTransformedNeutralApocalypse()) return true;
         if (killer == target) return true;
         
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
-       
-        AbilityLimit -= 1;
-        SendSkillRPC();
+
+        killer.RpcRemoveAbilityUse();
 
         if (killAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
-            Logger.Info($"{target.GetNameWithRole()}: ability left {AbilityLimit}", "Jinx");
             killer.SetDeathReason(PlayerState.DeathReason.Jinx);
             killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(target);
@@ -64,9 +61,4 @@ internal class Jinx : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
-
-    public override string GetProgressText(byte playerId, bool comms) 
-        => Utils.ColorString(CanJinx(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
-    private bool CanJinx(byte id) => AbilityLimit > 0;
 }

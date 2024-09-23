@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -59,7 +60,7 @@ internal class Troller : RoleBase
 
         AllEvents = [.. EnumHelper.GetAllValues<Events>()];
 
-        if (Utils.GetActiveMapName() is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle))
+        if (GetActiveMapName() is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle))
         {
             AllEvents.Remove(Events.AllDoorsOpen);
             AllEvents.Remove(Events.AllDoorsClose);
@@ -72,9 +73,9 @@ internal class Troller : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        AbilityLimit = 0;
+        playerId.SetAbilityUseLimit(0);
     }
-    private void ResetAbility() => AbilityLimit = TrollsPerRound.GetInt();
+    private void ResetAbility() => _state.PlayerId.SetAbilityUseLimit(TrollsPerRound.GetInt());
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -85,16 +86,16 @@ internal class Troller : RoleBase
     public override void AfterMeetingTasks() => ResetAbility();
     public override bool OnTaskComplete(PlayerControl troller, int completedTaskCount, int totalTaskCount)
     {
-        if (!troller.IsAlive() || AbilityLimit <= 0) return true;
+        if (!troller.IsAlive() || troller.GetAbilityUseLimit() <= 0) return true;
 
-        AbilityLimit--;
+        troller.RpcRemoveAbilityUse();
 
-        if (Utils.IsActive(SystemTypes.MushroomMixupSabotage) || Utils.IsActive(SystemTypes.Electrical))
+        if (IsActive(SystemTypes.MushroomMixupSabotage) || IsActive(SystemTypes.Electrical))
         {
             AllEvents.Remove(Events.SabotageActivated);
             AllEvents.Remove(Events.SabotageDisabled);
         }
-        else if (Utils.AnySabotageIsActive())
+        else if (AnySabotageIsActive())
         {
             AllEvents.Remove(Events.SabotageActivated);
         }
@@ -119,7 +120,7 @@ internal class Troller : RoleBase
                     Main.AllPlayerSpeed[pcSpeed.PlayerId] = newSpeed;
                     pcSpeed.Notify(GetString("Troller_ChangesSpeed"));
                 }
-                Utils.MarkEveryoneDirtySettings();
+                MarkEveryoneDirtySettings();
 
                 _ = new LateTask(() =>
                 {
@@ -128,13 +129,13 @@ internal class Troller : RoleBase
                         Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[pcSpeed.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
                         pcSpeed.Notify(GetString("Troller_SpeedOut"));
                     }
-                    Utils.MarkEveryoneDirtySettings();
+                    MarkEveryoneDirtySettings();
                 }, 10f, "Troller: Set Speed to default");
                 break;
             case Events.SabotageActivated:
                 var shipStatusActivated = ShipStatus.Instance;
                 List<SystemTypes> allSabotage = [];
-                switch ((MapNames)Utils.GetActiveMapId())
+                switch (GetActiveMapName())
                 {
                     case MapNames.Skeld:
                     case MapNames.Dleks:
@@ -186,7 +187,7 @@ internal class Troller : RoleBase
                         shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 67);
                         break;
                     case SystemTypes.Comms:
-                        var mapId = Utils.GetActiveMapId();
+                        var mapId = GetActiveMapId();
 
                         shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 16);
                         if (mapId is 1 or 5) // Mira HQ or The Fungle

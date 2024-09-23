@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using UnityEngine;
 using TOHE.Modules;
-using static TOHE.Translator;
 using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -36,30 +36,26 @@ internal class Pursuer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = PursuerSkillLimitTimes.GetInt();
+        playerId.SetAbilityUseLimit(PursuerSkillLimitTimes.GetInt());
     }
     public override bool CanUseKillButton(PlayerControl pc) => CanUseKillButton(pc.PlayerId);
     
-    public bool CanUseKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && AbilityLimit >= 1;
-    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, $"({AbilityLimit})");
+    private static bool CanUseKillButton(byte playerId) => !Main.PlayerStates[playerId].IsDead && playerId.GetAbilityUseLimit() > 0;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 300f;
-    public bool IsClient(byte playerId)
-    {
-        return clientList.Contains(playerId);
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
+
+    private bool IsClient(byte playerId) => clientList.Contains(playerId);
     public bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public bool CanSeel() => AbilityLimit > 0;
+    public bool CanSeel() => _state.PlayerId.GetAbilityUseLimit() > 0;
+
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return false;
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
         if (!(CanBeClient(target) && CanSeel())) return false;
 
-        AbilityLimit--;
-        SendSkillRPC();
+        pc.RpcRemoveAbilityUse();
+
         if (target.Is(CustomRoles.KillingMachine)) 
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");

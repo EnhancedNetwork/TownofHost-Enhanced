@@ -53,6 +53,7 @@ enum CustomRPC : byte // 185/255 USED
     SyncGeneralOptions,
     SyncSpeedPlayer,
     Arrow,
+    SyncAbilityUseLimit,
 
     //Roles 
     SetBountyTarget,
@@ -72,8 +73,8 @@ enum CustomRPC : byte // 185/255 USED
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
-    SetCurrentDrawTarget,
-    RpcPassBomb = 151, // BetterCheck used 150
+    SetCurrentDrawTarget = 151, // BetterCheck used 150
+    RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
     SetJailerTarget,
@@ -101,9 +102,6 @@ enum CustomRPC : byte // 185/255 USED
     SyncVultureBodyAmount,
     SpyRedNameSync,
     SpyRedNameRemove,
-    SetChameleonTimer,
-    SyncAdmiredList,
-    SyncAdmiredAbility,
     SetImitateLimit,
     SetStalkerrKillCount,
     //FFA
@@ -419,6 +417,12 @@ internal class RPCHandlerPatch
                     else LocateArrow.ReceiveRPC(reader);
                     break;
                 }
+            case CustomRPC.SyncAbilityUseLimit:
+                {
+                    var pc = Utils.GetPlayerById(reader.ReadByte());
+                    pc.SetAbilityUseLimit(reader.ReadSingle(), rpc: false);
+                    break;
+                }
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -528,12 +532,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SyncAdmiredList:
-                Admirer.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.SyncAdmiredAbility:
-                Admirer.ReceiveRPC(reader, false);
-                break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
                 break;
@@ -635,9 +633,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
-                break;
-            case CustomRPC.SetChameleonTimer:
-                Chameleon.ReceiveRPC_Custom(reader);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);

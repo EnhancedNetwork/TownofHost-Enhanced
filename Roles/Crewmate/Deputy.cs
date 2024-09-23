@@ -30,22 +30,19 @@ internal class Deputy : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = HandcuffMax.GetInt();
+        playerId.SetAbilityUseLimit(HandcuffMax.GetInt());
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = HandcuffCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() >= 1;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.SerialKiller)) return false;
-        if (AbilityLimit < 1) return false;
+        if (killer.GetAbilityUseLimit() < 1) return false;
 
-        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {AbilityLimit}", "Deputy");
-
-        if (target != _Player)
+        if (target.PlayerId != killer.PlayerId)
         {
-            AbilityLimit--;
-            SendSkillRPC();
+            killer.RpcRemoveAbilityUse();
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
@@ -60,7 +57,6 @@ internal class Deputy : RoleBase
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
         return false;
     }
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({AbilityLimit})");
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));

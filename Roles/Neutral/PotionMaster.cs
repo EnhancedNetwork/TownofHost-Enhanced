@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -40,7 +39,7 @@ internal class PotionMaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = RitualMaxCount.GetInt();
+        playerId.SetAbilityUseLimit(RitualMaxCount.GetInt());
         RitualTarget.TryAdd(playerId, []);
 
         var pc = Utils.GetPlayerById(playerId);
@@ -52,7 +51,6 @@ internal class PotionMaster : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(playerId);
-        writer.Write(AbilityLimit);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -60,9 +58,7 @@ internal class PotionMaster : RoleBase
     {
         byte playerId = reader.ReadByte();
 
-        AbilityLimit = reader.ReadSingle();
-          RitualTarget[playerId].Add(reader.ReadByte());
-        
+        RitualTarget[playerId].Add(reader.ReadByte()); 
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -72,7 +68,7 @@ internal class PotionMaster : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit > 0)
+        if (killer.GetAbilityUseLimit() > 0)
         {
             return killer.CheckDoubleTrigger(target, () => { SetRitual(killer, target); });
         }
@@ -91,9 +87,8 @@ internal class PotionMaster : RoleBase
     {
         if (!IsRitual(killer.PlayerId, target.PlayerId))
         {
-            AbilityLimit--;
+            killer.RpcRemoveAbilityUse();
             RitualTarget[killer.PlayerId].Add(target.PlayerId);
-            Logger.Info($"{killer.GetNameWithRole()}: Divined divination destination -> {target.GetNameWithRole()} || remaining {AbilityLimit} times", "PotionMaster");
 
             Utils.NotifyRoles(SpecifySeer: killer);
             SendRPC(killer.PlayerId, target.PlayerId);
@@ -113,6 +108,4 @@ internal class PotionMaster : RoleBase
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target);
-
-    public override string GetProgressText(byte playerId, bool coooonms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.PotionMaster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }

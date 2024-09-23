@@ -690,25 +690,7 @@ public static class Utils
 
                 if (ProgressText.Length == 0)
                 {
-                    var taskState = Main.PlayerStates?[playerId].TaskState;
-                    if (taskState.hasTasks)
-                    {
-                        Color TextColor;
-                        var info = GetPlayerInfoById(playerId);
-                        var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f);
-                        var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
-
-                        if (Workhorse.IsThisRole(playerId))
-                            NonCompleteColor = Workhorse.RoleColor;
-
-                        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-                        if (Main.PlayerStates.TryGetValue(playerId, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
-                            NormalColor = Color.red;
-
-                        TextColor = comms ? Color.gray : NormalColor;
-                        string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-                        ProgressText.Append(ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})"));
-                    }
+                    ProgressText.Append(GetTaskCount(playerId, comms));
                 }
                 else
                 {
@@ -722,6 +704,59 @@ public static class Utils
             ThrowException(error);
             Logger.Error($"PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}", "GetProgressText(byte playerId, bool comms = false)");
             return "Error2";
+        }
+    }
+    public static string GetAbilityUseLimitDisplay(byte playerId, bool displayOnlyUseAbility, bool usingAbility = false)
+    {
+        try
+        {
+            float limit = playerId.GetAbilityUseLimit();
+            if (float.IsNaN(limit)) return string.Empty;
+            Color TextColor;
+            if (limit < 1) TextColor = Color.red;
+            else if (usingAbility) TextColor = Color.green;
+            else TextColor = GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.25f);
+            return (displayOnlyUseAbility ? string.Empty : ColorString(Color.white, " - ")) + ColorString(TextColor, $"[{Math.Round(limit, 1)}]");
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    public static string GetTaskCount(byte playerId, bool comms)
+    {
+        try
+        {
+            if (playerId == 0 && Main.EnableGM.Value) return string.Empty;
+
+            var taskState = Main.PlayerStates[playerId].TaskState;
+            if (!taskState.hasTasks) return string.Empty;
+
+            var info = GetPlayerInfoById(playerId);
+            var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.5f);
+            var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
+
+            if (Workhorse.IsThisRole(playerId))
+                NonCompleteColor = Workhorse.RoleColor;
+
+            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+            if (Main.PlayerStates.TryGetValue(playerId, out var ps))
+            {
+                NormalColor = ps.MainRole switch
+                {
+                    CustomRoles.Crewpostor => Color.red,
+                    _ => NormalColor
+                };
+            }
+
+            Color TextColor = comms ? Color.gray : NormalColor;
+            string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
+            return ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})");
+        }
+        catch
+        {
+            return string.Empty;
         }
     }
     public static void ShowActiveSettingsHelp(byte PlayerId = byte.MaxValue)
@@ -2582,6 +2617,49 @@ public static class Utils
         float G = (color.g + Weight) / (Darkness + 1);
         float B = (color.b + Weight) / (Darkness + 1);
         return new Color(R, G, B, color.a);
+    }
+
+    public static float GetSettingNameAndValueForRole(CustomRoles role, string settingName)
+    {
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
+        var types = Assembly.GetExecutingAssembly().GetTypes();
+        var field = types.SelectMany(x => x.GetFields(flags)).FirstOrDefault(x => x.Name == $"{role}{settingName}");
+        if (field == null)
+        {
+            FieldInfo tempField = null;
+            foreach (var x in types)
+            {
+                bool any = false;
+                foreach (var f in x.GetFields(flags))
+                {
+                    if (f.Name.Contains(settingName))
+                    {
+                        any = true;
+                        tempField = f;
+                        break;
+                    }
+                }
+
+                if (any && x.Name == $"{role}")
+                {
+                    field = tempField;
+                    break;
+                }
+            }
+        }
+
+        float add;
+        if (field == null)
+        {
+            add = float.MaxValue;
+        }
+        else
+        {
+            if (field.GetValue(null) is OptionItem optionItem) add = optionItem.GetFloat();
+            else add = float.MaxValue;
+        }
+
+        return add;
     }
 
     public static void SetChatVisibleForEveryone()

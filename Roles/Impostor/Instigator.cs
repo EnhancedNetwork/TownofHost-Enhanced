@@ -36,7 +36,7 @@ internal class Instigator : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        AbilityLimit = AbilityLimitt.GetInt();
+        playerId.SetAbilityUseLimit(AbilityLimitt.GetInt());
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -45,7 +45,7 @@ internal class Instigator : RoleBase
     {
         if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
 
-        if (AbilityLimit <= 0) return;
+        if (instigator.GetAbilityUseLimit() <= 0) return;
 
         var killer = _Player;
         if (!killer.IsAlive()) return;
@@ -75,7 +75,6 @@ internal class Instigator : RoleBase
 
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Retribution, [.. killPlayers]);
 
-        AbilityLimit--;
-        SendSkillRPC();
+        instigator.RpcRemoveAbilityUse();
     }
 }

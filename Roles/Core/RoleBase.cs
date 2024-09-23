@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -14,7 +14,6 @@ public abstract class RoleBase
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
-    public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
@@ -422,8 +421,13 @@ public abstract class RoleBase
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
-
+    public virtual string GetProgressText(byte playerId, bool comms)
+    {
+        var sb = new StringBuilder();
+        sb.Append(Utils.GetTaskCount(playerId, comms));
+        sb.Append(Utils.GetAbilityUseLimitDisplay(playerId, sb.Length <= 0));
+        return sb.ToString();
+    }
 
     // 
     // IMPORTANT note about otherIcons: 
@@ -441,23 +445,8 @@ public abstract class RoleBase
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
-
-    public void OnReceiveRPC(MessageReader reader) 
-    {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-    }
-    public void SendSkillRPC()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    {
-        OnReceiveRPC(reader); // Default implementation
-    }
+    { }
 
     public enum GeneralOption
     {

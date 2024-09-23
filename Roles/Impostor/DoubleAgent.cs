@@ -109,9 +109,10 @@ internal class DoubleAgent : RoleBase
                 return;
             }
 
-            if (Bastion.BombedVents.Contains(vent.Id))
+            var bastion = Main.AllPlayerControls.FirstOrDefault(p => pc.Is(CustomRoles.Bastion));
+            if (bastion.GetRoleClass() is Bastion bastionClass && bastionClass.BombedVents.Contains(vent.Id))
             {
-                Bastion.BombedVents.Remove(vent.Id);
+                bastionClass.BombedVents.Remove(vent.Id);
                 _ = new LateTask(() =>
                 {
                     if (pc.inVent) pc.MyPhysics.RpcBootFromVent(vent.Id);
