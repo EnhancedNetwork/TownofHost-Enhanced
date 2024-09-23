@@ -44,7 +44,7 @@ internal class CopyCat : RoleBase
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
-        playerIdList.Remove(playerId);
+        //playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);

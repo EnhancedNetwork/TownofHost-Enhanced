@@ -167,9 +167,9 @@ class ExileControllerWrapUpPatch
                 });
 
                 Main.AfterMeetingDeathPlayers.Clear();
-                AntiBlackout.ResetAfterMeeting();
-
+                
                 Utils.AfterMeetingTasks();
+                AntiBlackout.ResetAfterMeeting();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
                 Utils.NotifyRoles(NoCache: true);

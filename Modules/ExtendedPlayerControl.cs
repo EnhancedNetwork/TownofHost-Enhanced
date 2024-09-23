@@ -74,13 +74,20 @@ static class ExtendedPlayerControl
     public static void RpcRevive(this PlayerControl player)
     {
         if (player == null) return;
-        if (!player.Data.IsDead)
+        if (!player.Data.IsDead && player.IsAlive())
         {
-            Logger.Warn($"Invalid Revive for {player.GetRealName()} / Player was already alive? {!player.Data.IsDead}", "RpcRevive");
+            Logger.Warn($"Invalid Revive for {player.GetRealName()} / player have data is dead: {player.Data.IsDead}, in game states is dead: {!player.IsAlive()}", "RpcRevive");
             return;
         }
 
-        var customRole = player.GetRoleMap().CustomRole;
+        if (player.HasGhostRole())
+        {
+            player.GetRoleClass().Remove(player.PlayerId);
+            player.RpcSetCustomRole(player.GetRoleMap().CustomRole);
+            player.GetRoleClass().Add(player.PlayerId);
+        }
+
+        var customRole = player.GetCustomRole();
         Main.PlayerStates[player.PlayerId].IsDead = false;
         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
 
@@ -671,8 +678,6 @@ static class ExtendedPlayerControl
         messageWriter.Write((int)MurderResultFlags.Succeeded);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     } //Must provide seer, target
-
-    [Obsolete]
     public static void RpcSpecificProtectPlayer(this PlayerControl killer, PlayerControl target = null, int colorId = 0)
     {
         if (AmongUsClient.Instance.AmClient)
