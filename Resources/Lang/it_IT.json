@@ -1591,7 +1591,7 @@
   "VentguardInfo": "Blocca i condotti entrandoci",
   "VentguardInfoLong": "(Astronauti):\nCome Paracondotti, puoi entrare nei condotti per bloccarli. Nessuno può entrare nei condotti bloccati, tranne gli Astronauti, se l'impostazione è attiva. I condotti bloccati possono essere ripristinati a ogni riunione.",
   "VentguardVentButtonText": "Blocca",
-  "Ventguard_MaxGuards": "Max number of Vent Blocks",
+  "Ventguard_MaxGuards": "Numero massimo di condotti bloccati",
   "Ventguard_BlockVentCooldown": "Block Vent Cooldown",
   "Ventguard_BlockDoesNotAffectCrew": "<color=#8cffff>Crewmates</color> can use blocked vents",
   "Ventguard_BlocksResetOnMeeting": "Reset Blocked Vents Every Meeting",
