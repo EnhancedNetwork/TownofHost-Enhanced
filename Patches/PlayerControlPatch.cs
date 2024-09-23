@@ -24,7 +24,7 @@ namespace TOHE;
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckProtect))]
 class CheckProtectPatch
 {
-    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
+    public static bool Prefix(PlayerControl __instance, PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
         Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
@@ -35,9 +35,6 @@ class CheckProtectPatch
             Logger.Info("Checking while AntiBlackOut protect, guard protect was canceled", "CheckProtect");
             return false;
         }
-
-        if (target.Data.IsDead) // bad protect
-            return false;
 
         if (!angel.GetRoleClass().OnCheckProtect(angel, target))
             return false;
@@ -56,13 +53,8 @@ class CheckProtectPatch
             return false;
         }
 
-        if (angel.Is(CustomRoles.Sheriff) && angel.Data.IsDead)
-        {
-            Logger.Info("Blocked protection", "CheckProtect");
-            return false; // What is this for? sheriff dosen't become guardian angel lmao
-        }
-
-        return true;
+        angel.RpcSpecificProtectPlayer(target, angel.Data.DefaultOutfit.ColorId);
+        return false;
     }
 
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
@@ -448,6 +440,9 @@ class MurderPlayerPatch
         {
             target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
+
+        target.Data.IsDead = true;
+        GameData.Instance.DirtyAllData();
 
         Main.MurderedThisRound.Add(target.PlayerId);
 
@@ -1843,6 +1838,7 @@ class PlayerControlSetRolePatch
             try
             {
                 GhostRoleAssign.GhostAssignPatch(__instance); // Sets customrole ghost if succeed
+                __instance.SyncSettings();
             }
             catch (Exception error)
             {

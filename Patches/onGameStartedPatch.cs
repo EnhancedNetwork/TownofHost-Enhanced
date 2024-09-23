@@ -187,6 +187,7 @@ internal class ChangeRoleSettings
                 
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
+                CustomRoleManager.DoNotUnlockVentsList[pc.PlayerId] = [];
 
                 pc.cosmetics.nameText.text = pc.name;
 

@@ -45,8 +45,10 @@ public static class NameNotifyManager
     }
     private static void SendRPC(byte playerId)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncNameNotify, SendOption.Reliable);
+        var player = playerId.GetPlayer();
+        if (player == null || !AmongUsClient.Instance.AmHost || !player.IsNonHostModdedClient()) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncNameNotify, SendOption.Reliable, player.GetClientId());
         writer.Write(playerId);
         if (Notice.ContainsKey(playerId))
         {

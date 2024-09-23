@@ -34,6 +34,8 @@ internal class Deceiver : RoleBase
     public override void Add(byte playerId)
     {
         playerId.SetAbilityUseLimit(DeceiverSkillLimitTimes.GetInt());
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool CanUseKillButton(PlayerControl pc) => pc.GetAbilityUseLimit() > 0;
@@ -83,6 +85,12 @@ internal class Deceiver : RoleBase
 
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");
         return true;
+    }
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (!IsClient(target.PlayerId)) return;
+
+        clientList.Remove(target.PlayerId);
     }
     public override void OnReportDeadBody(PlayerControl rafaeu, NetworkedPlayerInfo dinosaurs)
     {

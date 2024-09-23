@@ -470,6 +470,7 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    public static readonly Dictionary<byte, HashSet<int>> DoNotUnlockVentsList = [];
     public static readonly Dictionary<byte, HashSet<int>> BlockedVentsList = [];
 
     public static void Initialize()
@@ -478,6 +479,7 @@ public static class CustomRoleManager
         OnFixedUpdateOthers.Clear();
         CheckDeadBodyOthers.Clear();
         BlockedVentsList.Clear();
+        DoNotUnlockVentsList.Clear();
     }
 
     public static void Add()

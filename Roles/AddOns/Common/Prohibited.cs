@@ -45,6 +45,7 @@ public class Prohibited : IAddon
         foreach (var ventId in ventListId)
         {
             CustomRoleManager.BlockedVentsList[playerId].Remove(ventId);
+            CustomRoleManager.DoNotUnlockVentsList[playerId].Remove(ventId);
         }
         RememberBlokcedVents.Remove(playerId);
     }
@@ -76,6 +77,7 @@ public class Prohibited : IAddon
             var vent = allVents.RandomElement();
             RememberBlokcedVents[playerId].Add(vent.Id);
             CustomRoleManager.BlockedVentsList[playerId].Add(vent.Id);
+            CustomRoleManager.DoNotUnlockVentsList[playerId].Add(vent.Id);
             allVents.Remove(vent);
         }
     }

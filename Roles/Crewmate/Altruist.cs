@@ -70,13 +70,6 @@ internal class Altruist : RoleBase
             RevivedPlayerId = deadPlayerId;
             //AllRevivedPlayerId.Add(deadPlayerId);
 
-            if (deadPlayer.HasGhostRole())
-            {
-                deadPlayer.GetRoleClass().Remove(deadPlayerId);
-                deadPlayer.RpcSetCustomRole(Utils.GetRoleMap(deadPlayerId).CustomRole);
-                deadPlayer.GetRoleClass().Add(deadPlayerId);
-            }
-
             deadPlayer.RpcTeleport(deadBodyObject.transform.position);
             deadPlayer.RpcRevive();
 
