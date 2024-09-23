@@ -213,4 +213,21 @@ internal class Death : RoleBase
         }
         return false;
     }
+    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    {
+        var sc = Utils.GetPlayerListByRole(CustomRoles.Death).First();
+        if (sc == null || !sc.IsAlive() || sc.Data.Disconnected) return;
+
+        if (isMeetingHud)
+        {
+            if (exiled == sc.Data)
+            {
+                name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+            }
+            else
+            {
+                name = string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+            }
+        }
+    }
 }
