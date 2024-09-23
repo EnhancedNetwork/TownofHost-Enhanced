@@ -51,7 +51,7 @@ internal class Blackmailer : RoleBase
         var targetId = reader.ReadByte();
 
         if (targetId == byte.MaxValue)
-            ClearBlackmaile(true);
+            ClearBlackmaile(false);
         else
             ForBlackmailer.Add(targetId);
     }
