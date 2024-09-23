@@ -40,6 +40,7 @@ internal class Blackmailer : RoleBase
     }
     private void SendRPC(byte target = byte.MaxValue)
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);
         writer.Write(target);
@@ -50,7 +51,7 @@ internal class Blackmailer : RoleBase
         var targetId = reader.ReadByte();
 
         if (targetId == byte.MaxValue)
-            ForBlackmailer.Clear();
+            ClearBlackmaile(true);
         else
             ForBlackmailer.Add(targetId);
     }
@@ -77,23 +78,23 @@ internal class Blackmailer : RoleBase
             return;
         }
 
-        ClearBlackmaile();
+        ClearBlackmaile(true);
         ForBlackmailer.Add(target.PlayerId);
         SendRPC(target.PlayerId);
     }
 
     public override void AfterMeetingTasks()
     {
-        ClearBlackmaile();
+        ClearBlackmaile(true);
     }
     public override void OnCoEndGame()
     {
-        ClearBlackmaile();
+        ClearBlackmaile(false);
     }
-    private void ClearBlackmaile()
+    private void ClearBlackmaile(bool sendRpc)
     {
         ForBlackmailer.Clear();
-        SendRPC();
+        if (sendRpc) SendRPC();
     }
     
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
