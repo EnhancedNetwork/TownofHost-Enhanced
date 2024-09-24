@@ -1,5 +1,3 @@
-// Ignore Spelling: Auth Plugin
-
 using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;

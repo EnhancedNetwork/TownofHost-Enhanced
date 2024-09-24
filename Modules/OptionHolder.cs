@@ -1,5 +1,3 @@
-// Ignore Spelling: Adt
-
 using System;
 using System.Reflection;
 using TOHE.Modules;
