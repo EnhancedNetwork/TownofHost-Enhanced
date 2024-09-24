@@ -1592,7 +1592,7 @@
   "VentguardInfoLong": "(船員陣營):\n阻礙者可以通過進入通風口來封住通風口，被封住的通風口將無法進入(根據設定，船員陣營可能可以使用)。封住的管道會在會議後重置。",
   "VentguardVentButtonText": "阻礙",
   "Ventguard_MaxGuards": "最大阻礙次數",
-  "Ventguard_BlockVentCooldown": "Block Vent Cooldown",
+  "Ventguard_BlockVentCooldown": "封住管道的冷卻時間",
   "Ventguard_BlockDoesNotAffectCrew": "<color=#8cffff>船員</color>可以使用被封住的管道",
   "Ventguard_BlocksResetOnMeeting": "每次會議後重置管道",
   "VentIsBlocked": "你堵住了這個管道!",
