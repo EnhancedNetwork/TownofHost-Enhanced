@@ -883,6 +883,7 @@ class MeetingHudStartPatch
                     SendMessage(text, sendTo, title);
                 }
             }, 3f, "Skill Description First Meeting");
+
         }
 
         msgToSend = [];
@@ -940,6 +941,14 @@ class MeetingHudStartPatch
             // Check Mimic kill
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
+
+            // Eavesdropper notify msg
+            if (Eavesdropper.EavesdropperNotify.ContainsKey(pc.PlayerId) && IRandom.Instance.Next(0,100) < Eavesdropper.EavesdropPercentChance.GetFloat())
+            {
+                var eavesdropperMsg = msgToSend.Where(x => x.Item2 != 255).Select(x => x.Item1).ToList();
+                var randomMsg = eavesdropperMsg[IRandom.Instance.Next(0, eavesdropperMsg.Count)];
+                AddMsg(randomMsg, pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Eavesdropper), GetString("EavesdropperMsgTitle")));
+            }
         }
 
         // Add Mimic msg
