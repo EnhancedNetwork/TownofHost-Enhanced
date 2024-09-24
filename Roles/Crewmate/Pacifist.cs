@@ -42,8 +42,7 @@ internal class Pacifist : RoleBase
     {
         if (AbilityLimit < 1)
         {
-            pc?.MyPhysics?.RpcBootFromVent(vent.Id);
-            pc.Notify(GetString("PacifistMaxUsage"));
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
         else
         {

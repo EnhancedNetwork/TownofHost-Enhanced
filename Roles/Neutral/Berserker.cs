@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using AmongUs.GameOptions;
+using TOHE.Roles.Core;
+using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
-using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -39,7 +40,7 @@ internal class Berserker : RoleBase
     private static OptionItem BerserkerCanVent;
     public static OptionItem WarCanVent;
 
-    private static readonly Dictionary<byte, int> BerserkerKillMax = [];
+    private readonly Dictionary<byte, int> BerserkerKillMax = [];
 
     public override void SetupCustomOption()
     {
@@ -87,7 +88,19 @@ internal class Berserker : RoleBase
     {
         BerserkerKillMax.Remove(playerId);
     }
+    private void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(_Player);
+        writer.WritePacked(BerserkerKillMax[_Player.PlayerId]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        var killCount = reader.ReadPackedInt32();
 
+        BerserkerKillMax[_Player.PlayerId] = killCount;
+    }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) 
         => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) 
@@ -100,6 +113,7 @@ internal class Berserker : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.IsNeutralApocalypse()) return false;
+        
         bool noScav = true;
         if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
         {
@@ -141,7 +155,7 @@ internal class Berserker : RoleBase
             CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
             foreach (var player in Main.AllAlivePlayerControls)
             {
-                if (!player.IsModClient())
+                if (!player.IsModded())
                     player.KillFlash();
 
                 if (player == killer) continue;
@@ -162,6 +176,7 @@ internal class Berserker : RoleBase
             Main.AllPlayerKillCooldown[killer.PlayerId] = WarKillCooldown.GetFloat();
         }
 
+        SendRPC();
         return noScav;
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)

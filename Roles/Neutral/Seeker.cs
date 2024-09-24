@@ -112,9 +112,9 @@ internal class Seeker : RoleBase
        Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (player == null) return;
+        if (lowLoad) return;
         var targetId = GetTarget(player);
         if (targetId == 0xff) return;
 

@@ -19,6 +19,8 @@ public abstract class RoleBase
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
     public virtual bool IsDesyncRole => false;
+    public virtual bool IsSideKick => false;
+
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -84,6 +86,16 @@ public abstract class RoleBase
     /// </summary>
     public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
+
+    //this is a draft, it is not usable yet, Imma fix it in another PR
+
+    /// <summary>
+    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen. (they will also not be able to kill eachother)
+    /// </summary>
+    public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
+    {
+
+    }
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
@@ -123,12 +135,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl pc)
-    { }
-    /// <summary>
-    /// A local method to check conditions during gameplay, which aren't prioritized
-    /// </summary>
-    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     { }
 
     /// <summary>
@@ -151,22 +158,22 @@ public abstract class RoleBase
     public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
-    /// A method for activating actions where the role starts playing an animation when entering a vent
-    /// </summary>
-    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
-    { }
-    /// <summary>
     /// When role need force boot from vent
     /// </summary>
     public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the others roles starts playing an animation when entering a vent
     /// </summary>
     public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the role starts playing an animation when entering a vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    { }
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.
@@ -213,19 +220,6 @@ public abstract class RoleBase
     /// When the target role died by killer
     /// </summary>
     public virtual void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
-    { }
-
-    /// <summary>
-    /// A method to always check the state when targets have died (murder, exiled, execute etc..)
-    /// </summary>
-    public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
-    { }
-
-
-    /// <summary>
-    /// A method to always check the state player has died (murder, exiled, execute etc..). If there is a meeting it will only happen after it.
-    /// </summary>
-    public virtual void OnSelfReducedToAtoms(bool IsAfterMeeting)
     { }
 
     /// <summary>
@@ -339,6 +333,11 @@ public abstract class RoleBase
     /// </summary>
     public virtual string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target) => string.Empty;
 
+    /// <summary>
+    /// Used when player should be dead after meeting
+    /// </summary>
+    public virtual void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    { }
     /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
@@ -471,8 +470,10 @@ public abstract class RoleBase
         CanKill,
         KillCooldown,
         CanVent,
+        CantMoveOnVents,
         ImpostorVision,
         CanUseSabotage,
+        CanHaveAccessToVitals,
 
         // General settings
         CanKillImpostors,

@@ -9,7 +9,7 @@ public class Lucky : IAddon
 
     private static OptionItem LuckyProbability;
 
-    private static Dictionary<byte, bool> LuckyAvoid;
+    private static readonly Dictionary<byte, bool> LuckyAvoid = [];
 
     public void SetupCustomOption()
     {
@@ -18,15 +18,15 @@ public class Lucky : IAddon
             .SetValueFormat(OptionFormat.Percent);
     }
 
-    public static void Init()
+    public void Init()
     {
-        LuckyAvoid = [];
+        LuckyAvoid.Clear();
     }
-    public static void Add(byte PlayerId)
+    public  void Add(byte playerId, bool gameIsLoading = true)
     {
-        LuckyAvoid.Add(PlayerId, false);
+        LuckyAvoid[playerId] = false;
     }
-    public static void Remove(byte player)
+    public void Remove(byte player)
     {
         LuckyAvoid.Remove(player);
     }

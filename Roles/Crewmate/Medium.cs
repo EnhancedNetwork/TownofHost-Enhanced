@@ -157,6 +157,8 @@ internal class Medium : RoleBase
     }
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
+        if (!_Player.IsAlive()) return;
+
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))
             AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));

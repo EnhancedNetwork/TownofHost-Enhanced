@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -58,14 +57,15 @@ internal class Telecommunication : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 5;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
         {
-            if (Pelican.IsEaten(pc.PlayerId) || pc.inVent) continue;
+            if (pc.inVent) continue;
             try
             {
                 Vector2 PlayerPos = pc.transform.position;
@@ -145,7 +145,7 @@ internal class Telecommunication : RoleBase
         {
             foreach (var pc in playerIdList)
             {
-                var antiAdminer = GetPlayerById(pc);
+                var antiAdminer = pc.GetPlayer();
                 NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
             }
         }

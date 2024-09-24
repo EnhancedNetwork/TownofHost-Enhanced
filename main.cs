@@ -1,3 +1,5 @@
+// Ignore Spelling: Auth Plugin
+
 using AmongUs.GameOptions;
 using BepInEx;
 using BepInEx.Configuration;
@@ -10,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -26,7 +29,7 @@ namespace TOHE;
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
-    // == プログラム設定 / Program Config ==
+    // == Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
     public static readonly string ModName = "TOHE";
@@ -41,12 +44,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.0825.210.00070"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.1.0 Alpha 7";
+    public const string PluginVersion = "2024.0923.210.00150"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.1.0 Alpha 15";
     public const string SupportedVersionAU = "2024.8.13";
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 7
+    public static readonly bool devRelease = true; // Latest: V2.1.0 Alpha 14
     public static readonly bool canaryRelease = false; // Latest: V2.0.0 Canary 12
     public static readonly bool fullRelease = false; // Latest: V2.0.3
 
@@ -104,6 +107,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> AutoRehost { get; private set; }
 
     public static Dictionary<int, PlayerVersion> playerVersion = [];
+    public static BAUPlayersData BAUPlayers = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
@@ -115,6 +119,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> BetaBuildURL { get; private set; }
     public static ConfigEntry<float> LastKillCooldown { get; private set; }
     public static ConfigEntry<float> LastShapeshifterCooldown { get; private set; }
+    public static ConfigEntry<float> LastGuardianAngelCooldown { get; private set; }
     public static ConfigEntry<float> PlayerSpawnTimeOutCooldown { get; private set; }
 
     public static OptionBackupData RealOptionsData;
@@ -141,8 +146,10 @@ public class Main : BasePlugin
     public static readonly Dictionary<string, int> PlayerQuitTimes = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
+    public static string LastSummaryMessage;
 
     public static readonly HashSet<byte> DesyncPlayerList = [];
+    public static readonly HashSet<byte> MurderedThisRound = [];
     public static readonly HashSet<byte> TasklessCrewmate = [];
     public static readonly HashSet<byte> OverDeadPlayerList = [];
     public static readonly HashSet<byte> UnreportableBodies = [];
@@ -171,7 +178,7 @@ public class Main : BasePlugin
     public static bool VisibleTasksCount = false;
     public static bool AssignRolesIsStarted = false;
     public static string HostRealName = "";
-    public static bool introDestroyed = false;
+    public static bool IntroDestroyed = false;
     public static int DiscussionTime;
     public static int VotingTime;
     public static float DefaultCrewmateVision;
@@ -552,6 +559,7 @@ public class Main : BasePlugin
         MessageWait = Config.Bind("Other", "MessageWait", 1);
         LastKillCooldown = Config.Bind("Other", "LastKillCooldown", (float)30);
         LastShapeshifterCooldown = Config.Bind("Other", "LastShapeshifterCooldown", (float)30);
+        LastGuardianAngelCooldown = Config.Bind("Other", "LastGuardianAngelCooldown", (float)35);
         PlayerSpawnTimeOutCooldown = Config.Bind("Other", "PlayerSpawnTimeOutCooldown", (float)3);
 
         hasArgumentException = false;
@@ -708,6 +716,7 @@ public enum CustomRoles
     Addict,
     Admirer,
     Alchemist,
+    Altruist,
     Bastion,
     Benefactor,
     Bodyguard,
@@ -771,6 +780,7 @@ public enum CustomRoles
     TimeMaster,
     Tracefinder,
     Transporter,
+    Ventguard,
     Veteran,
     Vigilante,
     Witness,
@@ -883,6 +893,7 @@ public enum CustomRoles
     Cyber,
     Diseased,
     DoubleShot,
+    Eavesdropper,
     Egoist,
     Evader,
     EvilSpirit,
@@ -914,6 +925,7 @@ public enum CustomRoles
     Onbound,
     Overclocked,
     Paranoia,
+    Prohibited,
     Radar,
     Rainbow,
     Rascal,
@@ -924,6 +936,7 @@ public enum CustomRoles
     Seer,
     Silent,
     Sleuth,
+    Sloth,
     Soulless,
     Statue,
     Stubborn,

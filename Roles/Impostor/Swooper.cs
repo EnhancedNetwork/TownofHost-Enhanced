@@ -46,7 +46,7 @@ internal class Swooper : RoleBase
     }
     private void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (pc.IsHost()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WriteNetObject(_Player);
         writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
@@ -115,16 +115,16 @@ internal class Swooper : RoleBase
         }, 0.8f, "Swooper Vent");
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var nowTime = Utils.GetTimeStamp();
+        if (lowLoad) return;
         var playerId = player.PlayerId;
         var needSync = false;
 
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)SwooperCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
-            if (!player.IsModClient()) player.Notify(GetString("SwooperCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("SwooperCanVent"));
             needSync = true;
         }
 
@@ -152,7 +152,7 @@ internal class Swooper : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!swooper.IsModClient())
+                if (!swooper.IsModded())
                     swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }

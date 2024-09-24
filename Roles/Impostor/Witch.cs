@@ -155,9 +155,9 @@ internal class Witch : RoleBase
 
         return false;
     }
-    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
+        if (deathReason != PlayerState.DeathReason.Vote) return;
 
         foreach (var id in exileIds)
         {

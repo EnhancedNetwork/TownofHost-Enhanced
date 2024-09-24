@@ -74,7 +74,7 @@ internal class Mercenary : RoleBase
 
     public static void ClearSuicideTimer() => SuicideTimer.Clear();
 
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!HasKilled(player))
         {

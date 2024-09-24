@@ -1,13 +1,13 @@
 using AmongUs.GameOptions;
+using System;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static TOHE.Roles.Core.CustomRoleManager;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using System;
+using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE;
 
@@ -38,9 +38,13 @@ public static class CustomRolesHelper
     }
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
-        => (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor() || role is CustomRoles.Killer // FFA
+    {
+        if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
+
+        return (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor()
             ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()
             : RoleTypes.GuardianAngel;
+    }
 
     /* Needs recode, awaiting phantom role base*/
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
@@ -49,7 +53,7 @@ public static class CustomRolesHelper
         var customRole = player.GetCustomRole();
         bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
 
-        if (player.IsModClient() || (!considerVanillaShift && !player.IsModClient()))
+        if (player.IsModded() || (!considerVanillaShift && !player.IsModded()))
             return ModSideHasKillButton;
 
         bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
@@ -67,10 +71,12 @@ public static class CustomRolesHelper
             return true;
 
         return role is
-            CustomRoles.EvilSpirit;
+        CustomRoles.EvilSpirit;
 
     }
-    
+    public static bool HasGhostRole(this PlayerControl player) => player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole());
+
+
     /*
     public static bool IsExperimental(this CustomRoles role)
     {
@@ -334,7 +340,8 @@ public static class CustomRolesHelper
             CustomRoles.Spurt or
             CustomRoles.Statue or
             CustomRoles.Alchemist or
-            CustomRoles.Tired;
+            CustomRoles.Tired or
+            CustomRoles.Sloth;
     }
     public static bool IsRevealingRole(this CustomRoles role, PlayerControl target)
     {
@@ -611,7 +618,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Spy)
                     || pc.Is(CustomRoles.Necromancer)
                     || pc.Is(CustomRoles.Demon)
-                    || pc.Is(CustomRoles.Shaman))
+                    || pc.Is(CustomRoles.Shaman)
+                    || pc.Is(CustomRoles.Opportunist) && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool())
                     return false;
                 break;
 
@@ -726,7 +734,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Mortician)
                     || pc.Is(CustomRoles.Medium)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Altruist))
                     return false;
                 break;
 
@@ -740,7 +749,8 @@ public static class CustomRolesHelper
             case CustomRoles.Rebirth:
                 if (pc.Is(CustomRoles.Doppelganger) 
                     || pc.Is(CustomRoles.Jester)
-                    || pc.Is(CustomRoles.Zombie)) return false;
+                    || pc.Is(CustomRoles.Zombie) 
+                    || pc.Is(CustomRoles.Solsticer)) return false;
                 break;
 
             case CustomRoles.Youtuber:
@@ -760,6 +770,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Sidekick)
                     || pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.Hurried)
+                    || pc.Is(CustomRoles.Gangster)
+                    || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
@@ -799,7 +811,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Puppeteer)
                     || pc.Is(CustomRoles.Scavenger)
                     || pc.Is(CustomRoles.Lightning)
-                    || pc.Is(CustomRoles.Swift))
+                    || pc.Is(CustomRoles.Swift)
+                    || pc.Is(CustomRoles.Swooper))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -951,6 +964,14 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Prohibited:
+                if (Prohibited.GetCountBlokedVents() <= 0 || !pc.CanUseVents())
+                    return false;
+                if (pc.Is(CustomRoles.Ventguard)
+                    || pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool())
+                    return false;
+                break;
+
             case CustomRoles.Flash:
                 if (pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Solsticer)
@@ -958,14 +979,19 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Statue)
                     || pc.Is(CustomRoles.Seeker)
                     || pc.Is(CustomRoles.Doppelganger)
-                    || pc.Is(CustomRoles.DollMaster))
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Sloth)
+                    || pc.Is(CustomRoles.Zombie)
+                    || pc.Is(CustomRoles.Wraith)
+                    || pc.Is(CustomRoles.Spurt))
                     return false;
                 break;
 
             case CustomRoles.Fool:
                 if (pc.Is(CustomRoles.Mechanic)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Alchemist))
+                    || pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Troller))
                     return false;
                 break;
 
@@ -1020,14 +1046,32 @@ public static class CustomRolesHelper
                   || pc.Is(CustomRoles.Bewilder)
                   || pc.Is(CustomRoles.Lighter)
                   || pc.Is(CustomRoles.Flash)
-                  || pc.Is(CustomRoles.Mare))
+                  || pc.Is(CustomRoles.Mare)
+                  || pc.Is(CustomRoles.Sloth)
+                  || pc.Is(CustomRoles.Troller))
                     return false;
                 break;
 
             case CustomRoles.Statue:
                 if (pc.Is(CustomRoles.Alchemist)
                     || pc.Is(CustomRoles.Flash)
-                    || pc.Is(CustomRoles.Tired))
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Sloth))
+                    return false;
+                break;
+
+            case CustomRoles.Sloth:
+                if (pc.Is(CustomRoles.Swooper) 
+                    || pc.Is(CustomRoles.Solsticer)
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Statue)
+                    || pc.Is(CustomRoles.Seeker)
+                    || pc.Is(CustomRoles.Doppelganger)
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Flash)
+                    || pc.Is(CustomRoles.Zombie)
+                    || pc.Is(CustomRoles.Wraith)
+                    || pc.Is(CustomRoles.Spurt))
                     return false;
                 break;
         }

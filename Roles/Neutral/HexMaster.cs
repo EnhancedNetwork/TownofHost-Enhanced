@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using System.Text;
-using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -158,7 +157,6 @@ internal class HexMaster : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (Medic.ProtectList.Contains(target.PlayerId)) return false;
         if (target.IsTransformedNeutralApocalypse()) return false;
 
         if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
@@ -178,9 +176,10 @@ internal class HexMaster : RoleBase
         //キル処理終了させる
         return false;
     }
-    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
+        if (deathReason != PlayerState.DeathReason.Vote) return;
+
         foreach (var id in exileIds)
         {
             if (HexedPlayer.ContainsKey(id))

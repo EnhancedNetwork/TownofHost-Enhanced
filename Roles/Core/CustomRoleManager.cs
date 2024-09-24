@@ -67,7 +67,7 @@ public static class CustomRoleManager
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
-    public static bool HasDesyncRole(this PlayerControl player) => player != null && (player.GetRoleClass().IsDesyncRole || Main.DesyncPlayerList.Contains(player.Data.PlayerId));
+    public static bool HasDesyncRole(this PlayerControl player) => player != null && (player.GetRoleClass().IsDesyncRole || Main.DesyncPlayerList.Contains(player.Data.PlayerId) || player.Is(CustomRoles.Killer));
 
     /// <summary>
     /// If the role protect others players
@@ -95,7 +95,7 @@ public static class CustomRoleManager
 
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {
-            DollMaster.ApplySettingsToDoll(opt, player);
+            DollMaster.ApplySettingsToDoll(opt);
             return;
         }
 
@@ -116,7 +116,10 @@ public static class CustomRoleManager
                         Watcher.RevealVotes(opt);
                         break;
                     case CustomRoles.Flash:
-                        Flash.SetSpeed(player.PlayerId, false);
+                        Flash.SetSpeed(player.PlayerId);
+                        break;
+                    case CustomRoles.Sloth:
+                        Sloth.SetSpeed(player.PlayerId);
                         break;
                     case CustomRoles.Torch:
                         Torch.ApplyGameOptions(opt);
@@ -337,7 +340,7 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
-                        target.RpcSetRole(RoleTypes.GuardianAngel);
+                        target.RpcSetRole(RoleTypes.GuardianAngel, true);
                         break;
 
                     case CustomRoles.Spurt:
@@ -397,33 +400,21 @@ public static class CustomRoleManager
         }
     }
 
-    public static HashSet<Action<PlayerControl>> OnFixedUpdateOthers = [];
+    public static HashSet<Action<PlayerControl, bool, long>> OnFixedUpdateOthers = [];
     /// <summary>
     /// Function always called in a task turn
     /// For interfering with other roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
-    public static void OnFixedUpdate(PlayerControl player)
+    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        player.GetRoleClass()?.OnFixedUpdate(player);
+        player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime);
 
         if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdate in OnFixedUpdateOthers.ToArray())
         {
-            onFixedUpdate(player);
-        }
-    }
-    public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
-    public static void OnFixedUpdateLowLoad(PlayerControl player)
-    {
-        player.GetRoleClass()?.OnFixedUpdateLowLoad(player);
-
-        if (!OnFixedUpdateLowLoadOthers.Any()) return;
-        //Execute other viewpoint processing if any
-        foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
-        {
-            onFixedUpdateLowLoad(player);
+            onFixedUpdate(player, lowLoad, nowTime);
         }
     }
 
@@ -479,12 +470,16 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    public static readonly Dictionary<byte, HashSet<int>> DoNotUnlockVentsList = [];
+    public static readonly Dictionary<byte, HashSet<int>> BlockedVentsList = [];
+
     public static void Initialize()
     {
         OtherCollectionsSet = false;
         OnFixedUpdateOthers.Clear();
-        OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+        BlockedVentsList.Clear();
+        DoNotUnlockVentsList.Clear();
     }
 
     public static void Add()

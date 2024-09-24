@@ -11,6 +11,12 @@ public class Gravestone : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Gravestone, canSetNum: true, teamSpawnOptions: true);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool EveryoneKnowRole(PlayerControl player) => player.Is(CustomRoles.Gravestone) && !player.IsAlive();
 }
 

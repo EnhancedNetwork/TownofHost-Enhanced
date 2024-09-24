@@ -9,6 +9,12 @@ public class Influenced : IAddon
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Influenced, canSetNum: true, teamSpawnOptions: true);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static void ChangeVotingData(Dictionary<byte, int> VotingData)
     { 
         //The incoming votedata does not count influenced votes
@@ -23,24 +29,19 @@ public class Influenced : IAddon
         int max = 0;
         bool tie = false;
         byte exileId = byte.MaxValue;
-        //var voteLog = Logger.Handler("Influenced check Vote");
         foreach (var data in VotingData)
         {
-            //voteLog.Info($"{data.Key}({Utils.GetVoteName(data.Key)}):{data.Value}票");
             if (data.Value > max)
             {
-                //voteLog.Info(data.Key + "拥有更高票数(" + data.Value + ")");
                 exileId = data.Key;
                 max = data.Value;
                 tie = false;
             }
             else if (data.Value == max)
             {
-                //voteLog.Info(data.Key + "与" + exileId + "的票数相同(" + data.Value + ")");
                 exileId = byte.MaxValue;
                 tie = true;
             }
-            //voteLog.Info($"驱逐ID: {exileId}, 最大: {max}票");
         }
         if (tie) return;
 

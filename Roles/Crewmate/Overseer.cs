@@ -176,6 +176,7 @@ internal class Overseer : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OverseerCooldown.GetFloat();
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        Aware.OnCheckMurder(CustomRoles.Overseer, target);
         killer.SetKillCooldown(OverseerRevealTime.GetFloat());
         if (!IsRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))
         {
@@ -187,15 +188,15 @@ internal class Overseer : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!OverseerTimer.ContainsKey(player.PlayerId)) return;
+        if (!OverseerTimer.TryGetValue(player.PlayerId, out var data)) return;
 
         var playerId = player.PlayerId;
         if (!player.IsAlive() || Pelican.IsEaten(playerId))
         {
 
-            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
+            data.Item1.RpcSetSpecificScanner(player, false);
             OverseerTimer.Remove(playerId);
             SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
@@ -203,7 +204,7 @@ internal class Overseer : RoleBase
         }
         else
         {
-            var (farTarget, farTime) = OverseerTimer[playerId];
+            var (farTarget, farTime) = data;
             
             if (!farTarget.IsAlive())
             {
@@ -251,6 +252,13 @@ internal class Overseer : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
+        if (_Player == null) return;
+        if (OverseerTimer.TryGetValue(_Player.PlayerId, out var data))
+        {
+            var farTarget = data.Item1;
+            farTarget?.RpcSetSpecificScanner(_Player, false);
+        }
+
         OverseerTimer.Clear();
         SendTimerRPC(0, byte.MaxValue);
     }

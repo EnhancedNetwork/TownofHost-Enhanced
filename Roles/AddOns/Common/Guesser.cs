@@ -26,5 +26,11 @@ public class Guesser : IAddon
         GTryHideMsg = BooleanOptionItem.Create(Id + 15, "GuesserTryHideMsg", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser])
             .SetColor(Color.green);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }
 

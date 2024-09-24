@@ -20,4 +20,11 @@ public class Egoist : IAddon
         ImpEgoistVisibalToAllies = BooleanOptionItem.Create(Id + 12, "ImpEgoistVisibalToAllies", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
         EgoistCountAsConverted = BooleanOptionItem.Create(Id + 13, "EgoistCountAsConverted", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Egoist]);
     }
+
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }

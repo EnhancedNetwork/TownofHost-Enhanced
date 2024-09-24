@@ -51,12 +51,12 @@ internal class Pursuer : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
     public bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public bool CanSeel(byte playerId) => AbilityLimit > 0;
+    public bool CanSeel() => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return true;
+        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return false;
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
-        if (!(CanBeClient(target) && CanSeel(pc.PlayerId))) return false;
+        if (!(CanBeClient(target) && CanSeel())) return false;
 
         AbilityLimit--;
         SendSkillRPC();

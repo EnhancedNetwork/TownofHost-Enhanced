@@ -1,14 +1,29 @@
 ﻿namespace TOHE.Patches;
+
 [HarmonyPatch(typeof(DialogueBox))]
 internal class DialogueBoxPatch
 {
-    [HarmonyPatch(nameof(DialogueBox.Show)), HarmonyPostfix]
-    public static void Show_Postfix(DialogueBox __instance, [HarmonyArgument(0)]string dialouge)
+    [HarmonyPatch(nameof(DialogueBox.Show)), HarmonyPrefix]
+    public static bool Show_Prefix(DialogueBox __instance, string dialogue)
     {
-        if (!PlayerControl.LocalPlayer.inVent && dialouge.Contains("<size=0%>tohe</size>") && GameStates.IsInTask)
+        __instance.target.text = dialogue;
+        if (Minigame.Instance != null)
+            Minigame.Instance.Close();
+        if (Minigame.Instance != null)
+            Minigame.Instance.Close();
+        __instance.gameObject.SetActive(true);
+        return false;
+    }
+    [HarmonyPatch(nameof(DialogueBox.Show)), HarmonyPostfix]
+    public static void Show_Postfix(DialogueBox __instance, string dialogue)
+    {
+        if (!PlayerControl.LocalPlayer.inVent && dialogue.Contains("<size=0%>tohe</size>") && GameStates.IsInTask)
         {
             PlayerControl.LocalPlayer.ForceKillTimerContinue = true;
         }
+
+        if (GameStates.IsMeeting)
+            GuessManager.DestroyIDLabels();
     }
 
     [HarmonyPatch(nameof(DialogueBox.Hide)), HarmonyPostfix]
@@ -18,6 +33,9 @@ internal class DialogueBoxPatch
         {
             PlayerControl.LocalPlayer.ForceKillTimerContinue = false;
         }
+
+        if (GameStates.IsMeeting && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
+            GuessManager.CreateIDLabels(MeetingHud.Instance);
     }
 
     /*

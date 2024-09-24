@@ -71,19 +71,18 @@ internal class Poisoner : RoleBase
         return false;
     }
 
-    public override void OnFixedUpdate(PlayerControl poisoner)
+    public override void OnFixedUpdate(PlayerControl poisoner, bool lowLoad, long nowTime)
     {
         var poisonerID = poisoner.PlayerId;
         List<byte> targetList = new(PoisonedPlayers.Where(b => b.Value.PoisonerId == poisonerID).Select(b => b.Key));
 
-        for (var id = 0; id < targetList.Count; id++)
+        foreach (var targetId in targetList)
         {
-            var targetId = targetList[id];
             var poisonedPoisoner = PoisonedPlayers[targetId];
 
             if (poisonedPoisoner.KillTimer >= KillDelay)
             {
-                var target = Utils.GetPlayerById(targetId);
+                var target = targetId.GetPlayer();
                 KillPoisoned(poisoner, target);
                 PoisonedPlayers.Remove(targetId);
             }

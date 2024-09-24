@@ -11,7 +11,7 @@ internal class Sheriff : RoleBase
     private const int Id = 11200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sheriff);
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor; 
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
@@ -80,7 +80,7 @@ internal class Sheriff : RoleBase
     }
     private static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && !x.IsTNA() && x is not CustomRoles.Glitch).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;

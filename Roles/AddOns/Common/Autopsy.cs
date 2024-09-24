@@ -10,4 +10,10 @@ public class Autopsy : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Autopsy, canSetNum: true, teamSpawnOptions: true);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }

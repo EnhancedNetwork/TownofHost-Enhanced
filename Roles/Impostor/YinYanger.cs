@@ -31,6 +31,7 @@ internal class YinYanger : RoleBase
     public override void Add(byte playerId)
     {
         Yanged[playerId] = new();
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     private static bool CheckAvailability()
@@ -69,10 +70,11 @@ internal class YinYanger : RoleBase
     {
         Yanged[_state.PlayerId] = new();
     }
-    public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (Yanged.TryGetValue(DeadPlayer.PlayerId, out _))
-            Yanged[DeadPlayer.PlayerId] = new();
+        if (inMeeting) return;
+        if (Yanged.TryGetValue(target.PlayerId, out _))
+            Yanged[target.PlayerId] = new();
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
@@ -81,19 +83,20 @@ internal class YinYanger : RoleBase
 
         return seen.PlayerId == yin?.PlayerId || seen.PlayerId == yang?.PlayerId ? ColorString(col, "☯") : string.Empty;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var (yin, yang) = Yanged[pc.PlayerId];
+        if (lowLoad) return;
+        var (yin, yang) = Yanged[player.PlayerId];
         if (!yin || !yang) return;
 
-        if (Utils.GetDistance(yin.GetCustomPosition(), yang.GetCustomPosition()) < 1.5f)
+        if (GetDistance(yin.GetCustomPosition(), yang.GetCustomPosition()) < 1.5f)
         {
             yin.SetDeathReason(PlayerState.DeathReason.Equilibrium);
             yin.RpcMurderPlayer(yang);
 
             yang.SetDeathReason(PlayerState.DeathReason.Equilibrium);
             yang.RpcMurderPlayer(yin);
-            Yanged[pc.PlayerId] = new();
+            Yanged[player.PlayerId] = new();
         }
     }
 

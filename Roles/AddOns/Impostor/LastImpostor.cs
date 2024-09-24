@@ -16,8 +16,12 @@ public class LastImpostor : IAddon
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.LastImpostor])
             .SetValueFormat(OptionFormat.Percent);
     }
-    public static void Init() => currentId = byte.MaxValue;
-    public static void Add(byte id) => currentId = id;
+    public void Init() => currentId = byte.MaxValue;
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public static void AddMidGame(byte id) => currentId = id;
+    public void Remove(byte playerId)
+    { }
     public static void SetKillCooldown()
     {
         if (currentId == byte.MaxValue) return;
@@ -30,7 +34,6 @@ public class LastImpostor : IAddon
     
     public static void SetSubRole()
     {
-        //ラストインポスターがすでにいれば処理不要
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;
         if (Options.CurrentGameMode == CustomGameMode.FFA || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1) return;
 
@@ -39,7 +42,7 @@ public class LastImpostor : IAddon
             if (CanBeLastImpostor(pc))
             {
                 pc.RpcSetCustomRole(CustomRoles.LastImpostor);
-                Add(pc.PlayerId);
+                AddMidGame(pc.PlayerId);
                 SetKillCooldown();
                 pc.SyncSettings();
                 Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);

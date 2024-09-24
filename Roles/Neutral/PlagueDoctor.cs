@@ -154,7 +154,7 @@ internal class PlagueDoctor : RoleBase
     {
         InfectActive = false;
     }
-    private void OnCheckPlayerPosition(PlayerControl player)
+    private void OnCheckPlayerPosition(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (LateCheckWin)
         {
@@ -291,6 +291,7 @@ internal class PlagueDoctor : RoleBase
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 player.SetDeathReason(PlayerState.DeathReason.Infected);
                 player.RpcMurderPlayer(player);
+                player.SetRealKiller(_Player);
             }
         }
     }

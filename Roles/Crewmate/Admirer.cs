@@ -24,7 +24,7 @@ internal class Admirer : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem SkillLimit;
 
-    public static readonly Dictionary<byte, List<byte>> AdmiredList = [];
+    public static readonly Dictionary<byte, HashSet<byte>> AdmiredList = [];
 
     public override void SetupCustomOption()
     {

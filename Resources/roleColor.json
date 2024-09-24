@@ -37,6 +37,7 @@
   "Transporter": "#42D1FF",
   "TimeManager": "#6495ed",
   "Veteran": "#a77738",
+  "Altruist": "#9b0202",
   "Bodyguard": "#185abd",
   "Deceiver": "#BE29EC",
   "Witness": "#e70052",
@@ -80,6 +81,7 @@
   "Enigma": "#676798",
   "Arsonist": "#ff6633",
   "Pyromaniac": "#fc8a4c",
+  "Ventguard": "#ffa5ff",
   "Agitater": "#F3A359",
   "Bandit": "#8B008B",
   "Apocalypse": "#ff174f",
@@ -105,6 +107,7 @@
   "Pelican": "#34C849",
   "Revolutionist": "#ba4d06",
   "Hater": "#414b66",
+  "Prohibited": "#6a8f8f",
   "Demon": "#68bc71",
   "Stalker": "#483d8b",
   "Workaholic": "#008b8b",
@@ -242,5 +245,7 @@
   "Ghastly": "#9ad6d4",
   "Glow": "#E2F147",
   "Radar": "#1eff1e",
-  "Rebirth": "#f08c22"
+  "Rebirth": "#f08c22",
+  "Sloth": "#376db8",
+  "Eavesdropper": "#ffe6bf"
 }

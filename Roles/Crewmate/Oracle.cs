@@ -112,17 +112,17 @@ internal class Oracle : RoleBase
                 }
                 else
                 {
-                    if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Trickster)) text = "Impostor";
+                    if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
                     else text = "Crewmate";
                 }
 
                 if (FailChance.GetInt() > 0)
                 {
-                    int random_number_1 = HashRandom.Next(1, 100);
+                    int random_number_1 = IRandom.Instance.Next(1, 100);
                     if (random_number_1 <= FailChance.GetInt())
                     {
-                        int random_number_2 = HashRandom.Next(1, 3);
+                        int random_number_2 = IRandom.Instance.Next(1, 3);
                         if (text == "Crewmate")
                         {
                             if (random_number_2 == 1) text = "Neutral";

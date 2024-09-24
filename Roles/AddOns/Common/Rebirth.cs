@@ -21,17 +21,17 @@ public class Rebirth : IAddon
            .SetValueFormat(OptionFormat.Times);
         OnlyVoted = BooleanOptionItem.Create(Id + 12, "RebirthCountVotes", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebirth]);
     }
-    public static void Init()
+    public void Init()
     {
         Rebirths.Clear();
         VotedCount.Clear();
     }
-    public static void Add(byte Playerid)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        Rebirths[Playerid] = RebirthUses.GetInt();
-        VotedCount[Playerid] = [];
+        Rebirths[playerId] = RebirthUses.GetInt();
+        VotedCount[playerId] = [];
     }
-    public static void Remove(byte Playerid) 
+    public void Remove(byte Playerid) 
     {
         Rebirths.Remove(Playerid);
     }
@@ -59,8 +59,8 @@ public class Rebirth : IAddon
             list = [..VotedCount[pc.PlayerId].Select(x => GetPlayerById(x))];
         }
 
-        var ViablePlayer = list.Where(x => x != pc).Shuffle(IRandom.Instance)
-            .FirstOrDefault(x => x != null && !x.OwnedByHost() && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
+        var ViablePlayer = list.Where(x => x != null && x.PlayerId != pc.PlayerId).Shuffle()
+            .FirstOrDefault(x => !x.IsHost() && AntiBlackout.ExilePlayerId != x.PlayerId && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
 /*All converters */ !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) &&
                 !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.Is(CustomRoles.Doppelganger) && !x.GetCustomRole().IsImpostor());
 
@@ -71,10 +71,10 @@ public class Rebirth : IAddon
             return false;
         }
         Rebirths[pc.PlayerId]--;
-        pc.ResetPlayerOutfit(Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, ViablePlayer.Data.PlayerLevel, true);
+        pc.SetNewOutfit(Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, true, true, ViablePlayer.Data.PlayerLevel);
         Main.OvverideOutfit[pc.PlayerId] = (Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit, Main.PlayerStates[ViablePlayer.PlayerId].NormalOutfit.PlayerName);
 
-        ViablePlayer.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit, pc.Data.PlayerLevel, true);
+        ViablePlayer.SetNewOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit, true, true, pc.Data.PlayerLevel);
         Main.OvverideOutfit[ViablePlayer.PlayerId] = (Main.PlayerStates[pc.PlayerId].NormalOutfit, Main.PlayerStates[pc.PlayerId].NormalOutfit.PlayerName);
 
         NewExiledPlayer = ViablePlayer.Data;
