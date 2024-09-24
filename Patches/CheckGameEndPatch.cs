@@ -54,9 +54,12 @@ class GameEndCheckerForNormal
         predicate.CheckForEndGame(out reason);
 
         // FFA
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
+            case CustomGameMode.FFA:
+            case CustomGameMode.CandR:
+
+                if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
             {
                 ShipStatus.Instance.enabled = false;
                 StartEndGame(reason);
@@ -535,6 +538,8 @@ class GameEndCheckerForNormal
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
+    public static void SetPredicateToCandR() => predicate = new CandRGameEndPredicate(); //C&R
+
 
 
     // ===== Check Game End =====
@@ -652,6 +657,81 @@ class GameEndCheckerForNormal
         }
     }
 }
+
+// For C&R
+class CandRGameEndPredicate : GameEndPredicate
+{
+    public override bool CheckForEndGame(out GameOverReason reason)
+    {
+        // task win 
+        reason = GameOverReason.ImpostorByKill;
+        if (WinnerTeam != CustomWinner.Default) return false;
+        if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason)) return true;
+        return false;
+    }
+    public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+    {
+
+        // everyone died
+        reason = GameOverReason.ImpostorByKill;
+        if (!Main.AllAlivePlayerControls.Any())
+        {
+            reason = GameOverReason.ImpostorByKill;
+            ResetAndSetWinner(CustomWinner.None);
+            Logger.Info("Game end because all players dead", "C&R");
+            return true;
+        }
+
+        bool copsAlive = false;
+
+
+        bool allCaptured = true;
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (copsAlive && !allCaptured) break;
+            if (pc.Is(CustomRoles.Cop)) copsAlive = true;
+            else if (pc.Is(CustomRoles.Robber) && !CopsAndRobbersManager.captured.Contains(pc.PlayerId)) allCaptured = false;
+        }
+
+        // no cops left
+        if (!copsAlive)
+        {
+            reason = GameOverReason.ImpostorDisconnect;
+            ResetAndSetWinner(CustomWinner.Robbers);
+            WinnerIds = [.. CopsAndRobbersManager.robbers];
+            Logger.Info("Game end because No cops left", "C&R");
+            return true;
+        }
+
+        // all robbers captured
+        if (allCaptured)
+        {
+            reason = GameOverReason.ImpostorByKill;
+            ResetAndSetWinner(CustomWinner.Cops);
+            WinnerIds = [.. CopsAndRobbersManager.cops];
+            Logger.Info("Game end because all robbers captured", "C&R");
+            return true;
+        }
+
+        return false;
+    }
+
+    public override bool CheckGameEndByTask(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorByKill;
+
+        if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
+        {
+            reason = GameOverReason.HumansByTask;
+            ResetAndSetWinner(CustomWinner.Robbers);
+            WinnerIds = [.. CopsAndRobbersManager.robbers];
+            Logger.Info("Game end because robbers completed all tasks", "C&R");
+            return true;
+        }
+        return false;
+    }
+}
+
 
 // For FFA Games
 class FFAGameEndPredicate : GameEndPredicate

@@ -1002,6 +1002,11 @@ static class ExtendedPlayerControl
     public static bool CanUseKillButton(this PlayerControl pc)
     {
         if (GameStates.IsLobby) return false;
+        if (Options.CurrentGameMode is CustomGameMode.CandR) //C&R
+        {
+
+            return (pc.Is(CustomRoles.Cop));
+        }
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
         if (pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && !Options.ShieldedCanUseKillButton.GetBool() && MeetingStates.FirstMeeting) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;

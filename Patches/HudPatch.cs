@@ -343,6 +343,24 @@ class TaskPanelBehaviourPatch
                     AllText = $"<size=70%>{AllText}</size>";
 
                     break;
+                case CustomGameMode.CandR: //C&R
+                    var lines1 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
+                    StringBuilder sb1 = new();
+                    foreach (var eachLine in lines1)
+                    {
+                        var line = eachLine.Trim();
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb1.Length < 1 && !line.Contains('(')) continue;
+                        sb1.Append(line + "\r\n");
+                    }
+
+                    if (sb1.Length > 1)
+                    {
+                        var text = sb1.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sb1.ToString().Count(s => (s == '\n')) >= 2)
+                            text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
+                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                    }
+                    break;
             }
 
             __instance.taskText.text = AllText;

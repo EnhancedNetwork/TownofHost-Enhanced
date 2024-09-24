@@ -200,6 +200,12 @@ class CheckMurderPatch
             FFAManager.OnPlayerAttack(killer, target);
             return false;
         }
+        //C&R
+        if (Options.CurrentGameMode == CustomGameMode.CandR)
+        {
+            CopsAndRobbersManager.OnCopAttack(killer, target);
+            return false;
+        }
 
         // if player hacked by Glitch
         if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))

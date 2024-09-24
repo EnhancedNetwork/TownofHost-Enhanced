@@ -39,7 +39,14 @@ public static class CustomRolesHelper
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
-        if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
+        switch (Options.CurrentGameMode)
+        {
+            case CustomGameMode.FFA: //FFA
+                if (role is CustomRoles.Killer) return RoleTypes.Impostor;
+                break;
+            case CustomGameMode.CandR: //C&R
+                return CopsAndRobbersManager.RoleBase(role);
+        }
 
         return (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor()
             ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()

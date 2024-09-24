@@ -609,6 +609,7 @@ public static class Utils
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
+        if (Options.CurrentGameMode == CustomGameMode.CandR) return CopsAndRobbersManager.HasTasks(role); //C&R
 
         if (States.RoleClass != null && States.RoleClass.HasTasks(playerData, role, ForRecompute) == false)
             hasTasks = false;
