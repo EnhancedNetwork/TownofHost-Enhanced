@@ -1,5 +1,3 @@
-// Ignore Spelling: Adt
-
 using System;
 using System.Reflection;
 using TOHE.Modules;
@@ -624,7 +622,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 30000 last id for roles/add-ons (Next use 30100)
+        // 30100 last id for roles/add-ons (Next use 30200)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
