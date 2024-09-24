@@ -1,21 +1,17 @@
 ﻿using static TOHE.Options;
-using static TOHE.Roles.AddOns.Common.Sloth;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Eavesdropper : IAddon
 {
-    public const int Id = 29900;
-    public static readonly HashSet<byte> IsActive = [];
+    public const int Id = 30100;
+    private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Helpful;
-    private static readonly HashSet<byte> playerList = [];
 
     public static OptionItem ImpCanBeEavesdropper;
     public static OptionItem CrewCanBeEavesdropper;
     public static OptionItem NeutralCanBeEavesDropper;
-
-    public static readonly Dictionary<byte, string> EavesdropperNotify = [];
 
     public static OptionItem EavesdropPercentChance;
 
@@ -33,12 +29,34 @@ public class Eavesdropper : IAddon
     }
 
     public void Add(byte playerId, bool gameIsLoading = true)
-    { }
+    {
+        playerList.Add(playerId);
+        IsEnable = true;
+    }
     public void Remove(byte playerId)
     {
         playerList.Remove(playerId);
 
         if (!playerList.Any())
             IsEnable = false;
+    }
+    public static void GetMessage()
+    {
+        foreach (var eavesdropperId in playerList)
+        {
+            if (IRandom.Instance.Next(0, 100) < EavesdropPercentChance.GetFloat())
+            {
+                // Get all specific msg
+                var eavesdropperMsg = MeetingHudStartPatch.msgToSend.Where(x => x.Item2 != 255).Select(x => x.Item1).ToList();
+                
+                // Check any data
+                if (eavesdropperMsg.Any())
+                {
+                    // Get random message and send Eavesdropper
+                    var randomMsg = eavesdropperMsg.RandomElement();
+                    MeetingHudStartPatch.AddMsg(randomMsg, eavesdropperId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eavesdropper), Translator.GetString("EavesdropperMsgTitle")));
+                }
+            }
+        }
     }
 }
