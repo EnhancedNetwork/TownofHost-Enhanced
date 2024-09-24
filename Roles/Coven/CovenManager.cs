@@ -47,14 +47,14 @@ public abstract class CovenManager : RoleBase
     {
         var roleName = GetRoleName(role);
         Dictionary<string, string> replacementDic = new() { { "%role%", ColorString(GetRoleColor(role), roleName) } };
-        CovenImpVisOptions[role] = BooleanOptionItem.Create(Id, "%role%HasImpVis", defaultValue, TabGroup.CovenRoles, false).SetParent(CovenImpVisMode);
+        CovenImpVisOptions[role] = BooleanOptionItem.Create(Id, "%role%HasImpVis", defaultValue, TabGroup.CovenRoles, false).SetParent(parent);
         CovenImpVisOptions[role].ReplacementDictionary = replacementDic;
     }
     private static void SetUpVentOption(CustomRoles role, int Id, bool defaultValue = true, OptionItem parent = null)
     {
         var roleName = GetRoleName(role);
         Dictionary<string, string> replacementDic = new() { { "%role%", ColorString(GetRoleColor(role), roleName) } };
-        CovenVentOptions[role] = BooleanOptionItem.Create(Id, "%role%CanVent", defaultValue, TabGroup.CovenRoles, false).SetParent(CovenVentMode);
+        CovenVentOptions[role] = BooleanOptionItem.Create(Id, "%role%CanVent", defaultValue, TabGroup.CovenRoles, false).SetParent(parent);
         CovenVentOptions[role].ReplacementDictionary = replacementDic;
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -103,8 +103,10 @@ public abstract class CovenManager : RoleBase
             return option.GetBool();
         }
     }
+    /*
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    */
     public static void GiveNecronomicon()
     {
         
@@ -122,7 +124,7 @@ public abstract class CovenManager : RoleBase
     {
         necroHolder = null;
     }
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!necroHolder.IsAlive())
         {

@@ -12,6 +12,7 @@ using System;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Coven;
 
@@ -25,7 +26,7 @@ internal class Conjurer : CovenManager
         NecroBomb
     }
     //===========================SETUP================================\\
-    private const int Id = 30000;
+    private const int Id = 30300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Conjurer);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -63,9 +64,13 @@ internal class Conjurer : CovenManager
         state.TryAdd(playerId, ConjState.NormalMark);
     }
     public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
-
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        AURoleOptions.ShapeshifterCooldown = ConjureCooldown.GetFloat();
+    }
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
+        resetCooldown = true;
         Logger.Info($"Conjurer ShapeShift", "Conjurer");
         if (shapeshifter.PlayerId == target.PlayerId) return false;
         if (state[shapeshifter.PlayerId] != ConjState.NecroBomb && state[shapeshifter.PlayerId] != ConjState.NormalBomb)

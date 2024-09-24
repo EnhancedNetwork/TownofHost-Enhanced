@@ -12,13 +12,14 @@ using System;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Coven;
 
 internal class Illusionist : CovenManager
 {
     //===========================SETUP================================\\
-    private const int Id = 30100;
+    private const int Id = 30400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Illusionist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -34,12 +35,12 @@ internal class Illusionist : CovenManager
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Conjurer, 1, zeroOne: false);
-        IllusionCooldown = FloatOptionItem.Create(Id + 10, "IllusionCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Conjurer])
+        SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Illusionist, 1, zeroOne: false);
+        IllusionCooldown = FloatOptionItem.Create(Id + 10, "IllusionCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist])
             .SetValueFormat(OptionFormat.Seconds);
-        MaxIllusions = IntegerOptionItem.Create(Id + 11, "IllusionistMaxIllusions", new(1, 15, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist])
+        MaxIllusions = IntegerOptionItem.Create(Id + 11, "IllusionistMaxIllusions", new(1, 15, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist])
             .SetValueFormat(OptionFormat.Times);
-        SnitchCanIllusioned = BooleanOptionItem.Create(Id + 12, "IllusionistSnitchAffected", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Conjurer]);
+        SnitchCanIllusioned = BooleanOptionItem.Create(Id + 12, "IllusionistSnitchAffected", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist]);
     }
 
     public override void Init()
@@ -48,6 +49,7 @@ internal class Illusionist : CovenManager
     }
     public override void Add(byte playerId)
     {
+        AbilityLimit = MaxIllusions.GetInt();
         IllusionedPlayers[playerId] = [];
         GetPlayerById(playerId)?.AddDoubleTrigger();
     }
@@ -71,6 +73,7 @@ internal class Illusionist : CovenManager
         }
         return false;
     }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IllusionCooldown.GetFloat();
     private static PlayerState.DeathReason ChangeRandomDeath()
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>().ToArray();

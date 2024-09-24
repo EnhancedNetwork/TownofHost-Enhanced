@@ -1971,6 +1971,10 @@
   "ConjurerMeteor": "Meteor summoned",
   "ConjurerNecroMark": "Player marked",
 
+  "IllusionCooldown": "Illusion Cooldown",
+  "IllusionistMaxIllusions": "Max Illusions",
+  "IllusionistSnitchAffected": "<color=#b8fb4f>Snitch</color> is Affected by Illusions",
+
   "LuckyProbability": "Probability of surviving a kill",
   "ImpCanBeDoubleShot": "<color=#ff1919>Impostors</color> can have <color=#19fa8d>Double Shot</color>",
   "CrewCanBeDoubleShot": "<color=#8cffff>Crewmates</color> can have <color=#19fa8d>Double Shot</color>",
