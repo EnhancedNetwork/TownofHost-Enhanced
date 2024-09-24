@@ -18,7 +18,12 @@ public class Lazy : IAddon
         TaskBasedCrewCanBeLazy = BooleanOptionItem.Create(Id + 11, "TaskBasedCrewCanBeLazy", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Lazy]);
     }
-
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool CheckConflicts(PlayerControl player)
     {
         if (player.Is(CustomRoles.Ghoul)

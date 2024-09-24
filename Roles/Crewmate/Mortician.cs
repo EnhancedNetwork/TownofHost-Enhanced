@@ -1,5 +1,4 @@
-﻿using Hazel;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.MeetingHudStartPatch;
@@ -46,29 +45,6 @@ internal class Mortician : RoleBase
     {
         playerIdList.Remove(playerId);
     }
-    private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMorticianArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(add);
-        if (add)
-        {
-            writer.Write(loc.x);
-            writer.Write(loc.y);
-            writer.Write(loc.z);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        bool add = reader.ReadBoolean();
-        if (add)
-            LocateArrow.Add(playerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-        else
-            LocateArrow.RemoveAllTarget(playerId);
-    }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || target.IsDisconnected()) return;
@@ -78,12 +54,12 @@ internal class Mortician : RoleBase
         string minName = "";
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.PlayerId == target.PlayerId) continue;
+            if (pc.PlayerId == target.PlayerId || playerIdList.Any(p => p == pc.PlayerId)) continue;
             var dis = Utils.GetDistance(pc.transform.position, pos);
             if (dis < minDis && dis < 1.5f)
             {
                 minDis = dis;
-                minName = pc.GetRealName();
+                minName = pc.GetRealName(clientData: true);
             }
         }
 
@@ -93,7 +69,6 @@ internal class Mortician : RoleBase
             var player = Utils.GetPlayerById(pc);
             if (player == null || !player.IsAlive()) continue;
             LocateArrow.Add(pc, target.transform.position);
-            SendRPC(pc, true, target.transform.position);
         }
     }
     public override void OnReportDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
@@ -101,7 +76,6 @@ internal class Mortician : RoleBase
         foreach (var apc in playerIdList)
         {
             LocateArrow.RemoveAllTarget(apc);
-            SendRPC(apc, false);
         }
 
         if (pc == null || target == null || target.Object == null || !pc.Is(CustomRoles.Mortician) || pc.PlayerId == target.PlayerId) return;

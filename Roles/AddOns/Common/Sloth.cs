@@ -17,11 +17,19 @@ public class Sloth : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Sloth])
             .SetValueFormat(OptionFormat.Multiplier);
     }
-    public static void SetSpeed(byte playerId, bool clearAddOn)
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        if (!clearAddOn)
-            Main.AllPlayerSpeed[playerId] = OptionSpeed.GetFloat();
-        else
-            Main.AllPlayerSpeed[playerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+        Main.AllPlayerSpeed[playerId] = OptionSpeed.GetFloat();
+    }
+    public void Remove(byte playerId)
+    {
+        Main.AllPlayerSpeed[playerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+        playerId.GetPlayer()?.MarkDirtySettings();
+    }
+    public static void SetSpeed(byte playerId)
+    {
+        Main.AllPlayerSpeed[playerId] = OptionSpeed.GetFloat();
     }
 }

@@ -23,15 +23,20 @@ public class Evader : IAddon
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Percent);
     }
-    public static void Init()
+    public void Init()
     {
         AlredyCheck.Clear();
         SkillLimit.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         AlredyCheck[playerId] = false;
         SkillLimit[playerId] = SkillLimitTimes.GetInt();
+    }
+    public void Remove(byte playerId)
+    {
+        AlredyCheck.Remove(playerId);
+        SkillLimit.Remove(playerId);
     }
     public static void ReportDeadBody()
     {
@@ -49,8 +54,6 @@ public class Evader : IAddon
     }
     public static void CheckExile(byte evaderId, ref int VoteNum)
     {
-        CheckAddEvader(evaderId);
-
         if (AlredyCheck[evaderId] && RememberRandomForExile < ChanceNotExiled.GetInt())
         {
             VoteNum = 0;
@@ -64,13 +67,5 @@ public class Evader : IAddon
             AlredyCheck[evaderId] = true;
             VoteNum = 0;
         }
-    }
-    private static void CheckAddEvader(byte evaderId)
-    {
-        if (!SkillLimit.ContainsKey(evaderId))
-            SkillLimit[evaderId] = SkillLimitTimes.GetInt();
-
-        if (!AlredyCheck.ContainsKey(evaderId))
-            AlredyCheck[evaderId] = false;
     }
 }

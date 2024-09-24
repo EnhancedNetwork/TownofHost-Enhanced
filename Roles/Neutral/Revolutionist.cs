@@ -207,7 +207,7 @@ internal class Revolutionist : RoleBase
         _Player.RpcSetVentInteraction();
         _ = new LateTask(() => { NotifyRoles(SpecifySeer: _Player, ForceLoop: false); }, 1f, $"Update name for Revolutionist {_Player?.PlayerId}", shoudLog: false);
     }
-    private static void OnFixUpdateOthers(PlayerControl player) // jesus christ
+    private static void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (RevolutionistTimer.TryGetValue(player.PlayerId, out var revolutionistTimerData))
         {
@@ -262,18 +262,17 @@ internal class Revolutionist : RoleBase
                 }
             }
         }
-        if (IsDrawDone(player) && player.IsAlive())
+        if (!lowLoad && IsDrawDone(player) && player.IsAlive())
         {
             var playerId = player.PlayerId;
             if (RevolutionistStart.TryGetValue(playerId, out long startTime))
             {
                 if (RevolutionistLastTime.TryGetValue(playerId, out long lastTime))
                 {
-                    long nowtime = GetTimeStamp();
-                    if (lastTime != nowtime)
+                    if (lastTime != nowTime)
                     {
-                        RevolutionistLastTime[playerId] = nowtime;
-                        lastTime = nowtime;
+                        RevolutionistLastTime[playerId] = nowTime;
+                        lastTime = nowTime;
                     }
                     int time = (int)(lastTime - startTime);
                     int countdown = RevolutionistVentCountDown.GetInt() - time;
@@ -283,7 +282,7 @@ internal class Revolutionist : RoleBase
                     {
                         GetDrawPlayerCount(playerId, out var list);
 
-                        foreach (var pc in list.Where(x => x != null && x.IsAlive()).ToArray())
+                        foreach (var pc in list.Where(x => x.IsAlive()).ToArray())
                         {
                             pc.Data.IsDead = true;
                             pc.SetDeathReason(PlayerState.DeathReason.Sacrifice);

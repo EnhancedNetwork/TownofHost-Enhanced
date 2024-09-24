@@ -8,12 +8,11 @@ public class Tired : IAddon
 {
     private const int Id = 27300;
     public AddonTypes Type => AddonTypes.Harmful;
-    private static Dictionary<byte, bool> playerIdList; // Target Action player for Vision
+    private static readonly Dictionary<byte, bool> playerIdList = []; // Target Action player for Vision
 
     private static OptionItem SetVision;
     private static OptionItem SetSpeed;
     private static OptionItem TiredDuration;
-
 
     public void SetupCustomOption()
     {
@@ -26,24 +25,29 @@ public class Tired : IAddon
                 .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public static void Init()
+    public void Init()
     {
-        playerIdList = [];
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        playerIdList.Add(playerId, false);
+        playerIdList[playerId] = false;
     }
-    public static void Remove(byte player)
+    public void Remove(byte playerId)
     {
-        playerIdList.Remove(player);
+        playerIdList.Remove(playerId);
+        playerId.GetPlayer()?.MarkDirtySettings();
+    }
+    public static void RemoveMidGame(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        if (!playerIdList.ContainsKey(player.PlayerId)) return;
+        if (!playerIdList.TryGetValue(player.PlayerId, out var isTired)) return;
 
-        if (playerIdList[player.PlayerId])
+        if (isTired)
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, SetVision.GetFloat());
@@ -61,12 +65,12 @@ public class Tired : IAddon
     {
         // Speed
         player.Notify(GetString("TiredNotify"));
-        player.MarkDirtySettings();
         var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
         Main.AllPlayerSpeed[player.PlayerId] = SetSpeed.GetFloat();
 
         // Vision
         playerIdList[player.PlayerId] = true;
+        player.MarkDirtySettings();
 
         _ = new LateTask(() =>
         {

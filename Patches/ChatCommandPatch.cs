@@ -189,6 +189,7 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
                     break;
 
+
                 case "/rn":
                 case "/rename":
                 case "/renomear":
@@ -289,7 +290,10 @@ internal class ChatCommands
                 case "/р":
                 case "/роль":
                     canceled = true;
-                    subArgs = text.Remove(0, 2);
+                    if (text.Contains("/role") || text.Contains("/роль"))
+                        subArgs = text.Remove(0, 5);
+                    else
+                        subArgs = text.Remove(0, 2);
                     SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
@@ -312,6 +316,15 @@ internal class ChatCommands
                     }
                     SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId, isUp: true);
                     break;
+
+                //case "/setbasic":
+                //    canceled = true;
+                //    if (GameStates.IsLobby)
+                //    {
+                //        break;
+                //    }
+                //    PlayerControl.LocalPlayer.RpcChangeRoleBasis(CustomRoles.PhantomTOHE);
+                //    break;
 
                 case "/setplayers":
                 case "/maxjogadores":
@@ -832,7 +845,7 @@ internal class ChatCommands
                         player.RpcExileV2();
                         MurderPlayerPatch.AfterPlayerDeathTasks(PlayerControl.LocalPlayer, player, GameStates.IsMeeting);
 
-                        if (player.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
+                        if (player.IsHost()) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), player.Data.PlayerName));
                     }
                     break;
@@ -851,7 +864,7 @@ internal class ChatCommands
                     if (target != null)
                     {
                         target.RpcMurderPlayer(target);
-                        if (target.AmOwner) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
+                        if (target.IsHost()) Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
                         else Utils.SendMessage(string.Format(GetString("Message.Executed"), target.Data.PlayerName));
 
                         _ = new LateTask(() =>
@@ -951,7 +964,7 @@ internal class ChatCommands
                         if (setRole == roleName)
                         {
                             PlayerControl.LocalPlayer.GetRoleClass()?.OnRemove(PlayerControl.LocalPlayer.PlayerId);
-                            PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes());
+                            PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes(), true);
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
@@ -1871,10 +1884,8 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if ((Options.NewHideMsg.GetBool() || Blackmailer.HasEnabled) && !player.OwnedByHost()) // Blackmailer.ForBlackmailer.Contains(player.PlayerId)) && PlayerControl.LocalPlayer.IsAlive() && !player.OwnedByHost())
-        {
-            ChatManager.SendMessage(player, text);
-        }
+       
+        if (!Blackmailer.CheckBlackmaile(player)) ChatManager.SendMessage(player, text);
 
         if (text.StartsWith("\n")) text = text[1..];
         //if (!text.StartsWith("/")) return;
@@ -1900,7 +1911,7 @@ internal class ChatCommands
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
 
-        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive() && !player.IsModClient())
+        if (Blackmailer.CheckBlackmaile(player) && player.IsAlive())
         {
             Logger.Info($"This player (id {player.PlayerId}) was Blackmailed", "OnReceiveChat");
             ChatManager.SendPreviousMessagesToAll();
@@ -1916,7 +1927,10 @@ internal class ChatCommands
             case "/р":
             case "/роль":
                 Logger.Info($"Command '/r' was activated", "OnReceiveChat");
-                subArgs = text.Remove(0, 2);
+                if (text.Contains("/role") || text.Contains("/роль"))
+                    subArgs = text.Remove(0, 5);
+                else
+                    subArgs = text.Remove(0, 2);
                 SendRolesInfo(subArgs, player.PlayerId, isDev: player.FriendCode.GetDevUser().DeBug);
                 break;
 

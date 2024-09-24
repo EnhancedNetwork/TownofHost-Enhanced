@@ -123,7 +123,7 @@ class HudManagerPatch
                 player.Data.Role.CanVent = player.CanUseVents();
 
                 // Sometimes sabotage button was visible for non-host modded clients
-                if (!AmongUsClient.Instance.AmHost && player.CanUseSabotage())
+                if (!AmongUsClient.Instance.AmHost && !player.CanUseSabotage())
                     __instance.SabotageButton.Hide();
             }
             else

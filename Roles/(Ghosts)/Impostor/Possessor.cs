@@ -48,7 +48,7 @@ internal class Possessor : RoleBase
         AURoleOptions.ProtectionDurationSeconds = 0f;
     }
 
-    private void OnFixedUpdateOther(PlayerControl target)
+    private void OnFixedUpdateOther(PlayerControl target, bool lowLoad, long nowTime)
     {
         if (_Player == null) return;
 

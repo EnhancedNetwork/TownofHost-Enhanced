@@ -257,6 +257,7 @@ internal class Quizmaster : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
+        if (Player == null) return;
         if (pc.PlayerId == Player.PlayerId && MarkedPlayer != byte.MaxValue)
         {
             AddMsg(GetString("QuizmasterChat.Marked").Replace("{QMTARGET}", Utils.GetPlayerById(MarkedPlayer)?.GetRealName(isMeeting: true)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), pc.PlayerId, GetString("QuizmasterChat.Title"));
@@ -264,7 +265,7 @@ internal class Quizmaster : RoleBase
     }
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
-        if (!Utils.GetPlayerById(MarkedPlayer).IsAlive()) return;
+        if (pc == null || Player == null || !MarkedPlayer.GetPlayer().IsAlive()) return;
 
         if (pc.PlayerId == MarkedPlayer)
         {
@@ -288,6 +289,8 @@ internal class Quizmaster : RoleBase
 
     public override void AfterMeetingTasks()
     {
+        if (Player == null) return;
+
         firstSabotageOfRound = Sabotages.None;
         //killsForRound = 0;
         //allowedVenting = true;
@@ -301,6 +304,8 @@ internal class Quizmaster : RoleBase
 
     public static void ResetMarkedPlayer(bool canMarkAgain = true)
     {
+        if (Player == null) return;
+
         if (canMarkAgain)
             AlreadyMarked = false;
 
@@ -376,6 +381,7 @@ internal class Quizmaster : RoleBase
 
     private static void RightAnswer(PlayerControl target)
     {
+        if (Player == null || target == null) return;
         lastReportedColor = thisReportedColor;
         foreach (var plr in Main.AllPlayerControls)
         {
@@ -391,6 +397,7 @@ internal class Quizmaster : RoleBase
 
     private static void WrongAnswer(PlayerControl target, string wrongAnswer, string rightAnswer)
     {
+        if (Player == null) return;
         lastReportedColor = thisReportedColor;
         KillPlayer(target);
         foreach (var plr in Main.AllPlayerControls)
@@ -405,6 +412,7 @@ internal class Quizmaster : RoleBase
     }
     public static void AnswerByChat(PlayerControl plr, string[] args)
     {
+        if (Player == null) return;
         if (MarkedPlayer == plr.PlayerId)
         {
             var answerSyntaxValid = args.Length == 2;
@@ -439,6 +447,7 @@ internal class Quizmaster : RoleBase
 
     public static void ShowQuestion(PlayerControl plr)
     {
+        if (Player == null) return;
         if (plr.PlayerId == MarkedPlayer)
         {
             Utils.SendMessage(GetString("QuizmasterChat.MarkedBy").Replace("{QMCOLOR}", Utils.GetRoleColorCode(CustomRoles.Quizmaster)).Replace("{QMQUESTION}", Question.HasQuestionTranslation ? GetString("QuizmasterQuestions." + Question.Question) : Question.Question), MarkedPlayer, GetString("QuizmasterChat.Title"));
@@ -667,7 +676,7 @@ class SetAnswersQuestion : QuizQuestionBase
             }
             else
             {
-                string thatAnswer = PossibleAnswers[rnd.Next(0, PossibleAnswers.Count)];
+                string thatAnswer = PossibleAnswers.RandomElement();
                 if (thatAnswer == "None") prefix = "Quizmaster.";
                 Answers.Add(prefix + thatAnswer);
                 PossibleAnswers.Remove(thatAnswer);

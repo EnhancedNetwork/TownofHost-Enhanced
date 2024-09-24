@@ -1,7 +1,6 @@
 ﻿using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 
 
@@ -119,15 +118,15 @@ internal class Lightning : RoleBase
         RealKiller.TryAdd(killer.PlayerId, target);
         StartConvertCountDown(target, killer);
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl lightning)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!GhostPlayer.Any()) return;
+        if (lowLoad || !GhostPlayer.Any()) return;
 
         List<byte> deList = [];
         foreach (var ghost in GhostPlayer.ToArray())
         {
-            var gs = Utils.GetPlayerById(ghost);
-            if (gs == null || !gs.IsAlive() || gs.Data.Disconnected)
+            var gs = ghost.GetPlayer();
+            if (!gs.IsAlive())
             {
                 deList.Add(gs.PlayerId);
                 continue;
@@ -160,7 +159,7 @@ internal class Lightning : RoleBase
     {
         foreach (var ghost in GhostPlayer.ToArray())
         {
-            var gs = Utils.GetPlayerById(ghost);
+            var gs = ghost.GetPlayer();
             if (gs == null) continue;
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Quantization, gs.PlayerId);
             gs.SetRealKiller(RealKiller[gs.PlayerId]);
@@ -173,8 +172,6 @@ internal class Lightning : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting) return string.Empty;
-        target ??= seer;
         return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
     }
 

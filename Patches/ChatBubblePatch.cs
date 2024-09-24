@@ -18,7 +18,7 @@ class ChatBubbleSetNamePatch
     public static void Postfix(ChatBubble __instance, [HarmonyArgument(1)] bool isDead, [HarmonyArgument(2)] bool voted)
     {
         var seer = PlayerControl.LocalPlayer;
-        var target = Utils.GetPlayerById(__instance.playerInfo.PlayerId);
+        var target = __instance.playerInfo.Object;
 
         if (GameStates.IsInGame && !voted && seer.PlayerId == target.PlayerId)
             __instance.NameText.color = seer.GetRoleColor();

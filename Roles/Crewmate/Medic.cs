@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -26,9 +27,11 @@ internal class Medic : RoleBase
     private static OptionItem ResetCooldown;
     public static OptionItem GuesserIgnoreShield;
 
-    public static readonly List<byte> ProtectList = [];
+    private static readonly HashSet<byte> GlobalProtectedList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> ProtectedPlayers = [];
 
-    private static byte TempMarkProtected;
+    private readonly HashSet<byte> ProtectedList = [];
+    private readonly HashSet<byte> TempMarkProtected = [];
 
     private enum SelectOptionsList
     {
@@ -64,53 +67,71 @@ internal class Medic : RoleBase
     }
     public override void Init()
     {
-        ProtectList.Clear();
-        TempMarkProtected = byte.MaxValue;
+        GlobalProtectedList.Clear();
+        ProtectedPlayers.Clear();
+        ProtectedList.Clear();
+        TempMarkProtected.Clear();
     }
     public override void Add(byte playerId)
     {
         AbilityLimit = 1;
+        ProtectedPlayers[playerId] = [];
     }
-    private static void SendRPCForProtectList()
+    private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMedicalerProtectList, SendOption.Reliable, -1);
-        writer.Write(TempMarkProtected);
-        writer.Write(ProtectList.Count);
-        for (int i = 0; i < ProtectList.Count; i++)
-            writer.Write(ProtectList[i]);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.Write(TempMarkProtected.Count);
+        foreach (var markProtected in TempMarkProtected)
+        {
+            writer.Write(markProtected);
+        }
+        writer.Write(ProtectedList.Count);
+        foreach (var protect in ProtectedList)
+        {
+            writer.Write(protect);
+        }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPCForProtectList(MessageReader reader)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        TempMarkProtected = reader.ReadByte();
-        int count = reader.ReadInt32();
-        ProtectList.Clear();
-        for (int i = 0; i < count; i++)
-            ProtectList.Add(reader.ReadByte());
+        float Limit = reader.ReadSingle();
+        AbilityLimit = Limit;
+
+        int countMarkProtected = reader.ReadInt32();
+        TempMarkProtected.Clear();
+        for (int i = 0; i < countMarkProtected; i++)
+            TempMarkProtected.Add(reader.ReadByte());
+
+        int countProtected = reader.ReadInt32();
+        ProtectedList.Clear();
+        for (int i = 0; i < countProtected; i++)
+            ProtectedList.Add(reader.ReadByte());
     }
 
-    public static bool InProtect(byte id)
-        => ProtectList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
+    public static bool IsProtected(byte id)
+        => GlobalProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    public bool CheckKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && AbilityLimit > 0;
+    private bool IsProtect(byte id)
+        => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton(pc.PlayerId);
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton(id) ? 5f : 300f;
-    public override string GetProgressText(byte playerId, bool comms) => ColorString(CheckKillButton(playerId) ? GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public bool CheckKillButton() => AbilityLimit > 0;
+
+    public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton() ? 5f : 300f;
+    public override string GetProgressText(byte playerId, bool comms) => ColorString(CheckKillButton() ? GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return false;
-        if (!CheckKillButton(killer.PlayerId)) return false;
-        if (ProtectList.Contains(target.PlayerId)) return false;
+        if (!CheckKillButton() || ProtectedList.Contains(target.PlayerId)) return false;
 
         AbilityLimit--;
-        SendSkillRPC();
-        ProtectList.Add(target.PlayerId);
-        TempMarkProtected = target.PlayerId;
-        SendRPCForProtectList();
+        ProtectedPlayers[killer.PlayerId].Add(target.PlayerId);
+        GlobalProtectedList.Add(target.PlayerId);
+        ProtectedList.Add(target.PlayerId);
+        TempMarkProtected.Add(target.PlayerId);
+        SendRPC();
 
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill();
 
@@ -138,12 +159,11 @@ internal class Medic : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
+        if (killer == null || target == null || _Player == null) return true;
+        if (!IsProtect(target.PlayerId)) return false;
 
-        var Medics = Utils.GetPlayerListByRole(CustomRoles.Medic);
-        if (killer == null || target == null || Medics == null || !Medics.Any()) return true;
-        if (!ProtectList.Contains(target.PlayerId)) return false;
-
-        SendRPCForProtectList();
+        var medic = _Player;
+        SendRPC();
 
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown(ResetCooldown.GetFloat());
@@ -154,22 +174,12 @@ internal class Medic : RoleBase
         switch (KnowShieldBrokenOpt.GetValue())
         {
             case 0:
-                foreach (var medic in Medics)
-                {
-                    if (medic == null || !medic.IsAlive()) continue;
-
-                    medic.Notify(GetString("MedicKillerTryBrokenShieldTargetForMedic"));
-                }
+                medic?.Notify(GetString("MedicKillerTryBrokenShieldTargetForMedic"));
                 target.RpcGuardAndKill(target);
                 target.Notify(GetString("MedicKillerTryBrokenShieldTargetForTarget"));
                 break;
             case 1:
-                foreach (var medic in Medics)
-                {
-                    if (medic == null || !medic.IsAlive()) continue;
-
-                    medic.Notify(GetString("MedicKillerTryBrokenShieldTargetForMedic"));
-                }
+                medic?.Notify(GetString("MedicKillerTryBrokenShieldTargetForMedic"));
                 break;
             case 2:
                 target.RpcGuardAndKill(target);
@@ -184,31 +194,43 @@ internal class Medic : RoleBase
     {
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
 
-        if (ShieldDeactivationIsVisibleOpt.GetInt() == 1)
+        if (ShieldDeactivationIsVisibleOpt.GetValue() is 1)
         {
-            TempMarkProtected = byte.MaxValue;
-            SendRPCForProtectList();
+            TempMarkProtected.Clear();
+            SendRPC();
             NotifyRoles();
         }
     }
-    private static void IsDead(PlayerControl target)
+    private void AfterMedicDeadTask(PlayerControl target)
     {
         if (!target.Is(CustomRoles.Medic)) return;
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
 
-        ProtectList.Clear();
+        if (ProtectedPlayers.TryGetValue(target.PlayerId, out var protectedList))
+        {
+            foreach (var protectedId in protectedList)
+            {
+                ProtectedPlayers[target.PlayerId].Remove(protectedId);
+                GlobalProtectedList.Remove(protectedId);
+            }
+        }
+
+        ProtectedList.Clear();
         Logger.Info($"{target.GetNameWithRole()} : Medic is dead", "Medic");
 
-        if (ShieldDeactivationIsVisibleOpt.GetInt() == 0)
+        if (ShieldDeactivationIsVisibleOpt.GetValue() is 0)
         {
-            TempMarkProtected = byte.MaxValue;
+            TempMarkProtected.Clear();
         }
-        SendRPCForProtectList();
+        if (!target.IsDisconnected())
+        {
+            SendRPC();
+        }
         NotifyRoles(ForceLoop: true);
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        IsDead(target);
+        AfterMedicDeadTask(target);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
@@ -217,11 +239,11 @@ internal class Medic : RoleBase
     {
         if (WhoCanSeeProtectOpt.GetInt() is 0 or 1)
         {
-            if (seer.PlayerId == target.PlayerId && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId))
+            if (seer.PlayerId == target.PlayerId && (IsProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
-            else if (seer.PlayerId != target.PlayerId && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+            else if (seer.PlayerId != target.PlayerId && (IsProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
@@ -234,11 +256,11 @@ internal class Medic : RoleBase
         if (!seer.Is(CustomRoles.Medic))
         {
             // The seer sees protect on himself
-            if (seer.PlayerId == target.PlayerId && (InProtect(seer.PlayerId) || TempMarkProtected == seer.PlayerId) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
+            if (seer.PlayerId == target.PlayerId && (IsProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
             {
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
             }
-            else if (seer.PlayerId != target.PlayerId && !seer.IsAlive() && (InProtect(target.PlayerId) || TempMarkProtected == target.PlayerId))
+            else if (seer.PlayerId != target.PlayerId && !seer.IsAlive() && (IsProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
             {
                 // Dead players see protect
                 return ColorString(GetRoleColor(CustomRoles.Medic), "✚");

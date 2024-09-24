@@ -126,6 +126,8 @@ internal class Merchant : RoleBase
                 &&
                 (!x.Is(CustomRoles.Stubborn))
                 &&
+                !addon.IsConverted()
+                &&
                 CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
                 &&
                 (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))
@@ -171,8 +173,8 @@ internal class Merchant : RoleBase
             target.RpcSetCustomRole(addon);
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
-            
-            ExtendedPlayerControl.AddInSwitchAddons(target, target, addon);
+
+            target.AddInSwitchAddons(target, addon);
             
             addonsSold[player.PlayerId] += 1;
         }

@@ -138,23 +138,23 @@ internal class Chameleon : RoleBase
         }
         return true;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var nowTime = GetTimeStamp();
+        if (lowLoad) return;
         var playerId = player.PlayerId;
         var needSync = false;
 
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)ChameleonCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
-            if (!player.IsModClient()) player.Notify(GetString("ChameleonCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("ChameleonCanVent"));
             needSync = true;
         }
 
         foreach (var chameleonInfo in InvisDuration)
         {
             var chameleonId = chameleonInfo.Key;
-            var chameleon = GetPlayerById(chameleonId);
+            var chameleon = chameleonId.GetPlayer();
             if (chameleon == null) continue;
 
             var remainTime = chameleonInfo.Value + (long)ChameleonDuration.GetFloat() - nowTime;
@@ -175,7 +175,7 @@ internal class Chameleon : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!chameleon.IsModClient())
+                if (!chameleon.IsModded())
                     chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }

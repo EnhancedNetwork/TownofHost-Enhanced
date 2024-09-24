@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Options;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -8,9 +9,8 @@ internal class Jester : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jester);
+
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -18,7 +18,7 @@ internal class Jester : RoleBase
     private static OptionItem CanUseMeetingButton;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
-    private static OptionItem CantMoveInVents;
+    public static OptionItem CantMoveInVents;
     private static OptionItem MeetingsNeededForWin;
     private static OptionItem HideJesterVote;
     public static OptionItem SunnyboyChance;
@@ -47,12 +47,7 @@ internal class Jester : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         RememberBlockedVents.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -68,13 +63,16 @@ internal class Jester : RoleBase
     {
         if (!CantMoveInVents.GetBool()) return;
 
+        var player = physics.myPlayer;
         foreach (var vent in ShipStatus.Instance.AllVents)
         {
-            if (vent.Id == ventId) continue;
+            // Skip current vent or ventid 5 in Dleks to prevent stuck
+            if (vent.Id == ventId || (GameStates.DleksIsActive && ventId is 5 && vent.Id is 6)) continue;
 
             RememberBlockedVents.Add(vent.Id);
-            CustomRoleManager.BlockedVentsList[physics.myPlayer.PlayerId].Add(vent.Id);
+            CustomRoleManager.BlockedVentsList[player.PlayerId].Add(vent.Id);
         }
+        player.RpcSetVentInteraction();
     }
     public override void OnExitVent(PlayerControl pc, int ventId)
     {
@@ -113,18 +111,22 @@ internal class Jester : RoleBase
                 }
 
                 // Check exile target Executioner
-                foreach (var executioner in Executioner.playerIdList)
+                foreach (var executionerId in Executioner.playerIdList)
                 {
-                    if (Executioner.IsTarget(executioner, exiled.PlayerId))
+                    var executioner = executionerId.GetPlayer();
+                    if (executioner.IsAlive() && executioner.GetRoleClass() is Executioner executionerClass)
                     {
-                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
-                        CustomWinnerHolder.WinnerIds.Add(executioner);
+                        if (executionerClass.IsTarget(exiled.PlayerId))
+                        {
+                            CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Executioner);
+                            CustomWinnerHolder.WinnerIds.Add(executionerId);
+                        }
                     }
                 }
                 DecidedWinner = true;
             }
         }
-        else if (CEMode.GetInt() == 2 && isMeetingHud)
+        else if (isMeetingHud)
             name += string.Format(Translator.GetString("JesterMeetingLoose"), MeetingsNeededForWin.GetInt() + 1);
     }
 }

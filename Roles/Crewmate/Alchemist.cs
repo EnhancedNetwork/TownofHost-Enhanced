@@ -84,7 +84,7 @@ internal class Alchemist : RoleBase
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdatesBloodlus);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdatesBloodlus);
         }
     }
 
@@ -146,7 +146,7 @@ internal class Alchemist : RoleBase
 
     private static void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (pc.IsHost()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
         writer.Write(FixNextSabo);
         writer.Write(PotionID);
@@ -173,9 +173,9 @@ internal class Alchemist : RoleBase
         return false;
     }
 
-    private static void OnFixedUpdatesBloodlus(PlayerControl player)
+    private static void OnFixedUpdatesBloodlus(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!IsBloodthirst(player.PlayerId)) return;
+        if (lowLoad || !IsBloodthirst(player.PlayerId)) return;
 
         if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
         {
@@ -199,7 +199,7 @@ internal class Alchemist : RoleBase
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
                 var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
-                if (min.Value <= KillRange && player.CanMove && target.CanMove)
+                if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat)
                 {
                     if (player.RpcCheckAndMurder(target, true))
                     {
@@ -216,13 +216,11 @@ internal class Alchemist : RoleBase
             }
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!IsInvis(player.PlayerId)) return;
+        if (lowLoad || !IsInvis(player.PlayerId)) return;
 
-        var nowTime = Utils.GetTimeStamp();
         var needSync = false;
-
         foreach (var AlchemistInfo in InvisTime)
         {
             var alchemistId = AlchemistInfo.Key;
@@ -244,7 +242,7 @@ internal class Alchemist : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!alchemist.IsModClient())
+                if (!alchemist.IsModded())
                     alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }

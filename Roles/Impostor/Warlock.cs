@@ -104,8 +104,8 @@ internal class Warlock : RoleBase
                 {
                     if (p.PlayerId == cp.PlayerId) continue;
                     if (!WarlockCanKillSelf.GetBool() && p.PlayerId == shapeshifter.PlayerId) continue;
-                    if (!WarlockCanKillAllies.GetBool() && p.GetCustomRole().IsImpostor()) continue;
-                    if (Pelican.IsEaten(p.PlayerId) || Medic.ProtectList.Contains(p.PlayerId)) continue;
+                    if (!WarlockCanKillAllies.GetBool() && p.Is(Custom_Team.Impostor)) continue;
+                    if (Pelican.IsEaten(p.PlayerId) || Medic.IsProtected(p.PlayerId)) continue;
                     if (p.Is(CustomRoles.Glitch) || p.Is(CustomRoles.Pestilence)) continue;
                     
                     dis = Utils.GetDistance(cppos, p.transform.position);
@@ -143,7 +143,7 @@ internal class Warlock : RoleBase
         }
     }
 
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
         {

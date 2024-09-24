@@ -65,15 +65,15 @@ internal class Hater : RoleBase
             if (!ChooseConverted.GetBool())
             {
                 isWon = true; // Only win if target can be killed - this kills the target if they can be killed
-                Logger.Info($"{killer.GetRealName()} killed right target case 1", "FFF");
-                return false;  // The murder is already done if it could be done, so return false to avoid double killing
+                Logger.Info($"{killer.GetRealName()} killed right target case 1", "Hater");
+                return true;
             }
             else if (
                 ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Gangster)) && CanKillMadmate.GetBool())
                 || ((target.Is(CustomRoles.Charmed) || target.Is(CustomRoles.Cultist)) && CanKillCharmed.GetBool())
                 || (target.Is(CustomRoles.Lovers) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
-                    || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
+                || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit)) && CanKillSidekicks.GetBool())
                 || (target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
                 || ((target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool())
@@ -82,8 +82,8 @@ internal class Hater : RoleBase
                 )
             {
                 isWon = true; // Only win if target can be killed - this kills the target if they can be killed
-                Logger.Info($"{killer.GetRealName()} killed right target case 2", "FFF");
-                return false;  // The murder is already done if it could be done, so return false to avoid double killing
+                Logger.Info($"{killer.GetRealName()} killed right target case 2", "Hater");
+                return true;
             }
         }
         if (MisFireKillTarget.GetBool())
@@ -95,7 +95,7 @@ internal class Hater : RoleBase
         killer.SetDeathReason(PlayerState.DeathReason.Sacrifice);
         killer.RpcMurderPlayer(killer);
         
-        Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "FFF");
+        Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "Hater");
         return false;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);

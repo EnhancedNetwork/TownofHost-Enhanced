@@ -145,12 +145,16 @@ public static class GuessManager
             pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
         }
+        if (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser))
+        {
+            pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
+            return true;
+        }
         if (pc.GetCustomRole().IsCoven() && !Options.CovenCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
         }
-
 
         if (operate == 1)
         {
@@ -219,7 +223,7 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessedAsMundane"));
                     return true;
                 }
-                if (Medic.ProtectList.Contains(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
+                if (Medic.IsProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;
@@ -619,7 +623,6 @@ public static class GuessManager
     }
     public static void CreateGuesserButton(MeetingHud __instance)
     {
-
         foreach (var pva in __instance.playerStates.ToArray())
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
@@ -691,6 +694,7 @@ public static class GuessManager
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
             textTemplate.enabled = true;
             if (textTemplate.transform.FindChild("RoleTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("RoleTextMeeting").gameObject);
+            if (textTemplate.transform.FindChild("DeathReasonTextMeeting") != null) UnityEngine.Object.Destroy(textTemplate.transform.FindChild("DeathReasonTextMeeting").gameObject);
 
             Transform exitButtonParent = new GameObject().transform;
             exitButtonParent.SetParent(container);
@@ -965,6 +969,7 @@ public static class GuessManager
                     or CustomRoles.Mare
                     or CustomRoles.Cyber
                     or CustomRoles.Sloth
+                    or CustomRoles.Apocalypse
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);
@@ -1057,7 +1062,6 @@ public static class GuessManager
             {
                 return;
             }
-
             UnityEngine.Object.Destroy(textTemplate.gameObject);
         }
     }

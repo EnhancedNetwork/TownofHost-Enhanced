@@ -36,16 +36,27 @@ public class Oiiai : IAddon
         CanPassOn = BooleanOptionItem.Create(Id + 14, "OiiaiCanPassOn", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
         ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Oiiai]);
     }
-    public static void Init()
+    public void Init()
     {
-        playerIdList.Clear();
-        Eraser.ErasedRoleStorage.Clear();
         IsEnable = false;
+        playerIdList.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         playerIdList.Add(playerId);
         IsEnable = true;
+    }
+    public static void PassOnKiller(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+
+        if (!playerIdList.Any())
+            IsEnable = false;
     }
 
     public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
@@ -58,7 +69,7 @@ public class Oiiai : IAddon
 
         if (CanPassOn.GetBool() && !playerIdList.Contains(killer.PlayerId))
         {
-            Add(killer.PlayerId);
+            PassOnKiller(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Oiiai);
             Logger.Info(killer.GetNameWithRole() + " gets Oiiai addon by " + target.GetNameWithRole(), "Oiiai");
         }
@@ -75,7 +86,7 @@ public class Oiiai : IAddon
         }
 
         var killerRole = killer.GetCustomRole();
-        if (killerRole.IsTasklessCrewmate() || killerRole.IsGhostRole() || Main.TasklessCrewmate.Contains(killer.PlayerId) || CopyCat.playerIdList.Contains(killer.PlayerId) || killer.Is(CustomRoles.Stubborn))
+        if (killerRole.IsTasklessCrewmate() || killer.HasGhostRole() || Main.TasklessCrewmate.Contains(killer.PlayerId) || CopyCat.playerIdList.Contains(killer.PlayerId) || killer.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
             return;

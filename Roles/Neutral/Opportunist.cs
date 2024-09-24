@@ -14,7 +14,7 @@ internal class Opportunist : RoleBase
     //==================================================================\\
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
-    private static OptionItem OppoImmuneToAttacksWhenTasksDone;
+    public static OptionItem OppoImmuneToAttacksWhenTasksDone;
 
     public override void SetupCustomOption()
     {

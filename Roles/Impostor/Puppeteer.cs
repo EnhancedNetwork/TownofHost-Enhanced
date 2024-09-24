@@ -2,7 +2,6 @@
 using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -47,7 +46,7 @@ internal class Puppeteer : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
     }
 
@@ -85,8 +84,7 @@ internal class Puppeteer : RoleBase
     {
         if (target.Is(CustomRoles.LazyGuy) 
             || target.Is(CustomRoles.Lazy)
-            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18
-            || Medic.ProtectList.Contains(target.PlayerId))
+            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
             return false;
 
             return killer.CheckDoubleTrigger(target, () => 
@@ -96,13 +94,12 @@ internal class Puppeteer : RoleBase
                 SendRPC(killer.PlayerId, target.PlayerId, 1);
                 killer.RPCPlayCustomSound("Line");
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-            }
-        );
+            });
     }
 
-    private void OnFixedUpdateOthers(PlayerControl puppet)
+    private void OnFixedUpdateOthers(PlayerControl puppet, bool lowLoad, long nowTime)
     {
-        if (!PuppetIsActive(puppet.PlayerId)) return;
+        if (lowLoad || !PuppetIsActive(puppet.PlayerId)) return;
 
         if (!puppet.IsAlive() || Pelican.IsEaten(puppet.PlayerId))
         {

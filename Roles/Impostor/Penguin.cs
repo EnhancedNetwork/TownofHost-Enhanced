@@ -191,10 +191,8 @@ internal class Penguin : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl penguin)
+    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime)
     {
-        if (GameStates.IsMeeting) return;
-
         if (!stopCount)
             AbductTimer -= Time.fixedDeltaTime;
 
@@ -247,7 +245,7 @@ internal class Penguin : RoleBase
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 var position = penguin.transform.position;
-                if (!penguin.OwnedByHost())
+                if (!penguin.IsHost())
                 {
                     AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }
@@ -256,8 +254,7 @@ internal class Penguin : RoleBase
                     _ = new LateTask(() =>
                     {
                         AbductVictim?.RpcTeleport(position, sendInfoInLogs: false);
-                    }
-                    , 0.25f, "");
+                    }, 0.25f, "Penguin Teleport ", shoudLog: false);
                 }
             }
         }

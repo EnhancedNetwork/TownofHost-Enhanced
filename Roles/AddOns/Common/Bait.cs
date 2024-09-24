@@ -16,7 +16,7 @@ public class Bait : IAddon
     public static OptionItem BaitNotification;
     public static OptionItem BaitCanBeReportedUnderAllConditions;
     
-    public static List<byte> BaitAlive = [];
+    public static readonly HashSet<byte> BaitAlive = [];
 
     public void SetupCustomOption()
     {
@@ -30,9 +30,36 @@ public class Bait : IAddon
         BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(Id + 17, "BaitCanBeReportedUnderAllConditions", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        BaitAlive = [];
+        BaitAlive.Clear();
+    }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    {
+        BaitAlive.Add(playerId);
+    }
+    public void Remove(byte playerId)
+    {
+        BaitAlive.Remove(playerId);
+    }
+    public static void SendNotify()
+    {
+        if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && BaitNotification.GetBool())
+        {
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait) && !BaitAlive.Contains(x.PlayerId)).ToArray())
+            {
+                BaitAlive.Add(pc.PlayerId);
+            }
+            HashSet<string> baitAliveList = [];
+            foreach (var whId in BaitAlive.ToArray())
+            {
+                PlayerControl whpc = whId.GetPlayer();
+                if (whpc == null) continue;
+                baitAliveList.Add(whpc.GetRealName());
+            }
+            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
+        }
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
     {        

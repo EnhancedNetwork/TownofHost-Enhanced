@@ -225,7 +225,7 @@ public static class Options
 
     public static OptionItem NoGameEnd;
     public static OptionItem AllowConsole;
-    public static OptionItem DisableAntiBlackoutProtects;
+    //public static OptionItem DisableAntiBlackoutProtects;
 
     public static OptionItem RoleAssigningAlgorithm;
     public static OptionItem KPDCamouflageMode;
@@ -378,6 +378,7 @@ public static class Options
     public static OptionItem GhostCanSeeOtherVotes;
     public static OptionItem GhostCanSeeDeathReason;
     public static OptionItem ConvertedCanBecomeGhost;
+    public static OptionItem NeutralCanBecomeGhost;
     public static OptionItem MaxImpGhost;
     public static OptionItem MaxCrewGhost;
     public static OptionItem DefaultAngelCooldown;
@@ -632,7 +633,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 29900 last id for roles/add-ons (Next use 30000)
+        // 30200 last id for roles/add-ons (Next use 30300)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1187,9 +1188,9 @@ public static class Options
             .SetHeader(true);
         AllowConsole = BooleanOptionItem.Create(60382, "AllowConsole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red);
-        DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
+       /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Color.red);
+            .SetColor(Color.red);*/
 
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
@@ -1896,6 +1897,11 @@ public static class Options
         ConvertedCanBecomeGhost = BooleanOptionItem.Create(60840, "ConvertedCanBeGhostRole", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        NeutralCanBecomeGhost = BooleanOptionItem.Create(60841, "NeutralCanBeGhostRole", false, TabGroup.ModSettings, false)
+            .SetParent(ConvertedCanBecomeGhost)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+            
         MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)

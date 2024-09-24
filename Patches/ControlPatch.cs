@@ -209,6 +209,7 @@ internal class ControllerManagerUpdatePatch
                 Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
+                GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = true;
                 if (GameStates.IsHideNSeek)
                 {
                     GameEndCheckerForNormal.StartEndGame(GameOverReason.ImpostorDisconnect);

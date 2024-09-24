@@ -31,7 +31,7 @@ internal class Fireworker : RoleBase
     private static OptionItem CanKill;
 
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
-    private static readonly Dictionary<byte, List<Vector3>> FireworkerPosition = [];
+    private static readonly Dictionary<byte, HashSet<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
     private static readonly Dictionary<byte, int> FireworkerBombKill = [];
     private static int fireworkerCount = 1;

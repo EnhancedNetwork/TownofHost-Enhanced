@@ -53,7 +53,7 @@ class DisableDevice
         {
             try
             {
-                if (pc.IsModClient()) continue;
+                if (pc.IsModded()) continue;
 
                 bool doComms = false;
                 Vector2 PlayerPos = pc.transform.position;

@@ -28,9 +28,9 @@ internal class Virus : RoleBase
     private static OptionItem KillInfectedPlayerAfterMeeting;
     public static OptionItem ContagiousCountMode;
 
-    private static readonly HashSet<byte> InfectedBodies = [];
-    private static readonly HashSet<byte> InfectedPlayer = [];
-    private static readonly Dictionary<byte, string> VirusNotify = [];
+    private readonly HashSet<byte> InfectedBodies = [];
+    private readonly HashSet<byte> InfectedPlayer = [];
+    private readonly Dictionary<byte, string> VirusNotify = [];
 
     private enum ContagiousCountModeSelectList
     {
@@ -41,7 +41,7 @@ internal class Virus : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Virus, 1, zeroOne: false);
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Virus);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Virus]);
@@ -89,28 +89,23 @@ internal class Virus : RoleBase
         if (KillInfectedPlayerAfterMeeting.GetBool())
         {
             InfectedPlayer.Add(reporter.PlayerId);
-
-            VirusNotify.Add(reporter.PlayerId, GetString("VirusNoticeMessage2"));
+            VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage2");
         }
         else
         {
             reporter.RpcSetCustomRole(CustomRoles.Contagious);
-
-            VirusNotify.Add(reporter.PlayerId, GetString("VirusNoticeMessage"));
+            VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
         }
 
         Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!KillInfectedPlayerAfterMeeting.GetBool()) return;
+        if (!_Player.IsAlive() || deathReason != PlayerState.DeathReason.Vote || !KillInfectedPlayerAfterMeeting.GetBool()) return;
 
-        PlayerControl virus =
-            Main.AllAlivePlayerControls.FirstOrDefault(a => a.GetCustomRole() == CustomRoles.Virus);
-        if (virus == null || deathReason != PlayerState.DeathReason.Vote) return;
-
+        var virus = _Player;
         if (exileIds.Contains(virus.PlayerId)) 
         {
             InfectedPlayer.Clear();
@@ -118,30 +113,28 @@ internal class Virus : RoleBase
         } 
 
         var infectedIdList = new List<byte>();
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var infectedId in InfectedPlayer)
         {
-            bool isInfected = InfectedPlayer.Contains(pc.PlayerId);
-            if (!isInfected) continue;
-
-            if (virus.IsAlive())
+            var infected =  infectedId.GetPlayer();
+            if (virus.IsAlive() && infected != null)
             {
-                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
+                if (!Main.AfterMeetingDeathPlayers.ContainsKey(infectedId))
                 {
-                    pc.SetRealKiller(virus);
-                    infectedIdList.Add(pc.PlayerId);
+                    infected.SetRealKiller(virus);
+                    infectedIdList.Add(infectedId);
                 }
             }
             else
             {
-                Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
+                Main.AfterMeetingDeathPlayers.Remove(infectedId);
             }
         }
 
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Infected, [.. infectedIdList]);
-        RemoveInfectedPlayer(virus);
+        RemoveInfectedPlayer();
     }
 
-    private static void RemoveInfectedPlayer(PlayerControl virus)
+    private void RemoveInfectedPlayer()
     {
         InfectedPlayer.Clear();
     }
@@ -157,7 +150,7 @@ internal class Virus : RoleBase
     {
         if (seer.Is(CustomRoles.Contagious) && target.Is(CustomRoles.Virus)) return Main.roleColors[CustomRoles.Virus];
         if (seer.Is(CustomRoles.Virus) && target.Is(CustomRoles.Contagious)) return Main.roleColors[CustomRoles.Contagious];
-        if (seer.Is(CustomRoles.Contagious) && target.Is(CustomRoles.Contagious) && Virus.TargetKnowOtherTarget.GetBool()) return Main.roleColors[CustomRoles.Virus];
+        if (seer.Is(CustomRoles.Contagious) && target.Is(CustomRoles.Contagious) && TargetKnowOtherTarget.GetBool()) return Main.roleColors[CustomRoles.Virus];
         return "";
     }
     public override string GetProgressText(byte id, bool coooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Virus).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");

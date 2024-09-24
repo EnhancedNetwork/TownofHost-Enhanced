@@ -17,7 +17,12 @@ public class Torch : IAddon
             .SetValueFormat(OptionFormat.Multiplier);
         TorchAffectedByLights = BooleanOptionItem.Create(Id +11, "TorchAffectedByLights", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Torch]);
     }
-
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static void ApplyGameOptions(IGameOptions opt)
     {
         if (!Utils.IsActive(SystemTypes.Electrical))

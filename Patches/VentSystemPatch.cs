@@ -6,10 +6,32 @@ namespace TOHE.Patches;
 // Patches here is also activated from ShipStatus.Serialize and IntroCutScene 
 // through Utils.SetAllVentInteractions
 
+[HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.PerformVentOp))]
+static class PerformVentOpPatch
+{
+    public static bool Prefix(VentilationSystem __instance, [HarmonyArgument(0)] byte playerId, [HarmonyArgument(1)] VentilationSystem.Operation op/*, [HarmonyArgument(2)] byte ventId*/, [HarmonyArgument(3)] SequenceBuffer<VentilationSystem.VentMoveInfo> seqBuffer)
+    {
+        if (!AmongUsClient.Instance.AmHost) return true;
+        if (Utils.GetPlayerById(playerId) == null) return true;
+        switch (op)
+        {
+            case VentilationSystem.Operation.Move:
+                if (!__instance.PlayersInsideVents.ContainsKey(playerId))
+                {
+                    seqBuffer.BumpSid();
+                    return false;
+                }
+
+                break;
+        }
+
+        return true;
+    }
+}
 [HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.Deteriorate))]
 static class VentSystemDeterioratePatch
 {
-    public static Dictionary<byte, int> LastClosestVent;
+    public static Dictionary<byte, int> LastClosestVent = [];
     public static void Postfix(VentilationSystem __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -92,10 +114,10 @@ static class VentSystemDeterioratePatch
                         break;
                 }
                 writer.WritePacked(__instance.PlayersInsideVents.Count);
-                foreach (var (playerId, ventId) in __instance.PlayersInsideVents)
+                foreach (Il2CppSystem.Collections.Generic.KeyValuePair<byte, byte> keyValuePair2 in __instance.PlayersInsideVents)
                 {
-                    writer.Write(playerId);
-                    writer.Write(ventId);
+                    writer.Write(keyValuePair2.Key);
+                    writer.Write(keyValuePair2.Value);
                 }
                 writer.EndMessage();
             }

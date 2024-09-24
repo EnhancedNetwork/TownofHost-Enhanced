@@ -113,24 +113,25 @@ internal class Spiritualist : RoleBase
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Spiritualist) || !seer.IsAlive()) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
+        if (!seer.Is(CustomRoles.Spiritualist) || !seer.IsAlive()) return string.Empty;
+        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        if (GameStates.IsMeeting) return string.Empty;
         if (SpiritualistTarget != byte.MaxValue && ShowArrow(seer.PlayerId))
         {
             return Utils.ColorString(seer.GetRoleColor(), TargetArrow.GetArrows(seer, SpiritualistTarget)); 
         }
-        return "";
+        return string.Empty;
     }
 
     public static void RemoveTarget(byte player)
     {
         if (SpiritualistTarget != player) return;
 
-        foreach (var spiritualist in playerIdList)
-        {
-            TargetArrow.Remove(spiritualist, SpiritualistTarget);
-        }
+        if (AmongUsClient.Instance.AmHost)
+            foreach (var spiritualist in playerIdList)
+            {
+                TargetArrow.Remove(spiritualist, SpiritualistTarget);
+            }
 
         SpiritualistTarget = byte.MaxValue;
     }

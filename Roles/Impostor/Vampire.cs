@@ -96,10 +96,10 @@ internal class Vampire : RoleBase
         return false;
     }
 
-    public override void OnFixedUpdate(PlayerControl vampire)
+    public override void OnFixedUpdate(PlayerControl vampire, bool lowLoad, long nowTime)
     {
-        var vampireID = vampire.PlayerId;
-        List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireID).Select(b => b.Key));
+        var vampireId = vampire.PlayerId;
+        List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireId).Select(b => b.Key));
 
         foreach (var targetId in targetList)
         {
@@ -109,7 +109,7 @@ internal class Vampire : RoleBase
             {
                 Logger.Info("KillTimer >= KillDelay", "Vampire");
 
-                var target = Utils.GetPlayerById(targetId);
+                var target = targetId.GetPlayer();
                 KillBitten(vampire, target);
                 BittenPlayers.Remove(targetId);
             }

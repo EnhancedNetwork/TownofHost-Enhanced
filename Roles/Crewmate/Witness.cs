@@ -38,7 +38,7 @@ internal class Witness : RoleBase
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -60,9 +60,9 @@ internal class Witness : RoleBase
             killer.Notify(GetString("WitnessFoundInnocent"));
         return false;
     }
-    public static void OnFixedUpdateLowLoadOthers(PlayerControl player)
+    public static void OnFixedUpdateLowLoadOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + WitnessTime.GetInt() < Utils.GetTimeStamp())
+        if (!lowLoad && Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + WitnessTime.GetInt() < nowTime)
             Main.AllKillers.Remove(player.PlayerId);
     }
 }

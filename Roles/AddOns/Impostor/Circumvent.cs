@@ -10,6 +10,11 @@ public class Circumvent : IAddon
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Circumvent, canSetNum: true, tab: TabGroup.Addons);
     }
-
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool CantUseVent(PlayerControl player) => player.Is(CustomRoles.Circumvent);
 }

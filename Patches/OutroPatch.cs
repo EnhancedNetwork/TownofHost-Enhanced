@@ -60,7 +60,7 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Main.OvverideOutfit.TryGetValue(id, out var RealOutfit))
+            if (AmongUsClient.Instance.AmHost && Main.OvverideOutfit.TryGetValue(id, out var RealOutfit))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)
@@ -145,6 +145,9 @@ class EndGamePatch
         ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;
+        Main.GameIsLoaded = false;
+        Main.IntroDestroyed = false;
+
         if (AmongUsClient.Instance.AmHost)
         {
             Main.RealOptionsData.Restore(GameOptionsManager.Instance.CurrentGameOptions);
@@ -224,17 +227,15 @@ class SetEverythingUpPatch
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Egoist);
                 break;
             case CustomWinner.Coven:
-                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.CovenLeader);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.CovenLeader);
+                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Coven);
+                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Coven);
                 break;
-            //特殊勝利
             case CustomWinner.Terrorist:
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Terrorist);
                 break;
             case CustomWinner.Lovers:
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Lovers);
                 break;
-            //引き分け処理
             case CustomWinner.Draw:
                 __instance.WinText.text = GetString("ForceEnd");
                 __instance.WinText.color = Color.white;
@@ -255,7 +256,6 @@ class SetEverythingUpPatch
                 WinnerText.text = GetString("NeutralsLeftText");
                 WinnerText.color = Utils.GetRoleColor(CustomRoles.Executioner);
                 break;
-            //全滅
             case CustomWinner.None:
                 __instance.WinText.text = "";
                 __instance.WinText.color = Color.black;
@@ -359,6 +359,8 @@ class SetEverythingUpPatch
         Logger.Info($"{CustomWinnerHolder.WinnerTeam}", "Winner Team");
         Logger.Info($"{LastWinsReason}", "Wins Reason");
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
+
+        Utils.ShowLastRoles(sendMessage: false);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
