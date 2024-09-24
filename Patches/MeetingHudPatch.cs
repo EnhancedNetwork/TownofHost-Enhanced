@@ -946,7 +946,7 @@ class MeetingHudStartPatch
         if (Eavesdropper.IsEnable)
             Eavesdropper.GetMessage();
 
-            // Add Mimic msg
+        // Add Mimic msg
         if (MimicMsg != "")
         {
             MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
