@@ -267,7 +267,8 @@ public static class CustomRolesHelper
 
         return role is
             CustomRoles.Impostor or
-            CustomRoles.Shapeshifter;
+            CustomRoles.Shapeshifter or
+            CustomRoles.Phantom;
     }
 
     public static bool IsAbleToBeSidekicked(this CustomRoles role) 
@@ -580,7 +581,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Bewilder)
                     || pc.Is(CustomRoles.Lighter)
                     || pc.Is(CustomRoles.Tired)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
                     return false;
@@ -697,7 +699,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.PunchingBag))
+                    || pc.Is(CustomRoles.PunchingBag)
+                    || pc.Is(CustomRoles.KillingMachine))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Bewilder.CrewCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Bewilder.NeutralCanBeBewilder.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Bewilder.ImpCanBeBewilder.GetBool()))
                     return false;
@@ -734,7 +737,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Rascal)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
-                if (!pc.CanBeMadmate(inGame: false) || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if (!pc.CanBeMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
                     return false;
                 break;
 
@@ -1040,7 +1043,11 @@ public static class CustomRolesHelper
 
             case CustomRoles.Rainbow:
                 if (pc.Is(CustomRoles.Doppelganger)
-                    || pc.Is(CustomRoles.DollMaster))
+                    || pc.Is(CustomRoles.DollMaster)
+                    || pc.Is(CustomRoles.Chameleon)
+                    || pc.Is(CustomRoles.Swooper)
+                    || pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Wraith))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Rainbow.CrewCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Rainbow.NeutralCanBeRainbow.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Rainbow.ImpCanBeRainbow.GetBool()))
                     return false;

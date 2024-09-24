@@ -306,81 +306,6 @@ static class ExtendedPlayerControl
         }
         player.ResetKillCooldown();
     }
-    public static void ResetPlayerOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit Outfit = null, bool force = false)
-    {
-        Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
-
-        void Setoutfit() 
-        {
-            var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
-
-            player.SetName(Outfit.PlayerName);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
-                .Write(player.Data.NetId)
-                .Write(Outfit.PlayerName)
-            .EndRpc();
-
-            Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
-
-            player.SetColor(Outfit.ColorId);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
-                .Write(player.Data.NetId)
-                .Write((byte)Outfit.ColorId)
-            .EndRpc();
-
-            player.SetHat(Outfit.HatId, Outfit.ColorId);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
-                .Write(Outfit.HatId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
-            .EndRpc();
-
-            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
-                .Write(Outfit.SkinId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
-            .EndRpc();
-
-            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
-                .Write(Outfit.VisorId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
-            .EndRpc();
-
-            player.SetPet(Outfit.PetId);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
-                .Write(Outfit.PetId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-                .EndRpc();
-
-            player.SetNamePlate(Outfit.NamePlateId);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
-                .Write(Outfit.NamePlateId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
-                .EndRpc();
-
-            sender.SendMessage();
-
-            //cannot use currentoutfit type because of mushroom mixup . .
-            var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
-
-            player.Data.SetOutfit(OutfitTypeSet, Outfit);
-
-            //Used instead of GameData.Instance.DirtyAllData();
-            foreach (var innerNetObject in GameData.Instance.AllPlayers)
-            {
-                innerNetObject.SetDirtyBit(uint.MaxValue);
-            }
-        }
-        if (player.CheckCamoflague() && !force)
-        {
-            Main.LateOutfits[player.PlayerId] = Setoutfit;
-        }
-        else
-        {
-            Main.LateOutfits.Remove(player.PlayerId);
-            Setoutfit();
-        }
-    }
     public static void SetKillCooldownV3(this PlayerControl player, float time = -1f, PlayerControl target = null, bool forceAnime = false)
     {
         if (player == null) return;
@@ -678,7 +603,7 @@ static class ExtendedPlayerControl
 
         return false;
     }
-    public static bool HasKillButton(PlayerControl pc = null)
+    public static bool HasKillButton(this PlayerControl pc)
     {
         if (pc == null) return false;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
@@ -692,6 +617,7 @@ static class ExtendedPlayerControl
         { 
             CustomRoles.Impostor => true,
             CustomRoles.Shapeshifter => true,
+            CustomRoles.Phantom => true,
             _ => false
         };
     }
@@ -879,6 +805,7 @@ static class ExtendedPlayerControl
         //If target is null, it becomes a button.
         if (Options.DisableMeeting.GetBool() && !force) return;
 
+        SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
@@ -1122,6 +1049,7 @@ static class ExtendedPlayerControl
             // Check target status
             || !player.IsAlive()
             || player.inVent
+            || player.walkingToVent
             || player.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()

@@ -45,6 +45,12 @@ internal class KillingMachine : RoleBase
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.2f);
     }
 
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
+        => !reporter.Is(CustomRoles.KillingMachine);
+
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+        => !reporter.Is(CustomRoles.KillingMachine);
+
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.RpcMurderPlayer(target);

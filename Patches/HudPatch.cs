@@ -46,7 +46,7 @@ class HudManagerPatch
 
         if (!AmongUsClient.Instance.IsGameStarted || GameStates.IsHideNSeek) return;
 
-        Utils.CountAlivePlayers(false, false);
+        Utils.CountAlivePlayers(sendLog: false, checkGameEnd: false);
 
         if (SetHudActivePatch.IsActive)
         {

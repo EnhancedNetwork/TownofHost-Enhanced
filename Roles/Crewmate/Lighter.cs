@@ -108,7 +108,7 @@ internal class Lighter : RoleBase
         if (LighterNumOfUsed[playerId] < 1) TextColor141 = Color.red;
         else TextColor141 = Color.white;
         ProgressText.Append(ColorString(TextColor14, $"({Completed14}/{taskState14.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor141, $" <color=#ffffff>-</color> {Math.Round(LighterNumOfUsed[playerId], 1)})"));
+        ProgressText.Append(ColorString(TextColor141, $" <color=#ffffff>-</color> {Math.Round(LighterNumOfUsed[playerId], 1)}"));
         return ProgressText.ToString();
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)

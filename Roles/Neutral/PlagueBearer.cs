@@ -85,15 +85,15 @@ internal class PlagueBearer : RoleBase
     public static void CheckAndInfect(PlayerControl seer, PlayerControl target)
     {
         var isDisconnectOrSelfKill = seer.PlayerId == target.PlayerId;
-        foreach (var (PlagueId, Targets) in PlaguedList)
+        bool needCheck = false;
+        foreach (var (plagueBearerId, Targets) in PlaguedList)
         {
-            var plagueBearer = GetPlayerById(PlagueId);
+            var plagueBearer = GetPlayerById(plagueBearerId);
             if (plagueBearer == null || !plagueBearer.IsAlive()) continue;
 
-            bool needCheck = false;
             if (target.Is(CustomRoles.PlagueBearer) && !isDisconnectOrSelfKill)
             {
-                PlaguedList[PlagueId].Add(seer.PlayerId);
+                PlaguedList[plagueBearerId].Add(seer.PlayerId);
                 SendRPC(plagueBearer, seer);
                 needCheck = true;
             }
@@ -103,22 +103,24 @@ internal class PlagueBearer : RoleBase
             }
             else if (Targets.Contains(seer.PlayerId) && !Targets.Contains(target.PlayerId))
             {
-                PlaguedList[PlagueId].Add(target.PlayerId);
+                PlaguedList[plagueBearerId].Add(target.PlayerId);
                 SendRPC(plagueBearer, target);
                 needCheck = true;
             }
             else if (!Targets.Contains(seer.PlayerId) && Targets.Contains(target.PlayerId))
             {
-                PlaguedList[PlagueId].Add(seer.PlayerId);
+                PlaguedList[plagueBearerId].Add(seer.PlayerId);
                 SendRPC(plagueBearer, seer);
                 needCheck = true;
             }
 
-            if (needCheck)
-            {
-                NotifyRoles(SpecifySeer: plagueBearer);
-                CheckPlagueAllPlayers();
-            }
+            // Remove itself
+            PlaguedList[plagueBearerId].Remove(plagueBearerId);
+        }
+        if (needCheck)
+        {
+            NotifyRoles();
+            CheckPlagueAllPlayers();
         }
     }
     private static (int, int) PlaguedPlayerCount(byte playerId)

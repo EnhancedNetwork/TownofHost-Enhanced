@@ -147,10 +147,15 @@ internal class Jailer : RoleBase
             if (tpc == null) continue;
 
             if (NotifyJailedOnMeetingOpt.GetBool() && tpc.IsAlive())
+            {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(GetString("JailedNotifyMsg"), targetId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
-                }, 0.3f, "Jailer Notify Jailed");
+                    if (GameStates.IsInGame)
+                    {
+                        Utils.SendMessage(GetString("JailedNotifyMsg"), targetId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    }
+                }, 5f, $"Jailer Notify Jailed - id:{targetId}");
+            }
         }
     }
 

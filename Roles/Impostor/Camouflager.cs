@@ -59,6 +59,11 @@ internal class Camouflager : RoleBase
 
         Playerids.Add(playerId);
     }
+    public override void Remove(byte playerId)
+    {
+        ClearCamouflage();
+        Playerids.Remove(playerId);
+    }
 
     private void SendRPC()
     {

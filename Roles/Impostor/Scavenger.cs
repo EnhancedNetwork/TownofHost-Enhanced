@@ -13,6 +13,8 @@ internal class Scavenger : RoleBase
 
     private static OptionItem ScavengerKillCooldown;
 
+    public static readonly HashSet<byte> KilledPlayersId = [];
+
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Scavenger);
@@ -23,6 +25,7 @@ internal class Scavenger : RoleBase
     public override void Init()
     {
         PlayerIds.Clear();
+        KilledPlayersId.Clear();
     }
     public override void Add(byte playerId)
     {
@@ -34,6 +37,7 @@ internal class Scavenger : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
+        KilledPlayersId.Add(target.PlayerId);
 
         _ = new LateTask(
             () =>

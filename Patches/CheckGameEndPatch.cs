@@ -86,6 +86,11 @@ class GameEndCheckerForNormal
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
                             pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
                         {
+                            // When admired neutral win, set end game reason "HumansByVote"
+                            if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
+                            {
+                                reason = GameOverReason.HumansByVote;
+                            }
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
@@ -289,8 +294,8 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Specter);
                             break;
-                        case CustomRoles.Provocateur when Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tar):
-                            if (!WinnerIds.Contains(tar))
+                        case CustomRoles.Provocateur:
+                            if (Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId))
                             {
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);

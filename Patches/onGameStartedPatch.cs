@@ -85,6 +85,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
+            GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport = [];
@@ -108,9 +109,10 @@ internal class ChangeRoleSettings
 
             IRandom.SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
 
+            Main.DoBlockNameChange = true;
+
             // Sync Player Names
             RPC.SyncAllPlayerNames();
-            //Main.AllPlayerNames = [];
 
             GhostRoleAssign.Init();
 
@@ -137,29 +139,45 @@ internal class ChangeRoleSettings
 
             foreach (var pc in Main.AllPlayerControls)
             {
+                var outfit = pc.Data.DefaultOutfit;
                 var colorId = pc.Data.DefaultOutfit.ColorId;
-                if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
+                var currentName = "";
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    if (Options.FormatNameMode.GetInt() == 1)
+                    {
+                        var coloredName = Palette.GetColorName(colorId);
+                        currentName = coloredName;
+                        pc.RpcSetName(coloredName);
+                    }
+                    else
+                    {
+                        string realName = Main.AllPlayerNames.TryGetValue(pc.PlayerId, out var name) ? name : "";
+                        //Logger.Info($"player id: {pc.PlayerId} {realName}", "FinallyBegin");
+                        if (realName == "") continue;
+
+                        currentName = realName;
+                        pc.RpcSetName(realName);
+                    }
+                }
+
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
-                    NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(pc.GetRealName(clientData: true), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
+                    NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
                 };
-                //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
 
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];
-                
+
                 if (GameStates.IsNormalGame)
-                    Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod); //移動速度をデフォルトの移動速度に変更
-                
+                    Main.AllPlayerSpeed[pc.PlayerId] = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
                 pc.cosmetics.nameText.text = pc.name;
 
-                var outfit = pc.Data.DefaultOutfit;
-                Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(outfit.PlayerName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
+                Camouflage.PlayerSkins[pc.PlayerId] = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId, outfit.NamePlateId);
                 Main.clientIdList.Add(pc.GetClientId());
             }
-
-            
 
             Main.VisibleTasksCount = true;
             if (__instance.AmHost)

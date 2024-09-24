@@ -80,18 +80,18 @@ internal class Vector : RoleBase
             }
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
-    {
-        if (VectorVentCount[player.PlayerId] >= VectorVentNumWin.GetInt())
-        {
-            VectorVentCount[player.PlayerId] = VectorVentNumWin.GetInt();
-            if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vector);
-                CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-            }
-        }
-    }
+    //public override void OnFixedUpdateLowLoad(PlayerControl player)
+    //{
+    //    if (VectorVentCount[player.PlayerId] >= VectorVentNumWin.GetInt())
+    //    {
+    //        VectorVentCount[player.PlayerId] = VectorVentNumWin.GetInt();
+    //        if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+    //        {
+    //            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vector);
+    //            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+    //        }
+    //    }
+    //}
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Happy");
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

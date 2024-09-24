@@ -11,7 +11,7 @@ using Object = UnityEngine.Object;
 namespace TOHE;
 
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
-public static class GameStartManagerUpdatePatch
+public static class GameStartManagerMinPlayersPatch
 {
     public static void Prefix(GameStartManager __instance)
     {
@@ -31,6 +31,7 @@ public class GameStartManagerPatch
         public static TextMeshPro HideName;
         public static void Postfix(GameStartManager __instance)
         {
+            GameStartManagerUpdatePatch.AlredyBegin = false;
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
@@ -113,8 +114,9 @@ public class GameStartManagerPatch
     }
 
     [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.Update))]
-    public class GameStartManagerUpdatePatch
+    public static class GameStartManagerUpdatePatch
     {
+        public static bool AlredyBegin = false;
         private static bool update = false;
         private static string currentText = "";
         public static float exitTimer = -1f;
@@ -248,9 +250,11 @@ public class GameStartManagerPatch
             if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
             timerText.text = countDown;
         }
-
         private static void BeginAutoStart(float countdown)
         {
+            if (AlredyBegin) return;
+            AlredyBegin = true;
+
             _ = new LateTask(() =>
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
@@ -473,6 +477,8 @@ class ResetStartStatePatch
     {
         if (GameStates.IsCountDown)
         {
+            GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
+
             SoundManager.Instance.StopSound(__instance.gameStartSound);
 
             if (GameStates.IsNormalGame)
