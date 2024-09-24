@@ -21,9 +21,6 @@ internal class DialogueBoxPatch
         {
             PlayerControl.LocalPlayer.ForceKillTimerContinue = true;
         }
-
-        if (GameStates.IsMeeting)
-            GuessManager.DestroyIDLabels();
     }
 
     [HarmonyPatch(nameof(DialogueBox.Hide)), HarmonyPostfix]
@@ -33,9 +30,6 @@ internal class DialogueBoxPatch
         {
             PlayerControl.LocalPlayer.ForceKillTimerContinue = false;
         }
-
-        if (GameStates.IsMeeting && !DestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
-            GuessManager.CreateIDLabels(MeetingHud.Instance);
     }
 
     /*

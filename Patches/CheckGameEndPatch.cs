@@ -80,8 +80,6 @@ class GameEndCheckerForNormal
             // Update all Notify Roles
             Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
-            GuessManager.DestroyIDLabels();
-
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))

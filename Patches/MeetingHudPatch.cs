@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TMPro;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -1027,6 +1028,21 @@ class MeetingHudStartPatch
             deathReasonText.gameObject.name = "DeathReasonTextMeeting";
             deathReasonText.enableWordWrapping = false;
             deathReasonText.enabled = PlayerControl.LocalPlayer.KnowDeathReason(pc);
+
+            // Thanks BAU (By D1GQ)
+            var PlayerLevel = pva.transform.Find("PlayerLevel");
+            var LevelDisplay = UnityEngine.Object.Instantiate(PlayerLevel, pva.transform);
+            LevelDisplay.localPosition = new Vector3(-1.21f, -0.15f, PlayerLevel.transform.localPosition.z);
+            LevelDisplay.transform.SetSiblingIndex(pva.transform.Find("PlayerLevel").GetSiblingIndex() + 1);
+            LevelDisplay.gameObject.name = "PlayerId";
+            LevelDisplay.GetComponent<SpriteRenderer>().color = Palette.Purple;
+            var IdLabel = LevelDisplay.transform.Find("LevelLabel");
+            var IdNumber = LevelDisplay.transform.Find("LevelNumber");
+            UnityEngine.Object.Destroy(IdLabel.GetComponent<TextTranslatorTMP>());
+            IdLabel.GetComponent<TextMeshPro>().text = "ID";
+            IdNumber.GetComponent<TextMeshPro>().text = pva.TargetPlayerId.ToString();
+            IdLabel.name = "IdLabel";
+            IdNumber.name = "IdNumber";
 
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             var enable = true;
