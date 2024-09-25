@@ -442,7 +442,7 @@ class MurderPlayerPatch
         }
 
         target.Data.IsDead = true;
-        GameData.Instance.DirtyAllData();
+        target.Data.MarkDirty();
 
         Main.MurderedThisRound.Add(target.PlayerId);
 

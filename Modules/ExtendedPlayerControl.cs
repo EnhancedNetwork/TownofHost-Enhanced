@@ -1103,13 +1103,6 @@ static class ExtendedPlayerControl
         if (!player.HasImpKillButton(considerVanillaShift: false))
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
 
-        if (player.GetRoleClass() is Chronomancer ch)
-        {
-            ch.realcooldown = Main.AllPlayerKillCooldown[player.PlayerId];
-            ch.SetCooldown();
-        }
-
-
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
             Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;

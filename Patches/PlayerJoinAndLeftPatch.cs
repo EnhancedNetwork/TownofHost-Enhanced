@@ -303,9 +303,11 @@ public static class OnPlayerJoinedPatch
 class OnPlayerLeftPatch
 {
     public static bool StartingProcessing = false;
+    public static byte LeftPlayerId;
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         StartingProcessing = true;
+        LeftPlayerId = data.Character.PlayerId;
 
         if (GameStates.IsInGame)
         {

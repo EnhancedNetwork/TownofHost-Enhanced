@@ -215,12 +215,13 @@ internal class Death : RoleBase
     }
     public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
-        var sc = Utils.GetPlayerListByRole(CustomRoles.Death).First();
+        if (exiled == null) return;
+        var sc = Utils.GetPlayerListByRole(CustomRoles.Death).FirstOrDefault();
         if (sc == null || !sc.IsAlive() || sc.Data.Disconnected) return;
 
         if (isMeetingHud)
         {
-            if (exiled == sc.Data)
+            if (exiled.PlayerId == sc.PlayerId)
             {
                 name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
             }

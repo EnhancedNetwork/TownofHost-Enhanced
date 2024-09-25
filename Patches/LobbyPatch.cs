@@ -91,9 +91,14 @@ public class LobbyBehaviourPatch
 public static class HostInfoPanelUpdatePatch
 {
     private static TextMeshPro HostText;
-    public static void Postfix(HostInfoPanel __instance)
+    public static bool Prefix(HostInfoPanel __instance)
     {
-        if (AmongUsClient.Instance.AmHost)
+        // sometimse AU get exeption "System.IndexOutOfRangeException: Index was outside the bounds of the array"
+        return __instance != null && GameStates.IsLobby && __instance.player.ColorId > 0 && __instance.player.ColorId != 255 && __instance.player.ColorId != int.MaxValue;
+    }
+    public static void Postfix(HostInfoPanel __instance, bool __runOriginal)
+    {
+        if (AmongUsClient.Instance.AmHost && __runOriginal)
         {
             if (HostText == null)
                 HostText = __instance.content.transform.FindChild("Name").GetComponent<TextMeshPro>();
