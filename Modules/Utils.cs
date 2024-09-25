@@ -2237,7 +2237,7 @@ public static class Utils
     {
         foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+            MessageWriter writer = MessageWriter.Get(SendOption.None);
             writer.StartMessage(5); //0x05 GameData
             writer.Write(AmongUsClient.Instance.GameId);
             {
