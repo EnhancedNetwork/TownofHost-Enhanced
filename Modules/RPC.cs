@@ -729,8 +729,11 @@ internal class PlayerPhysicsRPCHandlerPatch
             return false;
         }
 
-        __instance.myPlayer.walkingToVent = true;
-        VentSystemDeterioratePatch.ForceUpadate = true;
+        if (!Main.MeetingIsStarted)
+        {
+            __instance.myPlayer.walkingToVent = true;
+            VentSystemDeterioratePatch.ForceUpadate = true;
+        }
 
         Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
         return true;
