@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -72,6 +72,7 @@ internal class Jester : RoleBase
             RememberBlockedVents.Add(vent.Id);
             CustomRoleManager.BlockedVentsList[player.PlayerId].Add(vent.Id);
         }
+        VentSystemDeterioratePatch.ForceUpadate = true;
         player.RpcSetVentInteraction();
     }
     public override void OnExitVent(PlayerControl pc, int ventId)

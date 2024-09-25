@@ -32,15 +32,17 @@ static class PerformVentOpPatch
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
-    private static long LastUpadate;
+    public static long LastUpadate;
+    public static bool ForceUpadate;
 
     public static void Postfix(VentilationSystem __instance)
     {
         if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed) return;
 
         var nowTime = Utils.GetTimeStamp();
-        if (nowTime != LastUpadate)
+        if (nowTime != LastUpadate || ForceUpadate)
         {
+            ForceUpadate = false;
             LastUpadate = nowTime;
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
