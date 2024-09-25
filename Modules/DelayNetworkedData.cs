@@ -8,6 +8,17 @@ namespace TOHE.Modules.DelayNetworkDataSpawn;
 [HarmonyPatch(typeof(InnerNetClient))]
 public class InnerNetClientPatch
 {
+    // This function allows a Reliable Message to be sent without disconnecting the sender.
+    // Not sure whether this is stable. Putting a logger here.
+    public static void Send(this InnerNetClient client, MessageWriter writer)
+    {
+        SendErrors sendErrors = client.connection.Send(writer);
+        if (sendErrors != null)
+        {
+            Logger.Error($"Send Error: {sendErrors}", "InnerNetClientPatch.Send");
+        }
+    }
+
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendInitialData))]
     [HarmonyPrefix]
     public static bool SendInitialDataPrefix(InnerNetClient __instance, int clientId)
@@ -136,12 +147,17 @@ public class InnerNetClientPatch
         if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance.NetworkMode != NetworkModes.OnlineGame) return;
         if (!__instance.AmHost || __instance.Streams == null) return;
 
-        var players = GameData.Instance.AllPlayers.ToArray().Where(x => x.IsDirty).ToList();
+        // We are serializing 2 Networked playerinfo maxium per fixed update
+        var players = GameData.Instance.AllPlayers.ToArray()
+            .Where(x => x.IsDirty)
+            .Take(2)
+            .ToList();
+    
         if (players != null)
         {
             foreach (var player in players)
             {
-                MessageWriter messageWriter = MessageWriter.Get(SendOption.None);
+                MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
                 messageWriter.StartMessage(5);
                 messageWriter.Write(__instance.GameId);
                 messageWriter.StartMessage(1);
@@ -174,8 +190,6 @@ public class InnerNetClientPatch
     }
 }
 
-// Seems like there is no need to patch this if we are always sending with None calls
-/*
 [HarmonyPatch(typeof(GameData), nameof(GameData.DirtyAllData))]
 internal class DirtyAllDataPatch
 {
@@ -188,4 +202,3 @@ internal class DirtyAllDataPatch
         return false;
     }
 }
-*/

@@ -676,6 +676,7 @@ internal class StartGameHostPatch
                 playerInfo.IsDead = data;
             }
 
+            //Not sure whether this is stable. This is necessary of course, to make sure every player got displayed intro correctly.
             var stream = MessageWriter.Get(SendOption.Reliable);
             stream.StartMessage(5);
             stream.Write(AmongUsClient.Instance.GameId);
