@@ -2538,7 +2538,7 @@
   "SettingsAreLoading": "<b>Caricamento\nimpostazioni...</b>",
   "EAC.CheatDetected.HighLevel": "Attenzione: EAC ha rilevato Alti Livelli di cheats.",
   "EAC.CheatDetected.LowLevel": "Attenzione: EAC ha rilevato Bassi Livelli di cheats. Uno dei giocatori sta hackerando.",
-  "ExiledJester": "Siete tutti degli sciocchi!\n{0} il {1} che ride a crepapelle vi ha ingannati per espellerlo.\nGG!",
+  "ExiledJester": "Siete tutti degli sciocchi!\n{0} il {1} che ride a crepapelle vi ha ingannati per espellerlo/a.\nGG!",
   "JesterMeetingLoose": "<i>\nMa non può vincere fino alla riunione numero {0}</i>",
   "ExiledExeTarget": "{0} era il {1}.\nMa era anche il bersaglio dell' <color=#c0c0c0>Esecutore</color>!\nGG!",
   "ExiledInnocentTargetAddBelow": "\nGuardando indietro l'<color=#8f815e>Innocente</color> conta il denaro che ha nelle mani",
