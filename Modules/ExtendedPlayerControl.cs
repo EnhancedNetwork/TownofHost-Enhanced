@@ -581,7 +581,7 @@ static class ExtendedPlayerControl
         // If player is inside a vent, we get the nearby vents that the player can snapto and insert them to the top of the list
         // Idk how to directly get the vent a player is in, so just assume the closet vent from the player is the vent that player is in
         // Not sure about whether inVent flags works 100% correct here. Maybe player is being kicked from a vent and inVent flags can return true there
-        if ((player.walkingToVent || player.inVent) && vents[0] != null)
+        if ((player.MyPhysics.Animations.IsPlayingEnterVentAnimation() || player.walkingToVent || player.inVent) && vents[0] != null)
         {
             var nextvents = vents[0].NearbyVents.ToList();
             nextvents.RemoveAll(v => v == null);

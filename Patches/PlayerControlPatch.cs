@@ -1470,8 +1470,6 @@ class CoEnterVentPatch
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return true;
         Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoEnterVent");
 
-        VentSystemDeterioratePatch.ForceUpadate = true;
-
         //FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.CheckCoEnterVent(__instance, id))
         {
@@ -1501,6 +1499,10 @@ class CoEnterVentPatch
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
         return true;
+    }
+    public static void Postfix()
+    {
+        _ = new LateTask(() => VentSystemDeterioratePatch.ForceUpadate = false, 1f, "Set Force Upadate As False", shoudLog: false);
     }
 }
 // Player entered in vent

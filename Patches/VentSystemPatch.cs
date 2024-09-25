@@ -40,9 +40,8 @@ static class VentSystemDeterioratePatch
         if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed) return;
 
         var nowTime = Utils.GetTimeStamp();
-        if (nowTime != LastUpadate || ForceUpadate)
+        if (ForceUpadate || (nowTime != LastUpadate))
         {
-            ForceUpadate = false;
             LastUpadate = nowTime;
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {

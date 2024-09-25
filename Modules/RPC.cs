@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -727,8 +728,11 @@ internal class PlayerPhysicsRPCHandlerPatch
             Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
             return false;
         }
-        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
 
+        __instance.myPlayer.walkingToVent = true;
+        VentSystemDeterioratePatch.ForceUpadate = true;
+
+        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
         return true;
     }
 }
