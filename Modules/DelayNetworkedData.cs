@@ -8,6 +8,8 @@ namespace TOHE.Modules.DelayNetworkDataSpawn;
 [HarmonyPatch(typeof(InnerNetClient))]
 public class InnerNetClientPatch
 {
+    public static List<MessageWriter> DelayedSpawnPlayers = [];
+
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendInitialData))]
     [HarmonyPrefix]
     public static bool SendInitialDataPrefix(InnerNetClient __instance, int clientId)
@@ -45,12 +47,12 @@ public class InnerNetClientPatch
             __instance.SendOrDisconnect(messageWriter);
             messageWriter.Recycle();
         }
-        DelaySpawnPlayerInfo(__instance, clientId);
+        DelayInitialSpawnPlayerInfo(__instance, clientId);
         return false;
     }
 
     // InnerSloth vanilla officials send PlayerInfo in spilt reliable packets
-    private static void DelaySpawnPlayerInfo(InnerNetClient __instance, int clientId)
+    private static void DelayInitialSpawnPlayerInfo(InnerNetClient __instance, int clientId)
     {
         List<NetworkedPlayerInfo> players = GameData.Instance.AllPlayers.ToArray().ToList();
 
@@ -128,6 +130,42 @@ public class InnerNetClientPatch
         return false;
     }
 
+    [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]
+    [HarmonyPrefix]
+    public static bool SpawnPrefix(InnerNetClient __instance, InnerNetObject netObjParent, int ownerId = -2, SpawnFlags flags = SpawnFlags.None)
+    {
+        if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return true;
+
+        if (__instance.AmHost)
+        {
+            ownerId = ((ownerId == -3) ? __instance.ClientId : ownerId);
+            MessageWriter msg = MessageWriter.Get(SendOption.Reliable);
+            msg.StartMessage(5);
+            msg.Write(__instance.GameId);
+            __instance.WriteSpawnMessage(netObjParent, ownerId, flags, msg);
+            msg.EndMessage();
+
+            //For unknow reason delaying playerinfo spawn here will make beans much easier to appear.
+            //Especially when spawning lots of players on game end
+            //Leaving these codes for further use.
+            /*
+            if (netObjParent is NetworkedPlayerInfo)
+            {
+                DelayedSpawnPlayers.Add(msg);
+                return false;
+            }
+            */
+
+            AmongUsClient.Instance.SendOrDisconnect(msg);
+        }
+
+        if (__instance.AmClient)
+        {
+            Debug.LogError("Tried to spawn while not host:" + ((netObjParent != null) ? netObjParent.ToString() : null));
+        }
+        return false;
+    }
+
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.FixedUpdate))]
     [HarmonyPostfix]
     public static void FixedUpdatePostfix(InnerNetClient __instance)
@@ -136,12 +174,24 @@ public class InnerNetClientPatch
         if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance.NetworkMode != NetworkModes.OnlineGame) return;
         if (!__instance.AmHost || __instance.Streams == null) return;
 
+        /*
+        var delayedPlayers = DelayedSpawnPlayers.Take(2);
+        foreach (var msg in delayedPlayers)
+        {
+            AmongUsClient.Instance.SendOrDisconnect(msg);
+            msg.Recycle();
+            DelayedSpawnPlayers.Remove(msg);
+        }
+
+        if (DelayedSpawnPlayers.Count >= 2) return;
+        */
+
         // We are serializing 2 Networked playerinfo maxium per fixed update
         var players = GameData.Instance.AllPlayers.ToArray()
             .Where(x => x.IsDirty)
             .Take(2)
             .ToList();
-    
+
         if (players != null)
         {
             foreach (var player in players)
