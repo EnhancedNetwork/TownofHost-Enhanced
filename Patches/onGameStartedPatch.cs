@@ -676,7 +676,7 @@ internal class StartGameHostPatch
                 playerInfo.IsDead = data;
             }
 
-            var stream = MessageWriter.Get(SendOption.Reliable);
+            var stream = MessageWriter.Get(SendOption.None);
             stream.StartMessage(5);
             stream.Write(AmongUsClient.Instance.GameId);
             {
