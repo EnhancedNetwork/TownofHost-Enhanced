@@ -676,7 +676,7 @@ internal class StartGameHostPatch
                 playerInfo.IsDead = data;
             }
 
-            //Not sure whether this is stable. This is necessary of course, to make sure every player got displayed intro correctly.
+            /*
             var stream = MessageWriter.Get(SendOption.Reliable);
             stream.StartMessage(5);
             stream.Write(AmongUsClient.Instance.GameId);
@@ -689,6 +689,10 @@ internal class StartGameHostPatch
             stream.EndMessage();
             AmongUsClient.Instance.SendOrDisconnect(stream);
             stream.Recycle();
+            */
+
+            // Let Delayed Networked Data send with delay.
+            playerInfo.SetDirtyBit(uint.MaxValue);
         }
     }
 

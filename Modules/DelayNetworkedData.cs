@@ -8,17 +8,6 @@ namespace TOHE.Modules.DelayNetworkDataSpawn;
 [HarmonyPatch(typeof(InnerNetClient))]
 public class InnerNetClientPatch
 {
-    // This function allows a Reliable Message to be sent without disconnecting the sender.
-    // Not sure whether this is stable. Putting a logger here.
-    public static void Send(this InnerNetClient client, MessageWriter writer)
-    {
-        SendErrors sendErrors = client.connection.Send(writer);
-        if (sendErrors != null)
-        {
-            Logger.Error($"Send Error: {sendErrors}", "InnerNetClientPatch.Send");
-        }
-    }
-
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendInitialData))]
     [HarmonyPrefix]
     public static bool SendInitialDataPrefix(InnerNetClient __instance, int clientId)
