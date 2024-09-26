@@ -91,24 +91,24 @@ public class LobbyBehaviourPatch
 public static class HostInfoPanelUpdatePatch
 {
     private static TextMeshPro HostText;
-    public static bool Prefix(HostInfoPanel __instance)
+    public static void Postfix(HostInfoPanel __instance)
     {
-        // sometimse AU get exeption "System.IndexOutOfRangeException: Index was outside the bounds of the array"
-        return __instance != null && GameStates.IsLobby && __instance.player.ColorId > 0 && __instance.player.ColorId != 255 && __instance.player.ColorId != int.MaxValue;
-    }
-    public static void Postfix(HostInfoPanel __instance, bool __runOriginal)
-    {
-        if (AmongUsClient.Instance.AmHost && __runOriginal)
+        try
         {
-            if (HostText == null)
-                HostText = __instance.content.transform.FindChild("Name").GetComponent<TextMeshPro>();
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (HostText == null)
+                    HostText = __instance.content.transform.FindChild("Name").GetComponent<TextMeshPro>();
 
-            string htmlStringRgb = ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[__instance.player.ColorId]);
-            string hostName = Main.HostRealName;
-            string youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
+                string htmlStringRgb = ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[__instance.player.ColorId]);
+                string hostName = Main.HostRealName;
+                string youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
 
-            // Set text in host info panel
-            HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">({youLabel})";
+                // Set text in host info panel
+                HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">({youLabel})";
+            }
         }
+        catch
+        { }
     }
 }
