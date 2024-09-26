@@ -384,6 +384,7 @@
   "DoubleAgent": "Double Agent",
   "Sloth": "Sloth",
   "Prohibited": "Prohibited",
+  "Eavesdropper": "Eavesdropper",
   "BracketAddons": "アドオンに括弧を追加",
   "EngineerTOHEInfo": "通気口を使って <color=#ff1919>インポスター</color> を捕まえる",
   "ScientistTOHEInfo": "どこからでも携帯用バイタルにアクセス",
@@ -694,6 +695,7 @@
   "DoubleAgentInfo": "会議中にプレイヤーに爆弾を仕掛ける",
   "SlothInfo": "You're slower",
   "ProhibitedInfo": "Certain vents are blocked",
+  "EavesdropperInfo": "Listen in on other roles",
   "EngineerTOHEInfoLong": "(クルーメイト):\nエンジニアとして、通信妨害が非アクティブの間はベントを使用できます。",
   "ScientistTOHEInfoLong": "(クルーメイト):\nサイエンティストとして、いつでもバイタルを見ることができ、誰が生きていて誰が死んでいるかを確認できます。",
   "NoisemakerTOHEInfoLong": "(クルーメイト):\nノイズメーカーとして、あなたが死ぬたびに音が鳴り、あなたの死のビジュアルインジケーターが画面に表示されます。これにより、クルーメイトはあなたを殺した人を現行犯で捕まえるために走ってくるでしょう (たとえその人が赤でなくても)。",
@@ -892,7 +894,7 @@
   "CursedSoulInfoLong": "(中立):\n呪われた魂として、ゲームの最後まで生き残って勝利してください。\n道化師や処刑人から勝利を奪うこともできます。\nさらに、他のプレイヤーの魂を盗むこともできます。\n魂を持たないプレイヤーは勝ち、あなたと一緒に死にます。",
   "PickpocketInfoLong": "(中立):\nスリとして、あなたは殺害から票を盗みます。\nこれらの投票は非表示になります。\n全員を倒して勝ちます。",
   "TraitorInfoLong": "(中立):\n裏切り者として、私は詐欺師を裏切った詐欺師でした。\nあなたは詐欺師のことを知っていますが、彼らはあなたのことを知りません。\nでもトリック？ 彼らはあなたを殺すことができますが、あなたは彼らを殺すことはできません。\n他の手段で詐欺師を排除し、他の全員を倒して勝利してください！",
-  "TrollerInfoLong": "(中立):\nトローラーとして、タスクを完了させることで、プレイヤーにランダムなイベントを発生させることができます。例えば、全プレイヤーのスピードを変えたり、テレポートさせたり、サボタージュに影響を与えたりすることができます。また、勝利チームと共に勝利することができます。",
+  "TrollerInfoLong": "(Neutrals):\nAs a Troller, you can complete tasks so that random events can happen to players.\nFor example, changing the speed of all players, teleportation, influencing sabotage, etc.\nAlso you can win with the winning team.",
   "VultureInfoLong": "(中立):\nハゲタカとして、死体を通報して勝ちましょう！\n死体を報告すると、食べるクールダウンがリセットされていれば、その死体を食べることができるようになります (その後は報告できなくなります)。\n食べる能力がクールダウン中の場合は、通常どおり死体を報告します。\nまた、ラウンドあたりの食事の最大数に達した場合、死体は通常通り報告されます。",
   "TaskinatorInfoLong": "(中立):\nタスキネーターとして、タスクを完了するたびにそのタスクは爆弾を設置されます。別のプレイヤーが爆弾付きのタスクを完了した時、爆弾が爆発してそのプレイヤーは死亡します。\n\nクルーが勝利しない状況で最後まで生き残れば勝ちです。\n\n 注意：タスキネーターの爆弾はあらゆる保護を無視します。",
   "BenefactorInfoLong": "(クルーメイト):\n恩人として、タスクを完了すると、そのタスクはマークされます。別のプレイヤーがマークされたタスクを完了すると、一時的な盾が得られます。\n\n注：盾は直接の攻撃からのみ保護します。",
@@ -1003,7 +1005,8 @@
   "DollMasterInfoLong": "(インポスター):\nドールマスターとして、<color=#ff0000>シェイプシフト</color>ボタンを使って任意のプレイヤーを一時的に操作し、あなたの行為を行わせることができます！",
   "DoubleAgentInfoLong": "(Impostor):\nAs the Double Agent, you cannot access the kill button. However, you can vote for someone in a meeting to pass a bomb onto them, which can only be done one player at a time. Once the meeting has finished, the bomb will activate and explode in a set amount of time.\nNote: when you pass the bomb onto someone in a meeting, you can vote afterward.\n\nAdditionally depending on settings the Double Agent can diffuse <color=#696969>Bastion</color> and <color=#F4A460>Agitator</color> bombs when venting.\n\nThe Double Agent can change roles when they are the <color=#ff1919>Last Imposter</color>, depending on the settings the role can be a <color=#ee43c3>Admired Impostor</color>, <color=#ff1919>Trickster</color>, <color=#BA2E05>Traitor</color>, or stay as the Double Agent.",
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
-  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have some vents blocked for use.",
+  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
+  "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ShowTextOverlay": "テキストオーバーレイ",
   "Overlay.GuesserMode": "<size=50%>ゲッサーモード</size>",
   "Overlay.NoGameEnd": "<size=50%>ゲーム終了なし</size>",
@@ -3616,5 +3619,7 @@
   "WardenWarn": "危険！逃げて！",
   "MinionAbilityTime": "能力の持続時間",
   "Minion_Blind": "盲目的",
-  "Evader_ChanceNotExiled": "Chance not be exiled"
+  "Evader_ChanceNotExiled": "Chance not be exiled",
+  "EavesdropperMsgTitle": "You found a secret",
+  "EavesdropPercentChance": "Chance to eavesdrop"
 }
