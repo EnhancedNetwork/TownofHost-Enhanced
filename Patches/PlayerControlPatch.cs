@@ -441,9 +441,6 @@ class MurderPlayerPatch
             target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
 
-        target.Data.IsDead = true;
-        target.Data.MarkDirty();
-
         Main.MurderedThisRound.Add(target.PlayerId);
 
         // Check Youtuber first died

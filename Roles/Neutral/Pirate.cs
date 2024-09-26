@@ -53,18 +53,15 @@ internal class Pirate : RoleBase
     {
         DuelDone[playerId] = false;
     }
-    public override void MeetingHudClear()
+    public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (!HasEnabled || PirateTarget == byte.MaxValue) return;
 
-        var pc = _Player;
         var tpc = GetPlayerById(PirateTarget);
         if (!tpc.IsAlive()) return;
-        _ = new LateTask(() =>
-        {
-            SendMessage(GetString("PirateMeetingMsg"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
-            SendMessage(GetString("PirateTargetMeetingMsg"), tpc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
-        }, 3f, "Pirate Meeting Messages");
+
+        MeetingHudStartPatch.AddMsg(GetString("PirateMeetingMsg"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
+        MeetingHudStartPatch.AddMsg(GetString("PirateTargetMeetingMsg"), tpc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DuelCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -130,7 +127,7 @@ internal class Pirate : RoleBase
 
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (_Player == null || PirateTarget == byte.MaxValue || deathReason != PlayerState.DeathReason.Vote) return;
+        if (_Player == null || PirateTarget == byte.MaxValue) return;
         
         var pirateId = _state.PlayerId;
         if (!DuelDone[pirateId]) return;

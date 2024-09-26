@@ -342,8 +342,7 @@ internal class Famine : RoleBase
     }
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (_Player == null || deathReason != PlayerState.DeathReason.Vote) return;
-        if (exileIds.Contains(_Player.PlayerId) || Baker.StarvedNonBreaded) return;
+        if (_Player == null || exileIds == null || exileIds.Contains(_Player.PlayerId) || Baker.StarvedNonBreaded) return;
 
         var deathList = new HashSet<byte>();
         var baker = _Player;
