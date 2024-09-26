@@ -384,6 +384,7 @@
   "DoubleAgent": "双面特工",
   "Sloth": "树懒",
   "Prohibited": "受限者",
+  "Eavesdropper": "Eavesdropper",
   "BracketAddons": "将附加职业以括号的形式显示",
   "EngineerTOHEInfo": "敌明我暗，邪恶无处遁形",
   "ScientistTOHEInfo": "随时使用生命体征器，生死拿捏于股掌",
@@ -694,6 +695,7 @@
   "DoubleAgentInfo": "在会议上向玩家安放炸弹",
   "SlothInfo": "见证树懒修BUG的速度",
   "ProhibitedInfo": "有的管道你注定钻不了",
+  "EavesdropperInfo": "Listen in on other roles",
   "EngineerTOHEInfoLong": "(船员阵营):\n工程师可以在通讯被破坏情况下进入通风口",
   "ScientistTOHEInfoLong": "(船员阵营):\n科学家可以随时查看生命体征，了解谁还活着，谁已经死亡",
   "NoisemakerTOHEInfoLong": "(船员阵营):\n大嗓门每当死亡时都会发出声音，屏幕上也会出现大嗓门死亡的直观提示",
@@ -892,7 +894,7 @@
   "CursedSoulInfoLong": "(中立阵营):\n诅咒之人还可以夺取其他玩家的灵魂。没有灵魂的玩家与诅咒之人一起获胜并被视为死亡",
   "PickpocketInfoLong": "(中立阵营):\n小偷可以从击杀中窃取选票",
   "TraitorInfoLong": "(中立阵营):\n背叛者知道内鬼，但他们不知道背叛者。内鬼可以杀了背叛者，但背叛者不能杀了内鬼。通过其他方式消灭内鬼，然后击杀其他所有人获胜！",
-  "TrollerInfoLong": "(中立阵营):\n暴君可以通过完成任务，让随机事件发生在玩家身上。\n例如，改变所有玩家的速度、传送、影响破坏等。\n此外，您还可以与获胜队伍一起获胜。",
+  "TrollerInfoLong": "(Neutrals):\nAs a Troller, you can complete tasks so that random events can happen to players.\nFor example, changing the speed of all players, teleportation, influencing sabotage, etc.\nAlso you can win with the winning team.",
   "VultureInfoLong": "(中立阵营):\n秃鹫通过报告尸体获胜！当秃鹫报告一具尸体时，且秃鹫的进食冷却时间到了，秃鹫会吃掉尸体。如果秃鹫的进食技能仍然处于冷却状态，那么秃鹫会正常报告尸体。此外，如果达到每轮吃掉的最大尸体数，秃鹫将正常报告尸体",
   "TaskinatorInfoLong": "(中立阵营):\n作为任务执行者，每当任务执行者完成任务时，任务就会被轰炸。 当其他玩家完成被炸任务时，炸弹就会爆炸，玩家就会死亡。\n注意：任务执行者放置的炸弹忽略所有保护",
   "BenefactorInfoLong": "(船员阵营):\n恩人每当完成一项任务，该任务就会被标记。当其他玩家完成被恩人标记的任务时，将获得一个临时护盾。\n注意：护盾只能抵御直接击杀.",
@@ -1003,7 +1005,8 @@
   "DollMasterInfoLong": "(内鬼阵营):\n玩偶师可以使用<color=#ff0000>变形</color>按钮暂时控制任何玩家，让玩家执行玩偶师的任务！",
   "DoubleAgentInfoLong": "(内鬼阵营):\n双面特工无法使用击杀按钮。您可以在会议上投票给某人，将炸弹交给他，但每次只能投票给一个人，会议结束后，炸弹会在设定的时间内启动并爆炸。\n注意:当你在会议上把炸弹传给某人时，之后你将可以投票。\n\n此外，根据不同的设置，双面特工还可以在通风口时传播 <color=#696969>埋雷兵</color> 和 <color=#F4A460>煽动者</color> 炸弹。\n\n双面特工在成为 <color=#ff1919>最后的内鬼</color>时可以改变职业，根据不同的设置，职业可以是 <color=#ee43c3>仰慕内鬼</color>、<color=#ff1919>骗术师</color>、<color=#BA2E05>背叛者</color>，或者保持双面特工的身份。",
   "SlothInfoLong": "(附加职业):\n树懒的默认移动速度比其他玩家要慢。(速度取决于房主设置）",
-  "ProhibitedInfoLong": "(附加职业):\n作为受限者，每局中会有固定数量但随机位置的管道不让你钻。\n根据设定，随机不让你钻的管道可能会在开局固定，也可能会在每次会议后刷新。",
+  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
+  "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ShowTextOverlay": "文本覆盖（小字显示）",
   "Overlay.GuesserMode": "<size=50%>猜测模式</size>",
   "Overlay.NoGameEnd": "<size=50%>测试模式</size>",
@@ -3616,5 +3619,7 @@
   "WardenWarn": "危险！快跑！",
   "MinionAbilityTime": "技能持续时间",
   "Minion_Blind": "失明",
-  "Evader_ChanceNotExiled": "Chance not be exiled"
+  "Evader_ChanceNotExiled": "Chance not be exiled",
+  "EavesdropperMsgTitle": "You found a secret",
+  "EavesdropPercentChance": "Chance to eavesdrop"
 }

@@ -384,6 +384,7 @@
   "DoubleAgent": "Doble Agente",
   "Sloth": "Perezoso",
   "Prohibited": "Prohibido",
+  "Eavesdropper": "Eavesdropper",
   "BracketAddons": "Dar Corchetes a Add-ons",
   "EngineerTOHEInfo": "Usa los conductos de ventilación para espiar a los <color=#ff1919>Impostores</color>",
   "ScientistTOHEInfo": "Ve los signos vitales de la tripulación desde cualquier sitio",
@@ -694,6 +695,7 @@
   "DoubleAgentInfo": "Planta bombas sobre los jugadores durante las reuniones",
   "SlothInfo": "Eres mas despacio",
   "ProhibitedInfo": "Ciertos conductos están bloqueados",
+  "EavesdropperInfo": "Listen in on other roles",
   "EngineerTOHEInfoLong": "(Tripulantes):\nComo el Ingeniero, podras acceder a los ductos mientras el sabotage las Comunaciones este inactivo.",
   "ScientistTOHEInfoLong": "(Tripulantes):\nComo el Científico, tienes acceso a los vitales al cualquier momento, muestrandote quién esta vivo o muerto.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not Red).",
@@ -892,7 +894,7 @@
   "CursedSoulInfoLong": "(Neutrals):\nAs the Cursed Soul, you steal the victory if you survive to the end of the game.\n\nYou can steal the win from a Jester or Executioner.\n\nAdditionally, you can steal the souls of other players.\nSoulless players win with you and count as dead.",
   "PickpocketInfoLong": "(Neutrals):\nAs the Pickpocket, you steal votes from your kills.\n\nKill everyone to win.",
   "TraitorInfoLong": "(Neutrals):\nAs the Traitor, you were an Impostor that betrayed the Impostors.\nYou know the Impostors, but they don't know you.\nThe twist? They can kill you, but you can't kill them.\n\nEliminate the Impostors by other means, then kill everyone else to win!",
-  "TrollerInfoLong": "(Neutrals):\nAs a Troller, you can complete tasks so that random events can happen to players.\nFor example, changing the speed of all players, teleportation, influencing sabotage, etc.\nAlso you can wins with the winner team.",
+  "TrollerInfoLong": "(Neutrals):\nAs a Troller, you can complete tasks so that random events can happen to players.\nFor example, changing the speed of all players, teleportation, influencing sabotage, etc.\nAlso you can win with the winning team.",
   "VultureInfoLong": "(Neutrales):\nEl Buitre gana reportando cadáveres.\n\nCuando intentes informar de un cadáver, si tu tiempo de espera para comer se haya acabado, te comerás el cadáver, lo que lo hará imposible de reportar.\nSi tu tiempo de espera para comer aún no se acabó o si llegas al límite de cadáveres por ronda, reportarás el cadáver normalmente.",
   "TaskinatorInfoLong": "(Neutrals):\nAs the Taskinator, whenever you finish a task, the task will be bombed. When another player completes the bombed task, the bomb will detonate, and the player will die.\n\nYou win if you survive till the end and Crew doesn't win.\n\n Note: Taskinator bombs ignore all protection.",
   "BenefactorInfoLong": "(Crewmates):\nAs the Benefactor, whenever you finish a task, that task will be marked. When another player completes the marked task, they get a temporary shield.\n\n Note: Shield only protects from direct kill attacks.",
@@ -1003,7 +1005,8 @@
   "DollMasterInfoLong": "(Impostor):\nAs the Dollmaster, you can temporarily take control of any player by using the <color=#ff0000>Shapeshift</color> button and to make them do your Deeds!",
   "DoubleAgentInfoLong": "(Impostor):\nAs the Double Agent, you cannot access the kill button. However, you can vote for someone in a meeting to pass a bomb onto them, which can only be done one player at a time. Once the meeting has finished, the bomb will activate and explode in a set amount of time.\nNote: when you pass the bomb onto someone in a meeting, you can vote afterward.\n\nAdditionally depending on settings the Double Agent can diffuse <color=#696969>Bastion</color> and <color=#F4A460>Agitator</color> bombs when venting.\n\nThe Double Agent can change roles when they are the <color=#ff1919>Last Imposter</color>, depending on the settings the role can be a <color=#ee43c3>Admired Impostor</color>, <color=#ff1919>Trickster</color>, <color=#BA2E05>Traitor</color>, or stay as the Double Agent.",
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
-  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have some vents blocked for use.",
+  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
+  "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ShowTextOverlay": "Superposición de texto",
   "Overlay.GuesserMode": "<size=50%>Modo de Adivinos</size>",
   "Overlay.NoGameEnd": "<size=50%>Partida Sin Fin</size>",
@@ -3616,5 +3619,7 @@
   "WardenWarn": "PELIGRO! HUYE!",
   "MinionAbilityTime": "Duración del Habilidad",
   "Minion_Blind": "cegado",
-  "Evader_ChanceNotExiled": "Chance not be exiled"
+  "Evader_ChanceNotExiled": "Chance not be exiled",
+  "EavesdropperMsgTitle": "You found a secret",
+  "EavesdropPercentChance": "Chance to eavesdrop"
 }
