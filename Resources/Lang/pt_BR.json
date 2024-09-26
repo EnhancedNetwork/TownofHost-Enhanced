@@ -384,6 +384,7 @@
   "DoubleAgent": "Agente Duplo",
   "Sloth": "Sloth",
   "Prohibited": "Prohibited",
+  "Eavesdropper": "Eavesdropper",
   "BracketAddons": "Adicionar parênteses para Atributos",
   "EngineerTOHEInfo": "Use ventilações para encontrar os <color=#ff1919>Impostores</color>",
   "ScientistTOHEInfo": "Acesse vitais portáveis de qualquer lugar",
@@ -694,6 +695,7 @@
   "DoubleAgentInfo": "Plante bombas nas reuniões",
   "SlothInfo": "You're slower",
   "ProhibitedInfo": "Certain vents are blocked",
+  "EavesdropperInfo": "Listen in on other roles",
   "EngineerTOHEInfoLong": "(Tripulantes):\n★Como um Engenheiro, você pode acessar as tubulações enquanto as comunicações não são sabotadas.",
   "ScientistTOHEInfoLong": "(Tripulantes):\nComo um Cientista, você tem um tablet portátil com os dados vitais da Tripulação.\nUse-o da maneira que quiser.",
   "NoisemakerTOHEInfoLong": "(Tripulantes):\nComo o Sirene, sempre que você morrer você fará um barulho, e um indicador visual de sua morte aparecerá na tela para que os tripulantes possam correr para pegar a pessoa que o matou em flagrante (mesmo que não seja Vermelho).",
@@ -892,7 +894,7 @@
   "CursedSoulInfoLong": "(Neutros):\nComo a Alma Perdida, você rouba a vitória se sobreviver até o final do jogo.\n\nVocê pode roubar a vitória de um Palhaço ou Executor.\n\nAlém disso, você pode roubar as almas de outros jogadores.\nJogadores sem alma vencem com você e são contados como mortos.",
   "PickpocketInfoLong": "(Neutros):\nComo o Rouba-Votos, você rouba votos de suas vítimas.\n\nMate todos para vencer.",
   "TraitorInfoLong": "(Neutros):\nO Traidor é um Impostor que traiu os Impostores.\nO Traidor saberá quem são os impostores, mas os impostores não saberão quem é o traidor.\nOs Impostores podem matar o Traidor, mas o Traidor não pode matar os Impostores.\n\nO Traidor precisa encontrar outra forma de eliminar os Impostores, então matar todos e vencer!",
-  "TrollerInfoLong": "(Neutros):\nComo Trollador, você pode completar tarefas para que eventos aleatórios aconteçam com os jogadores. Por exemplo, mudar a velocidade de todos os jogadores, teleportação, influenciar sabotagens, etc.\nAlém disso, você pode vencer com a equipe vencedora.",
+  "TrollerInfoLong": "(Neutrals):\nAs a Troller, you can complete tasks so that random events can happen to players.\nFor example, changing the speed of all players, teleportation, influencing sabotage, etc.\nAlso you can win with the winning team.",
   "VultureInfoLong": "(Neutros):\n★O Canibal não reporta corpos normalmente.\n★ O Canibal come o corpo clicando em reportar, fazendo com que não seja mais possível reportar o corpo.\n★ Coma a maioria dos corpos para vencer!",
   "TaskinatorInfoLong": "(Neutros):\nComo Sabota-Tarefas, sempre que você concluir uma tarefa, ela será bombardeada. Quando outro jogador concluir a tarefa bombardeada, a bomba será detonada e o jogador morrerá.\n\nVocê vence se sobreviver até o fim e a equipe não vencer.\n\n Observação: as bombas do Sabota-Tarefas ignoram qualquer tipo de proteção.",
   "BenefactorInfoLong": "(Tripulantes):\nComo Benfeitor, sempre que você completar uma tarefa, a tarefa será marcada. Quando outro jogador for completar a tarefa marcada, ele receberá um escudo temporário.\n\n Nota: O escudo protege apenas contra ataques diretos.",
@@ -1003,7 +1005,8 @@
   "DollMasterInfoLong": "(Impostor):\nComo Mestre Marionetista, você pode assumir temporariamente o controle de qualquer jogador usando o botão <color=#ff0000>Metamorfo</color> e fazê-lo realizar suas ações!",
   "DoubleAgentInfoLong": "(Impostor):\nComo o Agente Duplo, você não pode acessar o botão de matar. No entanto, você pode votar em alguém em uma reunião para passar uma bomba para ele, o que só pode ser feito em um jogador por vez. Assim que a reunião terminar, a bomba será ativada e explodirá em um determinado período de tempo.\nNota: quando você passa a bomba para alguém em uma reunião, você pode votar depois.\n\nAlém disso, dependendo das configurações, o Agente Duplo pode desarmar as bombas do <color=#696969>Mestre das Bombas</color> e do <color=#F4A460>Demolidor</color> ao usar os dutos.\n\nO Agente Duplo pode mudar de função quando for o <color=#ff1919>Último Impostor</color>, dependendo das configurações, a função pode ser <color=#ee43c3>Impostor Admirado</color>, <color=#ff1919>Trapaceiro</color>, <color=#BA2E05>Traidor</color> ou permanecer como o Agente Duplo.",
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
-  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have some vents blocked for use.",
+  "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
+  "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ShowTextOverlay": "Sobrepor Texto",
   "Overlay.GuesserMode": "<size=75%>Modo Adivinhador</size>",
   "Overlay.NoGameEnd": "<size=75%>Sem Fim de Jogo</size>",
@@ -3616,5 +3619,7 @@
   "WardenWarn": "PERIGO! CORRA!",
   "MinionAbilityTime": "Duração da Habilidade",
   "Minion_Blind": "cegado",
-  "Evader_ChanceNotExiled": "Chance not be exiled"
+  "Evader_ChanceNotExiled": "Chance not be exiled",
+  "EavesdropperMsgTitle": "You found a secret",
+  "EavesdropPercentChance": "Chance to eavesdrop"
 }
