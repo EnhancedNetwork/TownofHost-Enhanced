@@ -8,7 +8,7 @@ namespace TOHE.Modules.DelayNetworkDataSpawn;
 [HarmonyPatch(typeof(InnerNetClient))]
 public class InnerNetClientPatch
 {
-    public static List<MessageWriter> DelayedSpawnPlayers = [];
+    //public static List<MessageWriter> DelayedSpawnPlayers = [];
 
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendInitialData))]
     [HarmonyPrefix]
@@ -161,7 +161,7 @@ public class InnerNetClientPatch
 
         if (__instance.AmClient)
         {
-            Debug.LogError("Tried to spawn while not host:" + ((netObjParent != null) ? netObjParent.ToString() : null));
+            Debug.LogError("Tried to spawn while not host:" + (netObjParent?.ToString()));
         }
         return false;
     }
