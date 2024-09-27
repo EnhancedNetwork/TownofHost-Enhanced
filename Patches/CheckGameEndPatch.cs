@@ -505,6 +505,7 @@ class GameEndCheckerForNormal
 
         // Remember true win to display in chat
         SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
+        Utils.NotifyGameEnding();
 
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(0.2f);
@@ -526,7 +527,6 @@ class GameEndCheckerForNormal
             yield return new WaitForSeconds(0.3f);
         }
 
-        Utils.NotifyGameEnding();
         // Update all Notify Roles
         Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
