@@ -25,7 +25,7 @@ class CoShowIntroPatch
         {
             if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
             {
-                StartGameHostPatch.RpcSetDisconnected(disconnected: false);
+                StartGameHostPatch.RpcSetDisconnected(disconnected: false, forced: true);
 
                 DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
 
