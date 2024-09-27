@@ -18,7 +18,6 @@ internal class Mortician : RoleBase
 
     private static OptionItem ShowArrows;
 
-    private static readonly Dictionary<byte, string> lastPlayerName = [];
     private static readonly Dictionary<byte, string> msgToSend = [];
 
     public override void SetupCustomOption()
@@ -29,7 +28,6 @@ internal class Mortician : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        lastPlayerName.Clear();
         msgToSend.Clear();
     }
     public override void Add(byte playerId)
@@ -49,24 +47,23 @@ internal class Mortician : RoleBase
     {
         if (inMeeting || target.IsDisconnected()) return;
 
-        Vector2 pos = target.transform.position;
-        float minDis = float.MaxValue;
-        string minName = "";
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.PlayerId == target.PlayerId || playerIdList.Any(p => p == pc.PlayerId)) continue;
-            var dis = Utils.GetDistance(pc.transform.position, pos);
-            if (dis < minDis && dis < 1.5f)
-            {
-                minDis = dis;
-                minName = pc.GetRealName(clientData: true);
-            }
-        }
+        //Vector2 pos = target.transform.position;
+        //float minDis = float.MaxValue;
+        //string minName = "";
+        //foreach (var pc in Main.AllAlivePlayerControls)
+        //{
+        //    if (pc.PlayerId == target.PlayerId || playerIdList.Any(p => p == pc.PlayerId)) continue;
+        //    var dis = Utils.GetDistance(pc.transform.position, pos);
+        //    if (dis < minDis && dis < 0.5f)
+        //    {
+        //        minDis = dis;
+        //        minName = pc.GetRealName(clientData: true);
+        //    }
+        //}
 
-        lastPlayerName.TryAdd(target.PlayerId, minName);
         foreach (var pc in playerIdList.ToArray())
         {
-            var player = Utils.GetPlayerById(pc);
+            var player = pc.GetPlayer();
             if (player == null || !player.IsAlive()) continue;
             LocateArrow.Add(pc, target.transform.position);
         }
@@ -77,24 +74,23 @@ internal class Mortician : RoleBase
         {
             LocateArrow.RemoveAllTarget(apc);
         }
+        if (pc == null || target == null || !pc.Is(CustomRoles.Mortician) || pc.PlayerId == target.PlayerId) return;
+        
+        string name = string.Empty;
+        var killer = target.PlayerId.GetRealKillerById();
+        if (killer == null)
+        {
+            name = killer.GetRealName();
+        }
 
-        if (pc == null || target == null || target.Object == null || !pc.Is(CustomRoles.Mortician) || pc.PlayerId == target.PlayerId) return;
-        lastPlayerName.TryGetValue(target.PlayerId, out var name);
-        if (name == "") msgToSend.TryAdd(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.PlayerName));
+        if (name == string.Empty) msgToSend.TryAdd(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.PlayerName));
         else msgToSend.TryAdd(pc.PlayerId, string.Format(GetString("MorticianGetInfo"), target.PlayerName, name));
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (isForMeeting) return string.Empty;
+        if (!ShowArrows.GetBool() || isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
 
-        if (ShowArrows.GetBool())
-        {
-            if (!seer.Is(CustomRoles.Mortician)) return "";
-            if (target != null && seer.PlayerId != target.PlayerId) return "";
-            if (GameStates.IsMeeting) return "";
-            return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
-        }
-        else return "";
+        return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {

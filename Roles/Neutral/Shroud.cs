@@ -148,27 +148,28 @@ internal class Shroud : RoleBase
         {
             ShroudList.Clear();
             SendRPC(byte.MaxValue, byte.MaxValue, 0);
-            return;
         }
+    }
+    public override void AfterMeetingTasks()
+    {
+        if (_Player == null || !_Player.IsAlive()) return;
 
         foreach (var shroudedId in ShroudList.Keys)
         {
-            PlayerControl shrouded = Utils.GetPlayerById(shroudedId);
+            PlayerControl shrouded = shroudedId.GetPlayer();
             if (!shrouded.IsAlive()) continue;
 
             shrouded.SetDeathReason(PlayerState.DeathReason.Shrouded);
             shrouded.RpcMurderPlayer(shrouded);
-            shrouded.SetRealKiller(shroud);
+            shrouded.SetRealKiller(_Player);
 
-            ShroudList.Remove(shrouded.PlayerId);
             SendRPC(byte.MaxValue, shrouded.PlayerId, 2);
+            ShroudList.Remove(shrouded.PlayerId);
         }
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
         => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
-    
-        
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

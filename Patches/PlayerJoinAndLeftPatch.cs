@@ -303,9 +303,11 @@ public static class OnPlayerJoinedPatch
 class OnPlayerLeftPatch
 {
     public static bool StartingProcessing = false;
+    public static byte LeftPlayerId;
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         StartingProcessing = true;
+        LeftPlayerId = data.Character.PlayerId;
 
         if (GameStates.IsInGame)
         {
@@ -469,6 +471,7 @@ class OnPlayerLeftPatch
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                         GameManager.Instance.enabled = false;
+                        Utils.NotifyGameEnding();
                         GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                     }, 3f, "Disconnect Error Auto-end");
 

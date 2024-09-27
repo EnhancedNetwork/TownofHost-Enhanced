@@ -137,24 +137,18 @@ internal class Jailer : RoleBase
         return false;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void OnReportDeadBody(PlayerControl sob, NetworkedPlayerInfo bakugan)
+
+    public override void OnMeetingHudStart(PlayerControl pc)
     {
+        if (!NotifyJailedOnMeetingOpt.GetBool()) return;
+
         foreach (var targetId in JailerTarget.Values)
         {
             if (targetId == byte.MaxValue) continue;
-            var tpc = Utils.GetPlayerById(targetId);
-            if (tpc == null) continue;
+            var tpc = targetId.GetPlayer();
+            if (!tpc.IsAlive()) continue;
 
-            if (NotifyJailedOnMeetingOpt.GetBool() && tpc.IsAlive())
-            {
-                _ = new LateTask(() =>
-                {
-                    if (GameStates.IsInGame)
-                    {
-                        Utils.SendMessage(GetString("JailedNotifyMsg"), targetId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
-                    }
-                }, 5f, $"Jailer Notify Jailed - id:{targetId}");
-            }
+            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), targetId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
         }
     }
 

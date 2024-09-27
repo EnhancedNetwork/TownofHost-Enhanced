@@ -51,6 +51,7 @@ internal class Swapper : RoleBase
     }
     public override bool OnCheckStartMeeting(PlayerControl reporter) => OptCanStartMeeting.GetBool();
 
+
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
     

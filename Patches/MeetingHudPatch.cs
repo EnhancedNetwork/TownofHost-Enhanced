@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TMPro;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
@@ -610,9 +611,12 @@ class CheckForEndVotingPatch
     }
     private static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
-        foreach (var roleClass in CustomRoleManager.AllEnabledRoles.ToArray())
+        if (deathReason == PlayerState.DeathReason.Vote)
         {
-            roleClass?.OnCheckForEndVoting(deathReason, playerIds);
+            foreach (var player in Main.AllPlayerControls)
+            {
+                player.GetRoleClass()?.OnCheckForEndVoting(deathReason, playerIds);
+            }
         }
 
         foreach (var playerId in playerIds)
@@ -883,6 +887,7 @@ class MeetingHudStartPatch
                     SendMessage(text, sendTo, title);
                 }
             }, 3f, "Skill Description First Meeting");
+
         }
 
         msgToSend = [];
@@ -941,6 +946,9 @@ class MeetingHudStartPatch
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
         }
+
+        if (Eavesdropper.IsEnable)
+            Eavesdropper.GetMessage();
 
         // Add Mimic msg
         if (MimicMsg != "")
@@ -1023,6 +1031,21 @@ class MeetingHudStartPatch
             deathReasonText.gameObject.name = "DeathReasonTextMeeting";
             deathReasonText.enableWordWrapping = false;
             deathReasonText.enabled = PlayerControl.LocalPlayer.KnowDeathReason(pc);
+
+            // Thanks BAU (By D1GQ)
+            var PlayerLevel = pva.transform.Find("PlayerLevel");
+            var LevelDisplay = UnityEngine.Object.Instantiate(PlayerLevel, pva.transform);
+            LevelDisplay.localPosition = new Vector3(-1.21f, -0.15f, PlayerLevel.transform.localPosition.z);
+            LevelDisplay.transform.SetSiblingIndex(pva.transform.Find("PlayerLevel").GetSiblingIndex() + 1);
+            LevelDisplay.gameObject.name = "PlayerId";
+            LevelDisplay.GetComponent<SpriteRenderer>().color = Palette.Purple;
+            var IdLabel = LevelDisplay.transform.Find("LevelLabel");
+            var IdNumber = LevelDisplay.transform.Find("LevelNumber");
+            UnityEngine.Object.Destroy(IdLabel.GetComponent<TextTranslatorTMP>());
+            IdLabel.GetComponent<TextMeshPro>().text = "ID";
+            IdNumber.GetComponent<TextMeshPro>().text = pva.TargetPlayerId.ToString();
+            IdLabel.name = "IdLabel";
+            IdNumber.name = "IdNumber";
 
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             var enable = true;

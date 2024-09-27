@@ -172,6 +172,8 @@ internal class Berserker : RoleBase
         if (BerserkerKillMax[killer.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool()&& !killer.Is(CustomRoles.War))
         {
             killer.RpcSetCustomRole(CustomRoles.War);
+            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+
             killer.Notify(GetString("BerserkerToWar"));
             Main.AllPlayerKillCooldown[killer.PlayerId] = WarKillCooldown.GetFloat();
         }

@@ -100,6 +100,19 @@ public static class Utils
             }
         }
     }
+
+    // Should happen before EndGame messages is sent
+    public static void NotifyGameEnding()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
+        {
+            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, player.OwnerId);
+            writer.Write(GetString("NotifyGameEnding"));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+    }
+
     public static ClientData GetClientById(int id)
     {
         try
@@ -1770,7 +1783,7 @@ public static class Utils
         || (Main.CheckShapeshift.TryGetValue(PC.PlayerId, out bool isShapeshifitng) && isShapeshifitng);
     public static PlayerControl GetPlayerById(int PlayerId)
     {
-        return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId);
+        return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId) ?? null;
     }
     public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
@@ -1895,12 +1908,12 @@ public static class Utils
     private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro || OnPlayerLeftPatch.StartingProcessing) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return;
         if (Main.MeetingIsStarted && !isForMeeting) return;
         if (Main.AllPlayerControls == null) return;
 
         //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return;
+        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return;
 
         //var caller = new System.Diagnostics.StackFrame(1, false);
         //var callerMethod = caller.GetMethod();
@@ -1912,12 +1925,12 @@ public static class Utils
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro || OnPlayerLeftPatch.StartingProcessing) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
         if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return Task.CompletedTask;
+        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
 
         //var logger = Logger.Handler("DoNotifyRoles");
 
@@ -1946,8 +1959,8 @@ public static class Utils
             // Do nothing when the seer is not present in the game
             if (seer == null) continue;
             
-            // Only non-modded players
-            if (seer.IsModded()) continue;
+            // Only non-modded players or player left
+            if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
             
             // Size of player roles
             string fontSize = isForMeeting ? "1.6" : "1.8";
@@ -2099,7 +2112,7 @@ public static class Utils
                 foreach (var realTarget in targetList)
                 {
                     // if the target is the seer itself, do nothing
-                    if (realTarget == null || (realTarget.PlayerId == seer.PlayerId)) continue;
+                    if (realTarget == null || (realTarget.PlayerId == seer.PlayerId) || realTarget.PlayerId == OnPlayerLeftPatch.LeftPlayerId || realTarget.Data.Disconnected) continue;
 
                     var target = realTarget;
 
@@ -2272,7 +2285,7 @@ public static class Utils
     {
         foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            MessageWriter writer = MessageWriter.Get();
+            MessageWriter writer = MessageWriter.Get(SendOption.None);
             writer.StartMessage(5); //0x05 GameData
             writer.Write(AmongUsClient.Instance.GameId);
             {
@@ -2378,39 +2391,45 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
-        ChatManager.ClearLastSysMsg();
-        FallFromLadder.Reset();
-
-        if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
-        if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
-
-        AntiBlackout.AfterMeetingTasks();
-
-        foreach (var playerState in Main.PlayerStates.Values.ToArray())
+        try
         {
-            if (playerState.RoleClass == null) continue;
+            ChatManager.ClearLastSysMsg();
+            FallFromLadder.Reset();
 
-            playerState.RoleClass.AfterMeetingTasks();
-            playerState.RoleClass.HasVoted = false;
-        }
+            if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
+            if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
-        //Set kill timer
-        foreach (var player in Main.AllAlivePlayerControls)
-        {
-            player.SetKillTimer();
+            AntiBlackout.AfterMeetingTasks();
 
-            if (player.Is(CustomRoles.Prohibited))
+            foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
-                Prohibited.AfterMeetingTasks(player.PlayerId);
+                if (playerState.RoleClass == null) continue;
+
+                playerState.RoleClass.AfterMeetingTasks();
+                playerState.RoleClass.HasVoted = false;
             }
+
+            //Set kill timer
+            foreach (var player in Main.AllAlivePlayerControls)
+            {
+                player.SetKillTimer();
+
+                if (player.Is(CustomRoles.Prohibited))
+                {
+                    Prohibited.AfterMeetingTasks(player.PlayerId);
+                }
+            }
+
+            if (Statue.IsEnable) Statue.AfterMeetingTasks();
+            if (Burst.IsEnable) Burst.AfterMeetingTasks();
+
+            if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
         }
-
-        if (Statue.IsEnable) Statue.AfterMeetingTasks();
-        if (Burst.IsEnable) Burst.AfterMeetingTasks();
-
-        if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
-        
-
+        catch (Exception error)
+        {
+            Logger.Error($"Error after meeting: {error}", "AfterMeetingTasks");
+        }
+    
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
 

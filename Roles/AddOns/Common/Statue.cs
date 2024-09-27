@@ -40,9 +40,12 @@ public class Statue : IAddon
     }
     public void Remove(byte playerId)
     {
-        Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + TempSpeed[playerId];
+        if (Main.AllPlayerSpeed[playerId] == SlowDown.GetFloat())
+        {
+            Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + TempSpeed[playerId];
+            playerId.GetPlayer()?.MarkDirtySettings();
+        }
         TempSpeed.Remove(playerId);
-        playerId.GetPlayer()?.MarkDirtySettings();
 
         if (!TempSpeed.Any())
             IsEnable = false;
@@ -52,11 +55,8 @@ public class Statue : IAddon
     {
         foreach (var (statue, speed) in TempSpeed)
         {
-            var pc = statue.GetPlayer();
-            if (pc == null) continue;
-
-            Main.AllPlayerSpeed[statue] = Main.AllPlayerSpeed[statue] - SlowDown.GetFloat() + speed;
-            pc.MarkDirtySettings();
+            Main.AllPlayerSpeed[statue] = speed;
+            statue.GetPlayer()?.MarkDirtySettings();
         }
         Active = false;
         CountNearplr.Clear();
@@ -76,7 +76,7 @@ public class Statue : IAddon
             if (currentSpeed != normalSpeed)
             {
                 Main.AllPlayerSpeed[victim.PlayerId] = normalSpeed;
-                victim?.MarkDirtySettings();
+                victim.MarkDirtySettings();
             }
             return;
         }

@@ -87,7 +87,7 @@ internal class ChangeRoleSettings
             Main.IntroDestroyed = false;
             GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
-            GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
+            GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
             VentSystemDeterioratePatch.LastClosestVent.Clear();
@@ -358,7 +358,7 @@ internal class StartGameHostPatch
 
     public static System.Collections.IEnumerator AssignRoles()
     {
-        if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) yield break;
+        if (GameStates.IsEnded) yield break;
 
         try
         {
@@ -520,7 +520,7 @@ internal class StartGameHostPatch
 
         Logger.Info("Send rpc disconnected for all", "AssignRoleTypes");
         DataDisconnected.Clear();
-        RpcSetDisconnected(disconnected: true);
+        RpcSetDisconnected(disconnected: true, forced: false);
 
         yield return new WaitForSeconds(4f);
 
@@ -623,42 +623,11 @@ internal class StartGameHostPatch
             roleType = RpcSetRoleReplacer.StoragedData[target.PlayerId];
         }
 
-        // For host
-        //if (AmongUsClient.Instance.ClientId == targetClientId)
-        //{
-        //    // canOverride should be false for the host during assign
-        //    target.SetRole(roleType, true);
-        //    return;
-        //}
-
         target.RpcSetRoleDesync(roleType, targetClientId);
-
-        // For vanilla clients
-        //var stream = MessageWriter.Get(SendOption.None);
-        //stream.StartMessage(6);
-        //stream.Write(AmongUsClient.Instance.GameId);
-        //stream.WritePacked(targetClientId);
-        //{
-        //    RpcSetDisconnected(stream, true, true);
-
-        //    stream.StartMessage(2);
-        //    stream.WritePacked(target.NetId);
-        //    {
-        //        stream.Write((byte)RpcCalls.SetRole);
-        //        stream.Write((ushort)roleType);
-        //        stream.Write(true); //canOverride
-        //    }
-        //    stream.EndMessage();
-
-        //    RpcSetDisconnected(stream, false, true);
-        //}
-        //stream.EndMessage();
-        //AmongUsClient.Instance.SendOrDisconnect(stream);
-        //stream.Recycle();
     }
 
     private static readonly Dictionary<byte, bool> DataDisconnected = [];
-    public static void RpcSetDisconnected(bool disconnected)
+    public static void RpcSetDisconnected(bool disconnected, bool forced)
     {
         foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
@@ -677,18 +646,26 @@ internal class StartGameHostPatch
                 playerInfo.IsDead = data;
             }
 
-            var stream = MessageWriter.Get(SendOption.None);
-            stream.StartMessage(5);
-            stream.Write(AmongUsClient.Instance.GameId);
+            if (forced)
             {
-                stream.StartMessage(1);
-                stream.WritePacked(playerInfo.NetId);
-                playerInfo.Serialize(stream, false);
+                var stream = MessageWriter.Get(SendOption.Reliable);
+                stream.StartMessage(5);
+                stream.Write(AmongUsClient.Instance.GameId);
+                {
+                    stream.StartMessage(1);
+                    stream.WritePacked(playerInfo.NetId);
+                    playerInfo.Serialize(stream, false);
+                    stream.EndMessage();
+                }
                 stream.EndMessage();
+                AmongUsClient.Instance.SendOrDisconnect(stream);
+                stream.Recycle();
             }
-            stream.EndMessage();
-            AmongUsClient.Instance.SendOrDisconnect(stream);
-            stream.Recycle();
+            else
+            {
+                // Let Delayed Networked Data send with delay.
+                playerInfo.SetDirtyBit(uint.MaxValue);
+            }
         }
     }
 

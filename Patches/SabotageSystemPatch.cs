@@ -331,7 +331,7 @@ public class SabotageSystemPatch
         public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
         {
             // __runOriginal - the result that was returned from Prefix
-            if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !(isCooldownModificationEnabled && __runOriginal))
+            if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !__runOriginal || !isCooldownModificationEnabled)
             {
                 return;
             }
