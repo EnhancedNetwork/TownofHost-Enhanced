@@ -1112,7 +1112,7 @@ class FixedUpdateInNormalGamePatch
             }
 
 
-            if (GameStates.IsInTask)
+            if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
                 CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
 
