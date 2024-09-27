@@ -3616,7 +3616,9 @@
   "ModeC&R": "Gamemode: Cops And Robbers",
   "C&R_NumCops": "Number of Cops",
   "C&R_CopAbilityTriggerChance": "Ability trigger chance",
+  "C&R_CaptureCooldown": "Capture Cooldown",
   "C&R_CopAbilityDuration": "Ability Duration",
+  "C&R_AbilityCooldown": "Ability Cooldown",
   "C&R_HotPursuitChance": "Hot Pursuit activation chance",
   "C&R_HotPursuitSpeed": "Increase speed by",
   "C&R_SpikeStripChance": "Spike Strip activation chance",
@@ -3634,6 +3636,8 @@
   "CopAbility.FlashBang": "Flash Bang",
   "CopAbility.Radar": "Radar",
   "CopAbility.Scope": "Scope",
+  "CopAbilityText": "Ability",
+  "CopKillButtonText": "Capture",
 
   "C&R_NotifyRobbersWhenCaptured": "Notify Robbers when captured",
   "C&R_InitialPoints": "Initial points",

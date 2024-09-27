@@ -1965,6 +1965,9 @@ public static class Utils
                     case CustomGameMode.FFA:
                         SelfSuffix.Append(FFAManager.GetPlayerArrow(seer));
                         break;
+                    case CustomGameMode.CandR:
+                        SelfSuffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, seer));
+                        break;
                 }
 
 

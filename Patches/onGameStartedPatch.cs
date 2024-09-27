@@ -506,9 +506,9 @@ internal class StartGameHostPatch
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
-                //case CustomGameMode.CandR:
-                //    GameEndCheckerForNormal.SetPredicateToCandR();
-                //    break;
+                case CustomGameMode.CandR:
+                    GameEndCheckerForNormal.SetPredicateToCandR();
+                    break;
             }
 
             EAC.LogAllRoles();

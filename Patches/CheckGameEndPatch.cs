@@ -690,7 +690,7 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             if (copsAlive && !allCaptured) break;
             if (pc.Is(CustomRoles.Cop)) copsAlive = true;
-            else if (pc.Is(CustomRoles.Robber) && !CopsAndRobbersManager.captured.Contains(pc.PlayerId)) allCaptured = false;
+            else if (pc.Is(CustomRoles.Robber) && !CopsAndRobbersManager.captured.ContainsKey(pc.PlayerId)) allCaptured = false;
         }
 
         // no cops left

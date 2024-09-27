@@ -67,7 +67,7 @@ public static class Options
     [
         "Standard",
         "FFA",
-        "Cops&Robbers",
+        "C&R",
 
 
 

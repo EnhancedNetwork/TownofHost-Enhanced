@@ -28,6 +28,7 @@ public abstract class OptionItem
     public OptionFormat ValueFormat { get; protected set; }
     public CustomGameMode GameMode { get; protected set; }
     public CustomGameMode HideOptionInFFA { get; protected set; }
+    public CustomGameMode HideOptionInCandR { get; protected set; }
     public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
@@ -76,6 +77,7 @@ public abstract class OptionItem
         ValueFormat = OptionFormat.None;
         GameMode = CustomGameMode.All;
         HideOptionInFFA = CustomGameMode.All;
+        HideOptionInCandR = CustomGameMode.All;
         HideOptionInHnS = CustomGameMode.All;
         IsHeader = false;
         IsHidden = false;
@@ -130,6 +132,7 @@ public abstract class OptionItem
     public OptionItem SetHidden(bool value) => Do(i => i.IsHidden = value);
     public OptionItem SetText(bool value) => Do(i => i.IsText = value);
     public OptionItem HideInFFA(CustomGameMode value = CustomGameMode.FFA) => Do(i => i.HideOptionInFFA = value);
+    public OptionItem HideInCandR(CustomGameMode value = CustomGameMode.CandR) => Do(i => i.HideOptionInCandR = value); //C&R
     public OptionItem HideInHnS(CustomGameMode value = CustomGameMode.HidenSeekTOHE) => Do(i => i.HideOptionInHnS = value);
 
     public OptionItem SetParent(OptionItem parent) => Do(i =>

@@ -80,6 +80,9 @@ class HudManagerPatch
 
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
+                if (Options.CurrentGameMode is CustomGameMode.CandR) 
+                        CopsAndRobbersManager.SetAbilityButtonText(__instance, player.PlayerId);
+                
                 // Set lower info text for modded players
                 if (LowerInfoText == null)
                 {

@@ -56,6 +56,7 @@ public static class CustomRolesHelper
     /* Needs recode, awaiting phantom role base*/
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
+        if (Options.CurrentGameMode is CustomGameMode.CandR && player.Is(CustomRoles.Cop)) return true; 
         if (player == null) return false;
         var customRole = player.GetCustomRole();
         bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;

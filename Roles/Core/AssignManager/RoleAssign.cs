@@ -61,10 +61,6 @@ public class RoleAssign
             case CustomGameMode.CandR:
                 RoleResult = [];
                 RoleResult = CopsAndRobbersManager.SetRoles();
-                foreach ((byte playerId, CustomRoles rl) in RoleResult)
-                {
-                    Logger.Warn($"set role for {playerId}: {rl}", "Start select");
-                }
                 return;
         }
 
