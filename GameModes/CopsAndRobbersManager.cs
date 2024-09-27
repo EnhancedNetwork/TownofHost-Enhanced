@@ -2,9 +2,7 @@
 using static TOHE.Translator;
 using UnityEngine;
 using Hazel;
-using static UnityEngine.GraphicsBuffer;
 using TOHE.Modules;
-using MS.Internal.Xml.XPath;
 
 namespace TOHE;
 
@@ -27,7 +25,7 @@ internal static class CopsAndRobbersManager
     private static readonly HashSet<Vector2> removeTrap = [];
     private static readonly Dictionary<byte, long> spikeTrigger = [];
     private static readonly Dictionary<byte, long> flashTrigger = [];
-    private static readonly Dictionary<byte, byte> radar = [];
+    private static readonly Dictionary<byte, byte> k9 = [];
     private static readonly Dictionary<byte, bool> scopeAltered = [];
     private static int killDistance;
 
@@ -48,7 +46,7 @@ internal static class CopsAndRobbersManager
     private static OptionItem CandR_FlashBangChance;
     private static OptionItem CandR_FlashBangRadius;
     private static OptionItem CandR_FlashBangDuration;
-    private static OptionItem CandR_RadarChance;
+    private static OptionItem CandR_K9Chance;
     private static OptionItem CandR_ScopeChance;
     private static OptionItem CandR_ScopeIncrease;
     public static OptionItem CopHeader;
@@ -132,7 +130,7 @@ internal static class CopsAndRobbersManager
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_FlashBangChance);
 
-        CandR_RadarChance = IntegerOptionItem.Create(Id + 14, "C&R_RadarChance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+        CandR_K9Chance = IntegerOptionItem.Create(Id + 14, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
@@ -174,7 +172,7 @@ internal static class CopsAndRobbersManager
         HotPursuit, // Speed boost for a set amount of time.
         SpikeStrip, // Sets a trap that slows down the robber.
         FlashBang, // Sets a trap that blinds the robber temporarily.
-        Radar, // Points to the closest robber.
+        K9, // Points to the closest robber.
         Scope // Increases the capture range.
     }
 
@@ -204,7 +202,7 @@ internal static class CopsAndRobbersManager
             {CopAbility.HotPursuit, CandR_HotPursuitChance },
             {CopAbility.SpikeStrip, CandR_SpikeStripChance },
             {CopAbility.FlashBang, CandR_FlashBangChance },
-            {CopAbility.Radar, CandR_RadarChance },
+            {CopAbility.K9, CandR_K9Chance },
             {CopAbility.Scope, CandR_ScopeChance },
         };
         copAbilityChances.Clear();
@@ -234,7 +232,7 @@ internal static class CopsAndRobbersManager
         removeTrap.Clear();
         spikeTrigger.Clear();
         flashTrigger.Clear();
-        radar.Clear();
+        k9.Clear();
         scopeAltered.Clear();
         killDistance = Main.RealOptionsData.GetInt(Int32OptionNames.KillDistance);
         CopCumulativeChances();
@@ -371,7 +369,7 @@ internal static class CopsAndRobbersManager
         {
             case 0:
                 writer.Write(copId);
-                writer.Write(radar[copId]);
+                writer.Write(k9[copId]);
                 break;
             case 1:
                 writer.Write(copId);
@@ -387,12 +385,12 @@ internal static class CopsAndRobbersManager
         {
             case 0:
                 byte copId = reader.ReadByte();
-                byte radarId = reader.ReadByte();
-                radar[copId] = radarId;
+                byte k9Id = reader.ReadByte();
+                k9[copId] = k9Id;
                 break;
             case 1:
                 byte removeCopId = reader.ReadByte();
-                radar.Remove(removeCopId);
+                k9.Remove(removeCopId);
                 break;
         }
         
@@ -428,10 +426,10 @@ internal static class CopsAndRobbersManager
             case CopAbility.FlashBang: //it might also be removed in fixed update when trap triggered.
                 trapLocation.Remove(loc);
                 break;
-            case CopAbility.Radar:
-                byte targetId = radar[cop.PlayerId];
-                Logger.Info($"Removed radar for {cop.PlayerId}", "Remove radar");
-                radar.Remove(cop.PlayerId);
+            case CopAbility.K9:
+                byte targetId = k9[cop.PlayerId];
+                Logger.Info($"Removed k9 for {cop.PlayerId}", "Remove k9");
+                k9.Remove(cop.PlayerId);
                 SendCandRData(1, cop.PlayerId);
                 TargetArrow.Remove(cop.PlayerId, targetId);
                 break;
@@ -463,12 +461,12 @@ internal static class CopsAndRobbersManager
                 trapLocation.Add(loc, ability);
                 break;
 
-            case CopAbility.Radar:
-                if (radar.ContainsKey(cop.PlayerId))
+            case CopAbility.K9:
+                if (k9.ContainsKey(cop.PlayerId))
                     return;
-                radar.Add(cop.PlayerId, byte.MaxValue);
+                k9.Add(cop.PlayerId, byte.MaxValue);
                 SendCandRData(0, cop.PlayerId);
-                Logger.Info($"Added {cop.PlayerId} for radar", "Ability activated");
+                Logger.Info($"Added {cop.PlayerId} for k9", "Ability activated");
                 break;
             case CopAbility.Scope:
                 if (scopeAltered.ContainsKey(cop.PlayerId))
@@ -503,7 +501,7 @@ internal static class CopsAndRobbersManager
     }
     public static string GetClosestArrow(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting || !radar.ContainsKey(seer.PlayerId) || seer.PlayerId != target.PlayerId) return string.Empty;
+        if (isForMeeting || !k9.ContainsKey(seer.PlayerId) || seer.PlayerId != target.PlayerId) return string.Empty;
         return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), TargetArrow.GetArrows(seer));
     }
     public static void OnCopAttack(PlayerControl cop, PlayerControl robber)
@@ -737,29 +735,29 @@ internal static class CopsAndRobbersManager
                 if (copId == byte.MaxValue) continue;
                 PlayerControl copPC = Utils.GetPlayerById(copId);
                 if (copPC == null) continue;
-                //check for radar
-                if (radar.ContainsKey(copId))
+                //check for k9
+                if (k9.ContainsKey(copId))
                 {
                     PlayerControl closest = Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoles.Robber) && !captured.ContainsKey(pc.PlayerId))
                         .MinBy(robberPC => Utils.GetDistance(copPC.GetCustomPosition(), robberPC.GetCustomPosition()));
                     if (closest == null) continue;
-                    if (radar.TryGetValue(copId, out var targetId) && targetId != byte.MaxValue)
+                    if (k9.TryGetValue(copId, out var targetId) && targetId != byte.MaxValue)
                     {
                         if (targetId != closest.PlayerId)
                         {
-                            radar[copId] = closest.PlayerId;
+                            k9[copId] = closest.PlayerId;
                             SendCandRData(0, copId);
-                            Logger.Info($"Set radar for {copId}, closest: {closest.PlayerId}", "Arrow Change");
+                            Logger.Info($"Set k9 for {copId}, closest: {closest.PlayerId}", "Arrow Change");
                             TargetArrow.Remove(copId, targetId);
                             TargetArrow.Add(copId, closest.PlayerId);
                         }
                     }
                     else
                     {
-                        radar[copId] = closest.PlayerId;
+                        k9[copId] = closest.PlayerId;
                         SendCandRData(0, copId);
                         TargetArrow.Add(copId, closest.PlayerId);
-                        Logger.Info($"Add radar for {copId}, closest: {closest.PlayerId}", "Arrow Change");
+                        Logger.Info($"Add k9 for {copId}, closest: {closest.PlayerId}", "Arrow Change");
                     }
                 }
             }
