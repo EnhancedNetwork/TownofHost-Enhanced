@@ -87,6 +87,9 @@ static class ExtendedPlayerControl
             player.GetRoleClass().Add(player.PlayerId);
         }
 
+        if (Camouflage.IsCamouflage)
+            Camouflage.RpcSetSkin(player);
+
         var customRole = player.GetCustomRole();
         Main.PlayerStates[player.PlayerId].IsDead = false;
         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.etc;
