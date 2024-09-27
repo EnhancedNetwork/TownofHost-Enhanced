@@ -259,6 +259,8 @@ internal class Baker : RoleBase
         if (lowLoad || !AllHasBread(player) || player.Is(CustomRoles.Famine)) return;
 
         player.RpcSetCustomRole(CustomRoles.Famine);
+        player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+
         player.Notify(GetString("BakerToFamine"));
         player.RpcGuardAndKill(player);
     }

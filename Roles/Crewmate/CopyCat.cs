@@ -56,7 +56,9 @@ internal class CopyCat : RoleBase
         foreach (var playerId in playerIdList.ToArray())
         {
             var pc = playerId.GetPlayer();
-            if (pc != null && !pc.IsAlive())
+            if (pc == null) continue;
+
+            if (!pc.IsAlive())
             {
                 if (!pc.HasGhostRole())
                 {

@@ -97,7 +97,7 @@ internal class SoulCollector : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl ryuak, NetworkedPlayerInfo iscute)
     {
-        if (!_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
+        if (_Player == null || !_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
         
         AbilityLimit++;
         SendRPC();
@@ -110,7 +110,7 @@ internal class SoulCollector : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        if (!_Player.IsAlive()) return;
+        if (_Player == null || !_Player.IsAlive()) return;
         if (TargetId == byte.MaxValue) return;
 
         var playerId = _Player.PlayerId;
@@ -134,7 +134,10 @@ internal class SoulCollector : RoleBase
         if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !inMeeting)
         {
             PlayerControl sc = _Player;
+
             sc.RpcSetCustomRole(CustomRoles.Death);
+            sc.GetRoleClass()?.OnAdd(sc.PlayerId);
+
             sc.Notify(GetString("SoulCollectorToDeath"));
             sc.RpcGuardAndKill(sc);
         }
@@ -147,6 +150,8 @@ internal class SoulCollector : RoleBase
         if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
         {
             _Player.RpcSetCustomRole(CustomRoles.Death);
+            _Player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+
             _Player.Notify(GetString("SoulCollectorToDeath"));
             _Player.RpcGuardAndKill(_Player);
         }

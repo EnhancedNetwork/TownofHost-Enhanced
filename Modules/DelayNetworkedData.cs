@@ -171,7 +171,7 @@ public class InnerNetClientPatch
     public static void FixedUpdatePostfix(InnerNetClient __instance)
     {
         // Just send with None calls. Who cares?
-        if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance.NetworkMode != NetworkModes.OnlineGame) return;
+        if (!Constants.IsVersionModded() || GameStates.IsInGame || __instance == null || __instance.NetworkMode != NetworkModes.OnlineGame) return;
         if (!__instance.AmHost || __instance.Streams == null) return;
 
         /*
