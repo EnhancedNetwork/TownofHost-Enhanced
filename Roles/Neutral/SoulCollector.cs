@@ -97,19 +97,20 @@ internal class SoulCollector : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl ryuak, NetworkedPlayerInfo iscute)
     {
-        if (!_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
+        if (_Player == null || !_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
         
         AbilityLimit++;
-        _ = new LateTask(() =>
-        {
-            Utils.SendMessage(GetString("PassiveSoulGained"), _Player.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
-
-        }, 3f, "Passive Soul Gained");
         SendRPC();
+    }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (!pc.IsAlive() || !GetPassiveSouls.GetBool()) return;
+
+        MeetingHudStartPatch.AddMsg(GetString("PassiveSoulGained"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        if (!_Player.IsAlive()) return;
+        if (_Player == null || !_Player.IsAlive()) return;
         if (TargetId == byte.MaxValue) return;
 
         var playerId = _Player.PlayerId;
@@ -118,7 +119,7 @@ internal class SoulCollector : RoleBase
         {
             TargetId = byte.MaxValue;
             AbilityLimit++;
-            if (GameStates.IsMeeting)
+            if (inMeeting)
             {
                 _ = new LateTask(() =>
                 {
@@ -130,15 +131,15 @@ internal class SoulCollector : RoleBase
             SendRPC();
             _Player.Notify(GetString("SoulCollectorSoulGained"));
         }
-        if (AbilityLimit >= SoulCollectorPointsOpt.GetInt())
+        if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !inMeeting)
         {
-            if (!GameStates.IsMeeting)
-            {
-                PlayerControl sc = _Player;
-                sc.RpcSetCustomRole(CustomRoles.Death);
-                sc.Notify(GetString("SoulCollectorToDeath"));
-                sc.RpcGuardAndKill(sc);
-            }
+            PlayerControl sc = _Player;
+
+            sc.RpcSetCustomRole(CustomRoles.Death);
+            sc.GetRoleClass()?.OnAdd(sc.PlayerId);
+
+            sc.Notify(GetString("SoulCollectorToDeath"));
+            sc.RpcGuardAndKill(sc);
         }
     }
     public override void AfterMeetingTasks()
@@ -149,6 +150,8 @@ internal class SoulCollector : RoleBase
         if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
         {
             _Player.RpcSetCustomRole(CustomRoles.Death);
+            _Player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+
             _Player.Notify(GetString("SoulCollectorToDeath"));
             _Player.RpcGuardAndKill(_Player);
         }
@@ -181,8 +184,7 @@ internal class Death : RoleBase
  
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (_Player == null || deathReason != PlayerState.DeathReason.Vote) return;
-        if (exileIds.Contains(_Player.PlayerId)) return;
+        if (_Player == null || exileIds == null || exileIds.Contains(_Player.PlayerId)) return;
         
         var deathList = new List<byte>();
         var death = _Player;
@@ -215,12 +217,13 @@ internal class Death : RoleBase
     }
     public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
-        var sc = Utils.GetPlayerListByRole(CustomRoles.Death).First();
+        if (exiled == null) return;
+        var sc = Utils.GetPlayerListByRole(CustomRoles.Death).FirstOrDefault();
         if (sc == null || !sc.IsAlive() || sc.Data.Disconnected) return;
 
         if (isMeetingHud)
         {
-            if (exiled == sc.Data)
+            if (exiled.PlayerId == sc.PlayerId)
             {
                 name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
             }

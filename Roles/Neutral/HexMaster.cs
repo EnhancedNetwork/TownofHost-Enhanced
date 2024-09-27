@@ -178,8 +178,6 @@ internal class HexMaster : RoleBase
     }
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (deathReason != PlayerState.DeathReason.Vote) return;
-
         foreach (var id in exileIds)
         {
             if (HexedPlayer.ContainsKey(id))

@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -727,8 +728,14 @@ internal class PlayerPhysicsRPCHandlerPatch
             Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
             return false;
         }
-        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
 
+        if (!Main.MeetingIsStarted)
+        {
+            __instance.myPlayer.walkingToVent = true;
+            VentSystemDeterioratePatch.ForceUpadate = true;
+        }
+
+        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
         return true;
     }
 }
@@ -745,6 +752,10 @@ internal static class RPC
             {
                 return;
             }
+        }
+        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
+        {
+            return;
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
@@ -770,6 +781,10 @@ internal static class RPC
             {
                 return;
             }
+        }
+        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
+        {
+            return;
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
@@ -913,6 +928,8 @@ internal static class RPC
         if (AmongUsClient.Instance.AmHost)
         {
             ShipStatus.Instance.enabled = false;
+            Utils.NotifyGameEnding();
+            
             try { GameManager.Instance.LogicFlow.CheckEndCriteria(); }
             catch { }
             try { GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false); }

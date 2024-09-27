@@ -103,7 +103,7 @@ internal class Virus : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!_Player.IsAlive() || deathReason != PlayerState.DeathReason.Vote || !KillInfectedPlayerAfterMeeting.GetBool()) return;
+        if (!_Player.IsAlive() || !KillInfectedPlayerAfterMeeting.GetBool()) return;
 
         var virus = _Player;
         if (exileIds.Contains(virus.PlayerId)) 
