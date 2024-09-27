@@ -2380,6 +2380,7 @@
   "DefaultSystemMessageTitle": "SYSTEM MESSAGE",
   "MessageFromTheHost": "HOST MESSAGE",
   "MessageFromEAC": "EAC",
+  "NotifyGameEnding": "This game is ending.\nIf you find yourself stuck in game,\npls just quit and rejoin the room.",
   "DetectiveNoticeTitle": "INVESTIGATION",
   "SleuthNoticeTitle": "SLEUTH",
   "GuessKillTitle": "GUESSING INFO",

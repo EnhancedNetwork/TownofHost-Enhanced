@@ -100,6 +100,19 @@ public static class Utils
             }
         }
     }
+
+    // Should happen before EndGame messages is sent
+    public static void NotifyGameEnding()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
+        {
+            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, player.OwnerId);
+            writer.Write(GetString("NotifyGameEnding"));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+    }
+
     public static ClientData GetClientById(int id)
     {
         try
