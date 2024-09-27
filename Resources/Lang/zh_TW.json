@@ -1262,7 +1262,7 @@
   "DisableAirshipGapRoomLightsPanel": "禁用間隙室的配電箱(<color=#ed0007>Airship</color>)",
   "DisableAirshipCargoLightsPanel": "禁用貨艙的配電箱(<color=#ed0007>Airship</color>)",
   "RandomSpawnMode": "隨機出生點",
-  "RandomSpawn_SpawnInFirstRound": "Active On Round One",
+  "RandomSpawn_SpawnInFirstRound": "第一輪時隨機出生",
   "RandomSpawn_SpawnRandomLocation": "隨機出生的地點",
   "RandomSpawn_AirshipAdditionalSpawn": "額外出生點(<color=#ed0007>Airship</color>)",
   "RandomSpawn_SpawnRandomVents": "偶爾出生在管道上",
@@ -2546,8 +2546,8 @@
   "ExiledExeTarget": "票出 {0} 讓你有種不祥的預感\n他是 {1}，而他背後傳來的是<color=#c0c0c0>暴民</color>陰沉的笑聲...",
   "ExiledInnocentTargetAddBelow": "\n回頭一看，<color=#8f815e>冤罪師</color> 正數著手裡的錢呢",
   "ExiledInnocentTargetInOneLine": "票出 {0} 讓你有種不祥的預感\n他是 {1}，而回頭一看，<color=#8f815e>冤罪師</color> 正數著手裡的錢呢",
-  "ExiledDeath": "{0} was {1}!\nThe Crew has been saved from <color=#ff174f>Armageddon</color>!",
-  "ExiledNotDeath": "{0} was the {1}.\nBut they were not <color=#644661>Death</color>...\n<b><color=#ff174f>Death has claimed the souls of the Crew!</color></b>",
+  "ExiledDeath": "{0} 是 {1}!\n船員們躲過了死亡使者帶來的<color=#ff174f>世界末日</color>!",
+  "ExiledNotDeath": "{0} 是 {1}。\n但他並不是<color=#644661>死亡使者</color>...\n<b><color=#ff174f>死亡使者奪走了所有人的靈魂!</color></b>",
   "IsGood": "{0} 是個<color=#8cffff>好人</color>",
   "BelongTo": "{0} 屬於 {1}",
   "PlayerIsRole": "{0} 是 {1}",
@@ -3620,6 +3620,6 @@
   "MinionAbilityTime": "技能持續時間",
   "Minion_Blind": "致盲",
   "Evader_ChanceNotExiled": "逃過逐出的機率",
-  "EavesdropperMsgTitle": "You found a secret",
-  "EavesdropPercentChance": "Chance to eavesdrop"
+  "EavesdropperMsgTitle": "你竊聽到了一個秘密",
+  "EavesdropPercentChance": "成功竊聽的機率"
 }
