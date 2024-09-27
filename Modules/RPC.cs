@@ -920,6 +920,8 @@ internal static class RPC
         if (AmongUsClient.Instance.AmHost)
         {
             ShipStatus.Instance.enabled = false;
+            Utils.NotifyGameEnding();
+            
             try { GameManager.Instance.LogicFlow.CheckEndCriteria(); }
             catch { }
             try { GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false); }

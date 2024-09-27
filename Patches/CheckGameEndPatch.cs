@@ -526,6 +526,7 @@ class GameEndCheckerForNormal
             yield return new WaitForSeconds(0.3f);
         }
 
+        Utils.NotifyGameEnding();
         // Update all Notify Roles
         Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 

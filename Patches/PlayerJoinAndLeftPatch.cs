@@ -471,6 +471,7 @@ class OnPlayerLeftPatch
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                         GameManager.Instance.enabled = false;
+                        Utils.NotifyGameEnding();
                         GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                     }, 3f, "Disconnect Error Auto-end");
 
