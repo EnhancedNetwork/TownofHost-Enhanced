@@ -1117,9 +1117,10 @@ static class ExtendedPlayerControl
                                 break;
                         }
                     }
-
-                if (!player.HasImpKillButton(considerVanillaShift: false))
-                    Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
+                break;
+        }
+        if (!player.HasImpKillButton(considerVanillaShift: false))
+            Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
 
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
