@@ -135,6 +135,8 @@ class ExileControllerWrapUpPatch
         {
             _ = new LateTask(() =>
             {
+                if (GameStates.IsEnded) return;
+
                 exiled = AntiBlackout_LastExiled;
                 AntiBlackout.SendGameData();
                 AntiBlackout.SetRealPlayerRoles();
@@ -149,6 +151,8 @@ class ExileControllerWrapUpPatch
 
             _ = new LateTask(() =>
             {
+                if (GameStates.IsEnded) return;
+
                 Main.AfterMeetingDeathPlayers.Do(x =>
                 {
                     var player = x.Key.GetPlayer();

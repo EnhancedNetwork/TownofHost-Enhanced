@@ -38,7 +38,7 @@ internal class Hangman : RoleBase
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
             return true;
 
-        if (target.IsTransformedNeutralApocalypse())
+        if (target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer))
             return true;
 
         if (target.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())

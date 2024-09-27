@@ -32,16 +32,24 @@ static class PerformVentOpPatch
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
+    public static long LastUpadate;
+    public static bool ForceUpadate;
+
     public static void Postfix(VentilationSystem __instance)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.IntroDestroyed) return;
-        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed) return;
+
+        var nowTime = Utils.GetTimeStamp();
+        if (ForceUpadate || (nowTime != LastUpadate))
         {
-            if (pc.BlockVentInteraction())
+            LastUpadate = nowTime;
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                pc.RpcCloseVent(__instance);
+                if (pc.BlockVentInteraction())
+                {
+                    LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                    pc.RpcCloseVent(__instance);
+                }
             }
         }
     }

@@ -38,7 +38,7 @@ class CheckTaskCompletionPatch
 class GameEndCheckerForNormal
 {
     public static GameEndPredicate predicate;
-    public static bool ShowAllRolesWhenGameEnd = false;
+    public static bool GameIsEnded = false;
     public static bool ShouldNotCheck = false;
 
     public static bool Prefix()
@@ -49,7 +49,7 @@ class GameEndCheckerForNormal
 
         if (Options.NoGameEnd.GetBool() && WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
-        ShowAllRolesWhenGameEnd = false;
+        GameIsEnded = false;
         var reason = GameOverReason.ImpostorByKill;
         predicate.CheckForEndGame(out reason);
 
@@ -78,7 +78,7 @@ class GameEndCheckerForNormal
             Main.AllPlayerControls.Do(pc => Camouflage.RpcSetSkin(pc, ForceRevert: true, RevertToDefault: true, GameEnd: true));
 
             // Show all roles
-            ShowAllRolesWhenGameEnd = true;
+            GameIsEnded = true;
 
             // Update all Notify Roles
             Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
@@ -508,6 +508,7 @@ class GameEndCheckerForNormal
 
         // Remember true win to display in chat
         SetEverythingUpPatch.LastWinsReason = winner is CustomWinner.Crewmate or CustomWinner.Impostor ? GetString($"GameOverReason.{reason}") : "";
+        Utils.NotifyGameEnding();
 
         // Delay to ensure that resuscitation is delivered after the ghost roll setting
         yield return new WaitForSeconds(0.2f);

@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 

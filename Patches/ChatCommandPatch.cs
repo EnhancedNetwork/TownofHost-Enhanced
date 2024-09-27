@@ -262,12 +262,14 @@ internal class ChatCommands
                         case "crew":
                         case "tripulante":
                             GameManager.Instance.enabled = false;
+                            Utils.NotifyGameEnding();
                             GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
                             break;
 
                         case "imp":
                         case "impostor":
                             GameManager.Instance.enabled = false;
+                            Utils.NotifyGameEnding();
                             GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                             break;
 
