@@ -1878,7 +1878,7 @@ public static class Utils
         if (Main.AllPlayerControls == null) return;
 
         //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return;
+        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return;
 
         //var caller = new System.Diagnostics.StackFrame(1, false);
         //var callerMethod = caller.GetMethod();
@@ -1895,7 +1895,7 @@ public static class Utils
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
 
         //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return Task.CompletedTask;
+        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
 
         //var logger = Logger.Handler("DoNotifyRoles");
 

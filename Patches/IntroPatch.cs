@@ -23,16 +23,15 @@ class CoShowIntroPatch
 
         _ = new LateTask(() =>
         {
-            if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
+            if (GameStates.IsEnded) return;
+
+            StartGameHostPatch.RpcSetDisconnected(disconnected: false, forced: true);
+
+            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                StartGameHostPatch.RpcSetDisconnected(disconnected: false, forced: true);
-
-                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-
-                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                {
-                    pc.SetCustomIntro();
-                }
+                pc.SetCustomIntro();
             }
         }, 0.6f, "Set Disconnected");
 
@@ -40,23 +39,22 @@ class CoShowIntroPatch
         {
             try
             {
-                if (!(AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd))
+                if (GameStates.IsEnded) return;
+
+                // Assign tasks after assign all roles, as it should be
+                ShipStatus.Instance.Begin();
+
+                GameOptionsSender.AllSenders.Clear();
+                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 {
-                    // Assign tasks after assign all roles, as it should be
-                    ShipStatus.Instance.Begin();
-
-                    GameOptionsSender.AllSenders.Clear();
-                    foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                    {
-                        GameOptionsSender.AllSenders.Add(new PlayerGameOptionsSender(pc));
-                    }
-
-                    Utils.SyncAllSettings();
+                    GameOptionsSender.AllSenders.Add(new PlayerGameOptionsSender(pc));
                 }
+
+                Utils.SyncAllSettings();
             }
             catch
             {
-                Logger.Warn($"Game ended? {AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd}", "ShipStatus.Begin");
+                Logger.Warn($"Game ended? {GameStates.IsEnded}", "ShipStatus.Begin");
             }
         }, 4f, "Assing Task For All");
     }

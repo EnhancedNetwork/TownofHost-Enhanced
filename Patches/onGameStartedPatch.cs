@@ -86,7 +86,7 @@ internal class ChangeRoleSettings
             Main.IntroDestroyed = false;
             GameEndCheckerForNormal.ShouldNotCheck = false;
             GameEndCheckerForNormal.ForEndGame = false;
-            GameEndCheckerForNormal.ShowAllRolesWhenGameEnd = false;
+            GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
 
             VentSystemDeterioratePatch.LastClosestVent.Clear();
@@ -357,7 +357,7 @@ internal class StartGameHostPatch
 
     public static System.Collections.IEnumerator AssignRoles()
     {
-        if (AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) yield break;
+        if (GameStates.IsEnded) yield break;
 
         try
         {
