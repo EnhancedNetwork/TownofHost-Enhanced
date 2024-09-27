@@ -104,21 +104,4 @@ internal class Ventguard : RoleBase
             BlockedVents.Clear();
         }
     }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor;
-        var TaskCompleteColor = Color.green;
-        var NonCompleteColor = Color.yellow;
-        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-        TextColor = comms ? Color.gray : NormalColor;
-        string Completed2 = comms ? "?" : $"{taskState.CompletedTasksCount}";
-        Color TextColor21;
-        if (AbilityLimit < 1) TextColor21 = Color.red;
-        else TextColor21 = Color.white;
-        ProgressText.Append(Utils.ColorString(TextColor, $"({Completed2}/{taskState.AllTasksCount})"));
-        ProgressText.Append(Utils.ColorString(TextColor21, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
-    }
 }

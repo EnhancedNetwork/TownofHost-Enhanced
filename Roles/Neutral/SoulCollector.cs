@@ -47,7 +47,7 @@ internal class SoulCollector : RoleBase
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
-    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f),  $"({playerId.GetAbilityUseLimit()}/{SoulCollectorPointsOpt.GetInt()})");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f),  $"({playerId.GetAbilityUseLimit()}/{SoulCollectorPointsOpt.GetInt()})");
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("SoulCollectorKillButtonText"));
     
     private void SendRPC()
@@ -115,8 +115,9 @@ internal class SoulCollector : RoleBase
         if (TargetId == deadPlayer.PlayerId && playerState.IsDead && !playerState.Disconnected)
         {
             TargetId = byte.MaxValue;
-            AbilityLimit++;
-            if (GameStates.IsMeeting)
+            _Player.RpcIncreaseAbilityUseLimitBy(1);
+
+            if (inMeeting)
             {
                 _ = new LateTask(() =>
                 {
