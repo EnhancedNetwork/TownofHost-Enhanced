@@ -923,7 +923,7 @@
   "NecromancerInfoLong": "(中立陣營):\n當有人嘗試殺死死靈法師時，殺人行動會被阻擋並且死靈法師會傳送到隨機的通風口中，並且必須在倒數計時時間內殺死兇手，如果成功殺死，則存活，反之，如果倒數計時結束時你沒有殺死兇手，或是殺錯人，你會永久死亡。遊戲結束時，如果死靈法師活到最後，則死靈法師獨自獲勝。",
   "LastImpostorInfoLong": "(附加職業):\n這個效果只在偽裝者陣營只剩下一人時賦予該玩家，被賦予效果的玩家殺人冷卻將會縮短。",
   "OverclockedInfoLong": "(附加職業):\n超頻的冷卻時間會被減少至設定的百分比(%) 數(依據房主設定)，該附加職業只會給予帶刀玩家。",
-  "LoversInfoLong": "(附加職業):\n戀人為兩名玩家的組合。戀人可以看到對方名字旁有「♥」圖標作為提示，當戀人其中一人死亡時則另一人殉情(根據房主設定可能不會殉情)。戀人其中一人在會議中被逐出時，另一人也將死亡並變成不可報告的屍體。當場上只剩下戀人時戀人將獨自獲勝，戀人其中一人獲勝時另一人也一起獲勝。",
+  "LoversInfoLong": "(Add-ons):\nLovers are a combination of two players. The Lovers win when they are the last ones standing, and their victory is shared. When one of the Lovers wins, the other also wins together. Lovers can see the 「♥」 next to each other's name. If one of the Lovers dies, the other will die in love (may not die in love according to the Host's settings). When one of the Lovers is exiled in the meeting, the other will die and become a dead body that cannot be reported.",
   "MadmateInfoLong": "(附加職業):\n只有船員會成為叛徒，叛徒需要幫助偽裝者陣營獲勝，當偽裝者陣營失敗時叛徒也會失敗。根據房主設定，叛徒與偽裝者可能可以互認。\n\n擺爛人、告密者、網紅不會成為叛徒。此外，當以下職業成為叛徒之後技能將發生變動:\n\n時間大師 => 做任務減少會議時間。\n保鑣 => 兇手是偽裝者時不發動技能。\n擲彈兵 => 閃光彈只對船員生效。\n警長 => 預設可以殺死任何人。(具體可以殺死的陣營依據房主設定)\n正義賭怪 => 可以猜測船員。\n告密者 => 完成任務後與偽裝者互認。\n愚者 => 準確看到所有帶刀中立以及帶刀船員玩家顯示為紅名。\n法官 => 可以隨意審判。\n和平之鴿 => 技能只對船員生效",
   "WatcherInfoLong": "(附加職業):\n即使匿名投票設定為開啟狀態，觀察者依然可以在會議看到場上的投票",
   "FlashInfoLong": "(附加職業):\n閃電俠的初始移動速度會比其他人快。(具體速度依房主設定)",
