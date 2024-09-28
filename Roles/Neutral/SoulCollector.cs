@@ -74,6 +74,7 @@ internal class SoulCollector : RoleBase
     
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
+        if (_Player == null) return string.Empty;
         if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
@@ -144,7 +145,7 @@ internal class SoulCollector : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        if (!_Player.IsAlive()) return;
+        if (_Player == null || !_Player.IsAlive()) return;
         TargetId = byte.MaxValue;
 
         if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
