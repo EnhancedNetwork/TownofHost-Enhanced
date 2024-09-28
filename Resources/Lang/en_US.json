@@ -1789,6 +1789,7 @@
   "JudgeCanTrialContagious": "Can trial <color=#2E8B57>Contagious</color>",
   "JudgeTryHideMsg": "Hide <color=#f8d85a>Judge</color>'s commands",
   "JudgeTrialLimitPerMeeting": "Max Trials per Meeting",
+  "JudgeTrialLimitPerGame": "Max Trials per Game",
   "JudgeCanTrialMadmate": "Can trial <color=#ff1919>Madmates</color>",
   "JudgeCanTrialCharmed": "Can trial <color=#cf6acd>Charmed</color> players",
   "JudgeDead": "Sorry, you can't trial players after death.",
