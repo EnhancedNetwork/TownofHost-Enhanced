@@ -156,6 +156,46 @@ public class InnerNetClientPatch
             }
             */
 
+            if (netObjParent is NetworkedPlayerInfo playerinfo)
+            {
+                _ = new LateTask(() =>
+                {
+                    if (playerinfo != null && AmongUsClient.Instance.AmConnected)
+                    {
+                        var client = AmongUsClient.Instance.GetClient(playerinfo.ClientId);
+                        if (client != null && !client.IsDisconnected())
+                        {
+                            if (playerinfo.IsIncomplete)
+                            {
+                                Logger.Info($"Disconnecting Client [{client.Id}]{client.PlayerName} {client.FriendCode} for playerinfo timeout", "DelayedNetworkedData");
+                                AmongUsClient.Instance.SendLateRejection(client.Id, DisconnectReasons.ClientTimeout);
+                                __instance.OnPlayerLeft(client, DisconnectReasons.ClientTimeout);
+                            }
+                        }
+                    }
+                }, 5f, "PlayerInfo Green Bean Kick", false);
+            }
+
+            if (netObjParent is PlayerControl player)
+            {
+                _ = new LateTask(() =>
+                {
+                    if (player != null && !player.notRealPlayer && !player.isDummy && AmongUsClient.Instance.AmConnected)
+                    {
+                        var client = AmongUsClient.Instance.GetClient(player.OwnerId);
+                        if (client != null && !client.IsDisconnected())
+                        {
+                            if (player.Data == null  || player.Data.IsIncomplete)
+                            {
+                                Logger.Info($"Disconnecting Client [{client.Id}]{client.PlayerName} {client.FriendCode} for playercontrol timeout", "DelayedNetworkedData");
+                                AmongUsClient.Instance.SendLateRejection(client.Id, DisconnectReasons.ClientTimeout);
+                                __instance.OnPlayerLeft(client, DisconnectReasons.ClientTimeout);
+                            }
+                        }
+                    }
+                }, 5.5f, "PlayerControl Green Bean Kick", false);
+            }
+
             AmongUsClient.Instance.SendOrDisconnect(msg);
         }
 
