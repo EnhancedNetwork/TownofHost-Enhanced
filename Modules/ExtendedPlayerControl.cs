@@ -12,7 +12,6 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
-using static InnerNet.InnerNetClient;
 using static TOHE.Translator;
 
 namespace TOHE;
