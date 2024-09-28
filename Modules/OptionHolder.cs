@@ -140,6 +140,8 @@ public static class Options
     public static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
     public static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
     public static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem InspectorAbilityUseGainWithEachTaskCompleted;
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;

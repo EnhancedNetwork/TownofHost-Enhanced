@@ -14,7 +14,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 185/255 USED
+enum CustomRPC : byte // 182/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -78,8 +78,7 @@ enum CustomRPC : byte // 185/255 USED
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
-    SetJailerTarget,
-    SetJailerExeLimit,
+    SyncJailerData,
     SetInspectorLimit,
     KeeperRPC,
     SetAlchemistTimer,
@@ -524,11 +523,8 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
             //    break;
-            case CustomRPC.SetJailerExeLimit:
-                Jailer.ReceiveRPC(reader, setTarget: false);
-                break;
-            case CustomRPC.SetJailerTarget:
-                Jailer.ReceiveRPC(reader, setTarget: true);
+            case CustomRPC.SyncJailerData:
+                Jailer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
