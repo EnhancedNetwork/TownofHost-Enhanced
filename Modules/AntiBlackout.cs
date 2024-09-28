@@ -100,6 +100,7 @@ public static class AntiBlackout
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
+        if (dummyImp == null) return;
 
         foreach (var seer in Main.AllPlayerControls)
         {
