@@ -25,7 +25,7 @@ class CoShowIntroPatch
         {
             if (GameStates.IsEnded) return;
 
-            StartGameHostPatch.RpcSetDisconnected(disconnected: false, forced: true);
+            StartGameHostPatch.RpcSetDisconnected(disconnected: false);
 
             DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
 
