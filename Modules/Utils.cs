@@ -765,7 +765,7 @@ public static class Utils
 
             Color TextColor = comms ? Color.gray : NormalColor;
             string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-            return ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})");
+            return ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})");
         }
         catch
         {

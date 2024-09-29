@@ -44,6 +44,7 @@ internal class Benefactor : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        taskIndex[playerId] = [];
         playerId.SetAbilityUseLimit(0);
     }
     public override void Remove(byte playerId)
@@ -114,7 +115,7 @@ internal class Benefactor : RoleBase
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();
-        Color TextColor = Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f);
+        Color TextColor = Utils.GetRoleColor(CustomRoles.Benefactor).ShadeColor(0.25f);
 
         var maxUses = TaskMarkPerRoundOpt.GetInt();
         var usesLeft = Math.Max(maxUses - playerId.GetAbilityUseLimit(), 0);
