@@ -657,8 +657,6 @@ internal class StartGameHostPatch
             stream.EndMessage();
             AmongUsClient.Instance.SendOrDisconnect(stream);
             stream.Recycle();
-
-            playerInfo.SetDirtyBit(uint.MaxValue);
         }
     }
 
