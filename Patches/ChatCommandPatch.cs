@@ -59,7 +59,7 @@ internal class ChatCommands
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Judge jd && jd.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -1892,7 +1892,7 @@ internal class ChatCommands
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
-        if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
