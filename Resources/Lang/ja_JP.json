@@ -3619,7 +3619,7 @@
   "WardenWarn": "危険！逃げて！",
   "MinionAbilityTime": "能力の持続時間",
   "Minion_Blind": "盲目的",
-  "Evader_ChanceNotExiled": "Chance not be exiled",
-  "EavesdropperMsgTitle": "You found a secret",
-  "EavesdropPercentChance": "Chance to eavesdrop"
+  "Evader_ChanceNotExiled": "追放されない可能性",
+  "EavesdropperMsgTitle": "秘密を見つけた",
+  "EavesdropPercentChance": "盗み聞きするチャンス"
 }
