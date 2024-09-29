@@ -713,7 +713,7 @@ class CastVotePatch
                 case CustomRoles.Dictator:
                     if (target.Is(CustomRoles.Solsticer))
                     {
-                        SendMessage(GetString("VoteSolsticer"), srcPlayerId);
+                        SendMessage(GetString("ExpelSolsticer"), srcPlayerId);
                         __instance.RpcClearVoteDelay(voter.GetClientId());
                         return false;
                     }
