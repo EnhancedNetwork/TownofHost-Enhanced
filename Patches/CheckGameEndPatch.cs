@@ -643,15 +643,15 @@ class GameEndCheckerForNormal
             else
             {
                 if (impCount >= 1) return false; // Both Imp and NK are alive, the game must continue
-                if (covenCount >= 1) return false; // Both Coven and NK are alive, the game must continue
-                if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers NK (the game must continue)
-                if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers Coven (the game must continue)
-                if (crewCount <= covenCount && totalNKAlive == 0) // Imps dead, NK dead, Coven <= NK, Coven wins
+                if (crewCount <= covenCount && totalNKAlive == 0) // Imps dead, NK dead, Crew <= Coven, Coven wins
                 {
                     reason = GameOverReason.ImpostorByKill;
                     ResetAndSetWinner(CustomWinner.Coven);
                     return true;
                 }
+                if (covenCount >= 1) return false; // Both Coven and NK are alive, the game must continue
+                if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers NK (the game must continue)
+                if (crewCount > covenCount) return false; // Imps are dead, but Crew still outnumbers Coven (the game must continue)
                 else // Imps dead, Crew <= NK, Checking if All nk alive are in 1 team 
                 {
                     var winners = neutralRoleCounts.Where(kvp => kvp.Value == totalNKAlive).ToArray();

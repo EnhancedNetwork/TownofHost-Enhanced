@@ -3,6 +3,7 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 using InnerNet;
+using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -174,7 +175,7 @@ internal class Snitch : RoleBase
                 {
                     foreach (var target in Main.AllAlivePlayerControls)
                     {
-                        if (!IsSnitchTarget(target)) continue;
+                        if (!IsSnitchTarget(target) || (!Illusionist.IsNonCovIllusioned(target.PlayerId) && Illusionist.SnitchCanIllusioned.GetBool())) continue;
                         
                         var targetId = target.PlayerId;
 

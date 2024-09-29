@@ -8,6 +8,7 @@ using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Vanilla;
 
 namespace TOHE.Roles.Core;
@@ -104,6 +105,7 @@ public static class CustomRoleManager
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+        if (Medusa.HasEnabled) Medusa.SetStoned(player, opt);
 
         var playerSubRoles = player.GetCustomSubRoles();
 

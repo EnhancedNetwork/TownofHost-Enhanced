@@ -1,8 +1,10 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -54,7 +56,7 @@ internal class Witness : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown();
-        if (Main.AllKillers.ContainsKey(target.PlayerId))
+        if (Illusionist.IsNonCovIllusioned(target.PlayerId) || (Main.AllKillers.ContainsKey(target.PlayerId) && !Illusionist.IsCovIllusioned(target.PlayerId)))
             killer.Notify(GetString("WitnessFoundKiller"));
         else
             killer.Notify(GetString("WitnessFoundInnocent"));

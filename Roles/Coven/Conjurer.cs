@@ -1,17 +1,11 @@
 using Hazel;
 using TOHE.Roles.Core;
-using TOHE.Roles.Double;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Modules;
 using InnerNet;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using System.Text.RegularExpressions;
 using System;
-using TOHE.Modules.ChatManager;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Coven;

@@ -276,7 +276,7 @@ class CheckMurderPatch
             return false;
 
         // Coven CAN'T kill Coven/Enchanted
-        if ((killer.Is(Custom_Team.Coven) || killer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) return false;
+        // if ((killer.Is(Custom_Team.Coven) || killer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) return false;
 
         Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
 

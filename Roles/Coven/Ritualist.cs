@@ -2,7 +2,6 @@
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Modules;
 using InnerNet;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,7 +10,6 @@ using System.Text.RegularExpressions;
 using System;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Coven;
 
@@ -29,6 +27,8 @@ internal class Ritualist : CovenManager
     public static OptionItem TryHideMsg;
 
     private static readonly Dictionary<byte, int> RitualLimit = [];
+    private static readonly Dictionary<byte, List<byte>> EnchantedPlayers = [];
+
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Ritualist, 1, zeroOne: false);
@@ -40,14 +40,18 @@ internal class Ritualist : CovenManager
     public override void Init()
     {
         RitualLimit.Clear();
+        EnchantedPlayers.Clear();
     }
     public override void Add(byte PlayerId)
     {
+        EnchantedPlayers[PlayerId] = [];
         RitualLimit.Add(PlayerId, MaxRitsPerRound.GetInt());
     }
-    public override void Remove(byte playerId)
+    private static void SendRPC(byte playerId)
     {
-        RitualLimit.Remove(playerId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BloodRitual, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
@@ -62,8 +66,10 @@ internal class Ritualist : CovenManager
             RitualLimit[pid] = MaxRitsPerRound.GetInt();
         }
     }
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
+        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
+        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
     public static bool RitualistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -125,12 +131,21 @@ internal class Ritualist : CovenManager
 
             RitualLimit[pc.PlayerId]--;
 
-            target.RpcSetCustomRole(CustomRoles.Enchanted);
+            EnchantedPlayers[pc.PlayerId].Add(target.PlayerId);
             SendMessage(string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()), target.PlayerId);
             SendMessage(string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()), pc.PlayerId);
             return true;
         }
         return false;
+    }
+    public override void AfterMeetingTasks()
+    {
+        var rit = Utils.GetPlayerListByRole(CustomRoles.Ritualist).First();
+        foreach (var pc in EnchantedPlayers[rit.PlayerId])
+        {
+            GetPlayerById(pc).RpcSetCustomRole(CustomRoles.Enchanted);
+        }
+        EnchantedPlayers[rit.PlayerId].Clear();
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {

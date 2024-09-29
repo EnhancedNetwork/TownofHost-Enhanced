@@ -7,6 +7,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using InnerNet;
+using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -106,8 +107,11 @@ internal class Oracle : RoleBase
                 if (ChangeRecruitTeam.GetBool())
                 {
                     if (target.Is(CustomRoles.Admired)) text = "Crewmate";
+                    else if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
+                    else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
                     else if (target.GetCustomRole().IsImpostorTeamV2() || target.GetCustomSubRoles().Any(role => role.IsImpostorTeamV2())) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutralTeamV2() || target.GetCustomSubRoles().Any(role => role.IsNeutralTeamV2())) text = "Neutral";
+                    else if (target.IsPlayerCoven() || target.Is(CustomRoles.Enchanted)) text = "Coven";
                     else if (target.GetCustomRole().IsCrewmateTeamV2() && (target.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target.GetCustomSubRoles().Count == 0))) text = "Crewmate";
                 }
                 else

@@ -1,18 +1,14 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
 using InnerNet;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 public abstract class CovenManager : RoleBase
 {
-    public static PlayerControl necroHolder;
+    public static byte necroHolder;
 
     public enum VisOptionList
     {
@@ -61,7 +57,7 @@ public abstract class CovenManager : RoleBase
     => HasNecronomicon(seen) ? ColorString(GetRoleColor(CustomRoles.CovenLeader), "♣") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (!(seer == target) && HasNecronomicon(target) && seer.IsPlayerCoven() && !HasNecronomicon(seer))
+        if ((seer != target) && HasNecronomicon(target) && seer.IsPlayerCoven())
         {
             return ColorString(GetRoleColor(CustomRoles.CovenLeader), "♣");
         }
@@ -77,7 +73,7 @@ public abstract class CovenManager : RoleBase
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte NecroId = reader.ReadByte();
-        necroHolder = GetPlayerById(NecroId);
+        necroHolder = NecroId;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -103,33 +99,37 @@ public abstract class CovenManager : RoleBase
             return option.GetBool();
         }
     }
-    /*
+    
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
-    */
+    
     public static void GiveNecronomicon()
     {
-        
         var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven() && pc.IsAlive()).ToList();
         if (pcList.Any())
         {
-            PlayerControl rp = pcList.RandomElement();
+            byte rp = pcList.RandomElement().PlayerId;
             necroHolder = rp;
-            necroHolder.Notify(GetString("NecronomiconNotification"));
-            SendRPC(necroHolder.PlayerId);
+            GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
+            SendRPC(necroHolder);
         }
-        
+    }
+    public static void GiveNecronomicon(byte target)
+    {
+        necroHolder = target;
+        GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
+        SendRPC(necroHolder);
     }
     public override void OnCoEndGame()
     {
-        necroHolder = null;
+        necroHolder = byte.MaxValue;
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!necroHolder.IsAlive())
+        if (necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive())
         {
             GiveNecronomicon();
         }
     }
-    public static bool HasNecronomicon(PlayerControl pc) => necroHolder.Equals(pc);
+    public static bool HasNecronomicon(PlayerControl pc) => necroHolder == pc.PlayerId;
 }

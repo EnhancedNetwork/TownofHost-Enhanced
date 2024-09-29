@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -84,7 +85,7 @@ internal class Psychic : RoleBase
     {
         if (!_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
-        List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x =>
+        List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
         (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
