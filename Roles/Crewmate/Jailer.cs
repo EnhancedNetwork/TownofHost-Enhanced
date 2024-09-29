@@ -173,14 +173,17 @@ internal class Jailer : RoleBase
         {
             var targetIdByte = (byte)targetId;
             var tpc = targetIdByte.GetPlayer();
-            if (tpc.IsAlive())
+            if (tpc != null)
             {
-                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
-                tpc.SetRealKiller(player);
-            }
-            if (!CanBeExecuted(tpc.GetCustomRole()))
-            {
-                playerId.SetAbilityUseLimit(0);
+                if (tpc.IsAlive())
+                {
+                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
+                    tpc.SetRealKiller(player);
+                }
+                if (!CanBeExecuted(tpc.GetCustomRole()))
+                {
+                    playerId.SetAbilityUseLimit(0);
+                }
             }
         }
         JailerHasExe[playerId] = false;
