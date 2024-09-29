@@ -923,7 +923,7 @@
   "NecromancerInfoLong": "(中立阵营):\n当亡灵巫师试图被杀时，就会被阻挡击杀，并被传送到一个随机的通风口。将在有限的时间内杀死击杀亡灵巫师的玩家。如果成功击杀，就能活下去。如果在杀死击杀亡灵巫师的玩家之前时间耗尽，将永久死亡。如果试图杀死击杀亡灵巫师的玩家以外的其他人，也会死亡。",
   "LastImpostorInfoLong": "(附加职业):\n这个效果在内鬼仅剩一人时赋予该内鬼。使其击杀冷却缩短。",
   "OverclockedInfoLong": "(附加职业):\n超频波的冷却时间将减少设定时间。只分配给带刀职业",
-  "LoversInfoLong": "(附加职业):\n恋人为两名玩家的组合。场上仅剩恋人时恋人获胜。恋人其中一人胜利时另一人也一起胜利。恋人可以看到对方名字旁有「♥」标志。恋人其中一人死亡则另一人殉情（根据房主设置可能不会殉情）。恋人其中一人在会议中被放逐时，另一人将死亡并变为不可以被报告的尸体。",
+  "LoversInfoLong": "(Add-ons):\nLovers are a combination of two players. The Lovers win when they are the last ones standing, and their victory is shared. When one of the Lovers wins, the other also wins together. Lovers can see the 「♥」 next to each other's name. If one of the Lovers dies, the other will die in love (may not die in love according to the Host's settings). When one of the Lovers is exiled in the meeting, the other will die and become a dead body that cannot be reported.",
   "MadmateInfoLong": "(附加职业):\n只有船员会成为叛徒，叛徒需要帮助内鬼阵营获得胜利，当内鬼阵营失败时叛徒也会失败。叛徒与内鬼是否互知根据房主设定。\n\n摆烂人与网红不会成为叛徒，部分船员职业是否可以成为叛徒依据房主设定。此外，当以下职业成为叛徒后技能将发生变动：\n\n时间操控者 => 做任务减少会议时间。\n保镖 => 凶手是内鬼的时不发动技能。\n掷雷兵 => 闪光弹只对船员生效。\n警长 => 默认可以击杀任何人。（具体可以击杀的阵营根据房主设定）\n正义赌怪 => 可以猜测船员。\n告密者 => 完成任务后与内鬼互认。\n愚者 => 准确地看到所有邪恶中立以及带刀船员玩家显示为红名。\n正义法官 => 可以随意审判。",
   "WatcherInfoLong": "(附加职业):\n窥视者可以直接看到每个人投的票。",
   "FlashInfoLong": "(附加职业):\n闪电侠的默认移动速度比其他玩家要快。(速度取决于房主设置）",
