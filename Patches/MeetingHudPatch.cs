@@ -612,9 +612,12 @@ class CheckForEndVotingPatch
     }
     private static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
-        foreach (var roleClass in CustomRoleManager.AllEnabledRoles.ToArray())
+        if (deathReason == PlayerState.DeathReason.Vote)
         {
-            roleClass?.OnCheckForEndVoting(deathReason, playerIds);
+            foreach (var player in Main.AllPlayerControls)
+            {
+                player.GetRoleClass()?.OnCheckForEndVoting(deathReason, playerIds);
+            }
         }
 
         foreach (var playerId in playerIds)

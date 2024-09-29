@@ -446,9 +446,6 @@ class MurderPlayerPatch
             target.SetDeathReason(PlayerState.DeathReason.Kill);
         }
 
-        target.Data.IsDead = true;
-        GameData.Instance.DirtyAllData();
-
         Main.MurderedThisRound.Add(target.PlayerId);
 
         // Check Youtuber first died
@@ -1120,7 +1117,7 @@ class FixedUpdateInNormalGamePatch
             }
 
 
-            if (GameStates.IsInTask)
+            if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
                 CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
 
@@ -1498,22 +1495,16 @@ class CoEnterVentPatch
         if (!__instance.myPlayer.CanUseVents() || (playerRoleClass != null && playerRoleClass.CheckBootFromVent(__instance, id))
         )
         {
-            try
-            {
-                __instance?.RpcBootFromVent(id);
-            }
-            catch
-            {
-                _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
-            }
-            // Returning false causes errors in the logs
-            // I don’t yet know how to patch the IEnumerator function in Harmony, but need to send false in a certain place
-            return false;
+            _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
+            return true;
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
-
         return true;
+    }
+    public static void Postfix()
+    {
+        _ = new LateTask(() => VentSystemDeterioratePatch.ForceUpadate = false, 1f, "Set Force Upadate As False", shoudLog: false);
     }
 }
 // Player entered in vent

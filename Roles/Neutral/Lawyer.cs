@@ -169,11 +169,13 @@ internal class Lawyer : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
+        if (TargetId == byte.MaxValue) return string.Empty;
+
         if ((!seer.IsAlive() || seer.Is(CustomRoles.Lawyer)) && IsTarget(target.PlayerId))
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
         }
-        else if (seer.IsAlive() && TargetKnowsLawyer.GetBool() && IsTarget(seer.PlayerId))
+        else if (seer.IsAlive() && TargetKnowsLawyer.GetBool() && IsTarget(seer.PlayerId) && _state.PlayerId == target.PlayerId)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
         }

@@ -52,11 +52,17 @@ internal class Terrorist : RoleBase
     {
         CheckTerroristWin(exiled);
     }
-    private static void CheckTerroristWin(NetworkedPlayerInfo terrorist)
+    private static void CheckTerroristWin(NetworkedPlayerInfo terroristData)
     {
-        var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
-        if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()) && (Main.PlayerStates[terrorist.PlayerId].deathReason != PlayerState.DeathReason.Armageddon))
+        var terrorist = terroristData.Object;
+        if (terrorist == null) return;
+
+        var state = Main.PlayerStates[terrorist.PlayerId];
+        var taskState = terrorist.GetPlayerTaskState();
+        if (taskState.IsTaskFinished && (!state.IsSuicide || CanTerroristSuicideWin.GetBool()) && (state.deathReason != PlayerState.DeathReason.Armageddon))
         {
+            if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+            
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
@@ -80,7 +86,7 @@ internal class Terrorist : RoleBase
                     pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                     Main.PlayerStates[pc.PlayerId].SetDead();
                     pc.RpcMurderPlayer(pc);
-                    pc.SetRealKiller(terrorist.Object);
+                    pc.SetRealKiller(terrorist);
                 }
             }
         }

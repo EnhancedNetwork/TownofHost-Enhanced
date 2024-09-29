@@ -46,11 +46,11 @@ internal class Swooper : RoleBase
     }
     private void SendRPC(PlayerControl pc)
     {
-        if (pc.IsHost()) return;
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WriteNetObject(_Player);
-        writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
+        writer.Write(InvisCooldown.GetValueOrDefault(pc.PlayerId, -1).ToString());
+        writer.Write(InvisDuration.GetValueOrDefault(pc.PlayerId, -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -60,7 +60,7 @@ internal class Swooper : RoleBase
         long cooldown = long.Parse(reader.ReadString());
         long invis = long.Parse(reader.ReadString());
         if (cooldown > 0) InvisCooldown.Add(PlayerControl.LocalPlayer.PlayerId, cooldown);
-        if (invis > 0) InvisCooldown.Add(PlayerControl.LocalPlayer.PlayerId, invis);
+        if (invis > 0) InvisDuration.Add(PlayerControl.LocalPlayer.PlayerId, invis);
     }
 
     private static bool CanGoInvis(byte id)

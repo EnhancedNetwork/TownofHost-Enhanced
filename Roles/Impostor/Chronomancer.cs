@@ -100,23 +100,29 @@ internal class Chronomancer : RoleBase
 
         return sb.ToString();
     }
-    public void SetCooldown()
+    public override void SetKillCooldown(byte id)
     {
         if (IsInMassacre)
         {
-            Main.AllPlayerKillCooldown[_state.PlayerId] = 0.1f;
+            Main.AllPlayerKillCooldown[id] = 0.1f;
         }
         else
         {
-            Main.AllPlayerKillCooldown[_state.PlayerId] = realcooldown;
+            Main.AllPlayerKillCooldown[id] = realcooldown;
         }
-        _Player.SyncSettings();
+        _Player?.SyncSettings();
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         ChargedTime = 0;
         IsInMassacre = false;
-        _Player?.MarkDirtySettings();
+        _Player?.ResetKillCooldown();
+    }
+    public override void AfterMeetingTasks()
+    {
+        ChargedTime = 0;
+        IsInMassacre = false;
+        _Player?.ResetKillCooldown();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

@@ -61,7 +61,7 @@ static class ExtendedPlayerControl
             player.SetRole(role, true);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.None, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
         writer.Write((ushort)role);
         writer.Write(true);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -87,6 +87,9 @@ static class ExtendedPlayerControl
             player.RpcSetCustomRole(player.GetRoleMap().CustomRole);
             player.GetRoleClass().Add(player.PlayerId);
         }
+
+        if (Camouflage.IsCamouflage)
+            Camouflage.RpcSetSkin(player);
 
         var customRole = player.GetCustomRole();
         Main.PlayerStates[player.PlayerId].IsDead = false;
@@ -582,7 +585,7 @@ static class ExtendedPlayerControl
         // If player is inside a vent, we get the nearby vents that the player can snapto and insert them to the top of the list
         // Idk how to directly get the vent a player is in, so just assume the closet vent from the player is the vent that player is in
         // Not sure about whether inVent flags works 100% correct here. Maybe player is being kicked from a vent and inVent flags can return true there
-        if ((player.walkingToVent || player.inVent) && vents[0] != null)
+        if ((player.MyPhysics.Animations.IsPlayingEnterVentAnimation() || player.walkingToVent || player.inVent) && vents[0] != null)
         {
             var nextvents = vents[0].NearbyVents.ToList();
             nextvents.RemoveAll(v => v == null);
@@ -1104,13 +1107,6 @@ static class ExtendedPlayerControl
         if (!player.HasImpKillButton(considerVanillaShift: false))
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
 
-        if (player.GetRoleClass() is Chronomancer ch)
-        {
-            ch.realcooldown = Main.AllPlayerKillCooldown[player.PlayerId];
-            ch.SetCooldown();
-        }
-
-
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
         {
             Main.AllPlayerKillCooldown[player.PlayerId] = 0.3f;
@@ -1230,7 +1226,7 @@ static class ExtendedPlayerControl
     private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.ShowAllRolesWhenGameEnd) return true;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (PlayerControl.LocalPlayer.PlayerId == seer.PlayerId && Main.GodMode.Value)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
         else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;

@@ -4,8 +4,10 @@ using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using UnityEngine;
+using System.Text;
 using static TOHE.Translator;
 using static TOHE.CheckForEndVotingPatch;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -49,7 +51,20 @@ internal class Swapper : RoleBase
         AbilityLimit = SwapMax.GetInt();
     }
     public override bool OnCheckStartMeeting(PlayerControl reporter) => OptCanStartMeeting.GetBool();
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString((AbilityLimit > 0) ? Utils.GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        var taskState8 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor8;
+        var TaskCompleteColor8 = Color.green;
+        var NonCompleteColor8 = Color.yellow;
+        var NormalColor8 = taskState8.IsTaskFinished ? TaskCompleteColor8 : NonCompleteColor8;
+        TextColor8 = comms ? Color.gray : NormalColor8;
+        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
+        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount}) "));
+        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Swapper).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})"));
+        return ProgressText.ToString();
+    }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;

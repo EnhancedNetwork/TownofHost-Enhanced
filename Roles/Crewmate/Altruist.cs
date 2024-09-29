@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
@@ -50,10 +52,27 @@ internal class Altruist : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
+
+    public void SendRPC()
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(IsRevivingMode);
+        writer.Write(RevivedPlayerId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        IsRevivingMode = reader.ReadBoolean();
+        RevivedPlayerId = reader.ReadByte();
+    }
+
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
     {
         IsRevivingMode = !IsRevivingMode;
         Utils.NotifyRoles(SpecifySeer: physics.myPlayer, ForceLoop: false);
+        SendRPC();
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
@@ -112,6 +131,7 @@ internal class Altruist : RoleBase
                 }
             }
             Utils.NotifyRoles();
+            SendRPC();
             return false;
         }
         else if ((RevivedDeadBodyCannotBeReported.GetBool() || reporter.PlayerId == RevivedPlayerId) && deadBody.PlayerId == RevivedPlayerId)
@@ -120,6 +140,7 @@ internal class Altruist : RoleBase
             if (countDeadBody >= 2) return true;
 
             reporter.Notify(Translator.GetString("Altruist_YouTriedReportRevivedDeadBody"));
+            SendRPC();
             return false;
         }
 
@@ -127,7 +148,7 @@ internal class Altruist : RoleBase
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl target, bool isForMeeting = false, bool isForHud = false)
     {
-        if (seer.PlayerId != target.PlayerId || isForMeeting) return string.Empty;
+        if (seer.PlayerId != target.PlayerId || isForMeeting  || !_Player.IsAlive()) return string.Empty;
         return string.Format(Translator.GetString("AltruistSuffix"), Translator.GetString(IsRevivingMode ? "AltruistReviveMode" : "AltruistReportMode"));
     }
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
@@ -160,9 +181,12 @@ internal class Altruist : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud?.AbilityButton?.OverrideText(Translator.GetString("AltruistAbilityButton"));
+        if (_Player.IsAlive())
+        {
+            hud?.AbilityButton?.OverrideText(Translator.GetString("AltruistAbilityButton"));
 
-        if (IsRevivingMode)
-            hud?.ReportButton?.OverrideText(Translator.GetString("AltruistReviveMode"));
+            if (IsRevivingMode)
+                hud?.ReportButton?.OverrideText(Translator.GetString("AltruistReviveMode"));
+        }
     }
 }

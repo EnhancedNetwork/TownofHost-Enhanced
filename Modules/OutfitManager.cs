@@ -17,6 +17,7 @@ public static class OutfitManager
             .EndRpc();
 
             Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
+            RPC.SyncAllPlayerNames();
 
             player.SetColor(Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
@@ -100,6 +101,8 @@ public static class OutfitManager
             .EndRpc();
 
             Main.AllPlayerNames[player.PlayerId] = newOutfit.PlayerName;
+
+            RPC.SyncAllPlayerNames();
         }
 
         player.SetColor(newOutfit.ColorId);

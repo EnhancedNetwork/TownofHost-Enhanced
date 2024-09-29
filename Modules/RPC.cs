@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -18,7 +19,6 @@ enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
-    BetterCheck = 150, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -74,7 +74,11 @@ enum CustomRPC : byte // 185/255 USED
     SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
-    RpcPassBomb = 151, // BetterCheck used 150
+
+    // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
+    BetterCheck = 150,
+
+    RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
     SetJailerTarget,
@@ -732,8 +736,14 @@ internal class PlayerPhysicsRPCHandlerPatch
             Logger.Warn("Received Physics RPC without a player", "PlayerPhysics_ReceiveRPC");
             return false;
         }
-        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
 
+        if (!Main.MeetingIsStarted)
+        {
+            __instance.myPlayer.walkingToVent = true;
+            VentSystemDeterioratePatch.ForceUpadate = true;
+        }
+
+        Logger.Info($"{player.PlayerId}({(__instance.IsHost() ? "Host" : player.Data.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "PlayerPhysics_ReceiveRPC");
         return true;
     }
 }
@@ -750,6 +760,10 @@ internal static class RPC
             {
                 return;
             }
+        }
+        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
+        {
+            return;
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
@@ -775,6 +789,10 @@ internal static class RPC
             {
                 return;
             }
+        }
+        else if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient()))
+        {
+            return;
         }
 
         if (!AmongUsClient.Instance.AmHost || PlayerControl.AllPlayerControls.Count <= 1 || (AmongUsClient.Instance.AmHost == false && PlayerControl.LocalPlayer == null))
@@ -918,6 +936,8 @@ internal static class RPC
         if (AmongUsClient.Instance.AmHost)
         {
             ShipStatus.Instance.enabled = false;
+            Utils.NotifyGameEnding();
+            
             try { GameManager.Instance.LogicFlow.CheckEndCriteria(); }
             catch { }
             try { GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false); }
