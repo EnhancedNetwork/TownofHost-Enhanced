@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using UnityEngine;
+using System;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -309,7 +310,7 @@ internal class Troller : RoleBase
         TextColor8 = comms ? Color.gray : NonCompleteColor8;
         string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
         ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount}) "));
-        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Troller).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})"));
+        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Troller).ShadeColor(0.25f) : Color.gray, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
         return ProgressText.ToString();
     }
 }
