@@ -1,13 +1,9 @@
 ﻿using AmongUs.GameOptions;
-using UnityEngine;
-using System;
-using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
@@ -301,17 +297,5 @@ internal class Troller : RoleBase
         {
             CurrentActiveSabotage = systemType;
         }
-    }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState8 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor8;
-        var NonCompleteColor8 = Color.white;
-        TextColor8 = comms ? Color.gray : NonCompleteColor8;
-        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
-        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount}) "));
-        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Troller).ShadeColor(0.25f) : Color.gray, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
     }
 }
