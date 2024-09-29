@@ -164,33 +164,29 @@ internal class Jailer : RoleBase
                 role.IsImpostorTeamV3();
     }
 
-    public override void AfterMeetingTasks()
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
-        foreach (var pid in JailerHasExe.Keys)
+        var playerId = player.PlayerId;
+        if (!JailerTarget.TryGetValue(playerId, out var targetId)) return;
+
+        if (targetId != byte.MaxValue && JailerHasExe[playerId])
         {
-            var targetId = JailerTarget[pid];
-            if (targetId != byte.MaxValue && JailerHasExe[pid])
+            var targetIdByte = (byte)targetId;
+            var tpc = targetIdByte.GetPlayer();
+            if (tpc.IsAlive())
             {
-                var targetIdByte = (byte)targetId;
-                var tpc = targetIdByte.GetPlayer();
-                if (tpc != null)
-                {
-                    if (tpc.IsAlive())
-                    {
-                        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
-                        tpc.SetRealKiller(Utils.GetPlayerById(pid));
-                    }
-                    if (!CanBeExecuted(tpc.GetCustomRole()))
-                    {
-                        pid.SetAbilityUseLimit(0);
-                    }
-                }
+                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
+                tpc.SetRealKiller(player);
             }
-            JailerHasExe[pid] = false;
-            JailerTarget[pid] = byte.MaxValue;
-            JailerDidVote[pid] = false;
-            SendRPC(pid);
+            if (!CanBeExecuted(tpc.GetCustomRole()))
+            {
+                playerId.SetAbilityUseLimit(0);
+            }
         }
+        JailerHasExe[playerId] = false;
+        JailerTarget[playerId] = byte.MaxValue;
+        JailerDidVote[playerId] = false;
+        SendRPC(playerId);
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
