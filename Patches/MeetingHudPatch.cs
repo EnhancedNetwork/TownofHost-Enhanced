@@ -58,7 +58,7 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                if (Dictator.CheckVotingForTarget(pc, pva))
+                if (Dictator.CheckVotingForTarget(pc, pva) && !Dictator.ChangeCommandToExpel.GetBool())
                 {
                     var voteTarget = GetPlayerById(pva.VotedFor);
                     TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
@@ -410,7 +410,7 @@ class CheckForEndVotingPatch
     }
 
     // Credit：https://github.com/music-discussion/TownOfHost-TheOtherRoles
-    private static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
+    public static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (exiledPlayer == null) return;
@@ -609,7 +609,7 @@ class CheckForEndVotingPatch
         }
         CheckForDeathOnExile(deathReason, [.. AddedIdList]);
     }
-    private static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
+    public static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
         if (deathReason == PlayerState.DeathReason.Vote)
         {
