@@ -14,11 +14,10 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 182/255 USED
+enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
-    BetterCheck = 150, // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -74,7 +73,11 @@ enum CustomRPC : byte // 182/255 USED
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
-    SetCurrentDrawTarget = 151, // BetterCheck used 150
+
+    // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
+    BetterCheck = 150,
+
+    SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,

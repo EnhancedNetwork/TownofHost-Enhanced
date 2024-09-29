@@ -520,7 +520,7 @@ internal class StartGameHostPatch
 
         Logger.Info("Send rpc disconnected for all", "AssignRoleTypes");
         DataDisconnected.Clear();
-        RpcSetDisconnected(disconnected: true, forced: false);
+        RpcSetDisconnected(disconnected: true);
 
         yield return new WaitForSeconds(4f);
 
@@ -627,7 +627,7 @@ internal class StartGameHostPatch
     }
 
     private static readonly Dictionary<byte, bool> DataDisconnected = [];
-    public static void RpcSetDisconnected(bool disconnected, bool forced)
+    public static void RpcSetDisconnected(bool disconnected)
     {
         foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())
         {
@@ -646,26 +646,20 @@ internal class StartGameHostPatch
                 playerInfo.IsDead = data;
             }
 
-            if (forced)
+            var stream = MessageWriter.Get(SendOption.Reliable);
+            stream.StartMessage(5);
+            stream.Write(AmongUsClient.Instance.GameId);
             {
-                var stream = MessageWriter.Get(SendOption.Reliable);
-                stream.StartMessage(5);
-                stream.Write(AmongUsClient.Instance.GameId);
-                {
-                    stream.StartMessage(1);
-                    stream.WritePacked(playerInfo.NetId);
-                    playerInfo.Serialize(stream, false);
-                    stream.EndMessage();
-                }
+                stream.StartMessage(1);
+                stream.WritePacked(playerInfo.NetId);
+                playerInfo.Serialize(stream, false);
                 stream.EndMessage();
-                AmongUsClient.Instance.SendOrDisconnect(stream);
-                stream.Recycle();
             }
-            else
-            {
-                // Let Delayed Networked Data send with delay.
-                playerInfo.SetDirtyBit(uint.MaxValue);
-            }
+            stream.EndMessage();
+            AmongUsClient.Instance.SendOrDisconnect(stream);
+            stream.Recycle();
+
+            playerInfo.SetDirtyBit(uint.MaxValue);
         }
     }
 

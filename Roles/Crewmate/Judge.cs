@@ -6,6 +6,8 @@ using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
+using System.Text;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -21,6 +23,7 @@ internal class Judge : RoleBase
     //==================================================================\\
 
     public static OptionItem TrialLimitPerMeeting;
+    private static OptionItem TrialLimitPerGame;
     private static OptionItem TryHideMsg;
     private static OptionItem CanTrialMadmate;
     private static OptionItem CanTrialCharmed;
@@ -34,12 +37,14 @@ internal class Judge : RoleBase
     private static OptionItem CanTrialNeutralC;
     private static OptionItem CanTrialNeutralA;
 
-    private static readonly Dictionary<byte, int> TrialLimit = [];
+    private static readonly Dictionary<byte, int> TrialLimitMeeting = [];
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Judge);
         TrialLimitPerMeeting = IntegerOptionItem.Create(Id + 10, "JudgeTrialLimitPerMeeting", new(1, 30, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge])
+            .SetValueFormat(OptionFormat.Times);
+        TrialLimitPerGame = IntegerOptionItem.Create(Id + 22, "JudgeTrialLimitPerGame", new(1, 30, 1), 1, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge])
             .SetValueFormat(OptionFormat.Times);
         CanTrialMadmate = BooleanOptionItem.Create(Id + 12, "JudgeCanTrialMadmate", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
         CanTrialCharmed = BooleanOptionItem.Create(Id + 16, "JudgeCanTrialCharmed", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Judge]);
@@ -58,23 +63,25 @@ internal class Judge : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        TrialLimit.Clear();
+        TrialLimitMeeting.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        TrialLimit.Add(playerId, TrialLimitPerMeeting.GetInt());
+        TrialLimitMeeting.Add(playerId, TrialLimitPerMeeting.GetInt());
+        playerId.SetAbilityUseLimit(TrialLimitPerGame.GetInt());
     }
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
-        TrialLimit.Remove(playerId);
+        TrialLimitMeeting.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)
     {
-        foreach (var pid in TrialLimit.Keys)
+        foreach (var pid in TrialLimitMeeting.Keys)
         {
-            TrialLimit[pid] = TrialLimitPerMeeting.GetInt();
+            TrialLimitMeeting[pid] = TrialLimitPerMeeting.GetInt();
+            SendRPC(pid, true);
         }
     }
     public static bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
@@ -124,10 +131,14 @@ internal class Judge : RoleBase
             {
                 Logger.Info($"{pc.GetNameWithRole()} try trial {target.GetNameWithRole()}", "Judge");
                 bool judgeSuicide = true;
-                if (TrialLimit[pc.PlayerId] < 1)
+                if (TrialLimitMeeting[pc.PlayerId] < 1)
                 {
-                    pc.ShowInfoMessage(isUI, GetString("JudgeTrialMax"));
+                    pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxMeetingMsg"));
                     return true;
+                }
+                if (pc.GetAbilityUseLimit() < 1)
+                {
+                    pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxGameMsg"));
                 }
                 if (Jailer.IsTarget(target.PlayerId))
                 {
@@ -198,7 +209,9 @@ internal class Judge : RoleBase
 
                 string Name = dp.GetRealName();
 
-                TrialLimit[pc.PlayerId]--;
+                pc.RpcRemoveAbilityUse();
+                TrialLimitMeeting[pc.PlayerId]--;
+                SendRPC(pc.PlayerId, true);
 
                 if (!GameStates.IsProceeding)
                 
@@ -278,16 +291,28 @@ internal class Judge : RoleBase
         return false;
     }
 
-    private static void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId, bool syncLimit = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Judge, SendOption.Reliable, -1);
         writer.Write(playerId);
+        writer.Write(syncLimit);
+        writer.WritePacked(TrialLimitMeeting[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
-        int PlayerId = reader.ReadByte();
-        TrialMsg(pc, $"/tl {PlayerId}", true);
+        byte PlayerId = reader.ReadByte();
+        var syncLimit = reader.ReadBoolean();
+
+        if (syncLimit)
+        {
+            var trialLimit = reader.ReadPackedInt32();
+            TrialLimitMeeting[PlayerId] = trialLimit;
+        }
+        else
+        {
+            TrialMsg(pc, $"/tl {PlayerId}", true);
+        }
     }
 
     private static void JudgeOnClick(byte playerId /*, MeetingHud __instance*/)
@@ -296,7 +321,7 @@ internal class Judge : RoleBase
         var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) TrialMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
-        else SendRPC(playerId);
+        else SendRPC(playerId, false);
     }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
