@@ -140,7 +140,7 @@ internal class Jailer : RoleBase
         {
             if (voter.GetAbilityUseLimit() > 0)
             {
-                voter.RpcResetAbilityCooldown();
+                voter.RpcRemoveAbilityUse();
                 JailerHasExe[voter.PlayerId] = true;
             }
             else JailerHasExe[voter.PlayerId] = false;
@@ -161,7 +161,7 @@ internal class Jailer : RoleBase
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
                 (role.IsNA() && NACanBeExe.GetBool()) ||
                 (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
-                (role.IsImpostorTeamV3());
+                role.IsImpostorTeamV3();
     }
 
     public override void AfterMeetingTasks()
@@ -171,12 +171,13 @@ internal class Jailer : RoleBase
             var targetId = JailerTarget[pid];
             if (targetId != byte.MaxValue && JailerHasExe[pid])
             {
-                var tpc = ((byte)targetId).GetPlayer();
+                var targetIdByte = (byte)targetId;
+                var tpc = targetIdByte.GetPlayer();
                 if (tpc != null)
                 {
                     if (tpc.IsAlive())
                     {
-                        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, (byte)targetId);
+                        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
                         tpc.SetRealKiller(Utils.GetPlayerById(pid));
                     }
                     if (!CanBeExecuted(tpc.GetCustomRole()))
