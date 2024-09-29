@@ -81,6 +81,7 @@ internal class Judge : RoleBase
         foreach (var pid in TrialLimitMeeting.Keys)
         {
             TrialLimitMeeting[pid] = TrialLimitPerMeeting.GetInt();
+            SendRPC(pid, true);
         }
     }
     public bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
@@ -211,6 +212,7 @@ internal class Judge : RoleBase
                 TrialLimitMeeting[pc.PlayerId]--;
                 AbilityLimit--;
                 SendSkillRPC();
+                SendRPC(pc.PlayerId, true);
 
                 if (!GameStates.IsProceeding)
                 
@@ -290,16 +292,28 @@ internal class Judge : RoleBase
         return false;
     }
 
-    private static void SendRPC(byte playerId)
+    private static void SendRPC(byte playerId, bool syncLimit = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Judge, SendOption.Reliable, -1);
         writer.Write(playerId);
+        writer.Write(syncLimit);
+        writer.WritePacked(TrialLimitMeeting[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
-        int PlayerId = reader.ReadByte();
-        if (pc.GetRoleClass() is Judge judge) judge.TrialMsg(pc, $"/tl {PlayerId}", true);
+        byte PlayerId = reader.ReadByte();
+        var syncLimit = reader.ReadBoolean();
+
+        if (syncLimit)
+        {
+            var trialLimit = reader.ReadPackedInt32();
+            TrialLimitMeeting[PlayerId] = trialLimit;
+        }
+        else if (pc.GetRoleClass() is Judge judge)
+        {
+            judge.TrialMsg(pc, $"/tl {PlayerId}", true);
+        }
     }
 
     private static void JudgeOnClick(byte playerId /*, MeetingHud __instance*/)
@@ -308,7 +322,7 @@ internal class Judge : RoleBase
         var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.GetRoleClass() is Judge judge) judge.TrialMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
-        else SendRPC(playerId);
+        else SendRPC(playerId, false);
     }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
