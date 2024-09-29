@@ -1,8 +1,11 @@
 ﻿using AmongUs.GameOptions;
+using UnityEngine;
+using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
@@ -59,7 +62,7 @@ internal class Troller : RoleBase
 
         AllEvents = [.. EnumHelper.GetAllValues<Events>()];
 
-        if (Utils.GetActiveMapName() is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle))
+        if (GetActiveMapName() is not (MapNames.Airship or MapNames.Polus or MapNames.Fungle))
         {
             AllEvents.Remove(Events.AllDoorsOpen);
             AllEvents.Remove(Events.AllDoorsClose);
@@ -89,12 +92,12 @@ internal class Troller : RoleBase
 
         AbilityLimit--;
 
-        if (Utils.IsActive(SystemTypes.MushroomMixupSabotage) || Utils.IsActive(SystemTypes.Electrical))
+        if (IsActive(SystemTypes.MushroomMixupSabotage) || IsActive(SystemTypes.Electrical))
         {
             AllEvents.Remove(Events.SabotageActivated);
             AllEvents.Remove(Events.SabotageDisabled);
         }
-        else if (Utils.AnySabotageIsActive())
+        else if (AnySabotageIsActive())
         {
             AllEvents.Remove(Events.SabotageActivated);
         }
@@ -119,7 +122,7 @@ internal class Troller : RoleBase
                     Main.AllPlayerSpeed[pcSpeed.PlayerId] = newSpeed;
                     pcSpeed.Notify(GetString("Troller_ChangesSpeed"));
                 }
-                Utils.MarkEveryoneDirtySettings();
+                MarkEveryoneDirtySettings();
 
                 _ = new LateTask(() =>
                 {
@@ -128,13 +131,13 @@ internal class Troller : RoleBase
                         Main.AllPlayerSpeed[pcSpeed.PlayerId] = Main.AllPlayerSpeed[pcSpeed.PlayerId] - newSpeed + tempSpeed[pcSpeed.PlayerId];
                         pcSpeed.Notify(GetString("Troller_SpeedOut"));
                     }
-                    Utils.MarkEveryoneDirtySettings();
+                    MarkEveryoneDirtySettings();
                 }, 10f, "Troller: Set Speed to default");
                 break;
             case Events.SabotageActivated:
                 var shipStatusActivated = ShipStatus.Instance;
                 List<SystemTypes> allSabotage = [];
-                switch ((MapNames)Utils.GetActiveMapId())
+                switch (GetActiveMapName())
                 {
                     case MapNames.Skeld:
                     case MapNames.Dleks:
@@ -186,7 +189,7 @@ internal class Troller : RoleBase
                         shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 67);
                         break;
                     case SystemTypes.Comms:
-                        var mapId = Utils.GetActiveMapId();
+                        var mapId = GetActiveMapId();
 
                         shipStatusDisabled.RpcUpdateSystem(CurrentActiveSabotage, 16);
                         if (mapId is 1 or 5) // Mira HQ or The Fungle
@@ -296,5 +299,17 @@ internal class Troller : RoleBase
         {
             CurrentActiveSabotage = systemType;
         }
+    }
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        var taskState8 = Main.PlayerStates?[playerId].TaskState;
+        Color TextColor8;
+        var NonCompleteColor8 = Color.white;
+        TextColor8 = comms ? Color.gray : NonCompleteColor8;
+        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
+        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount}) "));
+        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Troller).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})"));
+        return ProgressText.ToString();
     }
 }
