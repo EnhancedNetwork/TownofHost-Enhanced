@@ -729,7 +729,7 @@ public static class Utils
             if (limit < 1) TextColor = Color.red;
             else if (usingAbility) TextColor = Color.green;
             else TextColor = GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.25f);
-            return (displayOnlyUseAbility ? string.Empty : ColorString(Color.white, " - ")) + ColorString(TextColor, $"[{Math.Round(limit, 1)}]");
+            return (displayOnlyUseAbility ? string.Empty : ColorString(Color.white, " - ")) + ColorString(TextColor, $"({Math.Round(limit, 1)})");
         }
         catch
         {

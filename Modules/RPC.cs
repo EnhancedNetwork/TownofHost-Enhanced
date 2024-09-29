@@ -102,7 +102,6 @@ enum CustomRPC : byte // 185/255 USED
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SyncVultureBodyAmount,
     SpyRedNameSync,
     SpyRedNameRemove,
     SetImitateLimit,
@@ -657,9 +656,6 @@ internal class RPCHandlerPatch
                 {
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
-                break;
-            case CustomRPC.SyncVultureBodyAmount:
-                Vulture.ReceiveBodyRPC(reader);
                 break;
             case CustomRPC.SpyRedNameSync:
                 Spy.ReceiveRPC(reader);
