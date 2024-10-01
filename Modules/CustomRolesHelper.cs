@@ -1057,6 +1057,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sloth))
                     return false;
                 break;
+            
+             case CustomRoles.Susceptible:
+                if (pc.Is(CustomRoles.Jester))
+                    return false;
+                break;
 
             case CustomRoles.Sloth:
                 if (pc.Is(CustomRoles.Swooper) 
