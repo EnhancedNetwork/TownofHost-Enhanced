@@ -2627,6 +2627,7 @@
   "SettingsAreLoading": "<b>Loading\nsettings...</b>",
   "EAC.CheatDetected.HighLevel": "Warning: EAC detected High Level of cheats.",
   "EAC.CheatDetected.LowLevel": "Warning: EAC detected Low Level of cheats. One of the players is hacking.",
+  "JesterRevealUponEject": "false",
   "ExiledJester": "You're all fools!\n{0} the {1} laughing out loud tricked you into ejecting them.\nGG!",
   "JesterMeetingLoose": "<i>\r\nBut it cannot win until meeting number {0}</i>",
   "ExiledExeTarget": "{0} was the {1}.\nBut they were also the <color=#c0c0c0>Executioner</color>'s target!\nGG!",
