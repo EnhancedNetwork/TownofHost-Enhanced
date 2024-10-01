@@ -619,6 +619,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Necromancer)
                     || pc.Is(CustomRoles.Demon)
                     || pc.Is(CustomRoles.Shaman)
+                    || pc.Is(CustomRoles.Monarch)
                     || pc.Is(CustomRoles.Opportunist) && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool())
                     return false;
                 break;
@@ -1213,7 +1214,7 @@ public static class CustomRolesHelper
            CustomRoles.Cultist => CountTypes.Cultist,
            CustomRoles.HexMaster => CountTypes.HexMaster,
            CustomRoles.Necromancer => CountTypes.Necromancer,
-           CustomRoles.Stalker => !Stalker.SnatchesWin.GetBool() ? CountTypes.Stalker : CountTypes.Crew,
+           CustomRoles.Stalker => Stalker.SnatchesWins ? CountTypes.Crew : CountTypes.Stalker,
            CustomRoles.Arsonist => Arsonist.CanIgniteAnytime() ? CountTypes.Arsonist : CountTypes.Crew,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,

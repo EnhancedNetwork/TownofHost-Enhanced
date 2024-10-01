@@ -109,7 +109,6 @@ enum CustomRPC : byte // 185/255 USED
     SyncAdmiredList,
     SyncAdmiredAbility,
     SetImitateLimit,
-    SetStalkerrKillCount,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -543,9 +542,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.LightningSetGhostPlayer:
                 Lightning.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetStalkerrKillCount:
-                Stalker.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetGreedy:
                 Greedy.ReceiveRPC(reader);
