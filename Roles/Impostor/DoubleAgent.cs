@@ -67,7 +67,6 @@ internal class DoubleAgent : RoleBase
     }
     public override void Init()
     {
-        ClearBomb();
         playerIdList.Clear();
         CurrentBombedPlayers.Clear();
         CurrentBombedTime = -1;
