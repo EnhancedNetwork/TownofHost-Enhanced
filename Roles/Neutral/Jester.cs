@@ -21,6 +21,7 @@ internal class Jester : RoleBase
     private static OptionItem MeetingsNeededForWin;
     private static OptionItem HideJesterVote;
     public static OptionItem SunnyboyChance;
+    public static OptionItem RevealJesterUponEjection;
 
     private readonly HashSet<int> RememberBlockedVents = [];
 
@@ -43,6 +44,8 @@ internal class Jester : RoleBase
         SunnyboyChance = IntegerOptionItem.Create(Id + 7, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
             .SetValueFormat(OptionFormat.Percent);
+        RevealJesterUponEjection = BooleanOptionItem.Create(Id + 8, "Jester_RevealUponEject", true, TabGroup.NeutralRoles, true)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
     }
     public override void Init()
     {
@@ -98,7 +101,10 @@ internal class Jester : RoleBase
         {
             if (isMeetingHud)
             {
-                name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                if (RevealJesterUponEjection.GetBool())
+                {
+                    name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                }
                 DecidedWinner = true;
             }
             else
