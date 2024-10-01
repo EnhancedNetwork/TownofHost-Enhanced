@@ -619,6 +619,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Necromancer)
                     || pc.Is(CustomRoles.Demon)
                     || pc.Is(CustomRoles.Shaman)
+                    || pc.Is(CustomRoles.Monarch)
                     || pc.Is(CustomRoles.Opportunist) && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool())
                     return false;
                 break;
