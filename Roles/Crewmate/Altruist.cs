@@ -2,8 +2,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
