@@ -5,9 +5,9 @@ namespace TOHE.Modules;
 
 public static class CriticalErrorManager
 {
-    public static bool IsError = false;
-    public static bool ErrorFromRpc = false;
-    public static byte ModdedPlayerId = byte.MinValue;
+    private static bool IsError = false;
+    private static bool ErrorFromRpc = false;
+    private static byte ModdedPlayerId = byte.MinValue;
 
     public static void SetCreiticalError(string reason, bool whileLoading, string sourseError = "")
     {
