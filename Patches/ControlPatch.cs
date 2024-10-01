@@ -174,11 +174,6 @@ internal class ControllerManagerUpdatePatch
             {
                 Utils.CopyCurrentSettings();
             }
-            //Open the game directory
-            if (GetKeysDown(KeyCode.F10))
-            {
-                System.Diagnostics.Process.Start(Environment.CurrentDirectory);
-            }
 
             // Show chat
             if (GetKeysDown(KeyCode.Return, KeyCode.C, KeyCode.LeftShift))

@@ -965,7 +965,6 @@ public static class Options
 
             foreach (var addon in addonType.Value)
             {
-
                 addon.SetupCustomOption();
             }
 

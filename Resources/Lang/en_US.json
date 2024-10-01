@@ -1551,6 +1551,7 @@
   "MayorHasPortableButton": "<color=#204d42>Mayor</color> has a Mobile Emergency Button",
   "MayorNumOfUseButton": "Max Number of Mobile Emergency Buttons",
   "MeetingsNeededForWin": "Meetings needed to win",
+  "Jester_RevealUponEject": "Reveal Upon Eject",
   "CannotVoteWhenDead": "Cannot cast a vote while dead",
   "EnableVote": "Enable /vote command",
   "ShouldVoteSpam": "Try to hide /vote command",

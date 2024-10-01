@@ -18,8 +18,6 @@ internal class Cleaner : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem KillCooldownAfterCleaning;
 
-    private static readonly HashSet<byte> CleanerBodies = [];
-
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Cleaner);
@@ -32,7 +30,6 @@ internal class Cleaner : RoleBase
     }
     public override void Init()
     {
-        CleanerBodies.Clear();
         Playerids.Clear();
     }
     public override void Add(byte playerId)
@@ -44,12 +41,11 @@ internal class Cleaner : RoleBase
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (CleanerBodies.Contains(deadBody.PlayerId)) return false;
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
         if (reporter.Is(CustomRoles.Cleaner))
         {
-            CleanerBodies.Remove(deadBody.PlayerId);
-            CleanerBodies.Add(deadBody.PlayerId);
+            Main.UnreportableBodies.Add(deadBody.PlayerId);
 
             reporter.Notify(Translator.GetString("CleanerCleanBody"));
             reporter.SetKillCooldownV3(KillCooldownAfterCleaning.GetFloat(), forceAnime: true);

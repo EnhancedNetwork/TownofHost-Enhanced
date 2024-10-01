@@ -19,7 +19,6 @@ internal class Coroner : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    private static readonly HashSet<byte> UnreportablePlayers = [];
     private static readonly Dictionary<byte, HashSet<byte>> CoronerTargets = [];
 
     private static OptionItem ArrowsPointingToDeadBody;
@@ -42,7 +41,6 @@ internal class Coroner : RoleBase
     }
     public override void Init()
     {
-        UnreportablePlayers.Clear();
         CoronerTargets.Clear();
     }
     public override void Add(byte playerId)
@@ -81,7 +79,7 @@ internal class Coroner : RoleBase
             byte tid = reader.ReadByte();
             if (!CoronerTargets.ContainsKey(pid)) CoronerTargets[pid] = [];
             CoronerTargets[pid].Add(tid);
-            if (opt == 1) UnreportablePlayers.Add(tid);
+            if (opt == 1) Main.UnreportableBodies.Add(tid);
         }
     }
 
@@ -97,7 +95,7 @@ internal class Coroner : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.ReportButton.OverrideText(GetString("CoronerReportButtonText"));
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
         if (reporter.Is(CustomRoles.Coroner))
         {
@@ -133,7 +131,7 @@ internal class Coroner : RoleBase
             int operate = 0;
             if (LeaveDeadBodyUnreportable.GetBool())
             {
-                UnreportablePlayers.Add(deadBody.PlayerId);
+                Main.UnreportableBodies.Add(deadBody.PlayerId);
                 operate = 1;
             }
             SendRPCLimit(pc.PlayerId, operate, targetId: deadBody.PlayerId);

@@ -42,7 +42,7 @@ internal class Admirer : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit =  SkillLimit.GetInt();
-        AdmiredList.Add(playerId, []);
+        AdmiredList[playerId] = [];
     }
     public override void Remove(byte playerId)
     {

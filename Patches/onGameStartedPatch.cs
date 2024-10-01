@@ -88,7 +88,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.ForEndGame = false;
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
-
+            OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
             VentSystemDeterioratePatch.LastClosestVent.Clear();
 
             ChatManager.ResetHistory();
@@ -315,11 +315,11 @@ internal class StartGameHostPatch
             thiz.Spawn(ShipStatus.Instance, -2, SpawnFlags.None);
         }
         float timer = 0f;
-        for (; ; )
+        while (true)
         {
             bool stopWaiting = true;
             int maxTimer = 10;
-            if (GameOptionsManager.Instance.CurrentGameOptions.MapId == 5 || GameOptionsManager.Instance.CurrentGameOptions.MapId == 4)
+            if (GameOptionsManager.Instance.CurrentGameOptions.MapId is 4 or 5)
             {
                 maxTimer = 15;
             }
@@ -517,7 +517,7 @@ internal class StartGameHostPatch
             }
 
             EAC.LogAllRoles();
-            Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
+            //Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
             Logger.Msg("Ended", "AssignRoles");
         }
@@ -529,13 +529,13 @@ internal class StartGameHostPatch
         }
 
         Logger.Info("Others assign finished", "AssignRoleTypes");
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(GameStates.IsLocalGame ? 1f : 2f);
 
         Logger.Info("Send rpc disconnected for all", "AssignRoleTypes");
         DataDisconnected.Clear();
         RpcSetDisconnected(disconnected: true);
 
-        yield return new WaitForSeconds(4f);
+        yield return new WaitForSeconds(GameStates.IsLocalGame ? 2f : 4f);
 
         Logger.Info("Assign self", "AssignRoleTypes");
         SetRoleSelf();
@@ -671,8 +671,6 @@ internal class StartGameHostPatch
             stream.EndMessage();
             AmongUsClient.Instance.SendOrDisconnect(stream);
             stream.Recycle();
-
-            playerInfo.SetDirtyBit(uint.MaxValue);
         }
     }
 

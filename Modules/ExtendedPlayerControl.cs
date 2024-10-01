@@ -355,14 +355,16 @@ static class ExtendedPlayerControl
 
         if (seer == null || player == null) return;
 
-        var clientId = seer.GetClientId();
+        var leftPlayer = OnPlayerLeftPatch.LeftPlayerId;
+        if (seer.PlayerId == leftPlayer || player.PlayerId == leftPlayer) return;
 
-        var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
-            .Write(seer.Data.NetId)
-            .Write(name)
-        .EndRpc();
-        sender.SendMessage();
+        var clientId = seer.GetClientId();
+        if (clientId == -1) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
+        writer.Write(player.Data.NetId);
+        writer.Write(name);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcEnterVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
     {
