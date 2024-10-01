@@ -25,8 +25,7 @@ internal class Vulture : RoleBase
     private static OptionItem VultureReportCD;
     private static OptionItem MaxEaten;
     private static OptionItem HasImpVision;
-
-    private static readonly HashSet<byte> UnreportablePlayers = [];
+    
     private static readonly Dictionary<byte, int> BodyReportCount = [];
     private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
     private static readonly Dictionary<byte, long> LastReport = [];
@@ -45,7 +44,6 @@ internal class Vulture : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        UnreportablePlayers.Clear();
         BodyReportCount.Clear();
         AbilityLeftInRound.Clear();
         LastReport.Clear();
@@ -115,8 +113,7 @@ internal class Vulture : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        // Vulture was eat body
-        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
         if (reporter.Is(CustomRoles.Vulture))
         {
@@ -169,8 +166,8 @@ internal class Vulture : RoleBase
         }
         SendBodyRPC(pc.PlayerId);
         pc.Notify(GetString("VultureBodyReported"));
-        UnreportablePlayers.Remove(target.PlayerId);
-        UnreportablePlayers.Add(target.PlayerId);
+        Main.UnreportableBodies.Remove(target.PlayerId);
+        Main.UnreportableBodies.Add(target.PlayerId);
     }
     public override void AfterMeetingTasks()
     {

@@ -187,30 +187,32 @@ internal class Jailer : RoleBase
                 (role.IsImpostorTeamV3()));
     }
 
-    public override void AfterMeetingTasks()
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
-        foreach (var pid in JailerHasExe.Keys)
+        var playerId = player.PlayerId;
+        if (!JailerTarget.TryGetValue(playerId, out var targetId)) return;
+
+        if (targetId != byte.MaxValue && JailerHasExe[playerId])
         {
-            var targetId = JailerTarget[pid];
-            if (targetId != byte.MaxValue && JailerHasExe[pid])
+            var tpc = targetId.GetPlayer();
+            if (tpc != null)
             {
-                var tpc = Utils.GetPlayerById(targetId);
                 if (tpc.IsAlive())
                 {
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetId);
-                    tpc.SetRealKiller(Utils.GetPlayerById(pid));
+                    tpc.SetRealKiller(player);
                 }
                 if (!CanBeExecuted(tpc.GetCustomRole()))
                 {
-                    JailerExeLimit[pid] = 0;
-                    SendRPC(pid, setTarget: false);
+                    JailerExeLimit[playerId] = 0;
+                    SendRPC(playerId, setTarget: false);
                 }
             }
-            JailerHasExe[pid] = false;
-            JailerTarget[pid] = byte.MaxValue;
-            JailerDidVote[pid] = false;
-            SendRPC(pid, byte.MaxValue, setTarget: true);
         }
+        JailerHasExe[playerId] = false;
+        JailerTarget[playerId] = byte.MaxValue;
+        JailerDidVote[playerId] = false;
+        SendRPC(playerId, byte.MaxValue, setTarget: true);
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {

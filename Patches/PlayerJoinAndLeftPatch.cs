@@ -303,7 +303,7 @@ public static class OnPlayerJoinedPatch
 class OnPlayerLeftPatch
 {
     public static bool StartingProcessing = false;
-    public static byte LeftPlayerId;
+    public static byte LeftPlayerId = byte.MaxValue;
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         StartingProcessing = true;

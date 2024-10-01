@@ -8,9 +8,6 @@ public class Antidote : IAddon
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Mixed;
 
-    public static OptionItem ImpCanBeAntidote;
-    public static OptionItem CrewCanBeAntidote;
-    public static OptionItem NeutralCanBeAntidote;
     private static OptionItem AntidoteCDOpt;
     private static OptionItem AntidoteCDReset;
 
