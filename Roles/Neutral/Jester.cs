@@ -39,7 +39,7 @@ internal class Jester : RoleBase
         SunnyboyChance = IntegerOptionItem.Create(Id + 7, "SunnyboyChance", new(0, 100, 5), 0, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester])
             .SetValueFormat(OptionFormat.Percent);
-        RevealJesterUponEjection = BooleanOptionItem.Create(Id + 8, GeneralOption.RevealUponEject, true, TabGroup.NeutralRoles, true)
+        RevealJesterUponEjection = BooleanOptionItem.Create(Id + 8, "Jester_RevealUponEject", true, TabGroup.NeutralRoles, true)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Jester]);
     }
     public override void Init()
