@@ -18,6 +18,9 @@ public static class CustomRolesHelper
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
+        //C&R
+        if (Options.CurrentGameMode is CustomGameMode.CandR && role is CustomRoles.Robber) return CustomRoles.Engineer;
+        
         // Vanilla roles
         if (role.IsVanilla()) return role;
 
@@ -45,7 +48,8 @@ public static class CustomRolesHelper
                 if (role is CustomRoles.Killer) return RoleTypes.Impostor;
                 break;
             case CustomGameMode.CandR: //C&R
-                return CopsAndRobbersManager.RoleBase(role);
+                if (role is CustomRoles.Cop) return RoleTypes.Shapeshifter;
+                break;
         }
 
         return (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor()

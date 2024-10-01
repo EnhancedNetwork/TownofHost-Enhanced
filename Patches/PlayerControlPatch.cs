@@ -1565,6 +1565,10 @@ class CoExitVentPatch
         }
 
         if (!AmongUsClient.Instance.AmHost) return;
+        if (Options.CurrentGameMode == CustomGameMode.CandR)
+        {
+            CopsAndRobbersManager.OnRobberExitVent(player);
+        }
 
         player.GetRoleClass()?.OnExitVent(player, id);
 

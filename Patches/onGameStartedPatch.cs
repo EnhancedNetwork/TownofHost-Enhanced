@@ -423,13 +423,18 @@ internal class StartGameHostPatch
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.FFA:
-                case CustomGameMode.CandR:
-
                     foreach (var pair in Main.PlayerStates)
-                {
-                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
-                }
-                goto EndOfSelectRolePatch;
+                    {
+                        ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                    }
+                    goto EndOfSelectRolePatch;
+                case CustomGameMode.CandR:
+                    foreach (var pair in RoleAssign.RoleResult)
+                    {
+                        if (pair.Value is CustomRoles.Robber) AssignCustomRole(pair.Value, Utils.GetPlayerById(pair.Key)); 
+                        ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value);                         
+                    }
+                    goto EndOfSelectRolePatch;
             }
 
             foreach (var kv in RoleAssign.RoleResult)

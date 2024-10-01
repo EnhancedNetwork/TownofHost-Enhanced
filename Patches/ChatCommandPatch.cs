@@ -1803,17 +1803,8 @@ internal class ChatCommands
                 var Conf1 = new StringBuilder();
 
                 CustomRoles rl1;
-                OptionItem option;
-                if (role == copName)
-                {
-                    rl1 = CustomRoles.Cop;
-                    option = CopsAndRobbersManager.CopHeader;
-                }
-                else if (role == robberName)
-                {
-                    rl1 = CustomRoles.Robber;
-                    option = CopsAndRobbersManager.RobberHeader;
-                }
+                if (role == copName) rl1 = CustomRoles.Cop;
+                else if (role == robberName) rl1 = CustomRoles.Robber;
                 else
                 {
                     Utils.SendMessage(GetString("ModeDescribe.C&R"), playerId);
@@ -1823,11 +1814,19 @@ internal class ChatCommands
                 var description = rl1.GetInfoLong();
                 var title1 = Utils.ColorString(Utils.GetRoleColor(rl1), GetString($"{rl1}"));
                 string rlHex1 = Utils.GetRoleColorCode(rl1);
-                //Conf1.Append($"{option.GetName(true)}: {option.GetString()}\n");
-                Utils.ShowChildrenSettings(option, ref Conf1);
-                var cleared1 = Conf1.ToString();
-                var Setting1 = $"<color={rlHex1}>{GetString(rl1.ToString())} {GetString("Settings:")}</color>\n";
-                Conf1.Clear().Append($"<color=#ffffff><size={Csize}>{Setting1}{cleared1}</size></color>");
+                var Setting = $"<size={Csize}><color={rlHex1}>{GetString(rl1.ToString())} {GetString("Settings:")}</color>\n";
+                Conf1.Clear().Append(Setting);
+
+                foreach (OptionItem opt in CopsAndRobbersManager.roleSettings[rl1])
+                {
+                    Conf1.Append($"{opt.GetName(true)}: {opt.GetString()}\n");
+                    int deep = 0;
+                    if (opt.Children.Any()) deep = 1;
+                    Utils.ShowChildrenSettings(opt, ref Conf1, deep: deep);
+                    var cleared = Conf1.ToString();
+                    Conf1.Clear().Append($"<color=#ffffff>{cleared}</color>");
+                }
+                Conf1.Append("</size>");
 
                 // Show role info
                 Utils.SendMessage(description, playerId, title1, noReplay: true);

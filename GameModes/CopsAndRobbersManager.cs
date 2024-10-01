@@ -20,7 +20,8 @@ internal static class CopsAndRobbersManager
     private static readonly Dictionary<byte, float> defaultSpeed = [];
 
     private static readonly Dictionary<CopAbility, int> copAbilityChances = [];
-    private static readonly Dictionary<byte, CopAbility?> RemoveAbility = [];
+    private static readonly Dictionary<RobberAbility, int> robberAbilityChances = [];
+    private static readonly Dictionary<byte, CopAbility?> RemoveCopAbility = [];
     private static readonly Dictionary<Vector2, CopAbility?> trapLocation = [];
     private static readonly HashSet<Vector2> removeTrap = [];
     private static readonly Dictionary<byte, long> spikeTrigger = [];
@@ -28,15 +29,22 @@ internal static class CopsAndRobbersManager
     private static readonly Dictionary<byte, byte> k9 = [];
     private static readonly Dictionary<byte, bool> scopeAltered = [];
     private static int killDistance;
+    public static Dictionary<CustomRoles, List<OptionItem>> roleSettings = [];
 
+    private static readonly Dictionary<byte, RobberAbility?> RemoveRobberAbility = [];
+    private static readonly HashSet<byte> energyShieldActive = [];
+    private static readonly HashSet<byte> smokeBombActive = [];
+    private static readonly Dictionary<byte, long> smokeBombTriggered = [];
+    private static readonly HashSet<byte> adrenalineRushActive = [];
+    private static readonly Dictionary<byte, byte> radar = [];
+    private static readonly HashSet<byte> disguise = [];
 
     private static int numCops;
 
     public static OptionItem CandR_NumCops;
-    private static OptionItem CandR_NotifyRobbersWhenCaptured;
     private static OptionItem CandR_CaptureCooldown;
     private static OptionItem CandR_CopAbilityTriggerChance;
-    private static OptionItem CandR_AbilityCooldown;
+    private static OptionItem CandR_CopAbilityCooldown;
     private static OptionItem CandR_CopAbilityDuration;
     private static OptionItem CandR_HotPursuitChance;
     private static OptionItem CandR_HotPursuitSpeed;
@@ -49,14 +57,27 @@ internal static class CopsAndRobbersManager
     private static OptionItem CandR_K9Chance;
     private static OptionItem CandR_ScopeChance;
     private static OptionItem CandR_ScopeIncrease;
-    public static OptionItem CopHeader;
-    //public static OptionItem CopActiveHidden;
-    public static OptionItem RobberHeader;
+
+ 
+
+    private static OptionItem CandR_NotifyRobbersWhenCaptured;
+    private static OptionItem CandR_RobberVentDuration;
+    private static OptionItem CandR_RobberVentCooldown;
+    private static OptionItem CandR_RobberAbilityDuration;
+    private static OptionItem CandR_RobberAbilityTriggerChance;
+    private static OptionItem CandR_AdrenalineRushChance;
+    private static OptionItem CandR_AdrenalineRushSpeed;
+    private static OptionItem CandR_EnergyShieldChance;
+    private static OptionItem CandR_SmokeBombChance;
+    private static OptionItem CandR_SmokeBombDuration;
+    private static OptionItem CandR_DisguiseChance;
+    private static OptionItem CandR_RadarChance;
 
 
     public static void SetupCustomOption()
     {
-        CopHeader = TextOptionItem.Create(Id-1, "Cop", TabGroup.ModSettings)
+        /*********** Cops ***********/
+        TextOptionItem.Create(Id, "Cop", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue));
 
@@ -79,7 +100,7 @@ internal static class CopsAndRobbersManager
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_AbilityCooldown = FloatOptionItem.Create(Id + 5, "C&R_AbilityCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
+        CandR_CopAbilityCooldown = FloatOptionItem.Create(Id + 5, "C&R_CopAbilityCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
@@ -130,27 +151,95 @@ internal static class CopsAndRobbersManager
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_FlashBangChance);
 
-        CandR_K9Chance = IntegerOptionItem.Create(Id + 14, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+        CandR_ScopeChance = IntegerOptionItem.Create(Id + 14, "C&R_ScopeChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-
-        CandR_ScopeChance = IntegerOptionItem.Create(Id + 15, "C&R_ScopeChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
-            .SetGameMode(CustomGameMode.CandR)
-            .SetColor(new Color32(0, 123, 255, byte.MaxValue))
-            .SetValueFormat(OptionFormat.Percent)
-            .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_ScopeIncrease = IntegerOptionItem.Create(Id + 16, "C&R_ScopeIncrease", new(1, 5, 1), 1, TabGroup.ModSettings, false)
+        CandR_ScopeIncrease = IntegerOptionItem.Create(Id + 15, "C&R_ScopeIncrease", new(1, 5, 1), 1, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_ScopeChance);
 
-
-        CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 17, "C&R_NotifyRobbersWhenCaptured", true, TabGroup.ModSettings, false)
+        CandR_K9Chance = IntegerOptionItem.Create(Id + 16, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
-            .SetColor(new Color32(0, 123, 255, byte.MaxValue));
+            .SetColor(new Color32(0, 123, 255, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent)
+            .SetParent(CandR_CopAbilityTriggerChance);
+
+        roleSettings[CustomRoles.Cop] = [CandR_NumCops, CandR_CaptureCooldown, CandR_CopAbilityTriggerChance];
+
+        /*********** Robbers ***********/
+
+        TextOptionItem.Create(Id + 20, "Robber", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue));
+
+        CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 21, "C&R_NotifyRobbersWhenCaptured", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue));
+
+        CandR_RobberVentDuration = FloatOptionItem.Create(Id + 22, "C&R_RobberVentDuration", new(1f, 20f, 0.5f), 10f, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Seconds);
+        CandR_RobberVentCooldown = FloatOptionItem.Create(Id + 23, "C&R_RobberVentCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Seconds);
+
+        CandR_RobberAbilityTriggerChance = IntegerOptionItem.Create(Id + 24, "C&R_RobberAbilityTriggerChance", new(0, 100, 5), 50, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent);
+        CandR_RobberAbilityDuration = IntegerOptionItem.Create(Id + 25, "C&R_RobberAbilityDuration", new(1, 10, 1), 10, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetParent(CandR_RobberAbilityTriggerChance);
+
+        CandR_AdrenalineRushChance = IntegerOptionItem.Create(Id + 26, "C&R_AdrenalineRushChance", new(0, 100, 5), 30, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent)
+            .SetParent(CandR_RobberAbilityTriggerChance);
+        CandR_AdrenalineRushSpeed = FloatOptionItem.Create(Id + 27, "C&R_AdrenalineRushSpeed", new(0f, 2f, 0.25f), 1f, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Multiplier)
+            .SetParent(CandR_AdrenalineRushChance);
+
+        CandR_EnergyShieldChance = IntegerOptionItem.Create(Id + 28, "C&R_EnergyShieldChance", new(0, 100, 5), 25, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent)
+            .SetParent(CandR_RobberAbilityTriggerChance);
+        
+        CandR_SmokeBombChance = IntegerOptionItem.Create(Id + 29, "C&R_SmokeBombChance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent)
+            .SetParent(CandR_RobberAbilityTriggerChance);
+        CandR_SmokeBombDuration = IntegerOptionItem.Create(Id + 30, "C&R_SmokeBombDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(0, 123, 255, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetParent(CandR_SmokeBombChance);
+
+        CandR_DisguiseChance = IntegerOptionItem.Create(Id + 31, "C&R_DisguiseChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent)
+            .SetParent(CandR_RobberAbilityTriggerChance);
+
+        CandR_RadarChance = IntegerOptionItem.Create(Id + 32, "C&R_RadarChance", new(0, 100, 5), 15, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Percent)
+            .SetParent(CandR_RobberAbilityTriggerChance);
+
+        roleSettings[CustomRoles.Robber] = [CandR_NotifyRobbersWhenCaptured, CandR_RobberVentDuration, CandR_RobberVentCooldown, CandR_RobberAbilityTriggerChance];
     }
 
     public enum RoleType
@@ -165,7 +254,7 @@ internal static class CopsAndRobbersManager
         EnergyShield, // Protects from the next capture attempt.
         SmokeBomb, // Blinds the Cop when captured.
         Disguise, // Wear the same costume as a Cop for confusion.
-        InvisibilityCloak // Become invisible for a set amount of duration.
+        Radar // Points towards closest captured player, if no captured player, it points towards a cop (colored arrows indicating cops or captured)
     }
     private enum CopAbility
     {
@@ -176,15 +265,6 @@ internal static class CopsAndRobbersManager
         Scope // Increases the capture range.
     }
 
-    public static RoleTypes RoleBase(CustomRoles role)
-    {
-        return role switch
-        {
-            CustomRoles.Cop => RoleTypes.Shapeshifter,
-            CustomRoles.Robber => RoleTypes.Engineer,
-            _ => RoleTypes.Engineer
-        };
-    }
     public static bool HasTasks(CustomRoles role)
     {
         return role switch
@@ -195,7 +275,7 @@ internal static class CopsAndRobbersManager
         };
     }
 
-    private static void CopCumulativeChances()
+    private static void CumulativeAbilityChances()
     {
         Dictionary<CopAbility, OptionItem> copOptionItems = new()
         {
@@ -213,6 +293,23 @@ internal static class CopsAndRobbersManager
             cumulativeChance += optionItem.Value.GetInt();
             copAbilityChances.Add(optionItem.Key, cumulativeChance);
         }
+
+        Dictionary<RobberAbility, OptionItem> robberOptionItems = new()
+        {
+            {RobberAbility.AdrenalineRush, CandR_AdrenalineRushChance },
+            {RobberAbility.EnergyShield, CandR_EnergyShieldChance },
+            {RobberAbility.SmokeBomb, CandR_SmokeBombChance },
+            {RobberAbility.Radar, CandR_RadarChance },
+            {RobberAbility.Disguise, CandR_DisguiseChance },
+        };
+        robberAbilityChances.Clear();
+        cumulativeChance = 0;
+        foreach (var optionItem in robberOptionItems)
+        {
+            if (optionItem.Value.GetInt() == 0) continue;
+            cumulativeChance += optionItem.Value.GetInt();
+            robberAbilityChances.Add(optionItem.Key, cumulativeChance);
+        }
     }
 
     public static void Init()
@@ -227,15 +324,22 @@ internal static class CopsAndRobbersManager
         saved.Clear();
         numCops = CandR_NumCops.GetInt();
         defaultSpeed.Clear();
-        RemoveAbility.Clear();
+        RemoveCopAbility.Clear();
+        RemoveRobberAbility.Clear();
         trapLocation.Clear();
         removeTrap.Clear();
         spikeTrigger.Clear();
         flashTrigger.Clear();
         k9.Clear();
         scopeAltered.Clear();
+        energyShieldActive.Clear();
+        smokeBombActive.Clear();
+        smokeBombTriggered.Clear();
+        adrenalineRushActive.Clear();
+        radar.Clear();
+        disguise.Clear();
         killDistance = Main.RealOptionsData.GetInt(Int32OptionNames.KillDistance);
-        CopCumulativeChances();
+        CumulativeAbilityChances();
     }
     public static Dictionary<byte, CustomRoles> SetRoles()
     {
@@ -294,14 +398,18 @@ internal static class CopsAndRobbersManager
         captured[robber.PlayerId] = capturedLocation;
         RoleType.Captured.SetCostume(playerId: robber.PlayerId);
         Main.AllPlayerSpeed[robber.PlayerId] = Main.MinSpeed;
+        robber.RpcSetVentInteraction();
         robber?.MarkDirtySettings();
     }
     private static void RemoveCaptured(this PlayerControl rescued)
     {
         if (rescued == null) return;
         captured.Remove(rescued.PlayerId);
-        RoleType.Robber.SetCostume(playerId: rescued.PlayerId); //for robber
+        if (disguise.Contains(rescued.PlayerId)) RoleType.Cop.SetCostume(playerId: rescued.PlayerId);
+        else RoleType.Robber.SetCostume(playerId: rescued.PlayerId); //for robber
         Main.AllPlayerSpeed[rescued.PlayerId] = defaultSpeed[rescued.PlayerId];
+        if (adrenalineRushActive.Contains(rescued.PlayerId)) Main.AllPlayerSpeed[rescued.PlayerId] += CandR_AdrenalineRushSpeed.GetFloat();
+        rescued.RpcSetVentInteraction();
         rescued?.MarkDirtySettings();
     }
 
@@ -322,12 +430,6 @@ internal static class CopsAndRobbersManager
                     "visor_pk01_Security1Visor", //visor
                     player.CurrentOutfit.PetId,
                     player.CurrentOutfit.NamePlateId);
-
-                //player.RpcSetColor(1); //blue
-                //player.RpcSetHat("hat_police");
-                //player.RpcSetSkin("skin_Police");
-                //player.RpcSetVisor("visor_pk01_Security1Visor");
-
                 break;
             case RoleType.Robber:
                 playerOutfit.Set(player.GetRealName(isMeeting: true),
@@ -337,9 +439,6 @@ internal static class CopsAndRobbersManager
                     "visor_None", //visor
                     player.CurrentOutfit.PetId,
                     player.CurrentOutfit.NamePlateId);
-                //player.RpcSetColor(6); //black
-                //player.RpcSetHat("hat_pk04_Vagabond");
-                //player.RpcSetSkin("skin_None");
                 break;
             case RoleType.Captured:
                 playerOutfit.Set(player.GetRealName(isMeeting: true),
@@ -349,10 +448,6 @@ internal static class CopsAndRobbersManager
                     "visor_pk01_DumStickerVisor", //visor
                     player.CurrentOutfit.PetId,
                     player.CurrentOutfit.NamePlateId);
-                //player.RpcSetColor(5); //yellow
-                //player.RpcSetHat("hat_tombstone");
-                //player.RpcSetSkin("skin_prisoner");
-                //player.RpcSetVisor("visor_pk01_DumStickerVisor");
                 break;
         }
         player.SetNewOutfit(newOutfit: playerOutfit, setName: false, setNamePlate: false);
@@ -361,18 +456,25 @@ internal static class CopsAndRobbersManager
     public static void CaptureCooldown(PlayerControl cop) =>
     Main.AllPlayerKillCooldown[cop.PlayerId] = CandR_CaptureCooldown.GetFloat();
 
-    private static void SendCandRData(byte op, byte copId)
+    private static void SendCandRData(byte op, byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCandRData, SendOption.Reliable, -1);
         writer.Write(op);
         switch (op)
         {
             case 0:
-                writer.Write(copId);
-                writer.Write(k9[copId]);
+                writer.Write(playerId);
+                writer.Write(k9[playerId]);
                 break;
             case 1:
-                writer.Write(copId);
+                writer.Write(playerId);
+                break;
+            case 2:
+                writer.Write(playerId);
+                writer.Write(radar[playerId]);
+                break;
+            case 3:
+                writer.Write(playerId);
                 break;
         }
 
@@ -391,6 +493,15 @@ internal static class CopsAndRobbersManager
             case 1:
                 byte removeCopId = reader.ReadByte();
                 k9.Remove(removeCopId);
+                break;
+            case 2:
+                byte robberId = reader.ReadByte();
+                byte radarId = reader.ReadByte();
+                radar[robberId] = radarId;
+                break;
+            case 3:
+                byte removeRobberId = reader.ReadByte();
+                radar.Remove(removeRobberId);
                 break;
         }
         
@@ -440,7 +551,7 @@ internal static class CopsAndRobbersManager
             default:
                 return;
         }
-        RemoveAbility.Remove(cop.PlayerId);
+        RemoveCopAbility.Remove(cop.PlayerId);
     }
     private static void ActivateCopAbility(this PlayerControl cop, CopAbility? ability)
     {
@@ -477,12 +588,12 @@ internal static class CopsAndRobbersManager
             default:
                 return;
         }
-        RemoveAbility[cop.PlayerId] = ability;
-        var notifyMsg = GetString("C&R_CopAbilityActivated");
+        RemoveCopAbility[cop.PlayerId] = ability;
+        var notifyMsg = GetString("C&R_AbilityActivated");
         cop.Notify(string.Format(notifyMsg.Replace("{Ability.Name}", "{0}"), GetString($"CopAbility.{ability}")), CandR_CopAbilityDuration.GetFloat());
         _ = new LateTask(() =>
         {
-            if (!GameStates.IsInGame || !RemoveAbility.ContainsKey(cop.PlayerId)) return;
+            if (!GameStates.IsInGame || !RemoveCopAbility.ContainsKey(cop.PlayerId)) return;
             cop.DeactivateCopAbility(ability: ability, loc: loc);
         }, CandR_CopAbilityDuration.GetInt(), "Remove cop ability");
     }
@@ -501,8 +612,15 @@ internal static class CopsAndRobbersManager
     }
     public static string GetClosestArrow(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting || !k9.ContainsKey(seer.PlayerId) || seer.PlayerId != target.PlayerId) return string.Empty;
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), TargetArrow.GetArrows(seer));
+        if (isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
+        if (k9.ContainsKey(seer.PlayerId))
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), TargetArrow.GetArrows(seer));
+        else if (radar.ContainsKey(seer.PlayerId))
+        {
+            bool isCaptured = captured.ContainsKey(radar[seer.PlayerId]);
+            return Utils.ColorString(isCaptured? Utils.GetRoleColor(CustomRoles.Robber) : Utils.GetRoleColor(CustomRoles.Cop), TargetArrow.GetArrows(seer));
+        }
+        return string.Empty;
     }
     public static void OnCopAttack(PlayerControl cop, PlayerControl robber)
     {
@@ -520,37 +638,177 @@ internal static class CopsAndRobbersManager
             return;
         }
 
-        Vector2 robberLocation = robber.GetCustomPosition();
-        robber.AddCaptured(robberLocation);
+        if (!energyShieldActive.Contains(robber.PlayerId))
+        {    
+            Vector2 robberLocation = robber.GetCustomPosition();
+            robber.AddCaptured(robberLocation);
 
-        if (CandR_NotifyRobbersWhenCaptured.GetBool())
-        {
-            foreach (byte pid in robbers)
+            if (CandR_NotifyRobbersWhenCaptured.GetBool())
             {
-                if (pid == byte.MaxValue) continue;
-                PlayerControl pc = Utils.GetPlayerById(pid);
-                pc?.KillFlash();
+                foreach (byte pid in robbers)
+                {
+                    if (pid == byte.MaxValue) continue;
+                    PlayerControl pc = Utils.GetPlayerById(pid);
+                    pc?.KillFlash();
+                }
             }
+
+            if (!capturedScore.ContainsKey(cop.PlayerId)) capturedScore[cop.PlayerId] = 0;
+            capturedScore[cop.PlayerId]++;
+
+            if (!timesCaptured.ContainsKey(robber.PlayerId)) timesCaptured[robber.PlayerId] = 0;
+            timesCaptured[robber.PlayerId]++;
         }
-
-        if (!capturedScore.ContainsKey(cop.PlayerId)) capturedScore[cop.PlayerId] = 0;
-        capturedScore[cop.PlayerId]++;
-
-        if (!timesCaptured.ContainsKey(robber.PlayerId)) timesCaptured[robber.PlayerId] = 0;
-        timesCaptured[robber.PlayerId]++;
+        else
+        {
+            Logger.Info($"capture canceled, Energy shield active {robber.PlayerId}", "Capture canceled");
+            cop.Notify($"Could not capture, {GetString("RobberAbility.EnergyShield")} active");
+        }
+        if (smokeBombActive.Contains(robber.PlayerId))
+        {
+            smokeBombTriggered[cop.PlayerId] = Utils.GetTimeStamp();
+            cop.MarkDirtySettings();
+            smokeBombActive.Remove(robber.PlayerId);
+            Logger.Info($"smoke bomb triggered for {cop.PlayerId}", "smoke trigger");
+        }
         CaptureCooldown(cop);
-
         cop.ResetKillCooldown();
         cop.SetKillCooldown();
+    }
+    private static RobberAbility? RandomRobberAbility()
+    {
+        var random = IRandom.Instance;
+        var shouldTrigger = random.Next(100);
+        if (!robberAbilityChances.Any() || shouldTrigger >= CandR_RobberAbilityTriggerChance.GetInt()) return null;
+        
+        int randomChance = random.Next(copAbilityChances.Values.Last());
+        foreach (var ability in robberAbilityChances)
+        {
+            if (randomChance < ability.Value)
+            {
+                return ability.Key;
+            }
+        }
+        return null; // shouldn't happen
+    }
+    private static void DeactivateRobberAbility(this PlayerControl robber, RobberAbility? ability)
+    {
+        if (ability == null || robber == null) return;
+        switch (ability)
+        {
+            case RobberAbility.AdrenalineRush:
+                adrenalineRushActive.Remove(robber.PlayerId);
+                if (!spikeTrigger.ContainsKey(robber.PlayerId))
+                {
+                    Main.AllPlayerSpeed[robber.PlayerId] -= CandR_AdrenalineRushSpeed.GetFloat();
+                    robber.MarkDirtySettings();
+                }
+                break;
+            case RobberAbility.EnergyShield:
+                energyShieldActive.Remove(robber.PlayerId);
+                break;
+            case RobberAbility.SmokeBomb:
+                smokeBombActive.Remove(robber.PlayerId);
+                break;
+            case RobberAbility.Disguise:
+                if (captured.ContainsKey(robber.PlayerId))
+                {
+                    Logger.Info($"disguise finished for captured player {robber.PlayerId}", "disguise finish");
+                    break;
+                }
+                disguise.Remove(robber.PlayerId);
+                RoleType.Robber.SetCostume(robber.PlayerId);
+                Logger.Info($"reverting costume because disguise finished for player: {robber.PlayerId}", "disguise finish");
+                break;
+            case RobberAbility.Radar:
+                byte targetId = radar[robber.PlayerId];
+                Logger.Info($"Removed k9 for {robber.PlayerId}", "Remove k9");
+                radar.Remove(robber.PlayerId);
+                SendCandRData(3, robber.PlayerId);
+                TargetArrow.Remove(robber.PlayerId, targetId);
+                break;
+            default:
+                return;
+        }
+        RemoveRobberAbility.Remove(robber.PlayerId);
+    }
+    private static void ActivateRobberAbility(this PlayerControl robber, RobberAbility? ability)
+    {
+        if (ability == null || robber == null) return;
+        switch (ability)
+        {
+            case RobberAbility.AdrenalineRush:
+                adrenalineRushActive.Add(robber.PlayerId);
+                Main.AllPlayerSpeed[robber.PlayerId] += CandR_AdrenalineRushSpeed.GetFloat();
+                robber.MarkDirtySettings();
+                break;
+            case RobberAbility.EnergyShield:
+                energyShieldActive.Add(robber.PlayerId);
+                break;
+            case RobberAbility.SmokeBomb:
+                smokeBombActive.Add(robber.PlayerId);
+                break;
+            case RobberAbility.Disguise:
+                RoleType.Cop.SetCostume(robber.PlayerId);
+                disguise.Add(robber.PlayerId);
+                break;
+            case RobberAbility.Radar:
+                if (radar.ContainsKey(robber.PlayerId))
+                    return;
+                radar.Add(robber.PlayerId, byte.MaxValue);
+                SendCandRData(2, robber.PlayerId);
+                Logger.Info($"Added {robber.PlayerId} for radar", "radar activated");
+                break;
+            default:
+                return;
+        }
+        RemoveRobberAbility[robber.PlayerId] = ability;
+        var notifyMsg = GetString("C&R_AbilityActivated");
+        robber.Notify(string.Format(notifyMsg.Replace("{Ability.Name}", "{0}"), GetString($"RobberAbility.{ability}")), CandR_RobberAbilityDuration.GetFloat());
+        _ = new LateTask(() =>
+        {
+            if (!GameStates.IsInGame || !RemoveRobberAbility.ContainsKey(robber.PlayerId)) return;
+            robber.DeactivateRobberAbility(ability: ability);
+        }, CandR_RobberAbilityDuration.GetInt(), "Remove cop ability");
+    }
+    public static void OnRobberExitVent(PlayerControl pc)
+    {
+        if (pc == null) return; 
+        if (!pc.Is(CustomRoles.Robber)) return;
+        if (captured.ContainsKey(pc.PlayerId))
+        {
+            Logger.Info($"Player {pc.PlayerId} was captured", "robber activity cancel");
+            return;
+        }
+        if (spikeTrigger.ContainsKey(pc.PlayerId))
+        {
+            Logger.Info($"Ability canceled for {pc.PlayerId}, robber triggered spike strip", "robber ability cancel");
+            return;
+        }
+        var ability = RandomRobberAbility();
+        if (ability == null) return;
+
+        float delay = Utils.GetActiveMapId() != 5 ? 0.1f : 0.4f;
+        _ = new LateTask(() =>
+        {
+            ActivateRobberAbility(pc, ability);
+        }, delay, "Robber On Exit Vent");
     }
 
     public static void ApplyGameOptions(ref IGameOptions opt, PlayerControl player)
     {
         if (player.Is(CustomRoles.Cop) && CandR_CopAbilityTriggerChance.GetFloat() > 0f)
         {
-            AURoleOptions.ShapeshifterCooldown = CandR_AbilityCooldown.GetFloat();
+            AURoleOptions.ShapeshifterCooldown = CandR_CopAbilityCooldown.GetFloat();
             AURoleOptions.ShapeshifterDuration = CandR_CopAbilityDuration.GetFloat();
         }
+
+        if (player.Is(CustomRoles.Robber))
+        {
+            AURoleOptions.EngineerCooldown = CandR_RobberVentCooldown.GetFloat();
+            AURoleOptions.EngineerInVentMaxTime = CandR_RobberVentDuration.GetFloat();
+        }
+
         if (scopeAltered.TryGetValue(player.PlayerId, out bool isAltered))
         {
             if (!isAltered)
@@ -560,12 +818,12 @@ internal static class CopsAndRobbersManager
             }
             opt.SetInt(Int32OptionNames.KillDistance, killDistance);
         }
-        if (flashTrigger.ContainsKey(player.PlayerId))
+        if (flashTrigger.ContainsKey(player.PlayerId) || smokeBombTriggered.ContainsKey(player.PlayerId))
         {
             opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, 0.25f);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.25f);
-            Logger.Warn($"vision for {player.PlayerId} set to 0.25f", "flash vision");
+            opt.SetFloat(FloatOptionNames.CrewLightMod, 0.05f);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.05f);
+            Logger.Warn($"vision for {player.PlayerId} set to 0.05f", "blind vision");
         }
         else
         {
@@ -592,7 +850,8 @@ internal static class CopsAndRobbersManager
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class FixedUpdateInGameModeCandRPatch
     {
-        private static long LastChecked;
+        private static long LastCheckedCop;
+        private static long LastCheckedRobber;
         public static void Postfix(PlayerControl __instance)
         {
             if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.CandR) return;
@@ -619,7 +878,7 @@ internal static class CopsAndRobbersManager
                         UnShapeshifter.RpcRejectShapeshift();
                         RoleType.Cop.SetCostume(UnShapeshifter.PlayerId);
                         Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
-                        Logger.Info($"Revert to shapeshifting state for: {__instance.GetRealName()}", "UnShapeShifer_FixedUpdate");
+                        Logger.Info($"Revert to shapeshifting state for: {__instance.GetRealName()}", "UnShapeShifter_FixedUpdate");
                     }
                 }
             }
@@ -639,13 +898,15 @@ internal static class CopsAndRobbersManager
                 Vector2 currentRobberLocation = robber.GetCustomPosition();
 
                 // check if duration of trap is completed every second
-                if (now != LastChecked)
+                if (now != LastCheckedRobber)
                 {
-                    LastChecked = now;
+                    LastCheckedRobber = now;
                     // If Spike duration finished, reset the speed of trapped player
                     if (spikeTrigger.ContainsKey(robberId) && now - spikeTrigger[robberId] > CandR_SpikeStripDuration.GetFloat())
                     {
                         Main.AllPlayerSpeed[robberId] = defaultSpeed[robberId];
+                        if (adrenalineRushActive.Contains(robberId))
+                            Main.AllPlayerSpeed[robberId] += CandR_AdrenalineRushSpeed.GetFloat();
                         robber?.MarkDirtySettings();
                         spikeTrigger.Remove(robberId);
                     }
@@ -654,7 +915,7 @@ internal static class CopsAndRobbersManager
                     {
                         flashTrigger.Remove(robberId);
                         robber.MarkDirtySettings();
-                        Logger.Warn($"Removed {robberId} from Flash trigger", "Flash remove");
+                        Logger.Info($"Removed {robberId} from Flash trigger", "Flash remove");
                     }
                 }
 
@@ -689,6 +950,43 @@ internal static class CopsAndRobbersManager
                     }
                 }
 
+                if (radar.ContainsKey(robberId))
+                {
+                    PlayerControl closest = null;
+                    if (captured.Any())
+                    {
+                        closest = Main.AllAlivePlayerControls.Where(pc => captured.ContainsKey(pc.PlayerId) && pc != null && pc.PlayerId != robberId)
+                            .MinBy(capturedPC => Utils.GetDistance(robber.GetCustomPosition(), capturedPC.GetCustomPosition()));
+                    }
+                    if (closest == null)
+                    {
+                        closest = Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoles.Cop) && pc != null)
+                            .MinBy(closestCop => Utils.GetDistance(robber.GetCustomPosition(), closestCop.GetCustomPosition()));
+                    }
+                    
+                    if (closest != null)
+                    {
+                        if (radar.TryGetValue(robberId, out byte targetId) && targetId != byte.MaxValue)
+                        {
+                            if (targetId != closest.PlayerId)
+                            {
+                                radar[robberId] = closest.PlayerId;
+                                SendCandRData(2, robberId);
+                                Logger.Info($"Set radar for {robberId}, closest: {closest.PlayerId}", "radar Change");
+                                TargetArrow.Remove(robberId, targetId);
+                                TargetArrow.Add(robberId, closest.PlayerId);
+                            }
+                        }
+                        else
+                        {
+                            radar[robberId] = closest.PlayerId;
+                            SendCandRData(2, robberId);
+                            TargetArrow.Add(robberId, closest.PlayerId);
+                            Logger.Info($"Add radar for {robberId}, closest: {closest.PlayerId}", "radar add");
+                        }
+                    }                   
+                }
+
                 // Check if trap triggered
                 if (trapLocation.Any())
                 {
@@ -716,7 +1014,7 @@ internal static class CopsAndRobbersManager
                         {
                             flashTrigger[robberId] = now;
                             robber.MarkDirtySettings();
-                            Logger.Warn($"added {robberId} to flashtrigger", "Flash trigger");
+                            Logger.Info($"added {robberId} to flashTrigger", "Flash trigger");
                             removeTrap.Add(trap.Key);
                             break;
                         }
@@ -735,6 +1033,20 @@ internal static class CopsAndRobbersManager
                 if (copId == byte.MaxValue) continue;
                 PlayerControl copPC = Utils.GetPlayerById(copId);
                 if (copPC == null) continue;
+
+                if (smokeBombTriggered.Any())
+                {
+                    if (now != LastCheckedCop)
+                    {
+                        LastCheckedCop = now;
+                        if (smokeBombTriggered.ContainsKey(copId) && now - smokeBombTriggered[copId] > CandR_SmokeBombDuration.GetFloat())
+                        {
+                            smokeBombTriggered.Remove(copId);
+                            copPC.MarkDirtySettings();
+                            Logger.Info($"Removed smoke bomb effect from {copId}", "remove smoke bomb");
+                        }
+                    }
+                }
                 //check for k9
                 if (k9.ContainsKey(copId))
                 {
@@ -761,31 +1073,6 @@ internal static class CopsAndRobbersManager
                     }
                 }
             }
-
-            //// below this only captured
-            //if (!captured.Any()) return;
-
-
-
-
-            //foreach (byte capturedId in captured)
-            //{
-            //    PlayerControl capturedPC = Utils.GetPlayerById(capturedId);
-            //    if (capturedPC == null) continue;
-
-            //    var capturedPos = capturedPC.GetCustomPosition();
-
-            //    foreach (byte robberId in robbers)
-            //    {
-            //        if (captured.Contains(robberId)) continue;
-            //        PlayerControl robberPC = Utils.GetPlayerById(robberId);
-            //        if (robberPC == null) continue;
-
-            //        float dis = Utils.GetDistance(capturedPos, robberPC.GetCustomPosition());
-
-            //    }
-            //}
-
         }
     }
 
