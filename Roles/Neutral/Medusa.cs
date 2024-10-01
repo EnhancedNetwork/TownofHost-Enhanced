@@ -47,6 +47,7 @@ internal class Medusa : RoleBase
     {
         if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
+
         if (reporter.Is(CustomRoles.Medusa))
         {
             Main.UnreportableBodies.Add(deadBody.PlayerId);

@@ -77,7 +77,7 @@ internal class Altruist : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (deadBody == null || deadBody.Object == null) return true;
-
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
         if (reporter.Is(CustomRoles.Altruist) && _Player?.PlayerId == reporter.PlayerId)
         {
             if (!IsRevivingMode) return true;
