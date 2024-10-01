@@ -45,6 +45,8 @@ internal class Medusa : RoleBase
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target, PlayerControl killer)
     {
+        if (Main.UnreportableBodies.Contains(target.PlayerId)) return false;
+
         if (reporter.Is(CustomRoles.Medusa))
         {
             Main.UnreportableBodies.Add(target.PlayerId);

@@ -5,6 +5,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -113,6 +114,8 @@ internal class Vulture : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
+
         if (reporter.Is(CustomRoles.Vulture))
         {
             var reporterId = reporter.PlayerId;
