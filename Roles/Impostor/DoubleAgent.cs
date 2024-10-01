@@ -23,7 +23,7 @@ internal class DoubleAgent : RoleBase
     //==================================================================\\
     private static readonly List<GameObject> createdButtonsList = [];
     private static readonly HashSet<byte> CurrentBombedPlayers = [];
-    private static float CurrentBombedTime = float.MaxValue;
+    private static float CurrentBombedTime;
     public static bool BombIsActive = false;
     public static bool CanBombInMeeting = true;
     public static bool StartedWithMoreThanOneImp = false;
@@ -70,7 +70,7 @@ internal class DoubleAgent : RoleBase
         ClearBomb();
         playerIdList.Clear();
         CurrentBombedPlayers.Clear();
-        CurrentBombedTime = float.MaxValue;
+        CurrentBombedTime = -1;
         BombIsActive = false;
         StartedWithMoreThanOneImp = false;
         CanBombInMeeting = true;
@@ -84,11 +84,12 @@ internal class DoubleAgent : RoleBase
             StartedWithMoreThanOneImp = true;
     }
 
-    public static void ClearBomb()
+    private void ClearBomb()
     {
         CurrentBombedPlayers.Clear();
-        CurrentBombedTime = 999f;
+        CurrentBombedTime = -1;
         BombIsActive = false;
+        SendRPC();
     }
 
     // On vent diffuse Bastion & Agitator Bomb if DoubleAgentCanDiffuseBombs is enabled.
@@ -129,10 +130,10 @@ internal class DoubleAgent : RoleBase
 
         if (!BombIsActive)
         {
-            if (target.GetCustomRole().GetCustomRoleTeam() == Custom_Team.Impostor) return false;
+            if (target.Is(Custom_Team.Impostor)) return false;
             if (voter == target) return false;
 
-            CurrentBombedTime = 999f;
+            CurrentBombedTime = -1;
             CurrentBombedPlayers.Add(target.PlayerId);
             BombIsActive = true;
             SendMessage(GetString("VoteHasReturned"), voter.PlayerId, title: ColorString(GetRoleColor(CustomRoles.DoubleAgent), string.Format(GetString("VoteAbilityUsed"), GetString("DoubleAgent"))));
@@ -155,7 +156,7 @@ internal class DoubleAgent : RoleBase
             if (ClearBombedOnMeetingCall.GetBool() && !CanUseAbilityInCalledMeeting.GetBool()) CanBombInMeeting = false;
         }
         else
-            CurrentBombedTime = 999f;
+            CurrentBombedTime = -1;
     }
 
     // If bomb is active set timer after meeting.
@@ -163,6 +164,7 @@ internal class DoubleAgent : RoleBase
     {
         CurrentBombedTime = BombExplosionTimer.GetFloat() + 1f;
         CanBombInMeeting = true;
+        SendRPC();
     }
 
     // Active bomb timer update and check.
@@ -281,10 +283,12 @@ internal class DoubleAgent : RoleBase
     }
 
     // Send bomb timer to Modded Clients when active.
-    private void SendRPC()
+    private void SendRPC(bool addData = false, byte targetId = byte.MaxValue)
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
         writer.WriteNetObject(_Player);
+        writer.Write(addData);
+        writer.Write(targetId);
         writer.WritePacked((int)CurrentBombedTime);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -292,7 +296,14 @@ internal class DoubleAgent : RoleBase
     // Receive and set bomb timer from Host when active.
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        CurrentBombedTime = reader.ReadPackedInt32();
+        bool addData = reader.ReadBoolean();
+        byte targetId = reader.ReadByte();
+        var timer = reader.ReadPackedInt32();
+
+        if (addData)
+            CurrentBombedPlayers.Add(targetId);
+
+        CurrentBombedTime = timer;
     }
 
     // Use button for Modded!
@@ -331,7 +342,7 @@ internal class DoubleAgent : RoleBase
     {
         if (BombIsActive) return;
 
-        CurrentBombedTime = 999f;
+        CurrentBombedTime = -1;
         CurrentBombedPlayers.Add(targetId);
         BombIsActive = true;
     }

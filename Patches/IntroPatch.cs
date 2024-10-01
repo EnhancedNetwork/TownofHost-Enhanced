@@ -155,6 +155,8 @@ class SetUpRoleTextPatch
             var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
             // Don't use RpcSetName because the modded client needs to set the name locally
             PlayerControl.LocalPlayer.SetName(realName);
+
+            Utils.DoNotifyRoles(NoCache: true);
         }, 1f, "Reset Name For Modded Players");
     }
     private static byte[] EncryptDES(byte[] data, string key)
@@ -586,8 +588,6 @@ class IntroCutsceneDestroyPatch
                     Main.GameIsLoaded = true;
                 }, 3f, "Set UnShapeShift Button");
             }
-
-            Utils.DoNotifyRoles(NoCache: true);
         }
     }
     public static void Postfix()
@@ -673,6 +673,7 @@ class IntroCutsceneDestroyPatch
             Utils.CheckAndSetVentInteractions();
         }
 
+        Utils.DoNotifyRoles(NoCache: true);
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
