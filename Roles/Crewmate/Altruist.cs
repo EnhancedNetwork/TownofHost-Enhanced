@@ -2,6 +2,8 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -77,7 +79,7 @@ internal class Altruist : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (deadBody == null || deadBody.Object == null) return true;
-
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
         if (reporter.Is(CustomRoles.Altruist) && _Player?.PlayerId == reporter.PlayerId)
         {
             if (!IsRevivingMode) return true;
