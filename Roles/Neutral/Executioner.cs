@@ -60,7 +60,7 @@ internal class Executioner : RoleBase
         CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "ExecutionerCanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 17, "ExeTarget_RevealUponEject", true, TabGroup.NeutralRoles, false) .SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 17, "Executioner_RevealTargetUponEject", true, TabGroup.NeutralRoles, false) .SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
     public override void Init()
     {
