@@ -1021,7 +1021,7 @@
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
   "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
-  
+
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -1551,6 +1551,7 @@
   "MayorHasPortableButton": "<color=#204d42>Mayor</color> has a Mobile Emergency Button",
   "MayorNumOfUseButton": "Max Number of Mobile Emergency Buttons",
   "MeetingsNeededForWin": "Meetings needed to win",
+  "Jester_RevealUponEject": "Reveal Upon Eject",
   "CannotVoteWhenDead": "Cannot cast a vote while dead",
   "EnableVote": "Enable /vote command",
   "ShouldVoteSpam": "Try to hide /vote command",
@@ -1562,6 +1563,7 @@
   "ExecutionerCanTargetNeutralBenign": "Can Target <color=#7f8c8d>Neutral</color> <color=#046300>Benign</color>",
   "ExecutionerCanTargetNeutralEvil": "Can Target <color=#7f8c8d>Neutral</color> <color=#912900>Evil</color>",
   "ExecutionerCanTargetNeutralChaos": "Can Target <color=#7f8c8d>Neutral</color> <color=#D4AF37>Chaos</color>",
+  "Executioner_RevealTargetUponEject": "Reveal Target Upon Ejection",
   "SidekickSheriffCanGoBerserk": "<color=#00b4eb>Recruited</color> <color=#f8cd46>Sheriff</color> Can Go Nuts",
   "LawyerCanTargetImpostor": "Can Target <color=#ff1919>Impostors</color>",
   "LawyerCanTargetNeutralKiller": "Can Target <color=#7f8c8d>Neutral</color> <color=#ff1919>Killers</color>",
