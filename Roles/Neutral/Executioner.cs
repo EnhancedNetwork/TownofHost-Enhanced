@@ -60,7 +60,7 @@ internal class Executioner : RoleBase
         CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "ExecutionerCanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 17, "ExeTarget_RevealUponEject", true, TabGroup.NeutralRoles, true) .SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 17, "ExeTarget_RevealUponEject", true, TabGroup.NeutralRoles, false) .SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
     public override void Init()
     {
@@ -224,13 +224,14 @@ internal class Executioner : RoleBase
                 if (RevealExeTargetUponEjection.GetBool())
                 {
                     name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                    DecidedWinner = true;
                 }
             }
             else
             {
                 ExeWin(kvp.Key, DecidedWinner);
+                DecidedWinner = true;
             }
-            DecidedWinner = true;
         }
     }
     private static void ExeWin(byte playerId, bool DecidedWinner)
