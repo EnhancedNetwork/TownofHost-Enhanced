@@ -578,9 +578,19 @@ public static class Utils
         return ColorString(new Color32(255, 69, 0, byte.MaxValue), string.Format(GetString("KillCount"), count));
     }
     public static string GetVitalText(byte playerId, bool RealKillerColor = false)
-    {
+    {   
         var state = Main.PlayerStates[playerId];
         string deathReason = state.IsDead ? state.deathReason == PlayerState.DeathReason.etc && state.Disconnected ? GetString("Disconnected") : GetString("DeathReason." + state.deathReason) : GetString("Alive");
+        if (Options.CurrentGameMode is CustomGameMode.CandR)
+        {
+            if (deathReason == GetString("Alive"))
+            {
+                if (CopsAndRobbersManager.captured.ContainsKey(playerId))
+                    deathReason = ColorString(GetRoleColor(CustomRoles.Robber), GetString("Captured"));
+                else deathReason = ColorString(Color.cyan, deathReason); 
+            }
+            return deathReason;
+        }
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
@@ -694,40 +704,45 @@ public static class Utils
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
             
-            if (Options.CurrentGameMode == CustomGameMode.FFA && role == CustomRoles.Killer)
+            switch (Options.CurrentGameMode)
             {
-                ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-            }
-            else
-            {
-                ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
+                case CustomGameMode.FFA:
+                    if (role is CustomRoles.Killer)
+                        ProgressText.Append(FFAManager.GetDisplayScore(playerId));
+                    break;
+                case CustomGameMode.CandR:
+                    ProgressText.Append(CopsAndRobbersManager.GetProgressText(playerId));
+                    break;
+                default:
+                    ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
-                if (ProgressText.Length == 0)
-                {
-                    var taskState = Main.PlayerStates?[playerId].TaskState;
-                    if (taskState.hasTasks)
+                    if (ProgressText.Length == 0)
                     {
-                        Color TextColor;
-                        var info = GetPlayerInfoById(playerId);
-                        var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f);
-                        var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
+                        var taskState = Main.PlayerStates?[playerId].TaskState;
+                        if (taskState.hasTasks)
+                        {
+                            Color TextColor;
+                            var info = GetPlayerInfoById(playerId);
+                            var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f);
+                            var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
 
-                        if (Workhorse.IsThisRole(playerId))
-                            NonCompleteColor = Workhorse.RoleColor;
+                            if (Workhorse.IsThisRole(playerId))
+                                NonCompleteColor = Workhorse.RoleColor;
 
-                        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-                        if (Main.PlayerStates.TryGetValue(playerId, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
-                            NormalColor = Color.red;
+                            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+                            if (Main.PlayerStates.TryGetValue(playerId, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
+                                NormalColor = Color.red;
 
-                        TextColor = comms ? Color.gray : NormalColor;
-                        string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-                        ProgressText.Append(ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})"));
+                            TextColor = comms ? Color.gray : NormalColor;
+                            string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
+                            ProgressText.Append(ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})"));
+                        }
                     }
-                }
-                else
-                {
-                    ProgressText.Insert(0, " ");
-                }
+                    else
+                    {
+                        ProgressText.Insert(0, " ");
+                    }
+                    break;
             }
             return ProgressText.ToString();
         }
@@ -1628,6 +1643,8 @@ public static class Utils
             }
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
+            else if (Options.CurrentGameMode == CustomGameMode.CandR)
+                name = $"<color=#007BFF><size=1.7>{GetString("ModeC&R")}</size></color>\r\n" + name;
         }
 
         var modtag = "";
@@ -2493,6 +2510,7 @@ public static class Utils
     
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
+        if (Options.CurrentGameMode is CustomGameMode.CandR) return CopsAndRobbersManager.SummaryTexts(id, disableColor, check);
         var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
         if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
         else name = GetPlayerById(id)?.Data.PlayerName ?? name;

@@ -3,6 +3,9 @@ using static TOHE.Translator;
 using UnityEngine;
 using Hazel;
 using TOHE.Modules;
+using AmongUs.Data;
+using System.Text;
+using System;
 
 namespace TOHE;
 
@@ -40,6 +43,8 @@ internal static class CopsAndRobbersManager
     private static readonly HashSet<byte> disguise = [];
 
     private static int numCops;
+    private static int numCaptures;
+    private static int numRobbers;
 
     public static OptionItem CandR_NumCops;
     private static OptionItem CandR_CaptureCooldown;
@@ -93,7 +98,6 @@ internal static class CopsAndRobbersManager
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent);
-            //.SetParent(CopActiveHidden);
 
         CandR_CopAbilityDuration = IntegerOptionItem.Create(Id + 4, "C&R_CopAbilityDuration", new(1, 10, 1), 10, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
@@ -319,6 +323,8 @@ internal static class CopsAndRobbersManager
         cops.Clear();
         robbers.Clear();
         captured.Clear();
+        numCaptures = 0;
+        numRobbers = 0;
         capturedScore.Clear();
         timesCaptured.Clear();
         saved.Clear();
@@ -370,7 +376,8 @@ internal static class CopsAndRobbersManager
             }
             Logger.Msg($"set role for {pc.PlayerId}: {finalRoles[pc.PlayerId]}", "SetRoles");
         }
-
+        SendCandRData(5);
+        SendCandRData(6);
         return finalRoles;
     }
     private static void Add(this RoleType role, byte playerId)
@@ -390,6 +397,7 @@ internal static class CopsAndRobbersManager
                 robbers.Add(playerId);
                 timesCaptured[playerId] = 0;
                 saved[playerId] = 0;
+                numRobbers++;
                 return;
         }
     }
@@ -456,7 +464,7 @@ internal static class CopsAndRobbersManager
     public static void CaptureCooldown(PlayerControl cop) =>
     Main.AllPlayerKillCooldown[cop.PlayerId] = CandR_CaptureCooldown.GetFloat();
 
-    private static void SendCandRData(byte op, byte playerId)
+    private static void SendCandRData(byte op, byte playerId = byte.MaxValue, int capturedCount = 0)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCandRData, SendOption.Reliable, -1);
         writer.Write(op);
@@ -475,6 +483,26 @@ internal static class CopsAndRobbersManager
                 break;
             case 3:
                 writer.Write(playerId);
+                break;
+            case 4:
+                writer.Write(capturedCount);
+                break;
+            case 5:
+                writer.Write(numRobbers);
+                break;
+            case 6:
+                writer.Write(cops.Count);
+                foreach (var pid in cops) writer.Write(pid);
+                writer.Write(robbers.Count);
+                foreach (var pid in robbers) writer.Write(pid);
+                break;
+            case 7:
+                writer.Write(playerId);
+                writer.Write(saved[playerId]);
+                break;
+            case 8:
+                writer.Write(playerId);
+                writer.Write(capturedScore[playerId]);
                 break;
         }
 
@@ -503,8 +531,29 @@ internal static class CopsAndRobbersManager
                 byte removeRobberId = reader.ReadByte();
                 radar.Remove(removeRobberId);
                 break;
-        }
-        
+            case 4:
+                numCaptures = reader.ReadInt32();
+                break;
+            case 5:
+                numRobbers = reader.ReadInt32();
+                break;
+            case 6:
+                cops.Clear();
+                int copLength = reader.ReadInt32();
+                for (int i = 0; i < copLength; i++) cops.Add(reader.ReadByte());
+                robbers.Clear();
+                int robberLength = reader.ReadInt32();
+                for (int i = 0; i < robberLength; i++) robbers.Add(reader.ReadByte());
+                break;
+            case 7:
+                byte robber = reader.ReadByte();
+                saved[robber] = reader.ReadInt32();
+                break;
+            case 8:
+                byte cop = reader.ReadByte();
+                capturedScore[cop] = reader.ReadInt32();
+                break;
+        }      
     }
 
     private static CopAbility? RandomCopAbility()
@@ -622,6 +671,7 @@ internal static class CopsAndRobbersManager
         }
         return string.Empty;
     }
+    
     public static void OnCopAttack(PlayerControl cop, PlayerControl robber)
     {
         if (cop == null || robber == null || Options.CurrentGameMode != CustomGameMode.CandR) return;
@@ -642,6 +692,15 @@ internal static class CopsAndRobbersManager
         {    
             Vector2 robberLocation = robber.GetCustomPosition();
             robber.AddCaptured(robberLocation);
+            numCaptures = captured.Count;
+            foreach (var pid in cops)
+            {
+                var player = Utils.GetPlayerById(pid);
+                if (player != null)
+                {
+                    Utils.NotifyRoles(SpecifySeer: player);
+                }
+            }
 
             if (CandR_NotifyRobbersWhenCaptured.GetBool())
             {
@@ -658,6 +717,8 @@ internal static class CopsAndRobbersManager
 
             if (!timesCaptured.ContainsKey(robber.PlayerId)) timesCaptured[robber.PlayerId] = 0;
             timesCaptured[robber.PlayerId]++;
+            SendCandRData(4, capturedCount: numCaptures);
+            SendCandRData(8, playerId: cop.PlayerId);
         }
         else
         {
@@ -834,6 +895,41 @@ internal static class CopsAndRobbersManager
         return;
     }
 
+    public static void AbilityDescription(string ability, byte playerId = byte.MaxValue)
+    {
+        ability = ability.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
+        StringBuilder copAbilities = new();
+        int i = 0;
+        foreach (var ab in Enum.GetValues(typeof(CopAbility)))
+        {
+            i++;
+            copAbilities.Append($"<b>{i}. {GetString($"CopAbility.{ab}")}</b>:\n");
+            copAbilities.Append($"{GetString($"Description.{ab}")}\n\n");
+        }
+        StringBuilder robberAbilities = new();
+        i = 0;
+        foreach (var ab in Enum.GetValues(typeof(RobberAbility)))
+        {
+            i++;
+            robberAbilities.Append($"<b>{i}. {GetString($"RobberAbility.{ab}")}</b>:\n");
+            robberAbilities.Append($"{GetString($"Description.{ab}")}\n\n");
+        }
+
+        if (ability == GetString(CustomRoles.Cop.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty) || ability == "cop")
+        {
+            Utils.SendMessage(copAbilities.ToString(), sendTo:playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), Utils.GetRoleName(CustomRoles.Cop)));
+        }
+        else if (ability == GetString(CustomRoles.Cop.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty) || ability == "robber")
+        {
+            Utils.SendMessage(robberAbilities.ToString(), sendTo: playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Robber), Utils.GetRoleName(CustomRoles.Robber)));
+        }
+        else
+        {
+            Utils.SendMessage(copAbilities.ToString(), sendTo: playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), Utils.GetRoleName(CustomRoles.Cop)));
+            Utils.SendMessage(robberAbilities.ToString(), sendTo: playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Robber), Utils.GetRoleName(CustomRoles.Robber)));
+        }
+    }
+
     public static void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         if (playerId == byte.MaxValue) return;
@@ -845,7 +941,88 @@ internal static class CopsAndRobbersManager
             hud.KillButton?.OverrideText(GetString("CopKillButtonText"));
         }
     }
+    public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
+    {
+        var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
+        if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
+        else name = Utils.GetPlayerById(id)?.Data.PlayerName ?? name;
 
+        string TaskCount = string.Empty;
+        Color nameColor = Color.white;
+        string roleName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.GM), Utils.GetRoleName(CustomRoles.GM));
+        string capturedCountText = string.Empty;
+        if (robbers.Contains(id))
+        {
+            var taskState = Main.PlayerStates?[id].TaskState;
+            Color CurrentСolor;
+            CurrentСolor = taskState.IsTaskFinished ? Color.green : Utils.GetRoleColor(CustomRoles.Robber);
+            TaskCount = Utils.ColorString(CurrentСolor, $" ({taskState.CompletedTasksCount}/{taskState.AllTasksCount})");
+            nameColor = Utils.GetRoleColor(CustomRoles.Robber);
+            roleName = Utils.ColorString(nameColor, Utils.GetRoleName(CustomRoles.Robber));
+            if (!saved.ContainsKey(id)) saved[id] = 0;
+            capturedCountText = Utils.ColorString(new Color32(255, 69, 0, byte.MaxValue), $"{GetString("Saved")}: {saved[id]}");
+        }  
+        else if (cops.Contains(id))
+        {
+            nameColor = Utils.GetRoleColor(CustomRoles.Cop);
+            roleName = Utils.ColorString(nameColor, Utils.GetRoleName(CustomRoles.Cop));
+            if (!capturedScore.ContainsKey(id)) capturedScore[id] = 0;
+            capturedCountText = Utils.ColorString(new Color32(255, 69, 0, byte.MaxValue), $"{GetString("Captured")}: {capturedScore[id]}");
+
+        }
+
+        Main.PlayerStates.TryGetValue(id, out var playerState);
+        var disconnectedText = playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $"({GetString("Disconnected")})" : string.Empty;
+ 
+        string summary = $"{Utils.ColorString(nameColor, name)} - {roleName}{TaskCount} {capturedCountText} 『{Utils.GetVitalText(id, true)}』{disconnectedText}";
+       
+        return check && Utils.GetDisplayRoleAndSubName(id, id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
+            ? "INVALID"
+            : disableColor ? summary.RemoveHtmlTags() : summary;
+    }
+
+    public static string GetProgressText(byte playerId)
+    {
+        string progressText = string.Empty;
+        if (playerId == byte.MaxValue) return progressText;
+        Color32 textColor = Color.white;
+        if (cops.Contains(playerId))
+        { 
+            progressText = $" ({numCaptures}/{numRobbers})";
+            textColor = Utils.GetRoleColor(CustomRoles.Cop);
+        }
+        else if (robbers.Contains(playerId))
+        {
+            var taskState = Main.PlayerStates?[playerId].TaskState;
+            string Completed = $"{taskState.CompletedTasksCount}";
+            progressText= $" ({Completed}/{taskState.AllTasksCount})";
+            textColor = taskState.IsTaskFinished? Color.green : Utils.GetRoleColor(CustomRoles.Robber);
+        }
+        return Utils.ColorString(textColor, progressText);
+    }
+
+    public static void OnPlayerDisconnect(byte playerId)
+    {
+        if (robbers.Contains(playerId))
+        {
+            if (captured.ContainsKey(playerId))
+            {
+                captured.Remove(playerId);
+                numCaptures = captured.Count;
+                SendCandRData(4, capturedCount: numCaptures);
+            }
+            numRobbers--;
+            SendCandRData(5);
+            foreach (var pid in cops)
+            {
+                var player = Utils.GetPlayerById(pid);
+                if (player != null)
+                {
+                    Utils.NotifyRoles(SpecifySeer: player);
+                }
+            }
+        }
+    }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class FixedUpdateInGameModeCandRPatch
@@ -945,8 +1122,19 @@ internal static class CopsAndRobbersManager
                             if (!saved.ContainsKey(saviour)) saved[saviour] = 0;
                             saved[saviour]++;
                             Utils.GetPlayerById(rescued).RemoveCaptured();
+                            SendCandRData(7, playerId: saviour);
                         }
                         removeCaptured.Clear();
+                        numCaptures = captured.Count;
+                        SendCandRData(4, capturedCount: numCaptures);
+                        foreach (var pid in cops)
+                        {
+                            var player = Utils.GetPlayerById(pid);
+                            if (player != null)
+                            {
+                                Utils.NotifyRoles(SpecifySeer: player);
+                            }
+                        }
                     }
                 }
 
@@ -1075,5 +1263,4 @@ internal static class CopsAndRobbersManager
             }
         }
     }
-
 }

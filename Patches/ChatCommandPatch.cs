@@ -1399,6 +1399,11 @@ internal class ChatCommands
                     Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                     break;
 
+                case "/ability":
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    CopsAndRobbersManager.AbilityDescription(subArgs);
+                    break;
+
                 default:
                     Main.isChatCommand = false;
                     break;
@@ -1807,7 +1812,7 @@ internal class ChatCommands
                 else if (role == robberName) rl1 = CustomRoles.Robber;
                 else
                 {
-                    Utils.SendMessage(GetString("ModeDescribe.C&R"), playerId);
+                    Utils.SendMessage(GetString("ModeDescribe.C&R"), playerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), GetString("ModeC&R")));
                     return;
                 }
 
@@ -3088,6 +3093,10 @@ internal class ChatCommands
                 }
                 break;
 
+            case "/ability":
+                subArgs = args.Length < 2 ? "" : args[1];
+                CopsAndRobbersManager.AbilityDescription(subArgs, player.PlayerId);
+                break;
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
