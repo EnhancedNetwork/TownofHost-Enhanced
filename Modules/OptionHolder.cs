@@ -271,6 +271,12 @@ public static class Options
     public static OptionItem DecontaminationTimeOnMiraHQ;
     public static OptionItem DecontaminationTimeOnPolus;
 
+    public static OptionItem EnableHalloweenDecorations;
+    public static OptionItem HalloweenDecorationsSkeld;
+    public static OptionItem HalloweenDecorationsMira;
+    public static OptionItem HalloweenDecorationsDleks;
+    public static OptionItem EnableBirthdayDecorationSkeld;
+
     // Sabotage Settings
     public static OptionItem CommsCamouflage;
     public static OptionItem DisableOnSomeMaps;
@@ -1272,6 +1278,21 @@ public static class Options
             .SetParent(ChangeDecontaminationTime)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Vanilla Map Decorations
+        EnableHalloweenDecorations = BooleanOptionItem.Create(60506, "EnableHalloweenDecorations", false, TabGroup.ModSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        HalloweenDecorationsSkeld = BooleanOptionItem.Create(60507, "HalloweenDecorationsSkeld", false, TabGroup.ModSettings, false)
+            .SetParent(EnableHalloweenDecorations)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        HalloweenDecorationsMira = BooleanOptionItem.Create(60508, "HalloweenDecorationsMira", false, TabGroup.ModSettings, false)
+            .SetParent(EnableHalloweenDecorations)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        HalloweenDecorationsDleks = BooleanOptionItem.Create(60509, "HalloweenDecorationsDleks", false, TabGroup.ModSettings, false)
+            .SetParent(EnableHalloweenDecorations)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        EnableBirthdayDecorationSkeld = BooleanOptionItem.Create(60518, "EnableBirthdayDecorationSkeld", false, TabGroup.ModSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+
         // Sabotage
         TextOptionItem.Create(10000026, "MenuTitle.Sabotage", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
