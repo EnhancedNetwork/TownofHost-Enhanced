@@ -687,6 +687,7 @@ internal class ChatCommands
                 case "/s":
                 case "/с":
                 case "/сказать":
+                case "/说":
                     canceled = true;
                     if (args.Length > 1)
                         Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#ff0000>{GetString("MessageFromTheHost")} ~ <size=1.25>{PlayerControl.LocalPlayer.GetRealName(clientData: true)}</size></color>");
