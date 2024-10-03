@@ -1324,6 +1324,7 @@
   "HalloweenDecorationsMira": "Enable On <color=#e84b56>MIRA HQ</color>",
   "HalloweenDecorationsDleks": "Enable On <color=#66a186>dlekS ehT</color>",
   "EnableBirthdayDecorationSkeld": "Birthday Decoration On <color=#66a186>The Skeld</color>",
+  "RandomBirthdayAndHalloweenDecorationSkeld": "Set Random Decoration When Birthday And Halloween Is Active On <color=#66a186>The Skeld</color>",
   "ApplyDenyNameList": "Apply DenyName List",
   "KickPlayerFriendCodeInvalid": "Kick players with an invalid friend code",
   "TempBanPlayerFriendCodeInvalid": "Temp Ban players with an invalid friend code",

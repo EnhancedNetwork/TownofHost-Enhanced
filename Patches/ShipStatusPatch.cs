@@ -199,10 +199,24 @@ class StartPatch
         switch (Utils.GetActiveMapName())
         {
             case MapNames.Skeld:
-                if (Options.HalloweenDecorationsSkeld.GetBool())
+                var halloweenDecorationIsActive = Options.HalloweenDecorationsSkeld.GetBool();
+                var birthdayDecorationIsActive = Options.EnableBirthdayDecorationSkeld.GetBool();
+                var halloweenDecorationObject = __instance.transform.FindChild("Helloween");
+                var birthdayDecorationObject = __instance.transform.FindChild("BirthdayDecorSkeld");
+
+                if (Options.RandomBirthdayAndHalloweenDecorationSkeld.GetBool() && halloweenDecorationIsActive && birthdayDecorationIsActive)
+                {
+                    var random = IRandom.Instance.Next(0, 100);
+                    if (random < 50)
+                        halloweenDecorationObject?.gameObject.SetActive(true);
+                    else
+                        birthdayDecorationObject?.gameObject.SetActive(true);
+                    break;
+                }
+                if (halloweenDecorationIsActive)
                     __instance.transform.FindChild("Helloween")?.gameObject.SetActive(true);
 
-                if (Options.EnableBirthdayDecorationSkeld.GetBool())
+                if (birthdayDecorationIsActive)
                     __instance.transform.FindChild("BirthdayDecorSkeld")?.gameObject.SetActive(true);
                 break;
             case MapNames.Mira when Options.HalloweenDecorationsMira.GetBool():

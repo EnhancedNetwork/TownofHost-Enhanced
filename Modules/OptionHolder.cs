@@ -276,6 +276,7 @@ public static class Options
     public static OptionItem HalloweenDecorationsMira;
     public static OptionItem HalloweenDecorationsDleks;
     public static OptionItem EnableBirthdayDecorationSkeld;
+    public static OptionItem RandomBirthdayAndHalloweenDecorationSkeld;
 
     // Sabotage Settings
     public static OptionItem CommsCamouflage;
@@ -1291,6 +1292,8 @@ public static class Options
             .SetParent(EnableHalloweenDecorations)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         EnableBirthdayDecorationSkeld = BooleanOptionItem.Create(60518, "EnableBirthdayDecorationSkeld", false, TabGroup.ModSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        RandomBirthdayAndHalloweenDecorationSkeld = BooleanOptionItem.Create(60519, "RandomBirthdayAndHalloweenDecorationSkeld", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
 
         // Sabotage
