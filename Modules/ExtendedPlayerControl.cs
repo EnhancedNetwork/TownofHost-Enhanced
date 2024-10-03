@@ -362,7 +362,7 @@ static class ExtendedPlayerControl
         if (clientId == -1) return;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
-        writer.Write(player.Data.NetId);
+        writer.Write(seer.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

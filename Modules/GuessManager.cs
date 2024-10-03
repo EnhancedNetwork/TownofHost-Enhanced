@@ -378,7 +378,7 @@ public static class GuessManager
 
     public static TextMeshPro NameText(this PlayerControl p) => p.cosmetics.nameText;
     public static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
-    public static void RpcGuesserMurderPlayer(this PlayerControl pc) //ゲッサー用の殺し方
+    public static void RpcGuesserMurderPlayer(this PlayerControl pc)
     {
         try
         {

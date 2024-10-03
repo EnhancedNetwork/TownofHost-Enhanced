@@ -1259,7 +1259,8 @@ class MeetingHudUpdatePatch
             bufferTime = 10;
             var myRole = PlayerControl.LocalPlayer.GetCustomRole();
 
-            __instance.playerStates.Where(x => (!Main.PlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
+            //__instance.playerStates.Where(x => !x.TargetPlayerId.GetPlayer().IsAlive() && !x.AmDead)
+            //    .Do(x => x.SetDead(x.DidReport, true, x.GAIcon));
 
             if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser or CustomRoles.Swapper && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);
