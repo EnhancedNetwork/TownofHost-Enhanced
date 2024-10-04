@@ -3687,6 +3687,7 @@
   "C&R_ReleaseCooldownForCaptured": "Release cooldown for captured player",
   "C&R_ReleaseCooldownForRobber": "Release cooldown for robber",
   "CandR_GameTime": "Maximum Game Length",
+  "C&R_ShowChatInGame": "Show chat in game <color=#ff0000>(may cause black screens)</color>",
 
   "FFA": "Free For All",
   "ModeFFA": "Gamemode: FFA",

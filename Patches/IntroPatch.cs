@@ -725,12 +725,24 @@ class IntroCutsceneDestroyPatch
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => true,
-                CustomGameMode.CandR => true,
+                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
+                _ => false
+            };
+            bool shouldAntiBlackOut = Options.CurrentGameMode switch
+            {
+                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
                 _ => false
             };
             try
             {
                 if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (shouldAntiBlackOut)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        AntiBlackout.SetIsDead();
+                    }, 4f, "anti blackout");
+                }
             }
             catch (Exception error)
             {

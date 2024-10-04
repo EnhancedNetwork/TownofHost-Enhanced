@@ -83,102 +83,105 @@ internal static class CopsAndRobbersManager
     private static OptionItem CandR_ReleaseCooldownForCaptured;
     private static OptionItem CandR_ReleaseCooldownForRobber;
     private static OptionItem CandR_GameTime;
+    public static OptionItem CandR_ShowChatInGame;
 
 
     public static void SetupCustomOption()
     {
         CandR_GameTime = IntegerOptionItem.Create(Id, "CandR_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
-            .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
 
+        CandR_ShowChatInGame = CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 1, "C&R_ShowChatInGame", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR);
+
         /*********** Cops ***********/
-        TextOptionItem.Create(Id + 1, "Cop", TabGroup.ModSettings)
+        TextOptionItem.Create(Id + 2, "Cop", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue));
 
-        CandR_NumCops = IntegerOptionItem.Create(Id + 2, "C&R_NumCops", new(1, 5, 1), 2, TabGroup.ModSettings, false)
+        CandR_NumCops = IntegerOptionItem.Create(Id + 3, "C&R_NumCops", new(1, 5, 1), 2, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue));
-        CandR_CaptureCooldown = FloatOptionItem.Create(Id + 3, "C&R_CaptureCooldown", new(5f, 60f, 2.5f), 15f, TabGroup.ModSettings, false)
+        CandR_CaptureCooldown = FloatOptionItem.Create(Id + 4, "C&R_CaptureCooldown", new(5f, 60f, 2.5f), 15f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
 
-        CandR_CopAbilityTriggerChance = IntegerOptionItem.Create(Id + 4, "C&R_CopAbilityTriggerChance", new(0, 100, 5), 50, TabGroup.ModSettings, false)
+        CandR_CopAbilityTriggerChance = IntegerOptionItem.Create(Id + 5, "C&R_CopAbilityTriggerChance", new(0, 100, 5), 50, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent);
 
-        CandR_CopAbilityDuration = IntegerOptionItem.Create(Id + 5, "C&R_CopAbilityDuration", new(1, 10, 1), 10, TabGroup.ModSettings, false)
+        CandR_CopAbilityDuration = IntegerOptionItem.Create(Id + 6, "C&R_CopAbilityDuration", new(1, 10, 1), 10, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_CopAbilityCooldown = FloatOptionItem.Create(Id + 6, "C&R_CopAbilityCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
+        CandR_CopAbilityCooldown = FloatOptionItem.Create(Id + 7, "C&R_CopAbilityCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_CopAbilityTriggerChance);
 
 
-        CandR_HotPursuitChance = IntegerOptionItem.Create(Id + 7, "C&R_HotPursuitChance", new(0, 100, 5), 35, TabGroup.ModSettings, false)
+        CandR_HotPursuitChance = IntegerOptionItem.Create(Id + 8, "C&R_HotPursuitChance", new(0, 100, 5), 35, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_HotPursuitSpeed = FloatOptionItem.Create(Id + 8, "C&R_HotPursuitSpeed", new(0f, 2f, 0.25f), 1f, TabGroup.ModSettings, false)
+        CandR_HotPursuitSpeed = FloatOptionItem.Create(Id + 9, "C&R_HotPursuitSpeed", new(0f, 2f, 0.25f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_HotPursuitChance);
 
 
-        CandR_SpikeStripChance = IntegerOptionItem.Create(Id + 9, "C&R_SpikeStripChance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+        CandR_SpikeStripChance = IntegerOptionItem.Create(Id + 10, "C&R_SpikeStripChance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_SpikeStripRadius = FloatOptionItem.Create(Id + 10, "C&R_SpikeStripRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
+        CandR_SpikeStripRadius = FloatOptionItem.Create(Id + 11, "C&R_SpikeStripRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_SpikeStripChance);
-        CandR_SpikeStripDuration = IntegerOptionItem.Create(Id + 11, "C&R_SpikeStripDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
+        CandR_SpikeStripDuration = IntegerOptionItem.Create(Id + 12, "C&R_SpikeStripDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_SpikeStripChance);
 
-        CandR_FlashBangChance = IntegerOptionItem.Create(Id + 12, "C&R_FlashBangChance", new(0, 100, 5), 15, TabGroup.ModSettings, false)
+        CandR_FlashBangChance = IntegerOptionItem.Create(Id + 13, "C&R_FlashBangChance", new(0, 100, 5), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_FlashBangRadius = FloatOptionItem.Create(Id + 13, "C&R_FlashBangRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
+        CandR_FlashBangRadius = FloatOptionItem.Create(Id + 14, "C&R_FlashBangRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_FlashBangChance);
-        CandR_FlashBangDuration = IntegerOptionItem.Create(Id + 14, "C&R_FlashBangDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
+        CandR_FlashBangDuration = IntegerOptionItem.Create(Id + 15, "C&R_FlashBangDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_FlashBangChance);
 
-        CandR_ScopeChance = IntegerOptionItem.Create(Id + 15, "C&R_ScopeChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
+        CandR_ScopeChance = IntegerOptionItem.Create(Id + 16, "C&R_ScopeChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_ScopeIncrease = IntegerOptionItem.Create(Id + 16, "C&R_ScopeIncrease", new(1, 5, 1), 1, TabGroup.ModSettings, false)
+        CandR_ScopeIncrease = IntegerOptionItem.Create(Id + 17, "C&R_ScopeIncrease", new(1, 5, 1), 1, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_ScopeChance);
 
-        CandR_K9Chance = IntegerOptionItem.Create(Id + 17, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+        CandR_K9Chance = IntegerOptionItem.Create(Id + 18, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
@@ -246,7 +249,7 @@ internal static class CopsAndRobbersManager
             .SetParent(CandR_RobberAbilityTriggerChance);
         CandR_SmokeBombDuration = IntegerOptionItem.Create(Id + 32, "C&R_SmokeBombDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
-            .SetColor(new Color32(0, 123, 255, byte.MaxValue))
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_SmokeBombChance);
 
