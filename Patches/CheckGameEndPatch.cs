@@ -676,6 +676,16 @@ class CandRGameEndPredicate : GameEndPredicate
 
         // everyone died
         reason = GameOverReason.ImpostorByKill;
+
+        if (CopsAndRobbersManager.RoundTime <= 0)
+        {
+            reason = GameOverReason.HideAndSeek_ByTimer;
+            ResetAndSetWinner(CustomWinner.Cops);
+            WinnerIds = [.. CopsAndRobbersManager.cops];
+            Logger.Warn("Game end because round time finished", "C&R");
+            return true;
+        }
+
         if (!Main.AllAlivePlayerControls.Any())
         {
             reason = GameOverReason.ImpostorByKill;

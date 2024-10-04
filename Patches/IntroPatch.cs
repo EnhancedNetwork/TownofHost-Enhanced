@@ -68,6 +68,7 @@ class CoBeginPatch
         RPC.RpcVersionCheck();
 
         FFAManager.SetData();
+        CopsAndRobbersManager.SetData();
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
