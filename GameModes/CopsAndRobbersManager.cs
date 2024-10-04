@@ -18,6 +18,8 @@ internal static class CopsAndRobbersManager
     public static readonly Dictionary<byte, Vector2> captured = [];
 
     private static readonly Dictionary<byte, int> capturedScore = [];
+    private static readonly Dictionary<byte, long> capturedTime = [];
+    private static readonly Dictionary<byte, long> releaseTime = [];
     private static readonly Dictionary<byte, int> timesCaptured = [];
     private static readonly Dictionary<byte, int> saved = [];
     private static readonly Dictionary<byte, float> defaultSpeed = [];
@@ -77,6 +79,8 @@ internal static class CopsAndRobbersManager
     private static OptionItem CandR_SmokeBombDuration;
     private static OptionItem CandR_DisguiseChance;
     private static OptionItem CandR_RadarChance;
+    private static OptionItem CandR_ReleaseCooldownForCaptured;
+    private static OptionItem CandR_ReleaseCooldownForRobber;
 
 
     public static void SetupCustomOption()
@@ -89,7 +93,7 @@ internal static class CopsAndRobbersManager
         CandR_NumCops = IntegerOptionItem.Create(Id + 1, "C&R_NumCops", new(1, 5, 1), 2, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue));
-        CandR_CaptureCooldown = FloatOptionItem.Create(Id + 2, "C&R_CaptureCooldown", new(10f, 60f, 2.5f), 25f, TabGroup.ModSettings, false)
+        CandR_CaptureCooldown = FloatOptionItem.Create(Id + 2, "C&R_CaptureCooldown", new(5f, 60f, 2.5f), 15f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
@@ -192,7 +196,14 @@ internal static class CopsAndRobbersManager
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(255, 140, 0, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-
+        CandR_ReleaseCooldownForCaptured = IntegerOptionItem.Create(Id + 33, "C&R_ReleaseCooldownForCaptured", new(5, 20, 1), 5, TabGroup.ModSettings, false)
+            .SetGameMode (CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Seconds);
+        CandR_ReleaseCooldownForRobber = IntegerOptionItem.Create(Id + 34, "C&R_ReleaseCooldownForRobber", new(5, 20, 1), 15, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(255, 140, 0, byte.MaxValue))
+            .SetValueFormat(OptionFormat.Seconds);
         CandR_RobberAbilityTriggerChance = IntegerOptionItem.Create(Id + 24, "C&R_RobberAbilityTriggerChance", new(0, 100, 5), 50, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(255, 140, 0, byte.MaxValue))
@@ -346,6 +357,8 @@ internal static class CopsAndRobbersManager
         disguise.Clear();
         killDistance = Main.RealOptionsData.GetInt(Int32OptionNames.KillDistance);
         CumulativeAbilityChances();
+        capturedTime.Clear();
+        releaseTime.Clear();
     }
     public static Dictionary<byte, CustomRoles> SetRoles()
     {
@@ -398,6 +411,7 @@ internal static class CopsAndRobbersManager
                 timesCaptured[playerId] = 0;
                 saved[playerId] = 0;
                 numRobbers++;
+                releaseTime[playerId] = Utils.GetTimeStamp();
                 return;
         }
     }
@@ -715,6 +729,8 @@ internal static class CopsAndRobbersManager
             if (!capturedScore.ContainsKey(cop.PlayerId)) capturedScore[cop.PlayerId] = 0;
             capturedScore[cop.PlayerId]++;
 
+            capturedTime[robber.PlayerId] = Utils.GetTimeStamp();
+
             if (!timesCaptured.ContainsKey(robber.PlayerId)) timesCaptured[robber.PlayerId] = 0;
             timesCaptured[robber.PlayerId]++;
             SendCandRData(4, capturedCount: numCaptures);
@@ -1029,6 +1045,8 @@ internal static class CopsAndRobbersManager
     {
         private static long LastCheckedCop;
         private static long LastCheckedRobber;
+        private static Dictionary<byte, long> LastCheckedReleaseCooldownCaptured = [];
+        private static Dictionary<byte, long> LastCheckedReleaseCooldownRobber = [];
         public static void Postfix(PlayerControl __instance)
         {
             if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.CandR) return;
@@ -1098,7 +1116,7 @@ internal static class CopsAndRobbersManager
 
                 // Check if captured release
                 if (captured.Any())
-                {
+                {                  
                     foreach ((var captureId, Vector2 capturedLocation) in captured)
                     {
                         if (captureId == byte.MaxValue) continue;
@@ -1110,6 +1128,32 @@ internal static class CopsAndRobbersManager
                         float dis = Utils.GetDistance(capturedLocation, currentRobberLocation);
                         if (dis < 0.3f)
                         {
+                            var releaseCDforCapture = now - capturedTime[captureId];
+                            if (releaseCDforCapture < CandR_ReleaseCooldownForCaptured.GetInt())
+                            {
+                                if (!LastCheckedReleaseCooldownCaptured.ContainsKey(captureId)) LastCheckedReleaseCooldownCaptured[captureId] = now - 1;
+                                if (now != LastCheckedReleaseCooldownCaptured[captureId])
+                                {
+                                    LastCheckedReleaseCooldownCaptured[captureId] = now;
+                                    robber.Notify(GetString("C&R_CapturedInReleaseCooldown"), time: CandR_ReleaseCooldownForCaptured.GetInt() - releaseCDforCapture);
+                                    Logger.Info($"Time left in release cooldown for captured player, {captureId}: {now - capturedTime[captureId]}", "release canceled");
+                                }
+                                continue;
+                            }
+                            if (!releaseTime.ContainsKey(robberId)) releaseTime[robberId] = now;
+                            var releaseCDforRobber = now - releaseTime[robberId];
+                            if (releaseCDforRobber < CandR_ReleaseCooldownForRobber.GetInt())
+                            {
+                                if (!LastCheckedReleaseCooldownRobber.ContainsKey(robberId)) LastCheckedReleaseCooldownRobber[robberId] = now - 1;
+                                if (now != LastCheckedReleaseCooldownRobber[robberId])
+                                {
+                                    LastCheckedReleaseCooldownRobber[robberId] = now;
+                                    robber.Notify(GetString("C&R_RobberInReleaseCooldown"), time: CandR_ReleaseCooldownForRobber.GetInt() - releaseCDforRobber);
+                                    Logger.Info($"Time left in release cooldown for robber, {robberId}: {now - releaseTime[robberId]}", "release canceled");
+                                }
+                                continue;
+                            }
+
                             removeCaptured[captureId] = robberId;
                             Logger.Info($"to remove captured {captureId}, rob: {robberId}", "C&R FixedUpdate");
                         }
@@ -1123,6 +1167,7 @@ internal static class CopsAndRobbersManager
                             saved[saviour]++;
                             Utils.GetPlayerById(rescued).RemoveCaptured();
                             SendCandRData(7, playerId: saviour);
+                            releaseTime[saviour] = now;
                         }
                         removeCaptured.Clear();
                         numCaptures = captured.Count;

@@ -3682,6 +3682,10 @@
   "Description.Radar": "Points towards closest captured player, if no captured player, it points towards a cop (colored arrows indicating cops or captured).",
   "Captured": "Captured",
   "Saved": "Saved",
+  "C&R_CapturedInReleaseCooldown": "Release cooldown for captured player is not finished",
+  "C&R_RobberInReleaseCooldown": "Your release cooldown is not finished",
+  "C&R_ReleaseCooldownForCaptured": "Release cooldown for captured player",
+  "C&R_ReleaseCooldownForRobber": "Release cooldown for robber",
 
   "FFA": "Free For All",
   "ModeFFA": "Gamemode: FFA",
