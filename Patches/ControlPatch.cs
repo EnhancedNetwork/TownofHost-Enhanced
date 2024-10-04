@@ -258,7 +258,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Cancel start count down
-            if (Input.GetKeyDown(KeyCode.C) && GameStates.IsCountDown)
+            if (Input.GetKeyDown(KeyCode.C) && GameStates.IsCountDown && GameStates.IsLobby)
             {
                 Logger.Info("Reset Countdown", "KeyCommand");
                 GameStartManager.Instance.ResetStartState();
