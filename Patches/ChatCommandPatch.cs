@@ -147,6 +147,9 @@ internal class ChatCommands
                 case "/胜利":
                 case "/获胜":
                 case "/赢":
+                case "/胜利者":
+                case "/获胜的人":
+                case "/赢家":
                     canceled = true;
                     if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"));
                     else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList));
@@ -276,15 +279,11 @@ internal class ChatCommands
                         case "r":
                         case "roles":
                         case "funções":
-                       // case "职业":
-                        //case "角色":
                             Utils.ShowActiveRoles();
                             break;
                         case "a":
                         case "all":
                         case "tudo":
-                        case "所有":
-                        case "全部":
                             Utils.ShowAllActiveSettings();
                             break;
                         default:
@@ -334,10 +333,8 @@ internal class ChatCommands
                 case "/role":
                 case "/р":
                 case "/роль":
-                //case "/职业":
-                //case "/角色":
                     canceled = true;
-                    if (text.Contains("/role") || text.Contains("/роль")/* || text.Contains("/角色")*/)
+                    if (text.Contains("/role") || text.Contains("/роль"))
                         subArgs = text.Remove(0, 5);
                     else
                         subArgs = text.Remove(0, 2);
@@ -2059,10 +2056,8 @@ internal class ChatCommands
             case "/role":
             case "/р":
             case "/роль":
-            //case "/职业":
-            //case "/角色":
                 Logger.Info($"Command '/r' was activated", "OnReceiveChat");
-                if (text.Contains("/role") || text.Contains("/роль")/* || text.Contains("/角色")*/)
+                if (text.Contains("/role") || text.Contains("/роль"))
                     subArgs = text.Remove(0, 5);
                 else
                     subArgs = text.Remove(0, 2);
@@ -2243,15 +2238,11 @@ internal class ChatCommands
                     case "r":
                     case "roles":
                     case "funções":
-                    case "职业":
-                    case "角色":
                         Utils.ShowActiveRoles(player.PlayerId);
                         break;
                     case "a":
                     case "all":
                     case "tudo":
-                    case "所有":
-                    case "全部":
                         Utils.ShowAllActiveSettings(player.PlayerId);
                         break;
                     default:
@@ -2281,6 +2272,9 @@ internal class ChatCommands
             case "/胜利":
             case "/获胜":
             case "/赢":
+            case "/胜利者":
+            case "/获胜的人":
+            case "/赢家":
                 if (Main.winnerNameList.Count == 0) Utils.SendMessage(GetString("NoInfoExists"), player.PlayerId);
                 else Utils.SendMessage("Winner: " + string.Join(", ", Main.winnerNameList), player.PlayerId);
                 break;
@@ -3234,6 +3228,8 @@ internal class ChatCommands
                 Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                 break;
             case "/me":
+            case "/我的权限":
+            case "/权限":
 
                 string Devbox = player.FriendCode.GetDevUser().DeBug ? "<#10e341><b>✓</b></color>" : "<#e31010><b>〤</b></color>";
                 string UpBox = player.FriendCode.GetDevUser().IsUp ? "<#10e341><b>✓</b></color>" : "<#e31010><b>〤</b></color>";
