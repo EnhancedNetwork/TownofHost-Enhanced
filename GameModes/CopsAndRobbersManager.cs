@@ -87,7 +87,7 @@ internal static class CopsAndRobbersManager
 
     public static void SetupCustomOption()
     {
-        CandR_GameTime = IntegerOptionItem.Create(Id, "CandR_GameTime", new(30, 600, 10), 30, TabGroup.ModSettings, false)
+        CandR_GameTime = IntegerOptionItem.Create(Id, "CandR_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
