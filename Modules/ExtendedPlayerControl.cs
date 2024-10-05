@@ -254,6 +254,20 @@ static class ExtendedPlayerControl
 
         Logger.Info($"{player.GetNameWithRole()}'s role basis was changed to {newRoleType} ({newCustomRole}) (from role: {playerRole}) - oldRoleIsDesync: {oldRoleIsDesync}, newRoleIsDesync: {newRoleIsDesync}", "RpcChangeRoleBasis");
     }
+    public static void RpcSetPetDesync(this PlayerControl player, string petId, PlayerControl seer)
+    {
+        var clientId = seer.GetClientId();
+        if (clientId == -1) return;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            player.SetPet(petId);
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetPetStr, SendOption.Reliable, clientId);
+        writer.Write(petId);
+        writer.Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static void RpcExile(this PlayerControl player)
     {
         player.Exiled();

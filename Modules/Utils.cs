@@ -2358,6 +2358,7 @@ public static class Utils
     {
         try
         {
+            PhantomRolePatch.AfterMeeting();
             ChatManager.ClearLastSysMsg();
             FallFromLadder.Reset();
 
