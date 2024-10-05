@@ -203,7 +203,7 @@ internal class Vulture : RoleBase
         var ProgressText = new StringBuilder();
         Color TextColor = GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f);
 
-        ProgressText.Append(GetTaskCount(playerId, comms));
+        //ProgressText.Append(GetTaskCount(playerId, comms));
         ProgressText.Append(ColorString(TextColor, ColorString(Color.white, " - ") + $"({playerId.GetAbilityUseLimit()}/{NumberOfReportsToWin.GetInt()})"));
         return ProgressText.ToString();
     }
