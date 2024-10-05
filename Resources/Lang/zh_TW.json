@@ -2080,7 +2080,7 @@
   "MediumKnowPlayerDead": "剛剛似乎有亡魂發出了一陣嘶吼",
   "SpurtMinSpeed": "最低速度",
   "SpurtMaxSpeed": "最高速度",
-  "SpurtModule": "速度調節器",
+  "SpurtModule": "速度調節",
   "EnableSpurtCharge": "顯示能量",
   "SpurtSuffix": "\n« <color=#c9e8f5>衝刺</color>: {0}% »",
   "TargetIsAlreadyDead": "目標已死亡",
