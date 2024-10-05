@@ -10,7 +10,7 @@ namespace TOHE.Patches;
 public static class PhantomRolePatch
 {
     private static readonly Il2CppSystem.Collections.Generic.List<PlayerControl> InvisibilityList = new();
-    private static readonly Dictionary<byte ,string> PetsList = [];
+    private static readonly Dictionary<byte, string> PetsList = [];
 
     /*
      *  InnerSloth is doing careless stuffs. They didnt put amModdedHost check in cmd check vanish appear
