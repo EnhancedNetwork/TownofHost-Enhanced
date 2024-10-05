@@ -44,7 +44,7 @@ public static class Utils
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }, 6f, "Anti-Black Msg SendInGame Error During Loading");
+            }, 8f, "Anti-Black Msg SendInGame Error During Loading");
 
             if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
             {
@@ -53,7 +53,7 @@ public static class Utils
                     CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                     GameManager.Instance.LogicFlow.CheckEndCriteria();
                     RPC.ForceEndGame(CustomWinner.Error);
-                }, 9f, "Anti-Black End Game As Critical Error");
+                }, 11f, "Anti-Black End Game As Critical Error");
             }
             else if (GameStartManager.Instance != null)
             {
@@ -80,14 +80,14 @@ public static class Utils
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
-                }, 6f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
+                }, 8f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
-                }, 6f, "Anti-Black Msg SendInGame Host Reject Force End");
+                }, 8f, "Anti-Black Msg SendInGame Host Reject Force End");
                 
                 _ = new LateTask(() =>
                 {
@@ -96,7 +96,7 @@ public static class Utils
                         AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
                         Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
                     }
-                }, 11f, "Anti-Black Exit Game Due Critical Error");
+                }, 13f, "Anti-Black Exit Game Due Critical Error");
             }
         }
     }
@@ -2393,6 +2393,7 @@ public static class Utils
     {
         try
         {
+            PhantomRolePatch.AfterMeeting();
             ChatManager.ClearLastSysMsg();
             FallFromLadder.Reset();
 

@@ -69,7 +69,7 @@ internal class CopyCat : RoleBase
             ////////////           /*remove the settings for current role*/             /////////////////////
             
             var pcRole = pc.GetCustomRole();
-            if (pcRole != CustomRoles.Sidekick || pcRole != CustomRoles.Retributionist)
+            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Retributionist)
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {

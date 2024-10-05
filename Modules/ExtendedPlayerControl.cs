@@ -254,6 +254,20 @@ static class ExtendedPlayerControl
 
         Logger.Info($"{player.GetNameWithRole()}'s role basis was changed to {newRoleType} ({newCustomRole}) (from role: {playerRole}) - oldRoleIsDesync: {oldRoleIsDesync}, newRoleIsDesync: {newRoleIsDesync}", "RpcChangeRoleBasis");
     }
+    public static void RpcSetPetDesync(this PlayerControl player, string petId, PlayerControl seer)
+    {
+        var clientId = seer.GetClientId();
+        if (clientId == -1) return;
+        if (AmongUsClient.Instance.ClientId == clientId)
+        {
+            player.SetPet(petId);
+            return;
+        }
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetPetStr, SendOption.Reliable, clientId);
+        writer.Write(petId);
+        writer.Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public static void RpcExile(this PlayerControl player)
     {
         player.Exiled();
@@ -355,14 +369,16 @@ static class ExtendedPlayerControl
 
         if (seer == null || player == null) return;
 
-        var clientId = seer.GetClientId();
+        var leftPlayer = OnPlayerLeftPatch.LeftPlayerId;
+        if (seer.PlayerId == leftPlayer || player.PlayerId == leftPlayer) return;
 
-        var sender = CustomRpcSender.Create(name: $"SetNamePrivate");
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, clientId)
-            .Write(seer.Data.NetId)
-            .Write(name)
-        .EndRpc();
-        sender.SendMessage();
+        var clientId = seer.GetClientId();
+        if (clientId == -1) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
+        writer.Write(seer.Data.NetId);
+        writer.Write(name);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcEnterVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
     {

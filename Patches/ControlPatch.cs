@@ -174,11 +174,6 @@ internal class ControllerManagerUpdatePatch
             {
                 Utils.CopyCurrentSettings();
             }
-            //Open the game directory
-            if (GetKeysDown(KeyCode.F10))
-            {
-                System.Diagnostics.Process.Start(Environment.CurrentDirectory);
-            }
 
             // Show chat
             if (GetKeysDown(KeyCode.Return, KeyCode.C, KeyCode.LeftShift))
@@ -263,7 +258,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // Cancel start count down
-            if (Input.GetKeyDown(KeyCode.C) && GameStates.IsCountDown)
+            if (Input.GetKeyDown(KeyCode.C) && GameStates.IsCountDown && GameStates.IsLobby)
             {
                 Logger.Info("Reset Countdown", "KeyCommand");
                 GameStartManager.Instance.ResetStartState();

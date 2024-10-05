@@ -1,12 +1,10 @@
 ﻿using Hazel;
-using System;
-using System.Text;
+using InnerNet;
 using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -19,7 +17,6 @@ internal class Coroner : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    private static readonly HashSet<byte> UnreportablePlayers = [];
     private static readonly Dictionary<byte, HashSet<byte>> CoronerTargets = [];
 
     private static OptionItem ArrowsPointingToDeadBody;
@@ -42,13 +39,12 @@ internal class Coroner : RoleBase
     }
     public override void Init()
     {
-        UnreportablePlayers.Clear();
         CoronerTargets.Clear();
     }
     public override void Add(byte playerId)
     {
         playerId.SetAbilityUseLimit(UseLimitOpt.GetInt());
-        CoronerTargets.Add(playerId, []);
+        CoronerTargets[playerId] = [];
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -73,17 +69,16 @@ internal class Coroner : RoleBase
     {
         byte pid = reader.ReadByte();
         int opt = reader.ReadInt32();
-        float limit = reader.ReadSingle();
         byte tid = reader.ReadByte();
 
         if (!CoronerTargets.ContainsKey(pid)) CoronerTargets[pid] = [];
         CoronerTargets[pid].Add(tid);
-        if (opt == 1) UnreportablePlayers.Add(tid);
+        if (opt == 1) Main.UnreportableBodies.Add(tid);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.ReportButton.OverrideText(GetString("CoronerReportButtonText"));
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
         if (reporter.Is(CustomRoles.Coroner))
         {
@@ -120,7 +115,7 @@ internal class Coroner : RoleBase
             int operate = 0;
             if (LeaveDeadBodyUnreportable.GetBool())
             {
-                UnreportablePlayers.Add(deadBody.PlayerId);
+                Main.UnreportableBodies.Add(deadBody.PlayerId);
                 operate = 1;
             }
             SendRPCLimit(pc.PlayerId, operate, targetId: deadBody.PlayerId);
@@ -169,10 +164,9 @@ internal class Coroner : RoleBase
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Coroner)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
-        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Any())
+        if (seer.PlayerId != target.PlayerId || isForMeeting) return string.Empty;
+
+        if (CoronerTargets.TryGetValue(seer.PlayerId, out var Targets) && Targets.Any())
         {
             var arrows = "";
             foreach (var targetId in CoronerTargets[seer.PlayerId])

@@ -619,6 +619,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Necromancer)
                     || pc.Is(CustomRoles.Demon)
                     || pc.Is(CustomRoles.Shaman)
+                    || pc.Is(CustomRoles.Monarch)
                     || pc.Is(CustomRoles.Opportunist) && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool())
                     return false;
                 break;
@@ -643,8 +644,6 @@ public static class CustomRolesHelper
 
             case CustomRoles.Antidote:
                 if (pc.Is(CustomRoles.Diseased) || pc.Is(CustomRoles.Solsticer))
-                    return false;
-                if ((pc.GetCustomRole().IsCrewmate() && !Antidote.CrewCanBeAntidote.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Antidote.NeutralCanBeAntidote.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Antidote.ImpCanBeAntidote.GetBool()))
                     return false;
                 break;
 
@@ -812,7 +811,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Scavenger)
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Swift)
-                    || pc.Is(CustomRoles.Swooper))
+                    || pc.Is(CustomRoles.Swooper)
+                    || pc.Is(CustomRoles.DoubleAgent))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1059,6 +1059,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sloth))
                     return false;
                 break;
+            
+             case CustomRoles.Susceptible:
+                if (pc.Is(CustomRoles.Jester))
+                    return false;
+                break;
 
             case CustomRoles.Sloth:
                 if (pc.Is(CustomRoles.Swooper) 
@@ -1210,7 +1215,7 @@ public static class CustomRolesHelper
            CustomRoles.Cultist => CountTypes.Cultist,
            CustomRoles.HexMaster => CountTypes.HexMaster,
            CustomRoles.Necromancer => CountTypes.Necromancer,
-           CustomRoles.Stalker => !Stalker.SnatchesWin.GetBool() ? CountTypes.Stalker : CountTypes.Crew,
+           CustomRoles.Stalker => Stalker.SnatchesWins ? CountTypes.Crew : CountTypes.Stalker,
            CustomRoles.Arsonist => Arsonist.CanIgniteAnytime() ? CountTypes.Arsonist : CountTypes.Crew,
            CustomRoles.Shroud => CountTypes.Shroud,
            CustomRoles.Werewolf => CountTypes.Werewolf,

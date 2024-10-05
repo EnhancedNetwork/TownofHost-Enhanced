@@ -45,7 +45,28 @@ public static class GameOptionsMenuPatch
     [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPostfix]
     private static void InitializePostfix()
     {
-        GameObject.Find("PlayerOptionsMenu(Clone)")?.transform.FindChild("Background")?.gameObject.SetActive(false);
+        var optionMenu = GameObject.Find("PlayerOptionsMenu(Clone)");
+        optionMenu?.transform.FindChild("Background")?.gameObject.SetActive(false);
+
+        _ = new LateTask(() =>
+        {
+            var menuDescription = optionMenu?.transform.FindChild("What Is This?");
+
+            var infoImage = menuDescription.transform.FindChild("InfoImage");
+            infoImage.transform.localPosition = new(-4.65f, 0.16f, -1f);
+            infoImage.transform.localScale = new(0.2202f, 0.2202f, 0.3202f);
+
+            var infoText = menuDescription.transform.FindChild("InfoText");
+            infoText.transform.localPosition = new(-3.5f, 0.83f, -2f);
+            infoText.transform.localScale = new(1f, 1f, 1f);
+
+            var cubeObject = menuDescription.transform.FindChild("Cube");
+            cubeObject.transform.localPosition = new(-3.2f, 0.55f, -0.1f);
+            cubeObject.transform.localScale = new(0.61f, 0.64f, 1f);
+
+            var menuDescriptionText = GameSettingMenu.Instance.MenuDescriptionText;
+            menuDescriptionText.m_marginWidth = 2.5f;
+        }, 0.1f, "Set Menu", shoudLog: false);
     }
 
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
@@ -609,7 +630,7 @@ public static class StringOptionPatch
     private static void SetupHelpIcon(CustomRoles role, StringOption __instance)
     {
         var template = __instance.transform.FindChild("MinusButton");
-        var icon = GameObject.Instantiate(template, template.parent, true);
+        var icon = Object.Instantiate(template, template.parent, true);
         icon.gameObject.SetActive(true);
         icon.name = $"{role}HelpIcon";
         var text = icon.GetComponentInChildren<TextMeshPro>();
@@ -630,10 +651,10 @@ public static class StringOptionPatch
                 {
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
                     var str = GetString($"{roleName}InfoLong");
-                    int Lenght = str.Length > 360 ? 360 : str.Length;
-                    var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
+                    int size = str.Length > 510 ? 70 : 90;
+                    var infoLong = str[(str.IndexOf('\n') + 1)..str.Length];
                     var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), GetString(role.ToString()));
-                    var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
+                    var info = $"<size={size}%>{ColorRole}: {infoLong}</size>";
                     GameSettingMenu.Instance.MenuDescriptionText.text = info;
                 }
             }
