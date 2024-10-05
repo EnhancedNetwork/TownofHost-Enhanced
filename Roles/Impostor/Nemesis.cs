@@ -72,7 +72,7 @@ internal class Nemesis : RoleBase
         if (!pc.Is(CustomRoles.Nemesis)) return false;
         msg = msg.Trim().ToLower();
         if (msg.Length < 3 || msg[..3] != "/rv" || msg[..3] != "/复仇" || msg[..3] != "/仇杀") return false;
-        
+
         if (NemesisCanKillNum.GetInt() < 1)
         {
             pc.ShowInfoMessage(isUI, GetString("NemesisKillDisable"));
@@ -219,6 +219,8 @@ internal class Nemesis : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/rv {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/复仇 {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/仇杀 {playerId}", true);
         else SendRPC(playerId);
     }
 
