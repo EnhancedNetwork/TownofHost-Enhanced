@@ -1,10 +1,10 @@
 ﻿using AmongUs.GameOptions;
+using UnityEngine;
+using TOHE.Roles.Double;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using UnityEngine;
-using TOHE.Roles.Double;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
@@ -43,7 +43,7 @@ internal class Ghastly : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxPossesions.GetInt();
+        playerId.SetAbilityUseLimit(MaxPossesions.GetInt());
 
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
@@ -61,7 +61,7 @@ internal class Ghastly : RoleBase
             angel.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantPosses")));
             return true;
         }
-        if (AbilityLimit <= 0)
+        if (angel.GetAbilityUseLimit() <= 0)
         {
             angel.Notify(GetString("GhastlyNoMorePossess"));
             return false;
@@ -89,8 +89,7 @@ internal class Ghastly : RoleBase
         else if (KillerIsChosen && Target == byte.MaxValue && target.PlayerId != killer)
         {
             Target = target.PlayerId;
-            AbilityLimit--;
-            SendSkillRPC();
+            angel.RpcRemoveAbilityUse();
             LastTime.Add(killer, GetTimeStamp());
 
             KillerIsChosen = false;
@@ -167,7 +166,7 @@ internal class Ghastly : RoleBase
 
         if (killer == seen.PlayerId && target != byte.MaxValue)
         {
-            var arrows = TargetArrow.GetArrows(GetPlayerById(killer), target);
+            var arrows = TargetArrow.GetArrows(killer.GetPlayer(), target);
             var tar = target.GetPlayer().GetRealName();
             if (tar == null) return string.Empty;
 
@@ -190,7 +189,4 @@ internal class Ghastly : RoleBase
             killertarget = (byte.MaxValue, byte.MaxValue);
         }
     }
-
-    public override string GetProgressText(byte playerId, bool cooms)
-        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }

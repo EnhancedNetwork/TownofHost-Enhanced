@@ -1,6 +1,5 @@
 ﻿using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -31,7 +30,7 @@ internal class Kamikaze : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = OptMaxMarked.GetInt();
+        playerId.SetAbilityUseLimit(OptMaxMarked.GetInt());
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
@@ -54,14 +53,13 @@ internal class Kamikaze : RoleBase
         return killer.CheckDoubleTrigger(target, () =>
         {
 
-            if (AbilityLimit >= 1 && !KamikazedList.Contains(target.PlayerId)) 
+            if (killer.GetAbilityUseLimit() >= 1 && !KamikazedList.Contains(target.PlayerId)) 
             {
                 KamikazedList.Add(target.PlayerId);
                 killer.RpcGuardAndKill(killer);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
-                AbilityLimit--;
-                SendSkillRPC();
+                killer.RpcRemoveAbilityUse();
             } 
             else
             {
@@ -95,8 +93,5 @@ internal class Kamikaze : RoleBase
         }
         KamikazedList.Clear();
     }
-
-    public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Kamikaze).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }
 

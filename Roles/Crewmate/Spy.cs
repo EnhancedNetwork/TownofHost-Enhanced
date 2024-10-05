@@ -1,6 +1,4 @@
 using Hazel;
-using System;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -19,7 +17,6 @@ internal class Spy : RoleBase
 
     private static OptionItem SpyRedNameDur;
     private static OptionItem UseLimitOpt;
-    private static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
     private static OptionItem SpyInteractionBlocked;
 
     private static readonly Dictionary<byte, long> SpyRedNameList = [];
@@ -46,7 +43,7 @@ internal class Spy : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        AbilityLimit = UseLimitOpt.GetInt();
+        playerId.SetAbilityUseLimit(UseLimitOpt.GetInt());
     }
     public override void Remove(byte playerId)
     {
@@ -79,15 +76,14 @@ internal class Spy : RoleBase
         string stimeStamp = reader.ReadString();
         if (long.TryParse(stimeStamp, out long timeStamp)) SpyRedNameList[susId] = timeStamp;
     }
-    public bool OnKillAttempt(PlayerControl killer, PlayerControl target)
+    private static bool OnKillAttempt(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;
 
-        if (AbilityLimit >= 1 && killer.IsAlive())
+        if (killer.GetAbilityUseLimit() > 0 && killer.IsAlive())
         {
-            AbilityLimit -= 1;
-            SendSkillRPC();
+            killer.RpcRemoveAbilityUse();
             SpyRedNameList.TryAdd(killer.PlayerId, GetTimeStamp());
             SendRPC(killer.PlayerId);                
             if (SpyInteractionBlocked.GetBool()) 
@@ -118,36 +114,6 @@ internal class Spy : RoleBase
             }
         }
         if (change) { NotifyRoles(SpecifySeer: player, ForceLoop: true); }
-    }
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-        {
-            AbilityLimit += SpyAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendSkillRPC();
-        }
-        return true;
-    }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var sb = "";
-
-        var taskState = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor;
-        var TaskCompleteColor = Color.green;
-        var NonCompleteColor = Color.yellow;
-        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-        TextColor = comms ? Color.gray : NormalColor;
-        string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-
-        Color TextColor1;
-        if (AbilityLimit < 1) TextColor1 = Color.red;
-        else TextColor1 = Color.white;
-
-        sb += ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})");
-        sb += ColorString(TextColor1, $" <color=#777777>-</color> {Math.Round(AbilityLimit, 1)}");
-
-        return sb;
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => (seer.Is(CustomRoles.Spy) && SpyRedNameList.ContainsKey(target.PlayerId)) ? "#BA4A00" : "";
 }

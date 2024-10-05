@@ -1,6 +1,5 @@
 using Hazel;
 using System;
-using System.Text;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
@@ -27,9 +26,7 @@ internal class Inspector : RoleBase
     private static OptionItem InspectCheckOtherTargetKnow;
     private static OptionItem InspectCheckBaitCountTypeOpt;
     private static OptionItem InspectCheckRevealTargetTeam;
-    private static OptionItem InspectAbilityUseGainWithEachTaskCompleted;
 
-    private static readonly Dictionary<byte, float> MaxCheckLimit = [];
     private static readonly Dictionary<byte, int> RoundCheckLimit = [];
 
     public override void SetupCustomOption()
@@ -45,83 +42,47 @@ internal class Inspector : RoleBase
         InspectCheckTargetKnow = BooleanOptionItem.Create(Id + 15, "InspectCheckTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Inspector]);
         InspectCheckOtherTargetKnow = BooleanOptionItem.Create(Id + 16, "InspectCheckOtherTargetKnow", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckTargetKnow);
         InspectCheckRevealTargetTeam = BooleanOptionItem.Create(Id + 17, "InspectCheckRevealTarget", false, TabGroup.CrewmateRoles, false).SetParent(InspectCheckOtherTargetKnow);
-        InspectAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 18, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
+        InspectorAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 18, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Inspector])
             .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Inspector);
     }
     public override void Init()
     {
-        MaxCheckLimit.Clear();
         RoundCheckLimit.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        MaxCheckLimit.Add(playerId, InspectCheckLimitMax.GetInt());
+        playerId.SetAbilityUseLimit(InspectCheckLimitMax.GetInt());
         RoundCheckLimit.Add(playerId, InspectCheckLimitPerMeeting.GetInt());
     }
     public override void Remove(byte playerId)
     {
-        MaxCheckLimit.Remove(playerId);
         RoundCheckLimit.Remove(playerId);
     }
-    public static void SendRPC(byte playerId, int operate)
+    public static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInspectorLimit, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write(operate);
-        // reset round limit
-        if (operate == 0) writer.Write(RoundCheckLimit[playerId]);
-        // reduce the limits
-        if (operate == 1)
-        {
-            writer.Write(RoundCheckLimit[playerId]);
-            writer.Write(MaxCheckLimit[playerId]);
-        }
-        // increase limit
-        if (operate == 3) writer.Write(MaxCheckLimit[playerId]);
+        writer.WritePacked(RoundCheckLimit[playerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
         byte pid = reader.ReadByte();
-        int operate = reader.ReadInt32();
-        if (operate == 0)
-        {
-            int roundLimit = reader.ReadInt32();
-            RoundCheckLimit[pid] = roundLimit;
-        }
-        if (operate == 1)
-        {
-            int roundLimit = reader.ReadInt32();
-            float maxLimit = reader.ReadSingle();
-            RoundCheckLimit[pid] = roundLimit;
-            MaxCheckLimit[pid] = maxLimit;
-        }
-        if (operate == 2)
-        {
-            float maxLimit = reader.ReadSingle();
-            MaxCheckLimit[pid] = maxLimit;
-        }
+        int roundLimit = reader.ReadPackedInt32();
+
+        RoundCheckLimit[pid] = roundLimit;
     }
 
     public static bool CheckBaitCountType => InspectCheckBaitCountTypeOpt.GetBool();
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-        {
-            MaxCheckLimit[player.PlayerId] += InspectAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendRPC(player.PlayerId, 2);
-        }
-        return true;
-    }
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         foreach (var pid in RoundCheckLimit.Keys)
         {
             RoundCheckLimit[pid] = InspectCheckLimitPerMeeting.GetInt();
-            SendRPC(pid, 0);
+            SendRPC(pid);
         }
     }
 
@@ -133,7 +94,7 @@ internal class Inspector : RoleBase
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Inspector)) return false;
 
-        int operate = 0; // 1:ID 2:猜测
+        int operate = 0;
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
         else if (CheckCommond(ref msg, "compare|cmp|比较|比較", false)) operate = 2;
@@ -173,9 +134,10 @@ internal class Inspector : RoleBase
             {
                 Logger.Info($"{pc.GetNameWithRole()} checked {target1.GetNameWithRole()} and {target2.GetNameWithRole()}", "Inspector");
 
-                if (MaxCheckLimit[pc.PlayerId] < 1 || RoundCheckLimit[pc.PlayerId] < 1)
+                var abilityLimit = pc.GetAbilityUseLimit();
+                if (abilityLimit < 1 || RoundCheckLimit[pc.PlayerId] < 1)
                 {
-                    if (MaxCheckLimit[pc.PlayerId] < 1)
+                    if (abilityLimit < 1)
                     {
                         _ = new LateTask(() =>
                         {
@@ -300,9 +262,9 @@ internal class Inspector : RoleBase
                             Aware.AwareInteracted[target2.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
                         }
                     }
-                    MaxCheckLimit[pc.PlayerId] -= 1;
+                    pc.RpcRemoveAbilityUse();
                     RoundCheckLimit[pc.PlayerId]--;
-                    SendRPC(pc.PlayerId, 1);
+                    SendRPC(pc.PlayerId);
                 }
             }
         }
@@ -338,7 +300,6 @@ internal class Inspector : RoleBase
             id2 = Convert.ToByte(num2);
         }
 
-        //判断选择的玩家是否合理
         PlayerControl target1 = GetPlayerById(id1);
         PlayerControl target2 = GetPlayerById(id2);
         if (target1 == null || target1.Data.IsDead || target2 == null || target2.Data.IsDead)
@@ -404,23 +365,6 @@ internal class Inspector : RoleBase
             writer.SendMessage();
         }
         ChatUpdatePatch.DoBlockChat = false;
-    }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState8 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor8;
-        var TaskCompleteColor8 = Color.green;
-        var NonCompleteColor8 = Color.yellow;
-        var NormalColor8 = taskState8.IsTaskFinished ? TaskCompleteColor8 : NonCompleteColor8;
-        TextColor8 = comms ? Color.gray : NormalColor8;
-        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
-        Color TextColor81;
-        if (MaxCheckLimit[playerId] < 1) TextColor81 = Color.red;
-        else TextColor81 = Color.white;
-        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor81, $" <color=#ffffff>-</color> {Math.Round(MaxCheckLimit[playerId], 1)}"));
-        return ProgressText.ToString();
     }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
