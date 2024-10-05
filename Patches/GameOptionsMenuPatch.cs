@@ -651,10 +651,10 @@ public static class StringOptionPatch
                 {
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
                     var str = GetString($"{roleName}InfoLong");
-                    //int Lenght = str.Length > 360 ? 360 : str.Length;
+                    int size = str.Length > 510 ? 70 : 90;
                     var infoLong = str[(str.IndexOf('\n') + 1)..str.Length];
                     var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), GetString(role.ToString()));
-                    var info = $"<size=90%>{ColorRole}: {infoLong}</size>";
+                    var info = $"<size={size}%>{ColorRole}: {infoLong}</size>";
                     GameSettingMenu.Instance.MenuDescriptionText.text = info;
                 }
             }
