@@ -71,7 +71,7 @@ internal class Nemesis : RoleBase
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Nemesis)) return false;
         msg = msg.Trim().ToLower();
-        if (msg.Length < 3 || msg[..3] != "/rv") return false;
+        if (msg.Length < 3 || msg[..3] != "/rv" || msg[..3] != "/复仇" || msg[..3] != "/仇杀") return false;
         
         if (NemesisCanKillNum.GetInt() < 1)
         {
@@ -85,7 +85,7 @@ internal class Nemesis : RoleBase
             return true;
         }
 
-        if (msg == "/rv")
+        if (msg == "/rv" || msg == "/复仇" || msg == "/仇杀")
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
@@ -110,6 +110,8 @@ internal class Nemesis : RoleBase
         try
         {
             targetId = int.Parse(msg.Replace("/rv", string.Empty));
+            targetId = int.Parse(msg.Replace("/复仇", string.Empty));
+            targetId = int.Parse(msg.Replace("/仇杀", string.Empty));
             target = Utils.GetPlayerById(targetId);
         }
         catch
@@ -189,6 +191,8 @@ internal class Nemesis : RoleBase
     {
         int PlayerId = reader.ReadByte();
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
+        NemesisMsgCheck(pc, $"/复仇 {PlayerId}", true);
+        NemesisMsgCheck(pc, $"/仇杀 {PlayerId}", true);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckCanUseKillButton() ? DefaultKillCooldown : 300f;
