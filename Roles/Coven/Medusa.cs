@@ -27,8 +27,8 @@ internal class Medusa : CovenManager
     //private static OptionItem HasImpostorVision;
 
     private static readonly Dictionary<byte, List<byte>> StonedPlayers = [];
-    private static readonly Dictionary<byte, List<byte>> PreStonedPlayers = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
+    private static bool isStoning;
 
 
 
@@ -52,12 +52,11 @@ internal class Medusa : CovenManager
     {
         StonedPlayers.Clear();
         originalSpeed.Clear();
-        PreStonedPlayers.Clear();
     }
     public override void Add(byte playerId)
     {
         StonedPlayers[playerId] = [];
-        PreStonedPlayers[playerId] = [];
+        isStoning = false;
     }
 
     public void SendRPC(PlayerControl player, PlayerControl target)
@@ -65,16 +64,13 @@ internal class Medusa : CovenManager
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(player.PlayerId);
-        writer.Write(AbilityLimit);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
-
-        AbilityLimit = reader.ReadSingle();
-        PreStonedPlayers[playerId].Add(reader.ReadByte());
+        StonedPlayers[playerId].Add(reader.ReadByte());
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = StoneCooldown.GetFloat();
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
@@ -100,7 +96,7 @@ internal class Medusa : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer) || !target.IsPlayerCoven()) {
+        if (HasNecronomicon(killer) && !target.IsPlayerCoven()) {
             killer.RpcMurderPlayer(target);
             killer.ResetKillCooldown();
             Main.UnreportableBodies.Add(target.PlayerId);
@@ -108,20 +104,18 @@ internal class Medusa : CovenManager
         }
         else
         {
-            PreStonedPlayers[killer.PlayerId].Add(target.PlayerId);
-            killer.Notify(GetString("MedusaStonedPlayer"));
+            StonedPlayers[killer.PlayerId].Add(target.PlayerId);
+            killer.Notify(string.Format(GetString("MedusaStonedPlayer"), target.GetRealName()));
             return false;
         }
     }
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
+    public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
     {
-        foreach (var player in PreStonedPlayers[pc.PlayerId]) 
+        var dusa = physics.myPlayer;
+        foreach (var player in StonedPlayers[dusa.PlayerId])
         {
-            StonedPlayers[pc.PlayerId].Add(player);
-            PreStonedPlayers[pc.PlayerId].Remove(player);   
-        }
-        foreach (var player in StonedPlayers[pc.PlayerId])
-        {
+            dusa.Notify(GetString("MedusaStoningStart"), StoneDuration.GetFloat());
+            isStoning = true;
             originalSpeed.Remove(player);
             originalSpeed.Add(player, Main.AllPlayerSpeed[player]);
             Main.AllPlayerSpeed[player] = 0f;
@@ -129,24 +123,26 @@ internal class Medusa : CovenManager
             GetPlayerById(player).MarkDirtySettings();
             _ = new LateTask(() =>
             {
+                dusa.Notify(GetString("MedusaStoningEnd"));
+                isStoning = false;
                 Main.AllPlayerSpeed[player] = originalSpeed[player];
                 GetPlayerById(player).SyncSettings();
                 originalSpeed.Remove(player);
-                StonedPlayers[pc.PlayerId].Remove(player);
+                StonedPlayers[dusa.PlayerId].Remove(player);
             }, StoneDuration.GetFloat(), "Medusa Revert Stone");
         }
     }
     public static void SetStoned(PlayerControl player, IGameOptions opt)
     {
         if (StonedPlayers.Any(a => a.Value.Contains(player.PlayerId) &&
-           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)))
+           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)) && isStoning)
         {
             opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, StoneDuration.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, StoneDuration.GetFloat());
+            opt.SetFloat(FloatOptionNames.CrewLightMod, StoneVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, StoneVision.GetFloat());
         }
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => PreStonedPlayers[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Medusa), "♻") : string.Empty;
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => StonedPlayers[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Medusa), "♻") : string.Empty;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("MedusaReportButtonText"));

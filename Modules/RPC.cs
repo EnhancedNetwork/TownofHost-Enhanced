@@ -115,6 +115,7 @@ enum CustomRPC : byte // 185/255 USED
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
+    Necronomicon,
 }
 public enum Sounds
 {
@@ -696,6 +697,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncShieldPersonDiedFirst:
                 Main.FirstDied = reader.ReadString();
                 Main.FirstDiedPrevious = reader.ReadString();
+                break;
+            case CustomRPC.Necronomicon:
+                CovenManager.ReceiveNecroRPC(reader);
                 break;
         }
     }

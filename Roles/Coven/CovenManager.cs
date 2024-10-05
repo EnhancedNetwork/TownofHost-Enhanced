@@ -65,12 +65,12 @@ public abstract class CovenManager : RoleBase
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Necronomicon, SendOption.Reliable, -1);
         writer.WriteNetObject(GetPlayerById(playerId)); 
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public static void ReceiveNecroRPC(MessageReader reader)
     {
         byte NecroId = reader.ReadByte();
         necroHolder = NecroId;
@@ -126,7 +126,7 @@ public abstract class CovenManager : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive())
+        if (necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive() || !GetPlayerById(necroHolder).IsPlayerCoven())
         {
             GiveNecronomicon();
         }

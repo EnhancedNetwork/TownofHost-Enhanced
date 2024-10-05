@@ -1980,6 +1980,10 @@
   "MedusaStoneCooldown": "Stone Cooldown",
   "MedusaStoneDuration": "Stone Duration",
   "MedusaStoneVision": "Stoned Vision",
+  "MedusaStonedPlayer": "{0} has been Stoned",
+  "MedusaStoningStart": "Stoning in progress",
+  "MedusaStoningEnd": "Stoning has ended",
+
 
   "LuckyProbability": "Probability of surviving a kill",
   "ImpCanBeDoubleShot": "<color=#ff1919>Impostors</color> can have <color=#19fa8d>Double Shot</color>",
