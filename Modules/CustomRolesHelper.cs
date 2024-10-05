@@ -749,7 +749,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Doppelganger) 
                     || pc.Is(CustomRoles.Jester)
                     || pc.Is(CustomRoles.Zombie) 
-                    || pc.Is(CustomRoles.Solsticer)) return false;
+                    || pc.Is(CustomRoles.Solsticer) || pc.IsNeutralApocalypse()) return false;
                 break;
 
             case CustomRoles.Youtuber:
@@ -1078,6 +1078,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wraith)
                     || pc.Is(CustomRoles.Spurt))
                     return false;
+                break;
+            case CustomRoles.Evader:
+                if (pc.IsNeutralApocalypse())
+                    return false; 
                 break;
         }
 
