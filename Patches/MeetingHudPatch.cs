@@ -512,7 +512,7 @@ class CheckForEndVotingPatch
                 else
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                    name += string.Format(GetString("ApocRemain"), neutralnum) + comma;
+                    name += string.Format(GetString("ApocRemain"), apocnum) + comma;
         }
 
     EndOfSession:
