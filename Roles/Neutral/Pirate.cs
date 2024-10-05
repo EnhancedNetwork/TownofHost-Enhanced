@@ -187,7 +187,7 @@ internal class Pirate : RoleBase
 
         msg = msg.ToLower().TrimStart().TrimEnd();
         bool operate = false;
-        if (CheckCommond(ref msg, "duel")) operate = true;
+        if (CheckCommond(ref msg, "duel|对决|决斗")) operate = true;
         else return false;
 
         if (!pc.IsAlive())
@@ -311,7 +311,7 @@ internal class Pirate : RoleBase
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = ["duel", "rps"];
+        string[] command = ["duel", "rps", "决斗", "对决"];
         for (int i = 0; i < 20; i++)
         {
             msg = "/";
