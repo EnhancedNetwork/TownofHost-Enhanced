@@ -204,10 +204,7 @@ internal class Retributionist : RoleBase
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
-        RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);
-        RetributionistMsgCheck(pc, $"/惩罚 {PlayerId}", true);
-        RetributionistMsgCheck(pc, $"/惩 {PlayerId}", true);
-        RetributionistMsgCheck(pc, $"/罚 {PlayerId}", true);
+        RetributionistMsgCheck(pc, $"/ret {PlayerId}|/惩罚 {PlayerId}|/惩 {PlayerId}|/罚 {PlayerId}", true);
     }
 
     private static void RetributionistOnClick(byte playerId /*, MeetingHud __instance*/)
@@ -215,10 +212,7 @@ internal class Retributionist : RoleBase
         Logger.Msg($"Click: ID {playerId}", "Retributionist UI");
         var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
-        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/惩罚 {playerId}", true);
-        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/惩 {playerId}", true);
-        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/罚 {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}|/惩罚 {playerId}|/惩 {playerId}|/罚 {playerId}", true);
         else SendRPC(playerId);
     }
     public override void OnMeetingHudStart(PlayerControl pc)
