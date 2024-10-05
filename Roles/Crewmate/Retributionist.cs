@@ -205,7 +205,7 @@ internal class Retributionist : RoleBase
     {
         int PlayerId = reader.ReadByte();
         RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);
-        RetributionistMsgCheck(pc, $"/惩罚 { PlayerId}", true);
+        RetributionistMsgCheck(pc, $"/惩罚 {PlayerId}", true);
         RetributionistMsgCheck(pc, $"/惩 {PlayerId}", true);
         RetributionistMsgCheck(pc, $"/罚 {PlayerId}", true);
     }
@@ -216,6 +216,9 @@ internal class Retributionist : RoleBase
         var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/惩罚 {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/惩 {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/罚 {playerId}", true);
         else SendRPC(playerId);
     }
     public override void OnMeetingHudStart(PlayerControl pc)

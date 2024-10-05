@@ -223,6 +223,8 @@ internal class President : RoleBase
             return;
         }
         EndMsg(pc, $"/finish");
+        EndMsg(pc, $"/总统结束");
+        EndMsg(pc, $"/总统结束会议");
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
