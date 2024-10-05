@@ -847,9 +847,11 @@ static class ExtendedPlayerControl
     public static int GetClientId(this PlayerControl player)
     {
         if (player == null) return -1;
-        var client = player.GetClient();
-        return client == null ? -1 : client.Id;
+        var data = player.Data;
+        return data == null ? -1 : data.ClientId;
     }
+    public static int GetClientId(this NetworkedPlayerInfo playerData) => playerData == null ? -1 : playerData.ClientId;
+
     /// <summary>
     /// Only roles (no add-ons)
     /// </summary>
