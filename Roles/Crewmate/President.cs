@@ -98,8 +98,8 @@ internal class President : RoleBase
 
         int operate;
         msg = msg.ToLower().TrimStart().TrimEnd();
-        if (CheckCommond(ref msg, "finish|结束|结束会议|結束|結束會議")) operate = 1;
-        else if (CheckCommond(ref msg, "reveal|展示")) operate = 2;
+        if (CheckCommond(ref msg, "finish|总统结束|总统结束会议|結束|結束會議")) operate = 1;
+        else if (CheckCommond(ref msg, "reveal|展示|揭晓")) operate = 2;
         else return false;
 
         if (!pc.IsAlive())

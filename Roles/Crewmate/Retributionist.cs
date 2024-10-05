@@ -67,7 +67,7 @@ internal class Retributionist : RoleBase
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Retributionist)) return false;
         msg = msg.Trim().ToLower();
-        if (msg.Length < 4 || msg[..4] != "/ret") return false;
+        if (msg.Length < 4 || msg[..4] != "/ret" || msg[..4] != "/惩罚" || msg[..4] != "/惩" || msg[..4] != "/罚") return false;
         if (RetributionistCanKillNum.GetInt() < 1)
         {
             pc.ShowInfoMessage(isUI, GetString("RetributionistKillDisable"));
@@ -96,7 +96,7 @@ internal class Retributionist : RoleBase
             return true;
         }
 
-        if (msg == "/ret")
+        if (msg == "/ret" || msg == "/惩罚" || msg == "/惩" || msg == "/罚")
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
@@ -120,6 +120,9 @@ internal class Retributionist : RoleBase
         try
         {
             targetId = int.Parse(msg.Replace("/ret", string.Empty));
+            targetId = int.Parse(msg.Replace("/惩罚", string.Empty));
+            targetId = int.Parse(msg.Replace("/惩", string.Empty));
+            targetId = int.Parse(msg.Replace("/罚", string.Empty));
             target = GetPlayerById(targetId);
         }
         catch
@@ -202,6 +205,9 @@ internal class Retributionist : RoleBase
     {
         int PlayerId = reader.ReadByte();
         RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);
+        RetributionistMsgCheck(pc, $"/惩罚 { PlayerId}", true);
+        RetributionistMsgCheck(pc, $"/惩 {PlayerId}", true);
+        RetributionistMsgCheck(pc, $"/罚 {PlayerId}", true);
     }
 
     private static void RetributionistOnClick(byte playerId /*, MeetingHud __instance*/)
