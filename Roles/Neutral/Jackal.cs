@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -38,7 +39,7 @@ internal class Jackal : RoleBase
     private static OptionItem SidekickCanKillSidekick;
     private static readonly Dictionary<byte, float> SidekickRecruitTime =[];
     public static bool SidekickAlive;
-    private int NeedtoKill;
+    private static int NeedtoKill;
     private enum SidekickAssignModeSelectList
     {
         Jackal_SidekickAssignMode_SidekickAndRecruit,
@@ -150,6 +151,7 @@ internal class Jackal : RoleBase
         if (NeedtoKill != 0)
         {
             NeedtoKill--;
+            SendRPC(NeedtoKill,SidekickAlive);
             return true;
         }
         if (SidekickAlive)
@@ -161,6 +163,8 @@ internal class Jackal : RoleBase
         {
             AbilityLimit--;
             NeedtoKill = RecruitSidekickNeedToKill.GetInt();
+            SidekickAlive = true;
+            SendRPC(NeedtoKill, SidekickAlive);
             SendSkillRPC();
 
             target.GetRoleClass()?.OnRemove(target.PlayerId);
@@ -175,7 +179,6 @@ internal class Jackal : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
 
-            SidekickAlive = true;
             SidekickRecruitTime[target.PlayerId] = AbilityLimit; 
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
@@ -196,6 +199,18 @@ internal class Jackal : RoleBase
         
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
         return true;
+    }
+    public static void SendRPC(int needtokill,bool sidekickalive)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncJackalNeedtoKill, SendOption.Reliable, -1);
+        writer.Write(needtokill);
+        writer.Write(sidekickalive);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC(MessageReader reader)
+    {
+        NeedtoKill = reader.ReadInt32();
+        SidekickAlive = reader.ReadBoolean();
     }
 
     public static bool CanBeSidekick(PlayerControl pc)
