@@ -489,8 +489,15 @@ static class ExtendedPlayerControl
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (player.GetRoleClass() is Glitch gc)
         {
-            gc.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
-            gc.KCDTimer = (int)(time / 2);
+            if (gc.NotSetCD)
+            {
+                gc.NotSetCD = false;
+            }
+            else
+            {
+                gc.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
+                gc.KCDTimer = (int)(time / 2);
+            }
         }
         else if (forceAnime || !player.IsModded() || !Options.DisableShieldAnimations.GetBool())
         {
