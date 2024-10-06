@@ -4,20 +4,14 @@ public class Sleuth : IAddon
 {
     private const int Id = 20100;
     public AddonTypes Type => AddonTypes.Helpful;
-
-    public static OptionItem ImpCanBeSleuth;
-    public static OptionItem CrewCanBeSleuth;
-    public static OptionItem NeutralCanBeSleuth;
+   
     public static OptionItem SleuthCanKnowKillerRole;
     
     public static readonly Dictionary<byte, string> SleuthNotify = [];
-
+    
     public void SetupCustomOption()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Sleuth, canSetNum: true);
-        ImpCanBeSleuth = BooleanOptionItem.Create(Id + 10, "ImpCanBeSleuth", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sleuth]);
-        CrewCanBeSleuth = BooleanOptionItem.Create(Id + 11, "CrewCanBeSleuth", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sleuth]);
-        NeutralCanBeSleuth = BooleanOptionItem.Create(Id + 12, "NeutralCanBeSleuth", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sleuth]);
         SleuthCanKnowKillerRole = BooleanOptionItem.Create(Id + 13, "SleuthCanKnowKillerRole", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sleuth]);
     }
 
