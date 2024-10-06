@@ -110,8 +110,6 @@ internal class Nemesis : RoleBase
         try
         {
             targetId = int.Parse(msg.Replace("/rv", string.Empty));
-            targetId = int.Parse(msg.Replace("/复仇", string.Empty));
-            targetId = int.Parse(msg.Replace("/仇杀", string.Empty));
             target = Utils.GetPlayerById(targetId);
         }
         catch
@@ -191,8 +189,6 @@ internal class Nemesis : RoleBase
     {
         int PlayerId = reader.ReadByte();
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
-        NemesisMsgCheck(pc, $"/复仇 {PlayerId}", true);
-        NemesisMsgCheck(pc, $"/仇杀 {PlayerId}", true);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckCanUseKillButton() ? DefaultKillCooldown : 300f;
@@ -219,8 +215,6 @@ internal class Nemesis : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
         if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/rv {playerId}", true);
-        if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/复仇 {playerId}", true);
-        if (AmongUsClient.Instance.AmHost) NemesisMsgCheck(PlayerControl.LocalPlayer, $"/仇杀 {playerId}", true);
         else SendRPC(playerId);
     }
 
