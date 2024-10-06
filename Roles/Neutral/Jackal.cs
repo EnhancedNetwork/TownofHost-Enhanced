@@ -29,14 +29,12 @@ internal class Jackal : RoleBase
     private static OptionItem JackalCanKillSidekick;
     private static OptionItem CanRecruitSidekick;
     private static OptionItem SidekickRecruitLimitOpt;
-    public static OptionItem SidekickCountMode;
     public static OptionItem KillCooldownSK;
     public static OptionItem CanVentSK;
     public static OptionItem CanUseSabotageSK;
     private static OptionItem RecruitSidekickNeedToKill;
     public static OptionItem SidekickCanKillBeforeInherited;
     private static OptionItem SidekickCanKillJackal;
-    private static OptionItem SidekickCanKillSidekick;
     private static readonly Dictionary<byte, float> SidekickRecruitTime =[];
     public static bool SidekickAlive;
     private static int NeedtoKill;
@@ -76,9 +74,6 @@ internal class Jackal : RoleBase
         CanUseSabotageSK = BooleanOptionItem.Create(Id + 22, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillBeforeInherited = BooleanOptionItem.Create(Id + 37, "Jackal_SidekickCanKillBeforeInherited", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillJackal = BooleanOptionItem.Create(Id + 23, "Jackal_SidekickCanKillJackal", false, TabGroup.NeutralRoles, false).SetParent(SidekickCanKillBeforeInherited);
-        SidekickCanKillSidekick = BooleanOptionItem.Create(Id + 24, "Jackal_SidekickCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(SidekickCanKillBeforeInherited);
-        SidekickCountMode = StringOptionItem.Create(Id + 25, "Jackal_SidekickCountMode", EnumHelper.GetAllNames<SidekickCountModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
-           .SetHidden(false);
         RecruitSidekickNeedToKill = IntegerOptionItem.Create(Id + 36, "Jackal_RecruitSidekickNeedToKill", new(0, 13, 1), 1, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
               .SetValueFormat(OptionFormat.Times);
     }
@@ -117,9 +112,8 @@ internal class Jackal : RoleBase
 
     public static bool JackalKnowRole(PlayerControl seer, PlayerControl target)
     {
-        if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) return true;
-        else if (seer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return true;
-        else if (seer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit))) return true;
+        if (seer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick))) return true;
+        else if (seer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Sidekick))) return true;
 
         return false;
     }
@@ -216,9 +210,9 @@ internal class Jackal : RoleBase
     public static bool CanBeSidekick(PlayerControl pc)
     {
         var role = pc.GetCustomRole();
-        return !(role is CustomRoles.Sidekick or CustomRoles.Recruit or CustomRoles.Recruit
-            or CustomRoles.Loyal or CustomRoles.Admired or CustomRoles.Rascal or CustomRoles.Madmate
-            or CustomRoles.Charmed or CustomRoles.Infected or CustomRoles.Paranoia or CustomRoles.Contagious)
+        return !(role is CustomRoles.Sidekick or CustomRoles.Loyal or CustomRoles.Admired 
+            or CustomRoles.Rascal or CustomRoles.Madmate or CustomRoles.Charmed 
+            or CustomRoles.Infected or CustomRoles.Paranoia or CustomRoles.Contagious)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 
@@ -235,29 +229,16 @@ internal class Jackal : RoleBase
         if (!JackalCanKillSidekick.GetBool())
         {
             // Jackal can kill Sidekick/Recruit
-            if (killer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return true;
-
-            // Sidekick/Recruit can kill Jackal
-            else if ((killer.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)) && target.Is(CustomRoles.Jackal))
+            if (killer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick))
                 return true;
         }
 
-        if (!SidekickCanKillSidekick.GetBool())
-        {
-            // Sidekick can kill Sidekick/Recruit
-            if (killer.Is(CustomRoles.Sidekick) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return true;
 
-            // Recruit can kill Recruit/Sidekick
-            if (killer.Is(CustomRoles.Recruit) && (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)))
-                return true;
-        }
 
         if (!SidekickCanKillJackal.GetBool())
         {
             // Recruit/Sidekick can kill Jackal
-            if (target.Is(CustomRoles.Jackal) && (killer.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)))
+            if (target.Is(CustomRoles.Jackal) && (killer.Is(CustomRoles.Sidekick)))
                 return true;
         }
         return false;

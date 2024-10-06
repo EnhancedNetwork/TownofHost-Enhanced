@@ -177,8 +177,6 @@ internal class BountyHunter : RoleBase
         if (player.Is(CustomRoles.Infected)
             && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTargets))) return false;
 
-        if (player.Is(CustomRoles.Recruit)
-            && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return false;
 
         if (player.Is(CustomRoles.Contagious)
             && target.Is(CustomRoles.Virus) || (target.Is(CustomRoles.Contagious) && Virus.TargetKnowOtherTarget.GetBool())) return false;

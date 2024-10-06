@@ -930,7 +930,6 @@ public enum CustomRoles
     Reach,
     Rebound,
     Spurt,
-    Recruit,
     Seer,
     Silent,
     Sleuth,

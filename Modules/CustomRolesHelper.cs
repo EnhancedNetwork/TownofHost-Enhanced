@@ -315,7 +315,6 @@ public static class CustomRolesHelper
     public static bool IsConverted(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
         || role is
             CustomRoles.Charmed or
-            CustomRoles.Recruit or
             CustomRoles.Infected or
             CustomRoles.Contagious or
             CustomRoles.Soulless or
@@ -359,7 +358,6 @@ public static class CustomRolesHelper
         return role is CustomRoles.Madmate
             or CustomRoles.Egoist
             or CustomRoles.Charmed
-            or CustomRoles.Recruit
             or CustomRoles.Infected
             or CustomRoles.Contagious
             or CustomRoles.Rascal
