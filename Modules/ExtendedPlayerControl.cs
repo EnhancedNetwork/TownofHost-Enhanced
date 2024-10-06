@@ -1190,7 +1190,7 @@ static class ExtendedPlayerControl
         if (Options.DisableMeeting.GetBool() && !force) return;
 
         SetUpRoleTextPatch.IsInIntro = false;
-        ReportDeadBodyPatch.AfterReportTasks(reporter, target);
+        ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
         reporter.RpcStartMeeting(target);

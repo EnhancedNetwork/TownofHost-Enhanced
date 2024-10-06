@@ -839,7 +839,7 @@ class ReportDeadBodyPatch
         // This is patched in CheckGameEndPatch
         return true;
     }
-    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target)
+    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
     {
         //=============================================
         // Hereinafter, it is assumed that the button is confirmed to be pressed
@@ -910,7 +910,7 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            PhantomRolePatch.OnReportDeadBody(pc);
+            PhantomRolePatch.OnReportDeadBody(pc, force);
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
