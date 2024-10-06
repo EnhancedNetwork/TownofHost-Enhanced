@@ -162,11 +162,12 @@ internal class Executioner : RoleBase
         var valueChanger = ChangeRolesAfterTargetKilled.GetValue();
         var newCustomRole = CRoleChangeRoles[valueChanger];
 
+        if (executioner.IsAlive())
+            executioner.RpcChangeRoleBasis(newCustomRole);
+
         executioner.GetRoleClass()?.OnRemove(executionerId);
         executioner.RpcSetCustomRole(newCustomRole);
         executioner.GetRoleClass().OnAdd(executionerId);
-        
-        executioner.RpcChangeRoleBasis(newCustomRole);
 
         Utils.NotifyRoles(SpecifySeer: executioner);
     }

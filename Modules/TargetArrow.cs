@@ -78,6 +78,8 @@ static class TargetArrow
     {
         var arrowInfo = new ArrowInfo(seer, target);
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.Equals(arrowInfo)));
+        if (!removeList.Any()) return;
+
         foreach (ArrowInfo a in removeList.ToArray())
         {
             TargetArrows.Remove(a);
@@ -94,6 +96,8 @@ static class TargetArrow
     public static void RemoveAllTarget(byte seer)
     {
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.From == seer));
+        if (!removeList.Any()) return;
+
         foreach (ArrowInfo arrowInfo in removeList.ToArray())
         {
             TargetArrows.Remove(arrowInfo);

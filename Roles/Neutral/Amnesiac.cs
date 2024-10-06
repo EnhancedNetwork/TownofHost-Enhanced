@@ -46,7 +46,6 @@ internal class Amnesiac : RoleBase
         playerIdList.Add(playerId);
         CanUseVent[playerId] = true;
 
-        if (!AmongUsClient.Instance.AmHost) return;
         if (ShowArrows.GetBool())
         {
             CheckDeadBodyOthers.Add(CheckDeadBody);
@@ -55,16 +54,10 @@ internal class Amnesiac : RoleBase
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (ShowArrows.GetBool())
-        {
-            CheckDeadBodyOthers.Remove(CheckDeadBody);
-        }
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        var player = Utils.GetPlayerById(playerId);
+        var player = playerId.GetPlayer();
         if (player == null) return;
 
         if (player.Is(Custom_Team.Crewmate))
@@ -91,12 +84,12 @@ internal class Amnesiac : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || Main.MeetingIsStarted) return;
-        foreach (var pc in playerIdList.ToArray())
+        foreach (var playerId in playerIdList.ToArray())
         {
-            var player = Utils.GetPlayerById(pc);
+            var player = playerId.GetPlayer();
             if (!player.IsAlive()) continue;
 
-            LocateArrow.Add(pc, target.transform.position);
+            LocateArrow.Add(playerId, target.Data.GetDeadBody().transform.position);
         }
     }
 
@@ -110,14 +103,17 @@ internal class Amnesiac : RoleBase
         }
         else return string.Empty;
     }
-
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
+    {
+        if (ShowArrows.GetBool())
+            foreach (var apc in playerIdList.ToArray())
+            {
+                LocateArrow.RemoveAllTarget(apc);
+            }
+    }
     public override bool OnCheckReportDeadBody(PlayerControl __instance, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         var tar = deadBody.Object;
-        foreach (var apc in playerIdList.ToArray())
-        {
-            LocateArrow.RemoveAllTarget(apc);
-        }
         if (__instance.Is(CustomRoles.Amnesiac))
         {
             var tempRole = CustomRoles.Amnesiac;
@@ -164,7 +160,7 @@ internal class Amnesiac : RoleBase
                     case 3: // Maverick
                         tempRole = CustomRoles.Maverick;
                         break;
-                    case 4: // Imitator..........................................................................kill me
+                    case 4: // Imitator
                         tempRole = CustomRoles.Imitator;
                         break;
                 }
@@ -187,6 +183,13 @@ internal class Amnesiac : RoleBase
                     _ => false,
                 };
                 Logger.Info($"player id: {__instance.PlayerId}, Can use vent: {CanUseVent[__instance.PlayerId]}", "Previous Amne Vent");
+            }
+            if (ShowArrows.GetBool())
+            {
+                foreach (var apc in playerIdList.ToArray())
+                {
+                    LocateArrow.RemoveAllTarget(apc);
+                }
             }
             return false;
         }

@@ -100,6 +100,8 @@ static class ExtendedPlayerControl
         player.SetKillCooldown();
         player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
+
+        Utils.DoNotifyRoles(SpecifySeer: player, NoCache: true);
     }
     /// <summary>
     /// Changes the Role Basis of player during the game
@@ -111,7 +113,7 @@ static class ExtendedPlayerControl
 
         var playerId = player.PlayerId;
         var playerClientId = player.GetClientId();
-        var playerRole = Utils.GetRoleMap(playerId).CustomRole;
+        var playerRole = player.GetCustomRole();
         var newRoleType = newCustomRole.GetRoleTypes();
         RoleTypes remeberRoleType;
 

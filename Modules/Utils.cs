@@ -1874,11 +1874,8 @@ public static class Utils
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return;
-        if (Main.MeetingIsStarted && !isForMeeting) return;
+        if (Main.MeetingIsStarted && !(isForMeeting || GameEndCheckerForNormal.GameIsEnded)) return;
         if (Main.AllPlayerControls == null) return;
-
-        //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return;
 
         //var caller = new System.Diagnostics.StackFrame(1, false);
         //var callerMethod = caller.GetMethod();
@@ -1891,11 +1888,8 @@ public static class Utils
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
+        if (Main.MeetingIsStarted && !(isForMeeting || GameEndCheckerForNormal.GameIsEnded)) return Task.CompletedTask;
         if (Main.AllPlayerControls == null) return Task.CompletedTask;
-
-        //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
 
         //var logger = Logger.Handler("DoNotifyRoles");
 

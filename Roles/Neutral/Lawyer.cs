@@ -194,11 +194,12 @@ internal class Lawyer : RoleBase
         var valueChanger = ChangeRolesAfterTargetKilled.GetValue();
         var newCustomRole = CRoleChangeRoles[valueChanger];
 
+        if (lawyer.IsAlive())
+            lawyer.RpcChangeRoleBasis(newCustomRole);
+
         lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
         lawyer.RpcSetCustomRole(newCustomRole);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
-
-        lawyer.RpcChangeRoleBasis(newCustomRole);
 
         if (inMeeting)
         {
