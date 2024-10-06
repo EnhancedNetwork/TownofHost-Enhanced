@@ -184,7 +184,7 @@ internal class Judge : RoleBase
                 }
                 else if (pc.IsAnySubRole(x => x.IsConverted())) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
-                else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;
+                else if (target.Is(CustomRoles.Sidekick) && CanTrialSidekick.GetBool()) judgeSuicide = false;
                 else if ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && CanTrialMadmate.GetBool()) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Infected) && CanTrialInfected.GetBool()) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Contagious) && CanTrialContagious.GetBool()) judgeSuicide = false;

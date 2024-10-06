@@ -106,7 +106,7 @@ internal class Admirer : RoleBase
                 SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
             }
 
-            if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
+            if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Charmed)
                 && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Admirer Assign");
@@ -120,13 +120,6 @@ internal class Admirer : RoleBase
                 target.RpcSetCustomRole(CustomRoles.Madmate);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
-            }
-            else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
-            {
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Recruit);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmiredPlayer")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
             {

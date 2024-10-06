@@ -79,16 +79,6 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Recruit))
-        {
-            countTypes = Jackal.SidekickCountMode.GetInt() switch
-            {
-                0 => CountTypes.Jackal,
-                1 => CountTypes.OutOfGame,
-                2 => countTypes,
-                _ => throw new NotImplementedException()
-            };
-        }
         if (pc.Is(CustomRoles.Infected))
         {
             countTypes = CountTypes.Infectious;
@@ -166,16 +156,6 @@ public class PlayerState(byte playerId)
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Cultist,
-                    2 => countTypes,
-                    _ => throw new NotImplementedException()
-                };
-                break;
-
-            case CustomRoles.Recruit:
-                countTypes = Jackal.SidekickCountMode.GetInt() switch
-                {
-                    0 => CountTypes.Jackal,
-                    1 => CountTypes.OutOfGame,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };

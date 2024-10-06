@@ -1168,7 +1168,6 @@ static class ExtendedPlayerControl
             CustomRoles.LastImpostor and not
             CustomRoles.Madmate and not
             CustomRoles.Charmed and not
-            CustomRoles.Recruit and not
             CustomRoles.Admired and not
             CustomRoles.Soulless and not
             CustomRoles.Lovers and not
@@ -1305,7 +1304,6 @@ static class ExtendedPlayerControl
 
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
-                or CustomRoles.Recruit
                 or CustomRoles.Admired
                 or CustomRoles.Charmed
                 or CustomRoles.Infected
@@ -1337,11 +1335,11 @@ static class ExtendedPlayerControl
         else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
         else if (Jackal.HasEnabled)
         {
-            if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))
-                return target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit);
+            if (seer.Is(CustomRoles.Jackal))
+                return target.Is(CustomRoles.Sidekick);
 
             else if (seer.Is(CustomRoles.Sidekick))
-                return target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
+                return target.Is(CustomRoles.Sidekick);
         }
 
         return false;

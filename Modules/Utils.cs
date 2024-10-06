@@ -482,7 +482,6 @@ public static class Utils
                         switch (subRole)
                         {
                             case CustomRoles.Madmate:
-                            case CustomRoles.Recruit:
                             case CustomRoles.Charmed:
                             case CustomRoles.Soulless:
                             case CustomRoles.Infected:
@@ -575,7 +574,6 @@ public static class Utils
             {
                 case CustomRoles.Madmate:
                 case CustomRoles.Charmed:
-                case CustomRoles.Recruit:
                 case CustomRoles.Egoist:
                 case CustomRoles.Infected:
                 case CustomRoles.EvilSpirit:
@@ -946,7 +944,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));

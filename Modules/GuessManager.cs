@@ -896,12 +896,6 @@ public static class GuessManager
                 if (!listOfRoles.Contains(CustomRoles.Amnesiac))
                     listOfRoles.Add(CustomRoles.Amnesiac);
 
-                if (CustomRoles.Jackal.IsEnable())
-                {
-                    if (!listOfRoles.Contains(CustomRoles.Recruit))
-                        listOfRoles.Add(CustomRoles.Recruit);
-                }
-
                 if (CustomRoles.Cultist.IsEnable())
                 {
                     if (!listOfRoles.Contains(CustomRoles.Charmed))
