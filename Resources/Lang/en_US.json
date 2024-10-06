@@ -1984,6 +1984,15 @@
   "MedusaStoningStart": "Stoning in progress",
   "MedusaStoningEnd": "Stoning has ended",
 
+  "MoonDancerBatonPassCooldown": "Baton Pass Cooldown",
+  "MoonDancerBlastOffChance": "Chance to Blast Off",
+  "MoonDancerPassEnabledAddons": "Can only Baton Pass enabled Add-ons",
+  "MoonDancerCantBlastOff": "Target can not be Blasted Off",
+  "MoonDancerNormalKill": "Killed normally",
+  "MoonDancerGiveHelpfulAddon": "Target will be given Helpful Add-on during meeting",
+  "MoonDancerGiveHarmfulAddon": "Target will be given Harmful Add-on during meeting",
+  "MoonDancerNoAddons": "No Add-ons to Baton Pass",
+
 
   "LuckyProbability": "Probability of surviving a kill",
   "ImpCanBeDoubleShot": "<color=#ff1919>Impostors</color> can have <color=#19fa8d>Double Shot</color>",
@@ -2080,6 +2089,7 @@
   "DeathReason.Starved": "Starved",
   "DeathReason.Equilibrium": "Equilibrium",
   "DeathReason.Sacrificed": "Sacrificed",
+  "DeathReason.BlastedOff": "Blasted Off",
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Disconnected": "Disconnected",

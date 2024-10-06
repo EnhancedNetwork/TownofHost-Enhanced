@@ -8,7 +8,7 @@ using static TOHE.Utils;
 namespace TOHE;
 public abstract class CovenManager : RoleBase
 {
-    public static byte necroHolder;
+    public static byte necroHolder = byte.MaxValue;
 
     public enum VisOptionList
     {
