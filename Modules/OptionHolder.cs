@@ -497,11 +497,15 @@ public static class Options
     public static OptionItem NonNeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralKillingRolesMinPlayer;
     public static OptionItem NeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralRoleWinTogether;
+    public static OptionItem NeutralWinTogether;
+
+    // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
     public static OptionItem TransformedNeutralApocalypseCanBeGuessed;
-    public static OptionItem NeutralRoleWinTogether;
-    public static OptionItem NeutralWinTogether;
+    public static OptionItem ApocCanSeeEachOthersAddOns;
+
 
     // Add-on
     public static OptionItem NameDisplayAddons;
@@ -915,6 +919,9 @@ public static class Options
         TransformedNeutralApocalypseCanBeGuessed = BooleanOptionItem.Create(60024, "TNACanBeGuessed", false, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
+
+        ApocCanSeeEachOthersAddOns = BooleanOptionItem.Create(60025, "ApocCanSeeEachOthersAddOns", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
         #endregion
