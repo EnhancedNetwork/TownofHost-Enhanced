@@ -120,9 +120,6 @@ internal class Retributionist : RoleBase
         try
         {
             targetId = int.Parse(msg.Replace("/ret", string.Empty));
-            targetId = int.Parse(msg.Replace("/惩罚", string.Empty));
-            targetId = int.Parse(msg.Replace("/惩", string.Empty));
-            targetId = int.Parse(msg.Replace("/罚", string.Empty));
             target = GetPlayerById(targetId);
         }
         catch
@@ -204,7 +201,7 @@ internal class Retributionist : RoleBase
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
         int PlayerId = reader.ReadByte();
-        RetributionistMsgCheck(pc, $"/ret {PlayerId}|/惩罚 {PlayerId}|/惩 {PlayerId}|/罚 {PlayerId}", true);
+        RetributionistMsgCheck(pc, $"/ret {PlayerId}", true);
     }
 
     private static void RetributionistOnClick(byte playerId /*, MeetingHud __instance*/)

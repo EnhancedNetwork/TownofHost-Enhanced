@@ -222,7 +222,7 @@ internal class President : RoleBase
             else CheckPresidentReveal.Add(PlayerId, false);
             return;
         }
-        EndMsg(pc, $"/finish|/总统结束|/总统结束会议");
+        EndMsg(pc, $"/finish");
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
