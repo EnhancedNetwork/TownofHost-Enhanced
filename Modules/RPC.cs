@@ -109,6 +109,7 @@ enum CustomRPC : byte // 185/255 USED
     SyncAdmiredAbility,
     SetImitateLimit,
     DictatorRPC,
+    SyncJackalNeedtoKill,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -633,6 +634,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncShieldPersonDiedFirst:
                 Main.FirstDied = reader.ReadString();
                 Main.FirstDiedPrevious = reader.ReadString();
+                break;
+            case CustomRPC.SyncJackalNeedtoKill:
+                Jackal.ReceiveRPC(reader);
                 break;
         }
     }
