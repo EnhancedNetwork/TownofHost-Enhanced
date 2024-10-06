@@ -2420,6 +2420,7 @@
   "NeutralCanBeGuesser": "<color=#7f8c8d>Neutrals</color> can become <color=#ffb347>Guesser</color>",
   "CrewCanBeMundane": "<color=#8cffff>Crewmates</color> can become Mundane",
   "NeutralCanBeMundane": "<color=#7f8c8d>Neutrals</color> can become Mundane",
+  "GuessedAsMundane": "You're Mundane.\nYou can't guess until you finish all the tasks",
   "ObliviousBaitImmune": "Immune to <color=#00f7ff>Bait</color>",
   "ImpCanBeInLove": "<color=#ff1919>Impostors</color> can be <color=#ff9ace>in love</color>",
   "CrewCanBeInLove": "<color=#8cffff>Crewmates</color> can be <color=#ff9ace>in love</color>",
