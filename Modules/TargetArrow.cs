@@ -28,8 +28,10 @@ static class TargetArrow
 
     public static void SendRPC(int index, byte seerId, byte targetId = byte.MaxValue)
     {
-        var seer = Utils.GetPlayerById(seerId);
-        if (!AmongUsClient.Instance.AmHost || seer == null || seer.AmOwner) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        var seer = seerId.GetPlayer();
+        if (!seer.IsNonHostModdedClient()) return;
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable, seer.GetClientId());
         writer.Write(true);
         writer.WritePacked(index);
