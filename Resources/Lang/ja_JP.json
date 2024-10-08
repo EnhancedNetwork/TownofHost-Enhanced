@@ -757,7 +757,7 @@
   "ParasiteInfoLong": "(チームインポスター):\nパラサイトとして、他のインポスターを知らないインポスター",
   "DisperserInfoLong": "(Impostors):\nDisperser can use Shapeshift to teleport all players to random vents.",
   "InhibitorInfoLong": "(Impostors):\nAs the Inhibitor, you can only kill when there is not a critical sabotage active.\n\nIf light or comms sabotage is active, then you can kill.",
-  "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a critical sabotage active.\n\nIf reactor or O2 sabotage is active, then you cannot kill.",
+  "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a critical sabotage active.\n\nIf reactor or O2 sabotage is active, then you can kill.",
   "CouncillorInfoLong": "(インポスター):\n評議員として、会議中にジャッジのようにプレイヤーをキルできます。会議中にキルすると、それらのキルはジャッジからの裁判として表示されます。\n\nキルコマンドは /tl [プレイヤーID] です。プレイヤーの名前の前にプレイヤーのIDを見ることができ、または全プレイヤーのIDを表示するために /id コマンドを使用できます。\n\n設定によっては、評議員がチームメイトを裁くと自殺します。転向した評議員は自由に裁くことができます。",
   "DazzlerInfoLong": "(インポスター):\nダズラーとして、シェイプシフトの対象の視界を永久に減少させることができます。死亡すると、彼らの視界は通常に戻ります。",
   "DeathpactInfoLong": "(インポスター):\n死の契約として、シェイプシフトの対象は死の契約のためにマークされます。十分なプレイヤーが死の契約のためにマークされると、マークされたプレイヤーは定義された期間内に会わなければならず、そうしない場合は死亡します。死の契約が完了する前にマークされたプレイヤーが死亡した場合、契約は取り消されます。",
