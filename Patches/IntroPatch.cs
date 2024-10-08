@@ -64,6 +64,8 @@ class CoBeginPatch
 {
     public static void Prefix()
     {
+        CriticalErrorManager.CheckEndGame();
+
         GameStates.InGame = true;
         RPC.RpcVersionCheck();
 
