@@ -15,7 +15,8 @@ namespace TOHE;
 public class ModUpdater
 {
     //private static readonly string URL_2018k = "http://api.tohre.dev";
-    private static readonly string URL_Github = "https://api.github.com/repos/0xDrMoe/TownofHost-Enhanced";
+    //private static readonly string URL_Github = "https://api.github.com/repos/0xDrMoe/TownofHost-Enhanced";
+    private static readonly string URL_Github = "https://api.github.com/repos/EnhancedNetwork/TownofHost-Enhanced";
     //public static readonly string downloadTest = "https://github.com/Pietrodjaowjao/TOHEN-Contributions/releases/download/v123123123/TOHE.dll";
     public static bool hasUpdate = false;
     //public static bool isNewer = false;

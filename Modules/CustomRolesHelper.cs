@@ -18,6 +18,9 @@ public static class CustomRolesHelper
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
+        //C&R
+        if (Options.CurrentGameMode is CustomGameMode.CandR && role is CustomRoles.Robber) return CustomRoles.Engineer;
+        
         // Vanilla roles
         if (role.IsVanilla()) return role;
 
@@ -39,7 +42,15 @@ public static class CustomRolesHelper
 
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
-        if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
+        switch (Options.CurrentGameMode)
+        {
+            case CustomGameMode.FFA: //FFA
+                if (role is CustomRoles.Killer) return RoleTypes.Impostor;
+                break;
+            case CustomGameMode.CandR: //C&R
+                if (role is CustomRoles.Cop) return RoleTypes.Shapeshifter;
+                break;
+        }
 
         return (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor()
             ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()
@@ -49,6 +60,7 @@ public static class CustomRolesHelper
     /* Needs recode, awaiting phantom role base*/
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
+        if (Options.CurrentGameMode is CustomGameMode.CandR && player.Is(CustomRoles.Cop)) return true; 
         if (player == null) return false;
         var customRole = player.GetCustomRole();
         bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
