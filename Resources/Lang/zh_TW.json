@@ -757,7 +757,7 @@
   "ParasiteInfoLong": "(偽裝者陣營):\n寄生蟲可以知道其他偽裝者，但其他偽裝者無法知道寄生蟲。\n寄生蟲可以殺人，破壞，使用通風口(就是普通的偽裝者)。",
   "DisperserInfoLong": "(偽裝者陣營):\n分散者可以使用變形來將所有玩家傳送到隨機管道上。",
   "InhibitorInfoLong": "(Impostors):\nAs the Inhibitor, you can only kill when there is not a critical sabotage active.\n\nIf light or comms sabotage is active, then you can kill.",
-  "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a critical sabotage active.\n\nIf reactor or O2 sabotage is active, then you cannot kill.",
+  "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a critical sabotage active.\n\nIf reactor or O2 sabotage is active, then you can kill.",
   "CouncillorInfoLong": "(偽裝者陣營):\n議員可以在會議中謀殺一名玩家。\n謀殺指令為:/tl [玩家ID]\n您可以在玩家名字前看到該玩家的ID，或使用/id來查詢所有玩家的編號。\n根據房主設定，議員嘗試謀殺隊友時可能自殺。被招募的議員可以隨意謀殺。",
   "DazzlerInfoLong": "(偽裝者陣營):\n眩暈者可以通過變形來永久減少一名玩家的視野，當眩暈者死亡時，被眩暈玩家的視野將恢復正常。",
   "DeathpactInfoLong": "(偽裝者陣營):\n簽約人可以通過變形來讓一名玩家簽署死亡契約，當有足夠的玩家被簽署死亡契約時，被簽約的玩家必須在規定的時間內會面，如果沒有在規定時間內會面，則會暴斃死亡，如果有簽署了死亡契約的玩家在會面前死亡，則該契約撤銷。",
