@@ -419,7 +419,7 @@ internal class Swapper : RoleBase
             renderer.sprite = CustomButton.Get("SwapNo");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => { 
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { 
                  SwapperOnClick(pva.TargetPlayerId, __instance); 
             }));
         }

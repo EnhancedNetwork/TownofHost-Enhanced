@@ -375,7 +375,7 @@ internal class Councillor : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 

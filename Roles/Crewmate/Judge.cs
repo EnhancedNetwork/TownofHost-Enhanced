@@ -352,7 +352,7 @@ internal class Judge : RoleBase
             renderer.sprite = CustomButton.Get("JudgeIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

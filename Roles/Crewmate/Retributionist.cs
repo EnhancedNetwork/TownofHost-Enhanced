@@ -242,7 +242,7 @@ internal class Retributionist : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

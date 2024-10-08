@@ -331,9 +331,9 @@ internal class DoubleAgent : RoleBase
             renderer.sprite = CustomButton.Get("DoubleAgentPocketBomb");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => DestroyButtons(targetBox)));
-            button.OnClick.AddListener((Action)(() => PlantBombOnClick(pva.TargetPlayerId /*, __instance*/)));
-            button.OnClick.AddListener((Action)(() => CustomSoundsManager.Play("Line")));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => DestroyButtons(targetBox)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => PlantBombOnClick(pva.TargetPlayerId /*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CustomSoundsManager.Play("Line")));
         }
     }
 

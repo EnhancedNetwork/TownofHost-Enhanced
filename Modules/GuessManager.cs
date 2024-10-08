@@ -621,7 +621,7 @@ public static class GuessManager
             renderer.sprite = CustomButton.Get("TargetIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => GuesserOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => GuesserOnClick(pva.TargetPlayerId, __instance)));
         }
     }
 
@@ -694,7 +694,7 @@ public static class GuessManager
             exitButtonParent.transform.localScale = new Vector3(0.22f, 0.9f, 1f);
             exitButtonParent.transform.SetAsFirstSibling();
             exitButton.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            exitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
+            exitButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 __instance.playerStates.ToList().ForEach(x =>
                 {
@@ -825,7 +825,7 @@ public static class GuessManager
                 Pagelabel.transform.localScale *= 1.6f;
                 Pagelabel.autoSizeTextContainer = true;
                 if (!IsNext && Page <= 1) Pagebutton.GetComponent<SpriteRenderer>().color = new(1, 1, 1, 0.1f);
-                Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => ClickEvent()));
+                Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => ClickEvent()));
                 void ClickEvent()
                 {
                     if (IsNext) Page += 1;
@@ -993,7 +993,7 @@ public static class GuessManager
                 //int copiedIndex = info[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-                if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
+                if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     if (selectedButton != button)
                     {

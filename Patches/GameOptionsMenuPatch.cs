@@ -66,7 +66,7 @@ public static class GameOptionsMenuPatch
 
             var menuDescriptionText = GameSettingMenu.Instance.MenuDescriptionText;
             menuDescriptionText.m_marginWidth = 2.5f;
-        }, 0.1f, "Set Menu", shoudLog: false);
+        }, 0.2f, "Set Menu", shoudLog: false);
     }
 
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
@@ -641,7 +641,7 @@ public static class StringOptionPatch
         icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
         var GameOptionsButton = icon.GetComponent<GameOptionButton>();
         GameOptionsButton.OnClick = new();
-        GameOptionsButton.OnClick.AddListener((Action)(() => {
+        GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
 
             if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
             {
