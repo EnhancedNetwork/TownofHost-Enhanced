@@ -757,7 +757,7 @@
   "ParasiteInfoLong": "(内鬼阵营):\n寄生虫和内鬼互不相认，除此之外寄生虫就是普通内鬼",
   "DisperserInfoLong": "（内鬼阵营）：\n分散者能够通过变形把所有人拉倒随机的通风管道上。",
   "InhibitorInfoLong": "(Impostors):\nAs the Inhibitor, you can only kill when there is not a critical sabotage active.\n\nIf light or comms sabotage is active, then you can kill.",
-  "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a critical sabotage active.\n\nIf reactor or O2 sabotage is active, then you cannot kill.",
+  "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a critical sabotage active.\n\nIf reactor or O2 sabotage is active, then you can kill.",
   "CouncillorInfoLong": "(内鬼阵营):\n邪恶法官可以像正义法官一样在会议上审判玩家。在会议中击杀时，这些击杀将显示为法官的审判\n审判指令/tl [玩家编号]\n你可以在玩家名字前看到玩家的 id，或者使用 /id 命令查看所有玩家的 id\n根据设置，邪恶法官在审判队友时会自杀。被招募的邪恶法官可以自由审判",
   "DazzlerInfoLong": "(内鬼阵营):\n眩晕者可以永久地减少变形目标的视野，当眩晕者被驱逐或死亡后，则眩晕者变形目标的视野会恢复正常",
   "DeathpactInfoLong": "(内鬼阵营):\n死亡契约变形后的目标会被标记为死亡契约，当有足够的玩家被标记为死亡契约，被标记的玩家必须在规定的时间内会面；若在规定的时间内未会面，就会暴毙死亡，当被标记的玩家在死亡契约完成之前死亡，则该契约将被撤销",
