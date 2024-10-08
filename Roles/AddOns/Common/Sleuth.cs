@@ -4,11 +4,11 @@ public class Sleuth : IAddon
 {
     private const int Id = 20100;
     public AddonTypes Type => AddonTypes.Helpful;
-
+   
     public static OptionItem SleuthCanKnowKillerRole;
     
     public static readonly Dictionary<byte, string> SleuthNotify = [];
-
+    
     public void SetupCustomOption()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Sleuth, canSetNum: true, teamSpawnOptions: true);
