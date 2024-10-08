@@ -887,7 +887,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || pc.Is(CustomRoles.Lurker))
+                    || pc.Is(CustomRoles.Lurker)
+                    || pc.Is(CustomRoles.Miner))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
