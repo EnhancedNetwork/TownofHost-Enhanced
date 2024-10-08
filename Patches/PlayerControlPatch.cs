@@ -145,9 +145,9 @@ class CheckMurderPatch
         }
 
         // Is the target in a killable state?
-        if (target.Data == null // Check if PlayerData is not null
-                                // Check target status
+        if (target.Data == null // Check if PlayerData is null
             || target.inVent
+            || target.onLadder
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()

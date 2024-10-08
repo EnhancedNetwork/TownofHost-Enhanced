@@ -74,12 +74,12 @@ internal class Executioner : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
+
         var executioner = _Player;
         if (AmongUsClient.Instance.AmHost && executioner.IsAlive())
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
-
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)

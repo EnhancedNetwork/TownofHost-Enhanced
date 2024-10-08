@@ -31,5 +31,6 @@ internal class Inhibitor : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = InhibitorCD.GetFloat();
 
-    public override bool CanUseKillButton(PlayerControl pc) => !Utils.AnySabotageIsActive();
+    public override bool CanUseKillButton(PlayerControl pc)
+        => !Saboteur.IsCriticalSabotage();
 }

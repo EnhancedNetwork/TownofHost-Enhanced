@@ -888,9 +888,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.KillingMachine)
                     || pc.Is(CustomRoles.Lurker)
-                    || pc.Is(CustomRoles.Miner))
+                    || pc.Is(CustomRoles.Miner)
+                    || pc.Is(CustomRoles.Prohibited)
+                    || pc.Is(CustomRoles.DoubleAgent))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.Is(Custom_Team.Impostor))
                     return false;
                 break;
 
@@ -969,6 +971,7 @@ public static class CustomRolesHelper
                 if (Prohibited.GetCountBlokedVents() <= 0 || !pc.CanUseVents())
                     return false;
                 if (pc.Is(CustomRoles.Ventguard)
+                    || pc.Is(CustomRoles.Circumvent)
                     || pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool())
                     return false;
                 break;
