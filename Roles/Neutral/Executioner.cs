@@ -68,7 +68,7 @@ internal class Executioner : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        TargetList.Remove(TargetId);
+        TargetList.Clear();
         TargetId = byte.MaxValue;
     }
     public override void Add(byte playerId)
@@ -147,6 +147,7 @@ internal class Executioner : RoleBase
     }
 
     public bool IsTarget(byte playerId) => TargetId == playerId;
+    public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
