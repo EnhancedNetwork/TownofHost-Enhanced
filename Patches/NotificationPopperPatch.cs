@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using TOHE.Modules;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -25,11 +24,7 @@ internal class NotificationPopperPatch
         SendRpc(0, index, playSound: playSound);
         var haveParent = key.Parent != null;
         string str;
-        if (haveParent && System.Enum.GetValues<CustomRoles>().Find(x => Translator.GetString($"{x}") == key.Parent.GetName().RemoveHtmlTags(), out var role))
-        {
-            str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.Parent.GetName() + "</font>: <font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
-        }
-        else if (haveParent)
+        if (haveParent)
         {
             str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.Parent.GetName() + "</font>: <font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
         }
@@ -47,7 +42,6 @@ internal class NotificationPopperPatch
         bool playSound = false)
     {
         SendRpc(1, index, customRole, playSound);
-        var roleColor = Utils.GetRoleColor(customRole);
         string str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
         SettingsChangeMessageLogic(key, str, playSound);
     }
