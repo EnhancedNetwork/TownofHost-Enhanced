@@ -366,9 +366,10 @@ internal class DollMaster : RoleBase
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(target, false);
-        RpcChangeSkin(pc, target);
-        RpcChangeSkin(target, pc);
-        RPC.SyncAllPlayerNames();
+        
+        pc?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
+        target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
+        
         pc?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
@@ -377,16 +378,16 @@ internal class DollMaster : RoleBase
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);
-        RpcChangeSkin(pc);
-        RpcChangeSkin(target);
-        RPC.SyncAllPlayerNames();
+        
+        pc?.ResetPlayerOutfit();
+        target?.ResetPlayerOutfit();
 
         IsControllingPlayer = false;
         ResetPlayerSpeed = true;
         _ = new LateTask(() =>
         {
             ReducedVisionPlayers.Clear();
-            if (TargetDiesAfterPossession.GetBool() && !GameStates.IsMeeting) target.RpcMurderPlayer(target);
+            if (TargetDiesAfterPossession.GetBool() && !GameStates.IsMeeting) target?.RpcMurderPlayer(target);
         }, 0.45f);
     }
 
@@ -421,85 +422,6 @@ internal class DollMaster : RoleBase
         if (controllingTarget == null) return;
         controllingTarget?.RpcTeleport(DollMasterPos);
         pc?.RpcTeleport(controllingTargetPos);
-    }
-
-    // Set players cosmetics.
-    private static void RpcChangeSkin(PlayerControl player, PlayerControl target = null, NetworkedPlayerInfo.PlayerOutfit Outfit = null)
-    {
-        target ??= player;
-        Outfit ??= Main.PlayerStates[target.PlayerId].NormalOutfit;
-
-        void Setoutfit()
-        {
-            var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
-
-            player.SetName(Outfit.PlayerName);
-            player.Data.DefaultOutfit.PlayerName = Main.PlayerStates[player.PlayerId].NormalOutfit.PlayerName;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
-                .Write(player.Data.NetId)
-                .Write(Outfit.PlayerName)
-            .EndRpc();
-
-            Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
-
-            player.SetColor(Outfit.ColorId);
-            player.Data.DefaultOutfit.ColorId = Main.PlayerStates[player.PlayerId].NormalOutfit.ColorId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
-                .Write(player.Data.NetId)
-                .Write((byte)Outfit.ColorId)
-            .EndRpc();
-
-            player.SetHat(Outfit.HatId, Outfit.ColorId);
-            player.Data.DefaultOutfit.HatSequenceId += 10;
-            player.Data.DefaultOutfit.HatId = Main.PlayerStates[player.PlayerId].NormalOutfit.HatId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
-                .Write(Outfit.HatId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
-            .EndRpc();
-
-            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
-            player.Data.DefaultOutfit.SkinSequenceId += 10;
-            player.Data.DefaultOutfit.SkinId = Main.PlayerStates[player.PlayerId].NormalOutfit.SkinId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
-                .Write(Outfit.SkinId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
-            .EndRpc();
-
-            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
-            player.Data.DefaultOutfit.VisorSequenceId += 10;
-            player.Data.DefaultOutfit.VisorId = Main.PlayerStates[player.PlayerId].NormalOutfit.VisorId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
-                .Write(Outfit.VisorId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
-            .EndRpc();
-
-            player.SetPet(Outfit.PetId);
-            player.Data.DefaultOutfit.PetSequenceId += 10;
-            player.Data.DefaultOutfit.PetId = Main.PlayerStates[player.PlayerId].NormalOutfit.PetId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
-                .Write(Outfit.PetId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-                .EndRpc();
-
-            sender.SendMessage();
-
-            //cannot use currentoutfit type because of mushroom mixup . .
-            var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
-
-            //Used instead of GameData.Instance.DirtyAllData();
-            foreach (var innerNetObject in GameData.Instance.AllPlayers)
-            {
-                innerNetObject.SetDirtyBit(uint.MaxValue);
-            }
-        }
-        if (player.CheckCamoflague())
-        {
-            Main.LateOutfits[target.PlayerId] = Setoutfit;
-        }
-        else
-        {
-            Setoutfit();
-        }
     }
 
     // Set name Suffix for Doll and Main Body under name.

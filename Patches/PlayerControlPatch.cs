@@ -1156,7 +1156,7 @@ class FixedUpdateInNormalGamePatch
                                 var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
                                 UnShapeshifter.RpcShapeshift(randomPlayer, false);
                                 UnShapeshifter.RpcRejectShapeshift();
-                                UnShapeshifter.ResetPlayerOutfit();
+                                UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }

@@ -2,12 +2,14 @@
 
 public static class OutfitManager
 {
-    public static void ResetPlayerOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit Outfit = null, uint newLevel = 500, bool force = false)
+    public static void ResetPlayerOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit Outfit = null, bool setNamePlate = false, uint newLevel = 500, bool force = false)
     {
         Outfit ??= Main.PlayerStates[player.PlayerId].NormalOutfit;
 
         void Setoutfit()
         {
+            if (player == null || Outfit == null) return;
+
             var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
 
             player.SetName(Outfit.PlayerName);
@@ -53,12 +55,15 @@ public static class OutfitManager
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
                 .EndRpc();
 
-            player.SetNamePlate(Outfit.NamePlateId);
-            player.Data.DefaultOutfit.NamePlateSequenceId += 10;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
-                .Write(Outfit.NamePlateId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
-                .EndRpc();
+            if (setNamePlate)
+            {
+                player.SetNamePlate(Outfit.NamePlateId);
+                player.Data.DefaultOutfit.NamePlateSequenceId += 10;
+                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
+                    .Write(Outfit.NamePlateId)
+                    .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
+                    .EndRpc();
+            }
 
             if (newLevel != 500)
             {
