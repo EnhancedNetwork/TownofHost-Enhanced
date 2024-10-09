@@ -2,6 +2,7 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
 using UnityEngine;
+using TOHE.Patches;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -449,6 +450,7 @@ public static class ToggleOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
             item.SetValue(__instance.GetBool() ? 1 : 0);
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
             return false;
         }
         return true;
@@ -522,7 +524,7 @@ public static class NumberOptionPatch
             {
                 floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
             }
-
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
             return false;
         }
         return true;
@@ -675,6 +677,16 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
+            var name = item.GetName();
+            if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
+            {
+                NotificationPopperPatch.AddRoleSettingsChangeMessage(index, item, role, true);
+            }
+            else
+            {
+                NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
+            }
+
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
                 if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
