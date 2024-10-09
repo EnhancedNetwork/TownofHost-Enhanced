@@ -95,7 +95,7 @@ public static class OutfitManager
     public static void SetNewOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit newOutfit, bool setName = true, bool setNamePlate = true, uint newLevel = 500)
     {
         // Start to set Outfit
-        var sender = CustomRpcSender.Create(name: $"SetOutfit({player.Data.PlayerName})", sendOption: Hazel.SendOption.Reliable);
+        var sender = CustomRpcSender.Create(name: $"SetOutfit({player.Data.PlayerName})");
 
         if (setName)
         {
@@ -165,7 +165,5 @@ public static class OutfitManager
         }
 
         sender.SendMessage();
-
-        player.Data.MarkDirty();
     }
 }

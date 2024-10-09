@@ -132,7 +132,9 @@ class ShouldProcessRpcPatch
      */
     public static bool Prefix(PlayerControl __instance, RpcCalls rpc, byte sequenceId, ref bool __result)
     {
-        Logger.Info($"{__instance.PlayerId} old skin sequenceId {__instance.Data.DefaultOutfit.SkinSequenceId} - new skin sequenceId {rpc} - sequenceId {sequenceId}", "Test");
+        if (rpc is RpcCalls.SetSkinStr)
+            Logger.Info($"Player Id: {__instance.PlayerId} - Old skin sequenceId {__instance.Data.DefaultOutfit.SkinSequenceId} - New skin sequenceId {sequenceId}", "ShouldProcessRpc");
+
         __result = true;
         return false;
     }
