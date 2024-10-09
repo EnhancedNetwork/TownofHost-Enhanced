@@ -73,7 +73,7 @@ internal class NotificationPopperPatch
     }
     private static void SendRpc(byte typeId, int index, CustomRoles customRole = CustomRoles.NotAssigned, bool playSound = true)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || Options.HideGameSettings.GetBool()) return;
         if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient())) return;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPopper, SendOption.Reliable);
