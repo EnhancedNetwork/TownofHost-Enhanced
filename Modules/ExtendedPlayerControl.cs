@@ -261,12 +261,12 @@ static class ExtendedPlayerControl
     {
         var clientId = seer.GetClientId();
         if (clientId == -1) return;
-        player.Data.DefaultOutfit.PetSequenceId += 10;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
             player.SetPet(petId);
             return;
         }
+        player.Data.DefaultOutfit.PetSequenceId += 10;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetPetStr, SendOption.Reliable, clientId);
         writer.Write(petId);
         writer.Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr));

@@ -198,7 +198,7 @@ public class InnerNetClientPatch
     {
         // Send a networked data pre 2 fixed update should be a good practice?
         if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return;
-        if (!__instance.AmHost || GameStates.InGame || __instance.Streams == null) return;
+        if (!__instance.AmHost || __instance.Streams == null) return;
 
         if (timer == 0)
         {
