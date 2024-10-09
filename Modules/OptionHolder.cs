@@ -1696,24 +1696,21 @@ public static class Options
             .SetHeader(true);
         CrewmatesCanGuess = BooleanOptionItem.Create(60681, "CrewmatesCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        CrewCanGuessCrew = BooleanOptionItem.Create(60686, "CrewCanGuessCrew", true, TabGroup.ModifierSettings, false)
+            .SetParent(CrewmatesCanGuess);
         ImpostorsCanGuess = BooleanOptionItem.Create(60682, "ImpostorsCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.ModifierSettings, false)
+            .SetParent(ImpostorsCanGuess);
         NeutralKillersCanGuess = BooleanOptionItem.Create(60683, "NeutralKillersCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         NeutralApocalypseCanGuess = BooleanOptionItem.Create(60690, "NeutralApocalypseCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        ApocCanGuessApoc = BooleanOptionItem.Create(60691, "ApocCanGuessApoc", false, TabGroup.ModifierSettings, false)
+            .SetParent(NeutralApocalypseCanGuess);
         PassiveNeutralsCanGuess = BooleanOptionItem.Create(60684, "PassiveNeutralsCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModifierSettings, false)
-            .SetParent(GuesserMode);
-        CrewCanGuessCrew = BooleanOptionItem.Create(60686, "CrewCanGuessCrew", true, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
-            .SetParent(GuesserMode);
-        ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
-            .SetParent(GuesserMode);
-        ApocCanGuessApoc = BooleanOptionItem.Create(60691, "ApocCanGuessApoc", false, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
             .SetParent(GuesserMode);
         HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode)
