@@ -198,7 +198,7 @@ public class InnerNetClientPatch
     {
         // Send a networked data pre 2 fixed update should be a good practice?
         if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return;
-        if (!__instance.AmHost || __instance.Streams == null) return;
+        if (!__instance.AmHost || GameStates.InGame || __instance.Streams == null) return;
 
         if (timer == 0)
         {
@@ -239,8 +239,19 @@ public class InnerNetClientPatch
             }
         }
     }
+    [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendOrDisconnect)), HarmonyPrefix]
+    public static void SendOrDisconnectPatch(InnerNetClient __instance, MessageWriter msg)
+    {
+        if (DebugModeManager.IsDebugMode)
+        {
+            Logger.Info($"Packet({msg.Length}), SendOption:{msg.SendOption}", "SendOrDisconnectPatch");
+        }
+        else if (msg.Length > 1000)
+        {
+            Logger.Info($"Large Packet({msg.Length})", "SendOrDisconnectPatch");
+        }
+    }
 }
-
 [HarmonyPatch(typeof(GameData), nameof(GameData.DirtyAllData))]
 internal class DirtyAllDataPatch
 {
