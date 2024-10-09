@@ -1,5 +1,6 @@
 using AmongUs.Data;
 using Discord;
+using InnerNet;
 using System;
 
 namespace TOHE.Patches
@@ -26,7 +27,7 @@ namespace TOHE.Patches
                         int maxSize = GameOptionsManager.Instance.CurrentGameOptions.MaxPlayers;
                         if (GameStates.IsLobby)
                         {
-                            lobbycode = GameStartManager.Instance.GameRoomNameCode.text;
+                            lobbycode = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
                             region = Utils.GetRegionName();
                         }
 

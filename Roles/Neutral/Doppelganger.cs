@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -11,7 +12,7 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
-    public override bool IsExperimental => true;
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -20,9 +21,6 @@ internal class Doppelganger : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem MaxSteals;
-
-    public static readonly Dictionary<byte, string> DoppelVictim = [];
-    public static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> DoppelPresentSkin = [];
 
     public override void SetupCustomOption()
     {
@@ -38,17 +36,11 @@ internal class Doppelganger : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxSteals.GetInt();
-        DoppelVictim[playerId] = Utils.GetPlayerById(playerId).GetRealName() ?? "Invalid";
-
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-
-    public static bool CheckDoppelVictim(byte playerId) => DoppelVictim.ContainsKey(playerId);
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -70,24 +62,20 @@ internal class Doppelganger : RoleBase
 
         var killerSkin = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(kname, killer.CurrentOutfit.ColorId, killer.CurrentOutfit.HatId, killer.CurrentOutfit.SkinId, killer.CurrentOutfit.VisorId, killer.CurrentOutfit.PetId, killer.CurrentOutfit.NamePlateId);
-        var killerLvl = Utils.GetPlayerInfoById(killer.PlayerId).PlayerLevel;
+        var killerLvl = killer.Data.PlayerLevel;
 
         var targetSkin = new NetworkedPlayerInfo.PlayerOutfit()
             .Set(tname, target.CurrentOutfit.ColorId, target.CurrentOutfit.HatId, target.CurrentOutfit.SkinId, target.CurrentOutfit.VisorId, target.CurrentOutfit.PetId, target.CurrentOutfit.NamePlateId);
-        var targetLvl = Utils.GetPlayerInfoById(target.PlayerId).PlayerLevel;
+        var targetLvl = target.Data.PlayerLevel;
 
-        DoppelVictim[target.PlayerId] = tname;
 
         target.SetNewOutfit(killerSkin, newLevel: killerLvl);
-        DoppelPresentSkin[target.PlayerId] = killerSkin;
+        Main.OvverideOutfit[target.PlayerId] = (killerSkin, Main.PlayerStates[killer.PlayerId].NormalOutfit.PlayerName);
         Logger.Info("Changed target skin", "Doppelganger");
 
         killer.SetNewOutfit(targetSkin, newLevel: targetLvl);
-        DoppelPresentSkin[killer.PlayerId] = targetSkin;
+        Main.OvverideOutfit[killer.PlayerId] = (targetSkin, Main.PlayerStates[target.PlayerId].NormalOutfit.PlayerName);
         Logger.Info("Changed killer skin", "Doppelganger");
-
-        //killer.Data.UpdateName(tname, Utils.GetClientById(killer.PlayerId));
-        //target.Data.UpdateName(kname, Utils.GetClientById(target.PlayerId));
 
         SendSkillRPC();
         RPC.SyncAllPlayerNames();

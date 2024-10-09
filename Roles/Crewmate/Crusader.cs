@@ -10,6 +10,7 @@ internal class Crusader : RoleBase
     //===========================SETUP================================\\
     private const int Id = 10400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Crusader);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -32,9 +33,6 @@ internal class Crusader : RoleBase
     {
         AbilityLimit = SkillLimitOpt.GetInt();
         CurrentKillCooldown = SkillCooldown.GetFloat();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;

@@ -81,11 +81,11 @@ internal class Addict : RoleBase
             Main.AllPlayerSpeed[player] = DefaultSpeed;
         }
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!SuicideTimer.ContainsKey(player.PlayerId) || !player.IsAlive()) return;
+        if (!player.IsAlive() || !SuicideTimer.TryGetValue(player.PlayerId, out var timer)) return;
 
-        if (SuicideTimer[player.PlayerId] >= TimeLimit.GetFloat())
+        if (timer >= TimeLimit.GetFloat())
         {
             player.SetDeathReason(PlayerState.DeathReason.Suicide);
             player.RpcMurderPlayer(player);

@@ -10,6 +10,7 @@ internal class Seeker : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Seeker);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -42,9 +43,6 @@ internal class Seeker : RoleBase
         TotalPoints.Add(playerId, 0);
         DefaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
         PointsToWinOpt = PointsToWin.GetInt();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
             _ = new LateTask(() =>
@@ -114,9 +112,9 @@ internal class Seeker : RoleBase
        Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (player == null) return;
+        if (lowLoad) return;
         var targetId = GetTarget(player);
         if (targetId == 0xff) return;
 

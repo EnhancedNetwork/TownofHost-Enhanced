@@ -19,7 +19,7 @@ class AddTasksFromListPatch
         
         List<NormalPlayerTask> disabledTasks = [];
 
-        foreach (var task in unusedTasks)
+        foreach (var task in unusedTasks.GetFastEnumerator())
         {
             switch (task.TaskType)
             {
@@ -202,13 +202,13 @@ class RpcSetTasksPatch
 
         // List of long tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
-        foreach (var task in ShipStatus.Instance.LongTasks.ToArray())
+        foreach (var task in ShipStatus.Instance.LongTasks)
             LongTasks.Add(task);
         Shuffle(LongTasks);
 
         // List of short tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
-        foreach (var task in ShipStatus.Instance.ShortTasks.ToArray())
+        foreach (var task in ShipStatus.Instance.ShortTasks)
             ShortTasks.Add(task);
         Shuffle(ShortTasks);
 

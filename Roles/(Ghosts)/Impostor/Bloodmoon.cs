@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -20,9 +22,10 @@ internal class Bloodmoon : RoleBase
     public static OptionItem KillCooldown;
     public static OptionItem CanKillNum;
     private static OptionItem TimeTilDeath;
-    
-    public static readonly Dictionary<byte, int> PlayerDie = [];
-    public static  readonly Dictionary<byte, long> LastTime = [];
+
+    private readonly Dictionary<byte, int> PlayerDie = [];
+    private readonly Dictionary<byte, long> LastTime = [];
+
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Bloodmoon);
@@ -42,7 +45,7 @@ internal class Bloodmoon : RoleBase
     {
         AbilityLimit = CanKillNum.GetInt();
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
-
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
     // EAC bans players when GA uses sabotage
     public override bool CanUseSabotage(PlayerControl pc) => false;
@@ -50,6 +53,29 @@ internal class Bloodmoon : RoleBase
     {
         AURoleOptions.GuardianAngelCooldown = KillCooldown.GetFloat();
         AURoleOptions.ProtectionDurationSeconds = 0f;
+    }
+    private void SendRPC(byte targetId, bool add)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.Write(add);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        float Limit = reader.ReadSingle();
+        bool add = reader.ReadBoolean();
+        byte targetId = reader.ReadByte();
+
+
+        AbilityLimit = Limit;
+
+        if (add)
+            PlayerDie.Add(targetId, TimeTilDeath.GetInt());
+        else
+            PlayerDie.Remove(targetId);
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
@@ -62,7 +88,7 @@ internal class Bloodmoon : RoleBase
         if (AbilityLimit > 0
             && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
-            && !target.Is(CustomRoles.Pestilence)
+            && !target.IsNeutralApocalypse()
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
@@ -70,18 +96,21 @@ internal class Bloodmoon : RoleBase
             LastTime.Add(target.PlayerId, GetTimeStamp());
             killer.RpcResetAbilityCooldown();
             AbilityLimit--;
-            SendSkillRPC();
+            SendRPC(target.PlayerId, true);
         }
         return false;
     }
-    public override string GetProgressText(byte playerId, bool cooms) => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    private void OnFixedUpdateOther(PlayerControl player)
+    public override string GetProgressText(byte playerId, bool cooms)
+        => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    
+    private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var IsMeeting = GameStates.IsMeeting;
+        if (lowLoad || _Player == null) return;
+
         var playerid = player.PlayerId;
-        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= GetTimeStamp() && !IsMeeting)
+        if (LastTime.TryGetValue(playerid, out var lastTime) && lastTime + 1 <= nowTime)
         {
-            LastTime[playerid] = GetTimeStamp();
+            LastTime[playerid] = nowTime;
             PlayerDie[playerid]--;
             if (PlayerDie[playerid] <= 0)
             {
@@ -93,21 +122,20 @@ internal class Bloodmoon : RoleBase
             }
         }
     }
-    public override void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (LastTime.ContainsKey(DeadPlayer.PlayerId))
-            LastTime.Remove(DeadPlayer.PlayerId);
+        var DeadPlayerId = target.PlayerId;
 
-        if (PlayerDie.ContainsKey(DeadPlayer.PlayerId))
-            PlayerDie.Remove(DeadPlayer.PlayerId);
+        if (LastTime.ContainsKey(DeadPlayerId))
+            LastTime.Remove(DeadPlayerId);
+
+        if (PlayerDie.ContainsKey(DeadPlayerId))
+        {
+            PlayerDie.Remove(DeadPlayerId);
+            SendRPC(DeadPlayerId, false);
+        }
     }
 
     public override string GetLowerTextOthers(PlayerControl seer, PlayerControl player = null, bool isForMeeting = false, bool isForHud = false)
-    {
-        if (GameStates.IsMeeting || isForMeeting) return string.Empty;
-        var playerid = player.PlayerId;
-
-        return PlayerDie.TryGetValue(playerid, out var DeathTimer) ? ColorString(GetRoleColor(CustomRoles.Bloodmoon), GetString("DeathTimer").Replace("{DeathTimer}", DeathTimer.ToString())) : "";
-
-    }
+        => !isForMeeting && PlayerDie.TryGetValue(player.PlayerId, out var DeathTimer) ? ColorString(GetRoleColor(CustomRoles.Bloodmoon), GetString("DeathTimer").Replace("{DeathTimer}", DeathTimer.ToString())) : string.Empty;
 }

@@ -2,22 +2,23 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Oblivious
+public class Oblivious : IAddon
 {
     private const int Id = 20700;
+    public AddonTypes Type => AddonTypes.Harmful;
 
-    public static OptionItem ImpCanBeOblivious;
-    public static OptionItem CrewCanBeOblivious;
-    public static OptionItem NeutralCanBeOblivious;
     public static OptionItem ObliviousBaitImmune;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Oblivious, canSetNum: true);
-        ImpCanBeOblivious = BooleanOptionItem.Create(Id + 10, "ImpCanBeOblivious", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
-        CrewCanBeOblivious = BooleanOptionItem.Create(Id + 11, "CrewCanBeOblivious", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
-        NeutralCanBeOblivious = BooleanOptionItem.Create(Id + 12, "NeutralCanBeOblivious", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
+        SetupAdtRoleOptions(Id, CustomRoles.Oblivious, canSetNum: true, teamSpawnOptions: true);
         ObliviousBaitImmune = BooleanOptionItem.Create(Id + 13, "ObliviousBaitImmune", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oblivious]);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 
 }

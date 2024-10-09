@@ -146,7 +146,6 @@ public static class OptionsMenuBehaviourStartPatch
 #endif
     }
 }
-
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {

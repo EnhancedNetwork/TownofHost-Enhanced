@@ -5,6 +5,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Double;
+
 internal class Mini : RoleBase
 {
     //===========================SETUP================================\\
@@ -139,7 +140,7 @@ internal class Mini : RoleBase
             {
                 SendRPC();
                 player.Notify(GetString("MiniUp"));
-                NotifyRoles();
+                NotifyRoles(SpecifyTarget: player);
             }
         }
     }

@@ -23,7 +23,7 @@ public static class HudSpritePatch
         if (player == null || !Main.EnableCustomButton.Value || AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
         if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
 
-        if (!AmongUsClient.Instance.IsGameStarted || !Main.introDestroyed)
+        if (!AmongUsClient.Instance.IsGameStarted || !Main.IntroDestroyed)
         {
             Kill = null;
             Ability = null;

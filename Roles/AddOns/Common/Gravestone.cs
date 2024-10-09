@@ -2,21 +2,21 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Gravestone
+public class Gravestone : IAddon
 {
     private const int Id = 22100;
-    
-    public static OptionItem ImpCanBeGravestone;
-    public static OptionItem CrewCanBeGravestone;
-    public static OptionItem NeutralCanBeGravestone;
+    public AddonTypes Type => AddonTypes.Mixed;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Gravestone, canSetNum: true);
-        ImpCanBeGravestone = BooleanOptionItem.Create(Id + 10, "ImpCanBeGravestone", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
-        CrewCanBeGravestone = BooleanOptionItem.Create(Id + 11, "CrewCanBeGravestone", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
-        NeutralCanBeGravestone = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGravestone", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Gravestone]);
+        SetupAdtRoleOptions(Id, CustomRoles.Gravestone, canSetNum: true, teamSpawnOptions: true);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool EveryoneKnowRole(PlayerControl player) => player.Is(CustomRoles.Gravestone) && !player.IsAlive();
 }
 

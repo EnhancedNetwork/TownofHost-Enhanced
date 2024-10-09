@@ -9,6 +9,7 @@ internal class Shaman : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Shaman);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -29,11 +30,6 @@ internal class Shaman : RoleBase
     {
         ShamanTarget = byte.MaxValue;
         ShamanTargetChoosen = false;
-    }
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void AfterMeetingTasks()

@@ -10,7 +10,7 @@ internal class Maverick : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13200;
     public static bool HasEnabled = CustomRoleManager.HasEnabled(CustomRoles.Maverick);
-
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -35,9 +35,6 @@ internal class Maverick : RoleBase
     public override void Add(byte playerId)
     {
         NumKills = 0;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();

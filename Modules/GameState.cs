@@ -5,9 +5,9 @@ using UnityEngine;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Utils;
+using Hazel;
 
 namespace TOHE;
 
@@ -20,6 +20,7 @@ public class PlayerState(byte playerId)
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
     public bool Disconnected { get; set; } = false;
+    public CustomRoles RoleofKiller = CustomRoles.NotAssigned;
 #pragma warning disable IDE1006 // Naming Styles
     public DeathReason deathReason { get; set; } = DeathReason.etc;
 #pragma warning restore IDE1006
@@ -37,7 +38,8 @@ public class PlayerState(byte playerId)
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
 
-        var pc = GetPlayerById(PlayerId);
+        var pc = PlayerId.GetPlayer();
+        if (pc == null) return;
 
         if (role == CustomRoles.Opportunist)
         {
@@ -111,31 +113,30 @@ public class PlayerState(byte playerId)
         }
 
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
+    public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
-            AllReplace = true;
-        }
-        if (AllReplace)
-        {
-            var sync = false;
+
             foreach (var subRole in SubRoles.ToArray())
             {
-                if (pc.Is(CustomRoles.Flash))
-                {
-                    Flash.SetSpeed(pc.PlayerId, true);
-                    sync = true;
-                }
-                SubRoles.Remove(subRole);
-
-                if (sync) MarkEveryoneDirtySettings();
+                RemoveSubRole(subRole);
             }
         }
 
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
+
+        if (CustomRoleManager.AddonClasses.TryGetValue(role, out var IAddOn))
+        {
+            var target = PlayerId.GetPlayer();
+            if (target != null)
+            {
+                IAddOn?.Add(target.PlayerId, !Main.IntroDestroyed);
+            }
+        }
+
         if (role.IsConverted())
         {
             SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
@@ -212,10 +213,26 @@ public class PlayerState(byte playerId)
                 break;
         }
     }
-    public void RemoveSubRole(CustomRoles role)
+    public void RemoveSubRole(CustomRoles addOn)
     {
-        if (SubRoles.Contains(role))
-            SubRoles.Remove(role);
+        if (SubRoles.Contains(addOn))
+            SubRoles.Remove(addOn);
+
+        if (CustomRoleManager.AddonClasses.TryGetValue(addOn, out var IAddon))
+        {
+            var target = PlayerId.GetPlayer();
+            if (target != null)
+            {
+                IAddon?.Remove(target.PlayerId);
+            }
+        }
+
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
+        writer.Write(PlayerId);
+        writer.WritePacked((int)addOn);
+        writer.EndMessage();
     }
 
     public void SetDead()
@@ -282,9 +299,13 @@ public class PlayerState(byte playerId)
         Trap,
         Targeted,
         Retribution,
+        Equilibrium,
         Slice,
         BloodLet,
         WrongAnswer,
+        Starved,
+        Armageddon,
+        Sacrificed,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
@@ -412,8 +433,9 @@ public static class GameStates
     public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
     public static bool FungleIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Fungle;
     public static bool IsLobby => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined;
+    public static bool IsCoStartGame => !InGame && !DestroyableSingleton<GameStartManager>.InstanceExists;
     public static bool IsInGame => InGame;
-    public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Ended;
+    public static bool IsEnded => AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.GameIsEnded;
     public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
     public static bool IsVanillaServer

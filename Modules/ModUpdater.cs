@@ -68,7 +68,7 @@ public class ModUpdater
                 new(3.68f, -2.68f, 1f),
                 new(255, 165, 0, byte.MaxValue),
                 new(255, 200, 0, byte.MaxValue),
-                () => StartUpdate(downloadUrl),
+                (UnityEngine.Events.UnityAction)(() => StartUpdate(downloadUrl)),
                 GetString("update"));
             updateButton.transform.localScale = Vector3.one;
         }
@@ -305,7 +305,7 @@ public class ModUpdater
                 button.GetChild(0).GetComponent<TextTranslatorTMP>().ResetText();
                 button.GetComponent<PassiveButton>().OnClick = new();
                 if (onClick != null) button.GetComponent<PassiveButton>().OnClick.AddListener(onClick);
-                else button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => InfoPopup.Close()));
+                else button.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopup.Close()));
             }
         }
     }

@@ -87,7 +87,7 @@ public class GameStartManagerPatch
             //cancelButton.transform.localPosition = new(2f, 0.13f, 0f);
             GameStartTextlocalPosition = __instance.GameStartText.transform.localPosition;
             cancelButton.OnClick = new();
-            cancelButton.OnClick.AddListener((Action)(() =>
+            cancelButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 __instance.ResetStartState();
             }));
@@ -108,7 +108,7 @@ public class GameStartManagerPatch
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
                 if (AURoleOptions.GuardianAngelCooldown == 0f)
-                    AURoleOptions.GuardianAngelCooldown = Options.DefaultAngelCooldown.GetFloat();
+                    AURoleOptions.GuardianAngelCooldown = Main.LastGuardianAngelCooldown.Value;
             }
         }
     }
@@ -124,7 +124,7 @@ public class GameStartManagerPatch
         private static int minPlayer;
         public static void Prefix(GameStartManager __instance)
         {
-            if (__instance == null) return;
+            if (__instance == null || LobbyBehaviour.Instance == null) return;
             minWait = Options.MinWaitAutoStart.GetFloat();
             maxWait = Options.MaxWaitAutoStart.GetFloat();
             minPlayer = Options.PlayerAutoStart.GetInt();
@@ -158,14 +158,14 @@ public class GameStartManagerPatch
                             if ((GameData.Instance.PlayerCount >= Options.StartWhenPlayersReach.GetInt() && Options.StartWhenPlayersReach.GetInt() > 1) ||
                                 (timer <= Options.StartWhenTimerLowerThan.GetInt() && Options.StartWhenTimerLowerThan.GetInt() > 0))
                             {
-                                BeginAutoStart(Options.ImmediateStartTimer.GetInt());
+                                BeginGameAutoStart(Options.ImmediateStartTimer.GetInt());
                                 return;
                             }
                         }
 
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
                         {
-                            BeginAutoStart(Options.AutoStartTimer.GetInt());
+                            BeginGameAutoStart(Options.AutoStartTimer.GetInt());
                             return;
                         }
                     }
@@ -250,7 +250,7 @@ public class GameStartManagerPatch
             if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
             timerText.text = countDown;
         }
-        private static void BeginAutoStart(float countdown)
+        private static void BeginGameAutoStart(float countdown)
         {
             if (AlredyBegin) return;
             AlredyBegin = true;
@@ -269,57 +269,7 @@ public class GameStartManagerPatch
                     Utils.SendMessage(msg);
                 }
 
-                if (Options.RandomMapsMode.GetBool())
-                {
-                    var mapId = GameStartRandomMap.SelectRandomMap();
-
-                    if (GameStates.IsNormalGame)
-                    {
-                        Main.NormalOptions.MapId = mapId;
-                    }
-                    else if (GameStates.IsHideNSeek)
-                    {
-                        Main.HideNSeekOptions.MapId = mapId;
-                    }
-
-                    if (mapId == 3) // Dleks map
-                        CreateOptionsPickerPatch.SetDleks = true;
-                    else
-                        CreateOptionsPickerPatch.SetDleks = false;
-                }
-                else if (CreateOptionsPickerPatch.SetDleks)
-                {
-                    if (GameStates.IsNormalGame)
-                        Main.NormalOptions.MapId = 3;
-
-                    else if (GameStates.IsHideNSeek)
-                        Main.HideNSeekOptions.MapId = 3;
-                }
-
-                //if (GameStates.IsNormalGame && Options.IsActiveDleks)
-                //{
-                //    Logger.SendInGame(GetString("Warning.BrokenVentsInDleksSendInGame"));
-                //    Utils.SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")));
-                //}
-
-                IGameOptions opt = GameStates.IsNormalGame
-                    ? Main.NormalOptions.Cast<IGameOptions>()
-                    : Main.HideNSeekOptions.Cast<IGameOptions>();
-
-                if (GameStates.IsNormalGame)
-                {
-                    Options.DefaultKillCooldown = Main.NormalOptions.KillCooldown;
-                    Main.LastKillCooldown.Value = Main.NormalOptions.KillCooldown;
-                    Main.NormalOptions.KillCooldown = 0f;
-
-                    AURoleOptions.SetOpt(opt);
-                    Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
-                    AURoleOptions.ShapeshifterCooldown = 0f;
-                    AURoleOptions.ImpostorsCanSeeProtect = false;
-                }
-
-                PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
-                RPC.RpcVersionCheck();
+                GameStartManagerBeginGamePatch.DoTasksForBeginGame();
 
                 GameStartManager.Instance.startState = GameStartManager.StartingStates.Countdown;
                 GameStartManager.Instance.countDownTimer = (countdown == 0 ? 0.2f : countdown);
@@ -344,7 +294,7 @@ public class GameStartManagerPatch
     }
 }
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
-public class GameStartRandomMap
+public class GameStartManagerBeginGamePatch
 {
     public static bool Prefix(GameStartManager __instance)
     {
@@ -357,6 +307,16 @@ public class GameStartRandomMap
             Utils.SendMessage(msg);
             return false;
         }
+
+        DoTasksForBeginGame();
+
+        __instance.ReallyBegin(false);
+        return false;
+    }
+    public static void DoTasksForBeginGame()
+    {
+        if (Options.NoGameEnd.GetBool())
+            Logger.SendInGame(string.Format(GetString("Warning.NoGameEndIsEnabled"), GetString("NoGameEnd")));
 
         if (Options.RandomMapsMode.GetBool())
         {
@@ -405,15 +365,15 @@ public class GameStartRandomMap
             Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
             AURoleOptions.ShapeshifterCooldown = 0f;
             AURoleOptions.ImpostorsCanSeeProtect = false;
+
+            Main.LastGuardianAngelCooldown.Value = Options.DefaultAngelCooldown.GetFloat();
+            AURoleOptions.GuardianAngelCooldown = 0f;
         }
 
         PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
         RPC.RpcVersionCheck();
-
-        __instance.ReallyBegin(false);
-        return false;
     }
-    public static byte SelectRandomMap()
+    private static byte SelectRandomMap()
     {
         var rand = IRandom.Instance;
         List<byte> randomMaps = [];

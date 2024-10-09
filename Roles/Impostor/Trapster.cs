@@ -56,7 +56,7 @@ internal class Trapster : RoleBase
     {
 
         // if trapster dead
-        if (deadBody.Object.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.Is(CustomRoles.Pestilence))
+        if (deadBody.Object.Is(CustomRoles.Trapster) && TrapTrapsterBody.GetBool() && !reporter.IsTransformedNeutralApocalypse())
         {
             var killerId = deadBody.PlayerId;
 
@@ -76,7 +76,7 @@ internal class Trapster : RoleBase
 
         // if reporter try reported trap body
         if (BoobyTrapBody.Contains(deadBody.PlayerId) && reporter.IsAlive()
-            && !reporter.Is(CustomRoles.Pestilence) && _Player.RpcCheckAndMurder(reporter, true))
+            && !reporter.IsTransformedNeutralApocalypse() && (reporter.Is(CustomRoles.Veteran) || _Player.RpcCheckAndMurder(reporter, true)))
         {
             var killerId = deadBody.PlayerId;
 

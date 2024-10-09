@@ -66,6 +66,7 @@ internal class Workaholic : RoleBase
         if (!((completedTaskCount) >= AllTasksCount && !(WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()))) return true;
 
         Logger.Info("The Workaholic task is done", "Workaholic");
+        if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return true;
 
         if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
         {
@@ -78,9 +79,10 @@ internal class Workaholic : RoleBase
         {
             if (pc.PlayerId != player.PlayerId)
             {
-                Main.PlayerStates[pc.PlayerId].deathReason = pc.PlayerId == player.PlayerId ?
+                var deathReason = pc.PlayerId == player.PlayerId ?
                     PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Ashamed;
 
+                pc.SetDeathReason(deathReason);
                 pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(player);
             }

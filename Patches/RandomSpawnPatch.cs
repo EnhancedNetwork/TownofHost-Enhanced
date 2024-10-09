@@ -9,6 +9,17 @@ namespace TOHE;
 // Thanks: https://github.com/tukasa0001/TownOfHost/blob/main/Patches/RandomSpawnPatch.cs
 class RandomSpawn
 {
+    [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.SnapTo))]
+    [HarmonyPatch(new Type[] { typeof(Vector2), typeof(ushort) })]
+    public class SnapToPatch
+    {
+        public static void Prefix(CustomNetworkTransform __instance, [HarmonyArgument(1)] ushort minSid)
+        {
+            if (AmongUsClient.Instance.AmHost) return;
+
+            Logger.Info($"Player Id {__instance.myPlayer.PlayerId} - old sequence {__instance.lastSequenceId} - new sequence {minSid}", "SnapToPatch");
+        }
+    }
     [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.HandleRpc))]
     public class CustomNetworkTransformHandleRpcPatch
     {
@@ -146,16 +157,19 @@ class RandomSpawn
         Main.PlayerStates[player.PlayerId].HasSpawned = true;
     }
     public static bool IsRandomSpawn() => RandomSpawnMode.GetBool();
+    public static bool CanSpawnInFirstRound() => SpawnInFirstRound.GetBool();
 
     private enum RandomSpawnOpt
     {
         RandomSpawnMode,
+        RandomSpawn_SpawnInFirstRound,
         RandomSpawn_SpawnRandomLocation,
         RandomSpawn_AirshipAdditionalSpawn,
         RandomSpawn_SpawnRandomVents
     }
 
     private static OptionItem RandomSpawnMode;
+    private static OptionItem SpawnInFirstRound;
     private static OptionItem SpawnRandomLocation;
     private static OptionItem AirshipAdditionalSpawn;
     private static OptionItem SpawnRandomVents;
@@ -165,6 +179,8 @@ class RandomSpawn
         RandomSpawnMode = BooleanOptionItem.Create(60470, RandomSpawnOpt.RandomSpawnMode, false, TabGroup.ModSettings, false)
             .HideInFFA()
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        SpawnInFirstRound = BooleanOptionItem.Create(60476, RandomSpawnOpt.RandomSpawn_SpawnInFirstRound, true, TabGroup.ModSettings, false)
+            .SetParent(RandomSpawnMode);
         SpawnRandomLocation = BooleanOptionItem.Create(60471, RandomSpawnOpt.RandomSpawn_SpawnRandomLocation, true, TabGroup.ModSettings, false)
             .SetParent(RandomSpawnMode);
         AirshipAdditionalSpawn = BooleanOptionItem.Create(60472, RandomSpawnOpt.RandomSpawn_AirshipAdditionalSpawn, true, TabGroup.ModSettings, false)
