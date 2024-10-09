@@ -25,7 +25,7 @@ public static class OutfitManager
                 .Write((byte)Outfit.ColorId)
             .EndRpc();
 
-                        player.Data.DefaultOutfit.HatSequenceId += 10;
+            player.Data.DefaultOutfit.HatSequenceId += 10;
             player.SetHat(Outfit.HatId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(Outfit.HatId)
