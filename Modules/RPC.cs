@@ -123,6 +123,20 @@ public enum Sounds
 
     Test,
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ShouldProcessRpc))]
+class ShouldProcessRpcPatch
+{
+    /*
+     * Sinse stupid AU code added check process rpc for outfit players, so need patch this
+     * Always return true because the check is absolutely pointless
+     */
+    public static bool Prefix(PlayerControl __instance, RpcCalls rpc, byte sequenceId, ref bool __result)
+    {
+        Logger.Info($"{__instance.PlayerId} old skin sequenceId {__instance.Data.DefaultOutfit.SkinSequenceId} - new skin sequenceId {rpc} - sequenceId {sequenceId}", "Test");
+        __result = true;
+        return false;
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class RPCHandlerPatch
 {

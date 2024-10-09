@@ -34,10 +34,7 @@ internal class Mortician : RoleBase
     {
         playerIdList.Add(playerId);
 
-        if (AmongUsClient.Instance.AmHost)
-        {
-            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
-        }
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
     public override void Remove(byte playerId)
     {
@@ -47,25 +44,11 @@ internal class Mortician : RoleBase
     {
         if (inMeeting || target.IsDisconnected()) return;
 
-        //Vector2 pos = target.transform.position;
-        //float minDis = float.MaxValue;
-        //string minName = "";
-        //foreach (var pc in Main.AllAlivePlayerControls)
-        //{
-        //    if (pc.PlayerId == target.PlayerId || playerIdList.Any(p => p == pc.PlayerId)) continue;
-        //    var dis = Utils.GetDistance(pc.transform.position, pos);
-        //    if (dis < minDis && dis < 0.5f)
-        //    {
-        //        minDis = dis;
-        //        minName = pc.GetRealName(clientData: true);
-        //    }
-        //}
-
         foreach (var pc in playerIdList.ToArray())
         {
             var player = pc.GetPlayer();
             if (player == null || !player.IsAlive()) continue;
-            LocateArrow.Add(pc, target.transform.position);
+            LocateArrow.Add(pc, target.Data.GetDeadBody().transform.position);
         }
     }
     public override void OnReportDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
