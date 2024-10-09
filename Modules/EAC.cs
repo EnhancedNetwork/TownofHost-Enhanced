@@ -366,16 +366,14 @@ internal class EAC
 
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
-            //if (!player.HasImpKillButton(true))
-            //{
-            //    WarnHost();
-            //    Report(player, "Bad Sabotage A : Non Imp");
-            //    HandleCheat(player, "Bad Sabotage A : Non Imp");
-            //    Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
-            //    return true;
-            //}
-
-            // Disable this check since haskillbutton needs rework
+            if (!player.HasImpKillButton(true))
+            {
+                WarnHost();
+                Report(player, "Bad Sabotage A : Non Imp");
+                HandleCheat(player, "Bad Sabotage A : Non Imp");
+                Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】Bad Sabotage A，已驳回", "EAC");
+                return true;
+            }
         } //Cheater directly send 128 systemtype rpc
         else if (systemType == SystemTypes.LifeSupp)
         {
