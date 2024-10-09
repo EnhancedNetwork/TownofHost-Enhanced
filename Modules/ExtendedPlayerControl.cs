@@ -771,13 +771,15 @@ static class ExtendedPlayerControl
         if (player == null) return;
         var netTransform = player.NetTransform;
         var clientId = seer.GetClientId();
-        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)40;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
+            netTransform.SnapTo(position, (ushort)(6 + netTransform.lastSequenceId));
             return;
         }
-        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
+        netTransform.lastSequenceId += 326;
+        netTransform.SetDirtyBit(uint.MaxValue);
+
+        ushort newSid = (ushort)(8 + netTransform.lastSequenceId);
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
@@ -821,11 +823,12 @@ static class ExtendedPlayerControl
 
         var netTransform = player.NetTransform;
 
-        if (AmongUsClient.Instance.AmClient)
+        if (AmongUsClient.Instance.AmHost)
         {
             // +328 because lastSequenceId has delay between the host and the vanilla client
             // And this cannot forced teleport the player
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
+            netTransform.SetDirtyBit(uint.MaxValue);
         }
 
         ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
