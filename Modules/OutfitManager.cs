@@ -25,36 +25,36 @@ public static class OutfitManager
                 .Write((byte)Outfit.ColorId)
             .EndRpc();
 
+                        player.Data.DefaultOutfit.HatSequenceId += 10;
             player.SetHat(Outfit.HatId, Outfit.ColorId);
-            player.Data.DefaultOutfit.HatSequenceId += 10;
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(Outfit.HatId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
             .EndRpc();
 
-            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
             player.Data.DefaultOutfit.SkinSequenceId += 10;
+            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
                 .Write(Outfit.SkinId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
             .EndRpc();
 
-            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
             player.Data.DefaultOutfit.VisorSequenceId += 10;
+            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
                 .Write(Outfit.VisorId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
             .EndRpc();
 
-            player.SetPet(Outfit.PetId);
             player.Data.DefaultOutfit.PetSequenceId += 10;
+            player.SetPet(Outfit.PetId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
                 .Write(Outfit.PetId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
                 .EndRpc();
 
-            player.SetNamePlate(Outfit.NamePlateId);
             player.Data.DefaultOutfit.NamePlateSequenceId += 10;
+            player.SetNamePlate(Outfit.NamePlateId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
                 .Write(Outfit.NamePlateId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
@@ -118,29 +118,29 @@ public static class OutfitManager
             .Write((byte)newOutfit.ColorId)
         .EndRpc();
 
-        player.SetHat(newOutfit.HatId, newOutfit.ColorId);
         player.Data.DefaultOutfit.HatSequenceId += 10;
+        player.SetHat(newOutfit.HatId, newOutfit.ColorId);
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
             .Write(newOutfit.HatId)
             .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
         .EndRpc();
 
-        player.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
         player.Data.DefaultOutfit.SkinSequenceId += 10;
+        player.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
             .Write(newOutfit.SkinId)
             .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
         .EndRpc();
 
-        player.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
         player.Data.DefaultOutfit.VisorSequenceId += 10;
+        player.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
             .Write(newOutfit.VisorId)
             .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
         .EndRpc();
 
-        player.SetPet(newOutfit.PetId);
         player.Data.DefaultOutfit.PetSequenceId += 10;
+        player.SetPet(newOutfit.PetId);
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
             .Write(newOutfit.PetId)
             .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
@@ -148,8 +148,8 @@ public static class OutfitManager
 
         if (setNamePlate)
         {
-            player.SetNamePlate(newOutfit.NamePlateId);
             player.Data.DefaultOutfit.NamePlateSequenceId += 10;
+            player.SetNamePlate(newOutfit.NamePlateId);
             sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
                 .Write(newOutfit.NamePlateId)
                 .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
