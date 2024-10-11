@@ -53,6 +53,7 @@ public static class GhostRoleAssign
             or CustomRoles.Sunnyboy
             or CustomRoles.Innocent
             or CustomRoles.Workaholic
+            or CustomRoles.Cultist
             or CustomRoles.PlagueDoctor) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();
