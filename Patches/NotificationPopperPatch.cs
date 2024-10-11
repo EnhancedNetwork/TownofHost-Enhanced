@@ -21,18 +21,25 @@ internal class NotificationPopperPatch
         OptionItem key,
         bool playSound = false)
     {
-        SendRpc(index, playSound);
-        var haveParent = key.Parent != null;
-        string str;
-        if (haveParent)
+        try
         {
-            str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.Parent.GetName() + "</font>: <font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
+            SendRpc(index, playSound);
+            var haveParent = key.Parent != null;
+            string str;
+            if (haveParent)
+            {
+                str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.Parent.GetName() + "</font>: <font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
+            }
+            else
+            {
+                str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
+            }
+            SettingsChangeMessageLogic(key, str, playSound);
         }
-        else
+        catch (System.Exception error)
         {
-            str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
+            Utils.ThrowException(error);
         }
-        SettingsChangeMessageLogic(key, str, playSound);
     }
 
     private static void SettingsChangeMessageLogic(OptionItem key, string item, bool playSound)
