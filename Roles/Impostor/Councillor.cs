@@ -253,8 +253,6 @@ internal class Councillor : RoleBase
                     Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                     MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
-                    Utils.NotifyRoles(isForMeeting: false, NoCache: true);
-
                     _ = new LateTask(() => {
                         if (!MakeEvilJudgeClear.GetBool())
                         {

@@ -307,7 +307,10 @@ class OnPlayerLeftPatch
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         StartingProcessing = true;
-        LeftPlayerId = data.Character.PlayerId;
+        LeftPlayerId = data?.Character?.PlayerId ?? byte.MaxValue;
+
+        if (data != null && data.Character != null)
+            StartGameHostPatch.DataDisconnected[data.Character.PlayerId] = true;
 
         if (GameStates.IsInGame)
         {

@@ -222,8 +222,6 @@ internal class Judge : RoleBase
                         Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                         MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
-                        NotifyRoles(isForMeeting: false, NoCache: true);
-
                         _ = new LateTask(() => { SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, ColorString(GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true); }, 0.6f, "Guess Msg");
 
                     }, 0.2f, "Trial Kill");

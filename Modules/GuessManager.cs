@@ -361,8 +361,6 @@ public static class GuessManager
                         Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                         MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
-                        Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
-
                         _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle")), true); }, 0.6f, "Guess Msg");
 
                         var doomsayers = Utils.GetPlayerListByRole(CustomRoles.Doomsayer);

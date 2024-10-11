@@ -955,7 +955,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.SuperStar)
                     || pc.Is(CustomRoles.Innocent)
                     || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.NiceMini))
+                    || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.Marshall))
                     return false;
                 break;
 

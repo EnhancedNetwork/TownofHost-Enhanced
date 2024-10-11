@@ -38,7 +38,22 @@ public static class GhostRoleAssign
         }
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist or CustomRoles.NiceMini) return;
+
+        // Neutral Apocalypse can't get ghost roles
+        if (getplrRole.IsNA() || getplrRole.IsTNA()) return;
+
+        // Roles can win after death, should not get ghost roles
+        if (getplrRole is CustomRoles.GM
+            or CustomRoles.Nemesis
+            or CustomRoles.Retributionist
+            or CustomRoles.NiceMini
+            or CustomRoles.Romantic
+            or CustomRoles.Follower
+            or CustomRoles.Specter
+            or CustomRoles.Sunnyboy
+            or CustomRoles.Innocent
+            or CustomRoles.Workaholic
+            or CustomRoles.PlagueDoctor) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();
         var CheckNeutral = player.GetCustomRole().IsNeutral() && Options.NeutralCanBecomeGhost.GetBool();
