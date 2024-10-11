@@ -2698,7 +2698,7 @@
   "VitalsWarning": "生命檢測儀正在被使用!",
   "DoorlogWarning": "通行記錄正在被使用!",
   "CameraWarning": "監控正在被使用!",
-  "MinWaitAutoStart": "自動開始前的等待時間",
+  "MinWaitAutoStart": "自動開始前的等待時間(分鐘)",
   "MaxWaitAutoStart": "當大廳時間(分鐘) 過低時強制開始遊戲",
   "PlayerAutoStart": "自動開始所需的最少玩家數",
   "AutoStartTimer": "自動開始的初始倒計時",
