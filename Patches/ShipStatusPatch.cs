@@ -288,7 +288,7 @@ class ShipStatusSpawnPlayerPatch
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position, sendInfoInLogs: false);
+        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
         return false;
     }
 }
@@ -307,7 +307,7 @@ class PolusShipStatusSpawnPlayerPatch
             ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
             : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
 
-        player.RpcTeleport(position, sendInfoInLogs: false);
+        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
         return false;
     }
 }
