@@ -677,15 +677,7 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
-            var name = item.GetName();
-            if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
-            {
-                NotificationPopperPatch.AddRoleSettingsChangeMessage(index, item, role, true);
-            }
-            else
-            {
-                NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
-            }
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {

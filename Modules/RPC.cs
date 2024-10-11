@@ -441,17 +441,12 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.NotificationPopper:
                 {
-                    var typeId = reader.ReadByte();
                     var item = reader.ReadPackedInt32();
-                    var customRole = reader.ReadPackedInt32();
                     var playSound = reader.ReadBoolean();
 
                     var key = OptionItem.AllOptions[item];
 
-                    if (typeId is 0)
-                        NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
-                    else if (typeId is 1)
-                        NotificationPopperPatch.AddRoleSettingsChangeMessage(item, key, (CustomRoles)customRole, playSound);
+                    NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
                 }
                 break;
             case CustomRPC.SetBountyTarget:

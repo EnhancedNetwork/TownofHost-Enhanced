@@ -21,7 +21,7 @@ internal class NotificationPopperPatch
         OptionItem key,
         bool playSound = false)
     {
-        SendRpc(0, index, playSound: playSound);
+        SendRpc(index, playSound);
         var haveParent = key.Parent != null;
         string str;
         if (haveParent)
@@ -32,17 +32,6 @@ internal class NotificationPopperPatch
         {
             str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
         }
-        SettingsChangeMessageLogic(key, str, playSound);
-    }
-
-    public static void AddRoleSettingsChangeMessage(
-        int index,
-        OptionItem key,
-        CustomRoles customRole,
-        bool playSound = false)
-    {
-        SendRpc(1, index, customRole, playSound);
-        string str = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.LobbyChangeSettingNotification, "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetName() + "</font>", "<font=\"Barlow-Black SDF\" material=\"Barlow-Black Outline\">" + key.GetString() + "</font>");
         SettingsChangeMessageLogic(key, str, playSound);
     }
 
@@ -65,15 +54,13 @@ internal class NotificationPopperPatch
             return;
         SoundManager.Instance.PlaySoundImmediate(Instance.settingsChangeSound, false);
     }
-    private static void SendRpc(byte typeId, int index, CustomRoles customRole = CustomRoles.NotAssigned, bool playSound = true)
+    private static void SendRpc(int index, bool playSound = false)
     {
         if (!AmongUsClient.Instance.AmHost || Options.HideGameSettings.GetBool()) return;
         if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient())) return;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPopper, SendOption.Reliable);
-        writer.Write(typeId);
         writer.WritePacked(index);
-        writer.WritePacked((int)customRole);
         writer.Write(playSound);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
