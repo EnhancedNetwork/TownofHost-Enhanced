@@ -636,14 +636,20 @@ static class ExtendedPlayerControl
     }
     public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        byte cnt = ++PlayerControl.LocalPlayer.scannerCount;
-
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seer.GetClientId());
+        var seerClientId = seer.GetClientId();
+        if (seerClientId == -1) return;
+        byte cnt = ++target.scannerCount;
+        if (AmongUsClient.Instance.ClientId == seerClientId)
+        {
+            target.SetScanner(IsActive, cnt);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seerClientId);
         messageWriter.Write(IsActive);
         messageWriter.Write(cnt);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        target.scannerCount = cnt;
     }
     public static void RpcCheckVanishDesync(this PlayerControl player, PlayerControl seer)
     {
