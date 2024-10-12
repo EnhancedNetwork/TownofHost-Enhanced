@@ -160,7 +160,7 @@ public static class BanManager
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
             Logger.SendInGame(string.Format(GetString("Message.BannedByBanList"), player.PlayerName));
-            Logger.Info($"{player.PlayerName}は過去にBAN済みのためBANされました。", "BAN");
+            Logger.Info($"{player.PlayerName} found in BanList, so player is banned", "BAN");
             return;
         }
         // Check EAC list from API
@@ -168,7 +168,7 @@ public static class BanManager
         {
             AmongUsClient.Instance.KickPlayer(player.Id, true);
             Logger.SendInGame(string.Format(GetString("Message.BannedByEACList"), player.PlayerName));
-            Logger.Info($"{player.PlayerName}存在于EAC封禁名单", "BAN");
+            Logger.Info($"{player.PlayerName} found in EAC block list, so player is banned", "BAN");
             return;
         }
         if (TempBanWhiteList.Contains(player?.GetHashedPuid()))

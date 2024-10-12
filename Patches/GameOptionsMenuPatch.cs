@@ -2,6 +2,7 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
 using UnityEngine;
+using TOHE.Patches;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -66,7 +67,7 @@ public static class GameOptionsMenuPatch
 
             var menuDescriptionText = GameSettingMenu.Instance.MenuDescriptionText;
             menuDescriptionText.m_marginWidth = 2.5f;
-        }, 0.1f, "Set Menu", shoudLog: false);
+        }, 0.2f, "Set Menu", shoudLog: false);
     }
 
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
@@ -449,6 +450,7 @@ public static class ToggleOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
             item.SetValue(__instance.GetBool() ? 1 : 0);
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
             return false;
         }
         return true;
@@ -522,7 +524,7 @@ public static class NumberOptionPatch
             {
                 floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
             }
-
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
             return false;
         }
         return true;
@@ -641,7 +643,7 @@ public static class StringOptionPatch
         icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
         var GameOptionsButton = icon.GetComponent<GameOptionButton>();
         GameOptionsButton.OnClick = new();
-        GameOptionsButton.OnClick.AddListener((Action)(() => {
+        GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
 
             if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
             {
@@ -651,7 +653,7 @@ public static class StringOptionPatch
                 {
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
                     var str = GetString($"{roleName}InfoLong");
-                    int size = str.Length > 510 ? 70 : 90;
+                    int size = str.Length > 500 ? str.Length > 550 ? 65 : 70 : 100;
                     var infoLong = str[(str.IndexOf('\n') + 1)..str.Length];
                     var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), GetString(role.ToString()));
                     var info = $"<size={size}%>{ColorRole}: {infoLong}</size>";
@@ -675,6 +677,8 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
+
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
                 if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek

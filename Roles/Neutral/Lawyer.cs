@@ -82,6 +82,7 @@ internal class Lawyer : RoleBase
             foreach (var target in Main.AllPlayerControls)
             {
                 if (playerId == target.PlayerId) continue;
+                else if (TargetList.Contains(target.PlayerId)) continue;
                 else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor)) continue;
                 else if (!CanTargetNeutralApoc.GetBool() && target.IsNeutralApocalypse()) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.IsNeutralKiller()) continue;
@@ -194,11 +195,12 @@ internal class Lawyer : RoleBase
         var valueChanger = ChangeRolesAfterTargetKilled.GetValue();
         var newCustomRole = CRoleChangeRoles[valueChanger];
 
+        if (lawyer.IsAlive())
+            lawyer.RpcChangeRoleBasis(newCustomRole);
+
         lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
         lawyer.RpcSetCustomRole(newCustomRole);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
-
-        lawyer.RpcChangeRoleBasis(newCustomRole);
 
         if (inMeeting)
         {

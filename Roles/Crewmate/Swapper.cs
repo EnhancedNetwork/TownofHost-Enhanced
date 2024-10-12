@@ -216,7 +216,6 @@ internal class Swapper : RoleBase
     {
         if (deadid == 253) return;
 
-
         foreach (var pid in PlayerIdList)
         {
             if (!Vote.TryGetValue(pid, out var tid1) || !VoteTwo.TryGetValue(pid, out var tid2)) continue;
@@ -342,7 +341,7 @@ internal class Swapper : RoleBase
     public static void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
     {
         byte PlayerId = reader.ReadByte();
-        if (Main.PlayerStates[pc.PlayerId].RoleClass is Swapper sw) sw.SwapMsg(pc, $"/sw {PlayerId}");
+        if (pc.GetRoleClass() is Swapper sw) sw.SwapMsg(pc, $"/sw {PlayerId}", true);
     }
     private void SwapperOnClick(byte playerId, MeetingHud __instance)
     {
@@ -389,29 +388,22 @@ internal class Swapper : RoleBase
     {
         foreach (var pva in __instance.playerStates)
         {
+            if (pva.transform.Find("SwapButton") != null) UnityEngine.Object.Destroy(pva.transform.Find("SwapButton").gameObject);
+
             var pc = pva.TargetPlayerId.GetPlayer();
             var local = PlayerControl.LocalPlayer;
             if (pc == null || !pc.IsAlive()) continue;
 
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
-            targetBox.name = "ShootButton";
+            targetBox.name = "SwapButton";
             targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
-            //if (pc.PlayerId == pva.TargetPlayerId && (Vote[local.PlayerId] == pc.PlayerId || VoteTwo[local.PlayerId] == pc.PlayerId)) 
-            //{
-            //    renderer.sprite = CustomButton.Get("SwapYes"); 
-            //}
-            //else 
-            //{
-            //    renderer.sprite = CustomButton.Get("SwapNo"); 
-            //}
-            //Button state here doesnt work bcz vote and vote2 arent synced to clients
             renderer.sprite = CustomButton.Get("SwapNo");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => { 
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { 
                  SwapperOnClick(pva.TargetPlayerId, __instance); 
             }));
         }

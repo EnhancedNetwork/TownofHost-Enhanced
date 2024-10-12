@@ -53,6 +53,7 @@ enum CustomRPC : byte // 185/255 USED
     SyncGeneralOptions,
     SyncSpeedPlayer,
     Arrow,
+    NotificationPopper,
     SyncAbilityUseLimit,
 
     //Roles 
@@ -72,11 +73,11 @@ enum CustomRPC : byte // 185/255 USED
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
-    SetCrewpostorTasksDone,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
@@ -118,6 +119,22 @@ public enum Sounds
     SabotageSound,
 
     Test,
+}
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.ShouldProcessRpc))]
+class ShouldProcessRpcPatch
+{
+    /*
+     * Sinse stupid AU code added check process rpc for outfit players, so need patch this
+     * Always return true because the check is absolutely pointless
+     */
+    public static bool Prefix(PlayerControl __instance, RpcCalls rpc, byte sequenceId, ref bool __result)
+    {
+        if (rpc is RpcCalls.SetSkinStr)
+            Logger.Info($"Player Id: {__instance.PlayerId} - Old skin sequenceId {__instance.Data.DefaultOutfit.SkinSequenceId} - New skin sequenceId {sequenceId}", "ShouldProcessRpc");
+
+        __result = true;
+        return false;
+    }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class RPCHandlerPatch
@@ -416,14 +433,24 @@ internal class RPCHandlerPatch
                 {
                     if (reader.ReadBoolean()) TargetArrow.ReceiveRPC(reader);
                     else LocateArrow.ReceiveRPC(reader);
-                    break;
                 }
+                break;
+            case CustomRPC.NotificationPopper:
+                {
+                    var item = reader.ReadPackedInt32();
+                    var playSound = reader.ReadBoolean();
+
+                    var key = OptionItem.AllOptions[item];
+
+                    NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
+                }
+                break;
             case CustomRPC.SyncAbilityUseLimit:
                 {
                     var pc = Utils.GetPlayerById(reader.ReadByte());
                     pc.SetAbilityUseLimit(reader.ReadSingle(), rpc: false);
-                    break;
                 }
+                break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;

@@ -1,7 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System;
-using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -58,7 +55,7 @@ internal class Ventguard : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.AbilityButton.buttonLabelText.text = GetString("VentguardVentButtonText");
+        hud.AbilityButton.OverrideText(GetString("VentguardVentButtonText"));
     }
 
     public override void OnEnterVent(PlayerControl ventguard, Vent vent)

@@ -100,6 +100,8 @@ static class ExtendedPlayerControl
         player.SetKillCooldown();
         player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
+
+        Utils.DoNotifyRoles(SpecifySeer: player, NoCache: true);
     }
     /// <summary>
     /// Changes the Role Basis of player during the game
@@ -111,7 +113,7 @@ static class ExtendedPlayerControl
 
         var playerId = player.PlayerId;
         var playerClientId = player.GetClientId();
-        var playerRole = Utils.GetRoleMap(playerId).CustomRole;
+        var playerRole = player.GetCustomRole();
         var newRoleType = newCustomRole.GetRoleTypes();
         RoleTypes remeberRoleType;
 
@@ -263,6 +265,7 @@ static class ExtendedPlayerControl
             player.SetPet(petId);
             return;
         }
+        player.Data.DefaultOutfit.PetSequenceId += 10;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetPetStr, SendOption.Reliable, clientId);
         writer.Write(petId);
         writer.Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr));
@@ -487,8 +490,15 @@ static class ExtendedPlayerControl
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (player.GetRoleClass() is Glitch gc)
         {
-            gc.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
-            gc.KCDTimer = (int)(time / 2);
+            if (gc.NotSetCD)
+            {
+                gc.NotSetCD = false;
+            }
+            else
+            {
+                gc.LastKill = Utils.GetTimeStamp() + ((int)(time / 2) - Glitch.KillCooldown.GetInt());
+                gc.KCDTimer = (int)(time / 2);
+            }
         }
         else if (forceAnime || !player.IsModded() || !Options.DisableShieldAnimations.GetBool())
         {
@@ -626,14 +636,20 @@ static class ExtendedPlayerControl
     }
     public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        byte cnt = ++PlayerControl.LocalPlayer.scannerCount;
-
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seer.GetClientId());
+        var seerClientId = seer.GetClientId();
+        if (seerClientId == -1) return;
+        byte cnt = ++target.scannerCount;
+        if (AmongUsClient.Instance.ClientId == seerClientId)
+        {
+            target.SetScanner(IsActive, cnt);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seerClientId);
         messageWriter.Write(IsActive);
         messageWriter.Write(cnt);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        target.scannerCount = cnt;
     }
     public static void RpcCheckVanishDesync(this PlayerControl player, PlayerControl seer)
     {
@@ -760,13 +776,15 @@ static class ExtendedPlayerControl
         if (player == null) return;
         var netTransform = player.NetTransform;
         var clientId = seer.GetClientId();
-        ushort addSid = GameStates.IsLocalGame ? (ushort)4 : (ushort)40;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + addSid));
+            netTransform.SnapTo(position, (ushort)(6 + netTransform.lastSequenceId));
             return;
         }
-        ushort newSid = (ushort)(netTransform.lastSequenceId + addSid);
+        netTransform.lastSequenceId += 326;
+        netTransform.SetDirtyBit(uint.MaxValue);
+
+        ushort newSid = (ushort)(8 + netTransform.lastSequenceId);
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
@@ -810,11 +828,12 @@ static class ExtendedPlayerControl
 
         var netTransform = player.NetTransform;
 
-        if (AmongUsClient.Instance.AmClient)
+        if (AmongUsClient.Instance.AmHost)
         {
             // +328 because lastSequenceId has delay between the host and the vanilla client
             // And this cannot forced teleport the player
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
+            netTransform.SetDirtyBit(uint.MaxValue);
         }
 
         ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
@@ -847,9 +866,11 @@ static class ExtendedPlayerControl
     public static int GetClientId(this PlayerControl player)
     {
         if (player == null) return -1;
-        var client = player.GetClient();
-        return client == null ? -1 : client.Id;
+        var data = player.Data;
+        return data == null ? -1 : data.ClientId;
     }
+    public static int GetClientId(this NetworkedPlayerInfo playerData) => playerData == null ? -1 : playerData.ClientId;
+
     /// <summary>
     /// Only roles (no add-ons)
     /// </summary>
@@ -1220,7 +1241,7 @@ static class ExtendedPlayerControl
         if (Options.DisableMeeting.GetBool() && !force) return;
 
         SetUpRoleTextPatch.IsInIntro = false;
-        ReportDeadBodyPatch.AfterReportTasks(reporter, target);
+        ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
         reporter.RpcStartMeeting(target);
@@ -1228,7 +1249,7 @@ static class ExtendedPlayerControl
     public static bool IsHost(this InnerNetObject innerObject) => innerObject.OwnerId == AmongUsClient.Instance.HostId;
     public static bool IsHost(this byte playerId) => playerId.GetPlayer()?.OwnerId == AmongUsClient.Instance.HostId;
     public static bool IsModded(this PlayerControl player) => player != null && (player.AmOwner || player.IsHost() || Main.playerVersion.ContainsKey(player.GetClientId()));
-    public static bool IsNonHostModdedClient(this PlayerControl pc) => pc != null && (!pc.IsHost() && Main.playerVersion.ContainsKey(pc.GetClientId()));
+    public static bool IsNonHostModdedClient(this PlayerControl pc) => pc != null && !pc.IsHost() && Main.playerVersion.ContainsKey(pc.GetClientId());
     ///<summary>
     ///プレイヤーのRoleBehaviourのGetPlayersInAbilityRangeSortedを実行し、戻り値を返します。
     ///</summary>
@@ -1315,6 +1336,7 @@ static class ExtendedPlayerControl
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.IsHost() && Main.GodMode.Value)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
+        else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
 
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick

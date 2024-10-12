@@ -252,8 +252,6 @@ internal class Councillor : RoleBase
                     Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                     MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
-                    Utils.NotifyRoles(isForMeeting: false, NoCache: true);
-
                     _ = new LateTask(() => {
                         if (!MakeEvilJudgeClear.GetBool())
                         {
@@ -370,7 +368,7 @@ internal class Councillor : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

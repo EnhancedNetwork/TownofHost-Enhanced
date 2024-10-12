@@ -36,9 +36,9 @@ internal class Glitch : RoleBase
     public long LastKill;
     public long LastMimic;
 
-
-    private bool isShifted = false;
-    private long lastRpcSend = 0;
+    public bool NotSetCD = false;
+    private bool IsShifted = false;
+    private long LastRpcSend = 0;
 
     public override void SetupCustomOption()
     {
@@ -59,20 +59,20 @@ internal class Glitch : RoleBase
     }
     public override void Add(byte playerId)
     {
-
         HackCDTimer = 10;
         KCDTimer = 10;
         MimicCDTimer = 10;
         MimicDurTimer = 0;
 
-        isShifted = false;
+        NotSetCD = false;
+        IsShifted = false;
 
         var ts = Utils.GetTimeStamp();
 
         LastKill = ts;
         LastHack = ts;
         LastMimic = ts;
-        lastRpcSend = ts;
+        LastRpcSend = ts;
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
@@ -86,7 +86,7 @@ internal class Glitch : RoleBase
         if (pc == null) return;
         if (!pc.IsAlive()) return;
         if (MimicCDTimer > 0) return;
-        if (isShifted) return;
+        if (IsShifted) return;
 
         var playerlist = Main.AllAlivePlayerControls.Where(a => a.PlayerId != pc.PlayerId).ToList();
 
@@ -94,7 +94,7 @@ internal class Glitch : RoleBase
         {
             pc.RpcShapeshift(playerlist[IRandom.Instance.Next(0, playerlist.Count)], false);
 
-            isShifted = true;
+            IsShifted = true;
             LastMimic = Utils.GetTimeStamp();
             MimicCDTimer = MimicCooldown.GetInt();
             MimicDurTimer = MimicDuration.GetInt();
@@ -110,8 +110,7 @@ internal class Glitch : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null) return false;
-        if (target == null) return false;
+        if (killer == null || target == null) return false;
 
         if (KCDTimer > 0 && HackCDTimer > 0) return false;
 
@@ -135,7 +134,8 @@ internal class Glitch : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad) return;
+        if (lowLoad || !Main.IntroDestroyed) return;
+
         if (HackCDTimer > 180 || HackCDTimer < 0) HackCDTimer = 0;
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
         if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
@@ -151,9 +151,6 @@ internal class Glitch : RoleBase
             }
         }
 
-        if (player == null) return;
-        if (!player.Is(CustomRoles.Glitch)) return;
-
         if (change) { Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false); }
 
         if (!player.IsAlive())
@@ -163,10 +160,10 @@ internal class Glitch : RoleBase
             MimicCDTimer = 0;
             MimicDurTimer = 0;
 
-            if (lastRpcSend <= nowTime + 500)
+            if (LastRpcSend <= nowTime + 500)
             {
                 SendRPC();
-                lastRpcSend += 9999;
+                LastRpcSend += 9999;
             }
             return;
         }
@@ -177,12 +174,12 @@ internal class Glitch : RoleBase
             catch { MimicDurTimer = 0; }
             if (MimicDurTimer > 180) MimicDurTimer = 0;
         }
-        if ((MimicDurTimer <= 0 || !GameStates.IsInTask) && isShifted)
+        if ((MimicDurTimer <= 0 || !GameStates.IsInTask) && IsShifted)
         {
             try
             {
                 player.RpcShapeshift(player, false);
-                isShifted = false;
+                IsShifted = false;
             }
             catch (System.Exception ex)
             {
@@ -215,10 +212,10 @@ internal class Glitch : RoleBase
         }
         if (player.IsNonHostModdedClient()) // For mooded non host players, sync kcd per second
         {
-            if (lastRpcSend < nowTime)
+            if (LastRpcSend < nowTime)
             {
                 SendRPC();
-                lastRpcSend = nowTime;
+                LastRpcSend = nowTime;
             }
         }
     }
@@ -246,6 +243,8 @@ internal class Glitch : RoleBase
         KCDTimer = 10;
         HackCDTimer = 10;
         MimicCDTimer = 10;
+        MimicDurTimer = 0;
+        NotSetCD = true;
         SendRPC();
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)

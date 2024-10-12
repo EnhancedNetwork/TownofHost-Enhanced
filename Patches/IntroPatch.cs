@@ -327,28 +327,26 @@ class BeginCrewmatePatch
             teamToDisplay.Add(PlayerControl.LocalPlayer);
         }
 
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Executioner))
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Executioner ex)
         {
             var exeTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             exeTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var executionId in Executioner.TargetList)
-            {
-                PlayerControl executing = executionId.GetPlayer();
-                if (executing == null) continue;
+
+            PlayerControl executing = ex.GetTargetId().GetPlayer();
+            if (executing != null)
                 exeTeam.Add(executing);
-            }
+
             teamToDisplay = exeTeam;
         }
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lawyer))
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Lawyer lw)
         {
             var lawyerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             lawyerTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var lawyerTargetId in Lawyer.TargetList)
-            {
-                PlayerControl lawyerTarget = lawyerTargetId.GetPlayer();
-                if (lawyerTarget == null) continue;
+
+            PlayerControl lawyerTarget = lw.GetTargetId().GetPlayer();
+            if (lawyerTarget != null)
                 lawyerTeam.Add(lawyerTarget);
-            }
+
             teamToDisplay = lawyerTeam;
         }
        

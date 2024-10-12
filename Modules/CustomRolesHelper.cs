@@ -46,7 +46,6 @@ public static class CustomRolesHelper
             : RoleTypes.GuardianAngel;
     }
 
-    /* Needs recode, awaiting phantom role base*/
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
         if (player == null) return false;
@@ -57,7 +56,7 @@ public static class CustomRolesHelper
             return ModSideHasKillButton;
 
         bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
-                                         (OriginalRole.GetDYRole() == RoleTypes.Impostor || OriginalRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom) : ModSideHasKillButton;
+                                         (OriginalRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || OriginalRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom) : ModSideHasKillButton;
 
         return vanillaSideHasKillButton;
     }
@@ -749,7 +748,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Doppelganger) 
                     || pc.Is(CustomRoles.Jester)
                     || pc.Is(CustomRoles.Zombie) 
-                    || pc.Is(CustomRoles.Solsticer)) return false;
+                    || pc.Is(CustomRoles.Solsticer) || pc.IsNeutralApocalypse()) return false;
                 break;
 
             case CustomRoles.Youtuber:
@@ -887,9 +886,12 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Wildling)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || pc.Is(CustomRoles.Lurker))
+                    || pc.Is(CustomRoles.Lurker)
+                    || pc.Is(CustomRoles.Miner)
+                    || pc.Is(CustomRoles.Prohibited)
+                    || pc.Is(CustomRoles.DoubleAgent))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor())
+                if (!pc.Is(Custom_Team.Impostor))
                     return false;
                 break;
 
@@ -953,7 +955,8 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.SuperStar)
                     || pc.Is(CustomRoles.Innocent)
                     || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.NiceMini))
+                    || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.Marshall))
                     return false;
                 break;
 
@@ -968,6 +971,7 @@ public static class CustomRolesHelper
                 if (Prohibited.GetCountBlokedVents() <= 0 || !pc.CanUseVents())
                     return false;
                 if (pc.Is(CustomRoles.Ventguard)
+                    || pc.Is(CustomRoles.Circumvent)
                     || pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool())
                     return false;
                 break;
@@ -1078,6 +1082,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Wraith)
                     || pc.Is(CustomRoles.Spurt))
                     return false;
+                break;
+            case CustomRoles.Evader:
+                if (pc.IsNeutralApocalypse())
+                    return false; 
                 break;
         }
 

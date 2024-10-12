@@ -53,10 +53,10 @@ internal class Vulture : RoleBase
         AbilityLeftInRound[playerId] = MaxEaten.GetInt();
         LastReport[playerId] = GetTimeStamp();
 
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
-
             _ = new LateTask(() =>
             {
                 if (GameStates.IsInTask)
@@ -160,16 +160,17 @@ internal class Vulture : RoleBase
     {
         foreach (var apc in playerIdList)
         {
-            var player = apc.GetPlayer();
+            var player = GetPlayerById(apc);
             if (player == null) continue;
 
             _ = new LateTask(() =>
             {
                 if (GameStates.IsInTask && player.IsAlive())
                 {
-                    if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(player);
+                    if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(GetPlayerById(apc));
                     player.Notify(GetString("VultureCooldownUp"));
                 }
+                return;
             }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
         }
     }
@@ -180,9 +181,8 @@ internal class Vulture : RoleBase
 
         foreach (var pc in playerIdList.ToArray())
         {
-            var player = GetPlayerById(pc);
-            if (player == null || !player.IsAlive() || player.PlayerId == target.PlayerId) continue;
-
+            var player = pc.GetPlayer();
+            if (player == null || !player.IsAlive()) continue;
             LocateArrow.Add(pc, target.Data.GetDeadBody().transform.position);
         }
     }

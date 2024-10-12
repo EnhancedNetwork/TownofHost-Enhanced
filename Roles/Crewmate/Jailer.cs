@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using System.Collections.Generic;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -121,22 +122,24 @@ internal class Jailer : RoleBase
 
         foreach (var targetId in JailerTarget.Values)
         {
-            if (targetId == byte.MaxValue) continue;
-            var tpc = ((byte)targetId).GetPlayer();
+            var targetIdByte = (byte)targetId;
+            if (targetIdByte == byte.MaxValue) continue;
+
+            var tpc = targetIdByte.GetPlayer();
             if (!tpc.IsAlive()) continue;
 
-            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), (byte)targetId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), targetIdByte, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
         }
     }
 
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter == null || target == null || !voter.Is(CustomRoles.Jailer)) return;
+        if (voter == null || target == null) return;
         if (JailerDidVote.TryGetValue(voter.PlayerId, out var didVote) && didVote) return;
         if (JailerTarget.TryGetValue(voter.PlayerId, out var jTarget) && jTarget == byte.MaxValue) return;
 
         JailerDidVote[voter.PlayerId] = true;
-        if (target.PlayerId == JailerTarget[voter.PlayerId])
+        if (target.PlayerId == jTarget)
         {
             if (voter.GetAbilityUseLimit() > 0)
             {
@@ -150,7 +153,7 @@ internal class Jailer : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting)
     {
-        return isForMeeting && seer.PlayerId != seen.PlayerId && JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && seen.PlayerId == targetID ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), "⊠") : string.Empty;
+        return seer.PlayerId != seen.PlayerId && JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && seen.PlayerId == targetID ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), "⊠") : string.Empty;
     }
 
     private static bool CanBeExecuted(CustomRoles role)

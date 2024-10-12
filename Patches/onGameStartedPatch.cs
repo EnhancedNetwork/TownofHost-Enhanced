@@ -626,7 +626,7 @@ internal class StartGameHostPatch
         target.RpcSetRoleDesync(roleType, targetClientId);
     }
 
-    private static readonly Dictionary<byte, bool> DataDisconnected = [];
+    public static readonly Dictionary<byte, bool> DataDisconnected = [];
     public static void RpcSetDisconnected(bool disconnected)
     {
         foreach (var playerInfo in GameData.Instance.AllPlayers.GetFastEnumerator())

@@ -237,9 +237,8 @@ internal class Baker : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        var baker = Utils.GetPlayerListByRole(CustomRoles.Baker);
-        if (killer == null || target == null || baker == null || !baker.Any()) return true;
-        if (!BarrierList[playerIdList.First()].Contains(target.PlayerId)) return false;
+        if (_Player == null || !_Player.IsAlive() || killer == null || target == null) return false;
+        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId)) return false;
 
         killer.RpcGuardAndKill(target);
         killer.ResetKillCooldown();

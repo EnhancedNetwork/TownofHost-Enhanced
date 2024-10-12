@@ -260,7 +260,7 @@ internal class PlagueDoctor : RoleBase
     }
     private void CheckWin()
     {
-        if (!HasEnabled) return;
+        if (_Player == null) return;
         if (!AmongUsClient.Instance.AmHost) return;
         // Invalid if someone's victory is being processed
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
@@ -269,10 +269,13 @@ internal class PlagueDoctor : RoleBase
         {
             InfectActive = false;
 
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+            if (!CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
             {
-                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
+                foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+                {
+                    CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+                }
             }
 
             foreach (PlayerControl player in Main.AllAlivePlayerControls)
