@@ -245,6 +245,7 @@ internal class Pestilence : RoleBase
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
+        if (killer.IsNeutralApocalypse()) return false;
         target.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
         return false;
