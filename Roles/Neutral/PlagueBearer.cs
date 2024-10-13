@@ -70,9 +70,8 @@ internal class PlagueBearer : RoleBase
     
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
-        MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(Utils.GetPlayerById(playerIdList.First())); // setPlaguedPlayer
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(playerIdList.First().GetPlayer());
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -89,7 +88,7 @@ internal class PlagueBearer : RoleBase
         bool needCheck = false;
         foreach (var (plagueBearerId, Targets) in PlaguedList)
         {
-            var plagueBearer = GetPlayerById(plagueBearerId);
+            var plagueBearer = plagueBearerId.GetPlayer();
             if (plagueBearer == null || !plagueBearer.IsAlive()) continue;
 
             if (target.Is(CustomRoles.PlagueBearer) && !isDisconnectOrSelfKill)
@@ -142,7 +141,7 @@ internal class PlagueBearer : RoleBase
     {
         foreach (var PlagueId in PlaguedList.Keys)
         {
-            var plagueBearer = GetPlayerById(PlagueId);
+            var plagueBearer = PlagueId.GetPlayer();
             if (plagueBearer == null) continue;
 
             if (IsPlaguedAll(plagueBearer))
@@ -194,6 +193,10 @@ internal class PlagueBearer : RoleBase
         {
             CheckAndInfect(killer, deadBody);
         }
+    }
+    public override void AfterMeetingTasks()
+    {
+        CheckPlagueAllPlayers();
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
         => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿") : string.Empty;
