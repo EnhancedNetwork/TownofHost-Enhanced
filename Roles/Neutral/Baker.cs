@@ -263,6 +263,7 @@ internal class Baker : RoleBase
         player.Notify(GetString("BakerToFamine"));
         player.RpcGuardAndKill(player);
     }
+    /*
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
@@ -272,6 +273,7 @@ internal class Baker : RoleBase
         }
         return false;
     }
+    */
 }
 internal class Famine : RoleBase
 {

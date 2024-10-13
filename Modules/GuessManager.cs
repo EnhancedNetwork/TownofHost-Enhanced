@@ -284,6 +284,30 @@ public static class GuessManager
                             return true;
                         }
                     }
+                    if (role.IsImpostor() && !Options.ImpCanGuessImp.GetBool())
+                    {
+                        if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessImpRole"));
+                            return true;
+                        }
+                    }
+                    if (role.IsCrewmate() && !Options.CrewCanGuessCrew.GetBool())
+                    {
+                        if (Options.CrewmatesCanGuess.GetBool() && pc.Is(Custom_Team.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessCrewRole"));
+                            return true;
+                        }
+                    }
+                    if (role.IsNA() && !Options.ApocCanGuessApoc.GetBool())
+                    {
+                        if (Options.NeutralApocalypseCanGuess.GetBool() && pc.IsNeutralApocalypse() && !pc.Is(CustomRoles.Guesser))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessApocRole"));
+                            return true;
+                        }
+                    }
                 }
 
                 if (pc.PlayerId == target.PlayerId)
