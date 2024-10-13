@@ -447,7 +447,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Doomsayer)
                     || pc.Is(CustomRoles.Nemesis)
                     || pc.Is(CustomRoles.Councillor)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.PunchingBag))
                     return false;
                 if ((pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool())
                     || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool()))

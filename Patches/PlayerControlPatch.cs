@@ -237,6 +237,11 @@ class CheckMurderPatch
         Logger.Info($"check: {check}", "RpcCheckAndMurder");
 
         if (target == null) target = killer;
+        if (killer == null)
+        {
+            Logger.Info($"Killer: {killer == null} or Target: {target == null} is null", "RpcCheckAndMurder");
+            return false;
+        }
 
         var killerRole = killer.GetCustomRole();
 

@@ -152,8 +152,7 @@ internal class Medic : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || _Player == null) return true;
-        if (!IsProtect(target.PlayerId)) return false;
+        if (_Player == null || !IsProtect(target.PlayerId)) return false;
 
         var medic = _Player;
         SendRPC();

@@ -191,7 +191,6 @@ internal class Benefactor : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (target == null || killer == null) return true;
         if (!shieldedPlayers.ContainsKey(target.PlayerId)) return false;
 
         if (ShieldIsOneTimeUse.GetBool())
