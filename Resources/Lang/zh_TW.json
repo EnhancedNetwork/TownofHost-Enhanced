@@ -2728,7 +2728,7 @@
   "GodfatherCount_Refugee": "<color=#ff1919>逃亡者</color>",
   "GodfatherCount_Madmate": "<color=#ff1919>叛徒</color>",
   "MissChance": "失誤的機率",
-  "IncreaseByOneIfConvert": "如果有玩家透過擊殺招募船員增加該名玩家的擊殺數",
+  "IncreaseByOneIfConvert": "如果船員的陣營被轉換則最大擊殺數+1",
   "HawkMissed": "失誤了!",
   "HawkCanKillNum": "最大擊殺次數",
   "HawkKillMax": "你的能力已經耗盡",
