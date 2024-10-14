@@ -74,7 +74,7 @@ internal class Hater : RoleBase
                 || (target.Is(CustomRoles.Lovers) && CanKillLovers.GetBool())
                 || ((target.Is(CustomRoles.Romantic) || target.Is(CustomRoles.RuthlessRomantic) || target.Is(CustomRoles.VengefulRomantic)
                 || Romantic.BetPlayer.ContainsValue(target.PlayerId)) && CanKillLovers.GetBool())
-                || ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit)) && CanKillSidekicks.GetBool())
+                || ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Jackal)) && CanKillSidekicks.GetBool())
                 || (target.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
                 || ((target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool())
                 || ((target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Virus)) && CanKillContagious.GetBool())
