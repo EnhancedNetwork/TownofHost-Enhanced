@@ -155,6 +155,8 @@ class SetUpRoleTextPatch
             var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
             // Don't use RpcSetName because the modded client needs to set the name locally
             PlayerControl.LocalPlayer.SetName(realName);
+
+            Utils.DoNotifyRoles(NoCache: true);
         }, 1f, "Reset Name For Modded Players");
     }
     private static byte[] EncryptDES(byte[] data, string key)
@@ -176,6 +178,23 @@ class SetUpRoleTextPatch
     {
         var allPlayerControlsArray = Main.AllPlayerControls;
         var sb = new StringBuilder();
+
+        sb.Append("------------Client Options------------\n");
+        sb.Append($"Game Master: {Main.EnableGM.Value}\n");
+        sb.Append($"UnlockFPS: {Main.UnlockFPS.Value}\n");
+        sb.Append($"Show FPS: {Main.ShowFPS.Value}\n");
+        sb.Append($"Auto Start: {Main.AutoStart.Value}\n");
+        sb.Append($"Dark Theme: {Main.DarkTheme.Value}\n");
+        sb.Append($"Disable Lobby Music: {Main.DisableLobbyMusic.Value}\n");
+        sb.Append($"Show Text Overlay: {Main.ShowTextOverlay.Value}\n");
+        sb.Append($"Horse Mode: {Main.HorseMode.Value}\n");
+        sb.Append($"Enable Custom Button: {Main.EnableCustomButton.Value}\n");
+        sb.Append($"Enable Custom Sound Effect: {Main.EnableCustomSoundEffect.Value}\n");
+        sb.Append($"Force Own Language: {Main.ForceOwnLanguage.Value}\n");
+        sb.Append($"Force Own Language Role Name: {Main.ForceOwnLanguageRoleName.Value}\n");
+        sb.Append($"Version Cheat: {Main.VersionCheat.Value}\n");
+        sb.Append($"God Mode: {Main.GodMode.Value}\n");
+        sb.Append($"Auto Rehost: {Main.AutoRehost.Value}\n");
 
         sb.Append("------------Player Names------------\n");
         foreach (var pc in allPlayerControlsArray)
@@ -319,28 +338,26 @@ class BeginCrewmatePatch
             teamToDisplay.Add(PlayerControl.LocalPlayer);
         }
 
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Executioner))
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Executioner ex)
         {
             var exeTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             exeTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var executionId in Executioner.TargetList)
-            {
-                PlayerControl executing = executionId.GetPlayer();
-                if (executing == null) continue;
+
+            PlayerControl executing = ex.GetTargetId().GetPlayer();
+            if (executing != null)
                 exeTeam.Add(executing);
-            }
+
             teamToDisplay = exeTeam;
         }
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lawyer))
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Lawyer lw)
         {
             var lawyerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             lawyerTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var lawyerTargetId in Lawyer.TargetList)
-            {
-                PlayerControl lawyerTarget = lawyerTargetId.GetPlayer();
-                if (lawyerTarget == null) continue;
+
+            PlayerControl lawyerTarget = lw.GetTargetId().GetPlayer();
+            if (lawyerTarget != null)
                 lawyerTeam.Add(lawyerTarget);
-            }
+
             teamToDisplay = lawyerTeam;
         }
        
@@ -614,8 +631,6 @@ class IntroCutsceneDestroyPatch
                     Main.GameIsLoaded = true;
                 }, 3f, "Set UnShapeShift Button");
             }
-
-            Utils.DoNotifyRoles(NoCache: true);
         }
     }
     public static void Postfix()
@@ -701,6 +716,7 @@ class IntroCutsceneDestroyPatch
             Utils.CheckAndSetVentInteractions();
         }
 
+        Utils.DoNotifyRoles(NoCache: true);
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

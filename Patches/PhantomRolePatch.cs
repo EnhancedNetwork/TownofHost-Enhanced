@@ -2,6 +2,7 @@
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.Core;
+using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -9,6 +10,7 @@ namespace TOHE.Patches;
 public static class PhantomRolePatch
 {
     private static readonly Il2CppSystem.Collections.Generic.List<PlayerControl> InvisibilityList = new();
+    private static readonly Dictionary<byte, string> PetsList = [];
 
     /*
      *  InnerSloth is doing careless stuffs. They didnt put amModdedHost check in cmd check vanish appear
@@ -62,9 +64,16 @@ public static class PhantomRolePatch
 
             _ = new LateTask(() =>
             {
-                if (!Main.MeetingIsStarted)
-                    phantom?.RpcExileDesync(target);
-            }, 1.2f, "Set Phantom invisible", shoudLog: false);
+                if (Main.MeetingIsStarted || phantom == null) return;
+
+                var petId = phantom.Data.DefaultOutfit.PetId;
+                if (petId != "")
+                {
+                    PetsList[phantom.PlayerId] = petId;
+                    phantom?.RpcSetPetDesync("", target);
+                }
+                phantom?.RpcExileDesync(target);
+            }, 1.2f, $"Set Phantom invisible {target.PlayerId}", shoudLog: false);
         }
         InvisibilityList.Add(phantom);
     }
@@ -77,7 +86,7 @@ public static class PhantomRolePatch
         var phantom = __instance;
         Logger.Info($"Player: {phantom.GetRealName()} => shouldAnimate {shouldAnimate}", "CheckAppear");
 
-        if (phantom.walkingToVent || phantom.inVent)
+        if (phantom.inVent)
         {
             phantom.MyPhysics.RpcBootFromVent(Main.LastEnteredVent[phantom.PlayerId].Id);
         }
@@ -96,16 +105,20 @@ public static class PhantomRolePatch
                 // Check appear again for desync role
                 if (target != null)
                     phantom?.RpcCheckAppearDesync(shouldAnimate, target);
-            }, 0.5f, "Check Appear when vanish is over", shoudLog: false);
+            }, 0.5f, $"Check Appear when vanish is over {target.PlayerId}", shoudLog: false);
 
             _ = new LateTask(() =>
             {
-                if (!Main.MeetingIsStarted)
+                if (Main.MeetingIsStarted || phantom == null) return;
+
+                InvisibilityList.Remove(phantom);
+                phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
+
+                if (PetsList.TryGetValue(phantom.PlayerId, out var petId))
                 {
-                    InvisibilityList.Remove(phantom);
-                    phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
+                    phantom?.RpcSetPetDesync(petId, target);
                 }
-            }, 1.8f, "Set Scientist when vanish is over", shoudLog: false);
+            }, 1.8f, $"Set Scientist when vanish is over {target.PlayerId}", shoudLog: false);
         }
     }
     [HarmonyPatch(nameof(PlayerControl.SetRoleInvisibility)), HarmonyPrefix]
@@ -116,38 +129,65 @@ public static class PhantomRolePatch
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
     }
 
-    public static void OnReportDeadBody(PlayerControl seer)
+    public static void OnReportDeadBody(PlayerControl seer, bool force)
     {
         if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole()) return;
 
         foreach (var phantom in InvisibilityList.GetFastEnumerator())
         {
-            if (!phantom.IsAlive()) continue;
-
-            var clientId = seer.GetClientId();
-            _ = new LateTask(() =>
+            if (!phantom.IsAlive())
             {
-                phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
-            }, 0.01f, "Set Scientist in meeting", shoudLog: false);
+                InvisibilityList.Remove(phantom);
+                continue;
+            }
 
-            _ = new LateTask(() =>
-            {
-                phantom?.RpcSetRoleDesync(RoleTypes.Phantom, clientId);
-            }, 1f, "Set Phantom in meeting", shoudLog: false);
-
-            _ = new LateTask(() =>
-            {
-                if (seer != null)
-                    phantom?.RpcStartAppearDesync(false, seer);
-            }, 1.5f, "Check Appear in meeting", shoudLog: false);
-
-            _ = new LateTask(() =>
-            {
-                phantom?.RpcSetRoleDesync(RoleTypes.Scientist, clientId);
-
-                InvisibilityList.Clear();
-            }, 4f, "Set Scientist in meeting after reset", shoudLog: false);
+            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer, force));
         }
+    }
+    private static bool InValid(PlayerControl phantom, PlayerControl seer) => seer.GetClientId() == -1 || phantom == null;
+    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer, bool force)
+    {
+        // Set Scientist for meeting
+        if (!force)
+        {
+            yield return new WaitForSeconds(0.0001f);
+        }
+        if (InValid(phantom, seer)) yield break;
+
+        phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
+
+        // Return Phantom in meeting
+        yield return new WaitForSeconds(1f);
+        {
+            if (InValid(phantom, seer)) yield break;
+
+            phantom?.RpcSetRoleDesync(RoleTypes.Phantom, seer.GetClientId());
+        }
+        // Revert invis for phantom
+        yield return new WaitForSeconds(1f);
+        {
+            if (InValid(phantom, seer)) yield break;
+
+            phantom?.RpcStartAppearDesync(false, seer);
+        }
+        // Set Scientist back
+        yield return new WaitForSeconds(4f);
+        {
+            if (InValid(phantom, seer)) yield break;
+
+            phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
+
+            if (PetsList.TryGetValue(phantom.PlayerId, out var petId))
+            {
+                phantom?.RpcSetPetDesync(petId, seer);
+            }
+        }
+        yield break;
+    }
+    public static void AfterMeeting()
+    {
+        InvisibilityList.Clear();
+        PetsList.Clear();
     }
 }
 // Fixed vanilla bug for host (from TOH-Y)

@@ -272,6 +272,13 @@ public static class Options
     public static OptionItem DecontaminationTimeOnMiraHQ;
     public static OptionItem DecontaminationTimeOnPolus;
 
+    public static OptionItem EnableHalloweenDecorations;
+    public static OptionItem HalloweenDecorationsSkeld;
+    public static OptionItem HalloweenDecorationsMira;
+    public static OptionItem HalloweenDecorationsDleks;
+    public static OptionItem EnableBirthdayDecorationSkeld;
+    public static OptionItem RandomBirthdayAndHalloweenDecorationSkeld;
+
     // Sabotage Settings
     public static OptionItem CommsCamouflage;
     public static OptionItem DisableOnSomeMaps;
@@ -500,11 +507,15 @@ public static class Options
     public static OptionItem NonNeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralKillingRolesMinPlayer;
     public static OptionItem NeutralKillingRolesMaxPlayer;
+    public static OptionItem NeutralRoleWinTogether;
+    public static OptionItem NeutralWinTogether;
+
+    // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
     public static OptionItem TransformedNeutralApocalypseCanBeGuessed;
-    public static OptionItem NeutralRoleWinTogether;
-    public static OptionItem NeutralWinTogether;
+    public static OptionItem ApocCanSeeEachOthersAddOns;
+
 
     // Coven
     public static OptionItem CovenRolesMinPlayer;
@@ -948,6 +959,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
 
+        ApocCanSeeEachOthersAddOns = BooleanOptionItem.Create(60025, "ApocCanSeeEachOthersAddOns", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
         #endregion
 
@@ -1023,7 +1037,6 @@ public static class Options
 
             foreach (var addon in addonType.Value)
             {
-
                 addon.SetupCustomOption();
             }
 
@@ -1346,6 +1359,23 @@ public static class Options
             .SetParent(ChangeDecontaminationTime)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        // Vanilla Map Decorations
+        EnableHalloweenDecorations = BooleanOptionItem.Create(60506, "EnableHalloweenDecorations", false, TabGroup.ModSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        HalloweenDecorationsSkeld = BooleanOptionItem.Create(60507, "HalloweenDecorationsSkeld", false, TabGroup.ModSettings, false)
+            .SetParent(EnableHalloweenDecorations)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        HalloweenDecorationsMira = BooleanOptionItem.Create(60508, "HalloweenDecorationsMira", false, TabGroup.ModSettings, false)
+            .SetParent(EnableHalloweenDecorations)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        HalloweenDecorationsDleks = BooleanOptionItem.Create(60509, "HalloweenDecorationsDleks", false, TabGroup.ModSettings, false)
+            .SetParent(EnableHalloweenDecorations)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        EnableBirthdayDecorationSkeld = BooleanOptionItem.Create(60518, "EnableBirthdayDecorationSkeld", false, TabGroup.ModSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+        RandomBirthdayAndHalloweenDecorationSkeld = BooleanOptionItem.Create(60519, "RandomBirthdayAndHalloweenDecorationSkeld", false, TabGroup.ModSettings, false)
+            .SetColor(new Color32(19, 188, 233, byte.MaxValue));
+
         // Sabotage
         TextOptionItem.Create(10000026, "MenuTitle.Sabotage", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
@@ -1739,29 +1769,23 @@ public static class Options
             .SetHeader(true);
         CrewmatesCanGuess = BooleanOptionItem.Create(60681, "CrewmatesCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        CrewCanGuessCrew = BooleanOptionItem.Create(60686, "CrewCanGuessCrew", true, TabGroup.ModifierSettings, false)
+            .SetParent(CrewmatesCanGuess);
         ImpostorsCanGuess = BooleanOptionItem.Create(60682, "ImpostorsCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.ModifierSettings, false)
+            .SetParent(ImpostorsCanGuess);
         NeutralKillersCanGuess = BooleanOptionItem.Create(60683, "NeutralKillersCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         NeutralApocalypseCanGuess = BooleanOptionItem.Create(60690, "NeutralApocalypseCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        ApocCanGuessApoc = BooleanOptionItem.Create(60691, "ApocCanGuessApoc", false, TabGroup.ModifierSettings, false)
+            .SetParent(NeutralApocalypseCanGuess);
         PassiveNeutralsCanGuess = BooleanOptionItem.Create(60684, "PassiveNeutralsCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         CovenCanGuess = BooleanOptionItem.Create(60693, "CovenCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModifierSettings, false)
-            .SetParent(GuesserMode);
-        CrewCanGuessCrew = BooleanOptionItem.Create(60686, "CrewCanGuessCrew", true, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
-            .SetParent(GuesserMode);
-        ImpCanGuessImp = BooleanOptionItem.Create(60687, "ImpCanGuessImp", true, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
-            .SetParent(GuesserMode);
-        ApocCanGuessApoc = BooleanOptionItem.Create(60691, "ApocCanGuessApoc", false, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
-            .SetParent(GuesserMode);
-        CovenCanGuessCoven = BooleanOptionItem.Create(60692, "CovenCanGuessCoven", false, TabGroup.ModifierSettings, false)
-            .SetHidden(true)
             .SetParent(GuesserMode);
         HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode)
@@ -1850,7 +1874,7 @@ public static class Options
         FixKillCooldownValue = FloatOptionItem.Create(60771, "FixKillCooldownValue", new(0f, 180f, 2.5f), 15f, TabGroup.ModSettings, false)
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(FixFirstKillCooldown);
-        // 首刀保护
+        // First dead shield
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
@@ -1863,7 +1887,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
-        ShieldedCanUseKillButton = BooleanOptionItem.Create(60873, "ShieldedCanUseKillButton", false, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
+        ShieldedCanUseKillButton = BooleanOptionItem.Create(60782, "ShieldedCanUseKillButton", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
             

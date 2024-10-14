@@ -53,7 +53,7 @@ internal class Witness : RoleBase
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Examine");
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown();
         if (Illusionist.IsNonCovIllusioned(target.PlayerId) || (Main.AllKillers.ContainsKey(target.PlayerId) && !Illusionist.IsCovIllusioned(target.PlayerId)))

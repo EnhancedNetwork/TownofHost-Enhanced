@@ -149,7 +149,6 @@ internal class Mastermind : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return true;
         if (!PlayerIsManipulated(killer)) return false;
 
         ManipulatedPlayers.Remove(killer.PlayerId);

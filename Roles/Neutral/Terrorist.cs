@@ -10,7 +10,7 @@ internal class Terrorist : RoleBase
     private const int id = 15400;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled = PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -45,6 +45,8 @@ internal class Terrorist : RoleBase
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
+        if (target.IsDisconnected()) return;
+
         Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
         CheckTerroristWin(target.Data);
     }
@@ -81,7 +83,7 @@ internal class Terrorist : RoleBase
                         pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                     }
                 }
-                else if (!pc.Data.IsDead)
+                else if (pc.IsAlive())
                 {
                     pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                     Main.PlayerStates[pc.PlayerId].SetDead();

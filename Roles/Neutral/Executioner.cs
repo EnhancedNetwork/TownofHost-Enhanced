@@ -24,6 +24,7 @@ internal class Executioner : RoleBase
     private static OptionItem CanTargetNeutralApocalypse;
     private static OptionItem KnowTargetRole;
     private static OptionItem ChangeRolesAfterTargetKilled;
+    private static OptionItem RevealExeTargetUponEjection;
 
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
@@ -62,22 +63,23 @@ internal class Executioner : RoleBase
         CanTargetNeutralApocalypse = BooleanOptionItem.Create(Id + 17, "ExecutionerCanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 18, "Executioner_RevealTargetUponEject", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
     public override void Init()
     {
         playerIdList.Clear();
-        TargetList.Remove(TargetId);
+        TargetList.Clear();
         TargetId = byte.MaxValue;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
+
         var executioner = _Player;
         if (AmongUsClient.Instance.AmHost && executioner.IsAlive())
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
-
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
@@ -145,6 +147,7 @@ internal class Executioner : RoleBase
     }
 
     public bool IsTarget(byte playerId) => TargetId == playerId;
+    public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
@@ -160,11 +163,12 @@ internal class Executioner : RoleBase
         var valueChanger = ChangeRolesAfterTargetKilled.GetValue();
         var newCustomRole = CRoleChangeRoles[valueChanger];
 
+        if (executioner.IsAlive())
+            executioner.RpcChangeRoleBasis(newCustomRole);
+
         executioner.GetRoleClass()?.OnRemove(executionerId);
         executioner.RpcSetCustomRole(newCustomRole);
         executioner.GetRoleClass().OnAdd(executionerId);
-        
-        executioner.RpcChangeRoleBasis(newCustomRole);
 
         Utils.NotifyRoles(SpecifySeer: executioner);
     }
@@ -204,13 +208,17 @@ internal class Executioner : RoleBase
 
         if (isMeetingHud)
         {
-            name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+            if (RevealExeTargetUponEjection.GetBool())
+            {
+                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                DecidedWinner = true;
+            }
         }
         else
         {
             ExeWin(_Player.PlayerId, DecidedWinner);
+            DecidedWinner = true;
         }
-        DecidedWinner = true;
     }
     private static void ExeWin(byte executionerId, bool DecidedWinner)
     {

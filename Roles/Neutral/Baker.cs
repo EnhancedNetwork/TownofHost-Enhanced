@@ -237,9 +237,8 @@ internal class Baker : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        var baker = Utils.GetPlayerListByRole(CustomRoles.Baker);
-        if (killer == null || target == null || baker == null || !baker.Any()) return true;
-        if (!BarrierList[playerIdList.First()].Contains(target.PlayerId)) return false;
+        if (_Player == null || !_Player.IsAlive()) return false;
+        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId)) return false;
 
         killer.RpcGuardAndKill(target);
         killer.ResetKillCooldown();
@@ -264,6 +263,7 @@ internal class Baker : RoleBase
         player.Notify(GetString("BakerToFamine"));
         player.RpcGuardAndKill(player);
     }
+    /*
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
@@ -273,6 +273,7 @@ internal class Baker : RoleBase
         }
         return false;
     }
+    */
 }
 internal class Famine : RoleBase
 {

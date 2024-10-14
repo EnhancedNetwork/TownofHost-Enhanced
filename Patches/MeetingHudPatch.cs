@@ -54,7 +54,6 @@ class CheckForEndVotingPatch
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
                         ExtendedPlayerControl.RpcSetCustomRole(pc.PlayerId, CustomRoles.Madmate);
-                        NotifyRoles(isForMeeting: true, SpecifySeer: pc, NoCache: true);
                         Logger.Info($"Assign in meeting by self vote: {pc?.Data?.PlayerName} = {pc.GetCustomRole()} + {CustomRoles.Madmate}", "Madmate");
                     }
                 }
@@ -136,7 +135,7 @@ class CheckForEndVotingPatch
                         {
                             Aware.OnVoted(pc, pva);
                         }
-                        else if (voteTarget.Is(CustomRoles.Rebirth))
+                        if (voteTarget.Is(CustomRoles.Rebirth))
                         {
                             Rebirth.CountVotes(voteTarget.PlayerId, pva.TargetPlayerId);
                         }
@@ -513,7 +512,7 @@ class CheckForEndVotingPatch
                 else
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                    name += string.Format(GetString("ApocRemain"), neutralnum) + comma;
+                    name += string.Format(GetString("ApocRemain"), apocnum) + comma;
         }
 
     EndOfSession:
@@ -1281,7 +1280,8 @@ class MeetingHudUpdatePatch
             bufferTime = 10;
             var myRole = PlayerControl.LocalPlayer.GetCustomRole();
 
-            __instance.playerStates.Where(x => (!Main.PlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead) && !x.AmDead).Do(x => x.SetDead(x.DidReport, true));
+            //__instance.playerStates.Where(x => !x.TargetPlayerId.GetPlayer().IsAlive() && !x.AmDead)
+            //    .Do(x => x.SetDead(x.DidReport, true, x.GAIcon));
 
             if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser or CustomRoles.Swapper && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);

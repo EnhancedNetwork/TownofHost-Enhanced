@@ -72,7 +72,7 @@ public class GameSettingMenuPatch
             var buttonComponent = button.GetComponent<PassiveButton>();
             buttonComponent.OnClick = new();
             buttonComponent.OnClick.AddListener(
-                (Action)(() => __instance.ChangeTab((int)tab + 3, false)));
+                (UnityEngine.Events.UnityAction)(() => __instance.ChangeTab((int)tab + 3, false)));
 
             ModSettingsButtons.Add(tab, button);
         }
@@ -178,7 +178,7 @@ public class GameSettingMenuPatch
         var Minus = GMinus.GetComponent<PassiveButton>();
         Minus.OnClick.RemoveAllListeners();
         Minus.OnClick.AddListener(
-                (Action)(() => {
+                (UnityEngine.Events.UnityAction)(() => {
                     if (PresetBehaviour == null) __instance.ChangeTab(3, false);
                     PresetBehaviour.Decrease();
                 }));
@@ -210,7 +210,7 @@ public class GameSettingMenuPatch
         var plus = PlusFab.GetComponent<PassiveButton>();
         plus.OnClick.RemoveAllListeners();
         plus.OnClick.AddListener(
-                (Action)(() => {
+                (UnityEngine.Events.UnityAction)(() => {
                     if (PresetBehaviour == null) __instance.ChangeTab(3, false);
                     PresetBehaviour.Increase();
                 }));
@@ -259,7 +259,7 @@ public class GameSettingMenuPatch
 
         passiveButton.OnClick = new();
         passiveButton.OnClick.AddListener(
-                (Action)(() => {
+                (UnityEngine.Events.UnityAction)(() => {
                     SearchForOptions(TextField);
                 }));
 

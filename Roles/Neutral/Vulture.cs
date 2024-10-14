@@ -25,8 +25,7 @@ internal class Vulture : RoleBase
     private static OptionItem VultureReportCD;
     private static OptionItem MaxEaten;
     private static OptionItem HasImpVision;
-
-    private static readonly HashSet<byte> UnreportablePlayers = [];
+    
     private static readonly Dictionary<byte, int> BodyReportCount = [];
     private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
     private static readonly Dictionary<byte, long> LastReport = [];
@@ -45,7 +44,6 @@ internal class Vulture : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        UnreportablePlayers.Clear();
         BodyReportCount.Clear();
         AbilityLeftInRound.Clear();
         LastReport.Clear();
@@ -57,10 +55,10 @@ internal class Vulture : RoleBase
         AbilityLeftInRound[playerId] = MaxEaten.GetInt();
         LastReport[playerId] = GetTimeStamp();
 
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
-
             _ = new LateTask(() =>
             {
                 if (GameStates.IsInTask)
@@ -115,8 +113,7 @@ internal class Vulture : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        // Vulture was eat body
-        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
         if (reporter.Is(CustomRoles.Vulture))
         {
@@ -164,13 +161,13 @@ internal class Vulture : RoleBase
         {
             foreach (var apc in playerIdList)
             {
-                LocateArrow.Remove(apc, target.Object.transform.position);
+                LocateArrow.Remove(apc, target.GetDeadBody().transform.position);
             }
         }
         SendBodyRPC(pc.PlayerId);
         pc.Notify(GetString("VultureBodyReported"));
-        UnreportablePlayers.Remove(target.PlayerId);
-        UnreportablePlayers.Add(target.PlayerId);
+        Main.UnreportableBodies.Remove(target.PlayerId);
+        Main.UnreportableBodies.Add(target.PlayerId);
     }
     public override void AfterMeetingTasks()
     {
@@ -211,31 +208,16 @@ internal class Vulture : RoleBase
         if (inMeeting || target.IsDisconnected()) return;
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
-        Vector2 pos = target.transform.position;
-        float minDis = float.MaxValue;
-
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            if (pc.PlayerId == target.PlayerId) continue;
-            var dis = GetDistance(pc.transform.position, pos);
-            if (dis < minDis && dis < 1.5f)
-            {
-                minDis = dis;
-            }
-        }
-
         foreach (var pc in playerIdList.ToArray())
         {
-            var player = GetPlayerById(pc);
+            var player = pc.GetPlayer();
             if (player == null || !player.IsAlive()) continue;
-            LocateArrow.Add(pc, target.transform.position);
+            LocateArrow.Add(pc, target.Data.GetDeadBody().transform.position);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (seer == null || isForMeeting) return string.Empty;
-        if (!seer.Is(CustomRoles.Vulture)) return string.Empty;
-        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        if (isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
         
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
     }

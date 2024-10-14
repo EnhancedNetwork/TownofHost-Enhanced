@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -28,7 +27,7 @@ class CreateOptionsPickerPatch
                 DleksButton = dlekS_ehT_MapButton;
                 dlekS_ehT_MapButton.MapIcon.transform.localScale = new Vector3(-1f, 1f, 1f);
                 dlekS_ehT_MapButton.Button.OnClick.RemoveAllListeners();
-                dlekS_ehT_MapButton.Button.OnClick.AddListener((Action)(() =>
+                dlekS_ehT_MapButton.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     __instance.SelectMap(__instance.AllMapIcons[0]);
 

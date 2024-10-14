@@ -207,6 +207,7 @@ public class RoleAssign
         // Players on the EAC banned list will be assigned as GM when opening rooms
         if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()))
         {
+            Logger.Warn("Host presets in BanManager.CheckEACList", "EAC");
             Main.EnableGM.Value = true;
             RoleResult[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);

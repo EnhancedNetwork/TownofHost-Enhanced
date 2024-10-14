@@ -9,6 +9,17 @@ namespace TOHE;
 // Thanks: https://github.com/tukasa0001/TownOfHost/blob/main/Patches/RandomSpawnPatch.cs
 class RandomSpawn
 {
+    [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.SnapTo))]
+    [HarmonyPatch(new Type[] { typeof(Vector2), typeof(ushort) })]
+    public class SnapToPatch
+    {
+        public static void Prefix(CustomNetworkTransform __instance, [HarmonyArgument(1)] ushort minSid)
+        {
+            if (AmongUsClient.Instance.AmHost) return;
+
+            Logger.Info($"Player Id {__instance.myPlayer.PlayerId} - old sequence {__instance.lastSequenceId} - new sequence {minSid}", "SnapToPatch");
+        }
+    }
     [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.HandleRpc))]
     public class CustomNetworkTransformHandleRpcPatch
     {

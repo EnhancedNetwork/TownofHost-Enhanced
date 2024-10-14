@@ -69,14 +69,14 @@ internal class CopyCat : RoleBase
             ////////////           /*remove the settings for current role*/             /////////////////////
             
             var pcRole = pc.GetCustomRole();
-            if (pcRole != CustomRoles.Sidekick || pcRole != CustomRoles.Retributionist)
+            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Retributionist)
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                 }
-                pc.RpcSetCustomRole(CustomRoles.CopyCat);
                 pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
+                pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
             pc.ResetKillCooldown();
         }
@@ -134,8 +134,8 @@ internal class CopyCat : RoleBase
         {
             if (role != CustomRoles.CopyCat)
             {
-                killer.RpcSetCustomRole(role);
                 killer.RpcChangeRoleBasis(role);
+                killer.RpcSetCustomRole(role);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
                 Main.PlayerStates[killer.PlayerId].InitTask(killer);
