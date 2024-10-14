@@ -193,6 +193,7 @@ class RpcSetTasksPatch
         int defaultCommonTasksNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
         if (hasCommonTasks) TasksList.RemoveRange(defaultCommonTasksNum, TasksList.Count - defaultCommonTasksNum);
         else TasksList.Clear();
+        TasksList = Shuffle(TasksList);
 
         // A HashSet into which allocated tasks can be placed
         // Prevents multiple assignments of the same task
@@ -204,13 +205,13 @@ class RpcSetTasksPatch
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
         foreach (var task in ShipStatus.Instance.LongTasks)
             LongTasks.Add(task);
-        Shuffle(LongTasks);
+        LongTasks = Shuffle(LongTasks);
 
         // List of short tasks that can be assigned
         Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
         foreach (var task in ShipStatus.Instance.ShortTasks)
             ShortTasks.Add(task);
-        Shuffle(ShortTasks);
+        ShortTasks = Shuffle(ShortTasks);
 
         // Use the function to assign tasks that are actually used on the Among Us side
         ShipStatus.Instance.AddTasksFromList(
@@ -236,15 +237,16 @@ class RpcSetTasksPatch
         }
 
     }
-    public static void Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
+    public static Il2CppSystem.Collections.Generic.List<T> Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
     {
-        for (int i = 0; i < list.Count - 1; i++)
+        int listCount = list.Count;
+        while (listCount > 1)
         {
-            T obj = list[i];
-            int rand = UnityEngine.Random.Range(i, list.Count);
-            list[i] = list[rand];
-            list[rand] = obj;
+            listCount--;
+            int k = IRandom.Instance.Next(listCount + 1);
+            (list[listCount], list[k]) = (list[k], list[listCount]);
         }
+        return list;
     }
 }
 

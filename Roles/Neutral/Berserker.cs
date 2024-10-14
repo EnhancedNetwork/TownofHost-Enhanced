@@ -181,6 +181,7 @@ internal class Berserker : RoleBase
         SendRPC();
         return noScav;
     }
+    /*
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
@@ -190,6 +191,7 @@ internal class Berserker : RoleBase
         }
         return false;
     }
+    */
 }
 internal class War : RoleBase
 {

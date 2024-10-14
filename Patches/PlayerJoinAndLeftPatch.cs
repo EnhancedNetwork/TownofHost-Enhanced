@@ -18,7 +18,7 @@ class OnGameJoinedPatch
     public static void Postfix(AmongUsClient __instance)
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
-        Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
+        Logger.Info($"{__instance.GameId} Joining room - Room code: {GameCode.IntToGameName(AmongUsClient.Instance.GameId) ?? string.Empty}", "OnGameJoined");
 
         Main.IsHostVersionCheating = false;
         Main.playerVersion = [];
@@ -307,7 +307,10 @@ class OnPlayerLeftPatch
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         StartingProcessing = true;
-        LeftPlayerId = data.Character.PlayerId;
+        LeftPlayerId = data?.Character?.PlayerId ?? byte.MaxValue;
+
+        if (data != null && data.Character != null)
+            StartGameHostPatch.DataDisconnected[data.Character.PlayerId] = true;
 
         if (GameStates.IsInGame)
         {

@@ -87,7 +87,7 @@ public class GameStartManagerPatch
             //cancelButton.transform.localPosition = new(2f, 0.13f, 0f);
             GameStartTextlocalPosition = __instance.GameStartText.transform.localPosition;
             cancelButton.OnClick = new();
-            cancelButton.OnClick.AddListener((Action)(() =>
+            cancelButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 __instance.ResetStartState();
             }));

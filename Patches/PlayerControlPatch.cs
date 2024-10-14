@@ -27,7 +27,7 @@ class CheckProtectPatch
     public static bool Prefix(PlayerControl __instance, PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
-        Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
+        Logger.Info($"{ __instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckProtect");
         var angel = __instance;
 
         if (AntiBlackout.SkipTasks)
@@ -145,9 +145,9 @@ class CheckMurderPatch
         }
 
         // Is the target in a killable state?
-        if (target.Data == null // Check if PlayerData is not null
-                                // Check target status
+        if (target.Data == null // Check if PlayerData is null
             || target.inVent
+            || target.onLadder
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
@@ -237,6 +237,11 @@ class CheckMurderPatch
         Logger.Info($"check: {check}", "RpcCheckAndMurder");
 
         if (target == null) target = killer;
+        if (killer == null)
+        {
+            Logger.Info($"Killer: {killer == null} or Target: {target == null} is null", "RpcCheckAndMurder");
+            return false;
+        }
 
         var killerRole = killer.GetCustomRole();
 
@@ -278,7 +283,6 @@ class CheckMurderPatch
         // Check murder on others targets
         if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
         {
-            Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
             return false;
         }
 
@@ -839,7 +843,7 @@ class ReportDeadBodyPatch
         // This is patched in CheckGameEndPatch
         return true;
     }
-    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target)
+    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
     {
         //=============================================
         // Hereinafter, it is assumed that the button is confirmed to be pressed
@@ -910,7 +914,7 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            PhantomRolePatch.OnReportDeadBody(pc);
+            PhantomRolePatch.OnReportDeadBody(pc, force);
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
@@ -1157,7 +1161,7 @@ class FixedUpdateInNormalGamePatch
                                 var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
                                 UnShapeshifter.RpcShapeshift(randomPlayer, false);
                                 UnShapeshifter.RpcRejectShapeshift();
-                                UnShapeshifter.ResetPlayerOutfit();
+                                UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }

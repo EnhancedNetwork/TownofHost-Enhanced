@@ -75,8 +75,8 @@ internal class CopyCat : RoleBase
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                 }
-                pc.RpcSetCustomRole(CustomRoles.CopyCat);
                 pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
+                pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
             pc.ResetKillCooldown();
         }
@@ -134,8 +134,8 @@ internal class CopyCat : RoleBase
         {
             if (role != CustomRoles.CopyCat)
             {
-                killer.RpcSetCustomRole(role);
                 killer.RpcChangeRoleBasis(role);
+                killer.RpcSetCustomRole(role);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
                 Main.PlayerStates[killer.PlayerId].InitTask(killer);

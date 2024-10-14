@@ -127,6 +127,7 @@ internal class Penguin : RoleBase
         resetCooldown = false;
         return false;
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Timer");
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

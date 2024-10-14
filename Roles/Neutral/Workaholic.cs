@@ -62,8 +62,8 @@ internal class Workaholic : RoleBase
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
-        var AllTasksCount = player.Data.Tasks.Count;
-        if (!((completedTaskCount) >= AllTasksCount && !(WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive()))) return true;
+        var taskState = player.GetPlayerTaskState();
+        if (!taskState.IsTaskFinished || (WorkaholicCannotWinAtDeath.GetBool() && !player.IsAlive())) return true;
 
         Logger.Info("The Workaholic task is done", "Workaholic");
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return true;

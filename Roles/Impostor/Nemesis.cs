@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -252,7 +251,7 @@ internal class Nemesis : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => NemesisOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => NemesisOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

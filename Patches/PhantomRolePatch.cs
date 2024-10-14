@@ -129,7 +129,7 @@ public static class PhantomRolePatch
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
     }
 
-    public static void OnReportDeadBody(PlayerControl seer)
+    public static void OnReportDeadBody(PlayerControl seer, bool force)
     {
         if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole()) return;
 
@@ -141,19 +141,21 @@ public static class PhantomRolePatch
                 continue;
             }
 
-            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer));
+            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer, force));
         }
     }
     private static bool InValid(PlayerControl phantom, PlayerControl seer) => seer.GetClientId() == -1 || phantom == null;
-    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer)
+    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer, bool force)
     {
         // Set Scientist for meeting
-        yield return new WaitForSeconds(0.001f);
+        if (!force)
         {
-            if (InValid(phantom, seer)) yield break;
-
-            phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
+            yield return new WaitForSeconds(0.0001f);
         }
+        if (InValid(phantom, seer)) yield break;
+
+        phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
+
         // Return Phantom in meeting
         yield return new WaitForSeconds(1f);
         {

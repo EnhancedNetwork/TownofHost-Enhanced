@@ -68,18 +68,18 @@ internal class Executioner : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        TargetList.Remove(TargetId);
+        TargetList.Clear();
         TargetId = byte.MaxValue;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        
+
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
+
         var executioner = _Player;
         if (AmongUsClient.Instance.AmHost && executioner.IsAlive())
         {
-            CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
-
             List<PlayerControl> targetList = [];
             var rand = IRandom.Instance;
             foreach (var target in Main.AllPlayerControls)
@@ -147,6 +147,7 @@ internal class Executioner : RoleBase
     }
 
     public bool IsTarget(byte playerId) => TargetId == playerId;
+    public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
@@ -162,11 +163,12 @@ internal class Executioner : RoleBase
         var valueChanger = ChangeRolesAfterTargetKilled.GetValue();
         var newCustomRole = CRoleChangeRoles[valueChanger];
 
+        if (executioner.IsAlive())
+            executioner.RpcChangeRoleBasis(newCustomRole);
+
         executioner.GetRoleClass()?.OnRemove(executionerId);
         executioner.RpcSetCustomRole(newCustomRole);
         executioner.GetRoleClass().OnAdd(executionerId);
-        
-        executioner.RpcChangeRoleBasis(newCustomRole);
 
         Utils.NotifyRoles(SpecifySeer: executioner);
     }

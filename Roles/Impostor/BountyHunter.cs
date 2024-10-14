@@ -18,8 +18,6 @@ internal class BountyHunter : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
-
     private static OptionItem OptionTargetChangeTime;
     private static OptionItem OptionSuccessKillCooldown;
     private static OptionItem OptionFailureKillCooldown;
@@ -249,13 +247,12 @@ internal class BountyHunter : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (seer == null) return string.Empty;
-        if (!seer.Is(CustomRoles.BountyHunter)) return string.Empty;
-        if (seen != null && seer.PlayerId != seen.PlayerId) return string.Empty;
-        
-        if (!ShowTargetArrow || isForMeeting) return string.Empty;
+        if (!ShowTargetArrow || isForMeeting || seer.PlayerId != seen.PlayerId) return string.Empty;
 
         var targetId = GetTarget(seer);
         return TargetArrow.GetArrows(seer, targetId);
     }
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Timer");
 }

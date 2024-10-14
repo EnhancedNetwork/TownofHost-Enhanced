@@ -157,6 +157,7 @@ internal class SoulCollector : RoleBase
             _Player.RpcGuardAndKill(_Player);
         }
     }
+    /*
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
         if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
@@ -166,6 +167,7 @@ internal class SoulCollector : RoleBase
         }
         return false;
     }
+    */
 }
 internal class Death : RoleBase
 {

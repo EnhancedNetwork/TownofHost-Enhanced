@@ -284,6 +284,30 @@ public static class GuessManager
                             return true;
                         }
                     }
+                    if (role.IsImpostor() && !Options.ImpCanGuessImp.GetBool())
+                    {
+                        if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessImpRole"));
+                            return true;
+                        }
+                    }
+                    if (role.IsCrewmate() && !Options.CrewCanGuessCrew.GetBool())
+                    {
+                        if (Options.CrewmatesCanGuess.GetBool() && pc.Is(Custom_Team.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessCrewRole"));
+                            return true;
+                        }
+                    }
+                    if (role.IsNA() && !Options.ApocCanGuessApoc.GetBool())
+                    {
+                        if (Options.NeutralApocalypseCanGuess.GetBool() && pc.IsNeutralApocalypse() && !pc.Is(CustomRoles.Guesser))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessApocRole"));
+                            return true;
+                        }
+                    }
                 }
 
                 if (pc.PlayerId == target.PlayerId)
@@ -360,8 +384,6 @@ public static class GuessManager
 
                         Main.PlayersDiedInMeeting.Add(dp.PlayerId);
                         MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
-
-                        Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
 
                         _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle")), true); }, 0.6f, "Guess Msg");
 
@@ -621,7 +643,7 @@ public static class GuessManager
             renderer.sprite = CustomButton.Get("TargetIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => GuesserOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => GuesserOnClick(pva.TargetPlayerId, __instance)));
         }
     }
 
@@ -694,7 +716,7 @@ public static class GuessManager
             exitButtonParent.transform.localScale = new Vector3(0.22f, 0.9f, 1f);
             exitButtonParent.transform.SetAsFirstSibling();
             exitButton.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-            exitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
+            exitButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 __instance.playerStates.ToList().ForEach(x =>
                 {
@@ -825,7 +847,7 @@ public static class GuessManager
                 Pagelabel.transform.localScale *= 1.6f;
                 Pagelabel.autoSizeTextContainer = true;
                 if (!IsNext && Page <= 1) Pagebutton.GetComponent<SpriteRenderer>().color = new(1, 1, 1, 0.1f);
-                Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => ClickEvent()));
+                Pagebutton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => ClickEvent()));
                 void ClickEvent()
                 {
                     if (IsNext) Page += 1;
@@ -993,7 +1015,7 @@ public static class GuessManager
                 //int copiedIndex = info[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
-                if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
+                if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     if (selectedButton != button)
                     {

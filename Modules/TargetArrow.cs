@@ -28,8 +28,10 @@ static class TargetArrow
 
     public static void SendRPC(int index, byte seerId, byte targetId = byte.MaxValue)
     {
-        var seer = Utils.GetPlayerById(seerId);
-        if (!AmongUsClient.Instance.AmHost || seer == null || seer.AmOwner) return;
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        var seer = seerId.GetPlayer();
+        if (!seer.IsNonHostModdedClient()) return;
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable, seer.GetClientId());
         writer.Write(true);
         writer.WritePacked(index);
@@ -78,6 +80,8 @@ static class TargetArrow
     {
         var arrowInfo = new ArrowInfo(seer, target);
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.Equals(arrowInfo)));
+        if (!removeList.Any()) return;
+
         foreach (ArrowInfo a in removeList.ToArray())
         {
             TargetArrows.Remove(a);
@@ -94,6 +98,8 @@ static class TargetArrow
     public static void RemoveAllTarget(byte seer)
     {
         var removeList = new List<ArrowInfo>(TargetArrows.Keys.Where(k => k.From == seer));
+        if (!removeList.Any()) return;
+
         foreach (ArrowInfo arrowInfo in removeList.ToArray())
         {
             TargetArrows.Remove(arrowInfo);

@@ -1071,24 +1071,17 @@ public static class Utils
         return name;
     }
     // From EHR by Gurge44
-    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerMemberName] string callerMemberName = "")
+    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string callerMemberName = "")
     {
         try
         {
-            // Get stack trace for the exception with source file information
-            var stEx = new StackTrace(ex, true);
-            // Get the top stack frame
-            var frame = stEx.GetFrame(0);
-            // Get the line number from the stack frame
-            var lineEx = frame.GetFileLineNumber();
-
-            StackTrace st = new(0, true);
+            StackTrace st = new(1, true);
             StackFrame[] stFrames = st.GetFrames();
 
             StackFrame firstFrame = stFrames.FirstOrDefault();
 
             var sb = new StringBuilder();
-            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineEx}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
+            sb.Append($" {ex.GetType().Name}: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName.Split('\\')[^1]}\n      at line {lineNumber}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
 
             bool skip = true;
             foreach (StackFrame sf in stFrames)
@@ -1104,15 +1097,29 @@ public static class Utils
                 string callerMethodName = callerMethod?.Name;
                 string callerClassName = callerMethod?.DeclaringType?.FullName;
 
-                var line = $"line {sf.GetFileLineNumber()} ({sf.GetFileColumnNumber()}) in {sf.GetFileName()}";
-
-                sb.Append($"\n      at {callerClassName}.{callerMethodName} ({line})");
+                sb.Append($"\n      at {callerClassName}.{callerMethodName}");
             }
 
             sb.Append("\n------ End of Method Stack Trace ------");
-            sb.Append("\n------ Exception Stack Trace ------");
+            sb.Append("\n------ Exception ------\n   ");
 
-            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n      "));
+            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n   "));
+
+            sb.Append("\n------ End of Exception ------");
+            sb.Append("\n------ Exception Stack Trace ------\n");
+
+            var stEx = new StackTrace(ex, true);
+            var stFramesEx = stEx.GetFrames();
+
+            foreach (StackFrame sf in stFramesEx)
+            {
+                var callerMethod = sf.GetMethod();
+
+                string callerMethodName = callerMethod?.Name;
+                string callerClassName = callerMethod?.DeclaringType?.FullName;
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName} in {sf.GetFileName()}, line {sf.GetFileLineNumber()}");
+            }
 
             sb.Append("\n------ End of Exception Stack Trace ------");
 
@@ -1873,12 +1880,17 @@ public static class Utils
     private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return;
-        if (Main.MeetingIsStarted && !isForMeeting) return;
-        if (Main.AllPlayerControls == null) return;
-
-        //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
+        if (GameStates.IsMeeting)
+        {
+            // When the meeting window is active and game is not ended
+            if (!GameEndCheckerForNormal.GameIsEnded) return;
+        }
+        else
+        {
+            // When some one press report button but NotifyRoles is not for meeting
+            if (Main.MeetingIsStarted && !isForMeeting) return;
+        }
 
         //var caller = new System.Diagnostics.StackFrame(1, false);
         //var callerMethod = caller.GetMethod();
@@ -1890,12 +1902,17 @@ public static class Utils
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
-        if (Main.AllPlayerControls == null) return Task.CompletedTask;
-
-        //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
+        if (GameStates.IsMeeting)
+        {
+            // When the meeting window is active and game is not ended
+            if (!GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
+        }
+        else
+        {
+            // When some one press report button but NotifyRoles is not for meeting
+            if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
+        }
 
         //var logger = Logger.Handler("DoNotifyRoles");
 

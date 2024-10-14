@@ -175,7 +175,7 @@ class ShipStatusCloseDoorsPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
 class StartPatch
 {
-    public static void Postfix()
+    public static void Postfix(ShipStatus __instance)
     {
         Logger.CurrentMethod();
         Logger.Info("-----------Start of game-----------", "Phase");
@@ -196,21 +196,50 @@ class StartPatch
             }
         }
 
-        if (GameStates.PolusIsActive && Main.EnableCustomDecorations.Value)
+        switch (Utils.GetActiveMapName())
         {
-            var Dropship = GameObject.Find("Dropship/panel_fuel");
-            if (Dropship != null)
-            {
-                var Decorations = UnityEngine.Object.Instantiate(Dropship, GameObject.Find("Dropship")?.transform);
-                Decorations.name = "Dropship_Decorations";
-                Decorations.transform.DestroyChildren();
-                UnityEngine.Object.Destroy(Decorations.GetComponent<Console>());
-                UnityEngine.Object.Destroy(Decorations.GetComponent<BoxCollider2D>());
-                UnityEngine.Object.Destroy(Decorations.GetComponent<PassiveButton>());
-                Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
-                Decorations.transform.SetSiblingIndex(1);
-                Decorations.transform.localPosition = new(0.0709f, 0.73f);
-            }
+            case MapNames.Skeld:
+                var halloweenDecorationIsActive = Options.HalloweenDecorationsSkeld.GetBool();
+                var birthdayDecorationIsActive = Options.EnableBirthdayDecorationSkeld.GetBool();
+                var halloweenDecorationObject = __instance.transform.FindChild("Helloween");
+                var birthdayDecorationObject = __instance.transform.FindChild("BirthdayDecorSkeld");
+
+                if (Options.RandomBirthdayAndHalloweenDecorationSkeld.GetBool() && halloweenDecorationIsActive && birthdayDecorationIsActive)
+                {
+                    var random = IRandom.Instance.Next(0, 100);
+                    if (random < 50)
+                        halloweenDecorationObject?.gameObject.SetActive(true);
+                    else
+                        birthdayDecorationObject?.gameObject.SetActive(true);
+                    break;
+                }
+                if (halloweenDecorationIsActive)
+                    __instance.transform.FindChild("Helloween")?.gameObject.SetActive(true);
+
+                if (birthdayDecorationIsActive)
+                    __instance.transform.FindChild("BirthdayDecorSkeld")?.gameObject.SetActive(true);
+                break;
+            case MapNames.Mira when Options.HalloweenDecorationsMira.GetBool():
+                __instance.transform.FindChild("Halloween")?.gameObject.SetActive(true);
+                break;
+            case MapNames.Dleks when Options.HalloweenDecorationsDleks.GetBool():
+                __instance.transform.FindChild("Helloween")?.gameObject.SetActive(true);
+                break;
+            case MapNames.Polus when Main.EnableCustomDecorations.Value:
+                var Dropship = GameObject.Find("Dropship/panel_fuel");
+                if (Dropship != null)
+                {
+                    var Decorations = UnityEngine.Object.Instantiate(Dropship, GameObject.Find("Dropship")?.transform);
+                    Decorations.name = "Dropship_Decorations";
+                    Decorations.transform.DestroyChildren();
+                    UnityEngine.Object.Destroy(Decorations.GetComponent<Console>());
+                    UnityEngine.Object.Destroy(Decorations.GetComponent<BoxCollider2D>());
+                    UnityEngine.Object.Destroy(Decorations.GetComponent<PassiveButton>());
+                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
+                    Decorations.transform.SetSiblingIndex(1);
+                    Decorations.transform.localPosition = new(0.0709f, 0.73f);
+                }
+                break;
         }
     }
 }
@@ -259,7 +288,7 @@ class ShipStatusSpawnPlayerPatch
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position, sendInfoInLogs: false);
+        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
         return false;
     }
 }
@@ -278,7 +307,7 @@ class PolusShipStatusSpawnPlayerPatch
             ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
             : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
 
-        player.RpcTeleport(position, sendInfoInLogs: false);
+        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
         return false;
     }
 }
