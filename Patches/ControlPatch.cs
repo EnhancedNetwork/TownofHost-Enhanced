@@ -180,10 +180,10 @@ internal class ControllerManagerUpdatePatch
             {
                 HudManager.Instance.Chat.SetVisible(true);
             }
-            
+
             if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
             {
-                Utils.ErrorEnd("Test AntiBlackout");
+                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
             }
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)

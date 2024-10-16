@@ -162,8 +162,8 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
-
     public static readonly HashSet<byte> UnShapeShifter = [];
+
     public static bool GameIsLoaded { get; set; } = false;
 
     public static bool isLoversDead = true;
@@ -266,7 +266,7 @@ public class Main : BasePlugin
                 {
                     try
                     {
-                        if (Enum.TryParse<CustomRoles>(tmp[0], out CustomRoles role))
+                        if (Enum.TryParse(tmp[0], out CustomRoles role))
                         {
                             var color = tmp[1].Trim().TrimStart('#');
                             if (Utils.CheckColorHex(color))
