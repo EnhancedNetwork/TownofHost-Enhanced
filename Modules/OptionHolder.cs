@@ -139,6 +139,7 @@ public static class Options
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem ShowMadmatesInLeftCommand;
     public static OptionItem ShowApocalypseInLeftCommand;
+    public static OptionItem ShowCovenInLeftCommand;
     public static OptionItem SeeEjectedRolesInMeeting;
 
     public static OptionItem KickLowLevelPlayer;
@@ -481,10 +482,12 @@ public static class Options
     public static OptionItem NeutralKillersCanGuess;
     public static OptionItem NeutralApocalypseCanGuess;
     public static OptionItem PassiveNeutralsCanGuess;
+    public static OptionItem CovenCanGuess;
     public static OptionItem CanGuessAddons;
     public static OptionItem ImpCanGuessImp;
     public static OptionItem CrewCanGuessCrew;
     public static OptionItem ApocCanGuessApoc;
+    public static OptionItem CovenCanGuessCoven;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
 
@@ -513,6 +516,14 @@ public static class Options
     public static OptionItem TransformedNeutralApocalypseCanBeGuessed;
     public static OptionItem ApocCanSeeEachOthersAddOns;
 
+
+    // Coven
+    public static OptionItem CovenRolesMinPlayer;
+    public static OptionItem CovenRolesMaxPlayer;
+    public static OptionItem CovenHasImpVis;
+    public static OptionItem CovenImpVisMode;
+    public static OptionItem CovenCanVent;
+    public static OptionItem CovenVentMode;
 
     // Add-on
     public static OptionItem NameDisplayAddons;
@@ -633,7 +644,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 30100 last id for roles/add-ons (Next use 30200)
+        // 30200 last id for roles/add-ons (Next use 30300)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -716,6 +727,27 @@ public static class Options
         NeutralWinTogether = BooleanOptionItem.Create(60018, "NeutralWinTogether", false, TabGroup.NeutralRoles, false)
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
+
+        CovenRolesMinPlayer = IntegerOptionItem.Create(60025, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true)
+            .SetValueFormat(OptionFormat.Players);
+        CovenRolesMaxPlayer = IntegerOptionItem.Create(60026, "CovenRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Players);
+        CovenHasImpVis = BooleanOptionItem.Create(60027, "CovenHasImpVis", true, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        CovenImpVisMode = StringOptionItem.Create(60028, "CovenImpVisMode", EnumHelper.GetAllNames<CovenManager.VisOptionList>(), 0, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(CovenHasImpVis);
+        CovenManager.RunSetUpImpVisOptions(160032);
+        CovenCanVent = BooleanOptionItem.Create(60029, "CovenCanVent", true, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
+        CovenVentMode = StringOptionItem.Create(60030, "CovenVentMode", EnumHelper.GetAllNames<CovenManager.VentOptionList>(), 0, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(CovenCanVent);
+        CovenManager.RunSetUpVentOptions(260032);
 
         NameDisplayAddons = BooleanOptionItem.Create(60019, "NameDisplayAddons", true, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -935,6 +967,45 @@ public static class Options
 
         yield return null;
 
+        #region Coven Settings
+        if (CustomRoleManager.RoleClass.Where(x => x.Key.IsCoven()).Any(r => r.Value.IsExperimental))
+        {
+            TextOptionItem.Create(10000023, "Experimental.Roles", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(141, 70, 49, byte.MaxValue));
+
+            CustomRoleManager.GetExperimentalOptions(Custom_Team.Coven).ForEach(r => r.SetupCustomOption());
+
+
+        }
+
+        TextOptionItem.Create(10000016, "RoleType.CovenPower", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CovenPower).ForEach(r => r.SetupCustomOption());
+
+        TextOptionItem.Create(10000017, "RoleType.CovenKilling", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CovenKilling).ForEach(r => r.SetupCustomOption());
+
+        TextOptionItem.Create(10000018, "RoleType.CovenTrickery", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CovenTrickery).ForEach(r => r.SetupCustomOption());
+
+        TextOptionItem.Create(10000019, "RoleType.CovenUtility", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CovenUtility).ForEach(r => r.SetupCustomOption());
+        #endregion
+
+        yield return null;
+
         #region Add-Ons Settings
 
         int titleId = 100100;
@@ -1005,6 +1076,8 @@ public static class Options
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand);
         ShowApocalypseInLeftCommand = BooleanOptionItem.Create(60043, "ShowApocalypseInLeftCommand", true, TabGroup.SystemSettings, false)
+            .SetParent(EnableKillerLeftCommand);
+        ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .HideInHnS();
@@ -1709,6 +1782,8 @@ public static class Options
         ApocCanGuessApoc = BooleanOptionItem.Create(60691, "ApocCanGuessApoc", false, TabGroup.ModifierSettings, false)
             .SetParent(NeutralApocalypseCanGuess);
         PassiveNeutralsCanGuess = BooleanOptionItem.Create(60684, "PassiveNeutralsCanGuess", false, TabGroup.ModifierSettings, false)
+            .SetParent(GuesserMode);
+        CovenCanGuess = BooleanOptionItem.Create(60693, "CovenCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);

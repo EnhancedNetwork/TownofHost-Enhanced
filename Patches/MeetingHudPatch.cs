@@ -9,6 +9,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -681,6 +682,27 @@ class CastVotePatch
                 __instance.RpcClearVoteDelay(voter.GetClientId());
                 return false;
             }
+        }
+
+        // Coven Leader Retraining
+        if (target == voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        {
+            PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
+            voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
+            SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
+            SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
+            CovenLeader.retrainPlayer.Clear();
+            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
+            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+            __instance.RpcClearVoteDelay(voter.GetClientId());
+        }
+        else if (target != voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        {
+            PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
+            SendMessage(string.Format(GetString("CovenLeaderDeclineRetrain"), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
+            SendMessage(string.Format(GetString("RetrainDeclineOffer"), CustomRoles.CovenLeader.ToColoredString()), voter.PlayerId);
+            CovenLeader.retrainPlayer.Clear();
+            __instance.RpcClearVoteDelay(voter.GetClientId());
         }
 
         if (target != null && suspectPlayerId < 253)

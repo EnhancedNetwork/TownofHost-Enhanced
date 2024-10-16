@@ -16,8 +16,10 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -277,6 +279,9 @@ class CheckMurderPatch
         // Impostors can kill Madmate
         if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
+
+        // Coven CAN'T kill Coven/Enchanted
+        // if ((killer.Is(Custom_Team.Coven) || killer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) return false;
 
         Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
 

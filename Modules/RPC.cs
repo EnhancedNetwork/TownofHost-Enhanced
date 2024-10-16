@@ -10,6 +10,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Coven;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -104,6 +105,7 @@ enum CustomRPC : byte // 185/255 USED
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
     SyncVultureBodyAmount,
+    BloodRitual,
     SpyRedNameSync,
     SpyRedNameRemove,
     SetChameleonTimer,
@@ -113,6 +115,7 @@ enum CustomRPC : byte // 185/255 USED
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
+    Necronomicon,
 }
 public enum Sounds
 {
@@ -666,6 +669,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetChameleonTimer:
                 Chameleon.ReceiveRPC_Custom(reader);
                 break;
+            case CustomRPC.BloodRitual:
+                Ritualist.ReceiveRPC_Custom(reader, __instance);
+                break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
@@ -714,6 +720,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncShieldPersonDiedFirst:
                 Main.FirstDied = reader.ReadString();
                 Main.FirstDiedPrevious = reader.ReadString();
+                break;
+            case CustomRPC.Necronomicon:
+                CovenManager.ReceiveNecroRPC(reader);
                 break;
         }
     }
