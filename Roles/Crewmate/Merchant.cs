@@ -88,8 +88,8 @@ internal class Merchant : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        addonsSold.Add(playerId, 0);
-        bribedKiller.Add(playerId, []);
+        addonsSold[playerId] = 0;
+        bribedKiller.TryAdd(playerId, []);
     }
     public override void Remove(byte playerId)
     {
@@ -161,13 +161,6 @@ internal class Merchant : RoleBase
                 ).ToList();
             }
 
-            if (AllAlivePlayer.Count == 0)
-            {
-                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
-                Logger.Info("All Alive Player Count = 0", "Merchant");
-                return true;
-            }
-
             PlayerControl target = AllAlivePlayer.RandomElement();
 
             target.RpcSetCustomRole(addon);
@@ -177,6 +170,12 @@ internal class Merchant : RoleBase
             target.AddInSwitchAddons(target, addon);
             
             addonsSold[player.PlayerId] += 1;
+        }
+        else
+        {
+            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
+            Logger.Info("All Alive Player Count = 0", "Merchant");
+            return true;
         }
 
         return true;
@@ -193,7 +192,7 @@ internal class Merchant : RoleBase
 
     public static bool OnClientMurder(PlayerControl killer, PlayerControl target)
     {
-        if (bribedKiller[target.PlayerId].Contains(killer.PlayerId))
+        if (IsBribedKiller(killer, target))
         {
             NotifyBribery(killer, target);
             return true;
@@ -209,10 +208,7 @@ internal class Merchant : RoleBase
         return false;
     }
 
-    public static bool IsBribedKiller(PlayerControl killer, PlayerControl target)
-    {
-        return bribedKiller[target.PlayerId].Contains(killer.PlayerId);
-    }
+    public static bool IsBribedKiller(PlayerControl killer, PlayerControl target) => bribedKiller.TryGetValue(target.PlayerId, out var targets) && targets.Contains(killer.PlayerId);
 
     private static void NotifyBribery(PlayerControl killer, PlayerControl target)
     {

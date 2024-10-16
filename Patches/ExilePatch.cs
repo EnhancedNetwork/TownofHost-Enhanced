@@ -118,6 +118,8 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
+            player.ResetKillCooldown();
+
             // Check for remove pet
             player.RpcRemovePet();
         }

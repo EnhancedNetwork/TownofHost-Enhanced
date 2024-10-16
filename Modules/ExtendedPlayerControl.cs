@@ -82,9 +82,9 @@ static class ExtendedPlayerControl
 
         if (player.HasGhostRole())
         {
-            player.GetRoleClass().Remove(player.PlayerId);
+            player.GetRoleClass().OnRemove(player.PlayerId);
             player.RpcSetCustomRole(player.GetRoleMap().CustomRole);
-            player.GetRoleClass().Add(player.PlayerId);
+            player.GetRoleClass().OnAdd(player.PlayerId);
         }
 
         if (Camouflage.IsCamouflage)
