@@ -175,12 +175,18 @@ class ExileControllerWrapUpPatch
                 Main.AfterMeetingDeathPlayers.Clear();
                 
                 Utils.AfterMeetingTasks();
-                AntiBlackout.ResetAfterMeeting();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
                 Utils.NotifyRoles(NoCache: true);
             }, 1.2f, "AfterMeetingDeathPlayers Task");
         }
+        _ = new LateTask(() =>
+        {
+            if (GameStates.IsEnded) return;
+
+            AntiBlackout.ResetAfterMeeting();
+        }, 2f, "Reset Cooldown After Meeting");
+
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.
         //If the delay is too long, it will influence other normal players' view
