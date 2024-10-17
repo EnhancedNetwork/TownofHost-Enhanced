@@ -2350,7 +2350,7 @@
   "NeutralCanBeGuesser": "<color=#7f8c8d>中立阵营</color>可以成为<color=#ffb347>赌怪</color>",
   "CrewCanBeMundane": "<color=#8cffff>船员阵营</color>可能成为平凡者",
   "NeutralCanBeMundane": "<color=#7f8c8d>中立阵营</color>可能成为平凡者",
-  "GuessedAsMundane": "You're Mundane.\nYou can't guess until you finish all the tasks",
+  "GuessedAsMundane": "一生平凡的人怎能猜测别人呢？\n赶紧去做任务去！",
   "ObliviousBaitImmune": "报告对<color=#00f7ff>诱饵</color>免疫",
   "ImpCanBeInLove": "<color=#ff1919>内鬼阵营</color>可以成为<color=#ff9ace>恋人</color>",
   "CrewCanBeInLove": "<color=#8cffff>船员阵营</color>可以成为<color=#ff9ace>恋人</color>",
