@@ -12,6 +12,7 @@ internal class Jackal : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -83,9 +84,6 @@ internal class Jackal : RoleBase
     {
         AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
 
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(OthersPlayersDead);
@@ -142,9 +140,6 @@ internal class Jackal : RoleBase
                 target.GetRoleClass()?.OnRemove(target.PlayerId);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
-
-                if (!Main.ResetCamPlayerList.Contains(target.PlayerId))
-                    Main.ResetCamPlayerList.Add(target.PlayerId);
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);

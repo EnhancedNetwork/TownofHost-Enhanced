@@ -2,38 +2,43 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Antidote
+public class Antidote : IAddon
 {
     private const int Id = 21400;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Mixed;
 
-    public static OptionItem ImpCanBeAntidote;
-    public static OptionItem CrewCanBeAntidote;
-    public static OptionItem NeutralCanBeAntidote;
     private static OptionItem AntidoteCDOpt;
     private static OptionItem AntidoteCDReset;
 
-    private static Dictionary<byte, int> KilledAntidote = [];
+    private static readonly HashSet<byte> playerList = [];
+    private static readonly Dictionary<byte, int> KilledAntidote = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Antidote, canSetNum: true);
-        ImpCanBeAntidote = BooleanOptionItem.Create(Id + 10, "ImpCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
-        CrewCanBeAntidote = BooleanOptionItem.Create(Id + 11, "CrewCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
-        NeutralCanBeAntidote = BooleanOptionItem.Create(Id + 12, "NeutralCanBeAntidote", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
+        SetupAdtRoleOptions(Id, CustomRoles.Antidote, canSetNum: true, teamSpawnOptions: true);
         AntidoteCDOpt = FloatOptionItem.Create(Id + 13, "AntidoteCDOpt", new(0f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote])
             .SetValueFormat(OptionFormat.Seconds);
         AntidoteCDReset = BooleanOptionItem.Create(Id + 14, "AntidoteCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        KilledAntidote = [];
         IsEnable = false;
+        playerList.Clear();
+        KilledAntidote.Clear();
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        playerList.Add(playerId);
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnable = false;
     }
 
     public static void ReduceKCD(PlayerControl player)
@@ -58,7 +63,7 @@ public static class Antidote
                 if (kapc == null) continue;
                 kapc.ResetKillCooldown();
             }
-            KilledAntidote = [];
+            KilledAntidote.Clear();
         }
     }
 

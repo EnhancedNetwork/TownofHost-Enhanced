@@ -74,7 +74,7 @@ internal class Mercenary : RoleBase
 
     public static void ClearSuicideTimer() => SuicideTimer.Clear();
 
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!HasKilled(player))
         {
@@ -99,6 +99,7 @@ internal class Mercenary : RoleBase
         }
     }
 
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Timer");
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(GetString("MercenarySuicideButtonText"));

@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Paranoia
+public class Paranoia : IAddon
 {
     private const int Id = 22400;
 
@@ -10,8 +10,9 @@ public static class Paranoia
     public static OptionItem CanBeCrew;
     public static OptionItem DualVotes;
     private static OptionItem HideAdditionalVotes;
+    public AddonTypes Type => AddonTypes.Mixed;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Paranoia, canSetNum: true);
         CanBeImp = BooleanOptionItem.Create(Id + 10, "ImpCanBeParanoia", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia]);
@@ -19,6 +20,12 @@ public static class Paranoia
         DualVotes = BooleanOptionItem.Create(Id + 12, "DualVotes", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Paranoia]);
         HideAdditionalVotes = BooleanOptionItem.Create(Id + 13, "HideAdditionalVotes", false, TabGroup.Addons, false).SetParent(DualVotes);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 
     public static bool IsExistInGame(PlayerControl player) => player.Is(CustomRoles.Paranoia);
 

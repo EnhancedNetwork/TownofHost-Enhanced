@@ -68,7 +68,7 @@ internal class Mastermind : RoleBase
         return killer.CheckDoubleTrigger(target, () =>
         {
             killer.SetKillCooldown(time: ManipulateCD);
-            if (ExtendedPlayerControl.HasKillButton(target) || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
+            if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
             {
                 ManipulateDelays.TryAdd(target.PlayerId, GetTimeStamp());
                 NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
@@ -77,8 +77,9 @@ internal class Mastermind : RoleBase
         });
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl mastermind)
+    public override void OnFixedUpdate(PlayerControl mastermind, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (ManipulatedPlayers.Count == 0 && ManipulateDelays.Count == 0) return;
 
         foreach (var x in ManipulateDelays)
@@ -90,10 +91,10 @@ internal class Mastermind : RoleBase
                 ManipulateDelays.Remove(x.Key);
                 continue;
             }
-            if (x.Value + Delay.GetInt() < GetTimeStamp())
+            if (x.Value + Delay.GetInt() < nowTime)
             {
                 ManipulateDelays.Remove(x.Key);
-                ManipulatedPlayers.TryAdd(x.Key, GetTimeStamp());
+                ManipulatedPlayers.TryAdd(x.Key, nowTime);
 
                 TempKCDs.TryAdd(pc.PlayerId, pc.killTimer);
                 pc.SetKillCooldown(time: 1f);
@@ -148,7 +149,6 @@ internal class Mastermind : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return true;
         if (!PlayerIsManipulated(killer)) return false;
 
         ManipulatedPlayers.Remove(killer.PlayerId);

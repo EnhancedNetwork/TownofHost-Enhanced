@@ -58,8 +58,10 @@ internal class TimeMaster : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
+        {
             AbilityLimit += TimeMasterAbilityUseGainWithEachTaskCompleted.GetFloat();
-
+            SendSkillRPC();
+        }
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
@@ -67,9 +69,9 @@ internal class TimeMaster : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.AbilityButton.buttonLabelText.text = GetString("TimeMasterVentButtonText");
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (TimeMasterInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + TimeMasterSkillDuration.GetInt() < GetTimeStamp())
+        if (!lowLoad && TimeMasterInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + TimeMasterSkillDuration.GetInt() < nowTime)
         {
             TimeMasterInProtect.Remove(player.PlayerId);
             if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill();
@@ -97,15 +99,17 @@ internal class TimeMaster : RoleBase
             }
         return true;
     }
-    public override void OnEnterVent(PlayerControl pc, Vent AirConditioning)
+    public override void OnEnterVent(PlayerControl pc, Vent currentVent)
     {
         if (AbilityLimit >= 1)
         {
             AbilityLimit -= 1;
+            SendSkillRPC();
+
             TimeMasterInProtect.Remove(pc.PlayerId);
             TimeMasterInProtect.Add(pc.PlayerId, GetTimeStamp());
 
-            if (!pc.IsModClient())
+            if (!pc.IsModded())
             {
                 pc.RpcGuardAndKill(pc);
             }
@@ -128,9 +132,13 @@ internal class TimeMaster : RoleBase
                 }
                 else
                 {
-                    TimeMasterBackTrack.Add(player.PlayerId, player.GetCustomPosition());
+                    TimeMasterBackTrack[player.PlayerId] = player.GetCustomPosition();
                 }
             }
+        }
+        else
+        {
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
     }
     public override string GetProgressText(byte playerId, bool comms)

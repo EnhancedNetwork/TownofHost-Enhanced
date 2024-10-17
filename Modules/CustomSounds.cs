@@ -10,7 +10,7 @@ public static class CustomSoundsManager
 {
     public static void RPCPlayCustomSound(this PlayerControl pc, string sound, bool force = false)
     {
-        if (!force) if (!AmongUsClient.Instance.AmHost || !pc.IsModClient()) return;
+        if (!force) if (!AmongUsClient.Instance.AmHost || !pc.IsModded()) return;
         if (pc == null || PlayerControl.LocalPlayer.PlayerId == pc.PlayerId)
         {
             Play(sound);
@@ -56,7 +56,7 @@ public static class CustomSoundsManager
         Logger.Msg($"play sound：{sound}", "CustomSounds");
     }
 
-    [DllImport("winmm.dll")]
+    [DllImport("winmm.dll", CharSet = CharSet.Unicode)]
     private static extern bool PlaySound(string Filename, int Mod, int Flags);
     private static void StartPlay(string path) => PlaySound(@$"{path}", 0, 1); //第3个形参，把1换为9，连续播放
 

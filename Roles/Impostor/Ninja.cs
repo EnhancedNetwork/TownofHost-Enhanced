@@ -128,10 +128,13 @@ internal class Ninja : RoleBase
             MarkedPlayer.Remove(shapeshifter.PlayerId);
             SendRPC(shapeshifter.PlayerId);
 
-            if (!(marketTarget == null || !marketTarget.IsAlive() || marketTarget.inVent || GameStates.IsMeeting))
+            if (!(marketTarget == null || !marketTarget.IsAlive()))
             {
                 if (shapeshifter.RpcCheckAndMurder(marketTarget, check: true))
                 {
+                    if (marketTarget.inVent)
+                        marketTarget.MyPhysics.RpcBootFromVent(Main.LastEnteredVent[marketTarget.PlayerId].Id);
+
                     shapeshifter.RpcTeleport(marketTarget.GetCustomPosition());
                     shapeshifter.ResetKillCooldown();
                     shapeshifter.RpcMurderPlayer(marketTarget);
@@ -142,6 +145,8 @@ internal class Ninja : RoleBase
                     return true;
                 }
             }
+            else
+                shapeshifter.Notify(Utils.ColorString(Utils.GetRoleColor(shapeshifter.GetCustomRole()), GetString("TargetIsAlreadyDead")));
         }
 
         return false;

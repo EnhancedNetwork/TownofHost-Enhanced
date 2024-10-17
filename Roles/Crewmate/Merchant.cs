@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using TOHE.Roles.AddOns;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -17,45 +18,6 @@ internal class Merchant : RoleBase
     private static List<CustomRoles> addons = [];
     private static readonly Dictionary<byte, int> addonsSold = [];
     private static readonly Dictionary<byte, HashSet<byte>> bribedKiller = [];
-
-    private static readonly List<CustomRoles> helpfulAddons =
-    [
-        CustomRoles.Watcher,
-        CustomRoles.Seer,
-        CustomRoles.Bait,
-        CustomRoles.Cyber,
-        CustomRoles.Trapper,
-        CustomRoles.Tiebreaker, 
-        CustomRoles.Necroview,
-        CustomRoles.Bewilder,
-        CustomRoles.Burst,
-        CustomRoles.Sleuth,
-        CustomRoles.Autopsy,
-        CustomRoles.Lucky
-    ];
-
-    private static readonly List<CustomRoles> harmfulAddons =
-    [
-        CustomRoles.Oblivious,
-        //CustomRoles.Sunglasses,
-        CustomRoles.VoidBallot,
-        CustomRoles.Fragile,
-        CustomRoles.Unreportable, // Disregarded
-        CustomRoles.Unlucky
-    ];
-
-    private static readonly List<CustomRoles> neutralAddons =
-    [
-        CustomRoles.Guesser,
-        CustomRoles.Diseased,
-        CustomRoles.Antidote,
-        CustomRoles.Aware,
-        CustomRoles.Gravestone,
-        //CustomRoles.Glow,
-        CustomRoles.Onbound,
-        CustomRoles.Stubborn,
-        CustomRoles.Rebound,
-    ];
 
     private static OptionItem OptionMaxSell;
     private static OptionItem OptionMoneyPerSell;
@@ -105,17 +67,17 @@ internal class Merchant : RoleBase
 
         if (OptionCanSellHelpful.GetBool())
         {
-            addons.AddRange(helpfulAddons);
+            addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
         }
 
         if (OptionCanSellHarmful.GetBool())
         {
-            addons.AddRange(harmfulAddons);
+            addons.AddRange(GroupedAddons[AddonTypes.Harmful]);
         }
 
         if (OptionCanSellNeutral.GetBool())
         {
-            addons.AddRange(neutralAddons);
+            addons.AddRange(GroupedAddons[AddonTypes.Mixed]);
         }
         if (OptionSellOnlyEnabledAddons.GetBool())
         { 
@@ -126,8 +88,8 @@ internal class Merchant : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        addonsSold.Add(playerId, 0);
-        bribedKiller.Add(playerId, []);
+        addonsSold[playerId] = 0;
+        bribedKiller.TryAdd(playerId, []);
     }
     public override void Remove(byte playerId)
     {
@@ -164,6 +126,8 @@ internal class Merchant : RoleBase
                 &&
                 (!x.Is(CustomRoles.Stubborn))
                 &&
+                !addon.IsConverted()
+                &&
                 CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
                 &&
                 (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))
@@ -179,8 +143,8 @@ internal class Merchant : RoleBase
 
         if (AllAlivePlayer.Any())
         {
-            bool helpfulAddon = helpfulAddons.Contains(addon);
-            bool harmfulAddon = !helpfulAddon;
+            bool helpfulAddon = GroupedAddons[AddonTypes.Helpful].Contains(addon);
+            bool harmfulAddon = GroupedAddons[AddonTypes.Harmful].Contains(addon);
 
             if (helpfulAddon && OptionSellOnlyHarmfulToEvil.GetBool())
             {
@@ -197,22 +161,21 @@ internal class Merchant : RoleBase
                 ).ToList();
             }
 
-            if (AllAlivePlayer.Count == 0)
-            {
-                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
-                Logger.Info("All Alive Player Count = 0", "Merchant");
-                return true;
-            }
-
             PlayerControl target = AllAlivePlayer.RandomElement();
 
             target.RpcSetCustomRole(addon);
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
-            
-            ExtendedPlayerControl.AddInSwitchAddons(target, target, addon);
+
+            target.AddInSwitchAddons(target, addon);
             
             addonsSold[player.PlayerId] += 1;
+        }
+        else
+        {
+            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
+            Logger.Info("All Alive Player Count = 0", "Merchant");
+            return true;
         }
 
         return true;
@@ -229,7 +192,7 @@ internal class Merchant : RoleBase
 
     public static bool OnClientMurder(PlayerControl killer, PlayerControl target)
     {
-        if (bribedKiller[target.PlayerId].Contains(killer.PlayerId))
+        if (IsBribedKiller(killer, target))
         {
             NotifyBribery(killer, target);
             return true;
@@ -245,10 +208,7 @@ internal class Merchant : RoleBase
         return false;
     }
 
-    public static bool IsBribedKiller(PlayerControl killer, PlayerControl target)
-    {
-        return bribedKiller[target.PlayerId].Contains(killer.PlayerId);
-    }
+    public static bool IsBribedKiller(PlayerControl killer, PlayerControl target) => bribedKiller.TryGetValue(target.PlayerId, out var targets) && targets.Contains(killer.PlayerId);
 
     private static void NotifyBribery(PlayerControl killer, PlayerControl target)
     {

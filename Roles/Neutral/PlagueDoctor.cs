@@ -15,6 +15,7 @@ internal class PlagueDoctor : RoleBase
     //===========================SETUP================================\\
     private const int Id = 27600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueDoctor);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -83,9 +84,6 @@ internal class PlagueDoctor : RoleBase
         // Fixed airship respawn selection delay
         if (Main.NormalOptions.MapId == 4)
             InfectInactiveTime += 5f;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -156,7 +154,7 @@ internal class PlagueDoctor : RoleBase
     {
         InfectActive = false;
     }
-    private void OnCheckPlayerPosition(PlayerControl player)
+    private void OnCheckPlayerPosition(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (LateCheckWin)
         {
@@ -273,7 +271,7 @@ internal class PlagueDoctor : RoleBase
     }
     private void CheckWin()
     {
-        if (!HasEnabled) return;
+        if (_Player == null) return;
         if (!AmongUsClient.Instance.AmHost) return;
         // Invalid if someone's victory is being processed
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
@@ -282,10 +280,13 @@ internal class PlagueDoctor : RoleBase
         {
             InfectActive = false;
 
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+            if (!CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
             {
-                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
+                foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+                {
+                    CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+                }
             }
 
             foreach (PlayerControl player in Main.AllAlivePlayerControls)
@@ -293,6 +294,7 @@ internal class PlagueDoctor : RoleBase
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 player.SetDeathReason(PlayerState.DeathReason.Infected);
                 player.RpcMurderPlayer(player);
+                player.SetRealKiller(_Player);
             }
         }
     }

@@ -192,7 +192,6 @@ internal class Benefactor : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (target == null || killer == null) return true;
         if (!shieldedPlayers.ContainsKey(target.PlayerId)) return false;
 
         if (ShieldIsOneTimeUse.GetBool())
@@ -206,16 +205,19 @@ internal class Benefactor : RoleBase
         return true;
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var now = Utils.GetTimeStamp();
-        foreach (var x in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < now).ToArray())
+        if (lowLoad) return;
+        foreach (var shieldedData in shieldedPlayers.Where(x => x.Value + ShieldDuration.GetInt() < nowTime).ToArray())
         {
-            var target = x.Key;
-            shieldedPlayers.Remove(target);
-            Utils.GetPlayerById(target)?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BKProtectOut")));
-            Utils.GetPlayerById(target)?.RpcGuardAndKill();
-            SendRPC(type: 4, targetId: target); //remove shieldedPlayer
+            var targetId = shieldedData.Key;
+            var target = targetId.GetPlayer();
+
+            shieldedPlayers.Remove(targetId);
+            target?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BKProtectOut")));
+            target?.RpcGuardAndKill();
+            
+            SendRPC(type: 4, targetId: targetId);
         }
     }
 }

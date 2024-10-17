@@ -1,17 +1,14 @@
 ﻿using AmongUs.GameOptions;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Glow
+public class Glow : IAddon
 {
     private const int Id = 22000;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Experimental;
 
-    public static OptionItem ImpCanBeGlow;
-    public static OptionItem CrewCanBeGlow;
-    public static OptionItem NeutralCanBeGlow;
     private static OptionItem GlowRadius;
     private static OptionItem GlowVisionOthers;
     private static OptionItem GlowVisionSelf;
@@ -19,15 +16,9 @@ public static class Glow
     private static readonly Dictionary<byte, HashSet<byte>> InRadius = [];
     private static readonly Dictionary<byte, bool> MarkedOnce = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeGlow = BooleanOptionItem.Create(Id + 10, "ImpCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        CrewCanBeGlow = BooleanOptionItem.Create(Id + 11, "CrewCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
-        NeutralCanBeGlow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeGlow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Glow]);
+        SetupAdtRoleOptions(Id, CustomRoles.Glow, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         GlowRadius = FloatOptionItem.Create(Id + 13, "GlowRadius", new(0.1f, 5f, 0.05f), 0.5f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Glow])
             .SetValueFormat(OptionFormat.Multiplier);
@@ -39,22 +30,25 @@ public static class Glow
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
-    public static void Init()
+    public void Init()
     {
-        InRadius.Clear();
         IsEnable = false;
+        InRadius.Clear();
         MarkedOnce.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         MarkedOnce[playerId] = false;
         InRadius[playerId] = [];
         IsEnable = true;
     }
-    public static void Remove(byte playerId)
+    public void Remove(byte playerId)
     {
         MarkedOnce.Remove(playerId);
         InRadius.Remove(playerId);
+
+        if (!MarkedOnce.Any())
+            IsEnable = false;
     }
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
@@ -79,22 +73,20 @@ public static class Glow
         opt.SetFloat(FloatOptionNames.CrewLightMod, setCrewVision);
     }
 
-    public static void OnFixedUpdate(PlayerControl player)
+    public void OnFixedUpdateLowLoad(PlayerControl player)
     {
-        if (player == null || !player.Is(CustomRoles.Glow)) return;
+        if (!IsEnable || player == null || !player.Is(CustomRoles.Glow)) return;
         if (!Utils.IsActive(SystemTypes.Electrical)) 
         { 
             InRadius[player.PlayerId].Clear();
             MarkedOnce[player.PlayerId] = false;
             return;
         }
-        if (!InRadius.ContainsKey(player.PlayerId)) InRadius[player.PlayerId] = [];
         var prevList = InRadius[player.PlayerId];
-        if (!MarkedOnce.ContainsKey(player.PlayerId)) MarkedOnce[player.PlayerId] = false;
         InRadius[player.PlayerId] = Main.AllAlivePlayerControls
             .Where(target => target != null 
                 && !target.Is(CustomRoles.Glow) 
-                && Vector2.Distance(player.GetCustomPosition(), target.GetCustomPosition()) <= GlowRadius.GetFloat())
+                && Utils.GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= GlowRadius.GetFloat())
             .Select(target => target.PlayerId)
             .ToHashSet();
 

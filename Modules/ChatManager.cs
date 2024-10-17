@@ -10,14 +10,14 @@ namespace TOHE.Modules.ChatManager
     public class ChatManager
     {
         public static bool cancel = false;
-        private static List<Dictionary<byte, string>> chatHistory = [];
-        private static Dictionary<byte, string> LastSystemChatMsg = [];
+        private static readonly List<Dictionary<byte, string>> chatHistory = [];
+        private static readonly Dictionary<byte, string> LastSystemChatMsg = [];
         private const int maxHistorySize = 20;
         public static List<string> ChatSentBySystem = [];
         public static void ResetHistory()
         {
-            chatHistory = [];
-            LastSystemChatMsg = [];
+            chatHistory.Clear();
+            LastSystemChatMsg.Clear();
         }
         public static void ClearLastSysMsg()
         {
@@ -247,7 +247,7 @@ namespace TOHE.Modules.ChatManager
                 var entry = chatHistory[i];
                 var senderId = entry.Keys.First();
                 var senderMessage = entry[senderId];
-                var senderPlayer = Utils.GetPlayerById(senderId);
+                var senderPlayer = senderId.GetPlayer();
                 if (senderPlayer == null) continue;
 
                 var playerDead = !senderPlayer.IsAlive();
@@ -273,7 +273,7 @@ namespace TOHE.Modules.ChatManager
             }
             foreach (var playerId in LastSystemChatMsg.Keys.ToArray())
             {
-                var pc = Utils.GetPlayerById(playerId);
+                var pc = playerId.GetPlayer();
                 if (pc == null && playerId != byte.MaxValue) continue;
                 var title = "<color=#FF0000>" + GetString("LastMessageReplay") + "</color>";
                 Utils.SendMessage(LastSystemChatMsg[playerId], playerId, title: title, noReplay: true);

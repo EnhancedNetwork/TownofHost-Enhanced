@@ -36,7 +36,7 @@ internal class Penguin : RoleBase
         OptionAbductTimerLimit = FloatOptionItem.Create(Id + 11, "PenguinAbductTimerLimit", new(1f, 20f, 1f), 10f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Penguin])
             .SetValueFormat(OptionFormat.Seconds);
-        OptionMeetingKill = BooleanOptionItem.Create(Id + 12, "PenguinMeetingKill", false, TabGroup.ImpostorRoles, false)
+        OptionMeetingKill = BooleanOptionItem.Create(Id + 13, "PenguinMeetingKill", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Penguin]);
     }
     public override void Add(byte playerId)
@@ -127,6 +127,7 @@ internal class Penguin : RoleBase
         resetCooldown = false;
         return false;
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Timer");
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
@@ -147,8 +148,8 @@ internal class Penguin : RoleBase
             if (!AmongUsClient.Instance.AmHost) return;
             if (AbductVictim == null) return;
             _Player?.RpcMurderPlayer(AbductVictim);
-            RemoveVictim();
         }
+        RemoveVictim();
     }
     public override void AfterMeetingTasks()
     {
@@ -191,10 +192,8 @@ internal class Penguin : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl penguin)
+    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime)
     {
-        if (GameStates.IsMeeting) return;
-
         if (!stopCount)
             AbductTimer -= Time.fixedDeltaTime;
 
@@ -247,7 +246,7 @@ internal class Penguin : RoleBase
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 var position = penguin.transform.position;
-                if (!penguin.OwnedByHost())
+                if (!penguin.IsHost())
                 {
                     AbductVictim.RpcTeleport(position, sendInfoInLogs: false);
                 }
@@ -256,8 +255,7 @@ internal class Penguin : RoleBase
                     _ = new LateTask(() =>
                     {
                         AbductVictim?.RpcTeleport(position, sendInfoInLogs: false);
-                    }
-                    , 0.25f, "");
+                    }, 0.25f, "Penguin Teleport ", shoudLog: false);
                 }
             }
         }

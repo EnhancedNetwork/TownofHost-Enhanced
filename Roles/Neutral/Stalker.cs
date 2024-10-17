@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -11,18 +10,18 @@ internal class Stalker : RoleBase
     private const int Id = 18100;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override Custom_RoleType ThisRoleType => SnatchesWins ? Custom_RoleType.NeutralEvil : Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
     private static OptionItem CanCountNeutralKiller;
-    public static OptionItem SnatchesWin;
+    private static OptionItem SnatchesWin;
 
-    private static readonly Dictionary<byte, float> CurrentKillCooldown = [];
+    public static bool SnatchesWins = false;
     public static readonly Dictionary<byte, bool> IsWinKill = [];
 
     public override void SetupCustomOption()
@@ -39,69 +38,46 @@ internal class Stalker : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        CurrentKillCooldown.Clear();
         IsWinKill.Clear();
+        SnatchesWins = SnatchesWin.GetBool();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        CurrentKillCooldown.Add(playerId, KillCooldown.GetFloat());
         IsWinKill[playerId] = false;
 
-        DRpcSetKillCount(Utils.GetPlayerById(playerId));
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
+        CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
 
-    public static void ReceiveRPC(MessageReader msg)
-    {
-        byte StalkerrId = msg.ReadByte();
-        bool IsKillerKill = msg.ReadBoolean();
-        if (IsWinKill.ContainsKey(StalkerrId))
-            IsWinKill[StalkerrId] = IsKillerKill;
-        else
-            IsWinKill.Add(StalkerrId, false);
-        Logger.Info($"Player{StalkerrId}:ReceiveRPC", "Stalker");
-    }
-    private static void DRpcSetKillCount(PlayerControl player)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetStalkerrKillCount, Hazel.SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
-        writer.Write(IsWinKill[player.PlayerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CurrentKillCooldown[id];
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl player) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl Ktarget)
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        var targetRole = Ktarget.GetCustomRole();
+        if (Utils.IsActive(SystemTypes.Electrical) || inMeeting || isSuicide) return;
+
+        // Code from AU: SabotageSystemType.UpdateSystem switch SystemTypes.Electrical
+        byte switchId = 4;
+        for (int index = 0; index < 5; ++index)
+        {
+            if (BoolRange.Next())
+                switchId |= (byte)(1 << index);
+        }
+        ShipStatus.Instance.RpcUpdateSystem(SystemTypes.Electrical, (byte)(switchId | 128U));
+    }
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    {
+        if (_Player == null || !SnatchesWins) return;
+
+        var stalkerId = _Player.PlayerId;
+        var targetRole = target.GetCustomRole();
         var succeeded = targetRole.IsImpostor();
-        if (CanCountNeutralKiller.GetBool() && !Ktarget.Is(CustomRoles.Arsonist) && !Ktarget.Is(CustomRoles.Revolutionist))
+        if (CanCountNeutralKiller.GetBool() && !target.Is(CustomRoles.Arsonist) && !target.Is(CustomRoles.Revolutionist))
         {
-            succeeded = succeeded || Ktarget.IsNeutralKiller();
+            succeeded = succeeded || target.IsNeutralKiller();
         }
-        if (succeeded && SnatchesWin.GetBool())
-            IsWinKill[killer.PlayerId] = true;
 
-        DRpcSetKillCount(killer);
-        MessageWriter SabotageFixWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, killer.GetClientId());
-        SabotageFixWriter.Write((byte)SystemTypes.Electrical);
-        MessageExtensions.WriteNetObject(SabotageFixWriter, killer);
-        AmongUsClient.Instance.FinishRpcImmediately(SabotageFixWriter);
-
-        foreach (var target in Main.AllPlayerControls)
-        {
-            if (target.PlayerId == killer.PlayerId || target.Data.Disconnected) continue;
-            SabotageFixWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
-            SabotageFixWriter.Write((byte)SystemTypes.Electrical);
-            MessageExtensions.WriteNetObject(SabotageFixWriter, target);
-            AmongUsClient.Instance.FinishRpcImmediately(SabotageFixWriter);
-        }
-        return true;
+        if (succeeded) IsWinKill[stalkerId] = true;
     }
 }

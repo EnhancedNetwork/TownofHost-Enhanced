@@ -10,20 +10,20 @@ public static class CustomWinnerHolder
     public static CustomWinner WinnerTeam;
     // 追加勝利するプレイヤーのチームが格納されます。
     // リザルトの表示に使用されます。
-    public static HashSet<AdditionalWinners> AdditionalWinnerTeams;
+    public static HashSet<AdditionalWinners> AdditionalWinnerTeams = [];
     // 勝者の役職が格納され、この変数に格納されている役職のプレイヤーは全員勝利となります。
     // チームとなるニュートラルの処理に最適です。
-    public static HashSet<CustomRoles> WinnerRoles;
+    public static HashSet<CustomRoles> WinnerRoles = [];
     // 勝者のPlayerIDが格納され、このIDを持つプレイヤーは全員勝利します。
     // 単独勝利するニュートラルの処理に最適です。
-    public static HashSet<byte> WinnerIds;
+    public static HashSet<byte> WinnerIds = [];
 
     public static void Reset()
     {
         WinnerTeam = CustomWinner.Default;
-        AdditionalWinnerTeams = [];
-        WinnerRoles = [];
-        WinnerIds = [];
+        AdditionalWinnerTeams.Clear();
+        WinnerRoles.Clear();
+        WinnerIds.Clear();
     }
     public static void ClearWinners()
     {
@@ -51,7 +51,7 @@ public static class CustomWinnerHolder
     }
     public static bool CheckForConvertedWinner(byte playerId)
     {
-        foreach (var role in Utils.GetPlayerById(playerId).GetCustomSubRoles().ToArray())
+        foreach (var role in playerId.GetPlayer()?.GetCustomSubRoles().ToArray())
         {
             if (!(role == CustomRoles.Madmate || role == CustomRoles.Admired || role.IsConverted())) continue;
             switch (role)
@@ -101,17 +101,17 @@ public static class CustomWinnerHolder
     {
         WinnerTeam = (CustomWinner)reader.ReadPackedInt32();
 
-        AdditionalWinnerTeams = [];
+        AdditionalWinnerTeams.Clear();
         int AdditionalWinnerTeamsCount = reader.ReadPackedInt32();
         for (int i = 0; i < AdditionalWinnerTeamsCount; i++)
             AdditionalWinnerTeams.Add((AdditionalWinners)reader.ReadPackedInt32());
 
-        WinnerRoles = [];
+        WinnerRoles.Clear();
         int WinnerRolesCount = reader.ReadPackedInt32();
         for (int i = 0; i < WinnerRolesCount; i++)
             WinnerRoles.Add((CustomRoles)reader.ReadPackedInt32());
 
-        WinnerIds = [];
+        WinnerIds.Clear();
         int WinnerIdsCount = reader.ReadPackedInt32();
         for (int i = 0; i < WinnerIdsCount; i++)
             WinnerIds.Add(reader.ReadByte());

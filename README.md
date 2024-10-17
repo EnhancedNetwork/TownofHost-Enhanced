@@ -48,6 +48,7 @@
 > - Provided roles: AntiAdminer, CursedWolf, Workaholic, Greedier (Greedy), DarkHide (Stalker)
 > - Reference: Modify game announcement
 > - Ported new UI for settings (for version AU v2024.6.18)
+> - Reference: Role-Basis changer fix
 > 
 ### :star: [TOH:TOR](https://github.com/discus-sions/TownOfHost-TheOtherRoles) :
 > 
@@ -86,6 +87,7 @@
 > - Improved Role Summary
 > - Dark Theme
 > - Improved Role Spawns
+> - Improve text box (TextBoxPatch.cs)
 > - Some ideas to improve performance
 ### :star: [TONEX (Formerly TOHEX)](https://github.com/XtremeWave/TownOfNewEpic_Xtreme)
 >
@@ -103,6 +105,7 @@
 ### :star: [MoreGamemodes](https://github.com/Rabek009/MoreGamemodes)
 >
 > - Changer Role Basis (RoleBasisChanger.cs)
+> - Disable use vent for vanilla players (VentSystemPatch.cs)
 ### :star: [Reactor](https://github.com/NuclearPowered/Reactor)
 >
 > - Reference: Disable the 5s timeout on custom servers

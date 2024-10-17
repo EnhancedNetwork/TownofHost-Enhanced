@@ -4,6 +4,7 @@ using static TOHE.Utils;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
 using InnerNet;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Neutral;
 
@@ -89,6 +90,7 @@ internal class Doomsayer : RoleBase
         byte DoomsayerId = reader.ReadByte();
         GuessingToWin[DoomsayerId]++;
     }
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(ImpostorVision.GetBool());
     private (int, int) GuessedPlayerCount(byte doomsayerId)
     {
         int GuessesToWin = GuessingToWin[doomsayerId], AmountOfGuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();

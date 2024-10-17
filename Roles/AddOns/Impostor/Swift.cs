@@ -3,14 +3,21 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
-public static class Swift
+public class Swift : IAddon
 {
     private const int Id = 23300;
-    
-    public static void SetupCustomOption()
+    public AddonTypes Type => AddonTypes.Experimental;
+
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (!DisableShieldAnimations.GetBool())

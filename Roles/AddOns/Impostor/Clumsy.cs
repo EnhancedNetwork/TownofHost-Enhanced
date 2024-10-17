@@ -2,15 +2,16 @@
 
 namespace TOHE.Roles.AddOns.Impostor;
 
-public static class Clumsy
+public class Clumsy : IAddon
 {
     private const int Id = 22700;
+    public AddonTypes Type => AddonTypes.Impostor;
 
     private static OptionItem ChanceToMiss;
 
-    private static Dictionary<byte, bool> HasMissed;
+    private static readonly Dictionary<byte, bool> HasMissed = [];
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Clumsy, canSetNum: true, tab: TabGroup.Addons);
         ChanceToMiss = IntegerOptionItem.Create(22703, "ChanceToMiss", new(0, 100, 5), 50, TabGroup.Addons, false)
@@ -18,17 +19,17 @@ public static class Clumsy
             .SetValueFormat(OptionFormat.Percent);
     }
 
-    public static void Init()
+    public void Init()
     {
-        HasMissed = [];
+        HasMissed.Clear();
     }
-    public static void Add(byte PlayerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        HasMissed.Add(PlayerId, false);
+        HasMissed.Add(playerId, false);
     }
-    public static void Remove(byte player)
+    public void Remove(byte playerId)
     {
-        HasMissed.Remove(player);
+        HasMissed.Remove(playerId);
     }
 
     private static void MissChance(PlayerControl killer)

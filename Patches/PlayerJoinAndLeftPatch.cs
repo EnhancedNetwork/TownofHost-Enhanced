@@ -6,11 +6,9 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
-using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Translator;
-using static TOHE.SelectRolesPatch;
 
 namespace TOHE;
 
@@ -20,7 +18,7 @@ class OnGameJoinedPatch
     public static void Postfix(AmongUsClient __instance)
     {
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
-        Logger.Info($"{__instance.GameId} Joining room", "OnGameJoined");
+        Logger.Info($"{__instance.GameId} Joining room - Room code: {GameCode.IntToGameName(AmongUsClient.Instance.GameId) ?? string.Empty}", "OnGameJoined");
 
         Main.IsHostVersionCheating = false;
         Main.playerVersion = [];
@@ -70,8 +68,12 @@ class OnGameJoinedPatch
                         Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
                     AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+
                     if (AURoleOptions.ShapeshifterCooldown == 0f)
                         AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
+
+                    if (AURoleOptions.GuardianAngelCooldown == 0f)
+                        AURoleOptions.GuardianAngelCooldown = Main.LastGuardianAngelCooldown.Value;
 
                     // if custom game mode is HideNSeekTOHE in normal game, set standart
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
@@ -223,7 +225,7 @@ public static class OnPlayerJoinedPatch
                 }
             }
             catch { }
-        }, 3f, "green bean kick late task", false);
+        }, 4.5f, "green bean kick late task", false);
 
 
         if (AmongUsClient.Instance.AmHost && HasInvalidFriendCode(client.FriendCode) && Options.KickPlayerFriendCodeInvalid.GetBool() && !GameStates.IsLocalGame)
@@ -301,9 +303,14 @@ public static class OnPlayerJoinedPatch
 class OnPlayerLeftPatch
 {
     public static bool StartingProcessing = false;
+    public static byte LeftPlayerId = byte.MaxValue;
     static void Prefix([HarmonyArgument(0)] ClientData data)
     {
         StartingProcessing = true;
+        LeftPlayerId = data?.Character?.PlayerId ?? byte.MaxValue;
+
+        if (data != null && data.Character != null)
+            StartGameHostPatch.DataDisconnected[data.Character.PlayerId] = true;
 
         if (GameStates.IsInGame)
         {
@@ -315,9 +322,8 @@ class OnPlayerLeftPatch
         if (Main.AssignRolesIsStarted)
         {
             Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
-            RoleAssign.RoleResult?.Remove(data.Character);
-            RpcSetRoleReplacer.senders?.Remove(data.Character.PlayerId);
-            RpcSetRoleReplacer.StoragedData?.Remove(data.Character);
+            RoleAssign.RoleResult?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.Senders?.Remove(data.Character.PlayerId);
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
@@ -356,9 +362,6 @@ class OnPlayerLeftPatch
         {
             if (GameStates.IsNormalGame && GameStates.IsInGame)
             {
-
-                CustomRoleManager.AllEnabledRoles.ForEach(r => r.OnOtherTargetsReducedToAtoms(data.Character));
-
                 if (data.Character.Is(CustomRoles.Lovers) && !data.Character.Data.IsDead)
                 {
                     foreach (var lovers in Main.LoversPlayers.ToArray())
@@ -371,14 +374,25 @@ class OnPlayerLeftPatch
 
                 if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
 
-                Main.PlayerStates[data.Character.PlayerId].Disconnected = true;
-                Main.PlayerStates[data.Character.PlayerId].SetDead();
+                var state = Main.PlayerStates[data.Character.PlayerId];
+                state.Disconnected = true;
+                state.SetDead();
 
                 // if the player left while he had a Notice message, clear it
                 if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
                     //Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
+                }
+
+                if (AmongUsClient.Instance.AmHost)
+                {
+                    try
+                    {
+                        data.Character.RpcSetName(state.NormalOutfit.PlayerName);
+                    }
+                    catch
+                    { }
                 }
 
                 AntiBlackout.OnDisconnect(data.Character.Data);
@@ -454,12 +468,13 @@ class OnPlayerLeftPatch
                 case DisconnectReasons.Hacking:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByAU-Anticheat"), data?.PlayerName));
                     break;
-                case DisconnectReasons.Error:
+                case DisconnectReasons.Error when !GameStates.IsLobby:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByError"), data?.PlayerName));
                     _ = new LateTask(() =>
                     {
                         CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
                         GameManager.Instance.enabled = false;
+                        Utils.NotifyGameEnding();
                         GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
                     }, 3f, "Disconnect Error Auto-end");
 
@@ -569,7 +584,7 @@ class InnerNetClientSpawnPatch
                     if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
                     {
                         // Only for vanilla
-                        if (!client.Character.OwnedByHost() && !client.Character.IsModClient())
+                        if (!client.Character.IsModded())
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
                             writer.WritePacked((int)GameStartManagerPatch.timer);
@@ -577,7 +592,7 @@ class InnerNetClientSpawnPatch
                             AmongUsClient.Instance.FinishRpcImmediately(writer);
                         }
                         // Non-host modded client
-                        else if (!client.Character.OwnedByHost() && client.Character.IsModClient())
+                        else if (client.Character.IsNonHostModdedClient())
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncLobbyTimer, SendOption.Reliable, client.Id);
                             writer.WritePacked((int)GameStartManagerPatch.timer);
@@ -620,7 +635,7 @@ class InnerNetClientSpawnPatch
                         if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
                         {
                             Main.isChatCommand = true;
-                            Utils.ShowLastRoles(client.Character.PlayerId);
+                            Utils.SendMessage("\n", client.Character.PlayerId, Main.LastSummaryMessage);
                         }
                     }, 3.1f, "DisplayLastRoles");
                 }

@@ -18,6 +18,7 @@ internal class Lawyer : RoleBase
 
     private static OptionItem CanTargetImpostor;
     private static OptionItem CanTargetNeutralKiller;
+    private static OptionItem CanTargetNeutralApoc;
     private static OptionItem CanTargetCrewmate;
     private static OptionItem CanTargetJester;
     private static OptionItem ShouldChangeRoleAfterTargetDeath;
@@ -25,7 +26,9 @@ internal class Lawyer : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem TargetKnowsLawyer;
 
-    public static readonly Dictionary<byte, byte> Target = [];
+    public static HashSet<byte> TargetList = [];
+    private byte TargetId;
+
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,
@@ -54,6 +57,7 @@ internal class Lawyer : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Lawyer);
         CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "LawyerCanTargetImpostor", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 11, "LawyerCanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        CanTargetNeutralApoc = BooleanOptionItem.Create(Id + 18, "LawyerCanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetCrewmate = BooleanOptionItem.Create(Id + 12, "LawyerCanTargetCrewmate", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetJester = BooleanOptionItem.Create(Id + 13, "LawyerCanTargetJester", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
@@ -63,11 +67,13 @@ internal class Lawyer : RoleBase
     }
     public override void Init()
     {
-        Target.Clear();
+        TargetId = byte.MaxValue;
+        TargetList.Clear();
     }
     public override void Add(byte playerId)
     {
-        if (AmongUsClient.Instance.AmHost)
+        var lawyer = _Player;
+        if (AmongUsClient.Instance.AmHost && lawyer.IsAlive())
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(OthersAfterPlayerDeathTask);
 
@@ -76,171 +82,133 @@ internal class Lawyer : RoleBase
             foreach (var target in Main.AllPlayerControls)
             {
                 if (playerId == target.PlayerId) continue;
+                else if (TargetList.Contains(target.PlayerId)) continue;
                 else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor)) continue;
+                else if (!CanTargetNeutralApoc.GetBool() && target.IsNeutralApocalypse()) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.IsNeutralKiller()) continue;
                 else if (!CanTargetCrewmate.GetBool() && target.Is(Custom_Team.Crewmate)) continue;
                 else if (!CanTargetJester.GetBool() && target.Is(CustomRoles.Jester)) continue;
-                else if (target.Is(Custom_Team.Neutral) && !target.IsNeutralKiller() && !target.Is(CustomRoles.Jester)) continue;
+                else if (target.Is(Custom_Team.Neutral) && !target.IsNeutralKiller() && !target.Is(CustomRoles.Jester) && !target.IsNeutralApocalypse()) continue;
                 if (target.GetCustomRole() is CustomRoles.GM or CustomRoles.SuperStar or CustomRoles.NiceMini or CustomRoles.EvilMini) continue;
-                if (Utils.GetPlayerById(playerId).Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
+                if (lawyer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
 
                 targetList.Add(target);
             }
 
-            if (!targetList.Any())
+            if (targetList.Any())
+            {
+                var selectedTarget = targetList.RandomElement();
+                TargetId = selectedTarget.PlayerId;
+                TargetList.Add(selectedTarget.PlayerId);
+
+                SendRPC(SetTarget: true);
+                Logger.Info($"{lawyer?.GetNameWithRole()}:{selectedTarget.GetNameWithRole()}", "Lawyer");
+            }
+            else
             {
                 Logger.Info($"Wow, not target for lawyer to select! Changing lawyer role to other", "Lawyer");
+
                 // Unable to find a target? Try to turn to changerole or opportunist
                 var changedRole = ShouldChangeRoleAfterTargetDeath.GetBool() ? CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()] : CustomRoles.Opportunist;
-                var lawyer = Utils.GetPlayerById(playerId);
-                if (lawyer.IsAlive())
-                {
-                    lawyer.GetRoleClass()?.OnRemove(playerId);
-                    lawyer.RpcSetCustomRole(changedRole);
-                    lawyer.GetRoleClass()?.OnAdd(playerId);
-                }
-                return;
-            }
 
-            var SelectedTarget = targetList.RandomElement();
-            Target.Add(playerId, SelectedTarget.PlayerId);
-            SendRPC(playerId, SelectedTarget.PlayerId, true);
-            Logger.Info($"{Utils.GetPlayerById(playerId)?.GetNameWithRole()}:{SelectedTarget.GetNameWithRole()}", "Lawyer");
+                lawyer.GetRoleClass()?.OnRemove(playerId);
+                lawyer.RpcSetCustomRole(changedRole);
+                lawyer.GetRoleClass()?.OnAdd(playerId);
+            }
         }
     }
     public override void Remove(byte playerId)
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
-            Target.Remove(playerId);
-            SendRPC(playerId, SetTarget: false);
+            SendRPC(SetTarget: false);
         }
+        TargetList.Remove(TargetId);
+        TargetId = byte.MaxValue;
     }
-    private void SendRPC(byte lawyerId, byte targetId = 0x73, bool SetTarget = false)
+    private void SendRPC(bool SetTarget = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);
         writer.Write(SetTarget);
-
-        if (SetTarget)
-        {
-            writer.Write(lawyerId);
-            writer.Write(targetId);
-        }
-        else
-        {
-            writer.Write(lawyerId);
-        }
-
+        writer.Write(TargetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         bool SetTarget = reader.ReadBoolean();
+        byte targetId = reader.ReadByte();
         if (SetTarget)
         {
-            byte LawyerId = reader.ReadByte();
-            byte TargetId = reader.ReadByte();
-            Target.Add(LawyerId, TargetId);
+            TargetId = targetId;
+            TargetList.Add(targetId);
         }
         else
-            Target.Remove(reader.ReadByte());
+        {
+            TargetId = byte.MaxValue;
+            TargetList.Remove(targetId);
+        }
     }
+
+    private bool IsTarget(byte playerId) => TargetId == playerId;
+    public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
         => ChangeRolesAfterTargetKilled.GetValue() is not 1 && !ForRecompute;
 
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (!Target.ContainsValue(target.PlayerId)) return;
-
-        byte lawyerId = 0x73;
-        if (!ShouldChangeRoleAfterTargetDeath.GetBool())
-        {
-            Logger.Info($"Laywer target  dead {target.GetRealName()}, but change role setting is off", "Lawyer");
-            return;
-        }
-        Target.Do(x =>
-        {
-            if (x.Value == target.PlayerId)
-                lawyerId = x.Key;
-        });
-
-        if (lawyerId == 0x73) return;
-        var lawyer = Utils.GetPlayerById(lawyerId);
-        if (lawyer == null) return;
-
-        // Change role
-        lawyer.GetRoleClass()?.OnRemove(lawyerId);
-        lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
-        lawyer.GetRoleClass()?.OnAdd(lawyerId);
-
-        if (inMeeting)
-        {
-            Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: lawyerId);
-        }
-        else
-        {
-            Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(lawyerId));
-        }
+        if (_Player == null || !IsTarget(target.PlayerId)) return;
+        ChangeRole(inMeeting);
     }
     public static bool TargetKnowLawyer => TargetKnowsLawyer.GetBool();
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
-        return player.Is(CustomRoles.Lawyer) && Target.TryGetValue(player.PlayerId, out var tar) && tar == target.PlayerId;
+        return player.Is(CustomRoles.Lawyer) && IsTarget(target.PlayerId);
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (seer == null || target == null) return string.Empty;
+        if (TargetId == byte.MaxValue) return string.Empty;
 
-        if (seer.Is(CustomRoles.Lawyer))
+        if ((!seer.IsAlive() || seer.Is(CustomRoles.Lawyer)) && IsTarget(target.PlayerId))
         {
-            return Target.TryGetValue(seer.PlayerId, out var targetId) && targetId == target.PlayerId
-                ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
         }
-        else if (seer.IsAlive() && TargetKnowsLawyer.GetBool())
-        {
-            return (Target.TryGetValue(target.PlayerId, out var x) && seer.PlayerId == x) ?
-                Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦") : string.Empty;
-        }
-        else if (!seer.IsAlive() && Target.ContainsValue(target.PlayerId))
+        else if (seer.IsAlive() && TargetKnowsLawyer.GetBool() && IsTarget(seer.PlayerId) && _state.PlayerId == target.PlayerId)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
         }
 
         return string.Empty;
     }
-    public override void AfterMeetingTasks()
+    private void ChangeRole(bool inMeeting)
     {
-        Target.Do(x =>
-        {
-            if (Main.PlayerStates[x.Value].IsDead)
-            {
-                var lawyer = Utils.GetPlayerById(x.Key);
-
-                if (lawyer.IsAlive())
-                {
-                    ChangeRole(lawyer);
-                }
-            }
-        });
-    }
-    private static void ChangeRole(PlayerControl lawyer)
-    {
-        // Called only in after meeting tasks when target death is impossible to check.
         if (!ShouldChangeRoleAfterTargetDeath.GetBool())
         {
             Logger.Info($"Laywer target dead, but change role setting is off", "Lawyer");
             return;
         }
+
+        var lawyer = _Player;
+        var valueChanger = ChangeRolesAfterTargetKilled.GetValue();
+        var newCustomRole = CRoleChangeRoles[valueChanger];
+
+        if (lawyer.IsAlive())
+            lawyer.RpcChangeRoleBasis(newCustomRole);
+
         lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
-        lawyer.RpcSetCustomRole(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]);
+        lawyer.RpcSetCustomRole(newCustomRole);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
-        var text = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), GetString(""));
-        text = string.Format(text, Utils.ColorString(Utils.GetRoleColor(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()]), GetString(CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()].ToString())));
-        lawyer.Notify(text);
+
+        if (inMeeting)
+        {
+            Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: lawyer.PlayerId);
+        }
+        else
+        {
+            Utils.NotifyRoles(SpecifySeer: lawyer);
+        }
     }
 }

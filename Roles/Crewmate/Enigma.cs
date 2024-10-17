@@ -499,7 +499,7 @@ internal class Enigma : RoleBase
         {
             int rangeStart = level - 15;
             int rangeEnd = level + 15;
-            return string.Format(GetString("EnigmaClueLevel3"), rangeStart, rangeEnd >= 100 ? 100 : rangeEnd);
+            return string.Format(GetString("EnigmaClueLevel3"), rangeStart, rangeEnd >= 100 ? rangeEnd + 53 : rangeEnd);
         }
 
         private static string GetStage3Clue(int level)

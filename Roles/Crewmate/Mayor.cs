@@ -91,7 +91,7 @@ internal partial class Mayor : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (MayorHasPortableButton.GetBool() && !CopyCat.playerIdList.Contains(pc.PlayerId))
+        if (MayorHasPortableButton.GetBool())
         {
             if (MayorUsedButtonCount.TryGetValue(pc.PlayerId, out var count) && count < MayorNumOfUseButton.GetInt())
             {

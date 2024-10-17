@@ -9,6 +9,7 @@ internal class Knight : RoleBase
     //===========================SETUP================================\\
     private const int Id = 10800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Knight);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -26,9 +27,6 @@ internal class Knight : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = 1;
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);

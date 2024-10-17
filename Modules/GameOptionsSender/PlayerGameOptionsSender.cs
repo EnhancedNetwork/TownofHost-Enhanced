@@ -126,6 +126,11 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
 
+        if (Main.UnShapeShifter.Contains(player.PlayerId))
+        {
+            AURoleOptions.ShapeshifterDuration = 1f;
+        }
+
         if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead)
         {
             opt.SetBool(BoolOptionNames.AnonymousVotes, false);
