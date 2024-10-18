@@ -1373,7 +1373,7 @@
   "MastermindTimeLimit": "殺人時間限制",
   "MastermindDelay": "操控通知延遲",
   "ManipulateNotify": "在{0}殺死某一玩家來避免死亡!",
-  "ManipulatedKilled": "<color=#00ffff>{0}</color>被你勒索的人殺害了",
+  "ManipulatedKilled": "<color=#00ffff>{0}</color>殺死了某位玩家",
   "SurvivedManipulation": "你在<color=#ff1919>主謀</color>的操控中存活了!",
   "Glitch_HackCooldown": "駭入冷卻時間",
   "Glitch_HackDuration": "駭入持續時間",
