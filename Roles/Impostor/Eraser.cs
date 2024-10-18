@@ -2,7 +2,6 @@
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -20,7 +19,6 @@ internal class Eraser : RoleBase
 
     private static readonly HashSet<byte> didVote = [];
     private static readonly HashSet<byte> PlayerToErase = [];
-    private static int TempEraseLimit;
     public static readonly Dictionary<byte, CustomRoles> ErasedRoleStorage = [];
 
     public override void SetupCustomOption()
@@ -37,17 +35,14 @@ internal class Eraser : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = EraseLimitOpt.GetInt();
+        playerId.SetAbilityUseLimit(EraseLimitOpt.GetInt());
     }
-    public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
-
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
         if (!HasEnabled) return true;
         if (player == null || target == null) return true;
         if (target.Is(CustomRoles.Eraser)) return true;
-        if (AbilityLimit < 1) return true;
+        if (player.GetAbilityUseLimit() < 1) return true;
 
         if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
@@ -68,8 +63,7 @@ internal class Eraser : RoleBase
             return true;
         }
 
-        AbilityLimit--;
-        SendSkillRPC();
+        player.RpcRemoveAbilityUse();
 
         if (!PlayerToErase.Contains(target.PlayerId))
             PlayerToErase.Add(target.PlayerId);
@@ -90,7 +84,6 @@ internal class Eraser : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        TempEraseLimit = (int)AbilityLimit;
         didVote.Clear();
     }
     public override void NotifyAfterMeeting()

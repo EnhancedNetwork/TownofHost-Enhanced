@@ -2,7 +2,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -51,10 +50,10 @@ internal class Bandit : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxSteals.GetInt();
+        playerId.SetAbilityUseLimit(MaxSteals.GetInt());
         killCooldown = KillCooldownOpt.GetFloat(); 
 
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = playerId.GetPlayer();
         pc?.AddDoubleTrigger();
     }
     public override void SetKillCooldown(byte id)
@@ -97,7 +96,6 @@ internal class Bandit : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(removeNow);
         if (removeNow)
         {
@@ -108,9 +106,6 @@ internal class Bandit : RoleBase
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-
         bool removeNow = reader.ReadBoolean();
         if (removeNow)
         {
@@ -137,7 +132,7 @@ internal class Bandit : RoleBase
             Targets[target.PlayerId] = (CustomRoles)SelectedAddOn;
             Logger.Info($"{killer.GetNameWithRole()} will steal {SelectedAddOn} addon from {target.GetNameWithRole()} after meeting starts", "Bandit");
         }
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
         SendRPC(target.PlayerId, (CustomRoles)SelectedAddOn, StealMode.GetValue() == 1);
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -166,7 +161,7 @@ internal class Bandit : RoleBase
             killer.SetKillCooldown();
             return true;
         }
-        if (AbilityLimit < 1)
+        if (killer.GetAbilityUseLimit() < 1)
         {
             Logger.Info("Max steals reached killing the player", "Bandit");
             killCooldown = KillCooldownOpt.GetFloat();
@@ -209,5 +204,4 @@ internal class Bandit : RoleBase
             Logger.Info($"Successfully Added {role} addon to {_Player?.GetNameWithRole()}", "Bandit");
         }
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Bandit).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }

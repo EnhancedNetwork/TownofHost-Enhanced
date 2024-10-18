@@ -54,6 +54,7 @@ enum CustomRPC : byte // 185/255 USED
     SyncSpeedPlayer,
     Arrow,
     NotificationPopper,
+    SyncAbilityUseLimit,
 
     //Roles 
     SetBountyTarget,
@@ -72,17 +73,16 @@ enum CustomRPC : byte // 185/255 USED
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
-    SetCrewpostorTasksDone,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
-    SetJailerTarget,
-    SetJailerExeLimit,
+    SyncJailerData,
     SetInspectorLimit,
     KeeperRPC,
     SetAlchemistTimer,
@@ -103,12 +103,8 @@ enum CustomRPC : byte // 185/255 USED
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SyncVultureBodyAmount,
     SpyRedNameSync,
     SpyRedNameRemove,
-    SetChameleonTimer,
-    SyncAdmiredList,
-    SyncAdmiredAbility,
     SetImitateLimit,
     //FFA
     SyncFFAPlayer,
@@ -449,6 +445,12 @@ internal class RPCHandlerPatch
                     NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
                 }
                 break;
+            case CustomRPC.SyncAbilityUseLimit:
+                {
+                    var pc = Utils.GetPlayerById(reader.ReadByte());
+                    pc.SetAbilityUseLimit(reader.ReadSingle(), rpc: false);
+                }
+                break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -549,20 +551,11 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
             //    break;
-            case CustomRPC.SetJailerExeLimit:
-                Jailer.ReceiveRPC(reader, setTarget: false);
-                break;
-            case CustomRPC.SetJailerTarget:
-                Jailer.ReceiveRPC(reader, setTarget: true);
+            case CustomRPC.SyncJailerData:
+                Jailer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SyncAdmiredList:
-                Admirer.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.SyncAdmiredAbility:
-                Admirer.ReceiveRPC(reader, false);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
@@ -663,9 +656,6 @@ internal class RPCHandlerPatch
             case CustomRPC.RetributionistRevenge:
                 Retributionist.ReceiveRPC_Custom(reader, __instance);
                 break;
-            case CustomRPC.SetChameleonTimer:
-                Chameleon.ReceiveRPC_Custom(reader);
-                break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
@@ -689,9 +679,6 @@ internal class RPCHandlerPatch
                 {
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
-                break;
-            case CustomRPC.SyncVultureBodyAmount:
-                Vulture.ReceiveBodyRPC(reader);
                 break;
             case CustomRPC.SpyRedNameSync:
                 Spy.ReceiveRPC(reader);

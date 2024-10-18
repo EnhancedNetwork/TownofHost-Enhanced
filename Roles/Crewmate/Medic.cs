@@ -74,14 +74,13 @@ internal class Medic : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
         ProtectedPlayers[playerId] = [];
     }
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(TempMarkProtected.Count);
         foreach (var markProtected in TempMarkProtected)
         {
@@ -96,9 +95,6 @@ internal class Medic : RoleBase
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-
         int countMarkProtected = reader.ReadInt32();
         TempMarkProtected.Clear();
         for (int i = 0; i < countMarkProtected; i++)
@@ -116,17 +112,16 @@ internal class Medic : RoleBase
     private bool IsProtect(byte id)
         => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    public bool CheckKillButton() => AbilityLimit > 0;
+    public bool CheckKillButton() => _state.PlayerId.GetAbilityUseLimit() > 0;
 
     public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton();
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton() ? 5f : 300f;
-    public override string GetProgressText(byte playerId, bool comms) => ColorString(CheckKillButton() ? GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!CheckKillButton() || ProtectedList.Contains(target.PlayerId)) return false;
+        if (ProtectedList.Contains(target.PlayerId)) return false;
 
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
         ProtectedPlayers[killer.PlayerId].Add(target.PlayerId);
         GlobalProtectedList.Add(target.PlayerId);
         ProtectedList.Add(target.PlayerId);
@@ -153,8 +148,6 @@ internal class Medic : RoleBase
 
         NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
         NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
-
-        Logger.Info($"{killer.GetNameWithRole()} : {AbilityLimit} shields left", "Medic");
         return false;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)

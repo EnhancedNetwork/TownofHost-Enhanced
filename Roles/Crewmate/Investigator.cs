@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
@@ -20,7 +19,6 @@ internal class Investigator : RoleBase
     private static OptionItem InvestigateMax;
     private static OptionItem InvestigateRoundMax;
 
-    private static readonly Dictionary<byte, int> MaxInvestigateLimit = [];
     private static readonly Dictionary<byte, int> RoundInvestigateLimit = [];
     private static readonly Dictionary<byte, HashSet<byte>> InvestigatedList = [];
 
@@ -39,62 +37,41 @@ internal class Investigator : RoleBase
     {
         playerIdList.Clear();
         InvestigatedList.Clear();
-        MaxInvestigateLimit.Clear();
         RoundInvestigateLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        MaxInvestigateLimit[playerId] = InvestigateMax.GetInt();
+        playerId.SetAbilityUseLimit(InvestigateMax.GetInt());
         RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         InvestigatedList[playerId] = [];
     }
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
-        MaxInvestigateLimit.Remove(playerId);
         RoundInvestigateLimit.Remove(playerId);
         InvestigatedList.Remove(playerId);
     }
 
-    private static void SendRPC(int operate, byte playerId = byte.MaxValue, byte targetId = byte.MaxValue)
+    private static void SendRPC(bool setTarget, byte playerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInvestgatorLimit, SendOption.Reliable, -1);
-        writer.Write(operate);
-        if (operate == 0)
-        {
-            writer.Write(playerId);
-            writer.Write(targetId);
-            writer.Write(MaxInvestigateLimit[playerId]);
-            writer.Write(RoundInvestigateLimit[playerId]);
-        }
+        writer.Write(setTarget);
+        writer.Write(playerId);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public static void ReceiveRPC(MessageReader reader)
     {
-        int operate = reader.ReadInt32();
-        if (operate == 0)
-        {
-            byte investigatorID = reader.ReadByte();
-            byte targetID = reader.ReadByte();
-            if (!InvestigatedList.ContainsKey(investigatorID)) InvestigatedList[investigatorID] = [];
-            InvestigatedList[investigatorID].Add(targetID);
+        var setTarget = reader.ReadBoolean();
+        byte investigatorID = reader.ReadByte();
+        byte targetId = reader.ReadByte();
 
-            int maxLimit = reader.ReadInt32();
-            MaxInvestigateLimit[investigatorID] = maxLimit;
-
-            int roundLimit = reader.ReadInt32();
-            MaxInvestigateLimit[investigatorID] = roundLimit;
-        }
-        if (operate == 1)
-        {
-            foreach (var playerid in RoundInvestigateLimit.Keys)
-            {
-                RoundInvestigateLimit[playerid] = InvestigateRoundMax.GetInt();
-                InvestigatedList[playerid] = [];
-            }
-        }
+        if (setTarget)
+            InvestigatedList[investigatorID].Add(targetId);
+        else
+            InvestigatedList[investigatorID] = [];
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -105,27 +82,20 @@ internal class Investigator : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = InvestigateCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl player)
     {
-        if (player == null) return false;
         byte pid = player.PlayerId;
-        if (!MaxInvestigateLimit.ContainsKey(pid)) MaxInvestigateLimit[pid] = InvestigateMax.GetInt();
-        if (!RoundInvestigateLimit.ContainsKey(pid)) RoundInvestigateLimit[pid] = InvestigateRoundMax.GetInt();
-        return !player.Data.IsDead && MaxInvestigateLimit[player.PlayerId] >= 1 && RoundInvestigateLimit[player.PlayerId] >= 1;
+        return pid.GetAbilityUseLimit() >= 1 && RoundInvestigateLimit[pid] >= 1;
     }
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
 
-        if (!MaxInvestigateLimit.ContainsKey(killer.PlayerId)) MaxInvestigateLimit[killer.PlayerId] = InvestigateMax.GetInt();
-        if (!RoundInvestigateLimit.ContainsKey(killer.PlayerId)) RoundInvestigateLimit[killer.PlayerId] = InvestigateRoundMax.GetInt();
+        if (killer.GetAbilityUseLimit() < 1 || RoundInvestigateLimit[killer.PlayerId] < 1) return false;
 
-        if (MaxInvestigateLimit[killer.PlayerId] < 1 || RoundInvestigateLimit[killer.PlayerId] < 1) return false;
-
-        MaxInvestigateLimit[killer.PlayerId]--;
+        killer.RpcRemoveAbilityUse();
         RoundInvestigateLimit[killer.PlayerId]--;
-        if (!InvestigatedList.ContainsKey(killer.PlayerId)) InvestigatedList[killer.PlayerId] = [];
         InvestigatedList[killer.PlayerId].Add(target.PlayerId);
 
-        SendRPC(operate: 0, playerId: killer.PlayerId, targetId: target.PlayerId);
+        SendRPC(setTarget: true, killer.PlayerId, target.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer, ForceLoop: true);
 
         killer.ResetKillCooldown();
@@ -152,12 +122,10 @@ internal class Investigator : RoleBase
             RoundInvestigateLimit[playerid] = InvestigateRoundMax.GetInt();
             InvestigatedList[playerid] = [];
         }
-        SendRPC(1);
+        SendRPC(setTarget: false);
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(MaxInvestigateLimit[playerId] >= 1 ? Utils.GetRoleColor(CustomRoles.Investigator).ShadeColor(0.25f) : Color.gray, $"({MaxInvestigateLimit[playerId]})");
-
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton.OverrideText(Translator.GetString("InvestigatorButtonText")); ;
+        hud.KillButton.OverrideText(Translator.GetString("InvestigatorButtonText"));
     }
 }

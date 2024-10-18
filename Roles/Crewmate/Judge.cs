@@ -69,7 +69,7 @@ internal class Judge : RoleBase
     {
         playerIdList.Add(playerId);
         TrialLimitMeeting[playerId] = TrialLimitPerMeeting.GetInt();
-        AbilityLimit = TrialLimitPerGame.GetInt();
+        playerId.SetAbilityUseLimit(TrialLimitPerGame.GetInt());
     }
     public override void Remove(byte playerId)
     {
@@ -83,7 +83,7 @@ internal class Judge : RoleBase
             TrialLimitMeeting[pid] = TrialLimitPerMeeting.GetInt();
         }
     }
-    public bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
+    public static bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
     {
         var originMsg = msg;
 
@@ -135,7 +135,7 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxMeetingMsg"));
                     return true;
                 }
-                if (AbilityLimit < 1)
+                if (pc.GetAbilityUseLimit() < 1)
                 {
                     pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxGameMsg"));
                 }
@@ -208,9 +208,8 @@ internal class Judge : RoleBase
 
                 string Name = dp.GetRealName();
 
+                pc.RpcRemoveAbilityUse();
                 TrialLimitMeeting[pc.PlayerId]--;
-                AbilityLimit--;
-                SendSkillRPC();
 
                 if (!GameStates.IsProceeding)
                     _ = new LateTask(() =>
@@ -293,10 +292,7 @@ internal class Judge : RoleBase
     {
         byte targetId = reader.ReadByte();
 
-        if (pc.GetRoleClass() is Judge judge)
-        {
-            judge.TrialMsg(pc, $"/tl {targetId}", true);
-        }
+        TrialMsg(pc, $"/tl {targetId}", true);
     }
 
     private static void JudgeOnClick(byte targetId /*, MeetingHud __instance*/)
@@ -304,7 +300,7 @@ internal class Judge : RoleBase
         Logger.Msg($"Click: ID {targetId}", "Judge UI");
         var target = targetId.GetPlayer();
         if (target == null || !target.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.GetRoleClass() is Judge judge) judge.TrialMsg(PlayerControl.LocalPlayer, $"/tl {targetId}", true);
+        if (AmongUsClient.Instance.AmHost) TrialMsg(PlayerControl.LocalPlayer, $"/tl {targetId}", true);
         else SendRPC(targetId);
     }
 
@@ -312,20 +308,7 @@ internal class Judge : RoleBase
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Judge), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState8 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor8;
-        var TaskCompleteColor16 = Color.green;
-        var NonCompleteColor16 = Color.yellow;
-        var NormalColor8 = taskState8.IsTaskFinished ? TaskCompleteColor16 : NonCompleteColor16;
-        TextColor8 = comms ? Color.gray : NormalColor8;
-        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
-        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})" + " "));
-        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Judge).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})" ?? "Invalid"));
-        return ProgressText.ToString();
-    }
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch
     {
