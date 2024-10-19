@@ -55,7 +55,7 @@ public class Unlucky : IAddon
             _ => -1
         };
 
-        if (shouldBeSuicide)
+        if (shouldBeSuicide && !victim.IsTransformedNeutralApocalypse())
         {
             victim.SetDeathReason(PlayerState.DeathReason.Suicide);
             victim.RpcMurderPlayer(victim);

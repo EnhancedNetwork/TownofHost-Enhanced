@@ -90,6 +90,11 @@ internal class Bastion : RoleBase
             Logger.Info("DoubleAgent enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
             return false;
         }
+        else if (pc.IsTransformedNeutralApocalypse())
+        {
+            Logger.Info("Horseman enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
+            return false;
+        }
         else
         {
             _ = new LateTask(() =>
