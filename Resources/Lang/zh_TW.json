@@ -1584,7 +1584,7 @@
   "TrapperBlockMoveTime": "兇手無法移動的時間",
   "BecomeTrapperBlockMoveTime": "兇手無法移動的時間",
   "TimeThiefDecreaseMeetingTime": "每次殺人縮短的會議時間",
-  "TimeThiefLowerLimitVotingTime": "存活時會議時間下限",
+  "TimeThiefLowerLimitVotingTime": "會議時間下限",
   "TimeThiefReturnStolenTimeUponDeath": "死亡後會議時間恢復",
   "EvilTrackerCanSeeKillFlash": "<color=#ff1919>偽裝者</color>殺人時可以看到殺人閃光",
   "EvilTrackerCanSeeLastRoomInMeeting": "可以看見<color=#8cffff>船員</color>的位置",
