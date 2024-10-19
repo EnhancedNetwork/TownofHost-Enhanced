@@ -306,6 +306,7 @@ public enum TabGroup
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
+    CovenRoles,
     Addons
 }
 public enum OptionFormat

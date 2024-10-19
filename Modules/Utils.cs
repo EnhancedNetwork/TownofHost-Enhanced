@@ -464,6 +464,9 @@ public static class Utils
             case Custom_Team.Neutral:
                 hexColor = "#7f8c8d";
                 break;
+            case Custom_Team.Coven:
+                hexColor = "#ac42f2";
+                break;
         }
 
         _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
@@ -2191,6 +2194,9 @@ public static class Utils
 
                                     if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
+
+                                    if (Options.CovenCanGuess.GetBool() && seer.GetCustomRole().IsCoven())
+                                        TargetPlayerName = GetTragetId;
                                 }
                             }
                             else // Guesser Mode is Off ID
@@ -2367,6 +2373,7 @@ public static class Utils
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Sacrificed => CustomRoles.Altruist.IsEnable(),
+            PlayerState.DeathReason.BlastedOff => CustomRoles.MoonDancer.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
