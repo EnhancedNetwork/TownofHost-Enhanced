@@ -1569,7 +1569,7 @@
   "NameDisplayAddons": "顯示職業時同時顯示附加職業",
   "YourAddon": "你的附加職業:",
   "NoLimitAddonsNumMax": "每位玩家的附加職業上限",
-  "LoverSpawnChances": "出現機率",
+  "LoverSpawnChances": "<color=#ff9ace>戀人</color>出現機率",
   "AdditionRolesSpawnRate": "出現機率",
   "TorchVision": "<color=#eee5be>持燈</color>視野大小",
   "TorchAffectedByLights": "<color=#eee5be>持燈</color>的視野會因燈光破壞而受到影響",
