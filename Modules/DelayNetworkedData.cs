@@ -183,7 +183,7 @@ public class InnerNetClientPatch
             }
         }
 
-        if (__instance.AmClient)
+        if (!__instance.AmHost)
         {
             Debug.LogError("Tried to spawn while not host:" + (netObjParent?.ToString()));
         }
