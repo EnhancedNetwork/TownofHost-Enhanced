@@ -62,9 +62,6 @@ public static class CustomWinnerHolder
                 case CustomRoles.Madmate:
                     ResetAndSetWinner(CustomWinner.Impostor); 
                     return true;
-                case CustomRoles.Recruit:
-                    ResetAndSetWinner(CustomWinner.Jackal); 
-                    return true;
                 case CustomRoles.Charmed:
                     ResetAndSetWinner(CustomWinner.Cultist); 
                     return true;

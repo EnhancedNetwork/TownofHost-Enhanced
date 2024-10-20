@@ -36,7 +36,6 @@ internal class Visionary : RoleBase
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
-                or CustomRoles.Recruit
                 or CustomRoles.Soulless
                 or CustomRoles.Refugee
                 or CustomRoles.Admired)
