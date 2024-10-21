@@ -66,7 +66,7 @@ internal class Retributionist : RoleBase
         if (!GameStates.IsInGame || pc == null) return false;
         if (!pc.Is(CustomRoles.Retributionist)) return false;
         msg = msg.Trim().ToLower();
-        if (msg.Length < 4 || msg[..4] != "/ret") return false;
+        if (msg.Length < 4 || msg[..4] != "/ret" || msg[..4] != "/惩罚" || msg[..4] != "/惩" || msg[..4] != "/罚") return false;
         if (RetributionistCanKillNum.GetInt() < 1)
         {
             pc.ShowInfoMessage(isUI, GetString("RetributionistKillDisable"));
@@ -95,7 +95,7 @@ internal class Retributionist : RoleBase
             return true;
         }
 
-        if (msg == "/ret")
+        if (msg == "/ret" || msg == "/惩罚" || msg == "/惩" || msg == "/罚")
         {
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
@@ -208,7 +208,7 @@ internal class Retributionist : RoleBase
         Logger.Msg($"Click: ID {playerId}", "Retributionist UI");
         var pc = GetPlayerById(playerId);
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}", true);
+        if (AmongUsClient.Instance.AmHost) RetributionistMsgCheck(PlayerControl.LocalPlayer, $"/ret {playerId}|/惩罚 {playerId}|/惩 {playerId}|/罚 {playerId}", true);
         else SendRPC(playerId);
     }
     public override void OnMeetingHudStart(PlayerControl pc)
