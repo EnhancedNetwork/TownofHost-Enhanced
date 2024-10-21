@@ -1687,7 +1687,7 @@
   "Medic_SeeMedicAndTarget": "<color=#00ff97>軍醫</color>+<color=#8cffff>被保護者</color>",
   "Medic_SeeMedic": "<color=#00ff97>軍醫</color>",
   "Medic_SeeTarget": "<color=#8cffff>被保護者</color>",
-  "Medic_SeeNoOne": "不計",
+  "Medic_SeeNoOne": "無",
   "MedicShieldDeactivatesWhenMedicDies": "<color=#00ff97>軍醫</color>死亡時護盾失效",
   "MedicShielDeactivationIsVisible": "被保護者可以在什麼時候看到護盾失效",
   "MedicShieldDeactivationIsVisible_Immediately": "立刻",
