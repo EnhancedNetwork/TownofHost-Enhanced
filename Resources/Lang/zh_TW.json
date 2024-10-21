@@ -1800,7 +1800,7 @@
   "InfectiousKnowTargetRole": "可以知道<color=#7B8968>被感染</color>的玩家的職業",
   "InfectiousTargetKnowOtherTarget": "<color=#7B8968>被感染</color>的玩家可以互認",
   "DoubleClickKill": "點兩下殺人鍵來殺死目標",
-  "VirusInfectMax": "最大傳染數",
+  "VirusInfectMax": "散播<color=#2E8B57>病毒</color>最大次數",
   "VirusKnowTargetRole": "可以知道<color=#2E8B57>被傳染</color>的玩家的職業",
   "VirusTargetKnowOtherTarget": "<color=#2E8B57>被感染</color>的玩家可以互認",
   "VirusKillInfectedPlayerAfterMeeting": "<color=#2E8B57>被感染</color>的玩家會在會議後死亡",
