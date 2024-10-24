@@ -3013,7 +3013,7 @@
   "DazzleButtonText": "Abbaglia",
   "MoleVentButtonText": "Scava",
   "MoleVentCooldown": "Ricarica Scava",
-  "AddictVentButtonText": "Fatti Curare",
+  "AddictVentButtonText": "Prendi la Dose",
   "AddictInvulnerbilityTimeAfterVent": "Tempo d'<color=#008000>Invulnerabilità</color>",
   "AddictSpeedWhileInvulnerble": "Velocità di movimento mentre <color=#008000>Invulnerabile</color>",
   "AddictFreezeTimeAfterInvulnerbility": "Tempo in cui il <color=#008000>Tossicomane</color> viene immobilizzato sul posto dopo l'<color=#008000>Invulnerabilità</color>",
