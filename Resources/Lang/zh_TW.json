@@ -1766,7 +1766,7 @@
   "Judge_TrialKillTitle": "【 ★ 法院事件 ★ 】",
   "Judge_TrialHelp": "指令格式:/tl [玩家ID]\n您可以在玩家的名字前看到該玩家的ID\n或使用/id查看玩家ID列表",
   "Judge_TrialNull": "請選擇一個在場的存活角色進行審判",
-  "VeteranSkillMaxOfUseage": "警戒次數上限",
+  "VeteranSkillMaxOfUseage": "戒備次數上限",
   "SwooperCooldown": "隱身冷卻時間",
   "SwooperDuration": "隱身持續時間",
   "WraithCooldown": "隱身冷卻時間",
