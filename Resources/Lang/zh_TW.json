@@ -1393,7 +1393,7 @@
   "ControlCooldown": "意念控制冷卻時間",
   "PoisonCooldown": "下毒冷卻時間",
   "PoisonerKillDelay": "下毒目標延遲死亡時間",
-  "WardenNotifyLimit": "警戒次數上限",
+  "WardenNotifyLimit": "警告次數上限",
   "BombCooldown": "炸彈冷卻時間",
   "Warlock_CanKillSelf": "可以殺死自己",
   "CrewpostorKnowsAllies": "船鬼知道<color=#ff1919>偽裝者</color>",
