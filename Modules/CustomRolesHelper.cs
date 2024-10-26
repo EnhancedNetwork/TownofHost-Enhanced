@@ -707,7 +707,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Taskinator)
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.PunchingBag))
+                    || pc.Is(CustomRoles.PunchingBag)
+                    || pc.IsTransformedNeutralApocalypse())
                     return false;
                 break;
 
