@@ -1007,7 +1007,7 @@
   "SlothInfoLong": "(Атрибут):\nСкорость передвижения ленивца по умолчанию медленнее, чем у других.\n(Скорость зависит от настроек хоста)",
   "ProhibitedInfoLong": "(Атрибут):\nКак Ограниченный, вы не можете использовать определенные вентиляции\nКоличество отключенных вентиляций зависит от настроек хоста.",
   "EavesdropperInfoLong": "(Add-ons):\nУ Подслушиваетеля есть возможность читать сообщения, которые были отправленные другим ролям/атрибутам, например, «Гробовщик» или «Сыщик».",
-  "ApocolypseInfoLong": "(Апокалипсис):\nЧлены Апокалипсиса находятся в отдельной команде, которая работает вместе и вместе побеждает. Если в игре несколько ролей апокалипсиса, они смогут видеть роли друг друга.\nВ зависимости от настроек Хоста роли Апокалипсиса можно угадывать.",
+  "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "Наложение текста",
   "Overlay.GuesserMode": "<size=50%>Режим Угадывателей</size>",
   "Overlay.NoGameEnd": "<size=50%>Игра Не Закончится</size>",

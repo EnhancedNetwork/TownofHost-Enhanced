@@ -1007,7 +1007,7 @@
   "SlothInfoLong": "(附加职业):\n树懒的默认移动速度比其他玩家要慢。(速度取决于房主设置）",
   "ProhibitedInfoLong": "(附加职业):\n受限者可以禁用通风口",
   "EavesdropperInfoLong": "(附加职业):\n窃听者可以阅读其他「职业/附加职业」相关的消息，比如入殓师或侦探",
-  "ApocolypseInfoLong": "(Apocolypse):\nApocolypse members are on a seperate team which work together and win together. If there are multiple apocolypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocolypse roles can guess or be guessed.",
+  "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "文本覆盖（小字显示）",
   "Overlay.GuesserMode": "<size=50%>猜测模式</size>",
   "Overlay.NoGameEnd": "<size=50%>测试模式</size>",

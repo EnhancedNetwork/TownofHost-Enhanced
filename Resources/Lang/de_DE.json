@@ -1007,7 +1007,7 @@
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
   "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
-  "ApocolypseInfoLong": "(Apocolypse):\nApocolypse members are on a seperate team which work together and win together. If there are multiple apocolypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocolypse roles can guess or be guessed.",
+  "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guessermodus</size>",
   "Overlay.NoGameEnd": "<size=50%>Kein Spielende</size>",
