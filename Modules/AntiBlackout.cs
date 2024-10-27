@@ -262,8 +262,11 @@ public static class AntiBlackout
         {
             if (seer.IsAlive())
             {
-                seer.SetKillCooldown();
                 seer.RpcResetAbilityCooldown();
+                seer.ResetKillCooldown();
+
+                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd) && kcd >= 2f)
+                    seer.SetKillCooldown(kcd - 2f);
             }
             else if (seer.HasGhostRole())
             {
