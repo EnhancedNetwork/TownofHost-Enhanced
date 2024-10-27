@@ -396,13 +396,4 @@ internal class Famine : RoleBase
         Baker.BreadList[baker.PlayerId].Clear();
         Baker.StarvedNonBreaded = true;
     }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool()) 
-        { 
-            guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
-            return true; 
-        }
-        return false;
-    }
 }

@@ -251,6 +251,12 @@ public static class GuessManager
                     return true;
                 }
 
+                if (role.IsTNA() && role != CustomRoles.Pestilence && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())
+                {
+                    pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
+                    return true;
+                }
+
                 // Guesser (add-on) Cant Guess Addons
                 if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
                 {
