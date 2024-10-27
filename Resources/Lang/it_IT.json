@@ -1007,7 +1007,7 @@
   "SlothInfoLong": "(Modificatori):\nLa velocità di movimento predefinita del Bradipo è più lenta rispetto alle altre.\n(La velocità dipende dalle impostazioni dell'host)",
   "ProhibitedInfoLong": "(Modificatori):\nCome Proibito, hai dei condotti specifici che non puoi usare.\nQuanti condotti sono disabilitati dipende dalle impostazioni dell'Host.",
   "EavesdropperInfoLong": "(Modificatori):\nCome Origliatore, hai la possibilità di leggere messaggi basati su informazioni relative ad altri ruoli/modificatori, come Imbalsamatore o Indagatore.",
-  "ApocolypseInfoLong": "(Apocalisse):\nI membri dell'Apocalisse sono in un team separato che lavora insieme e vince insieme. Se ci sono più ruoli dell'Apocalisse nel gioco, possono vedere i ruoli degli altri.\nA seconda delle impostazioni dell'host, i ruoli dell'Apocalisse possono indovinare o essere indovinati.",
+  "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "Sovrapposizione Testo",
   "Overlay.GuesserMode": "<size=50%>Modalità Indovino</size>",
   "Overlay.NoGameEnd": "<size=50%>Gioco senza fine</size>",
