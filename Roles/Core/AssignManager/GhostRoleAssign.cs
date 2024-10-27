@@ -182,27 +182,24 @@ public static class GhostRoleAssign
 
                 var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                 writer.StartMessage(__instance.GetClientId());
-                writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                    .Write(host.Data.NetId)
-                    .Write(Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString("GhostTransformTitle")))
-                    .EndRpc();
-                writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                    .Write(sb.ToString())
-                    .EndRpc();
+                {
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(host.Data.NetId)
+                        .Write(Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString("GhostTransformTitle")))
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                        .Write(sb.ToString())
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                        .Write(conf.ToString())
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(host.Data.NetId)
+                        .Write(name)
+                        .EndRpc();
+                }
                 writer.EndMessage();
                 writer.SendMessage();
-
-                var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
-                writer2.StartMessage(__instance.GetClientId());
-                writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                    .Write(conf.ToString())
-                    .EndRpc();
-                writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                    .Write(host.Data.NetId)
-                    .Write(name)
-                    .EndRpc();
-                writer2.EndMessage();
-                writer2.SendMessage();
 
                 // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
 
