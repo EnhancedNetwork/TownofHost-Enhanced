@@ -1007,7 +1007,7 @@
   "SlothInfoLong": "(附加職業):\n樹懶的初始移動速度會比其他人慢。(具體速度依房主設定)",
   "ProhibitedInfoLong": "(附加職業):\n受限者無法使用某些特定的通風口。\n不能使用的管道數根據房主設定而不同。",
   "EavesdropperInfoLong": "(附加職業):\n竊聽者有一定機率能夠在會議上看到其他人的職業/附加職業的信息，比如殯葬師或偵探。",
-  "ApocolypseInfoLong": "(災厄陣營):\n災厄陣營是一個獨立的陣營，災厄成員會共同獲勝，且可以看到彼此的職業。\n根據房主設置，災厄陣營的玩家可以賭人或是被賭",
+  "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "文字覆蓋(小字顯示)",
   "Overlay.GuesserMode": "<size=50%>賭怪模式</size>",
   "Overlay.NoGameEnd": "<size=50%>測試模式(遊戲不結束)</size>",
