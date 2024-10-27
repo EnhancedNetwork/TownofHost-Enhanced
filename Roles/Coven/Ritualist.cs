@@ -25,6 +25,9 @@ internal class Ritualist : CovenManager
 
     private static OptionItem MaxRitsPerRound;
     public static OptionItem TryHideMsg;
+    public static OptionItem EnchantedKnowsCoven;
+    public static OptionItem EnchantedKnowsEnchanted;
+
 
     private static readonly Dictionary<byte, int> RitualLimit = [];
     private static readonly Dictionary<byte, List<byte>> EnchantedPlayers = [];
@@ -36,6 +39,9 @@ internal class Ritualist : CovenManager
             .SetValueFormat(OptionFormat.Times);
         TryHideMsg = BooleanOptionItem.Create(Id + 11, "RitualistTryHideMsg", true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist])
             .SetColor(Color.green);
+        EnchantedKnowsCoven = BooleanOptionItem.Create(Id + 12, "RitualistEnchantedKnowsCoven", true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist]);
+        EnchantedKnowsEnchanted = BooleanOptionItem.Create(Id + 13, "RitualistEnchantedKnowsEnchanted", true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Ritualist]);
+
     }
     public override void Init()
     {

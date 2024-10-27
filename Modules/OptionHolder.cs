@@ -71,7 +71,7 @@ public static class Options
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
 
-    public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew)> AddonCanBeSettings = [];
+    public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew, OptionItem Coven)> AddonCanBeSettings = [];
     public enum SpawnChance
     {
         Chance0,
@@ -342,6 +342,7 @@ public static class Options
     public static OptionItem DisableDevicesIgnoreConditions;
     public static OptionItem DisableDevicesIgnoreImpostors;
     public static OptionItem DisableDevicesIgnoreNeutrals;
+    public static OptionItem DisableDevicesIgnoreCoven;
     public static OptionItem DisableDevicesIgnoreCrewmates;
     public static OptionItem DisableDevicesIgnoreAfterAnyoneDied;
 
@@ -520,6 +521,7 @@ public static class Options
     // Coven
     public static OptionItem CovenRolesMinPlayer;
     public static OptionItem CovenRolesMaxPlayer;
+    public static OptionItem CovenCanSeeEachOthersAddOns;
     public static OptionItem CovenHasImpVis;
     public static OptionItem CovenImpVisMode;
     public static OptionItem CovenCanVent;
@@ -537,6 +539,7 @@ public static class Options
     public static OptionItem ImpCanBeInLove;
     public static OptionItem CrewCanBeInLove;
     public static OptionItem NeutralCanBeInLove;
+    public static OptionItem CovenCanBeInLove;
 
     // Experimental Roles
 
@@ -728,26 +731,28 @@ public static class Options
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
-        CovenRolesMinPlayer = IntegerOptionItem.Create(60025, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
+        CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Players);
-        CovenRolesMaxPlayer = IntegerOptionItem.Create(60026, "CovenRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
+        CovenRolesMaxPlayer = IntegerOptionItem.Create(60027, "CovenRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
-        CovenHasImpVis = BooleanOptionItem.Create(60027, "CovenHasImpVis", true, TabGroup.CovenRoles, false)
+        CovenHasImpVis = BooleanOptionItem.Create(60028, "CovenHasImpVis", true, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
-        CovenImpVisMode = StringOptionItem.Create(60028, "CovenImpVisMode", EnumHelper.GetAllNames<CovenManager.VisOptionList>(), 0, TabGroup.CovenRoles, false)
+        CovenImpVisMode = StringOptionItem.Create(60029, "CovenImpVisMode", EnumHelper.GetAllNames<CovenManager.VisOptionList>(), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(CovenHasImpVis);
         CovenManager.RunSetUpImpVisOptions(160032);
-        CovenCanVent = BooleanOptionItem.Create(60029, "CovenCanVent", true, TabGroup.CovenRoles, false)
+        CovenCanVent = BooleanOptionItem.Create(60030, "CovenCanVent", true, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        CovenVentMode = StringOptionItem.Create(60030, "CovenVentMode", EnumHelper.GetAllNames<CovenManager.VentOptionList>(), 0, TabGroup.CovenRoles, false)
+        CovenVentMode = StringOptionItem.Create(60031, "CovenVentMode", EnumHelper.GetAllNames<CovenManager.VentOptionList>(), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(CovenCanVent);
         CovenManager.RunSetUpVentOptions(260032);
+        CovenCanSeeEachOthersAddOns = BooleanOptionItem.Create(60032, "CovenCanSeeEachOthersAddOns", true, TabGroup.CovenRoles, false)
+            .SetGameMode(CustomGameMode.Standard);
 
         NameDisplayAddons = BooleanOptionItem.Create(60019, "NameDisplayAddons", true, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1579,6 +1584,8 @@ public static class Options
         DisableDevicesIgnoreNeutrals = BooleanOptionItem.Create(60591, "IgnoreNeutrals", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
+        DisableDevicesIgnoreCoven = BooleanOptionItem.Create(60694, "IgnoreCoven", false, TabGroup.ModSettings, false)
+            .SetParent(DisableDevicesIgnoreConditions);
         DisableDevicesIgnoreCrewmates = BooleanOptionItem.Create(60592, "IgnoreCrewmates", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
@@ -1785,6 +1792,8 @@ public static class Options
             .SetParent(GuesserMode);
         CovenCanGuess = BooleanOptionItem.Create(60693, "CovenCanGuess", false, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
+        CovenCanGuessCoven = BooleanOptionItem.Create(60692, "CovenCanGuessCoven", false, TabGroup.ModifierSettings, false)
+            .SetParent(CovenCanGuess);
         CanGuessAddons = BooleanOptionItem.Create(60685, "CanGuessAddons", true, TabGroup.ModifierSettings, false)
             .SetParent(GuesserMode);
         HideGuesserCommands = BooleanOptionItem.Create(60688, "GuesserTryHideMsg", true, TabGroup.ModifierSettings, false)
@@ -1999,6 +2008,10 @@ public static class Options
         .SetParent(spawnOption)
             .SetGameMode(customGameMode);
 
+        CovenCanBeInLove = BooleanOptionItem.Create(id + 8, "CovenCanBeInLove", true, TabGroup.Addons, false)
+        .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
+
 
         var countOption = IntegerOptionItem.Create(id + 1, "NumberOfLovers", new(2, 2, 1), 2, TabGroup.Addons, false)
             .SetParent(spawnOption)
@@ -2044,7 +2057,12 @@ public static class Options
                 .SetGameMode(customGameMode)
                 .AddReplacement(("{role}", role.ToColoredString()));
 
-            AddonCanBeSettings.Add(role, (impOption, neutralOption, crewOption));
+            var covenOption = BooleanOptionItem.Create(id + 6, "CovenCanBeRole", true, tab, false)
+                .SetParent(spawnOption)
+                .SetGameMode(customGameMode)
+                .AddReplacement(("{role}", role.ToColoredString()));
+
+            AddonCanBeSettings.Add(role, (impOption, neutralOption, crewOption, covenOption));
         }
 
 

@@ -304,6 +304,14 @@ public static class GuessManager
                             return true;
                         }
                     }
+                    if (role.IsCoven() && !Options.CovenCanGuessCoven.GetBool())
+                    {
+                        if (Options.CovenCanGuess.GetBool() && (pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted)) && !pc.Is(CustomRoles.Guesser))
+                        {
+                            pc.ShowInfoMessage(isUI, GetString("GuessCovenRole"));
+                            return true;
+                        }
+                    }
                     if (role.IsCrewmate() && !Options.CrewCanGuessCrew.GetBool())
                     {
                         if (Options.CrewmatesCanGuess.GetBool() && pc.Is(Custom_Team.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))

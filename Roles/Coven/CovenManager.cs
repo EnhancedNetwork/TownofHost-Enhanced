@@ -33,7 +33,7 @@ public abstract class CovenManager : RoleBase
     }
     public static void RunSetUpVentOptions(int Id)
     {
-            foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven() && (x is not CustomRoles.Medusa or CustomRoles.PotionMaster /* or CustomRoles.Sacrifist */)).ToArray())
+            foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven() && (x is not CustomRoles.Medusa or CustomRoles.PotionMaster or CustomRoles.Sacrifist)).ToArray())
             {
                 SetUpVentOption(cov, Id, true, CovenVentMode);
                 Id++;
@@ -53,11 +53,13 @@ public abstract class CovenManager : RoleBase
         CovenVentOptions[role] = BooleanOptionItem.Create(Id, "%role%CanVent", defaultValue, TabGroup.CovenRoles, false).SetParent(parent);
         CovenVentOptions[role].ReplacementDictionary = replacementDic;
     }
+    /*
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     => HasNecronomicon(seen) ? ColorString(GetRoleColor(CustomRoles.CovenLeader), "♣") : string.Empty;
+    */
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if ((seer != target) && HasNecronomicon(target) && seer.IsPlayerCoven())
+        if (HasNecronomicon(target) && seer.IsPlayerCoven())
         {
             return ColorString(GetRoleColor(CustomRoles.CovenLeader), "♣");
         }
@@ -99,9 +101,10 @@ public abstract class CovenManager : RoleBase
             return option.GetBool();
         }
     }
-    
+    /*
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
+    */
     
     public static void GiveNecronomicon()
     {

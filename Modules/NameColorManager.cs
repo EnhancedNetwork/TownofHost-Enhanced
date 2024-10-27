@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -49,9 +50,11 @@ public static class NameColorManager
         if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
 
-        /* Coven
-        if ((seer.Is(Custom_Team.Coven) || seer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) color = Main.roleColors[CustomRoles.Coven];
-        */
+        // Coven
+        if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven)) color = Main.roleColors[CustomRoles.Coven];
+        if (seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven) && Ritualist.EnchantedKnowsCoven.GetBool()) color = Main.roleColors[CustomRoles.Coven];
+        if (seer.Is(Custom_Team.Coven) && target.Is(CustomRoles.Enchanted)) color = Main.roleColors[CustomRoles.Enchanted];
+        if (seer.Is(CustomRoles.Enchanted) && target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool()) color = Main.roleColors[CustomRoles.Enchanted];
 
         // Cultist
         if (Cultist.NameRoleColor(seer, target)) color = Main.roleColors[CustomRoles.Cultist];

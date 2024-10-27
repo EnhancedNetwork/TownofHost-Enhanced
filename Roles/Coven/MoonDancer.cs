@@ -207,27 +207,34 @@ internal class MoonDancer : CovenManager
     }
     private void DistributeAddOns(PlayerControl md)
     {
-        if (addons.Count == 0)
-        {
-            md.Notify(ColorString(GetRoleColor(CustomRoles.MoonDancer), GetString("MoonDancerNoAddons")));
-            Logger.Info("No addons to pass.", "MoonDancer");
-            return;
-        }
         var rd = IRandom.Instance;
         foreach (var pc in BatonPassList[md.PlayerId])
         {
             var player = GetPlayerById(pc);
             var addon = addons.RandomElement();
-            if (player.IsPlayerCoven() || player.Is(CustomRoles.Enchanted)) { 
-                addon = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList().RandomElement();
+            var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
+            var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
+            if (player.IsPlayerCoven() || player.Is(CustomRoles.Enchanted) || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers))) {
+                if (helpful.Count <= 0) {
+                    SendMessage(string.Format(GetString("MoonDancerNoAddons"), player.GetRealName()), md.PlayerId);
+                    Logger.Info("No addons to pass.", "MoonDancer");
+                    continue;
+                }
+                addon = helpful.RandomElement();
             }
             else
             {
-                addon = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList().RandomElement();
-
+                if (harmful.Count <= 0)
+                {
+                    SendMessage(string.Format(GetString("MoonDancerNoAddons"), player.GetRealName()), md.PlayerId);
+                    Logger.Info("No addons to pass.", "MoonDancer");
+                    continue;
+                }
+                addon = harmful.RandomElement();
             }
             player.RpcSetCustomRole(addon);
             player.AddInSwitchAddons(player, addon);
+            Logger.Info("Addon Passed.", "MoonDancer");
         }
         BatonPassList[md.PlayerId].Clear();
     }

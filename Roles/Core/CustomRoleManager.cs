@@ -112,6 +112,8 @@ public static class CustomRoleManager
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
         if (Medusa.HasEnabled) Medusa.SetStoned(player, opt);
+        if (Sacrifist.HasEnabled) Sacrifist.SetVision(player, opt);
+
 
         var playerSubRoles = player.GetCustomSubRoles();
 

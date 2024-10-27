@@ -115,8 +115,8 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Coven:
-                        if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted)) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
-                             && !WinnerIds.Contains(pc.PlayerId))
+                        if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted)) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless))) 
+                            || pc.Is(CustomRoles.Enchanted) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -383,9 +383,9 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                     }
                 }
-                if (Main.AllAlivePlayerControls.All(p => p.IsPlayerCoven()))
+                if (Main.AllAlivePlayerControls.All(p => p.IsPlayerCoven() || p.Is(CustomRoles.Enchanted)))
                 {
-                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsPlayerCoven()))
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsPlayerCoven() || x.Is(CustomRoles.Enchanted)))
                     {
                         if (!WinnerIds.Contains(pc.PlayerId))
                             WinnerIds.Add(pc.PlayerId);

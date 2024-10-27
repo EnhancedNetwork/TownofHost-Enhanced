@@ -58,6 +58,7 @@ internal class Necromancer : CovenManager
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (IsRevenge) return true;
+        if (killer.IsPlayerCoven()) return false;
         if ((killer.Is(CustomRoles.Retributionist) || killer.Is(CustomRoles.Nemesis)) && !killer.IsAlive()) return true;
 
         _ = new LateTask(target.RpcRandomVentTeleport, 0.01f, "Random Vent Teleport - Necromancer");
