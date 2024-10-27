@@ -35,9 +35,9 @@ class ChatBubbleSetNamePatch
         if (Main.DarkTheme.Value)
         {
             if (isDead)
-                __instance.Background.color = new Color(0.0f, 0.0f, 0.0f, 0.6f);
+                __instance.Background.color = new(0.1f, 0.1f, 0.1f, 0.6f);
             else
-                __instance.Background.color = Color.black;
+                __instance.Background.color = new(0.1f, 0.1f, 0.1f, 1f);
 
             __instance.TextArea.color = Color.white;
         }
