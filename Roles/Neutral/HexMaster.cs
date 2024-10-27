@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using System.Text;
-using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -15,7 +14,7 @@ internal class HexMaster : RoleBase
     private const int Id = 16400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -60,9 +59,6 @@ internal class HexMaster : RoleBase
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
 
     private static void SendRPC(bool doHex, byte hexId, byte target = 255)
@@ -161,8 +157,7 @@ internal class HexMaster : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (Medic.ProtectList.Contains(target.PlayerId)) return false;
-        if (target.Is(CustomRoles.Pestilence)) return false;
+        if (target.IsTransformedNeutralApocalypse()) return false;
 
         if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {
@@ -181,9 +176,8 @@ internal class HexMaster : RoleBase
         //キル処理終了させる
         return false;
     }
-    public static void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (!HasEnabled || deathReason != PlayerState.DeathReason.Vote) return;
         foreach (var id in exileIds)
         {
             if (HexedPlayer.ContainsKey(id))

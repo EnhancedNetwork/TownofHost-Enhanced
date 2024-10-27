@@ -16,6 +16,7 @@ internal class Pelican : RoleBase
     //===========================SETUP================================\\
     private const int Id = 17300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -24,7 +25,7 @@ internal class Pelican : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
 
-    private static readonly Dictionary<byte, List<byte>> eatenList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
     public static Dictionary<byte, Vector2> PelicanLastPosition = [];
 
@@ -45,11 +46,6 @@ internal class Pelican : RoleBase
         PelicanLastPosition.Clear();
 
         Count = 0;
-    }
-    public override void Add(byte playerId)
-    {
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -85,7 +81,7 @@ internal class Pelican : RoleBase
         {
             int eatenNum = reader.ReadInt32();
             eatenList.Remove(playerId);
-            List<byte> list = [];
+            HashSet<byte> list = [];
             for (int i = 0; i < eatenNum; i++)
                 list.Add(reader.ReadByte());
             eatenList.Add(playerId, list);
@@ -118,7 +114,7 @@ internal class Pelican : RoleBase
             }
         }
 
-        return target != null && target.CanBeTeleported() && !target.Is(CustomRoles.Pestilence) && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id);
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
@@ -267,23 +263,25 @@ internal class Pelican : RoleBase
         GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl pelican)
-    {        
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (lowLoad) return;
+
         Count--;
         
         if (Count > 0) return; 
         
-        Count = 2;
+        Count = 4;
 
-        foreach (var pc in eatenList.Values)
+        if (eatenList.TryGetValue(player.PlayerId, out var playerList))
         {
-            foreach (var tar in pc.ToArray())
+            foreach (var tar in playerList.ToArray())
             {
-                var target = Utils.GetPlayerById(tar);
-                if (target == null) continue;
+                var target = tar.GetPlayer();
+                if (!target.IsAlive()) continue;
 
                 var pos = GetBlackRoomPSForPelican();
-                var dis = Vector2.Distance(pos, target.GetCustomPosition());
+                var dis = Utils.GetDistance(pos, target.GetCustomPosition());
                 if (dis < 1f) continue;
 
                 target.RpcTeleport(pos, sendInfoInLogs: false);

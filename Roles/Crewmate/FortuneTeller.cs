@@ -21,7 +21,6 @@ internal class FortuneTeller : RoleBase
 
     private static OptionItem CheckLimitOpt;
     private static OptionItem AccurateCheckMode;
-    private static OptionItem HidesVote;
     private static OptionItem ShowSpecificRole;
     private static OptionItem AbilityUseGainWithEachTaskCompleted;
     private static OptionItem RandomActiveRoles;
@@ -35,12 +34,11 @@ internal class FortuneTeller : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.FortuneTeller);
-        CheckLimitOpt = IntegerOptionItem.Create(Id + 10, "FortuneTellerSkillLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller])
+        CheckLimitOpt = IntegerOptionItem.Create(Id + 10, GeneralOption.SkillLimitTimes, new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller])
             .SetValueFormat(OptionFormat.Times);
         RandomActiveRoles = BooleanOptionItem.Create(Id + 11, "RandomActiveRoles", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller]);
         AccurateCheckMode = BooleanOptionItem.Create(Id + 12, "AccurateCheckMode", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller]);
         ShowSpecificRole = BooleanOptionItem.Create(Id + 13, "ShowSpecificRole", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller]);
-        HidesVote = BooleanOptionItem.Create(Id + 14, "FortuneTellerHideVote", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller]);
         AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.FortuneTeller])
             .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.FortuneTeller);
@@ -87,7 +85,6 @@ internal class FortuneTeller : RoleBase
         }
     }
 
-    public override bool HideVote(PlayerVoteArea pva) => HidesVote.GetBool() && TempCheckLimit > 0;
     private static string GetTargetRoleList(CustomRoles[] roles)
     {
         return roles != null ? string.Join("\n", roles.Select(role => $"    ★ {GetRoleName(role)}")) : "";
@@ -101,16 +98,16 @@ internal class FortuneTeller : RoleBase
         }
         return true;
     }
-    public override void OnVote(PlayerControl player, PlayerControl target)
+    public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (player == null || target == null) return;
-        if (didVote.Contains(player.PlayerId)) return;
+        if (player == null || target == null) return true;
+        if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
 
         if (AbilityLimit < 1)
         {
             SendMessage(GetString("FortuneTellerCheckReachLimit"), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
-            return;
+            return true;
         }
 
         if (RandomActiveRoles.GetBool())
@@ -118,7 +115,7 @@ internal class FortuneTeller : RoleBase
             if (targetList.Contains(target.PlayerId))
             {
                 SendMessage(GetString("FortuneTellerAlreadyCheckedMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
-                return;
+                return true;
             }
         }
 
@@ -128,7 +125,7 @@ internal class FortuneTeller : RoleBase
         if (player.PlayerId == target.PlayerId)
         {
             SendMessage(GetString("FortuneTellerCheckSelfMsg") + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
-            return;
+            return true;
         }
 
         string msg;
@@ -161,7 +158,7 @@ internal class FortuneTeller : RoleBase
         }
         else
         {
-            List<CustomRoles[]> completeRoleList = EnumHelper.Achunk<CustomRoles>(chunkSize: 6, shuffle: true, exclude: (x) => !x.IsGhostRole() && !x.IsAdditionRole() && x != CustomRoles.NotAssigned);
+            List<CustomRoles[]> completeRoleList = EnumHelper.Achunk<CustomRoles>(chunkSize: 6, shuffle: true, exclude: (x) => !x.IsGhostRole() && !x.IsAdditionRole() && !x.IsVanilla() && x is not CustomRoles.NotAssigned and not CustomRoles.ChiefOfPolice and not CustomRoles.Killer and not CustomRoles.GM);
 
             var targetRole = target.GetCustomRole();
             string text = string.Empty;
@@ -179,6 +176,8 @@ internal class FortuneTeller : RoleBase
         }
 
         SendMessage(GetString("FortuneTellerCheck") + "\n" + msg + "\n\n" + string.Format(GetString("FortuneTellerCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.FortuneTeller), GetString("FortuneTellerCheckMsgTitle")));
+        SendMessage(GetString("VoteHasReturned"), player.PlayerId, title: ColorString(GetRoleColor(CustomRoles.FortuneTeller), string.Format(GetString("VoteAbilityUsed"), GetString("FortuneTeller"))));
+        return false;
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

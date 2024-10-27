@@ -3,22 +3,21 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Watcher
+public class Watcher : IAddon
 {
     private const int Id = 20400;
-    
-    public static OptionItem ImpCanBeWatcher;
-    public static OptionItem CrewCanBeWatcher;
-    public static OptionItem NeutralCanBeWatcher;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Watcher, canSetNum: true);
-        ImpCanBeWatcher = BooleanOptionItem.Create(Id + 10, "ImpCanBeWatcher", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
-        CrewCanBeWatcher = BooleanOptionItem.Create(Id + 11, "CrewCanBeWatcher", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
-        NeutralCanBeWatcher = BooleanOptionItem.Create(Id + 12, "NeutralCanBeWatcher", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Watcher]);
+        SetupAdtRoleOptions(Id, CustomRoles.Watcher, canSetNum: true, teamSpawnOptions: true);
     }
-
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static void RevealVotes(IGameOptions opt) => opt.SetBool(BoolOptionNames.AnonymousVotes, false);
 }
 

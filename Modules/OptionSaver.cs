@@ -83,8 +83,15 @@ public static class OptionSaver
     {
         if (AmongUsClient.Instance != null && !AmongUsClient.Instance.AmHost) return;
 
-        var jsonString = JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
-        File.WriteAllText(OptionSaverFileInfo.FullName, jsonString);
+        try
+        {
+            var jsonString = JsonSerializer.Serialize(GenerateOptionsData(), new JsonSerializerOptions { WriteIndented = true, });
+            File.WriteAllText(OptionSaverFileInfo.FullName, jsonString);
+        }
+        catch (System.Exception error)
+        {
+            Logger.Error($"Error: {error}", "OptionSaver.Save");
+        }
     }
     /// <summary>Read options from json file</summary>
     public static void Load()

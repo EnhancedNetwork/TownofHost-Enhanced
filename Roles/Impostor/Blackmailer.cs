@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
-using TOHE.Roles.Neutral;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 
@@ -37,6 +38,23 @@ internal class Blackmailer : RoleBase
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
+    private void SendRPC(byte target = byte.MaxValue)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(_Player);
+        writer.Write(target);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    {
+        var targetId = reader.ReadByte();
+
+        if (targetId == byte.MaxValue)
+            ClearBlackmaile(false);
+        else
+            ForBlackmailer.Add(targetId);
+    }
     public override bool OnCheckShapeshift(PlayerControl blackmailer, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (ShowShapeshiftAnimationsOpt.GetBool() || blackmailer.PlayerId == target.PlayerId) return true;
@@ -52,27 +70,32 @@ internal class Blackmailer : RoleBase
             DoBlackmaile(blackmailer, target);
         }
     }
-    private static void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
+    private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {
         if (!target.IsAlive())
         {
-            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("NotAssassin")));
+            blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("TargetIsAlreadyDead")));
             return;
         }
 
-        ClearBlackmaile();
+        ClearBlackmaile(true);
         ForBlackmailer.Add(target.PlayerId);
+        SendRPC(target.PlayerId);
     }
 
     public override void AfterMeetingTasks()
     {
-        ClearBlackmaile();
+        ClearBlackmaile(true);
     }
     public override void OnCoEndGame()
     {
-        ClearBlackmaile();
+        ClearBlackmaile(false);
     }
-    private static void ClearBlackmaile() => ForBlackmailer.Clear();
+    private void ClearBlackmaile(bool sendRpc)
+    {
+        ForBlackmailer.Clear();
+        if (sendRpc) SendRPC();
+    }
     
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
 
@@ -84,7 +107,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName(isMeeting: true);
-            if (Doppelganger.DoppelVictim.TryGetValue(pc.PlayerId, out var doppelPlayerName)) playername = doppelPlayerName; 
+            if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name; 
             AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }

@@ -10,12 +10,17 @@ public abstract class RoleBase
 {
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
+    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
+    public bool HasVoted = false;
+    public virtual bool IsExperimental => false;
+    public virtual bool IsDesyncRole => false;
+    public virtual bool IsSideKick => false;
+
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -35,6 +40,12 @@ public abstract class RoleBase
         if (CustomRoleManager.OtherCollectionsSet) // If a role is applied mid-game, filter them again jsut in-case
         {
             CustomRoleManager.Add();
+        }
+
+        // Remember desync player so that when changing role he will still be as desync
+        if (IsDesyncRole)
+        {
+            Main.DesyncPlayerList.Add(playerid);
         }
     }
     public void OnRemove(byte playerId)
@@ -75,6 +86,16 @@ public abstract class RoleBase
     /// </summary>
     public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
+
+    //this is a draft, it is not usable yet, Imma fix it in another PR
+
+    /// <summary>
+    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen. (they will also not be able to kill eachother)
+    /// </summary>
+    public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
+    {
+
+    }
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
@@ -97,8 +118,6 @@ public abstract class RoleBase
     public virtual void SetupCustomOption()
     { }
 
-    public virtual bool IsExperimental => false;
-
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
     /// </summary>
@@ -116,12 +135,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl pc)
-    { }
-    /// <summary>
-    /// A local method to check conditions during gameplay, which aren't prioritized
-    /// </summary>
-    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     { }
 
     /// <summary>
@@ -144,22 +158,22 @@ public abstract class RoleBase
     public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
-    /// A method for activating actions where the role starts playing an animation when entering a vent
-    /// </summary>
-    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
-    { }
-    /// <summary>
     /// When role need force boot from vent
     /// </summary>
     public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the others roles starts playing an animation when entering a vent
     /// </summary>
     public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the role starts playing an animation when entering a vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    { }
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.
@@ -209,19 +223,6 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method to always check the state when targets have died (murder, exiled, execute etc..)
-    /// </summary>
-    public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
-    { }
-
-
-    /// <summary>
-    /// A method to always check the state player has died (murder, exiled, execute etc..). If there is a meeting it will only happen after it.
-    /// </summary>
-    public virtual void OnSelfReducedToAtoms(bool IsAfterMeeting)
-    { }
-
-    /// <summary>
     /// When someone was died and need to run kill flash for specific role
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
@@ -250,6 +251,16 @@ public abstract class RoleBase
     /// </summary>
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     { }
+
+
+    // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
+    // So OnCheckShapeShift and OnShapeshift are pointless when using it.
+    // Last thing, while the button may say "shift" after resetability, the game still thinks you're shapeshifted and will work instantly as intended.
+    
+    /// <summary>
+    /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
+    /// </summary>
+    public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
 
     /// <summary>
     /// Check start meeting by press meeting button
@@ -323,6 +334,11 @@ public abstract class RoleBase
     public virtual string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target) => string.Empty;
 
     /// <summary>
+    /// Used when player should be dead after meeting
+    /// </summary>
+    public virtual void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    { }
+    /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
     public virtual void NotifyAfterMeeting()
@@ -345,20 +361,27 @@ public abstract class RoleBase
     public virtual void OnCoEndGame()
     { }
 
+
     /// <summary>
-    /// When player vote for target
+    /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
+    /// </summary>
+    public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
+
+    /// <summary>
+    /// A check for any role abilites of the player which voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVote(PlayerControl votePlayer, PlayerControl voteTarget)
     { }
     /// <summary>
-    /// When the player was voted
+    /// A check for any role abilites of the player that was voted, when the vote hasn't been canceled by any other means.
     /// </summary>
     public virtual void OnVoted(PlayerControl votedPlayer, PlayerControl votedTarget)
     { }
     /// <summary>
-    /// When need hide vote
+    /// Hides the playervote
     /// </summary>
-    public virtual bool HideVote(PlayerVoteArea votedPlayer) => false;
+    public virtual bool HideVote(PlayerVoteArea PVA) => false;
+
 
     /// <summary>
     /// When need add visual votes
@@ -401,12 +424,6 @@ public abstract class RoleBase
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
-    public virtual float SetModdedLowerText(out Color32? FaceColor)
-    {
-        FaceColor = null;
-        return 2.8f;
-    }
-
 
     // 
     // IMPORTANT note about otherIcons: 
@@ -447,13 +464,16 @@ public abstract class RoleBase
         // Ability
         Cooldown,
         AbilityCooldown,
+        SkillLimitTimes,
 
         // Impostor-based settings
         CanKill,
         KillCooldown,
         CanVent,
+        CantMoveOnVents,
         ImpostorVision,
         CanUseSabotage,
+        CanHaveAccessToVitals,
 
         // General settings
         CanKillImpostors,

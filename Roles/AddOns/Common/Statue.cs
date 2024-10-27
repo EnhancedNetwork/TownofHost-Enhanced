@@ -1,76 +1,93 @@
-﻿using UnityEngine;
+﻿using AmongUs.GameOptions;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Statue
+public class Statue : IAddon
 {
     private const int Id = 13800;
+    public AddonTypes Type => AddonTypes.Harmful;
     public static bool IsEnable = false;
 
-    public static OptionItem CanBeOnCrew;
-    public static OptionItem CanBeOnImp;
-    public static OptionItem CanBeOnNeutral;
     private static OptionItem SlowDown;
     private static OptionItem PeopleAmount;
 
     private static bool Active;
-    private static HashSet<byte> CountNearplr;
-    private static Dictionary<byte, float> tempSpeed;
+    private static readonly HashSet<byte> CountNearplr = [];
+    private static readonly Dictionary<byte, float> TempSpeed = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Statue, canSetNum: true, tab: TabGroup.Addons);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Statue, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         SlowDown = FloatOptionItem.Create(Id + 10, "StatueSlow", new(0f, 1.25f, 0.25f), 0f, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue])
              .SetValueFormat(OptionFormat.Multiplier);
         PeopleAmount = IntegerOptionItem.Create(Id + 11, "StatuePeopleToSlow", new(1, 5, 1), 3, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue])
              .SetValueFormat(OptionFormat.Times);
-        CanBeOnImp = BooleanOptionItem.Create(Id + 12, "ImpCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
-        CanBeOnCrew = BooleanOptionItem.Create(Id + 13, "CrewCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
-        CanBeOnNeutral = BooleanOptionItem.Create(Id + 14, "NeutralCanBeStatue", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Statue]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        CountNearplr = [];
-        tempSpeed = [];
-        Active = true;
         IsEnable = false;
+        CountNearplr.Clear();
+        TempSpeed.Clear();
+        Active = true;
     }
 
-    public static void Add(byte player)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        tempSpeed.Add(player, Main.AllPlayerSpeed[player]);
+        var speed = Main.AllPlayerSpeed[playerId];
+        TempSpeed[playerId] = speed;
         IsEnable = true;
     }
-
-    public static void Remove(byte player)
+    public void Remove(byte playerId)
     {
-        tempSpeed.Remove(player);
+        if (Main.AllPlayerSpeed[playerId] == SlowDown.GetFloat())
+        {
+            Main.AllPlayerSpeed[playerId] = Main.AllPlayerSpeed[playerId] - SlowDown.GetFloat() + TempSpeed[playerId];
+            playerId.GetPlayer()?.MarkDirtySettings();
+        }
+        TempSpeed.Remove(playerId);
+
+        if (!TempSpeed.Any())
+            IsEnable = false;
     }
 
     public static void AfterMeetingTasks()
     {
-        foreach (var Statue in tempSpeed.Keys)
+        foreach (var (statue, speed) in TempSpeed)
         {
-            var pc = Utils.GetPlayerById(Statue);
-            if (pc == null) continue;
-            float tmpFloat = tempSpeed[Statue];
-            Main.AllPlayerSpeed[Statue] = Main.AllPlayerSpeed[Statue] - Main.AllPlayerSpeed[Statue] + tmpFloat;
-            pc.MarkDirtySettings();
+            Main.AllPlayerSpeed[statue] = speed;
+            statue.GetPlayer()?.MarkDirtySettings();
         }
         Active = false;
-        CountNearplr = [];
+        CountNearplr.Clear();
         _ = new LateTask(() => 
         {
             Active = true;
         }, 6f);
     }
 
-    public static void OnFixedUpdate(PlayerControl victim) 
+    public void OnFixedUpdate(PlayerControl victim) 
     {
-        foreach (var PVC in Main.AllAlivePlayerControls)
+        if (!victim.Is(CustomRoles.Statue)) return;
+        if (!victim.IsAlive() && victim != null)
         {
-            if (CountNearplr.Contains(PVC.PlayerId) && Vector2.Distance(PVC.transform.position, victim.transform.position) > 2f)
+            var currentSpeed = Main.AllPlayerSpeed[victim.PlayerId];
+            var normalSpeed = Main.RealOptionsData.GetFloat(FloatOptionNames.PlayerSpeedMod);
+            if (currentSpeed != normalSpeed)
+            {
+                Main.AllPlayerSpeed[victim.PlayerId] = normalSpeed;
+                victim.MarkDirtySettings();
+            }
+            return;
+        }
+
+        foreach (var PVC in Main.AllPlayerControls)
+        {
+            if (!PVC.IsAlive())
+            {
+                CountNearplr.Remove(PVC.PlayerId);
+            }
+            if (CountNearplr.Contains(PVC.PlayerId) && Utils.GetDistance(PVC.transform.position, victim.transform.position) > 2f)
             {
                 CountNearplr.Remove(PVC.PlayerId);
             }
@@ -80,7 +97,7 @@ public static class Statue
         {
             foreach (var plr in Main.AllAlivePlayerControls)
             {
-                if (Vector2.Distance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
+                if (Utils.GetDistance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
                 {
                     if (!CountNearplr.Contains(plr.PlayerId)) CountNearplr.Add(plr.PlayerId);
                 }
@@ -97,7 +114,7 @@ public static class Statue
             }
             else if (Main.AllPlayerSpeed[victim.PlayerId] == SlowDown.GetFloat())
             {
-                float tmpFloat = tempSpeed[victim.PlayerId];
+                float tmpFloat = TempSpeed[victim.PlayerId];
                 Main.AllPlayerSpeed[victim.PlayerId] = Main.AllPlayerSpeed[victim.PlayerId] - SlowDown.GetFloat() + tmpFloat;
                 victim.MarkDirtySettings();
             }

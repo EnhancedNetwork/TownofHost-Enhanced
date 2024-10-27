@@ -7,7 +7,7 @@
         <Description>Town Of Host Enhanced</Description>
         <Authors>Moe</Authors>
         <langVersion>preview</langVersion>
-	<!--<AmongUs>C:\Program Files (x86)\Steam\steamapps\common\Among Us (v11.28_Town of Host Enhanced v1.4.1)</AmongUs>-->
+		<!--<AmongUs>C:\Program Files\Epic Games\AmongUs</AmongUs>-->
         <Configurations>Debug;Release;Canary</Configurations>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Optimize>True</Optimize>
@@ -19,7 +19,7 @@
     </ItemGroup>
     
     <ItemGroup>
-        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2024.8.13" PrivateAssets="all" />
+        <PackageReference Include="AmongUs.GameLibs.Steam" Version="2024.10.29" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -32,7 +32,6 @@
             <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="csv" Version="2.0.93" />
         <PackageReference Include="GitInfo" Version="3.3.3">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

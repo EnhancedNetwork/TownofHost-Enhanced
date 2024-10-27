@@ -1,108 +1,51 @@
-﻿using Hazel;
-using UnityEngine;
-using static TOHE.Options;
-
+﻿using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Radar
+public class Radar : IAddon
 {
     private const int Id = 28200;
-    public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeRadar;
-    public static OptionItem CrewCanBeRadar;
-    public static OptionItem NeutralCanBeRadar;
+    private static readonly Dictionary<byte, byte> ClosestPlayer = [];
 
-    private static Dictionary<byte, byte> ClosestPlayer = [];
-
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons);
-        ImpCanBeRadar = BooleanOptionItem.Create(Id + 10, "ImpCanBeRadar", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
-        CrewCanBeRadar = BooleanOptionItem.Create(Id + 11, "CrewCanBeRadar", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
-        NeutralCanBeRadar = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRadar", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Radar]);
+        SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
-
-    public static void Init()
-    {
+    public void Init()
+    { 
         ClosestPlayer.Clear();
-        IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
+    public void OnFixedUpdateLowLoad(PlayerControl seer)
     {
-        ClosestPlayer[playerId] = byte.MaxValue;
-        IsEnable = true;
-    }
-    public static void Remove(byte playerId)
-    {
-        ClosestPlayer.Remove(playerId);
-    }
-
-    private static void SendRPC(byte playerId, byte previousClosest)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRadarArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(previousClosest);
-        writer.Write(ClosestPlayer[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte radarId = reader.ReadByte();
-        byte previousClosest = reader.ReadByte();
-        TargetArrow.Remove(radarId, previousClosest);
-        byte closest = reader.ReadByte();
-        TargetArrow.Add(radarId, closest);
-        ClosestPlayer[radarId] = closest;
-    }
-
-    public static void OnFixedUpdate(PlayerControl radarPC)
-    {
-        if (radarPC == null || !radarPC.Is(CustomRoles.Radar) || !GameStates.IsInTask) return;
+        if (!seer.Is(CustomRoles.Radar) || seer.inVent || !seer.IsAlive() || !GameStates.IsInTask) return;
         if (Main.AllAlivePlayerControls.Length <= 1) return;
 
-        if (!ClosestPlayer.ContainsKey(radarPC.PlayerId)) ClosestPlayer[radarPC.PlayerId] = byte.MaxValue;
-        byte previousClosest = ClosestPlayer[radarPC.PlayerId];
-
-        byte closestPlayerId = byte.MaxValue;
-        float closestDistance = Mathf.Infinity;
-
-        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+        PlayerControl closest = Main.AllAlivePlayerControls.Where(x => x.PlayerId != seer.PlayerId).MinBy(x => Utils.GetDistance(seer.GetCustomPosition(), x.GetCustomPosition()));
+        if (ClosestPlayer.TryGetValue(seer.PlayerId, out var targetId))
         {
-            if (pc == radarPC)
-                continue;
-
-            float distance = Vector2.Distance(radarPC.GetCustomPosition(), pc.GetCustomPosition());
-
-            if (distance < closestDistance)
+            if (targetId != closest.PlayerId)
             {
-                closestDistance = distance;
-                closestPlayerId = pc.PlayerId;
+                ClosestPlayer[seer.PlayerId] = closest.PlayerId;
+                TargetArrow.Remove(seer.PlayerId, targetId);
+                TargetArrow.Add(seer.PlayerId, closest.PlayerId);
             }
         }
-
-        if (closestPlayerId == previousClosest) return;
-
-        TargetArrow.Remove(radarPC.PlayerId, previousClosest);
-        if (closestPlayerId == byte.MaxValue) return;
-        ClosestPlayer[radarPC.PlayerId] = closestPlayerId;
-        TargetArrow.Add(radarPC.PlayerId, closestPlayerId);
-        SendRPC(radarPC.PlayerId, previousClosest);
-        Logger.Info($"Radar: {radarPC.PlayerId} Target: {closestPlayerId}", "Radar Target");
+        else
+        {
+            ClosestPlayer[seer.PlayerId] = closest.PlayerId;
+            TargetArrow.Add(seer.PlayerId, closest.PlayerId);
+        }
     }
-    public static string GetPlayerArrow(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public static string GetPlayerArrow(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (isForMeeting || seer == null) return string.Empty;
-        if (!seer.Is(CustomRoles.Radar) || !ClosestPlayer.ContainsKey(seer.PlayerId)) return string.Empty;
-        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
-
-        string arrow = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Radar), TargetArrow.GetArrows(seer, ClosestPlayer[seer.PlayerId]));
-        return arrow;
+        if (isForMeeting || !seer.Is(CustomRoles.Radar) || seer.PlayerId != target.PlayerId) return string.Empty;
+        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Radar), TargetArrow.GetArrows(seer));
     }
 }
 

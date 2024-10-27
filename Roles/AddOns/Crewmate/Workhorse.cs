@@ -4,9 +4,10 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
-public static class Workhorse
+public class Workhorse : IAddon
 {
     private const int Id = 23730;
+    public AddonTypes Type => AddonTypes.Misc;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool IsEnable = false;
 
@@ -21,7 +22,7 @@ public static class Workhorse
     private static int NumLongTasks;
     private static int NumShortTasks;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.Addons, CustomRoles.Workhorse, zeroOne: true);
         OptionAssignOnlyToCrewmate = BooleanOptionItem.Create(Id + 10, "AssignOnlyToCrewmate", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
@@ -31,19 +32,28 @@ public static class Workhorse
             .SetValueFormat(OptionFormat.Pieces);
         OptionSnitchCanBeWorkhorse = BooleanOptionItem.Create(Id + 14, "SnitchCanBeWorkhorse", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Workhorse]);
     }
-    public static void Init()
+    public void Init()
     {
-        playerIdList.Clear();
         IsEnable = false;
+        playerIdList.Clear();
 
         AssignOnlyToCrewmate = OptionAssignOnlyToCrewmate.GetBool();
         NumLongTasks = OptionNumLongTasks.GetInt();
         NumShortTasks = OptionNumShortTasks.GetInt();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public static void AddMidGame(byte playerId)
     {
         playerIdList.Add(playerId);
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
+
+        if (!playerIdList.Any())
+            IsEnable = false;
     }
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
     public static (bool, int, int) TaskData => (false, NumLongTasks, NumShortTasks);
@@ -74,7 +84,7 @@ public static class Workhorse
 
         if (AmongUsClient.Instance.AmHost)
         {
-            Add(pc.PlayerId);
+            AddMidGame(pc.PlayerId);
             pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); // Redistribute tasks
             pc.SyncSettings();
             Utils.NotifyRoles(SpecifySeer: pc);

@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
+using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -14,6 +15,7 @@ namespace TOHE.Roles.Core;
 public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
+    public static readonly Dictionary<CustomRoles, IAddon> AddonClasses = [];
     public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
@@ -65,14 +67,22 @@ public static class CustomRoleManager
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
+    public static bool HasDesyncRole(this PlayerControl player) => player != null && (player.GetRoleClass().IsDesyncRole || Main.DesyncPlayerList.Contains(player.Data.PlayerId) || player.Is(CustomRoles.Killer));
+
     /// <summary>
     /// If the role protect others players
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
-        // return true when need to cancel the kill target
-        // "Any()" defines a function that returns true, and converts to false to cancel the kill
-        return !AllEnabledRoles.Any(RoleClass => RoleClass.CheckMurderOnOthersTarget(killer, target) == true);
+        foreach (var roleClass in AllEnabledRoles.ToArray())
+        {
+            if (roleClass.CheckMurderOnOthersTarget(killer, target) == true)
+            {
+                Logger.Info($"Role class cancels kill: {roleClass}", "OnCheckMurderAsTargetOnOthers");
+                return false;
+            }
+        }
+        return true;
     }
 
     /// <summary>
@@ -91,7 +101,7 @@ public static class CustomRoleManager
 
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {
-            DollMaster.ApplySettingsToDoll(opt, player);
+            DollMaster.ApplySettingsToDoll(opt);
             return;
         }
 
@@ -112,7 +122,10 @@ public static class CustomRoleManager
                         Watcher.RevealVotes(opt);
                         break;
                     case CustomRoles.Flash:
-                        Flash.SetSpeed(player.PlayerId, false);
+                        Flash.SetSpeed(player.PlayerId);
+                        break;
+                    case CustomRoles.Sloth:
+                        Sloth.SetSpeed(player.PlayerId);
                         break;
                     case CustomRoles.Torch:
                         Torch.ApplyGameOptions(opt);
@@ -333,7 +346,11 @@ public static class CustomRoleManager
                         break;
 
                     case CustomRoles.EvilSpirit when !inMeeting && !isSuicide:
-                        target.RpcSetRole(RoleTypes.GuardianAngel);
+                        target.RpcSetRole(RoleTypes.GuardianAngel, true);
+                        break;
+
+                    case CustomRoles.Spurt:
+                        Spurt.DeathTask(target);
                         break;
 
                 }
@@ -348,7 +365,7 @@ public static class CustomRoleManager
             {
                 switch (subRole)
                 {
-                    case CustomRoles.TicketsStealer when !inMeeting && !isSuicide:
+                    case CustomRoles.Stealer when !inMeeting && !isSuicide:
                         Stealer.OnMurderPlayer(killer);
                         break;
 
@@ -389,33 +406,21 @@ public static class CustomRoleManager
         }
     }
 
-    public static HashSet<Action<PlayerControl>> OnFixedUpdateOthers = [];
+    public static HashSet<Action<PlayerControl, bool, long>> OnFixedUpdateOthers = [];
     /// <summary>
     /// Function always called in a task turn
     /// For interfering with other roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
-    public static void OnFixedUpdate(PlayerControl player)
+    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        player.GetRoleClass()?.OnFixedUpdate(player);
+        player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime);
 
         if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any
         foreach (var onFixedUpdate in OnFixedUpdateOthers.ToArray())
         {
-            onFixedUpdate(player);
-        }
-    }
-    public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
-    public static void OnFixedUpdateLowLoad(PlayerControl player)
-    {
-        player.GetRoleClass()?.OnFixedUpdateLowLoad(player);
-
-        if (!OnFixedUpdateLowLoadOthers.Any()) return;
-        //Execute other viewpoint processing if any
-        foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
-        {
-            onFixedUpdateLowLoad(player);
+            onFixedUpdate(player, lowLoad, nowTime);
         }
     }
 
@@ -452,6 +457,7 @@ public static class CustomRoleManager
         {
             sb.Append(lower(seer, seen, isForMeeting, isForHud));
         }
+
         return sb.ToString();
     }
 
@@ -470,12 +476,16 @@ public static class CustomRoleManager
         return sb.ToString();
     }
 
+    public static readonly Dictionary<byte, HashSet<int>> DoNotUnlockVentsList = [];
+    public static readonly Dictionary<byte, HashSet<int>> BlockedVentsList = [];
+
     public static void Initialize()
     {
         OtherCollectionsSet = false;
         OnFixedUpdateOthers.Clear();
-        OnFixedUpdateLowLoadOthers.Clear();
         CheckDeadBodyOthers.Clear();
+        BlockedVentsList.Clear();
+        DoNotUnlockVentsList.Clear();
     }
 
     public static void Add()
@@ -485,4 +495,15 @@ public static class CustomRoleManager
         SuffixOthers = AllEnabledRoles.Select(suffix => (Func<PlayerControl, PlayerControl, bool, string>)suffix.GetSuffixOthers).FilterDuplicates();
         OtherCollectionsSet = true;
     }
+
+    // ADDONS ////////////////////////////
+
+    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x => {
+        if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
+            IAddon.OnFixedUpdate(pc);
+        else return;
+
+        if (!lowload)
+            IAddon.OnFixedUpdateLowLoad(pc);
+    });
 }

@@ -11,7 +11,7 @@ internal class Investigator : RoleBase
     private const int Id = 24900;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -48,9 +48,6 @@ internal class Investigator : RoleBase
         MaxInvestigateLimit[playerId] = InvestigateMax.GetInt();
         RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         InvestigatedList[playerId] = [];
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -70,7 +67,6 @@ internal class Investigator : RoleBase
             writer.Write(targetId);
             writer.Write(MaxInvestigateLimit[playerId]);
             writer.Write(RoundInvestigateLimit[playerId]);
-            return;
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -146,7 +142,7 @@ internal class Investigator : RoleBase
         if (!InvestigatedList.TryGetValue(seer.PlayerId, out var targetList)) return string.Empty;
         if (!targetList.Contains(target.PlayerId)) return string.Empty;
 
-        if (ExtendedPlayerControl.HasKillButton(target) || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
+        if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
         else return "#8CFFFF";
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)

@@ -3,35 +3,41 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Burst
+public class Burst : IAddon
 {
     private const int Id = 19000;
     public static bool IsEnable = false;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeBurst;
-    public static OptionItem CrewCanBeBurst;
-    public static OptionItem NeutralCanBeBurst;
     private static OptionItem BurstKillDelay;
 
-    private static readonly List<byte> BurstBodies = [];
-    public static void SetupCustomOptions()
+    private static readonly HashSet<byte> BurstBodies = [];
+    private static readonly HashSet<byte> playerList = [];
+
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true);
-        ImpCanBeBurst = BooleanOptionItem.Create(Id + 10, "ImpCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        CrewCanBeBurst = BooleanOptionItem.Create(Id + 11, "CrewCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
-        NeutralCanBeBurst = BooleanOptionItem.Create(Id + 12, "NeutralCanBeBurst", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst]);
+        SetupAdtRoleOptions(Id, CustomRoles.Burst, canSetNum: true, teamSpawnOptions: true);
         BurstKillDelay = FloatOptionItem.Create(Id + 13, "BurstKillDelay", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Burst])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public static void Init()
+    public void Init()
     {
-        BurstBodies.Clear();
         IsEnable = false;
+        BurstBodies.Clear();
+        playerList.Clear();
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        playerList.Add(playerId);
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnable = false;
     }
 
     public static void AfterMeetingTasks()
@@ -43,7 +49,7 @@ public static class Burst
     {
         target.SetRealKiller(killer);
         BurstBodies.Add(target.PlayerId);
-        if (killer.PlayerId != target.PlayerId && !killer.Is(CustomRoles.Pestilence))
+        if (killer.PlayerId != target.PlayerId && !killer.IsTransformedNeutralApocalypse())
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
             _ = new LateTask(() =>

@@ -10,7 +10,7 @@ internal class Terrorist : RoleBase
     private const int id = 15400;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled = PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -45,6 +45,8 @@ internal class Terrorist : RoleBase
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
+        if (target.IsDisconnected()) return;
+
         Logger.Info(target?.Data?.PlayerName + " was Terrorist", "AfterPlayerDeathTasks");
         CheckTerroristWin(target.Data);
     }
@@ -52,11 +54,17 @@ internal class Terrorist : RoleBase
     {
         CheckTerroristWin(exiled);
     }
-    private static void CheckTerroristWin(NetworkedPlayerInfo terrorist)
+    private static void CheckTerroristWin(NetworkedPlayerInfo terroristData)
     {
-        var taskState = Utils.GetPlayerById(terrorist.PlayerId).GetPlayerTaskState();
-        if (taskState.IsTaskFinished && (!Main.PlayerStates[terrorist.PlayerId].IsSuicide || CanTerroristSuicideWin.GetBool()))
+        var terrorist = terroristData.Object;
+        if (terrorist == null) return;
+
+        var state = Main.PlayerStates[terrorist.PlayerId];
+        var taskState = terrorist.GetPlayerTaskState();
+        if (taskState.IsTaskFinished && (!state.IsSuicide || CanTerroristSuicideWin.GetBool()) && (state.deathReason != PlayerState.DeathReason.Armageddon))
         {
+            if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
+            
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);
@@ -75,12 +83,12 @@ internal class Terrorist : RoleBase
                         pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                     }
                 }
-                else if (!pc.Data.IsDead)
+                else if (pc.IsAlive())
                 {
                     pc.SetDeathReason(PlayerState.DeathReason.Bombed);
                     Main.PlayerStates[pc.PlayerId].SetDead();
                     pc.RpcMurderPlayer(pc);
-                    pc.SetRealKiller(terrorist.Object);
+                    pc.SetRealKiller(terrorist);
                 }
             }
         }

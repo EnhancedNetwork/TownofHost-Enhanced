@@ -68,6 +68,24 @@ public static class CollectionExtensions
         }
         return list;
     }
+    /// <summary>
+    /// Shuffles all elements in a collection randomly
+    /// </summary>
+    /// <typeparam name="T">The type of the collection</typeparam>
+    /// <param name="collection">The collection to be shuffled</param>
+    /// <returns>The shuffled collection</returns>
+    public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> collection)
+    {
+        var list = collection.ToList();
+        int n = list.Count;
+        while (n > 1)
+        {
+            n--;
+            int k = IRandom.Instance.Next(n + 1);
+            (list[n], list[k]) = (list[k], list[n]);
+        }
+        return list;
+    }
 
     /// <summary>
     /// Filters a IEnumerable(<typeparamref name="TDelegate"/>) of any duplicates
@@ -87,6 +105,46 @@ public static class CollectionExtensions
 
         return distinctDelegates.ToHashSet();
     }
+
+    /// <summary>
+    /// Determines whether a collection contains any elements that satisfy a predicate and returns the first element that satisfies the predicate
+    /// </summary>
+    /// <param name="collection">The collection to search</param>
+    /// <param name="predicate">The predicate to check for each element</param>
+    /// <param name="element">The first element that satisfies the predicate, or the default value of <typeparamref name="T"/> if no elements satisfy the predicate</param>
+    /// <typeparam name="T">The type of the elements in the collection</typeparam>
+    /// <returns><c>true</c> if the collection contains any elements that satisfy the predicate, <c>false</c> otherwise</returns>
+    public static bool Find<T>(this IEnumerable<T> collection, Func<T, bool> predicate, out T element)
+    {
+        if (collection is List<T> list)
+        {
+            for (int i = 0; i < list.Count; i++)
+            {
+                T item = list[i];
+                if (predicate(item))
+                {
+                    element = item;
+                    return true;
+                }
+            }
+
+            element = default;
+            return false;
+        }
+
+        foreach (T item in collection)
+        {
+            if (predicate(item))
+            {
+                element = item;
+                return true;
+            }
+        }
+
+        element = default;
+        return false;
+    }
+
     /// <summary>
     /// Return the first byte of a HashSet(Byte)
     /// </summary>

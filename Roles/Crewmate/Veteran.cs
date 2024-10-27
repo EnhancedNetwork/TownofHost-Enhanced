@@ -72,11 +72,11 @@ internal class Veteran : RoleBase
         if (killer.PlayerId != target.PlayerId && VeteranInProtect.TryGetValue(target.PlayerId, out var time))
             if (time + VeteranSkillDuration.GetInt() >= GetTimeStamp())
             {
-                if (killer.Is(CustomRoles.Pestilence))
+                if (killer.Is(CustomRoles.Pestilence) || killer.Is(CustomRoles.War))
                 {
                     killer.RpcMurderPlayer(target);
                     target.SetRealKiller(killer);
-                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence", "Veteran");
+                    Logger.Info($"{killer.GetRealName()} kill {target.GetRealName()} because killer Pestilence or War", "Veteran");
                     return false;
                 }
                 else if (killer.Is(CustomRoles.Jinx))
@@ -95,22 +95,22 @@ internal class Veteran : RoleBase
             }
         return true;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (VeteranInProtect.TryGetValue(pc.PlayerId, out var vtime) && vtime + VeteranSkillDuration.GetInt() < GetTimeStamp())
+        if (!lowLoad && VeteranInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + VeteranSkillDuration.GetInt() < nowTime)
         {
-            VeteranInProtect.Remove(pc.PlayerId);
+            VeteranInProtect.Remove(player.PlayerId);
 
             if (!DisableShieldAnimations.GetBool())
             {
-                pc.RpcGuardAndKill();
+                player.RpcGuardAndKill();
             }
             else
             {
-                pc.RpcResetAbilityCooldown();
+                player.RpcResetAbilityCooldown();
             }
 
-            pc.Notify(string.Format(GetString("VeteranOffGuard"), AbilityLimit));
+            player.Notify(string.Format(GetString("AbilityExpired"), AbilityLimit));
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
@@ -118,7 +118,7 @@ internal class Veteran : RoleBase
         // Ability use limit reached
         if (AbilityLimit <= 0)
         {
-            pc.Notify(GetString("VeteranMaxUsage"));
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
             return;
         }
 
@@ -131,7 +131,7 @@ internal class Veteran : RoleBase
             SendSkillRPC();
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("Gunload");
-            pc.Notify(GetString("VeteranOnGuard"), VeteranSkillDuration.GetFloat());
+            pc.Notify(GetString("AbilityInUse"), VeteranSkillDuration.GetFloat());
         }
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)

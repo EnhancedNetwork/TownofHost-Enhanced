@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -123,9 +122,9 @@ internal class Nemesis : RoleBase
             pc.ShowInfoMessage(isUI, GetString("NemesisKillDead"));
             return true;
         }
-        else if (target.Is(CustomRoles.Pestilence))
+        else if (target.IsTransformedNeutralApocalypse())
         {
-            pc.ShowInfoMessage(isUI, GetString("PestilenceImmune"));
+            pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
             return true;
         }
         else if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
@@ -146,6 +145,7 @@ internal class Nemesis : RoleBase
         else if (pc.RpcCheckAndMurder(target, true) == false)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
+            Logger.Info($"Guess Immune target {target.PlayerId} have role {target.GetCustomRole()}", "Nemesis");
             return true;
         }
 
@@ -251,7 +251,7 @@ internal class Nemesis : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => NemesisOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => NemesisOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

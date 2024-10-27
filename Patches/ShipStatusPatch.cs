@@ -1,9 +1,10 @@
 using Hazel;
 using System;
 using UnityEngine;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Neutral;
+using TOHE.Patches;
 using TOHE.Roles.Core;
+using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -29,17 +30,19 @@ class ShipFixedUpdatePatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(MessageReader))]
 public static class MessageReaderUpdateSystemPatch
 {
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] SystemTypes systemType, [HarmonyArgument(1)] PlayerControl player, [HarmonyArgument(2)] MessageReader reader)
     {
-        if (systemType is 
+        if (systemType is
             SystemTypes.Ventilation
             or SystemTypes.Security
             or SystemTypes.Decontamination
             or SystemTypes.Decontamination2
-            or SystemTypes.Decontamination3) return true;
+            or SystemTypes.Decontamination3
+            or SystemTypes.MedBay) return true;
 
         if (GameStates.IsHideNSeek) return true;
 
@@ -59,13 +62,15 @@ public static class MessageReaderUpdateSystemPatch
             or SystemTypes.Security
             or SystemTypes.Decontamination
             or SystemTypes.Decontamination2
-            or SystemTypes.Decontamination3) return;
+            or SystemTypes.Decontamination3
+            or SystemTypes.MedBay) return;
 
         if (GameStates.IsHideNSeek) return;
 
         UpdateSystemPatch.Postfix(__instance, systemType, player, MessageReader.Get(reader).ReadByte());
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.UpdateSystem), typeof(SystemTypes), typeof(PlayerControl), typeof(byte))]
 class UpdateSystemPatch
 {
@@ -100,7 +105,7 @@ class UpdateSystemPatch
         if (player.Is(CustomRoles.Unlucky) && player.IsAlive()
             && (systemType is SystemTypes.Doors))
         {
-            if (Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor)) 
+            if (Unlucky.SuicideRand(player, Unlucky.StateSuicide.OpenDoor))
                 return false;
         }
 
@@ -147,6 +152,7 @@ class UpdateSystemPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.CloseDoorsOfType))]
 class ShipStatusCloseDoorsPatch
 {
@@ -165,10 +171,11 @@ class ShipStatusCloseDoorsPatch
         return allow;
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Start))]
 class StartPatch
 {
-    public static void Postfix()
+    public static void Postfix(ShipStatus __instance)
     {
         Logger.CurrentMethod();
         Logger.Info("-----------Start of game-----------", "Phase");
@@ -189,28 +196,58 @@ class StartPatch
             }
         }
 
-        if (GameStates.PolusIsActive && Main.EnableCustomDecorations.Value)
+        switch (Utils.GetActiveMapName())
         {
-            var Dropship = GameObject.Find("Dropship/panel_fuel");
-            if (Dropship != null)
-            {
-                var Decorations = UnityEngine.Object.Instantiate(Dropship, GameObject.Find("Dropship")?.transform);
-                Decorations.name = "Dropship_Decorations";
-                Decorations.transform.DestroyChildren();
-                UnityEngine.Object.Destroy(Decorations.GetComponent<Console>());
-                UnityEngine.Object.Destroy(Decorations.GetComponent<BoxCollider2D>());
-                UnityEngine.Object.Destroy(Decorations.GetComponent<PassiveButton>());
-                Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
-                Decorations.transform.SetSiblingIndex(1);
-                Decorations.transform.localPosition = new(0.0709f, 0.73f);
-            }
+            case MapNames.Skeld:
+                var halloweenDecorationIsActive = Options.HalloweenDecorationsSkeld.GetBool();
+                var birthdayDecorationIsActive = Options.EnableBirthdayDecorationSkeld.GetBool();
+                var halloweenDecorationObject = __instance.transform.FindChild("Helloween");
+                var birthdayDecorationObject = __instance.transform.FindChild("BirthdayDecorSkeld");
+
+                if (Options.RandomBirthdayAndHalloweenDecorationSkeld.GetBool() && halloweenDecorationIsActive && birthdayDecorationIsActive)
+                {
+                    var random = IRandom.Instance.Next(0, 100);
+                    if (random < 50)
+                        halloweenDecorationObject?.gameObject.SetActive(true);
+                    else
+                        birthdayDecorationObject?.gameObject.SetActive(true);
+                    break;
+                }
+                if (halloweenDecorationIsActive)
+                    __instance.transform.FindChild("Helloween")?.gameObject.SetActive(true);
+
+                if (birthdayDecorationIsActive)
+                    __instance.transform.FindChild("BirthdayDecorSkeld")?.gameObject.SetActive(true);
+                break;
+            case MapNames.Mira when Options.HalloweenDecorationsMira.GetBool():
+                __instance.transform.FindChild("Halloween")?.gameObject.SetActive(true);
+                break;
+            case MapNames.Dleks when Options.HalloweenDecorationsDleks.GetBool():
+                __instance.transform.FindChild("Helloween")?.gameObject.SetActive(true);
+                break;
+            case MapNames.Polus when Main.EnableCustomDecorations.Value:
+                var Dropship = GameObject.Find("Dropship/panel_fuel");
+                if (Dropship != null)
+                {
+                    var Decorations = UnityEngine.Object.Instantiate(Dropship, GameObject.Find("Dropship")?.transform);
+                    Decorations.name = "Dropship_Decorations";
+                    Decorations.transform.DestroyChildren();
+                    UnityEngine.Object.Destroy(Decorations.GetComponent<Console>());
+                    UnityEngine.Object.Destroy(Decorations.GetComponent<BoxCollider2D>());
+                    UnityEngine.Object.Destroy(Decorations.GetComponent<PassiveButton>());
+                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
+                    Decorations.transform.SetSiblingIndex(1);
+                    Decorations.transform.localPosition = new(0.0709f, 0.73f);
+                }
+                break;
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.StartMeeting))]
 class StartMeetingPatch
 {
-    public static void Prefix(ShipStatus __instance, PlayerControl reporter, NetworkedPlayerInfo target)
+    public static void Prefix([HarmonyArgument(1)] NetworkedPlayerInfo target)
     {
         if (GameStates.IsHideNSeek) return;
 
@@ -225,26 +262,140 @@ class StartMeetingPatch
         }
     }
 }
+
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
-class BeginPatch
+class ShipStatusBeginPatch
 {
     public static void Postfix()
     {
         Logger.CurrentMethod();
-
-        //Should the initial setup of the host's position be done here?
     }
 }
-[HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
-class CheckTaskCompletionPatch
+
+/*
+    // Since SnapTo is unstable on the server side,
+    // after a meeting, sometimes not all players appear on the table,
+    // it's better to manually teleport them
+*/
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.SpawnPlayer))]
+class ShipStatusSpawnPlayerPatch
 {
-    public static bool Prefix(ref bool __result)
+    public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.FFA)
+        // Skip first spawn and modded clients
+        if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
+
+        Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
+        Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
+
+        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        return false;
+    }
+}
+[HarmonyPatch(typeof(PolusShipStatus), nameof(PolusShipStatus.SpawnPlayer))]
+class PolusShipStatusSpawnPlayerPatch
+{
+    public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
+    {
+        // Skip first spawn and modded clients
+        if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
+
+        int num1 = Mathf.FloorToInt(numPlayers / 2f);
+        int num2 = player.PlayerId % 15;
+
+        Vector2 position = num2 >= num1
+            ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
+            : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
+
+        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Serialize))]
+class ShipStatusSerializePatch
+{
+    // Patch the global way of Serializing ShipStatus
+    // If we are patching any other systemTypes, just add below like Ventilation.
+    public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
+    {
+        __result = false;
+        if (!AmongUsClient.Instance.AmHost) return true;
+        if (initialState) return true;
+
+        // Original methods
+        short num = 0;
+        while (num < SystemTypeHelpers.AllTypes.Length)
         {
-            __result = false;
-            return false;
+            SystemTypes systemTypes = SystemTypeHelpers.AllTypes[num];
+
+            if (systemTypes is SystemTypes.Ventilation)
+            {
+                // Skip Ventilation here
+                // Further new systems should skip original methods here and add new patches below.
+                num++;
+                continue;
+            }
+
+            if (__instance.Systems.TryGetValue(systemTypes, out ISystemType systemType) && systemType.IsDirty) // initialState used here in vanilla code. Removed it.
+            {
+                __result = true;
+                writer.StartMessage((byte)systemTypes);
+                systemType.Serialize(writer, initialState);
+                writer.EndMessage();
+            }
+            num++;
         }
-        return true;
+
+        // Ventilation part
+        {
+            // Logger.Info("doing Ventilation Serialize", "ShipStatusSerializePatch");
+            // Serialize Ventilation with our own patches to clients specifically if needed
+            bool customVentilation = false;
+
+            if (GameStates.IsInGame)
+            {
+                foreach (var pc in PlayerControl.AllPlayerControls)
+                {
+                    if (pc.BlockVentInteraction())
+                    {
+                        customVentilation = true;
+                    }
+                }
+            }
+
+            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+            if (ventilationSystem != null && ventilationSystem.IsDirty)
+            {
+                // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
+                if (customVentilation)
+                {
+                    Utils.SetAllVentInteractions();
+                }
+                else
+                {
+                    // Logger.Info("vanilla update vents", "ShipStatusSerializePatch");
+                    var subwriter = MessageWriter.Get(SendOption.Reliable);
+                    subwriter.StartMessage(5);
+                    {
+                        subwriter.Write(AmongUsClient.Instance.GameId);
+                        subwriter.StartMessage(1);
+                        {
+                            subwriter.WritePacked(__instance.NetId);
+                            subwriter.StartMessage((byte)SystemTypes.Ventilation);
+                            ventilationSystem.Serialize(subwriter, false);
+                            subwriter.EndMessage();
+                        }
+                        subwriter.EndMessage();
+                    }
+                    subwriter.EndMessage();
+                    AmongUsClient.Instance.SendOrDisconnect(subwriter);
+                    subwriter.Recycle();
+                }
+                ventilationSystem.IsDirty = false;
+            }
+        }
+
+        return false;
     }
 }

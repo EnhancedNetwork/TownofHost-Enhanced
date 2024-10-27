@@ -18,8 +18,6 @@ internal class BountyHunter : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
-
     private static OptionItem OptionTargetChangeTime;
     private static OptionItem OptionSuccessKillCooldown;
     private static OptionItem OptionFailureKillCooldown;
@@ -83,9 +81,7 @@ internal class BountyHunter : RoleBase
     {
         byte bountyId = reader.ReadByte();
         byte targetId = reader.ReadByte();
-
         Targets[bountyId] = targetId;
-        if (ShowTargetArrow) TargetArrow.Add(bountyId, targetId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -120,9 +116,9 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => ChangeTimer.Clear();
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!ChangeTimer.ContainsKey(player.PlayerId)) return;
+        if (!ChangeTimer.TryGetValue(player.PlayerId, out var timer)) return;
 
         if (!player.IsAlive())
             ChangeTimer.Remove(player.PlayerId);
@@ -131,12 +127,12 @@ internal class BountyHunter : RoleBase
             var targetId = GetTarget(player);
             if (targetId == byte.MaxValue) return;
 
-            if (ChangeTimer[player.PlayerId] >= TargetChangeTime)
+            if (timer >= TargetChangeTime)
             {
                 ResetTarget(player);
                 Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
             }
-            if (ChangeTimer[player.PlayerId] >= 0)
+            if (timer >= 0)
                 ChangeTimer[player.PlayerId] += Time.fixedDeltaTime;
 
             if (Main.PlayerStates[targetId].IsDead)
@@ -171,7 +167,7 @@ internal class BountyHunter : RoleBase
             && ((Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId))) return false;
 
         if (target.Is(CustomRoles.Lawyer)
-            && (Lawyer.Target.TryGetValue(target.PlayerId, out byte lawyerTarget) && lawyerTarget == player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
+            && Lawyer.TargetList.Contains(player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
 
         if (player.Is(CustomRoles.Charmed)
             && (target.Is(CustomRoles.Cultist) || (target.Is(CustomRoles.Charmed) && Cultist.TargetKnowOtherTargets))) return false;
@@ -251,13 +247,12 @@ internal class BountyHunter : RoleBase
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (seer == null) return string.Empty;
-        if (!seer.Is(CustomRoles.BountyHunter)) return string.Empty;
-        if (seen != null && seer.PlayerId != seen.PlayerId) return string.Empty;
-        
-        if (!ShowTargetArrow || isForMeeting) return string.Empty;
+        if (!ShowTargetArrow || isForMeeting || seer.PlayerId != seen.PlayerId) return string.Empty;
 
         var targetId = GetTarget(seer);
         return TargetArrow.GetArrows(seer, targetId);
     }
+
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handoff");
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Timer");
 }

@@ -63,12 +63,9 @@ internal class Bomber : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = BombCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = 2f;
     }
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl targetSS, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == targetSS.PlayerId) return true;
-
         var playerRole = shapeshifter.GetCustomRole();
 
         Logger.Info("The bomb went off", playerRole.ToString());
@@ -76,13 +73,13 @@ internal class Bomber : RoleBase
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsModClient()) target.KillFlash();
+            if (!target.IsModded()) target.KillFlash();
             if (target.PlayerId == shapeshifter.PlayerId) continue;
 
-            if (!target.IsAlive() || Medic.ProtectList.Contains(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Solsticer)) continue;
+            if (!target.IsAlive() || Medic.IsProtected(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
 
             var pos = shapeshifter.transform.position;
-            var dis = Vector2.Distance(pos, target.transform.position);
+            var dis = Utils.GetDistance(pos, target.transform.position);
             if (dis > BomberRadius.GetFloat()) continue;
 
             target.SetDeathReason(PlayerState.DeathReason.Bombed);
@@ -103,8 +100,6 @@ internal class Bomber : RoleBase
                 Utils.NotifyRoles();
             }, 0.3f, $"{playerRole} was suicide");
         }
-
-        return false;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

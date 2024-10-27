@@ -1,22 +1,28 @@
 ﻿
 namespace TOHE.Roles.AddOns.Crewmate;
 
-public static class Hurried
+public class Hurried : IAddon
 {
     private const int Id = 21300;
+    public AddonTypes Type => AddonTypes.Harmful;
 
     public static OptionItem CanBeOnMadMate;
     public static OptionItem CanBeOnTaskBasedCrew;
     public static OptionItem CanBeConverted;
 
-    public static void SetupCustomOption()
+    public void SetupCustomOption()
     {
         Options.SetupAdtRoleOptions(Id, CustomRoles.Hurried, canSetNum: true);
         CanBeOnMadMate = BooleanOptionItem.Create(Id + 11, "MadmateCanBeHurried", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
         CanBeOnTaskBasedCrew = BooleanOptionItem.Create(Id + 12, "TaskBasedCrewCanBeHurried", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
         CanBeConverted = BooleanOptionItem.Create(Id + 13, "HurriedCanBeConverted", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Hurried]);
     }
-
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool CheckWinState(PlayerControl pc)
     {
         if (pc == null) return false;

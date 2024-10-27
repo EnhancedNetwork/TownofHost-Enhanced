@@ -17,7 +17,6 @@ internal class Eraser : RoleBase
     //==================================================================\\
 
     private static OptionItem EraseLimitOpt;
-    public static OptionItem HideVoteOpt;
 
     private static readonly HashSet<byte> didVote = [];
     private static readonly HashSet<byte> PlayerToErase = [];
@@ -29,7 +28,6 @@ internal class Eraser : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eraser);
         EraseLimitOpt = IntegerOptionItem.Create(Id + 10, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Times);
-        HideVoteOpt = BooleanOptionItem.Create(Id + 11, "EraserHideVote", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser]);
     }
     public override void Init()
     {
@@ -44,17 +42,14 @@ internal class Eraser : RoleBase
     public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 
-    public override bool HideVote(PlayerVoteArea votedPlayer)
-        => HideVoteOpt.GetBool() && TempEraseLimit > 0;
-
-    public override void OnVote(PlayerControl player, PlayerControl target)
+    public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
-        if (!HasEnabled) return;
-        if (player == null || target == null) return;
-        if (target.Is(CustomRoles.Eraser)) return;
-        if (AbilityLimit < 1) return;
+        if (!HasEnabled) return true;
+        if (player == null || target == null) return true;
+        if (target.Is(CustomRoles.Eraser)) return true;
+        if (AbilityLimit < 1) return true;
 
-        if (didVote.Contains(player.PlayerId)) return;
+        if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
 
         Logger.Info($"{player.GetCustomRole()} votes for {target.GetCustomRole()}", "Vote Eraser");
@@ -62,7 +57,7 @@ internal class Eraser : RoleBase
         if (target.PlayerId == player.PlayerId)
         {
             Utils.SendMessage(GetString("EraserEraseSelf"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
-            return;
+            return true;
         }
 
         var targetRole = target.GetCustomRole();
@@ -70,7 +65,7 @@ internal class Eraser : RoleBase
         {
             Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
             Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
-            return;
+            return true;
         }
 
         AbilityLimit--;
@@ -82,6 +77,7 @@ internal class Eraser : RoleBase
         Utils.SendMessage(string.Format(GetString("EraserEraseNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
 
         Utils.NotifyRoles(SpecifySeer: player);
+        return false;
     }
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
@@ -122,6 +118,11 @@ internal class Eraser : RoleBase
             else
             {
                 Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
+                return;
+            }
+            if (player.HasGhostRole())
+            {
+                Logger.Info($"Canceled {player.GetNameWithRole()} because player have ghost role", "Eraser");
                 return;
             }
             player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));

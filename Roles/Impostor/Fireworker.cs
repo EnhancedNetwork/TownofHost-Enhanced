@@ -31,7 +31,7 @@ internal class Fireworker : RoleBase
     private static OptionItem CanKill;
 
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
-    private static readonly Dictionary<byte, List<Vector3>> FireworkerPosition = [];
+    private static readonly Dictionary<byte, HashSet<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
     private static readonly Dictionary<byte, int> FireworkerBombKill = [];
     private static int fireworkerCount = 1;
@@ -136,7 +136,7 @@ internal class Fireworker : RoleBase
                 {
                     foreach (var pos in FireworkerPosition[shapeshifterId].ToArray())
                     {
-                        var dis = Vector2.Distance(pos, player.transform.position);
+                        var dis = Utils.GetDistance(pos, player.transform.position);
                         if (dis > fireworkerRadius) continue;
 
                         if (player == shapeshifter)

@@ -10,7 +10,7 @@ internal class Medusa : RoleBase
     private const int Id = 17000;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -37,24 +37,24 @@ internal class Medusa : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target, PlayerControl killer)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
+
+
         if (reporter.Is(CustomRoles.Medusa))
         {
-            Main.UnreportableBodies.Add(target.PlayerId);
+            Main.UnreportableBodies.Add(deadBody.PlayerId);
             reporter.Notify(GetString("MedusaStoneBody"));
 
             reporter.SetKillCooldownV3(KillCooldownAfterStoneGazing.GetFloat(), forceAnime: true);
-            Logger.Info($"{reporter.GetRealName()} stoned {target.PlayerName} body", "Medusa");
+            Logger.Info($"{reporter.GetRealName()} stoned {deadBody.PlayerName} body", "Medusa");
             return false;
         }
         return true;

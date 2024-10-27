@@ -3,39 +3,43 @@ using static TOHE.Options;
 namespace TOHE.Roles.AddOns.Common;
 
 // https://github.com/Yumenopai/TownOfHost_Y/blob/main/Roles/Crewmate/Y/Rainbow.cs
-public static class Rainbow
+public class Rainbow : IAddon
 {
     private const int Id = 27700;
-    public static OptionItem CrewCanBeRainbow;
-    public static OptionItem ImpCanBeRainbow;
-    public static OptionItem NeutralCanBeRainbow;
+    public AddonTypes Type => AddonTypes.Misc;
+
     private static OptionItem RainbowColorChangeCoolDown;
     private static OptionItem ChangeInCamouflage;
 
-    public static bool isEnabled = false;
-    public static long LastColorChange;
-    public static void SetupCustomOptions()
+    private static readonly HashSet<byte> playerList = [];
+    public static bool IsEnabled = false;
+    private static long LastColorChange;
+
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Rainbow, canSetNum: true, tab: TabGroup.Addons);
-        CrewCanBeRainbow = BooleanOptionItem.Create(Id + 10, "CrewCanBeRainbow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
-        ImpCanBeRainbow = BooleanOptionItem.Create(Id + 11, "ImpCanBeRainbow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
-        NeutralCanBeRainbow = BooleanOptionItem.Create(Id + 12, "NeutralCanBeRainbow", true, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
+        SetupAdtRoleOptions(Id, CustomRoles.Rainbow, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         RainbowColorChangeCoolDown = IntegerOptionItem.Create(Id + 13, "RainbowColorChangeCoolDown", new(1, 100, 1), 3, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
         ChangeInCamouflage = BooleanOptionItem.Create(Id + 14, "RainbowInCamouflage", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Rainbow]);
     }
-    public static void Init()
+    public void Init()
     {
+        IsEnabled = false;
+        playerList.Clear();
         LastColorChange = Utils.GetTimeStamp();
-        isEnabled = false;
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        isEnabled = true;
+        playerList.Add(playerId);
+        IsEnabled = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnabled = false;
     }
     public static void OnFixedUpdate()
     {

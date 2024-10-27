@@ -1,5 +1,4 @@
 ﻿using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
@@ -26,7 +25,7 @@ internal class Bodyguard : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         var bodyguard = _Player;
-        if (!bodyguard.IsAlive() || killer?.PlayerId == target.PlayerId || bodyguard.PlayerId == target.PlayerId) return false;
+        if (!bodyguard.IsAlive() || killer.PlayerId == target.PlayerId || bodyguard.PlayerId == target.PlayerId) return false;
 
         var killerRole = killer.GetCustomRole();
         // Not should kill
@@ -37,7 +36,7 @@ internal class Bodyguard : RoleBase
             return false;
 
         var pos = target.transform.position;
-        var dis = Vector2.Distance(pos, bodyguard.transform.position);
+        var dis = Utils.GetDistance(pos, bodyguard.transform.position);
         if (dis > ProtectRadiusOpt.GetFloat()) return false;
 
         if (bodyguard.Is(CustomRoles.Madmate) && killer.GetCustomRole().IsImpostorTeam())

@@ -43,7 +43,7 @@ public class ClientOptionItem
                 closeButton.Background.color = Palette.DisabledGrey;
                 var closePassiveButton = closeButton.GetComponent<PassiveButton>();
                 closePassiveButton.OnClick = new();
-                closePassiveButton.OnClick.AddListener(new Action(() =>
+                closePassiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     CustomBackground.gameObject.SetActive(false);
                 }));
@@ -69,7 +69,7 @@ public class ClientOptionItem
                 modOptionsButton.Background.color = new Color32(255, 192, 203, byte.MaxValue);
                 var modOptionsPassiveButton = modOptionsButton.GetComponent<PassiveButton>();
                 modOptionsPassiveButton.OnClick = new();
-                modOptionsPassiveButton.OnClick.AddListener(new Action(() =>
+                modOptionsPassiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     CustomBackground.gameObject.SetActive(true);
                 }));
@@ -91,7 +91,7 @@ public class ClientOptionItem
             ToggleButton.Text.text = Translator.GetString(name);
             var passiveButton = ToggleButton.GetComponent<PassiveButton>();
             passiveButton.OnClick = new();
-            passiveButton.OnClick.AddListener(new Action(() =>
+            passiveButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 if (config != null) config.Value = !config.Value;
                 UpdateToggle();

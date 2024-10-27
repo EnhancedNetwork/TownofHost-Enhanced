@@ -11,6 +11,7 @@ internal class Pursuer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 13400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pursuer);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -24,9 +25,9 @@ internal class Pursuer : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pursuer);
-        PursuerSkillCooldown = FloatOptionItem.Create(Id + 10, "PursuerSkillCooldown", new(2.5f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pursuer])
+        PursuerSkillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(2.5f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pursuer])
             .SetValueFormat(OptionFormat.Seconds);
-        PursuerSkillLimitTimes = IntegerOptionItem.Create(Id + 11, "PursuerSkillLimitTimes", new(1, 20, 1), 2, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pursuer])
+        PursuerSkillLimitTimes = IntegerOptionItem.Create(Id + 11, GeneralOption.SkillLimitTimes, new(1, 20, 1), 2, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pursuer])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()
@@ -36,9 +37,6 @@ internal class Pursuer : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = PursuerSkillLimitTimes.GetInt();
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => CanUseKillButton(pc.PlayerId);
     
@@ -53,12 +51,12 @@ internal class Pursuer : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
     public bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public bool CanSeel(byte playerId) => AbilityLimit > 0;
+    public bool CanSeel() => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
-        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return true;
+        if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return false;
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
-        if (!(CanBeClient(target) && CanSeel(pc.PlayerId))) return false;
+        if (!(CanBeClient(target) && CanSeel())) return false;
 
         AbilityLimit--;
         SendSkillRPC();

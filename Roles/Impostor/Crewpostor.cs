@@ -1,5 +1,4 @@
 ﻿using Hazel;
-using UnityEngine;
 using static TOHE.Options;
 using AmongUs.GameOptions;
 
@@ -95,6 +94,7 @@ internal class Crewpostor : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc) => false;
 
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target) ? Utils.GetRoleColorCode(CustomRoles.Crewpostor) : string.Empty;
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor))
@@ -110,7 +110,7 @@ internal class Crewpostor : RoleBase
             TasksDone[player.PlayerId] = 0;
 
         SendRPC(player.PlayerId, TasksDone[player.PlayerId]);
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
+        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
 
         if (!list.Any())
         {
@@ -122,10 +122,10 @@ internal class Crewpostor : RoleBase
         }
         else
         {
-            list = [.. list.OrderBy(x => Vector2.Distance(player.transform.position, x.transform.position))];
+            list = [.. list.OrderBy(x => Utils.GetDistance(player.transform.position, x.transform.position))];
             var target = list[0];
 
-            if (!target.Is(CustomRoles.Pestilence))
+            if (!target.IsTransformedNeutralApocalypse())
             {
                 if (!LungeKill.GetBool())
                 {
@@ -143,12 +143,17 @@ internal class Crewpostor : RoleBase
                 }
                 Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "Crewpostor");
             }
-            else
+            else if (target.Is(CustomRoles.Pestilence))
             {
                 target.RpcMurderPlayer(player);
                 target.SetRealKiller(player);
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
+            }
+            else 
+            {
+                player.RpcGuardAndKill();
+                Logger.Info($"Crewpostor tried to kill Apocalypse Member：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Apocalypse Immune");
             }
         }
 

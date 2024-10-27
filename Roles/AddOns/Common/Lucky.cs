@@ -2,36 +2,31 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Lucky
+public class Lucky : IAddon
 {
     private const int Id = 19500;
+    public AddonTypes Type => AddonTypes.Helpful;
 
     private static OptionItem LuckyProbability;
-    public static OptionItem ImpCanBeLucky;
-    public static OptionItem CrewCanBeLucky;
-    public static OptionItem NeutralCanBeLucky;
 
-    private static Dictionary<byte, bool> LuckyAvoid;
+    private static readonly Dictionary<byte, bool> LuckyAvoid = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Lucky, canSetNum: true);
+        SetupAdtRoleOptions(Id, CustomRoles.Lucky, canSetNum: true, teamSpawnOptions: true);
         LuckyProbability = IntegerOptionItem.Create(Id + 10, "LuckyProbability", new(0, 100, 5), 50, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky])
             .SetValueFormat(OptionFormat.Percent);
-        ImpCanBeLucky = BooleanOptionItem.Create(Id + 11, "ImpCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
-        CrewCanBeLucky = BooleanOptionItem.Create(Id + 12, "CrewCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
-        NeutralCanBeLucky = BooleanOptionItem.Create(Id + 13, "NeutralCanBeLucky", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lucky]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        LuckyAvoid = [];
+        LuckyAvoid.Clear();
     }
-    public static void Add(byte PlayerId)
+    public  void Add(byte playerId, bool gameIsLoading = true)
     {
-        LuckyAvoid.Add(PlayerId, false);
+        LuckyAvoid[playerId] = false;
     }
-    public static void Remove(byte player)
+    public void Remove(byte player)
     {
         LuckyAvoid.Remove(player);
     }

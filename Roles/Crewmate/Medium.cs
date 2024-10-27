@@ -28,7 +28,7 @@ internal class Medium : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Medium);
-        ContactLimitOpt = IntegerOptionItem.Create(Id + 10, "MediumContactLimit", new(0, 15, 1), 1, TabGroup.CrewmateRoles, false)
+        ContactLimitOpt = IntegerOptionItem.Create(Id + 10, GeneralOption.SkillLimitTimes, new(0, 15, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medium])
             .SetValueFormat(OptionFormat.Times);
         OnlyReceiveMsgFromCrew = BooleanOptionItem.Create(Id + 11, "MediumOnlyReceiveMsgFromCrew", true, TabGroup.CrewmateRoles, false)
@@ -157,6 +157,8 @@ internal class Medium : RoleBase
     }
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
+        if (!_Player.IsAlive()) return;
+
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))
             AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));

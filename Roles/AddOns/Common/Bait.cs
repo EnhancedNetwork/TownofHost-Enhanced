@@ -5,27 +5,22 @@ using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Bait
+public class Bait : IAddon
 {
     private const int Id = 18700;
+    public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeBait;
-    public static OptionItem CrewCanBeBait;
-    public static OptionItem NeutralCanBeBait;
     public static OptionItem BaitDelayMin;
     public static OptionItem BaitDelayMax;
     public static OptionItem BaitDelayNotify;
     public static OptionItem BaitNotification;
     public static OptionItem BaitCanBeReportedUnderAllConditions;
     
-    public static List<byte> BaitAlive = [];
+    public static readonly HashSet<byte> BaitAlive = [];
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Bait, canSetNum: true);
-        ImpCanBeBait = BooleanOptionItem.Create(Id + 10, "ImpCanBeBait", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        CrewCanBeBait = BooleanOptionItem.Create(Id + 11, "CrewCanBeBait", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
-        NeutralCanBeBait = BooleanOptionItem.Create(Id + 12, "NeutralCanBeBait", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
+        SetupAdtRoleOptions(Id, CustomRoles.Bait, canSetNum: true, teamSpawnOptions: true);
         BaitDelayMin = FloatOptionItem.Create(Id + 13, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait])
             .SetValueFormat(OptionFormat.Seconds);
         BaitDelayMax = FloatOptionItem.Create(Id + 14, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait])
@@ -35,9 +30,36 @@ public static class Bait
         BaitCanBeReportedUnderAllConditions = BooleanOptionItem.Create(Id + 17, "BaitCanBeReportedUnderAllConditions", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bait]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        BaitAlive = [];
+        BaitAlive.Clear();
+    }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    {
+        BaitAlive.Add(playerId);
+    }
+    public void Remove(byte playerId)
+    {
+        BaitAlive.Remove(playerId);
+    }
+    public static void SendNotify()
+    {
+        if (MeetingStates.FirstMeeting && CustomRoles.Bait.RoleExist() && BaitNotification.GetBool())
+        {
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Bait) && !BaitAlive.Contains(x.PlayerId)).ToArray())
+            {
+                BaitAlive.Add(pc.PlayerId);
+            }
+            HashSet<string> baitAliveList = [];
+            foreach (var whId in BaitAlive.ToArray())
+            {
+                PlayerControl whpc = whId.GetPlayer();
+                if (whpc == null) continue;
+                baitAliveList.Add(whpc.GetRealName());
+            }
+            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
+        }
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
     {        
@@ -55,6 +77,8 @@ public static class Bait
         if (killer.Is(CustomRoles.KillingMachine)
             || killer.Is(CustomRoles.Swooper)
             || killer.Is(CustomRoles.Wraith)
+            || killer.Is(CustomRoles.Cleaner)
+            || (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !Bait.BaitCanBeReportedUnderAllConditions.GetBool())
             || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
             return;
 

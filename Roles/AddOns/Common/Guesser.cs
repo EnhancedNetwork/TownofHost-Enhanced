@@ -3,9 +3,10 @@ using UnityEngine;
 
 namespace TOHE.Roles.AddOns.Common;
 
-public static class Guesser
+public class Guesser : IAddon
 {
     private const int Id = 22200;
+    public AddonTypes Type => AddonTypes.Guesser;
 
     public static OptionItem ImpCanBeGuesser;
     public static OptionItem CrewCanBeGuesser;
@@ -14,7 +15,7 @@ public static class Guesser
     public static OptionItem GCanGuessTaskDoneSnitch;
     public static OptionItem GTryHideMsg;
 
-    public static void SetupCustomOptions()
+    public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Guesser, canSetNum: true, tab: TabGroup.Addons);
         ImpCanBeGuesser = BooleanOptionItem.Create(Id + 10, "ImpCanBeGuesser", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser]);
@@ -25,5 +26,11 @@ public static class Guesser
         GTryHideMsg = BooleanOptionItem.Create(Id + 15, "GuesserTryHideMsg", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Guesser])
             .SetColor(Color.green);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }
 

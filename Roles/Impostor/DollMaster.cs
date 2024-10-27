@@ -58,7 +58,6 @@ internal class DollMaster : RoleBase
         DollMasterTarget = Utils.GetPlayerById(playerId);
         IsControllingPlayer = false;
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
-        CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(CheckIfPlayerDC);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -73,24 +72,41 @@ internal class DollMaster : RoleBase
     public static bool IsDoll(byte id) => ReducedVisionPlayers.Contains(id);
 
     // Set Vision and Speed to 0 for possessed Target.
-    public static void ApplySettingsToDoll(IGameOptions opt, PlayerControl target)
+    public static void ApplySettingsToDoll(IGameOptions opt)
     {
         opt.SetVision(false);
         opt.SetFloat(FloatOptionNames.CrewLightMod, 0f * 0);
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
     }
 
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (controllingTarget != null && DollMasterTarget != null)
         {
             // If DollMaster can't be teleported start waiting to unpossess.
             WaitToUnPossessUpdate(DollMasterTarget, controllingTarget);
         }
-    }
+        if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
+        {
+            ReducedVisionPlayers.Clear();
 
-    private static void OnFixedUpdateOthers(PlayerControl target)
+            if (controllingTarget != null)
+            {
+                Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
+                controllingTarget.MarkDirtySettings();
+            }
+
+            DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
+            controllingTarget?.ResetPlayerOutfit();
+
+            IsControllingPlayer = false;
+            ResetPlayerSpeed = true;
+        }
+    }
+    private static void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (controllingTarget != null && target == controllingTarget)
         {
             // Boot Possessed Player from vent if inside of a vent and if waiting.
@@ -228,7 +244,7 @@ internal class DollMaster : RoleBase
     {
         var CanUseAbility = true;
         var cRole = player.GetCustomRole();
-        var subRoles = player.GetCustomSubRoles(); // May use later on!
+        //var subRoles = player.GetCustomSubRoles(); // May use later on!
 
         switch (cRole) // Check role.
         {
@@ -345,52 +361,33 @@ internal class DollMaster : RoleBase
         return false;
     }
 
-    // A fix when the DollMaster or Possessed Player DC's from the game.
-    public static void CheckIfPlayerDC(PlayerControl player)
-    {
-        if (IsControllingPlayer && (controllingTarget == null || DollMasterTarget == null))
-        {
-            ReducedVisionPlayers.Clear();
-
-            if (controllingTarget != null)
-            {
-                Main.AllPlayerSpeed[controllingTarget.PlayerId] = originalSpeed;
-                controllingTarget.MarkDirtySettings();
-            }
-
-            DollMasterTarget?.RpcShapeshift(DollMasterTarget, false);
-            controllingTarget?.ResetPlayerOutfit();
-
-            IsControllingPlayer = false;
-            ResetPlayerSpeed = true;
-        }
-    }
-
     // Possess Player
-    private static void Possess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
+    private static void Possess(PlayerControl pc, PlayerControl target)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(target, false);
-        RpcChangeSkin(pc, target);
-        RpcChangeSkin(target, pc);
-        RPC.SyncAllPlayerNames();
+        
+        pc?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
+        target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
+        
         pc?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
     // UnPossess Player
-    private static void UnPossess(PlayerControl pc, PlayerControl target, bool shouldAnimate = false)
+    private static void UnPossess(PlayerControl pc, PlayerControl target)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);
-        RpcChangeSkin(pc);
-        RpcChangeSkin(target);
+        
+        pc?.ResetPlayerOutfit();
+        target?.ResetPlayerOutfit();
 
         IsControllingPlayer = false;
         ResetPlayerSpeed = true;
         _ = new LateTask(() =>
         {
             ReducedVisionPlayers.Clear();
-            if (TargetDiesAfterPossession.GetBool() && !GameStates.IsMeeting) target.RpcMurderPlayer(target);
+            if (TargetDiesAfterPossession.GetBool() && !GameStates.IsMeeting) target?.RpcMurderPlayer(target);
         }, 0.45f);
     }
 
@@ -425,82 +422,6 @@ internal class DollMaster : RoleBase
         if (controllingTarget == null) return;
         controllingTarget?.RpcTeleport(DollMasterPos);
         pc?.RpcTeleport(controllingTargetPos);
-    }
-
-    // Set players cosmetics.
-    private static void RpcChangeSkin(PlayerControl player, PlayerControl target = null, NetworkedPlayerInfo.PlayerOutfit Outfit = null)
-    {
-        target ??= player;
-        Outfit ??= Main.PlayerStates[target.PlayerId].NormalOutfit;
-
-        void Setoutfit()
-        {
-            var sender = CustomRpcSender.Create(name: $"Reset PlayerOufit for 『{player.Data.PlayerName}』");
-
-            player.SetName(Outfit.PlayerName);
-            player.Data.DefaultOutfit.PlayerName = Main.PlayerStates[player.PlayerId].NormalOutfit.PlayerName;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
-                .Write(player.Data.NetId)
-                .Write(Outfit.PlayerName)
-            .EndRpc();
-
-
-            Main.AllPlayerNames[player.PlayerId] = Outfit.PlayerName;
-
-            player.SetColor(Outfit.ColorId);
-            player.Data.DefaultOutfit.ColorId = Main.PlayerStates[player.PlayerId].NormalOutfit.ColorId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
-                .Write(player.Data.NetId)
-                .Write((byte)Outfit.ColorId)
-            .EndRpc();
-
-            player.SetHat(Outfit.HatId, Outfit.ColorId);
-            player.Data.DefaultOutfit.HatId = Main.PlayerStates[player.PlayerId].NormalOutfit.HatId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
-                .Write(Outfit.HatId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
-            .EndRpc();
-
-            player.SetSkin(Outfit.SkinId, Outfit.ColorId);
-            player.Data.DefaultOutfit.SkinId = Main.PlayerStates[player.PlayerId].NormalOutfit.SkinId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
-                .Write(Outfit.SkinId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
-            .EndRpc();
-
-            player.SetVisor(Outfit.VisorId, Outfit.ColorId);
-            player.Data.DefaultOutfit.VisorId = Main.PlayerStates[player.PlayerId].NormalOutfit.VisorId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
-                .Write(Outfit.VisorId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
-            .EndRpc();
-
-            player.SetPet(Outfit.PetId);
-            player.Data.DefaultOutfit.PetId = Main.PlayerStates[player.PlayerId].NormalOutfit.PetId;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
-                .Write(Outfit.PetId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-                .EndRpc();
-
-            sender.SendMessage();
-
-            //cannot use currentoutfit type because of mushroom mixup . .
-            var OutfitTypeSet = player.CurrentOutfitType != PlayerOutfitType.Shapeshifted ? PlayerOutfitType.Default : PlayerOutfitType.Shapeshifted;
-
-            //Used instead of GameData.Instance.DirtyAllData();
-            foreach (var innerNetObject in GameData.Instance.AllPlayers)
-            {
-                innerNetObject.SetDirtyBit(uint.MaxValue);
-            }
-        }
-        if (player.CheckCamoflague())
-        {
-            Main.LateOutfits[target.PlayerId] = Setoutfit;
-        }
-        else
-        {
-            Setoutfit();
-        }
     }
 
     // Set name Suffix for Doll and Main Body under name.

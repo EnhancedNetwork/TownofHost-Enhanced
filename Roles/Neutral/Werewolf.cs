@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Double;
 using static TOHE.Options;
-using UnityEngine;
 
 namespace TOHE.Roles.Neutral;
 
@@ -11,7 +10,7 @@ internal class Werewolf : RoleBase
     private const int Id = 18400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -39,9 +38,6 @@ internal class Werewolf : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
@@ -60,10 +56,10 @@ internal class Werewolf : RoleBase
                 if (player == killer) continue;
                 if (player == target) continue;
 
-                if (player.Is(CustomRoles.Pestilence)) continue;
+                if (player.IsTransformedNeutralApocalypse()) continue;
                 else if ((player.Is(CustomRoles.NiceMini) || player.Is(CustomRoles.EvilMini)) && Mini.Age < 18) continue;
 
-                if (Vector2.Distance(killer.transform.position, player.transform.position) <= MaulRadius.GetFloat())
+                if (Utils.GetDistance(killer.transform.position, player.transform.position) <= MaulRadius.GetFloat())
                 {
                     player.SetDeathReason(PlayerState.DeathReason.Mauled);
                     player.RpcMurderPlayer(player);

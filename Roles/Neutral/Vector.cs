@@ -41,19 +41,20 @@ internal class Vector : RoleBase
     }
     public override void Add(byte playerId)
     {
-        VectorVentCount.Add(playerId, 0);
+        VectorVentCount[playerId] = 0;
         PlayerIds.Add(playerId);
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        if (!_Player.IsNonHostModdedClient()) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);
-        writer.Write(VectorVentCount[_Player.PlayerId]); 
+        writer.WritePacked(VectorVentCount[_Player.PlayerId]); 
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        int count = reader.ReadInt32();
+        int count = reader.ReadPackedInt32();
         VectorVentCount[_Player.PlayerId] = count;
     }
     public override string GetProgressText(byte playerId, bool comms)
@@ -67,10 +68,12 @@ internal class Vector : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        VectorVentCount.TryAdd(pc.PlayerId, 0);
         VectorVentCount[pc.PlayerId]++;
         SendRPC();
         NotifyRoles(SpecifySeer: pc);
+        
+        Logger.Info($"Vent count {VectorVentCount[pc.PlayerId]}", "Vector");
+        
         if (VectorVentCount[pc.PlayerId] >= VectorVentNumWin.GetInt())
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))

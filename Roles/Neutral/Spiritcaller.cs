@@ -12,6 +12,7 @@ internal class Spiritcaller : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25200;
     public static bool HasEnabled = CustomRoleManager.HasEnabled(CustomRoles.Spiritcaller);
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
@@ -60,12 +61,9 @@ internal class Spiritcaller : RoleBase
         AbilityLimit = SpiritMax.GetInt();
         ProtectTimeStamp = 0;
 
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateOthers);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -103,23 +101,25 @@ internal class Spiritcaller : RoleBase
         return true;
     }
 
-    private void OnFixedUpdateOthers(PlayerControl pc)
+    private void OnFixedUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (pc.Is(CustomRoles.Spiritcaller))
+        if (lowLoad) return;
+        var playerId = player.PlayerId;
+        if (player.Is(CustomRoles.Spiritcaller))
         {
-            if (ProtectTimeStamp < Utils.GetTimeStamp() && ProtectTimeStamp != 0)
+            if (ProtectTimeStamp < nowTime && ProtectTimeStamp != 0)
             {
                 ProtectTimeStamp = 0;
             }
         }
-        else if (PlayersHaunted.ContainsKey(pc.PlayerId) && PlayersHaunted[pc.PlayerId] < Utils.GetTimeStamp())
+        else if (PlayersHaunted.TryGetValue(playerId, out var time) && time < nowTime)
         {
-            PlayersHaunted.Remove(pc.PlayerId);
-            pc.MarkDirtySettings();
+            PlayersHaunted.Remove(playerId);
+            player?.MarkDirtySettings();
         }
     }
 
-    public override string GetProgressText(byte PlayerId, bool cooooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Spiritcaller) : Color.gray, $"({AbilityLimit})");
 
     public static void HauntPlayer(PlayerControl target)
     {
