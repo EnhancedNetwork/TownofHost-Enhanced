@@ -23,7 +23,7 @@ internal class NotificationPopperPatch
     {
         try
         {
-            SendRpc(index, playSound);
+            SendRpc(index, true);
             var haveParent = key.Parent != null;
             string str;
             if (haveParent)
