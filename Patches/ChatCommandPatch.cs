@@ -1533,6 +1533,39 @@ internal class ChatCommands
                     }
                     Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                     break;
+                case "/start":
+                case "/开始":
+                case "/старт":
+                    canceled = true;
+                    if (!GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (GameStates.IsCountDown)
+                    {
+                        Utils.SendMessage(GetString("StartCommandCountdown"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !int.TryParse(subArgs, out int countdown))
+                    {
+                        countdown = 5;
+                    }
+                    else
+                    {
+                        countdown = int.Parse(subArgs);
+                    }
+                    if (countdown < 0 || countdown > 99)
+                    {
+                        Utils.SendMessage(string.Format(GetString("StartCommandInvalidCountdown"), 0, 99), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    GameStartManager.Instance.BeginGame();
+                    GameStartManager.Instance.countDownTimer = countdown;
+                    Utils.SendMessage(string.Format(GetString("StartCommandStarted"), PlayerControl.LocalPlayer.name));
+                    Logger.Info("Game Starting", "ChatCommand");
+                    break;
 
                 default:
                     Main.isChatCommand = false;
@@ -3274,6 +3307,51 @@ internal class ChatCommands
                         Utils.SendMessage($"{(GetString("Message.MeCommandInvalidID"))}", player.PlayerId);
                     }
                 }
+                break;
+
+            case "/start":
+            case "/开始":
+            case "/старт":
+                if (!GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                    break;
+                }
+
+                if (!Utils.IsPlayerModerator(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
+
+                    break;
+
+                }
+                if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowStartCommand.GetBool() == false)
+                {
+                    Utils.SendMessage(GetString("StartCommandDisabled"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsCountDown)
+                {
+                    Utils.SendMessage(GetString("StartCommandCountdown"), player.PlayerId);
+                    break;
+                }
+                subArgs = args.Length < 2 ? "" : args[1];
+                if (string.IsNullOrEmpty(subArgs) || !int.TryParse(subArgs, out int countdown))
+                {
+                    countdown = 5;
+                }
+                else
+                {
+                    countdown = int.Parse(subArgs);
+                }
+                if (countdown < Options.StartCommandMinCountdown.CurrentValue || countdown > Options.StartCommandMaxCountdown.CurrentValue)
+                {
+                    Utils.SendMessage(string.Format(GetString("StartCommandInvalidCountdown"), Options.StartCommandMinCountdown.CurrentValue, Options.StartCommandMaxCountdown.CurrentValue), player.PlayerId);
+                    break;
+                }
+                GameStartManager.Instance.BeginGame();
+                GameStartManager.Instance.countDownTimer = countdown;
+                Utils.SendMessage(string.Format(GetString("StartCommandStarted"), player.name));
                 break;
 
 
