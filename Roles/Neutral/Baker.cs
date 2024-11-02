@@ -268,17 +268,6 @@ internal class Baker : RoleBase
         player.Notify(GetString("BakerToFamine"));
         player.RpcGuardAndKill(player);
     }
-    /*
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
-        {
-            guesser.ShowInfoMessage(isUI, GetString("GuessApocRole"));
-            return true;
-        }
-        return false;
-    }
-    */
 }
 internal class Famine : RoleBase
 {
@@ -395,14 +384,5 @@ internal class Famine : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Starved, [.. deathList]);
         Baker.BreadList[baker.PlayerId].Clear();
         Baker.StarvedNonBreaded = true;
-    }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool()) 
-        { 
-            guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
-            return true; 
-        }
-        return false;
     }
 }

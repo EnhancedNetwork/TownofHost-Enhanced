@@ -157,17 +157,6 @@ internal class SoulCollector : RoleBase
             _Player.RpcGuardAndKill(_Player);
         }
     }
-    /*
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (!ApocCanGuessApoc.GetBool() && target.IsNeutralApocalypse() && guesser.IsNeutralApocalypse())
-        {
-            guesser.ShowInfoMessage(isUI, GetString("GuessApocRole"));
-            return true;
-        }
-        return false;
-    }
-    */
 }
 internal class Death : RoleBase
 {
@@ -208,15 +197,6 @@ internal class Death : RoleBase
             }
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
-    }
-    public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
-    {
-        if (!TransformedNeutralApocalypseCanBeGuessed.GetBool())
-        {
-            guesser.ShowInfoMessage(isUI, GetString("GuessImmune"));
-            return true;
-        }
-        return false;
     }
     public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
