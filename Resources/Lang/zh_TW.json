@@ -2587,7 +2587,7 @@
   "FortuneTellerCheck.Result": "【<b>{0}</b>】可以是以下職業:\n{1}",
   "SunnyboyChance": "成為<color=#ff9902>陽光開朗大男孩</color>的機率",
   "BardChance": "成為<color=#ff1919>吟遊詩人</color>的機率",
-  "SkeldChance": "地圖是<color=#66a186> The Skeld</color>的機率",
+  "SkeldChance": "地圖為<color=#66a186>The Skeld</color>的機率",
   "MiraChance": "地圖為<color=#e84b56>MIRA HQ</color>的機率",
   "PolusChance": "地圖為<color=#a167c0>Polus</color>的機率",
   "DleksChance": "地圖是<color=#66a186>dlekS ehT</color>的機率",
