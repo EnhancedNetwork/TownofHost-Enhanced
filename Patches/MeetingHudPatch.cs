@@ -439,6 +439,8 @@ class CheckForEndVotingPatch
         int impnum = 0;
         int neutralnum = 0;
         int apocnum = 0;
+        int covennum = 0;
+
 
         if (CustomRoles.Bard.RoleExist())
         {
@@ -458,6 +460,8 @@ class CheckForEndVotingPatch
                 neutralnum++;
             else if (pc_role.IsNA() && pc != exiledPlayer.Object)
                 apocnum++;
+            else if (pc_role.IsCoven() && pc != exiledPlayer.Object)
+                covennum++;
         }
         switch (Options.CEMode.GetInt())
         {
@@ -474,6 +478,9 @@ class CheckForEndVotingPatch
                 else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor)) 
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
+                else if (player.GetCustomRole().IsCoven())
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+
                 break;
             case 2:
                 name = string.Format(GetString("PlayerIsRole"), realName, coloredRole);
@@ -486,6 +493,8 @@ class CheckForEndVotingPatch
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.GetCustomRole().IsCrewmate())
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
+                    else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Enchanted))
+                        name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }
                 break;
@@ -513,6 +522,8 @@ class CheckForEndVotingPatch
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
                     name += string.Format(GetString("ApocRemain"), apocnum) + comma;
+            if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
+                    name += string.Format(GetString("CovenRemain"), covennum) + comma;
         }
 
     EndOfSession:
@@ -955,6 +966,7 @@ class MeetingHudStartPatch
                 if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
                 if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
                 if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+                if (!Cyber.CovenKnowCyberDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
 
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }

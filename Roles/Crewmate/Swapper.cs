@@ -8,6 +8,8 @@ using System.Text;
 using static TOHE.Translator;
 using static TOHE.CheckForEndVotingPatch;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -257,8 +259,18 @@ internal class Swapper : RoleBase
         if (!Vote.TryGetValue(pc.PlayerId, out var tid1) || !VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) return;
         if (tid1 == 253 || tid2 == 253 || tid1 == tid2) return;
 
-        var target1 = Utils.GetPlayerById(tid1);
-        var target2 = Utils.GetPlayerById(tid2);
+        var target1 = GetPlayerById(tid1);
+        if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+        {
+            target1 = GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+        }
+        var target2 = GetPlayerById(tid2);
+        if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target2.PlayerId].Count > 0)
+        {
+            target2 = GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+        }
 
         if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) return;
 

@@ -111,6 +111,10 @@ public class PlayerState(byte playerId)
         {
             countTypes = CountTypes.OutOfGame;
         }
+        if (pc.Is(CustomRoles.Enchanted))
+        {
+            countTypes = CountTypes.Coven;
+        }
 
     }
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)

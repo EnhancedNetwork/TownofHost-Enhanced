@@ -7,9 +7,6 @@ using TOHE.Modules;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using AmongUs.GameOptions;
 using Hazel;
-using MS.Internal.Xml.XPath;
-using static UnityEngine.GraphicsBuffer;
-using TOHE.Roles.Impostor;
 
 namespace TOHE.Roles.Coven;
 
@@ -24,16 +21,21 @@ internal class Sacrifist : CovenManager
     //==================================================================\\
 
     private static OptionItem DebuffCooldown;
-    public static OptionItem DeathsAfterVote;
-    public static OptionItem NecroReducedCooldown;
+    private static OptionItem DeathsAfterVote;
+    private static OptionItem NecroReducedCooldown;
     private static OptionItem Vision;
+    private static OptionItem VisionDuration;
     private static OptionItem Speed;
+    private static OptionItem SpeedDuration;
     private static OptionItem IncreasedCooldown;
+    private static OptionItem RandomFreezeDuration;
 
     private static byte DebuffID = 10;
     private static float debuffTimer;
     private static float maxDebuffTimer;
+    private static float freezeTimer;
     private static byte randPlayer;
+    private static bool isFreezing;
     private static readonly Dictionary<byte, float> originalSpeed = [];
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = [];
 
@@ -46,10 +48,16 @@ internal class Sacrifist : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         Vision = FloatOptionItem.Create(Id + 13, "SacrifistVision", new(0f, 5f, 0.25f), 0.5f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
             .SetValueFormat(OptionFormat.Multiplier);
+        VisionDuration = FloatOptionItem.Create(Id + 17, "SacrifistVisionDuration", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
+            .SetValueFormat(OptionFormat.Seconds);
         Speed = FloatOptionItem.Create(Id + 14, "SacrifistSpeed", new(0f, 5f, 0.25f), 0.5f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
             .SetValueFormat(OptionFormat.Multiplier);
+        SpeedDuration = FloatOptionItem.Create(Id + 18, "SacrifistSpeedDuration", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
+            .SetValueFormat(OptionFormat.Seconds);
         IncreasedCooldown = FloatOptionItem.Create(Id + 15, "SacrifistIncreasedCooldown", new(0f, 100f, 2.5f), 50f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
             .SetValueFormat(OptionFormat.Percent);
+        RandomFreezeDuration = FloatOptionItem.Create(Id + 16, "SacrifistFreezeDuration", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
+            .SetValueFormat(OptionFormat.Seconds);
         DeathsAfterVote = IntegerOptionItem.Create(Id + 11, "SacrifistDeathsAfterVote", new(0, 15, 1), 0, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
             .SetValueFormat(OptionFormat.Players);
         NecroReducedCooldown = FloatOptionItem.Create(Id + 12, "SacrifistNecroReducedCooldown", new(0f, 100f, 2.5f), 50f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
@@ -67,6 +75,8 @@ internal class Sacrifist : CovenManager
     {
         debuffTimer = 0;
         maxDebuffTimer = DebuffCooldown.GetFloat();
+        freezeTimer = 0;
+        isFreezing = false;
     }
     public void SendRPC(PlayerControl pc)
     {
@@ -98,7 +108,7 @@ internal class Sacrifist : CovenManager
             Logger.Info($"{pc.GetRealName()} Started Sacrifice", "Sacrifist");
             if (HasNecronomicon(pc))
             {
-                pc.RpcExileV2();
+                pc.RpcMurderPlayer(pc);
                 pc.SetRealKiller(pc);
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 Logger.Info($"{pc.GetRealName()} Ultimate Sacrifice", "Sacrifist");
@@ -118,15 +128,32 @@ internal class Sacrifist : CovenManager
                     originalSpeed.Remove(randPlayer);
                     originalSpeed.Add(randPlayer, Main.AllPlayerSpeed[randPlayer]);
                     Main.AllPlayerSpeed[randPlayer] = Speed.GetFloat();
+                    randPlayerPC.MarkDirtySettings();
                     originalSpeed.Remove(sacrifist);
                     originalSpeed.Add(sacrifist, Main.AllPlayerSpeed[sacrifist]);
                     Main.AllPlayerSpeed[sacrifist] = Speed.GetFloat();
+                    pc.MarkDirtySettings();
                     Logger.Info($"{pc.GetRealName()} Changed Speed for {randPlayerPC.GetRealName} and self", "Sacrifist");
-                    pc.Notify(GetString("SacrifistSpeedDebuff"), 15f);
+                    pc.Notify(GetString("SacrifistSpeedDebuff"), SpeedDuration.GetFloat());
+                    _ = new LateTask(() =>
+                    {
+                        pc.Notify(GetString("SacrifistSpeedRevert"));
+                        Main.AllPlayerSpeed[randPlayer] = originalSpeed[randPlayer];
+                        GetPlayerById(randPlayer).SyncSettings();
+                        originalSpeed.Remove(randPlayer);
+                        Main.AllPlayerSpeed[sacrifist] = originalSpeed[sacrifist];
+                        pc.SyncSettings();
+                        originalSpeed.Remove(sacrifist);
+                    }, SpeedDuration.GetFloat(), "Sacrifist Revert Speed");
                     break;
                 // Change Vision
                 case 1:
-                    pc.Notify(GetString("SacrifistVisionDebuff"), 15f);
+                    pc.Notify(GetString("SacrifistVisionDebuff"), VisionDuration.GetFloat());
+                    _ = new LateTask(() =>
+                    {
+                        DebuffID = 10;
+                        pc.Notify(GetString("SacrifistVisionRevert"), 5f);
+                    }, VisionDuration.GetFloat(), "Sacrifist Revert Vision");
                     break;
                 // Change Cooldown
                 case 2:
@@ -134,47 +161,55 @@ internal class Sacrifist : CovenManager
                     Main.AllPlayerKillCooldown[sacrifist] += Main.AllPlayerKillCooldown[sacrifist] * (IncreasedCooldown.GetFloat() / 100);
                     maxDebuffTimer += maxDebuffTimer * (IncreasedCooldown.GetFloat() / 100);
                     Logger.Info($"{pc.GetRealName()} Changed Cooldown for {randPlayerPC.GetRealName} and self", "Sacrifist");
-                    pc.Notify(GetString("SacrifistCooldownDebuff"), 15f);
+                    pc.Notify(GetString("SacrifistCooldownDebuff"), 5f);
                     break;
                 // Cant Fix Sabotage (not coding allat, just give them Fool)
                 case 3:
                     GetPlayerById(sacrifist).RpcSetCustomRole(CustomRoles.Fool);
                     randPlayerPC.RpcSetCustomRole(CustomRoles.Fool);
                     Logger.Info($"{pc.GetRealName()} Gave Fool to {randPlayerPC.GetRealName} and self", "Sacrifist");
-                    pc.Notify(GetString("SacrifistFoolDebuff"), 15f);
+                    pc.Notify(GetString("SacrifistFoolDebuff"), 5f);
                     break;
                 // Make one of them call a meeting
                 case 4:
                     pc.Notify(GetString("SacrifistMeetingDebuff"), 15f);
-                    switch (rand.Next(0,2))
+                    _ = new LateTask(() =>
                     {
-                        case 0:
-                            randPlayerPC.NoCheckStartMeeting(null);
-                            Logger.Info($"{pc.GetRealName()} Made Self Call meeting", "Sacrifist");
-                            break;
-                        case 1:
-                            GetPlayerById(sacrifist).NoCheckStartMeeting(null);
-                            Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} call meeting", "Sacrifist");
-                            break;
-                    }
+                        switch (rand.Next(0, 2))
+                        {
+                            case 0:
+                                randPlayerPC.NoCheckStartMeeting(null);
+                                Logger.Info($"{pc.GetRealName()} Made Self Call meeting", "Sacrifist");
+                                break;
+                            case 1:
+                                GetPlayerById(sacrifist).NoCheckStartMeeting(null);
+                                Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} call meeting", "Sacrifist");
+                                break;
+                        }
+                    }, 2f, "Sacrifist Call Meeting");
                     break;
                 // Can't Report
                 case 5:
                     ReportDeadBodyPatch.CanReport[randPlayer] = false;
                     ReportDeadBodyPatch.CanReport[sacrifist] = false;
                     Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} and self unable to report", "Sacrifist");
-                    pc.Notify(GetString("SacrifistReportDebuff"), 15f);
+                    pc.Notify(GetString("SacrifistReportDebuff"), 5f);
                     break;
-                // Reset Tasks (inapplicable to Sacrifist)
+                // Reset Tasks
                 case 6:
-                    var taskState = pc.GetPlayerTaskState();
+                    var taskStateTarget = randPlayerPC.GetPlayerTaskState();
                     randPlayerPC.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskState.CompletedTasksCount = 0;
-                    pc.Notify(GetString("SacrifistTasksDebuff"), 15f);
+                    taskStateTarget.CompletedTasksCount = 0;
+                    var taskStateSacrif = pc.GetPlayerTaskState();
+                    pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
+                    taskStateSacrif.CompletedTasksCount = 0;
+                    pc.Notify(GetString("SacrifistTasksDebuff"), 5f);
+                    Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} and self reset tasks", "Sacrifist");
                     break;
                 // Swap Skins
                 case 7:
-                    var temp = pc.CurrentOutfit;
+                    var temp = new NetworkedPlayerInfo.PlayerOutfit()
+                    .Set(pc.GetRealName(), pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId);
                     OriginalPlayerSkins.Add(pc.PlayerId, Camouflage.PlayerSkins[pc.PlayerId]);
                     Camouflage.PlayerSkins[pc.PlayerId] = temp;
                     pc.SetNewOutfit(randPlayerPC.CurrentOutfit, setName: true, setNamePlate: true);
@@ -182,12 +217,14 @@ internal class Sacrifist : CovenManager
                     OriginalPlayerSkins.Add(randPlayer, Camouflage.PlayerSkins[randPlayer]);
                     Camouflage.PlayerSkins[randPlayer] = randPlayerPC.CurrentOutfit;
                     randPlayerPC.SetNewOutfit(temp, setName: true, setNamePlate: true);
+                    pc.Notify(GetString("SacrifistSwapSkinsDebuff"), 5f);
                     Logger.Info($"{pc.GetRealName()} swapped outfit with {randPlayerPC.GetRealName}", "Sacrifist");
                     break;
-                // Fake Snitch Arrow to Sacrifist and Target (done in different method)
+                // Random Freezing (done in different method)
                 case 8:
-                    Logger.Info($"{pc.GetRealName()} Caused Arrow to {randPlayerPC.GetRealName} and self for everyone", "Sacrifist");
-                    pc.Notify(GetString("SacrifistDoxxDebuff"), 15f);
+                    isFreezing = true;
+                    Logger.Info($"{pc.GetRealName()} and {randPlayerPC.GetRealName} will randomly freeze for duration", "Sacrifist");
+                    pc.Notify(string.Format(GetString("SacrifistFreezeDebuff"), RandomFreezeDuration.GetFloat()), RandomFreezeDuration.GetFloat());
                     break;
                 // Swap Sacrifist and Target (done in different method)
                 case 9:
@@ -219,30 +256,14 @@ internal class Sacrifist : CovenManager
                 {
                     pc.Notify(ColorString(GetRoleColor(CustomRoles.Sacrifist), GetString("ErrorTeleport")));
                 }
-            }, 5f, "Sacrifist Swap");
+            }, 3f, "Sacrifist Swap");
         }
-    }
-    public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
-    {
-        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
-        if (randPlayer == byte.MaxValue) return string.Empty;
-        if (randPlayer == seer.PlayerId) return string.Empty;
-        if (DebuffID != 8) return string.Empty;
-
-        var warning = "⚠";
-            warning += TargetArrow.GetArrows(seer, [_Player.PlayerId, randPlayer]);
-
-        return ColorString(GetRoleColor(CustomRoles.Snitch), warning);
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-
         var sacrifist = _Player.PlayerId;
         DebuffID = 10;
 
-        Main.AllPlayerSpeed[randPlayer] = originalSpeed[randPlayer];
-        GetPlayerById(randPlayer).SyncSettings();
-        originalSpeed.Remove(randPlayer);
         ReportDeadBodyPatch.CanReport[randPlayer] = true;
         GetPlayerById(randPlayer).ResetKillCooldown();
         Camouflage.PlayerSkins[randPlayer] = OriginalPlayerSkins[randPlayer];
@@ -258,9 +279,6 @@ internal class Sacrifist : CovenManager
         Logger.Info($"Resetting Debuffs for Affected player", "Sacrifist");
 
 
-        Main.AllPlayerSpeed[sacrifist] = originalSpeed[sacrifist];
-        GetPlayerById(sacrifist).SyncSettings();
-        originalSpeed.Remove(sacrifist);
         ReportDeadBodyPatch.CanReport[sacrifist] = true;
         _Player.ResetKillCooldown();
         maxDebuffTimer = DebuffCooldown.GetFloat();
@@ -293,6 +311,46 @@ internal class Sacrifist : CovenManager
         if (debuffTimer < maxDebuffTimer)
         {
             debuffTimer += Time.fixedDeltaTime;
+        }
+        if (isFreezing)
+        {
+            if (freezeTimer < RandomFreezeDuration.GetFloat())
+            {
+                var rand = IRandom.Instance;
+                var num = rand.Next(0, 10);
+                if (num == 0)
+                {
+                    originalSpeed.Remove(randPlayer);
+                    originalSpeed.Add(randPlayer, Main.AllPlayerSpeed[randPlayer]);
+                    Main.AllPlayerSpeed[randPlayer] = 0f;
+                    GetPlayerById(randPlayer).MarkDirtySettings();
+                    originalSpeed.Remove(player.PlayerId);
+                    originalSpeed.Add(player.PlayerId, Main.AllPlayerSpeed[player.PlayerId]);
+                    Main.AllPlayerSpeed[player.PlayerId] = 0f;
+                    player.MarkDirtySettings();
+                }
+                else
+                {
+                    Main.AllPlayerSpeed[randPlayer] = originalSpeed[randPlayer];
+                    GetPlayerById(randPlayer).SyncSettings();
+                    originalSpeed.Remove(randPlayer);
+                    Main.AllPlayerSpeed[player.PlayerId] = originalSpeed[player.PlayerId];
+                    player.SyncSettings();
+                    originalSpeed.Remove(player.PlayerId);
+                }
+                freezeTimer += Time.fixedDeltaTime;
+            }
+            if (freezeTimer >= RandomFreezeDuration.GetFloat())
+            {
+                Main.AllPlayerSpeed[randPlayer] = originalSpeed[randPlayer];
+                GetPlayerById(randPlayer).SyncSettings();
+                originalSpeed.Remove(randPlayer);
+                Main.AllPlayerSpeed[player.PlayerId] = originalSpeed[player.PlayerId];
+                player.SyncSettings();
+                originalSpeed.Remove(player.PlayerId);
+                isFreezing = false;
+                freezeTimer = 0;
+            }
         }
     }
     public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)

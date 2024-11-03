@@ -6,6 +6,7 @@ using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -192,6 +193,15 @@ public static class GuessManager
 
             if (target != null)
             {
+
+                if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+                {
+                    target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                    _ = new LateTask(() =>
+                    {
+                        Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+                    }, 2f, "Voodoo Master Notify");
+                }
                 GuessMaster.OnGuess(role);
                 bool guesserSuicide = false;
 
@@ -758,11 +768,12 @@ public static class GuessManager
                 Crewmate   = 0
                 Impostor   = 1
                 Neutral    = 2
-                Add-ons    = 3
+                Coven      = 3
+                Add-ons    = 4
             */
 
             int tabCount = 0;
-            for (int TabId = 0; TabId < 4; TabId++)
+            for (int TabId = 0; TabId < 5; TabId++)
             {
                 if (PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
                 {
@@ -780,7 +791,7 @@ public static class GuessManager
                 {
                     //if (!Options.GCanGuessCrew.GetBool() && TabId == 0) continue;
                     //if (!Options.GCanGuessImp.GetBool() && TabId == 1) continue;
-                    if (!Guesser.GCanGuessAdt.GetBool() && TabId == 3) continue;
+                    if (!Guesser.GCanGuessAdt.GetBool() && TabId == 4) continue;
                 }
                 else if (Options.GuesserMode.GetBool() &&
                     !(PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) ||
@@ -790,7 +801,8 @@ public static class GuessManager
                 {
                     if (!Options.CrewCanGuessCrew.GetBool() && PlayerControl.LocalPlayer.Is(Custom_Team.Crewmate) && TabId == 0) continue;
                     if (!Options.ImpCanGuessImp.GetBool() && PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) && TabId == 1) continue;
-                    if (!Options.CanGuessAddons.GetBool() && TabId == 3) continue;
+                    if (!Options.CovenCanGuessCoven.GetBool() && PlayerControl.LocalPlayer.Is(Custom_Team.Coven) && TabId == 3) continue;
+                    if (!Options.CanGuessAddons.GetBool() && TabId == 4) continue;
                 }
 
                 Transform TeambuttonParent = new GameObject().transform;
@@ -808,6 +820,7 @@ public static class GuessManager
                     Custom_Team.Crewmate => new Color32(140, 255, 255, byte.MaxValue),
                     Custom_Team.Impostor => new Color32(255, 25, 25, byte.MaxValue),
                     Custom_Team.Neutral => new Color32(127, 140, 141, byte.MaxValue),
+                    Custom_Team.Coven => new Color32(172, 66, 242, byte.MaxValue),
                     Custom_Team.Addon => new Color32(255, 154, 206, byte.MaxValue),
                     _ => throw new NotImplementedException(),
                 };
@@ -966,6 +979,12 @@ public static class GuessManager
                         listOfRoles.Add(CustomRoles.War);
                 }
 
+                if (CustomRoles.Ritualist.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Enchanted))
+                        listOfRoles.Add(CustomRoles.Enchanted);
+                }
+
                 arrayOfRoles = [.. listOfRoles];
             }
             else
@@ -1000,6 +1019,7 @@ public static class GuessManager
                     or CustomRoles.Cyber
                     or CustomRoles.Sloth
                     or CustomRoles.Apocalypse
+                    or CustomRoles.Coven
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 CreateRole(role);

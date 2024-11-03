@@ -2345,6 +2345,7 @@ internal class ChatCommands
                 int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                 int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
                 int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
 
                 var sub = new StringBuilder();
                 sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
@@ -2354,6 +2355,9 @@ internal class ChatCommands
 
                 if (Options.ShowApocalypseInLeftCommand.GetBool())
                     sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+
+                if (Options.ShowCovenInLeftCommand.GetBool())
+                    sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
 
                 sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 

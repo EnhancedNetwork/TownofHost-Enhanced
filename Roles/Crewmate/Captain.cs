@@ -27,6 +27,7 @@ internal class Captain : RoleBase
     private static OptionItem CaptainCanTargetNE;
     private static OptionItem CaptainCanTargetNK;
     private static OptionItem CaptainCanTargetNA;
+    private static OptionItem CaptainCanTargetCoven;
 
     private static readonly Dictionary<byte, float> OriginalSpeed = [];
     private static readonly Dictionary<byte, List<byte>> CaptainVoteTargets = [];
@@ -47,6 +48,7 @@ internal class Captain : RoleBase
         CaptainCanTargetNE = BooleanOptionItem.Create(Id + 19, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNK = BooleanOptionItem.Create(Id + 20, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNA = BooleanOptionItem.Create(Id + 21, "CaptainCanTargetNA", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        CaptainCanTargetCoven = BooleanOptionItem.Create(Id + 23, "CaptainCanTargetCoven", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         OverrideTasksData.Create(Id + 22, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
@@ -79,7 +81,9 @@ internal class Captain : RoleBase
                                                            (CaptainCanTargetNE.GetBool() && x.GetCustomRole().IsNE()) ||
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()) 
-                              ||                           (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()))).ToList();
+                              ||                           (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()) ||
+                                                           (CaptainCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven())
+                              )).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
         if (allTargets.Count == 0) return true;

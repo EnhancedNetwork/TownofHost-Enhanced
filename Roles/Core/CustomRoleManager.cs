@@ -53,6 +53,10 @@ public static class CustomRoleManager
                 roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
                 break;
 
+            case Custom_Team.Coven:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven()).Select(r => r.Value).ToList();
+                break;
+
             default:
                 Logger.Info("Unsupported team was sent.", "GetExperimentalOptions");
                 break;

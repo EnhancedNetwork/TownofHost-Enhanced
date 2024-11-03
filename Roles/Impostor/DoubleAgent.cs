@@ -8,6 +8,7 @@ using TOHE.Roles.Neutral;
 using static TOHE.Utils;
 using static TOHE.Options;
 using static TOHE.Translator;
+using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
@@ -130,6 +131,12 @@ internal class DoubleAgent : RoleBase
         {
             if (target.Is(Custom_Team.Impostor)) return false;
             if (voter == target) return false;
+
+            if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+            {
+                target = GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+            }
 
             CurrentBombedTime = -1;
             CurrentBombedPlayers.Add(target.PlayerId);

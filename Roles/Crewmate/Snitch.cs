@@ -24,6 +24,7 @@ internal class Snitch : RoleBase
     private static OptionItem OptionCanGetColoredArrow;
     private static OptionItem OptionCanFindNeutralKiller;
     private static OptionItem OptionCanFindNeutralApocalypse;
+    private static OptionItem OptionCanFindCoven;
     private static OptionItem OptionCanFindMadmate;
     private static OptionItem OptionRemainingTasks;
 
@@ -31,6 +32,7 @@ internal class Snitch : RoleBase
     private static bool CanGetColoredArrow;
     private static bool CanFindNeutralKiller;
     private static bool CanFindNeutralApocalypse;
+    private static bool CanFindCoven;
     private static bool CanFindMadmate;
     private static int RemainingTasksToBeFound;
 
@@ -47,6 +49,7 @@ internal class Snitch : RoleBase
         OptionCanGetColoredArrow = BooleanOptionItem.Create(Id + 11, "SnitchCanGetArrowColor", true, TabGroup.CrewmateRoles, false).SetParent(OptionEnableTargetArrow);
         OptionCanFindNeutralKiller = BooleanOptionItem.Create(Id + 12, "SnitchCanFindNeutralKiller", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OptionCanFindNeutralApocalypse = BooleanOptionItem.Create(Id + 15, "SnitchCanFindNeutralApoc", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
+        OptionCanFindCoven = BooleanOptionItem.Create(Id + 16, "SnitchCanFindCoven", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OptionCanFindMadmate = BooleanOptionItem.Create(Id + 14, "SnitchCanFindMadmate", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OptionRemainingTasks = IntegerOptionItem.Create(Id + 13, "SnitchRemainingTaskFound", new(0, 10, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Snitch]);
         OverrideTasksData.Create(Id + 20, TabGroup.CrewmateRoles, CustomRoles.Snitch);
@@ -59,6 +62,7 @@ internal class Snitch : RoleBase
         CanGetColoredArrow = OptionCanGetColoredArrow.GetBool();
         CanFindNeutralKiller = OptionCanFindNeutralKiller.GetBool();
         CanFindNeutralApocalypse = OptionCanFindNeutralApocalypse.GetBool();
+        CanFindCoven = OptionCanFindCoven.GetBool();
         CanFindMadmate = OptionCanFindMadmate.GetBool();
         RemainingTasksToBeFound = OptionRemainingTasks.GetInt();
 
@@ -95,7 +99,7 @@ internal class Snitch : RoleBase
     }
 
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse)|| (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse) || (target.IsPlayerCoven() && CanFindCoven) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
     
     private void CheckTask(PlayerControl snitch)
     {
