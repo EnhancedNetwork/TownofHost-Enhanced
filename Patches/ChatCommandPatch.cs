@@ -80,6 +80,7 @@ internal class ChatCommands
         if (Exorcist.IsExorcismActive())
         {
             Exorcist.ExcersizePlayer(PlayerControl.LocalPlayer);
+            goto Canceled;
         }
         switch (args[0])
         {
@@ -2023,6 +2024,7 @@ internal class ChatCommands
         if (Exorcist.IsExorcismActive())
         {
             Exorcist.ExcersizePlayer(player);
+            return;
         }
         if (!Blackmailer.CheckBlackmaile(player)) ChatManager.SendMessage(player, text);
 
