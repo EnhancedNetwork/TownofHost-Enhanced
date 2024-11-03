@@ -399,6 +399,7 @@
   "Sloth": "Sloth",
   "Prohibited": "Prohibited",
   "Eavesdropper": "Eavesdropper",
+  "Exorcist": "Exorcist",
   "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable vitals from anywhere",
@@ -710,6 +711,7 @@
   "SlothInfo": "You're slower",
   "ProhibitedInfo": "Certain vents are blocked",
   "EavesdropperInfo": "Listen in on other roles",
+  "ExorcistInfo": "Kill people who won't shut up",
   "EngineerTOHEInfoLong": "(Crewmates):\nAs the Engineer, you may access the vents while Comms Sabotaged is inactive.",
   "ScientistTOHEInfoLong": "(Crewmates):\nAs the Scientist, you can see vitals at any time, showing you who is alive and dead.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die, you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not Red).",
@@ -791,6 +793,7 @@
   "EvilMiniInfoLong": "(Impostors):\nAs the Evil Mini, you are unkillable until you grow up and have a very long initial kill cooldown, which gets drastically shortened as you grow up.",
   "BlackmailerInfoLong": "(Impostors):\nAs the Blackmailer, when you shift into a target, you will blackmail that player. This means that during the meetings, they won't be able to speak.\n\nNote: If someone is already blackmailed, blackmailing another person un-blackmails the current person.",
   "InstigatorInfoLong": "(Impostors):\nAs the Instigator, it's your job to turn the crewmates against each other. Each time a Crewmate gets voted out in a meeting, if you are alive, an additional Crewmate who voted for the innocent player will die after the meeting. The Host determines the number of additional players dying.",
+  "ExorcistInfoLong": "(Impostors):\nAs the Exorcist, you can use /ex in meeting to exorcise a player who won't shut up. The exorcised player will die. You'll lose your ability if you excersise too many people.",
   "LazyGuyInfoLong": "(Crewmates):\nLazy Guy has only one task. In addition, the Impostor's abilities can't affect the Lazy Guy, such as being a scapegoat for Anonymous, being marked by a Warlock or Puppeteer, and more. Lazy Guy will not have any add-ons.",
   "SuperStarInfoLong": "(Crewmates):\nThere will be a star logo next to the Super Star's name, so everyone knows who the Super Star is. The Super Star can only die when the murderer is alone with the Super Star (regular kills only). In addition, the Guessers can't guess the Super Star. ",
   "CelebrityInfoLong": "(Crewmates):\nAll Crewmates see the kill-flash when the Celebrity dies (same as the Seer sees the kill-flash) and get a notice at the next meeting. The Impostors don't know anything about this.",
@@ -2002,6 +2005,7 @@
   "DeathReason.Starved": "Starved",
   "DeathReason.Equilibrium": "Equilibrium",
   "DeathReason.Sacrificed": "Sacrificed",
+  "DeathReason.Excersized": "Excersized",
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Disconnected": "Disconnected",
@@ -3793,5 +3797,20 @@
   "Evader_ChanceNotExiled": "Chance not be exiled",
 
   "EavesdropperMsgTitle": "You found a secret",
-  "EavesdropPercentChance": "Chance to eavesdrop"
+  "EavesdropPercentChance": "Chance to eavesdrop",
+
+  "ExorcistKill": "<b>{0}</b> was Exorcismed",
+  "ExorcistNotify": "Exorcism is being activated in <b>{0}</b> seconds",
+  "ExorcistEnd": "Exorcism has ended",
+  "ExorcistStart": "<size=150%>Exorcism has started for <b>{0}</b> seconds</size>",
+  "ExorcistActive": "Exorcism is active",
+  "ExorcistOutOfUsages": "You're out of usages!",
+  "ExorcistDispelled": "You're out of spells!",
+  "ExcorismActiveFor": "How long should exorcism last for",
+  "ExcorismPerGame": "How many times can exorcism be used per game",
+  "ExcorismDelay": "How long should the delay be",
+  "ExcorismSacrificesToDispell": "How many sacrifices are needed to dispell",
+  "ExcorismLimitMeeting": "How many times can exorcism be used per meeting",
+  "ExcorismEndOnKill": "End exorcism on kill",
+  "ExorcistTryHideMsg": "Try to hide exorcist's commands"
 }
