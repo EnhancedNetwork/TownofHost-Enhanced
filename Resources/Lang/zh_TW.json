@@ -1331,7 +1331,7 @@
   "TempBan": "暫時封禁",
   "OnlyCancel": "只取消作弊行為",
   "CheatResponses": "檢測到外掛時",
-  "NeutralRoleWinTogether": "同種職業的<color=#7f8c8d>中立</color>玩家共同獲勝",
+  "NeutralRoleWinTogether": "<color=#7f8c8d>中立陣營</color>玩家共同獲勝",
   "NeutralWinTogether": "全體<color=#7f8c8d>中立</color>陣營玩家共同獲勝",
   "MenuTitle.Disable": "★ 禁用相關設定",
   "MenuTitle.MapsSettings": "★ 地圖 ★",
