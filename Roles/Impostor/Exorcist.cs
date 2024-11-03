@@ -13,7 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class Exorcist : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 30200;
+    private const int Id = 30800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Exorcist);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -113,7 +113,7 @@ internal class Exorcist : RoleBase
             IsExcorism = false;
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
         }
-        player.SetDeathReason(PlayerState.DeathReason.Excersized);
+        player.SetDeathReason(PlayerState.DeathReason.Exorcised);
         player.SetRealKiller(ExorcistPlayer);
         GuessManager.RpcGuesserMurderPlayer(player);
         Main.PlayersDiedInMeeting.Add(player.PlayerId);
