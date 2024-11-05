@@ -746,6 +746,11 @@ public class RoleAssign
             if (FinalRolesList.Contains(CustomRoles.Romantic) && FinalRolesList.Contains(CustomRoles.Lovers))
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
+        if (HeartBreaker.HasEnabled)
+        {
+            if(!FinalRolesList.Contains(CustomRoles.Romantic) && !FinalRolesList.Contains(CustomRoles.Lovers) && FinalRolesList.Contains(CustomRoles.HeartBreaker))
+                FinalRolesList.Remove(CustomRoles.HeartBreaker);
+        }
 
         // if roles are very few, add vanilla сrewmate roles
         if (AllPlayers.Count > FinalRolesList.Count)

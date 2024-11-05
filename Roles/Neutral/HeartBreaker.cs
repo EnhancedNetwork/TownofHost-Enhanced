@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AmongUs.GameOptions;
 using Rewired;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -16,17 +17,16 @@ namespace TOHE.Roles.Neutral
         //===========================SETUP================================\\
         private const int Id = 30900;
         public override bool IsDesyncRole => true;
+        public override bool IsExperimental => true;
+        public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.HeartBreaker);
         public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-        public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
+        public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
         //==================================================================\\
 
         private static OptionItem HeartBreakerCooldown;
         private static OptionItem HeartBreakerKillOtherLover;
         private static OptionItem HeartBreakerTriesMax;
-        private static OptionItem HeartBreakerCanKillAfterFindingLover;
         private static OptionItem HeartBreakerSuicideIfNoLover;
-
-        private bool HasLover = false;
 
         public override void SetupCustomOption()
         {
@@ -35,8 +35,6 @@ namespace TOHE.Roles.Neutral
                 .SetParent(CustomRoleSpawnChances[CustomRoles.HeartBreaker])
                 .SetValueFormat(OptionFormat.Seconds);
             HeartBreakerTriesMax = IntegerOptionItem.Create(Id + 11, "HeartBreakerTriesMax", new(1, 10, 1), 3, TabGroup.NeutralRoles, false)
-                .SetParent(CustomRoleSpawnChances[CustomRoles.HeartBreaker]);
-            HeartBreakerCanKillAfterFindingLover = BooleanOptionItem.Create(Id + 12, "HeartBreakerCanKillAfterFindingLover", true, TabGroup.NeutralRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.HeartBreaker]);
             HeartBreakerSuicideIfNoLover = BooleanOptionItem.Create(Id + 13, "HeartBreakerSuicideIfNoLover", true, TabGroup.NeutralRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.HeartBreaker]);
@@ -50,66 +48,58 @@ namespace TOHE.Roles.Neutral
         public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = HeartBreakerCooldown.GetFloat();
 
         public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
-        public bool IsUseKillButton(PlayerControl pc)
-            => pc.IsAlive() && AbilityLimit > 0 && (!HasLover || HeartBreakerCanKillAfterFindingLover.GetBool());
-
+        public bool IsUseKillButton(PlayerControl pc) => pc.IsAlive() && AbilityLimit > 0;
+        public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
         public override string GetProgressText(byte playerId, bool comms)
             => Utils.ColorString(IsUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.HeartBreaker).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
         public override void SetAbilityButtonText(HudManager hud, byte playerId)
         {
-            if (!HasLover) hud.KillButton.OverrideText(GetString("HeartBreakerBreakText"));
+            if (!HasLover()) hud.KillButton.OverrideText(GetString("HeartBreakerBreakText"));
             else hud.KillButton.OverrideText(GetString("TriggerKill"));
         }
         public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
         {
             if (killer == null || target == null) return false;
-            if (AbilityLimit < 1)
-            {
-                killer.ResetKillCooldown();
-                return false;
-            }
-            if (HasLover && HeartBreakerCanKillAfterFindingLover.GetBool()) return true;
-            else if (HasLover) return false;
             AbilityLimit--;
             SendSkillRPC();
-            if (HasLover && HeartBreakerCanKillAfterFindingLover.GetBool()) return true;
+            if (HasLover()) return true;
             else
             {
                 if (target.GetCustomSubRoles().Contains(CustomRoles.Lovers))
                 {
-                    HasLover = true;
                     SetAbilityButtonText(HudManager.Instance, killer.PlayerId);
                     foreach (PlayerControl player in Main.LoversPlayers)
                     {
-                        PlayerState playerState = Main.PlayerStates[player.PlayerId];
-                        if (playerState.SubRoles.Contains(CustomRoles.Lovers) && playerState.PlayerId != target.PlayerId)
+                        if (player.GetCustomSubRoles().Contains(CustomRoles.Lovers) && player != target && killer != target)
                         {
-                            playerState.RemoveSubRole(CustomRoles.Lovers);
-                            PlayerControl playerControl = Utils.GetPlayerById(playerState.PlayerId);
-                            Main.LoversPlayers.Remove(playerControl);
+                            player.GetCustomSubRoles().Remove(CustomRoles.Lovers);
+                            Main.LoversPlayers.Remove(player);
                             RPC.SyncLoversPlayers();
                             if (HeartBreakerKillOtherLover.GetBool())
                             {
-                                playerControl.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
-                                playerControl.RpcMurderPlayer(playerControl);
-                                playerControl.SetRealKiller(killer);
+                                player.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+                                player.RpcMurderPlayer(player);
+                                player.SetRealKiller(killer);
                             }
-                            PlayerState killerPlayerState = Main.PlayerStates[killer.PlayerId];
-                            killerPlayerState.SetSubRole(CustomRoles.Lovers);
+                            killer.RpcSetCustomRole(CustomRoles.Lovers);
                             Main.LoversPlayers.Add(killer);
                             RPC.SyncLoversPlayers();
+                            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+                            target.RpcGuardAndKill(killer);
+                            target.RpcGuardAndKill(target);
                             break;
                         }
                     }
                 }
-                else if (HeartBreakerSuicideIfNoLover.GetBool() && AbilityLimit < 1 && !HasLover)
+                else if (HeartBreakerSuicideIfNoLover.GetBool() && AbilityLimit < 1 && !HasLover())
                 {
                     killer.SetDeathReason(PlayerState.DeathReason.Suicide);
                     killer.RpcMurderPlayer(killer);
                 }
-                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
                 return false;
             }
         }
+        public bool HasLover() => Main.LoversPlayers.Contains(_Player);
     }
 }
