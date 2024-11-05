@@ -399,6 +399,7 @@
   "Sloth": "Sloth",
   "Prohibited": "Prohibited",
   "Eavesdropper": "Eavesdropper",
+  "HeartBreaker": "Heart Breaker",
   "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable vitals from anywhere",
@@ -710,6 +711,7 @@
   "SlothInfo": "You're slower",
   "ProhibitedInfo": "Certain vents are blocked",
   "EavesdropperInfo": "Listen in on other roles",
+  "HeartBreakerInfo": "Steal a lover",
   "EngineerTOHEInfoLong": "(Crewmates):\nAs the Engineer, you may access the vents while Comms Sabotaged is inactive.",
   "ScientistTOHEInfoLong": "(Crewmates):\nAs the Scientist, you can see vitals at any time, showing you who is alive and dead.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die, you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not Red).",
@@ -935,6 +937,7 @@
   "JinxInfoLong": "(Neutrals):\nAs the Jinx, whenever you get attacked, you jinx them, resulting in them dying to a jinx.\nThis has limited uses.\n\nKill off everyone to win.",
   "PotionMasterInfoLong": "(Neutrals):\nAs the Potion Master, you have three different potions assigned to three different actions.\n\nSingle click: Reveal role\nDouble click: Kill\nMap: Sabotage\n\nThe reveal potion has a limit.\nWhen you run out, the kill buttons default to killing.",
   "NecromancerInfoLong": "(Neutrals):\nAs the Necromancer, you win when you're the last one standing.\nAdditionally when someone tries to kill you, you will block the kill, and you will teleport to a random vent. You will have a limited time to kill your killer. If you succeed in doing so, you live. If the time runs out before you kill your killer, you die permanently. If you try to kill someone else other than your killer, you will die.",
+  "HeartBreakerInfoLong": "(Neutrals):\nAs the Heart Breaker, you can steal a lover. Depending on the settings, you will be able to kill after finding your lover. You may also die if you don't find one",
   "LastImpostorInfoLong": "(Add-ons):\nThis special effect is given to the last surviving Impostor. It significantly reduces their kill cooldown.",
   "OverclockedInfoLong": "(Add-ons):\nAs the Overclocked, your kill cooldown is reduced by a percentage.\n\nThis feature is only assigned to roles with a kill button.",
   "LoversInfoLong": "(Add-ons):\nLovers are a combination of two players. The Lovers win when they are the last ones standing, and their victory is shared. When one of the Lovers wins, the other also wins together. Lovers can see the 「♥」 next to each other's name. If one of the Lovers dies, the other will die in love (may not die in love according to the Host's settings). When one of the Lovers is exiled in the meeting, the other will die and become a dead body that cannot be reported.",
@@ -3791,6 +3794,13 @@
   "Minion_Blind": "blinded",
 
   "Evader_ChanceNotExiled": "Chance not be exiled",
+
+  "HeartBreakerCooldown": "Break Cooldown",
+  "HeartBreakerKillOtherLover": "Kill Other Lover",
+  "HeartBreakerTriesMax": "Break Limit",
+  "HeartBreakerCanKillAfterFindingLover": "Can Kill After Finding Lover",
+  "HeartBreakerSuicideIfNoLover": "Suicide If No Lover",
+  "HeartBreakerBreakText" : "Break",
 
   "EavesdropperMsgTitle": "You found a secret",
   "EavesdropPercentChance": "Chance to eavesdrop"

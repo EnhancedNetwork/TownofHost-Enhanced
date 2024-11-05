@@ -174,6 +174,7 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Mini)
                 || pc.Is(CustomRoles.NiceMini)
                 || pc.Is(CustomRoles.EvilMini)
+                || pc.Is(CustomRoles.HeartBreaker)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
