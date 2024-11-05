@@ -179,7 +179,7 @@ internal class Snitch : RoleBase
                 {
                     foreach (var target in Main.AllAlivePlayerControls)
                     {
-                        if (!IsSnitchTarget(target) || (!Illusionist.IsNonCovIllusioned(target.PlayerId) && Illusionist.SnitchCanIllusioned.GetBool())) continue;
+                        if (!IsSnitchTarget(target) || !(Illusionist.IsNonCovIllusioned(target.PlayerId) && Illusionist.SnitchCanIllusioned.GetBool())) continue;
                         
                         var targetId = target.PlayerId;
 

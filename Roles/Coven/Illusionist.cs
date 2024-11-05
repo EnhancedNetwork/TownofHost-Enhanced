@@ -87,7 +87,7 @@ internal class Illusionist : CovenManager
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IllusionCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.Ritualist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.Illusionist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     private static PlayerState.DeathReason ChangeRandomDeath()
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>().ToArray();
