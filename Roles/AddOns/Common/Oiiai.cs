@@ -91,7 +91,7 @@ public class Oiiai : IAddon
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
             return;
         }
-        else if (killer.GetCustomRole().IsCoven() || !CovenManager.HasNecronomicon(killer))
+        else if (killer.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(killer))
         {
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Enchanted);

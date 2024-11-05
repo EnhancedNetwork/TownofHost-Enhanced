@@ -873,7 +873,6 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
-    Spellcaster,
     Sorceress,
     VoodooMaster,
 

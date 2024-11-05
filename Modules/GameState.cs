@@ -215,6 +215,10 @@ public class PlayerState(byte playerId)
             case CustomRoles.Soulless:
                 countTypes = CountTypes.OutOfGame;
                 break;
+
+            case CustomRoles.Enchanted:
+                countTypes = CountTypes.Coven;
+                break;
         }
     }
     public void RemoveSubRole(CustomRoles addOn)
