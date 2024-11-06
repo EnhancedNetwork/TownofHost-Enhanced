@@ -77,7 +77,7 @@ internal class Romantic : RoleBase
         CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
     }
 
-    private void SendRPC(byte playerId)
+    internal void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
