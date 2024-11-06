@@ -67,6 +67,7 @@ namespace TOHE.Roles.Neutral
             {
                 if (target.GetCustomSubRoles().Contains(CustomRoles.Lovers))
                 {
+                    if (HasLover()) return false;
                     SetAbilityButtonText(HudManager.Instance, killer.PlayerId);
                     foreach (PlayerControl player in Main.LoversPlayers)
                     {
@@ -84,12 +85,30 @@ namespace TOHE.Roles.Neutral
                             killer.RpcSetCustomRole(CustomRoles.Lovers);
                             Main.LoversPlayers.Add(killer);
                             RPC.SyncLoversPlayers();
+                            // temp workaround i guess
+                            Utils.DoNotifyRoles(killer, target);
+                            Utils.DoNotifyRoles(target, killer);
+                            target.Notify(GetString("HeartBreakerNewLoverText"));
                             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                             target.RpcGuardAndKill(killer);
                             target.RpcGuardAndKill(target);
                             break;
                         }
                     }
+                }
+                else if (target.Is(CustomRoles.Romantic) && !HasLover())
+                {
+                    Romantic.BetPlayer.Remove(target.PlayerId);
+                    Romantic.BetPlayer.Add(target.PlayerId, killer.PlayerId);
+                    Romantic romantic = (Romantic)target.GetRoleClass();
+                    romantic.SendRPC(target.PlayerId);
+                    target.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+                    Utils.DoNotifyRoles(killer, target);
+                    Utils.DoNotifyRoles(target, killer);
+                    target.Notify(GetString("HeartBreakerNewLoverText"));
+                    if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+                    target.RpcGuardAndKill(killer);
+                    target.RpcGuardAndKill(target);
                 }
                 else if (HeartBreakerSuicideIfNoLover.GetBool() && AbilityLimit < 1 && !HasLover())
                 {
@@ -100,6 +119,15 @@ namespace TOHE.Roles.Neutral
                 return false;
             }
         }
-        public bool HasLover() => Main.LoversPlayers.Contains(_Player);
+        public bool HasLover(PlayerControl player = null)
+        {
+            if (player == null) player = _Player;
+            if (Main.LoversPlayers.Contains(player))
+                return true;
+            else
+                for (byte i = 0; i < Romantic.BetPlayer.Count; i++)
+                    if (Romantic.BetPlayer[i] == player.PlayerId) return true;
+            return false;
+        }
     }
 }
