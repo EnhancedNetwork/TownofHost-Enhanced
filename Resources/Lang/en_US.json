@@ -1011,7 +1011,7 @@
   "LoyalInfoLong": "(Add-ons):\nAs the Loyal, you cannot be recruited by roles such as Jackal or Cultist.\n\nCannot be assigned to neutrals.",
   "EvilSpiritInfoLong": "(Add-ons):\nAs Evil Spirit, it's your job to help the Spiritcaller to victory. You can use your Haunt button to freeze players and reduce their vision. Alternatively, you can use your Haunt button to give the Spiritcaller a shield against a kill attempt temporarily.",
   "RecruitInfoLong": "(Betrayal Add-ons):\nAs a recruit, you are on the Jackal's team and help out the Jackal and their Sidekicks.\n\nYou cannot win with your original team.",
-  "EnchantedInfoLong": "(Betrayal Add-ons):\nThe Enchanted add-on can only be obtained through being converted by the Ritualist.\nOnce Enchanted, you are apart of the Coven team and are no longer apart of your original team.",
+  "EnchantedInfoLong": "(Betrayal Add-ons):\nThe Enchanted add-on can only be obtained through being converted by the Ritualist or upon killing the Oiiai as a non-nerconomicon holder.\nOnce Enchanted, you are apart of the Coven team and are no longer apart of your original team.",
   "AdmiredInfoLong": "(Betrayal Add-ons):\nAs an admired player, you win with the crew and not your original team.\n\nYou can see the Admirer.",
   "GlowInfoLong": "(Add-ons):\nDuring lights out, you and players nearby you will receive a vision boost.",
   "RadarInfoLong": "(Add-ons):\nAs Radar, you have arrows pointing towards the closest person at all times.",
@@ -2048,6 +2048,16 @@
   "VoodooMasterTargetInMeeting": "Someone tried to target you with their role during this meeting, but it was deflected to one of your dolls, {0}, instead!",
   "VoodooMasterNoDollsLeft": "You can't voodoo anyone else this round!",
   "VoodooMasterDolledSomeone": "{0} has been turned into a Voodoo doll",
+
+  "PotionMasterMaxReveals": "Maximum Reveals",
+  "PotionMasterMaxBarriers": "Maximum Barriers",
+  "PotionMasterNoPotions": "You're out of {0} Potions!",
+  "PotionMasterPotionSwitch": "Potion switched to: {0}",
+  "PotionMasterPotionCurrent": "Current Potion: ",
+  "PotionMasterRevealCoven": "You can already see roles of Coven!",
+  "PotionMasterReveal": "Reveal",
+  "PotionMasterBarrier": "Barrier",
+  "PotionMasterKillButtonText": "Use Potion",
 
 
   "LuckyProbability": "Probability of surviving a kill",
@@ -3370,7 +3380,6 @@
   "PitfallTrapCauseVisionTime": "Trap caused vision time",
   "PitfallTrap": "You have fallen into a trap!",
   "ConsigliereDivinationMaxCount": "Maximum Reveals",
-  "RitualMaxCount": "Maximum Reveals",
   "CleanserHideVote": "Hide Cleanser's vote",
   "OracleSkillLimit": "Maximum Uses",
   "OracleHideVote": "Hide <color=#6666FF>Oracle</color>'s vote",

@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -108,7 +109,6 @@ internal class CopyCat : RoleBase
                 CustomRoles.Consigliere => CustomRoles.Overseer,
                 CustomRoles.Mercenary => CustomRoles.Addict,
                 CustomRoles.Miner => CustomRoles.Mole,
-                CustomRoles.PotionMaster => CustomRoles.Overseer,
                 CustomRoles.Twister => CustomRoles.TimeMaster,
                 CustomRoles.Disperser => CustomRoles.Transporter,
                 CustomRoles.Eraser => CustomRoles.Cleanser,
@@ -127,6 +127,8 @@ internal class CopyCat : RoleBase
                 CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
                 CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,
                 CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
+                CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 0 => CustomRoles.Overseer,
+                CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 1 => CustomRoles.Medic,
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
                 CustomRoles.MoonDancer => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,
