@@ -69,9 +69,9 @@ internal class Mortician : RoleBase
         if (name == string.Empty) msgToSend.TryAdd(pc.PlayerId, string.Format(GetString("MorticianGetNoInfo"), target.PlayerName));
         else msgToSend.TryAdd(pc.PlayerId, string.Format(GetString("MorticianGetInfo"), target.PlayerName, name));
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!ShowArrows.GetBool() || isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
+        if (!ShowArrows.GetBool() || isForMeeting || seer.PlayerId != seen.PlayerId) return string.Empty;
 
         return Utils.ColorString(Color.white, LocateArrow.GetArrows(seer));
     }

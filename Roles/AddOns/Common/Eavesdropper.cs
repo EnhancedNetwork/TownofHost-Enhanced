@@ -9,10 +9,6 @@ public class Eavesdropper : IAddon
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem ImpCanBeEavesdropper;
-    public static OptionItem CrewCanBeEavesdropper;
-    public static OptionItem NeutralCanBeEavesDropper;
-
     public static OptionItem EavesdropPercentChance;
 
     public void SetupCustomOption()

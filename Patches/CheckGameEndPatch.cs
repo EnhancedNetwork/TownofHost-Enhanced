@@ -363,9 +363,10 @@ class GameEndCheckerForNormal
                                 var lawyertarget = lawerClass.GetTargetId();
                                 if (WinnerIds.Contains(lawyertarget)
                                     || (Main.PlayerStates.TryGetValue(lawyertarget, out var lawyerTargetPS) && WinnerRoles.Contains(lawyerTargetPS.MainRole)))
+                                {
                                     WinnerIds.Add(pc.PlayerId);
-
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Lawyer);
+                                    AdditionalWinnerTeams.Add(AdditionalWinners.Lawyer);
+                                }
                             }
                             break;
                         case CustomRoles.Follower when Follower.BetPlayer.TryGetValue(pc.PlayerId, out var followerTarget)
