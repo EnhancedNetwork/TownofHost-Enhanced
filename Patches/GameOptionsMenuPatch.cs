@@ -450,7 +450,7 @@ public static class ToggleOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
             item.SetValue(__instance.GetBool() ? 1 : 0);
-            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
         return true;
@@ -524,7 +524,7 @@ public static class NumberOptionPatch
             {
                 floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
             }
-            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
         return true;
@@ -677,7 +677,7 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
-            NotificationPopperPatch.AddSettingsChangeMessage(index, item, true);
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {

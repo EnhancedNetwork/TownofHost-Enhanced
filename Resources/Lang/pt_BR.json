@@ -1007,7 +1007,7 @@
   "SlothInfoLong": "(Atributos):\nA velocidade de movimento padrão do Preguiçoso é mais lenta que outras.\n(a velocidade depende da configuração do Anfitrião)",
   "ProhibitedInfoLong": "(Atributos):\nComo Proibido, você tem dutos específicos que você não pode usar.\nQuantos dutos estão desativados dependerá das configurações do Anfitrião.",
   "EavesdropperInfoLong": "(Atributos):\nComo Interceptador, você tem a chance de ler mensagens baseadas em informações de outras funções/atributos, como Funerário ou Cão de Caça.",
-  "ApocolypseInfoLong": "(Apocolypse):\nApocolypse members are on a seperate team which work together and win together. If there are multiple apocolypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocolypse roles can guess or be guessed.",
+  "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "Sobrepor Texto",
   "Overlay.GuesserMode": "<size=75%>Modo Adivinhador</size>",
   "Overlay.NoGameEnd": "<size=75%>Sem Fim de Jogo</size>",
