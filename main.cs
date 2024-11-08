@@ -840,6 +840,7 @@ public enum CustomRoles
     Seeker,
     SerialKiller,
     Shaman,
+    Shocker,
     Shroud,
     Sidekick,
     Solsticer,
