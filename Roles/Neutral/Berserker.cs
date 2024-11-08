@@ -22,6 +22,7 @@ internal class Berserker : RoleBase
     //==================================================================\\
 
     private static OptionItem BerserkerKillCooldown;
+    private static OptionItem BerserkerCanKillTeamate;
     private static OptionItem BerserkerMax;
     private static OptionItem BerserkerOneCanKillCooldown;
     private static OptionItem BerserkerKillCooldownLevel;
@@ -47,22 +48,23 @@ internal class Berserker : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Berserker, 1, zeroOne: false);
         BerserkerKillCooldown = FloatOptionItem.Create(Id + 2, "BerserkerKillCooldown", new(25f, 250f, 2.5f), 35f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
             .SetValueFormat(OptionFormat.Seconds);
+        BerserkerCanKillTeamate = BooleanOptionItem.Create(Id + 3, "BerserkerCanKillTeamate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerMax = IntegerOptionItem.Create(Id + 3, "BerserkerMax", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
             .SetValueFormat(OptionFormat.Level);
         BerserkerHasImpostorVision = BooleanOptionItem.Create(Id + 15, "BerserkerHasImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         WarHasImpostorVision = BooleanOptionItem.Create(Id + 16, "WarHasImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerCanVent = BooleanOptionItem.Create(Id + 17, "BerserkerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         WarCanVent = BooleanOptionItem.Create(Id + 18, "WarCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerOneCanKillCooldown = BooleanOptionItem.Create(Id + 4, "BerserkerOneCanKillCooldown", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerOneKillCooldown = FloatOptionItem.Create(Id + 5, "BerserkerOneKillCooldown", new(10f, 45f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
+        BerserkerOneCanKillCooldown = BooleanOptionItem.Create(Id + 5, "BerserkerOneCanKillCooldown", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerOneKillCooldown = FloatOptionItem.Create(Id + 6, "BerserkerOneKillCooldown", new(10f, 45f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
             .SetValueFormat(OptionFormat.Seconds);
-        BerserkerKillCooldownLevel = IntegerOptionItem.Create(Id + 6, "BerserkerLevelRequirement", new(1, 10, 1), 1, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
+        BerserkerKillCooldownLevel = IntegerOptionItem.Create(Id + 7, "BerserkerLevelRequirement", new(1, 10, 1), 1, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
             .SetValueFormat(OptionFormat.Level);
-        BerserkerTwoCanScavenger = BooleanOptionItem.Create(Id + 7, "BerserkerTwoCanScavenger", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerScavengerLevel = IntegerOptionItem.Create(Id + 8, "BerserkerLevelRequirement", new(1, 10, 1), 2, TabGroup.NeutralRoles, false).SetParent(BerserkerTwoCanScavenger)
+        BerserkerTwoCanScavenger = BooleanOptionItem.Create(Id + 8, "BerserkerTwoCanScavenger", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerScavengerLevel = IntegerOptionItem.Create(Id + 9, "BerserkerLevelRequirement", new(1, 10, 1), 2, TabGroup.NeutralRoles, false).SetParent(BerserkerTwoCanScavenger)
             .SetValueFormat(OptionFormat.Level);
-        BerserkerThreeCanBomber = BooleanOptionItem.Create(Id + 9, "BerserkerThreeCanBomber", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        BerserkerBomberLevel = IntegerOptionItem.Create(Id + 10, "BerserkerLevelRequirement", new(1, 10, 1), 3, TabGroup.NeutralRoles, false).SetParent(BerserkerThreeCanBomber)
+        BerserkerThreeCanBomber = BooleanOptionItem.Create(Id + 10, "BerserkerThreeCanBomber", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
+        BerserkerBomberLevel = IntegerOptionItem.Create(Id + 11, "BerserkerLevelRequirement", new(1, 10, 1), 3, TabGroup.NeutralRoles, false).SetParent(BerserkerThreeCanBomber)
             .SetValueFormat(OptionFormat.Level);
         //BerserkerFourCanFlash = BooleanOptionItem.Create(Id + 11, "BerserkerFourCanFlash", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         //BerserkerSpeed = FloatOptionItem.Create(611, "BerserkerSpeed", new(1.5f, 5f, 0.25f), 2.5f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
@@ -112,7 +114,7 @@ internal class Berserker : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse()) return false;
+        if (target.IsNeutralApocalypse() && !BerserkerCanKillTeamate.GetBool())  return false;
         
         bool noScav = true;
         if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
@@ -151,6 +153,7 @@ internal class Berserker : RoleBase
 
         if (BerserkerKillMax[killer.PlayerId] >= BerserkerBomberLevel.GetInt() && BerserkerThreeCanBomber.GetBool())
         {
+            
             Logger.Info("炸弹爆炸了", "Boom");
             CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
             foreach (var player in Main.AllAlivePlayerControls)
@@ -161,7 +164,7 @@ internal class Berserker : RoleBase
                 if (player == killer) continue;
                 if (player == target) continue;
 
-                if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
+                if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat() && BerserkerCanKillTeamate.GetBool())
                 {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.RpcMurderPlayer(player);
