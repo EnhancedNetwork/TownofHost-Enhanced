@@ -48,7 +48,6 @@ internal class Berserker : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Berserker, 1, zeroOne: false);
         BerserkerKillCooldown = FloatOptionItem.Create(Id + 2, "BerserkerKillCooldown", new(25f, 250f, 2.5f), 35f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
             .SetValueFormat(OptionFormat.Seconds);
-        BerserkerCanKillTeamate = BooleanOptionItem.Create(Id + 3, "BerserkerCanKillTeamate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerMax = IntegerOptionItem.Create(Id + 3, "BerserkerMax", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker])
             .SetValueFormat(OptionFormat.Level);
         BerserkerHasImpostorVision = BooleanOptionItem.Create(Id + 15, "BerserkerHasImpostorVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
@@ -74,6 +73,7 @@ internal class Berserker : RoleBase
             .SetValueFormat(OptionFormat.Level);
         WarKillCooldown = FloatOptionItem.Create(Id + 14, "WarKillCooldown", new(0f, 150f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(BerserkerFourCanNotKill)
             .SetValueFormat(OptionFormat.Seconds);
+        BerserkerCanKillTeamate = BooleanOptionItem.Create(Id + 19, "BerserkerCanKillTeamate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
     }
     public override void Init()
     {
