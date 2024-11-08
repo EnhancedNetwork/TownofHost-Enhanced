@@ -22,6 +22,8 @@ internal class PlagueBearer : RoleBase
 
     private static OptionItem PlagueBearerCooldownOpt;
     public static OptionItem PestilenceCooldownOpt;
+    private static OptionItem PlagueBearerCanVent;
+    private static OptionItem PlagueBearerHasImpostorVision;
     public static OptionItem PestilenceCanVent;
     public static OptionItem PestilenceHasImpostorVision;
 
@@ -36,9 +38,13 @@ internal class PlagueBearer : RoleBase
         PestilenceCooldownOpt = FloatOptionItem.Create(Id + 11, "PestilenceCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer])
                 .SetValueFormat(OptionFormat.Seconds);
-        PestilenceCanVent = BooleanOptionItem.Create(Id + 12, "PestilenceCanVent", true, TabGroup.NeutralRoles, false)
+        PlagueBearerCanVent = BooleanOptionItem.Create(Id + 12, "PlagueBearerCanVent", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
-        PestilenceHasImpostorVision = BooleanOptionItem.Create(Id + 13, "PestilenceHasImpostorVision", true, TabGroup.NeutralRoles, false)
+        PlagueBearerHasImpostorVision = BooleanOptionItem.Create(Id + 13, "PlagueBearerHasImpostorVision", true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
+        PestilenceCanVent = BooleanOptionItem.Create(Id + 14, "PestilenceCanVent", true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
+        PestilenceHasImpostorVision = BooleanOptionItem.Create(Id + 15, "PestilenceHasImpostorVision", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
     }
 
@@ -60,6 +66,9 @@ internal class PlagueBearer : RoleBase
         PlaguedList.Remove(playerId);
         CustomRoleManager.CheckDeadBodyOthers.Remove(OnPlayerDead);
     }
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => PlagueBearerCanVent.GetBool();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) 
+        => opt.SetVision(PlagueBearerHasImpostorVision.GetBool());
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
