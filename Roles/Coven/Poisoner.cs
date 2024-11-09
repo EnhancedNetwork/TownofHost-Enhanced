@@ -1,7 +1,8 @@
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Coven;
 
@@ -28,6 +29,8 @@ internal class Poisoner : CovenManager
     //private static OptionItem HasImpostorVision;
 
     private static readonly Dictionary<byte, PoisonedInfo> PoisonedPlayers = [];
+    private static readonly Dictionary<byte, List<byte>> RoleblockedPlayers = [];
+
 
     private static float KillDelay;
 
@@ -46,12 +49,16 @@ internal class Poisoner : CovenManager
     {
         playerIdList.Clear();
         PoisonedPlayers.Clear();
+        RoleblockedPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
+        RoleblockedPlayers[playerId] = [];
+        GetPlayerById(playerId)?.AddDoubleTrigger();
+
     }
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -61,15 +68,27 @@ internal class Poisoner : CovenManager
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Bait)) return true;
-
-        killer.SetKillCooldown();
-
-        if (!PoisonedPlayers.ContainsKey(target.PlayerId))
+        if (killer.CheckDoubleTrigger(target, () => { RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId); }))
         {
-            PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
+            if (HasNecronomicon(killer) && !target.IsPlayerCoven()) 
+            {
+                if (target.Is(CustomRoles.Bait)) return true;
+
+                killer.SetKillCooldown();
+
+                if (!PoisonedPlayers.ContainsKey(target.PlayerId))
+                {
+                    PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
+                }
+            }
+            return false;
         }
-        return false;
+        else
+        {
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            return false;
+        }
     }
 
     public override void OnFixedUpdate(PlayerControl poisoner, bool lowLoad, long nowTime)
@@ -121,11 +140,23 @@ internal class Poisoner : CovenManager
     {
         foreach (var targetId in PoisonedPlayers.Keys)
         {
-            var target = Utils.GetPlayerById(targetId);
-            var poisoner = Utils.GetPlayerById(PoisonedPlayers[targetId].PoisonerId);
+            var target = GetPlayerById(targetId);
+            var poisoner = GetPlayerById(PoisonedPlayers[targetId].PoisonerId);
             KillPoisoned(poisoner, target);
         }
         PoisonedPlayers.Clear();
+    }
+    public bool IsRoleblocked(byte id) => RoleblockedPlayers[_Player.PlayerId].Contains(id);
+    public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
+    {
+        if (!IsRoleblocked(pc.PlayerId)) return false;
+        if (pc == null) return false;
+
+        pc.ResetKillCooldown();
+        pc.SetKillCooldown();
+
+        Logger.Info($"{pc.GetRealName()} fail ability because roleblocked", "Poisoner");
+        return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
