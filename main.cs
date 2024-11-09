@@ -8,6 +8,7 @@ using MonoMod.Utils;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
@@ -38,6 +39,7 @@ public class Main : BasePlugin
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";
     public const string DebugKeySalt = "59687b";
+    public static string FileHash { get; private set; } = "";
 
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
@@ -481,6 +483,19 @@ public class Main : BasePlugin
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
     }
 
+    private void InitializeFileHash()
+    {
+        var file = Assembly.GetExecutingAssembly();
+        using var stream = file.Location != null ? File.OpenRead(file.Location) : null;
+        if (stream != null)
+        {
+            using var sha256 = SHA256.Create();
+            var hashBytes = sha256.ComputeHash(stream);
+            FileHash = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
+            TOHE.Logger.Msg("Assembly Hash: " + FileHash, "Plugin Load");
+        }
+    }
+
     public override void Load()
     {
         Instance = this;
@@ -594,6 +609,8 @@ public class Main : BasePlugin
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
         else ConsoleManager.CreateConsole();
 
+
+        InitializeFileHash();
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
