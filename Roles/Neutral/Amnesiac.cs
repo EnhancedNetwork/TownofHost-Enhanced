@@ -29,7 +29,7 @@ internal class Amnesiac : RoleBase
         Role_Maverick,
         Role_Imitator,
     }
-    
+
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
@@ -135,11 +135,10 @@ internal class Amnesiac : RoleBase
             }
             if (tar.GetCustomRole().IsNA())
             {
-                tempRole = tar.GetCustomRole();
-            }
-            if (tar.GetCustomRole().IsCoven())
-            {
-                tempRole = tar.GetCustomRole();
+                __instance.RpcSetCustomRole(tar.GetCustomRole());
+                __instance.GetRoleClass().Add(__instance.PlayerId);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
+                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
             }
             if (tar.GetCustomRole().IsAmneNK())
             {
@@ -169,7 +168,6 @@ internal class Amnesiac : RoleBase
             if (tempRole != CustomRoles.Amnesiac)
             {
                 __instance.GetRoleClass().OnRemove(__instance.PlayerId);
-                __instance.RpcChangeRoleBasis(tempRole);
                 __instance.RpcSetCustomRole(tempRole);
                 __instance.GetRoleClass().OnAdd(__instance.PlayerId);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
