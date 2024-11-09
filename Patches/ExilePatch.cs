@@ -57,6 +57,7 @@ class ExileControllerWrapUpPatch
     }
     private static void CheckAndDoRandomSpawn()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap spawnMap = Utils.GetActiveMapName() switch
