@@ -16,7 +16,7 @@ internal class Sacrifist : CovenManager
     private const int Id = 30600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sacrifist);
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
     //==================================================================\\
 
@@ -93,13 +93,13 @@ internal class Sacrifist : CovenManager
     // Sacrifist shouldn't be able to kill at all but if there's solo Sacrifist the game is unwinnable so they can kill when solo
     public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Coven)).Count() == 1;
 
-    public override void OnEnterVent(PlayerControl pc, Vent vent)
+    public override void UnShapeShiftButton(PlayerControl pc)
     {
         var rand = IRandom.Instance;
         DebuffID = (byte)rand.Next(0, 10);
         if (randPlayer == byte.MaxValue)
         {
-            randPlayer = Main.AllAlivePlayerControls.Where(x => !x.Is(Custom_Team.Coven) || !x.Is(CustomRoles.Enchanted)).ToList().RandomElement().PlayerId;
+            randPlayer = Main.AllAlivePlayerControls.Where(x => !x.Is(Custom_Team.Coven) && !x.Is(CustomRoles.Enchanted)).ToList().RandomElement().PlayerId;
         }
         var randPlayerPC = GetPlayerById(randPlayer);
         var sacrifist = pc.PlayerId;
