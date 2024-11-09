@@ -833,6 +833,7 @@ public enum CustomRoles
     Pursuer,
     Pyromaniac,
     Quizmaster,
+    Renevant,
     Revolutionist,
     Romantic,
     RuthlessRomantic,
