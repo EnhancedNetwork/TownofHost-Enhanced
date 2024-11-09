@@ -3,7 +3,10 @@ using TOHE.Modules.ChatManager;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.Core;
+using UnityEngine;
+using Hazel;
+using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -74,12 +77,14 @@ internal class Dictator : RoleBase
             {
                 return true;
             }
+
             if (target.Is(CustomRoles.Solsticer))
             {
                 pc.ShowInfoMessage(false,GetString("ExpelSolsticer"));
                 MeetingHud.Instance.RpcClearVoteDelay(pc.GetClientId());
                 return true;
             }
+
             statesList.Add(new()
             {
                 VoterId = pc.PlayerId,
@@ -131,4 +136,72 @@ internal class Dictator : RoleBase
     => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) 
         => IsForMeeting && ChangeCommandToExpel.GetBool() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
+
+    private void SendDictatorRPC(byte playerId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DictatorRPC, SendOption.Reliable, -1);
+        writer.Write(playerId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public static void OnReceiveDictatorRPC(MessageReader reader, PlayerControl pc)
+    {
+        byte pid = reader.ReadByte();
+        if (pc.Is(CustomRoles.Dictator) && pc.IsAlive() && GameStates.IsVoting)
+        {
+            if (pc.GetRoleClass() is Dictator dictator)
+                dictator.ExilePlayer(pc, $"/exp {pid}");
+        }
+    }
+
+    private void DictatorOnClick(byte playerId, MeetingHud __instance)
+    {
+        Logger.Msg($"Click: ID {playerId}", "Dictator UI");
+        var pc = playerId.GetPlayer();
+        if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
+
+        if (AmongUsClient.Instance.AmHost) ExilePlayer(PlayerControl.LocalPlayer, $"/exp {playerId}");
+        else SendDictatorRPC(playerId);
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())
+        {
+            CreateDictatorButton(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
+    class StartMeetingPatch
+    {
+        public static void Postfix(MeetingHud __instance)
+        {
+            if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dictator)
+                if (ChangeCommandToExpel.GetBool())
+                    dictator.CreateDictatorButton(__instance);
+        }
+    }
+
+    private void CreateDictatorButton(MeetingHud __instance)
+    {
+        foreach (var pva in __instance.playerStates)
+        {
+            if (pva.transform.Find("DictatorButton") != null) UnityEngine.Object.Destroy(pva.transform.Find("DictatorButton").gameObject);
+
+            var pc = pva.TargetPlayerId.GetPlayer();
+            var local = PlayerControl.LocalPlayer;
+            if (pc == null || !pc.IsAlive()) continue;
+
+            GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
+            GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
+            targetBox.name = "DictatorButton";
+            targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
+            SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
+            PassiveButton button = targetBox.GetComponent<PassiveButton>();
+            renderer.sprite = CustomButton.Get("JudgeIcon");
+
+            button.OnClick.RemoveAllListeners();
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+                DictatorOnClick(pva.TargetPlayerId, __instance);
+            }));
+        }
+    }
 }

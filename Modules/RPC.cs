@@ -110,6 +110,7 @@ enum CustomRPC : byte // 185/255 USED
     SyncAdmiredList,
     SyncAdmiredAbility,
     SetImitateLimit,
+    DictatorRPC,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -156,7 +157,8 @@ internal class RPCHandlerPatch
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
         or CustomRPC.SetFriendCode
-        or CustomRPC.BetterCheck;
+        or CustomRPC.BetterCheck
+        or CustomRPC.DictatorRPC;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -632,6 +634,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
+                break;
+            case CustomRPC.DictatorRPC:
+                Dictator.OnReceiveDictatorRPC(reader, __instance);
                 break;
             case CustomRPC.SyncShieldPersonDiedFirst:
                 Main.FirstDied = reader.ReadString();
