@@ -15,7 +15,7 @@ internal class Medusa : CovenManager
     private const int Id = 17000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medusa);
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
     //==================================================================\\
 
@@ -75,7 +75,6 @@ internal class Medusa : CovenManager
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = StoneCooldown.GetFloat();
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     //public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
     /*
@@ -109,9 +108,8 @@ internal class Medusa : CovenManager
             return false;
         }
     }
-    public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    public override void UnShapeShiftButton(PlayerControl dusa)
     {
-        var dusa = physics.myPlayer;
         foreach (var player in StonedPlayers[dusa.PlayerId])
         {
             dusa.Notify(GetString("MedusaStoningStart"), StoneDuration.GetFloat());
