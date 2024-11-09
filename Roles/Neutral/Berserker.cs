@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using Hazel;
 using InnerNet;
@@ -164,11 +164,20 @@ internal class Berserker : RoleBase
                 if (player == killer) continue;
                 if (player == target) continue;
 
-                if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat() && BerserkerCanKillTeamate.GetBool())
+                if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
                 {
+                    if (!target.IsNeutralApocalypse())
+                    {
                     Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                     player.RpcMurderPlayer(player);
                     player.SetRealKiller(killer);
+                    }
+                    if (target.IsNeutralApocalypse() && BerserkerCanKillTeamate.GetBool())
+                    {
+                    Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
+                    player.RpcMurderPlayer(player);
+                    player.SetRealKiller(killer);                        
+                    }
                 }
             }
         }
