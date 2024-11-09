@@ -2,11 +2,11 @@
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
-internal class Renevant : RoleBase
+internal class Revenant : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 31000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Renevant);
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Revenant);
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
@@ -14,7 +14,7 @@ internal class Renevant : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Renevant);
+        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Revenant);
     }
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
