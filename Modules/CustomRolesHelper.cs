@@ -181,8 +181,6 @@ public static class CustomRolesHelper
             CustomRoles.Sidekick or
             CustomRoles.Infectious or
             CustomRoles.Pyromaniac or
-            CustomRoles.Medusa or
-            CustomRoles.Necromancer or
             CustomRoles.Wraith or
             CustomRoles.Shroud or
             CustomRoles.Pelican or

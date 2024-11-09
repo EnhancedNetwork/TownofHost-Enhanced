@@ -2059,6 +2059,10 @@
   "PotionMasterBarrier": "Barrier",
   "PotionMasterKillButtonText": "Use Potion",
 
+  "HexMasterHexCooldown": "Hex Cooldown",
+  "HexMasterCovenCanGetMovingHex": "Coven Can Get Moving Hex",
+  "HexMasterMovingHexCooldown": "Moving Hex Pass Cooldown",
+
 
   "LuckyProbability": "Probability of surviving a kill",
   "ImpCanBeDoubleShot": "<color=#ff1919>Impostors</color> can have <color=#19fa8d>Double Shot</color>",

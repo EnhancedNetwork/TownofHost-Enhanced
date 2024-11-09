@@ -19,9 +19,12 @@ internal class HexMaster : CovenManager
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenKilling;
     //==================================================================\\
 
-    private static OptionItem ModeSwitchAction;
+    //private static OptionItem ModeSwitchAction;
     private static OptionItem HexesLookLikeSpells;
     //private static OptionItem HasImpostorVision;
+    private static OptionItem HexCooldown;
+    private static OptionItem CovenCanGetMovingHex;
+    private static OptionItem MovingHexPassCooldown;
 
     private static readonly Dictionary<byte, bool> HexMode = [];
     private static readonly Dictionary<byte, List<byte>> HexedPlayer = [];
@@ -29,6 +32,7 @@ internal class HexMaster : CovenManager
     private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
+    /*
     private enum SwitchTriggerList
     {
         TriggerKill,
@@ -36,12 +40,18 @@ internal class HexMaster : CovenManager
         TriggerDouble,
     };
     private static SwitchTriggerList NowSwitchTrigger;
+    */
 
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.HexMaster, 1, zeroOne: false);        
-        ModeSwitchAction = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        //ModeSwitchAction = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HexCooldown = FloatOptionItem.Create(Id + 13, "HexMasterCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
+            .SetValueFormat(OptionFormat.Seconds);
+        CovenCanGetMovingHex = BooleanOptionItem.Create(Id + 14, "HexMasterCovenCanGetMovingHex", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        MovingHexPassCooldown = FloatOptionItem.Create(Id + 15, "HexMasterMovingHexCooldown", new(0f, 5f, 0.25f), 1f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
+            .SetValueFormat(OptionFormat.Seconds);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision,  true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
     public override void Init()
@@ -55,7 +65,7 @@ internal class HexMaster : CovenManager
         playerIdList.Add(playerId);
         HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
-        NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();
+        // NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -106,11 +116,12 @@ internal class HexMaster : CovenManager
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
 
-
+    /*
     private static bool IsHexMode(byte playerId)
     {
         return HexMode.ContainsKey(playerId) && HexMode[playerId];
     }
+   
     private static void SwitchHexMode(byte playerId, bool kill)
     {
         bool needSwitch = false;
@@ -130,6 +141,7 @@ internal class HexMaster : CovenManager
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(playerId));
         }
     }
+    */
     private static bool IsHexed(byte target)
     {
         foreach (var hexmaster in playerIdList)
@@ -160,6 +172,7 @@ internal class HexMaster : CovenManager
     {
         if (target.IsTransformedNeutralApocalypse()) return false;
 
+        /*
         if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {
             return killer.CheckDoubleTrigger(target, () => { SetHexed(killer, target); });
@@ -170,11 +183,14 @@ internal class HexMaster : CovenManager
             //キルモードなら通常処理に戻る
             return true;
         }
-        SetHexed(killer, target);
-
-        //スペルに失敗してもスイッチ判定
-        SwitchHexMode(killer.PlayerId, true);
-        //キル処理終了させる
+        */
+        if (killer.CheckDoubleTrigger(target, () => { SetHexed(killer, target); }))
+        {
+            if (HasNecronomicon(killer) && !target.IsPlayerCoven())
+            {
+                return true;
+            }
+        }
         return false;
     }
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
@@ -219,6 +235,7 @@ internal class HexMaster : CovenManager
             SendRPC(true, hexmaster);
         }
     }
+    /*
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
         if (NowSwitchTrigger is SwitchTriggerList.TriggerVent)
@@ -226,6 +243,7 @@ internal class HexMaster : CovenManager
             SwitchHexMode(pc.PlayerId, false);
         }
     }
+    */
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (isForMeeting && IsHexed(target.PlayerId))
@@ -241,7 +259,7 @@ internal class HexMaster : CovenManager
         }
         return string.Empty;
     }
-
+    /*
     public override string GetLowerText(PlayerControl hexmaster, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (!hexmaster.IsAlive() || isForMeeting || hexmaster != seen) return string.Empty;
@@ -266,16 +284,8 @@ internal class HexMaster : CovenManager
 
         return str.ToString();
     }
+    */
     
-    public override void SetAbilityButtonText(HudManager hud, byte playerid)
-    {
-        if (IsHexMode(playerid) && NowSwitchTrigger != SwitchTriggerList.TriggerDouble)
-        {
-            hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
-        }
-        else
-        {
-            hud.KillButton.OverrideText($"{GetString("KillButtonText")}");
-        }
-    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerid) => hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
+
 }
