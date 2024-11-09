@@ -33,7 +33,7 @@ public abstract class CovenManager : RoleBase
     }
     public static void RunSetUpVentOptions(int Id)
     {
-            foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven() && (x != CustomRoles.Medusa && x != CustomRoles.PotionMaster && x != CustomRoles.Sacrifist)).ToArray())
+            foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven() && (x != CustomRoles.Medusa && x != CustomRoles.Sacrifist)).ToArray())
             {
                 SetUpVentOption(cov, Id, true, CovenVentMode);
                 Id++;
