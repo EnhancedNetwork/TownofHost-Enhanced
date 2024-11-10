@@ -28,7 +28,7 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerAbilityPerRound;
     private static OptionItem ShockeShockInVents;
     private static OptionItem ShockerOutsideRadius;
-    private static OptionItem ShockerHideBody;
+    private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
 
     private static Dictionary<byte, List<Collider2D>> ShockedRooms = new();
@@ -36,7 +36,7 @@ internal class Shocker : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shocker);
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shocker);
         ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, "ShockerAbilityCooldown", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
@@ -51,11 +51,15 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerOutsideRadius = FloatOptionItem.Create(Id + 15, "ShockerOutsideRadius", new(0f, 5f, 0.5f), 3, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        ShockerHideBody = BooleanOptionItem.Create(Id + 16, "ShockerHideBody", false, TabGroup.NeutralRoles, false)
+        ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerImpostorVision = BooleanOptionItem.Create(Id + 17, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         OverrideTasksData.Create(Id + 20, TabGroup.NeutralRoles, CustomRoles.Shocker);
+    }
+    public override void Init()
+    {
+        PlayerIds.Clear();
     }
 
     public override void Add(byte playerId)
@@ -92,6 +96,7 @@ internal class Shocker : RoleBase
             return;
         }
         AbilityLimit--;
+        SendSkillRPC();
         pc.Notify(Translator.GetString("ShockerAbilityActivate"));
         IsShocking.Add(pc.PlayerId);
         _ = new LateTask(() =>
@@ -104,7 +109,10 @@ internal class Shocker : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (completedTaskCount == totalTaskCount)
+        {
             AbilityLimit++;
+            SendSkillRPC();
+        }
 
         if (IsShocking.Contains(player.PlayerId))
         {
@@ -159,6 +167,9 @@ internal class Shocker : RoleBase
             if (!IsShocking.Contains(playerId))
                 continue;
 
+            if (playerId == player.PlayerId && !ShockerCanShockHimself.GetBool())
+                continue;
+
             if (ShockedRooms.ContainsKey(playerId))
             {
                 foreach (Collider2D collider in ShockedRooms[playerId])
@@ -167,9 +178,7 @@ internal class Shocker : RoleBase
                     {
                         if (!ShockeShockInVents.GetBool() && player.inVent)
                             break;
-                        Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");
-                        if (ShockerHideBody.GetBool())
-                            player.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
+                        Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");                        
                         player.RpcMurderPlayer(player);
                         player.SetRealKiller(Utils.GetPlayerById(playerId));
                         player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
