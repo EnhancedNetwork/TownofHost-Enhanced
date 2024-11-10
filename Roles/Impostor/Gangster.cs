@@ -6,6 +6,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Impostor;
 
@@ -90,6 +91,13 @@ internal class Gangster : RoleBase
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("BeRecruitedByGangster")));
                 Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
+            else if (killer.Is(CustomRoles.Enchanted) && Ritualist.CanBeConverted(target))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Gangster Assign");
+                target.RpcSetCustomRole(CustomRoles.Enchanted);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("BeRecruitedByGangster")));
             }
             else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
