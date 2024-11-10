@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -107,7 +108,7 @@ internal class Admirer : RoleBase
             }
 
             if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious))
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Enchanted))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(CustomRoles.Admired);
@@ -120,6 +121,13 @@ internal class Admirer : RoleBase
                 target.RpcSetCustomRole(CustomRoles.Madmate);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Enchanted) && Ritualist.CanBeConverted(target))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Enchanted);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
