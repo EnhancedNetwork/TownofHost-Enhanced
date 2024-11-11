@@ -46,12 +46,12 @@ internal class HexMaster : CovenManager
     {
         SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.HexMaster, 1, zeroOne: false);        
         //ModeSwitchAction = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HexCooldown = FloatOptionItem.Create(Id + 13, "HexMasterCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
+        HexCooldown = FloatOptionItem.Create(Id + 13, "HexMasterHexCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
             .SetValueFormat(OptionFormat.Seconds);
-        CovenCanGetMovingHex = BooleanOptionItem.Create(Id + 14, "HexMasterCovenCanGetMovingHex", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         MovingHexPassCooldown = FloatOptionItem.Create(Id + 15, "HexMasterMovingHexCooldown", new(0f, 5f, 0.25f), 1f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
             .SetValueFormat(OptionFormat.Seconds);
+        CovenCanGetMovingHex = BooleanOptionItem.Create(Id + 14, "HexMasterCovenCanGetMovingHex", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision,  true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
     public override void Init()

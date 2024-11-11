@@ -56,7 +56,7 @@ public abstract class CovenManager : RoleBase
     /*
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     => HasNecronomicon(seen) ? ColorString(GetRoleColor(CustomRoles.CovenLeader), "♣") : string.Empty;
-    */
+    
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (HasNecronomicon(target) && seer.IsPlayerCoven())
@@ -65,6 +65,7 @@ public abstract class CovenManager : RoleBase
         }
         return string.Empty;
     }
+    */
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Necronomicon, SendOption.Reliable, -1);
@@ -123,11 +124,8 @@ public abstract class CovenManager : RoleBase
         GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
         SendRPC(necroHolder);
     }
-    public override void OnCoEndGame()
-    {
-        necroHolder = byte.MaxValue;
-    }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+
+    public static void NecronomiconCheck()
     {
         if (necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive() || !GetPlayerById(necroHolder).IsPlayerCoven())
         {
