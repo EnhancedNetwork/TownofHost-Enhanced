@@ -862,6 +862,7 @@ public static class Utils
 
         List<string> impsb = [];
         List<string> neutralsb = [];
+        List<string> covenb = [];
         List<string> crewsb = [];
         List<string> addonsb = [];
 
@@ -881,17 +882,20 @@ public static class Utils
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
                 else if (role.IsNeutral()) neutralsb.Add(roleDisplay);
+                else if (role.IsCoven()) covenb.Add(roleDisplay);
             }
         }
 
         impsb.Sort();
         crewsb.Sort();
         neutralsb.Sort();
+        covenb.Sort();
         addonsb.Sort();
         
         SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", covenb), PlayerId, GetString("CovenRoles"), ShouldSplit: true);
         SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
@@ -1019,7 +1023,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Enchanted) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
