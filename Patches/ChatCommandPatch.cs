@@ -220,6 +220,11 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
                     break;
 
+                case "/coveninfo":
+                case "/covinfo":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
+                    break;
 
                 case "/rn":
                 case "/rename":
@@ -2202,6 +2207,11 @@ internal class ChatCommands
             case "/末日类中立职业介绍":
             case "/末日类中立介绍":
                 Utils.SendMessage(GetString("Message.ApocalypseInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
+                break;
+
+            case "/coveninfo":
+            case "/covinfo":
+                Utils.SendMessage(GetString("Message.CovenInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
                 break;
 
             case "/rn":
