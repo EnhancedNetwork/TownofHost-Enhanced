@@ -3,7 +3,10 @@ using Hazel;
 using UnityEngine;
 using System.Text;
 using static TOHE.Options;
+using static TOHE.Utils;
 using static TOHE.Translator;
+using InnerNet;
+using TOHE.Roles.Core;
 
 
 namespace TOHE.Roles.Coven;
@@ -26,8 +29,12 @@ internal class HexMaster : CovenManager
     private static OptionItem CovenCanGetMovingHex;
     private static OptionItem MovingHexPassCooldown;
 
-    private static readonly Dictionary<byte, bool> HexMode = [];
     private static readonly Dictionary<byte, List<byte>> HexedPlayer = [];
+    public static byte CurrentHexedPlayer = byte.MaxValue;
+    public static byte LastHexedPlayer = byte.MaxValue;
+    public static bool HasHexed = false;
+    public static long? CurrentHexedPlayerTime = new();
+    public static long? HexedTime = new();
 
     private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
@@ -57,23 +64,26 @@ internal class HexMaster : CovenManager
     public override void Init()
     {
         playerIdList.Clear();
-        HexMode.Clear();
         HexedPlayer.Clear();
+        CurrentHexedPlayer = byte.MaxValue;
+        LastHexedPlayer = byte.MaxValue;
+        HasHexed = false;
+        CurrentHexedPlayerTime = new();
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
         // NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
+        CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
     }
 
-    private static void SendRPC(bool doHex, byte hexId, byte target = 255)
+    private static void SendRPC(bool regularHex, byte hexId, byte target = 255, byte oldHex = 255, byte newHex = 255)
     {
-        if (doHex)
+        if (regularHex)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
             writer.Write(hexId);
@@ -82,16 +92,17 @@ internal class HexMaster : CovenManager
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrSpell, SendOption.Reliable, -1);
-            writer.Write(hexId);
-            writer.Write(HexMode[hexId]);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            writer.WriteNetObject(GetPlayerById(hexId));
+            writer.Write(newHex);
+            writer.Write(oldHex);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
 
         }
     }
-    public static void ReceiveRPC(MessageReader reader, bool doHex)
+    public static void ReceiveRPC(MessageReader reader, bool regularHex)
     {
-        if (doHex)
+        if (regularHex)
         {
             var hexmaster = reader.ReadByte();
             var hexedId = reader.ReadByte();
@@ -106,15 +117,16 @@ internal class HexMaster : CovenManager
         }
         else
         {
-            byte playerId = reader.ReadByte();
-            HexMode[playerId] = reader.ReadBoolean();
+            CurrentHexedPlayer = reader.ReadByte();
+            LastHexedPlayer = reader.ReadByte();
         }
     }
 
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
+    // public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
+    public override void SetKillCooldown(byte id) => HexCooldown.GetFloat();
 
     /*
     private static bool IsHexMode(byte playerId)
@@ -160,6 +172,59 @@ internal class HexMaster : CovenManager
             killer.SetKillCooldown();
         }
     }
+    private void PassHex(PlayerControl player, PlayerControl target)
+    {
+        if (!HasHexed) return;
+        if (!target.IsAlive()) return;
+
+        var now = GetTimeStamp();
+        if (now - CurrentHexedPlayerTime < MovingHexPassCooldown.GetFloat()) return;
+        if (target.PlayerId == LastHexedPlayer) return;
+        if (!CovenCanGetMovingHex.GetBool() && target.IsPlayerCoven()) return;
+
+
+        if (target.Is(CustomRoles.Pestilence))
+        {
+            target.RpcMurderPlayer(player);
+            ResetHex();
+            return;
+        }
+        LastHexedPlayer = CurrentHexedPlayer;
+        CurrentHexedPlayer = target.PlayerId;
+        CurrentHexedPlayerTime = now;
+        MarkEveryoneDirtySettings();
+
+
+        SendRPC(false, CurrentHexedPlayer, LastHexedPlayer);
+        Logger.Msg($"{player.GetNameWithRole()} passed hex to {target.GetNameWithRole()}", "Hex Master Pass");
+    }
+    public static void ResetHex()
+    {
+        CurrentHexedPlayer = 254;
+        CurrentHexedPlayerTime = new();
+        LastHexedPlayer = byte.MaxValue;
+        HasHexed = false;
+    }
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (!lowLoad && CurrentHexedPlayer == 254)
+        {
+            SendRPC(false, CurrentHexedPlayer, LastHexedPlayer);
+            CurrentHexedPlayer = byte.MaxValue;
+        }
+    }
+    public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo agitatergoatedrole)
+    {
+        if (CurrentHexedPlayer == byte.MaxValue) return;
+        var target = GetPlayerById(CurrentHexedPlayer);
+        var killer = _Player;
+        if (target == null || killer == null) return;
+
+        HexedPlayer[killer.PlayerId].Add(target.PlayerId);
+        SendRPC(true, killer.PlayerId, target.PlayerId);
+        ResetHex();
+        Logger.Info($"Passing hex ended, {target.GetRealName()} ended with hex on report", "Hex Master");
+    }
     public override void AfterMeetingTasks()
     {
         foreach (var hexmaster in playerIdList)
@@ -184,7 +249,12 @@ internal class HexMaster : CovenManager
             return true;
         }
         */
-        if (killer.CheckDoubleTrigger(target, () => { SetHexed(killer, target); }))
+        if (!HasNecronomicon(killer))
+        {
+            SetHexed(killer, target);
+            return false;
+        }
+        if (killer.CheckDoubleTrigger(target, () => { SetHexedNecronomicon(killer, target); }))
         {
             if (HasNecronomicon(killer) && !target.IsPlayerCoven())
             {
@@ -192,6 +262,54 @@ internal class HexMaster : CovenManager
             }
         }
         return false;
+    }
+    private static void SetHexedNecronomicon(PlayerControl killer, PlayerControl target)
+    {
+        if (!HasEnabled) return;
+
+        CurrentHexedPlayer = target.PlayerId;
+        LastHexedPlayer = killer.PlayerId;
+        CurrentHexedPlayerTime = GetTimeStamp();
+        killer.RpcGuardAndKill(killer);
+        killer.Notify(GetString("HexMasterPassNotify"));
+        HasHexed = true;
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
+    }
+    private void OnFixedUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (lowLoad || !HasHexed || CurrentHexedPlayer != player.PlayerId) return;
+
+        if (!player.IsAlive())
+        {
+            ResetHex();
+        }
+        else
+        {
+            var playerPos = player.GetCustomPosition();
+            Dictionary<byte, float> targetDistance = [];
+            float dis;
+
+            foreach (var target in Main.AllAlivePlayerControls)
+            {
+                if (target.PlayerId != player.PlayerId && target.PlayerId != LastHexedPlayer)
+                {
+                    dis = GetDistance(playerPos, target.transform.position);
+                    targetDistance.Add(target.PlayerId, dis);
+                }
+            }
+
+            if (targetDistance.Any())
+            {
+                var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
+                var target = min.Key.GetPlayer();
+                var KillRange = GameOptionsData.KillDistances[Mathf.Clamp(GameOptionsManager.Instance.currentNormalGameOptions.KillDistance, 0, 2)];
+                if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat && player.RpcCheckAndMurder(target, true))
+                {
+                    PassHex(player, target);
+                }
+            }
+        }
     }
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
@@ -250,11 +368,11 @@ internal class HexMaster : CovenManager
         {
             if (!HexesLookLikeSpells.GetBool())
             {
-                return Utils.ColorString(RoleColorHex, "乂");
+                return ColorString(RoleColorHex, "乂");
             }
             else
             {
-                return Utils.ColorString(RoleColorSpell, "†");
+                return ColorString(RoleColorSpell, "†");
             }
         }
         return string.Empty;

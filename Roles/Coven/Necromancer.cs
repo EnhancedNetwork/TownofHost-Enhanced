@@ -6,6 +6,8 @@ using static TOHE.Translator;
 using TOHE.Roles.AddOns;
 using Rewired;
 using UnityEngine;
+using TOHE.Roles.Neutral;
+using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Coven;
 
@@ -196,7 +198,16 @@ internal class Necromancer : CovenManager
             CustomRoles.Nemesis or
             CustomRoles.NiceMini or
             CustomRoles.Mini or 
-            CustomRoles.EvilMini;
+            CustomRoles.EvilMini or
+            CustomRoles.SuperStar or 
+            CustomRoles.RuthlessRomantic or 
+            CustomRoles.VengefulRomantic or 
+            CustomRoles.CursedSoul or 
+            CustomRoles.Provocateur or 
+            CustomRoles.Specter or
+            CustomRoles.Sunnyboy || 
+            (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
+            (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool());
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {

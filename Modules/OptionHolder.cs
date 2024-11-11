@@ -648,7 +648,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 30200 last id for roles/add-ons (Next use 30300)
+        // 30800 last id for roles/add-ons (Next use 30900)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -748,11 +748,11 @@ public static class Options
         CovenManager.RunSetUpImpVisOptions(160032);
         CovenCanVent = BooleanOptionItem.Create(60030, "CovenCanVent", true, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard);
-        CovenVentMode = StringOptionItem.Create(60031, "CovenVentMode", EnumHelper.GetAllNames<CovenManager.VentOptionList>(), 0, TabGroup.CovenRoles, false)
+        CovenVentMode = StringOptionItem.Create(60032, "CovenVentMode", EnumHelper.GetAllNames<CovenManager.VentOptionList>(), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(CovenCanVent);
         CovenManager.RunSetUpVentOptions(260032);
-        CovenCanSeeEachOthersAddOns = BooleanOptionItem.Create(60032, "CovenCanSeeEachOthersAddOns", true, TabGroup.CovenRoles, false)
+        CovenCanSeeEachOthersAddOns = BooleanOptionItem.Create(60033, "CovenCanSeeEachOthersAddOns", true, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard);
 
         NameDisplayAddons = BooleanOptionItem.Create(60019, "NameDisplayAddons", true, TabGroup.Addons, false)
