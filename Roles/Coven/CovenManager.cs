@@ -69,7 +69,6 @@ public abstract class CovenManager : RoleBase
     private static void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Necronomicon, SendOption.Reliable, -1);
-        writer.WriteNetObject(GetPlayerById(playerId)); 
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
