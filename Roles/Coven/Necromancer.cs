@@ -5,6 +5,7 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using TOHE.Roles.AddOns;
 using Rewired;
+using UnityEngine;
 
 namespace TOHE.Roles.Coven;
 
@@ -33,6 +34,10 @@ internal class Necromancer : CovenManager
     private static bool Success = false;
     private static float tempKillTimer = 0;
 
+    private static readonly Dictionary<byte, List<CustomRoles>> UsedRoles = [];
+    private static float AbilityTimer;
+    private static bool canUseAbility;
+
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Necromancer, 1, zeroOne: false);
@@ -54,22 +59,20 @@ internal class Necromancer : CovenManager
         Success = false;
         Killer = null;
         tempKillTimer = 0;
+        UsedRoles.Clear();
+        canUseAbility = false;
+        AbilityTimer = 0;
     }
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
         Timer = RevengeTime.GetInt();
+        UsedRoles[playerId] = [];
     }
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
+    public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc) || IsRevenge;
     //public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-    {
-        AURoleOptions.ShapeshifterCooldown = AbilityCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = AbilityDuration.GetFloat();
-    }
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -110,16 +113,30 @@ internal class Necromancer : CovenManager
             return false;
         }
     }
-    public override bool OnCheckShapeshift(PlayerControl nm, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        resetCooldown = true;
-        var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
-        CustomRoles[] deadRoles = new CustomRoles[deadPlayers.Count()];
-        foreach (var deadPlayer in deadPlayers) {
-            if (BlackList(deadPlayer.GetCustomRole())) continue;
-            deadRoles.AddItem(deadPlayer.GetCustomRole());
+        return GetString("NecromancerAbilityCooldown") + ": " + AbilityTimer.ToString() + "s / " + AbilityCooldown.GetFloat().ToString() + "s";
+    }
+    public override void UnShapeShiftButton(PlayerControl nm)
+    {
+        if (nm == null) return;
+        if (!canUseAbility) {
+            nm.Notify(GetString("NecromancerCooldownNotDone"));
+            return; 
         }
-        if (deadRoles.Length < 0) return false;
+        var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
+        List<CustomRoles> deadRoles = [];
+        foreach (var deadPlayer in deadPlayers)
+        {
+            if (BlackList(deadPlayer.GetCustomRole())) continue;
+            if (UsedRoles[nm.PlayerId].Contains(deadPlayer.GetCustomRole())) continue;
+            deadRoles.Add(deadPlayer.GetCustomRole());
+        }
+        if (deadRoles.Count < 1)
+        {
+            nm.Notify(GetString("NecromancerNoUsableRoles"));
+            return;
+        }
         var role = deadRoles.RandomElement();
         nm.RpcChangeRoleBasis(role);
         nm.RpcSetCustomRole(role);
@@ -130,24 +147,33 @@ internal class Necromancer : CovenManager
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
         nm.RpcGuardAndKill(nm);
         nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
-        return false;
-    }
-    public override void OnShapeshift(PlayerControl pc, PlayerControl target, bool IsAnimate, bool shapeshifting)
-    {
-        IsAnimate = false;
-        if (!shapeshifting)
+        _ = new LateTask(() =>
         {
-            if (pc.GetCustomRole() != CustomRoles.Necromancer)
+            if (nm.GetCustomRole() != CustomRoles.Necromancer)
             {
-                pc.GetRoleClass()?.OnRemove(pc.PlayerId);
+                nm.GetRoleClass()?.OnRemove(nm.PlayerId);
             }
-            Main.PlayerStates[pc.PlayerId].RemoveSubRole(CustomRoles.Enchanted);
-            pc.RpcChangeRoleBasis(CustomRoles.Necromancer);
-            pc.RpcSetCustomRole(CustomRoles.Necromancer);
-            pc.ResetKillCooldown();
-            pc.RpcGuardAndKill(pc);
-            pc.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Necromancer)));
+            Main.PlayerStates[nm.PlayerId].RemoveSubRole(CustomRoles.Enchanted);
+            nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
+            nm.RpcSetCustomRole(CustomRoles.Necromancer);
+            nm.ResetKillCooldown();
+            nm.SyncSettings();
+            nm.RpcGuardAndKill(nm);
+            nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Necromancer)));
+            UsedRoles[nm.PlayerId].Add(role);
+            canUseAbility = false;
+            AbilityTimer = 0;
+        }, AbilityDuration.GetFloat(), "Necromancer Revert Role");
+    }
+    public override void OnCoEndGame()
+    {
+        if (_Player.GetCustomRole() != CustomRoles.Necromancer)
+        {
+            _Player.GetRoleClass()?.OnRemove(_Player.PlayerId);
         }
+        Main.PlayerStates[_Player.PlayerId].RemoveSubRole(CustomRoles.Enchanted);
+        _Player.RpcChangeRoleBasis(CustomRoles.Necromancer);
+        _Player.RpcSetCustomRole(CustomRoles.Necromancer);
     }
     private static bool BlackList(CustomRoles role)
     {
@@ -171,6 +197,14 @@ internal class Necromancer : CovenManager
             CustomRoles.NiceMini or
             CustomRoles.Mini or 
             CustomRoles.EvilMini;
+    }
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (AbilityTimer < AbilityCooldown.GetFloat())
+        {
+            AbilityTimer += Time.fixedDeltaTime;
+        }
+        else canUseAbility = true;
     }
     private static void Countdown(int seconds, PlayerControl player)
     {

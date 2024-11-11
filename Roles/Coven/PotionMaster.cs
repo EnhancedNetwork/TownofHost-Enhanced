@@ -65,34 +65,35 @@ internal class PotionMaster : CovenManager
         pc?.AddDoubleTrigger();
     }
 
-    private void SendRPC(byte playerId, byte targetId, int operate)
+    private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(operate);
-        writer.Write(playerId);
-        writer.Write(targetId);
-        if (operate == 0)
-            writer.Write(RevealLimit[playerId]);
-        else
-            writer.Write(BarrierLimit[playerId]);
+        if (!player.IsNonHostModdedClient()) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(player);
+        writer.Write(typeId);
+        writer.Write(player.PlayerId);
+        writer.Write(target.PlayerId);
+        if (typeId == 0) writer.Write(RevealLimit[player.PlayerId]);
+        else if (typeId == 1) writer.Write(BarrierLimit[player.PlayerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        int operate = reader.ReadInt32();
+        byte typeId = reader.ReadByte();
         byte playerId = reader.ReadByte();
-        if (operate == 0)
+        byte targetId = reader.ReadByte();
+
+        switch (typeId)
         {
-            RevealLimit[playerId] = reader.ReadInt32();
-            RevealList[playerId].Add(reader.ReadByte());
+            case 0:
+                RevealList[playerId].Add(targetId);
+                RevealLimit[playerId] = reader.ReadInt32();
+                break;
+            case 1:
+                BarrierList[playerId].Add(targetId);
+                BarrierLimit[playerId] = reader.ReadInt32();
+                break;
         }
-        if (operate == 1)
-        {
-            BarrierLimit[playerId] = reader.ReadInt32();
-            BarrierList[playerId].Add(reader.ReadByte());
-        }
-        
     }
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -113,14 +114,7 @@ internal class PotionMaster : CovenManager
         }
     }
 
-    public static bool IsReveal(byte seer, byte target)
-    {
-        if (RevealList[seer].Contains(target))
-        {
-            return true;
-        }
-        return false;
-    }
+    public static bool IsReveal(byte seer, byte target) => RevealList[seer].Contains(target);
     private void SetRitual(PlayerControl killer, PlayerControl target)
     {
         switch (PotionMode)
@@ -136,8 +130,8 @@ internal class PotionMaster : CovenManager
                     RevealList[killer.PlayerId].Add(target.PlayerId);
                     Logger.Info($"{killer.GetNameWithRole()}: Divined divination destination -> {target.GetNameWithRole()} || remaining {RevealLimit[killer.PlayerId]} times", "PotionMaster");
 
-                    Utils.NotifyRoles(SpecifySeer: killer);
-                    SendRPC(killer.PlayerId, target.PlayerId, 0);
+                    NotifyRoles(SpecifySeer: killer);
+                    SendRPC(PotionMode, killer, target);
 
                     killer.SetKillCooldown();
                 }
@@ -153,7 +147,7 @@ internal class PotionMaster : CovenManager
                     BarrierList[killer.PlayerId].Add(target.PlayerId);
                     Logger.Info($"{killer.GetNameWithRole()}: Barrier destination -> {target.GetNameWithRole()} || remaining {BarrierLimit[killer.PlayerId]} times", "PotionMaster");
 
-                    SendRPC(killer.PlayerId, target.PlayerId, 1);
+                    SendRPC(PotionMode, killer, target);
 
                     killer.SetKillCooldown();
                 }

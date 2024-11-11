@@ -483,6 +483,7 @@ class GameEndCheckerForNormal
     {
         CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());
         ForEndGame = true;
+        CovenManager.necroHolder = byte.MaxValue;
 
         // Set ghost role
         List<byte> ReviveRequiredPlayerIds = [];

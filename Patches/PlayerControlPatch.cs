@@ -1316,6 +1316,7 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
 
+
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
@@ -1330,6 +1331,10 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                         Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
+                }
+                if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target) || CovenManager.HasNecronomicon(seer)))
+                {
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
                 }
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())

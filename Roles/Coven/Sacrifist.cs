@@ -226,37 +226,31 @@ internal class Sacrifist : CovenManager
                     Logger.Info($"{pc.GetRealName()} and {randPlayerPC.GetRealName} will randomly freeze for duration", "Sacrifist");
                     pc.Notify(string.Format(GetString("SacrifistFreezeDebuff"), RandomFreezeDuration.GetFloat()), RandomFreezeDuration.GetFloat());
                     break;
-                // Swap Sacrifist and Target (done in different method)
+                // Swap Sacrifist and Target
                 case 9:
+                    _ = new LateTask(() =>
+                    {
+                        var randPlayerPC = GetPlayerById(randPlayer);
+                        if (pc.CanBeTeleported() && randPlayerPC.CanBeTeleported())
+                        {
+                            var originPs = randPlayerPC.GetCustomPosition();
+                            randPlayerPC.RpcTeleport(pc.GetCustomPosition());
+                            pc.RpcTeleport(originPs);
+
+                            pc.RPCPlayCustomSound("Teleport");
+                            randPlayerPC.RPCPlayCustomSound("Teleport");
+                        }
+                        else
+                        {
+                            pc.Notify(ColorString(GetRoleColor(CustomRoles.Sacrifist), GetString("ErrorTeleport")));
+                        }
+                    }, 0.01f, "Sacrifist Swap");
                     Logger.Info($"{pc.GetRealName()} Will Swap with {randPlayerPC.GetRealName} 5s after exiting vent", "Sacrifist");
                     pc.Notify(GetString("SacrifistSwapDebuff"), 15f);
                     break;
             }
             SendRPC(pc);
             debuffTimer = 0;
-        }
-    }
-    public override void OnExitVent(PlayerControl pc, int ventId)
-    {
-        if (DebuffID == 9)
-        {
-            _ = new LateTask(() =>
-            {
-                var randPlayerPC = GetPlayerById(randPlayer);
-                if (pc.CanBeTeleported() && randPlayerPC.CanBeTeleported())
-                {
-                    var originPs = randPlayerPC.GetCustomPosition();
-                    randPlayerPC.RpcTeleport(pc.GetCustomPosition());
-                    pc.RpcTeleport(originPs);
-
-                    pc.RPCPlayCustomSound("Teleport");
-                    randPlayerPC.RPCPlayCustomSound("Teleport");
-                }
-                else
-                {
-                    pc.Notify(ColorString(GetRoleColor(CustomRoles.Sacrifist), GetString("ErrorTeleport")));
-                }
-            }, 3f, "Sacrifist Swap");
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
