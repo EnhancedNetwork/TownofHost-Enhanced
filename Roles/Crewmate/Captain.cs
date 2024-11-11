@@ -48,8 +48,8 @@ internal class Captain : RoleBase
         CaptainCanTargetNE = BooleanOptionItem.Create(Id + 19, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNK = BooleanOptionItem.Create(Id + 20, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNA = BooleanOptionItem.Create(Id + 21, "CaptainCanTargetNA", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        CaptainCanTargetCoven = BooleanOptionItem.Create(Id + 23, "CaptainCanTargetCoven", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        OverrideTasksData.Create(Id + 22, TabGroup.CrewmateRoles, CustomRoles.Captain);
+        CaptainCanTargetCoven = BooleanOptionItem.Create(Id + 22, "CaptainCanTargetCoven", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        OverrideTasksData.Create(Id + 23, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
     public override void Init()

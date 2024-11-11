@@ -2063,6 +2063,7 @@
   "HexMasterModeHex": "Hex",
   "HexMasterModeKill": "Kill",
   "HexMasterModeDouble": "Double Click = Kill, Single Click = Hex",
+  "HexMasterPassNotify": "Hex successfully passed",
 
   "JinxSpellTimes": "Amount of Jinx Spells",
   "JinxCooldown": "Jinx Cooldown",

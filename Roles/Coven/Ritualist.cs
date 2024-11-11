@@ -16,7 +16,7 @@ namespace TOHE.Roles.Coven;
 internal class Ritualist : CovenManager
 {
     //===========================SETUP================================\\
-    private const int Id = 29900;
+    private const int Id = 30800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ritualist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
