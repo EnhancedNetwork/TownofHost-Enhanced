@@ -28,16 +28,15 @@ internal class Sacrifist : CovenManager
     private static OptionItem Speed;
     private static OptionItem SpeedDuration;
     private static OptionItem IncreasedCooldown;
-    private static OptionItem RandomFreezeDuration;
 
     private static byte DebuffID = 10;
     private static float debuffTimer;
     private static float maxDebuffTimer;
-    private static float freezeTimer;
     private static byte randPlayer;
-    private static bool isFreezing;
     private static readonly Dictionary<byte, float> originalSpeed = [];
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = [];
+    private static readonly Dictionary<byte, List<byte>> VisionChange = [];
+
 
 
 
@@ -56,8 +55,6 @@ internal class Sacrifist : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         IncreasedCooldown = FloatOptionItem.Create(Id + 15, "SacrifistIncreasedCooldown", new(0f, 100f, 2.5f), 50f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
             .SetValueFormat(OptionFormat.Percent);
-        RandomFreezeDuration = FloatOptionItem.Create(Id + 16, "SacrifistFreezeDuration", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
-            .SetValueFormat(OptionFormat.Seconds);
         DeathsAfterVote = IntegerOptionItem.Create(Id + 11, "SacrifistDeathsAfterVote", new(0, 15, 1), 0, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
             .SetValueFormat(OptionFormat.Players);
         NecroReducedCooldown = FloatOptionItem.Create(Id + 12, "SacrifistNecroReducedCooldown", new(0f, 100f, 2.5f), 50f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sacrifist])
@@ -70,13 +67,13 @@ internal class Sacrifist : CovenManager
         randPlayer = byte.MaxValue;
         originalSpeed.Clear();
         OriginalPlayerSkins.Clear();
+        VisionChange.Clear();
     }
     public override void Add(byte playerId)
     {
         debuffTimer = 0;
         maxDebuffTimer = DebuffCooldown.GetFloat();
-        freezeTimer = 0;
-        isFreezing = false;
+        VisionChange[playerId] = [];
     }
     public void SendRPC(PlayerControl pc)
     {
@@ -96,7 +93,7 @@ internal class Sacrifist : CovenManager
     public override void UnShapeShiftButton(PlayerControl pc)
     {
         var rand = IRandom.Instance;
-        DebuffID = (byte)rand.Next(0, 10);
+        DebuffID = (byte)rand.Next(0, 9);
         if (randPlayer == byte.MaxValue)
         {
             randPlayer = Main.AllAlivePlayerControls.Where(x => !x.Is(Custom_Team.Coven) && !x.Is(CustomRoles.Enchanted)).ToList().RandomElement().PlayerId;
@@ -148,9 +145,13 @@ internal class Sacrifist : CovenManager
                     break;
                 // Change Vision
                 case 1:
+                    VisionChange[sacrifist].Add(sacrifist);
+                    VisionChange[sacrifist].Add(randPlayer);
                     pc.Notify(GetString("SacrifistVisionDebuff"), VisionDuration.GetFloat());
                     _ = new LateTask(() =>
                     {
+                        VisionChange[sacrifist].Remove(sacrifist);
+                        VisionChange[sacrifist].Remove(randPlayer);
                         DebuffID = 10;
                         pc.Notify(GetString("SacrifistVisionRevert"), 5f);
                     }, VisionDuration.GetFloat(), "Sacrifist Revert Vision");
@@ -220,14 +221,8 @@ internal class Sacrifist : CovenManager
                     pc.Notify(GetString("SacrifistSwapSkinsDebuff"), 5f);
                     Logger.Info($"{pc.GetRealName()} swapped outfit with {randPlayerPC.GetRealName}", "Sacrifist");
                     break;
-                // Random Freezing (done in different method)
-                case 8:
-                    isFreezing = true;
-                    Logger.Info($"{pc.GetRealName()} and {randPlayerPC.GetRealName} will randomly freeze for duration", "Sacrifist");
-                    pc.Notify(string.Format(GetString("SacrifistFreezeDebuff"), RandomFreezeDuration.GetFloat()), RandomFreezeDuration.GetFloat());
-                    break;
                 // Swap Sacrifist and Target
-                case 9:
+                case 8:
                     _ = new LateTask(() =>
                     {
                         var randPlayerPC = GetPlayerById(randPlayer);
@@ -289,7 +284,8 @@ internal class Sacrifist : CovenManager
     }
     public static void SetVision(PlayerControl player, IGameOptions opt)
     {
-        if ((player.PlayerId == randPlayer || player.PlayerId == Utils.GetPlayerListByRole(CustomRoles.Sacrifist).First().PlayerId) && DebuffID == 1)
+        if (VisionChange.Any(a => a.Value.Contains(player.PlayerId) &&
+           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)) && DebuffID == 1)
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Vision.GetFloat());
@@ -305,46 +301,6 @@ internal class Sacrifist : CovenManager
         if (debuffTimer < maxDebuffTimer)
         {
             debuffTimer += Time.fixedDeltaTime;
-        }
-        if (isFreezing)
-        {
-            if (freezeTimer < RandomFreezeDuration.GetFloat())
-            {
-                var rand = IRandom.Instance;
-                var num = rand.Next(0, 10);
-                if (num == 0)
-                {
-                    originalSpeed.Remove(randPlayer);
-                    originalSpeed.Add(randPlayer, Main.AllPlayerSpeed[randPlayer]);
-                    Main.AllPlayerSpeed[randPlayer] = 0f;
-                    GetPlayerById(randPlayer).MarkDirtySettings();
-                    originalSpeed.Remove(player.PlayerId);
-                    originalSpeed.Add(player.PlayerId, Main.AllPlayerSpeed[player.PlayerId]);
-                    Main.AllPlayerSpeed[player.PlayerId] = 0f;
-                    player.MarkDirtySettings();
-                }
-                else
-                {
-                    Main.AllPlayerSpeed[randPlayer] = originalSpeed[randPlayer];
-                    GetPlayerById(randPlayer).SyncSettings();
-                    originalSpeed.Remove(randPlayer);
-                    Main.AllPlayerSpeed[player.PlayerId] = originalSpeed[player.PlayerId];
-                    player.SyncSettings();
-                    originalSpeed.Remove(player.PlayerId);
-                }
-                freezeTimer += Time.fixedDeltaTime;
-            }
-            if (freezeTimer >= RandomFreezeDuration.GetFloat())
-            {
-                Main.AllPlayerSpeed[randPlayer] = originalSpeed[randPlayer];
-                GetPlayerById(randPlayer).SyncSettings();
-                originalSpeed.Remove(randPlayer);
-                Main.AllPlayerSpeed[player.PlayerId] = originalSpeed[player.PlayerId];
-                player.SyncSettings();
-                originalSpeed.Remove(player.PlayerId);
-                isFreezing = false;
-                freezeTimer = 0;
-            }
         }
     }
     public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
