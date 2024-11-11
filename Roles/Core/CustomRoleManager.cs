@@ -423,7 +423,6 @@ public static class CustomRoleManager
     public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime);
-        CovenManager.NecronomiconCheck();
 
         if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any

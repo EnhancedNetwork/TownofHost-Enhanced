@@ -1106,6 +1106,7 @@ class FixedUpdateInNormalGamePatch
 
             DoubleTrigger.OnFixedUpdate(player);
             KillTimerManager.FixedUpdate(player);
+            CovenManager.NecronomiconCheck();
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
