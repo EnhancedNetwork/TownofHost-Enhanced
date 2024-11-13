@@ -1,13 +1,7 @@
-﻿using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
+﻿using AmongUs.GameOptions;
 using UnityEngine;
-using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
-using Rewired.Demos;
-using System.Collections.Generic;
-using static UnityEngine.GraphicsBuffer;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -15,8 +9,8 @@ internal class Shocker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 31000;
-    private static readonly HashSet<byte> PlayerIds = new();
-    public static bool HasEnabled => PlayerIds.Any();
+    public static byte? playerId;
+    public static bool HasEnabled => playerId.HasValue;
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -31,8 +25,8 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
 
-    private static Dictionary<byte, List<Collider2D>> ShockedRooms = new();
-    private static List<byte> IsShocking = new();
+    private static List<Collider2D> shockedRooms = new();
+    private static bool isShocking = false;
 
     public override void SetupCustomOption()
     {
@@ -59,25 +53,25 @@ internal class Shocker : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
+        Shocker.playerId = null;
     }
 
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+        Shocker.playerId = playerId;
         AbilityLimit = ShockerAbilityPerRound.GetValue();
     }
     public override void Remove(byte playerId)
     {
-        PlayerIds.Remove(playerId);
+        Shocker.playerId = null;
     }
     public override void AfterMeetingTasks()
     {
         AbilityLimit = ShockerAbilityPerRound.GetValue();
         if (ShockerAbilityResetAfterMeeting.GetBool())
         {
-            IsShocking.Clear();
-            ShockedRooms.Clear();
+            isShocking = false;
+            shockedRooms.Clear();
         }
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -88,9 +82,9 @@ internal class Shocker : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (AbilityLimit < 1)
+        if (AbilityLimit < 1 || playerId != pc.PlayerId)
             return;
-        if (IsShocking.Contains(pc.PlayerId))
+        if (isShocking)
         {
             pc.Notify(Translator.GetString("ShockerIsShocking"));
             return;
@@ -98,11 +92,11 @@ internal class Shocker : RoleBase
         AbilityLimit--;
         SendSkillRPC();
         pc.Notify(Translator.GetString("ShockerAbilityActivate"));
-        IsShocking.Add(pc.PlayerId);
+        isShocking = true;
         _ = new LateTask(() =>
         {
-            ShockedRooms.Remove(pc.PlayerId);
-            IsShocking.Remove(pc.PlayerId);
+            shockedRooms.Clear();
+            isShocking = false;
             pc.Notify(Translator.GetString("ShockerAbilityDeactivate"));
         }, ShockerAbilityDuration.GetValue(), "Shocker Is Shocking");
     }
@@ -114,38 +108,30 @@ internal class Shocker : RoleBase
             SendSkillRPC();
         }
 
-        if (IsShocking.Contains(player.PlayerId))
+        if (isShocking && playerId == player.PlayerId)
         {
             player.Notify(Translator.GetString("ShockerIsShocking"));
             return false;
         }
         Vector2 location = player.GetTruePosition();
-        bool IsRoom = false;
+        bool isRoom = false;
         ShipStatus.Instance.AllRooms.ForEach(room =>
         {
             if (room.roomArea.OverlapPoint(location))
             {
-                if (!ShockedRooms.ContainsKey(player.PlayerId))
-                {
-                    ShockedRooms[player.PlayerId] = new List<Collider2D>();
-                }
-                ShockedRooms[player.PlayerId].Add(room.roomArea);
-                IsRoom = true;
-                Logger.Info($"Added {room.RoomId} ({room.roomArea.name}) to {player.PlayerId} shocked rooms", "Shocker");
+                shockedRooms.Add(room.roomArea);
+                isRoom = true;
+                Logger.Info($"Added {room.RoomId} ({room.roomArea.name}) to shocked rooms", "Shocker");
             }
         });
-        if (!IsRoom)
+        if (!isRoom)
         {
             Logger.Info($"Player {player.PlayerId} is not in a room", "Shocker");
             Collider2D collider2D = new GameObject("Outside").AddComponent<CircleCollider2D>();
             collider2D.transform.position = location;
             ((CircleCollider2D)collider2D).radius = ShockerOutsideRadius.GetFloat();
             collider2D.isTrigger = true;
-            if (!ShockedRooms.ContainsKey(player.PlayerId))
-            {
-                ShockedRooms[player.PlayerId] = new List<Collider2D>();
-            }
-            ShockedRooms[player.PlayerId].Add(collider2D);
+            shockedRooms.Add(collider2D);
         }
         return true;
     }
@@ -159,31 +145,23 @@ internal class Shocker : RoleBase
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
     public static void OnUpdate(PlayerControl player)
     {
-        if (!player.IsAlive())
+        if (!player.IsAlive() || !playerId.HasValue)
             return;
 
-        foreach (byte playerId in PlayerIds)
+        if (!ShockeShockInVents.GetBool() && player.inVent)
+            return;
+
+        if (isShocking && playerId != player.PlayerId && (!ShockerCanShockHimself.GetBool() || playerId != player.PlayerId))
         {
-            if (!IsShocking.Contains(playerId))
-                continue;
-
-            if (playerId == player.PlayerId && !ShockerCanShockHimself.GetBool())
-                continue;
-
-            if (ShockedRooms.ContainsKey(playerId))
+            foreach (Collider2D collider in shockedRooms)
             {
-                foreach (Collider2D collider in ShockedRooms[playerId])
+                if (collider.OverlapPoint(player.GetTruePosition()))
                 {
-                    if (collider.OverlapPoint(player.GetTruePosition()))
-                    {
-                        if (!ShockeShockInVents.GetBool() && player.inVent)
-                            break;
-                        Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");                        
-                        player.RpcMurderPlayer(player);
-                        player.SetRealKiller(Utils.GetPlayerById(playerId));
-                        player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
-                        break;
-                    }
+                    Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");
+                    player.RpcMurderPlayer(player);
+                    player.SetRealKiller(Utils.GetPlayerById(playerId.Value));
+                    player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
+                    break;
                 }
             }
         }
