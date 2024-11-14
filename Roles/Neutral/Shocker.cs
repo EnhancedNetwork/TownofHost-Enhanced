@@ -113,22 +113,17 @@ internal class Shocker : RoleBase
             player.Notify(Translator.GetString("ShockerIsShocking"));
             return false;
         }
-        Vector2 location = player.GetTruePosition();
-        bool isRoom = false;
-        ShipStatus.Instance.AllRooms.ForEach(room =>
+        if (player.GetPlainShipRoom() != null)
         {
-            if (room.roomArea.OverlapPoint(location))
-            {
-                shockedRooms.Add(room.roomArea);
-                isRoom = true;
-                Logger.Info($"Added {room.RoomId} ({room.roomArea.name}) to shocked rooms", "Shocker");
-            }
-        });
-        if (!isRoom)
+            PlainShipRoom room = player.GetPlainShipRoom();
+            shockedRooms.Add(room.roomArea);
+            Logger.Info($"Player {player.PlayerId} is in a room {room.RoomId}", "Shocker");
+        }
+        else
         {
             Logger.Info($"Player {player.PlayerId} is not in a room", "Shocker");
             Collider2D collider2D = new GameObject("Outside").AddComponent<CircleCollider2D>();
-            collider2D.transform.position = location;
+            collider2D.transform.position = player.GetTruePosition();
             ((CircleCollider2D)collider2D).radius = ShockerOutsideRadius.GetFloat();
             collider2D.isTrigger = true;
             shockedRooms.Add(collider2D);
@@ -155,12 +150,12 @@ internal class Shocker : RoleBase
         {
             foreach (Collider2D collider in shockedRooms)
             {
-                if (collider.OverlapPoint(player.GetTruePosition()))
+                if (collider.IsTouching(player.Collider))
                 {
                     Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");
+                    player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
                     player.RpcMurderPlayer(player);
                     player.SetRealKiller(Utils.GetPlayerById(playerId.Value));
-                    player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
                     break;
                 }
             }
