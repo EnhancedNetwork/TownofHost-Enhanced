@@ -14,7 +14,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 185/255 USED
+enum CustomRPC : byte // 186/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -77,6 +77,7 @@ enum CustomRPC : byte // 185/255 USED
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    ExorcistExorcise,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
@@ -148,6 +149,7 @@ internal class RPCHandlerPatch
         or CustomRPC.RequestRetryVersionCheck
         or CustomRPC.AntiBlackout
         or CustomRPC.Judge
+        or CustomRPC.ExorcistExorcise
         or CustomRPC.CouncillorJudge
         or CustomRPC.NemesisRevenge
         or CustomRPC.RetributionistRevenge
@@ -644,6 +646,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Judge:
                 Judge.ReceiveRPC_Custom(reader, __instance);
+                break;
+            case CustomRPC.ExorcistExorcise:
+                Exorcist.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.PresidentEnd:
                 President.ReceiveRPC(reader, __instance);
