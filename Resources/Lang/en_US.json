@@ -1754,6 +1754,7 @@
   "GrenadierSkillDuration": "Grenade Duration",
   "GrenadierCauseVision": "Lowered vision",
   "GrenadierCanAffectNeutral": "Can affect <color=#7f8c8d>Neutrals</color>",
+  "GrenadierCanAffectCoven": "Can affect <color=#ac42f2>Coven</color>",
   "TicketsPerKill": "Votes Increase Amount Per Kill",
   "GangsterRecruitCooldown": "Recruit cooldown",
   "GangsterRecruitLimit": "Recruit limit",

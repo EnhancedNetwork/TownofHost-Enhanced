@@ -135,10 +135,11 @@ internal class Amnesiac : RoleBase
             }
             if (tar.GetCustomRole().IsNA())
             {
-                __instance.RpcSetCustomRole(tar.GetCustomRole());
-                __instance.GetRoleClass().Add(__instance.PlayerId);
-                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
-                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                tempRole = tar.GetCustomRole();
+            }
+            if (tar.GetCustomRole().IsCoven() || tar.GetCustomRole().GetStaticRoleClass().ThisRoleBase == CustomRoles.Impostor)
+            {
+                tempRole = tar.GetCustomRole();
             }
             if (tar.GetCustomRole().IsAmneNK())
             {

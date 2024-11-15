@@ -494,7 +494,7 @@ class CheckForEndVotingPatch
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.GetCustomRole().IsCrewmate())
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
-                    else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Enchanted))
+                    else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }
