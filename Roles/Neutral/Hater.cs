@@ -25,6 +25,7 @@ internal class Hater : RoleBase
     private static OptionItem CanKillEgoists;
     private static OptionItem CanKillInfected;
     private static OptionItem CanKillContagious;
+    private static OptionItem CanKillEnchanted;
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
     
@@ -41,6 +42,7 @@ internal class Hater : RoleBase
         CanKillInfected = BooleanOptionItem.Create(Id + 18, "HaterCanKillInfected", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
         CanKillContagious = BooleanOptionItem.Create(Id + 19, "HaterCanKillContagious", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
         CanKillAdmired = BooleanOptionItem.Create(Id + 20, "HaterCanKillAdmired", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
+        CanKillEnchanted = BooleanOptionItem.Create(Id + 21, "HaterCanKillEnchanted", true, TabGroup.NeutralRoles, false).SetParent(ChooseConverted);
     }
 
     public override void Init()
@@ -79,6 +81,7 @@ internal class Hater : RoleBase
                 || ((target.Is(CustomRoles.Infected) || target.Is(CustomRoles.Infectious)) && CanKillInfected.GetBool())
                 || ((target.Is(CustomRoles.Contagious) || target.Is(CustomRoles.Virus)) && CanKillContagious.GetBool())
                 || ((target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Admirer)) && CanKillAdmired.GetBool())
+                || ((target.Is(CustomRoles.Enchanted) || target.Is(CustomRoles.Ritualist)) && CanKillEnchanted.GetBool())
                 )
             {
                 isWon = true; // Only win if target can be killed - this kills the target if they can be killed
@@ -117,7 +120,8 @@ internal class Hater : RoleBase
             CustomRoles.Jackal or
             CustomRoles.Virus or
             CustomRoles.Infectious or
-            CustomRoles.Admirer
+            CustomRoles.Admirer or 
+            CustomRoles.Ritualist
             => true,
 
             _ => false,

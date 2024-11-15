@@ -1155,7 +1155,8 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Charmed)
             || sheriff.Is(CustomRoles.Infected)
             || sheriff.Is(CustomRoles.Contagious)
-            || sheriff.Is(CustomRoles.Egoist);
+            || sheriff.Is(CustomRoles.Egoist)
+            || sheriff.Is(CustomRoles.Enchanted);
     }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
     {
