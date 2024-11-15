@@ -3806,11 +3806,12 @@
   "ExorcistActive": "Exorcism is active",
   "ExorcistOutOfUsages": "You're out of usages!",
   "ExorcistDispelled": "You're out of spells!",
-  "ExcorismActiveFor": "Exorcism Duration",
-  "ExcorismPerGame": "Max exorcises per game",
-  "ExcorismDelay": "Exorcism Delay",
-  "ExcorismSacrificesToDispell": "How many sacrifices are needed to dispell",
-  "ExcorismLimitMeeting": "Max exorcises per meeting",
-  "ExcorismEndOnKill": "End exorcism on kill",
+  "ExorcismActiveFor": "Exorcism Duration",
+  "ExorcismPerGame": "Max exorcises per game",
+  "ExorcismDelay": "Exorcism Delay",
+  "ExorcismSacrificesToDispel": "How many sacrifices are needed to dispel",
+  "ExorcismLimitMeeting": "Max exorcises per meeting",
+  "ExorcismEndOnKill": "End exorcism on kill",
   "ExorcistTryHideMsg": "Try to hide exorcist's commands"
+  
 }

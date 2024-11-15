@@ -5,7 +5,9 @@ using System.Runtime.Intrinsics.Arm;
 using System.Text;
 using System.Threading.Tasks;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
+using Hazel;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -15,21 +17,20 @@ internal class Exorcist : RoleBase
     //===========================SETUP================================\\
     private const int Id = 30800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Exorcist);
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Exorcist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
-    private static OptionItem ExcorismActiveFor;
-    private static OptionItem ExcorismPerGame;
-    private static OptionItem ExcorismDelay;
-    private static OptionItem ExcorismSacrificesToDispell;
-    private static OptionItem ExcorismLimitMeeting;
-    private static OptionItem ExcorismEndOnKill;
+    private static OptionItem ExorcismActiveFor;
+    private static OptionItem ExorcismPerGame;
+    private static OptionItem ExorcismDelay;
+    private static OptionItem ExorcismSacrificesToDispel;
+    private static OptionItem ExorcismLimitMeeting;
+    private static OptionItem ExorcismEndOnKill;
     private static OptionItem TryHideMsg;
-  
 
-    private int ExcorismLimitPerMeeting;
-    private static bool IsExcorism;
-    private static bool IsDelay;
+    private int ExorcismLimitPerMeeting;
+    private static bool IsExorcismActive;
+    private static bool IsDelayActive;
     private static PlayerControl ExorcistPlayer;
     private int Sacrifices = 0;
     private bool Dispelled = false;
@@ -37,63 +38,73 @@ internal class Exorcist : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Exorcist, 1, zeroOne: false);
-        ExcorismActiveFor = FloatOptionItem.Create(Id + 2, "ExcorismActiveFor", new(1f, 10f, 1f), 3f, TabGroup.ImpostorRoles, false)
+        ExorcismActiveFor = FloatOptionItem.Create(Id + 2, "ExorcismActiveFor", new(1f, 10f, 1f), 3f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist])
             .SetValueFormat(OptionFormat.Seconds);
-        ExcorismPerGame = IntegerOptionItem.Create(Id + 3, "ExcorismPerGame", new(1, 10, 1), 3, TabGroup.ImpostorRoles, false)
+        ExorcismPerGame = IntegerOptionItem.Create(Id + 3, "ExorcismPerGame", new(1, 10, 1), 3, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist]);
-        ExcorismDelay = FloatOptionItem.Create(Id + 4, "ExcorismDelay", new(0f, 10f, 1f), 3f, TabGroup.ImpostorRoles, false)
+        ExorcismDelay = FloatOptionItem.Create(Id + 4, "ExorcismDelay", new(0f, 10f, 1f), 3f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist])
             .SetValueFormat(OptionFormat.Seconds);
-        ExcorismSacrificesToDispell = IntegerOptionItem.Create(Id + 5, "ExcorismSacrificesToDispell", new(1, 10, 1), 2, TabGroup.ImpostorRoles, false)
+        ExorcismSacrificesToDispel = IntegerOptionItem.Create(Id + 5, "ExorcismSacrificesToDispel", new(1, 10, 1), 2, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist]);
-        ExcorismLimitMeeting = IntegerOptionItem.Create(Id + 6, "ExcorismLimitMeeting", new(1, 5, 1), 1, TabGroup.ImpostorRoles, false)
+        ExorcismLimitMeeting = IntegerOptionItem.Create(Id + 6, "ExorcismLimitMeeting", new(1, 5, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist]);
-        ExcorismEndOnKill = BooleanOptionItem.Create(Id + 7, "ExcorismEndOnKill", true, TabGroup.ImpostorRoles, false)
+        ExorcismEndOnKill = BooleanOptionItem.Create(Id + 7, "ExorcismEndOnKill", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist]);
         TryHideMsg = BooleanOptionItem.Create(Id + 8, "ExorcistTryHideMsg", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist])
             .SetColor(Color.green);
-
     }
+
     public override void Add(byte playerId)
     {
-        ExcorismLimitPerMeeting = ExcorismLimitMeeting.GetInt();
-        AbilityLimit = ExcorismPerGame.GetInt();
+        ExorcismLimitPerMeeting = ExorcismLimitMeeting.GetInt();
+        AbilityLimit = ExorcismPerGame.GetInt();
     }
+
     public override void AfterMeetingTasks()
     {
-        ExcorismLimitPerMeeting = ExcorismLimitMeeting.GetInt();
+        ExorcismLimitPerMeeting = ExorcismLimitMeeting.GetInt();
     }
-    public bool CheckCommond(ref string msg, string command, PlayerControl player)
-    {
 
-        var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
+    public bool CheckCommand(PlayerControl player, string msg, bool isUI = false)
+    {
+        var originMsg = msg;
+
+        if (!AmongUsClient.Instance.AmHost) return false;
+        if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return false;
+        if (!player.Is(CustomRoles.Exorcist)) return false;
+
+        msg = msg.ToLower().Trim();
+
+        var commands = new[] { "exorcise", "exorcism", "ex" };
+        foreach (var cmd in commands)
         {
-            if (msg == "/" + comList[i])
+            if (msg.StartsWith("/" + cmd))
             {
-                if (!GameStates.IsMeeting) return false;
-                if (player.Data.IsDead) return false;
-                if (AbilityLimit <= 0 || ExcorismLimitPerMeeting <= 0)
+                if (!player.IsAlive()) return false;
+                
+
+                if (AbilityLimit <= 0 || ExorcismLimitPerMeeting <= 0)
                 {
                     if (TryHideMsg.GetBool() && !player.Data.IsHost())
                         GuessManager.TryHideMsg();
-                    Utils.SendMessage(Translator.GetString("ExorcistOutOfUsages"), player.PlayerId);
+                    player.ShowInfoMessage(isUI, GetString("ExorcistOutOfUsages"));
                     return true;
                 }
                 if (Dispelled)
                 {
                     if (TryHideMsg.GetBool() && !player.Data.IsHost())
                         GuessManager.TryHideMsg();
-                    Utils.SendMessage(Translator.GetString("ExorcistDispelled"), player.PlayerId);
+                    player.ShowInfoMessage(isUI, GetString("ExorcistDispelled"));
                     return true;
                 }
-                if (IsExcorism || IsDelay)
+                if (IsExorcismActive || IsDelayActive)
                 {
                     if (TryHideMsg.GetBool() && !player.Data.IsHost())
                         GuessManager.TryHideMsg();
-                    Utils.SendMessage(Translator.GetString("ExorcistActive"), player.PlayerId);
+                    player.ShowInfoMessage(isUI, GetString("ExorcistActive"));
                     return true;
                 }
                 ActivateExorcism(player);
@@ -102,15 +113,17 @@ internal class Exorcist : RoleBase
         }
         return false;
     }
-    public static bool IsExorcismActive()
+
+    public static bool IsExorcismCurrentlyActive()
     {
-        return IsExcorism;
+        return IsExorcismActive;
     }
-    public static void ExcersizePlayer(PlayerControl player)
+
+    public static void ExorcisePlayer(PlayerControl player)
     {
-        if (ExcorismEndOnKill.GetBool() && IsExcorism && ExorcistPlayer == player)
+        if (ExorcismEndOnKill.GetBool() && IsExorcismActive && ExorcistPlayer == player)
         {
-            IsExcorism = false;
+            IsExorcismActive = false;
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
         }
         player.SetDeathReason(PlayerState.DeathReason.Exorcised);
@@ -118,43 +131,106 @@ internal class Exorcist : RoleBase
         GuessManager.RpcGuesserMurderPlayer(player);
         Main.PlayersDiedInMeeting.Add(player.PlayerId);
         MurderPlayerPatch.AfterPlayerDeathTasks(player, PlayerControl.LocalPlayer, true);
-        Utils.SendMessage(string.Format(Translator.GetString("ExorcistKill"),player.name.RemoveHtmlTags()));
+        Utils.SendMessage(string.Format(Translator.GetString("ExorcistKill"), player.name.RemoveHtmlTags()));
         Exorcist exorcist = (Exorcist)ExorcistPlayer.GetRoleClass();
         exorcist.Sacrifice();
     }
+
     public void ActivateExorcism(PlayerControl player)
     {
-        ExcorismLimitPerMeeting--;
+        ExorcismLimitPerMeeting--;
         AbilityLimit--;
-        if(TryHideMsg.GetBool())
+        if (TryHideMsg.GetBool())
             GuessManager.TryHideMsg();
         ExorcistPlayer = player;
-        IsDelay = true;
-        if (ExcorismDelay.GetFloat() > 0)
-             Utils.SendMessage(string.Format(Translator.GetString("ExorcistNotify"), ExcorismDelay.GetFloat()));
+        IsDelayActive = true;
+        if (ExorcismDelay.GetFloat() > 0)
+            Utils.SendMessage(string.Format(GetString("ExorcistNotify"), ExorcismDelay.GetFloat()));
+        
         _ = new LateTask(() =>
         {
-            IsExcorism = true;
-            IsDelay = false;
-            Utils.SendMessage(string.Format(Translator.GetString("ExorcistStart"), ExcorismActiveFor.GetFloat()));
+            IsExorcismActive = true;
+            IsDelayActive = false;
+            Utils.SendMessage(string.Format(Translator.GetString("ExorcistStart"), ExorcismActiveFor.GetFloat()));
             _ = new LateTask(() =>
             {
-                if (IsExcorism)
+                if (IsExorcismActive)
                 {
-                    IsExcorism = false;
-                    Utils.SendMessage(Translator.GetString("ExorcistEnd"));
-                }   
-            }, ExcorismActiveFor.GetFloat(), "ExorcistNotify");
-            
-        }, ExcorismDelay.GetFloat(), "ExorcistNotify");
-       
+                    IsExorcismActive = false;
+                    Utils.SendMessage(GetString("ExorcistEnd"));
+                }
+            }, ExorcismActiveFor.GetFloat(), "ExorcistNotify");
 
+        }, ExorcismDelay.GetFloat(), "ExorcistNotify");
     }
+
     public void Sacrifice()
     {
         Sacrifices++;
-        if (Sacrifices >= ExcorismSacrificesToDispell.CurrentValue)
+        if (Sacrifices >= ExorcismSacrificesToDispel.GetInt())
             Dispelled = true;
     }
-    public override string GetProgressText(byte playerId, bool coooms) => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Exorcist), $"({AbilityLimit})") ?? "Invalid";
+
+    public override string GetProgressText(byte playerId, bool coooms)
+        => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Exorcist), $"({AbilityLimit})") ?? "Invalid";
+
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
+    class StartMeetingPatch
+    {
+        public static void Postfix(MeetingHud __instance)
+        {
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.Exorcist) && PlayerControl.LocalPlayer.IsAlive())
+                CreateExorcistButton(__instance);
+        }
+    }
+
+    public static void CreateExorcistButton(MeetingHud __instance)
+    {
+        PlayerControl pc = PlayerControl.LocalPlayer;
+        PlayerVoteArea pva = __instance.playerStates[pc.PlayerId];
+        if (pc == null || !pc.IsAlive()) return;
+
+        GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
+        GameObject exorcistButton = UnityEngine.Object.Instantiate(template, pva.transform);
+        exorcistButton.name = "ExorcistButton";
+        exorcistButton.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
+        SpriteRenderer renderer = exorcistButton.GetComponent<SpriteRenderer>();
+        renderer.sprite = CustomButton.Get("MeetingKillButton");
+        PassiveButton button = exorcistButton.GetComponent<PassiveButton>();
+        button.OnClick.RemoveAllListeners();
+        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => ExorcistOnClick()));
+        
+    }
+
+    private static void ExorcistOnClick()
+    {
+        if (!PlayerControl.LocalPlayer.IsAlive()) return;
+        Logger.Msg($"Exorcist Click: ID {PlayerControl.LocalPlayer.PlayerId}", "Exorcist UI");
+        if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.GetRoleClass() is Exorcist exorcist)
+        {
+            exorcist.CheckCommand(PlayerControl.LocalPlayer, "/ex", true);
+        }
+        else
+        {
+            SendExorcismRPC(PlayerControl.LocalPlayer.PlayerId);
+        }
+    }
+
+    private static void SendExorcismRPC(byte exorcistId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExorcistExorcise, SendOption.Reliable);
+        writer.Write(exorcistId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
+    {
+        if (pc.GetRoleClass() is Exorcist exorcist && exorcist.AbilityLimit > 0)
+        {
+            byte exorcistId = reader.ReadByte();
+            PlayerControl exorcistPlayer = Utils.GetPlayerById(exorcistId);
+            if (exorcistPlayer == null) return;
+            exorcist.CheckCommand(exorcistPlayer, "/ex", false);
+        }
+    }
 }
