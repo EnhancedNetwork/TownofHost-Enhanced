@@ -302,7 +302,6 @@ public enum TabGroup
 {
     SystemSettings,
     ModSettings,
-    ModifierSettings,
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,

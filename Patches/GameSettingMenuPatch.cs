@@ -49,7 +49,6 @@ public class GameSettingMenuPatch
             {
                 TabGroup.SystemSettings => Main.ModColor,
                 TabGroup.ModSettings => "#59ef83",
-                TabGroup.ModifierSettings => "#EF59AF",
                 TabGroup.ImpostorRoles => "#f74631",
                 TabGroup.CrewmateRoles => "#8cffff",
                 TabGroup.NeutralRoles => "#7f8c8d",
@@ -351,7 +350,6 @@ public class GameSettingMenuPatch
                 {
                     case TabGroup.SystemSettings:
                     case TabGroup.ModSettings:
-                    case TabGroup.ModifierSettings:
                         __instance.MenuDescriptionText.text = GetString("TabMenuDescription_General");
                         break;
                     case TabGroup.ImpostorRoles:
