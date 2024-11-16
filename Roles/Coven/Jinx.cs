@@ -81,9 +81,19 @@ internal class Jinx : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        return HasNecronomicon(killer) && killer.CheckDoubleTrigger(target, () => {
-            JinxPlayer(killer, target);
-        });
+        if (killer.CheckDoubleTrigger(target, () => { JinxPlayer(killer, target); }))
+        {
+            if (HasNecronomicon(killer))
+            {
+                if (target.GetCustomRole().IsCovenTeam())
+                {
+                    killer.Notify(GetString("CovenDontKillOtherCoven"));
+                    return false;
+                }
+                else return true;
+            }
+        }
+        return false;
     }
     private void JinxPlayer(PlayerControl jinx, PlayerControl target)
     {

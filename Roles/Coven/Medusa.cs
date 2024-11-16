@@ -95,7 +95,12 @@ internal class Medusa : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer) && !target.IsPlayerCoven()) {
+        if (HasNecronomicon(killer)) {
+            if (target.GetCustomRole().IsCovenTeam())
+            {
+                killer.Notify(GetString("CovenDontKillOtherCoven"));
+                return false;
+            }
             killer.RpcMurderPlayer(target);
             killer.ResetKillCooldown();
             Main.UnreportableBodies.Add(target.PlayerId);

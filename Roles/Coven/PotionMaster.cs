@@ -103,15 +103,24 @@ internal class PotionMaster : CovenManager
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (HasNecronomicon(killer))
-        {
-            return killer.CheckDoubleTrigger(target, () => { SetRitual(killer, target); });
-        }
-        else
+        if (!HasNecronomicon(killer))
         {
             SetRitual(killer, target);
             return false;
         }
+        if (killer.CheckDoubleTrigger(target, () => { SetRitual(killer, target); }))
+        {
+            if (HasNecronomicon(killer))
+            {
+                if (target.GetCustomRole().IsCovenTeam())
+                {
+                    killer.Notify(GetString("CovenDontKillOtherCoven"));
+                    return false;
+                }
+                else return true;
+            }
+        }
+        return false;
     }
 
     public static bool IsReveal(byte seer, byte target) => RevealList[seer].Contains(target);

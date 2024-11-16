@@ -53,7 +53,14 @@ internal class CovenLeader : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer)) return true;
+        if (HasNecronomicon(killer)) { 
+            if (target.GetCustomRole().IsCovenTeam())
+            {
+                killer.Notify(GetString("CovenDontKillOtherCoven"));
+                return false;
+            }
+            else return true; 
+        }
         if (AbilityLimit <= 0)
         {
             killer.Notify(GetString("CovenLeaderNoRetrain"));

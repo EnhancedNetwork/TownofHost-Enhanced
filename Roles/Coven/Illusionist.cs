@@ -73,6 +73,7 @@ internal class Illusionist : CovenManager
                 Main.PlayerStates[target.PlayerId].SetDead();
                 return true;
             }
+            killer.Notify(GetString("CovenDontKillOtherCoven"));
             return false;
         }
         else

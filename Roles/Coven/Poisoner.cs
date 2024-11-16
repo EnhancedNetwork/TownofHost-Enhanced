@@ -81,6 +81,7 @@ internal class Poisoner : CovenManager
                     PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
                 }
             }
+            killer.Notify(GetString("CovenDontKillOtherCoven"));
             return false;
         }
         else

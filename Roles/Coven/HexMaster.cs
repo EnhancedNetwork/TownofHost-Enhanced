@@ -256,9 +256,14 @@ internal class HexMaster : CovenManager
         }
         if (killer.CheckDoubleTrigger(target, () => { SetHexedNecronomicon(killer, target); }))
         {
-            if (HasNecronomicon(killer) && !target.IsPlayerCoven())
+            if (HasNecronomicon(killer))
             {
-                return true;
+                if (target.GetCustomRole().IsCovenTeam())
+                {
+                    killer.Notify(GetString("CovenDontKillOtherCoven"));
+                    return false;
+                }
+                else return true;
             }
         }
         return false;

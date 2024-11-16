@@ -130,7 +130,7 @@ internal class Sacrifist : CovenManager
                     originalSpeed.Add(sacrifist, Main.AllPlayerSpeed[sacrifist]);
                     Main.AllPlayerSpeed[sacrifist] = Speed.GetFloat();
                     pc.MarkDirtySettings();
-                    Logger.Info($"{pc.GetRealName()} Changed Speed for {randPlayerPC.GetRealName} and self", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} Changed Speed for {randPlayerPC.GetRealName()} and self", "Sacrifist");
                     pc.Notify(GetString("SacrifistSpeedDebuff"), SpeedDuration.GetFloat());
                     _ = new LateTask(() =>
                     {
@@ -161,14 +161,14 @@ internal class Sacrifist : CovenManager
                     Main.AllPlayerKillCooldown[randPlayer] += Main.AllPlayerKillCooldown[randPlayer] * (IncreasedCooldown.GetFloat() / 100);
                     Main.AllPlayerKillCooldown[sacrifist] += Main.AllPlayerKillCooldown[sacrifist] * (IncreasedCooldown.GetFloat() / 100);
                     maxDebuffTimer += maxDebuffTimer * (IncreasedCooldown.GetFloat() / 100);
-                    Logger.Info($"{pc.GetRealName()} Changed Cooldown for {randPlayerPC.GetRealName} and self", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} Changed Cooldown for {randPlayerPC.GetRealName()} and self", "Sacrifist");
                     pc.Notify(GetString("SacrifistCooldownDebuff"), 5f);
                     break;
                 // Cant Fix Sabotage (not coding allat, just give them Fool)
                 case 3:
                     GetPlayerById(sacrifist).RpcSetCustomRole(CustomRoles.Fool);
                     randPlayerPC.RpcSetCustomRole(CustomRoles.Fool);
-                    Logger.Info($"{pc.GetRealName()} Gave Fool to {randPlayerPC.GetRealName} and self", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} Gave Fool to {randPlayerPC.GetRealName()} and self", "Sacrifist");
                     pc.Notify(GetString("SacrifistFoolDebuff"), 5f);
                     break;
                 // Make one of them call a meeting
@@ -184,7 +184,7 @@ internal class Sacrifist : CovenManager
                                 break;
                             case 1:
                                 GetPlayerById(sacrifist).NoCheckStartMeeting(null);
-                                Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} call meeting", "Sacrifist");
+                                Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName()} call meeting", "Sacrifist");
                                 break;
                         }
                     }, 2f, "Sacrifist Call Meeting");
@@ -193,7 +193,7 @@ internal class Sacrifist : CovenManager
                 case 5:
                     ReportDeadBodyPatch.CanReport[randPlayer] = false;
                     ReportDeadBodyPatch.CanReport[sacrifist] = false;
-                    Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} and self unable to report", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName()} and self unable to report", "Sacrifist");
                     pc.Notify(GetString("SacrifistReportDebuff"), 5f);
                     break;
                 // Reset Tasks
@@ -205,7 +205,7 @@ internal class Sacrifist : CovenManager
                     pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
                     taskStateSacrif.CompletedTasksCount = 0;
                     pc.Notify(GetString("SacrifistTasksDebuff"), 5f);
-                    Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName} and self reset tasks", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName()} and self reset tasks", "Sacrifist");
                     break;
                 // Swap Skins
                 case 7:
@@ -219,7 +219,7 @@ internal class Sacrifist : CovenManager
                     Camouflage.PlayerSkins[randPlayer] = randPlayerPC.CurrentOutfit;
                     randPlayerPC.SetNewOutfit(temp, setName: true, setNamePlate: true);
                     pc.Notify(GetString("SacrifistSwapSkinsDebuff"), 5f);
-                    Logger.Info($"{pc.GetRealName()} swapped outfit with {randPlayerPC.GetRealName}", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} swapped outfit with {randPlayerPC.GetRealName()}", "Sacrifist");
                     break;
                 // Swap Sacrifist and Target
                 case 8:
@@ -240,7 +240,7 @@ internal class Sacrifist : CovenManager
                             pc.Notify(ColorString(GetRoleColor(CustomRoles.Sacrifist), GetString("ErrorTeleport")));
                         }
                     }, 0.01f, "Sacrifist Swap");
-                    Logger.Info($"{pc.GetRealName()} Will Swap with {randPlayerPC.GetRealName} 5s after exiting vent", "Sacrifist");
+                    Logger.Info($"{pc.GetRealName()} Will Swap with {randPlayerPC.GetRealName()} 5s after exiting vent", "Sacrifist");
                     pc.Notify(GetString("SacrifistSwapDebuff"), 15f);
                     break;
             }

@@ -1966,6 +1966,8 @@
   "CovenPerRole": "Per Role",
   "CovenCanSeeEachOthersAddOns": "<color=#ac42f2>Coven</color> can see each other's Add-Ons",
   "NecronomiconNotification": "You have recieved the Necronomicon!<br>Your powers are now enhanced!",
+  "NecronomiconVote": "You have voted for {0} to receive the Necronomicon next round. You may now vote normally.",
+  "CovenDontKillOtherCoven": "Don't try to kill your fellow Coven!",
 
   "CovenLeaderMaxRetrains": "Max Retrains",
   "CovenLeaderRetrainCooldown": "Retrain Cooldown",
@@ -3814,6 +3816,7 @@
   "HaterCanKillInfected": "Can kill infected team",
   "HaterCanKillContagious": "Can kill virus team",
   "HaterCanKillAdmired": "Can kill admirer",
+  "HaterCanKillEnchanted": "Can kill enchanted",
   "HorseMode": "Enable to become a horse",
   "LongMode": "Enable to have a long neck",
   "InfluencedChangeVote": "Oops! You are so influenced by others!\nYou can not contain your fear that you change voted {0}!",
