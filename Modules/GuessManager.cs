@@ -734,7 +734,7 @@ public static class GuessManager
             container.transform.localPosition = new Vector3(0, 0, -200f);
             guesserUI = container.gameObject;
 
-            List<int> info = [0, 0, 0, 0];
+            List<int> info = [0, 0, 0, 0, 0];
             var buttonTemplate = __instance.playerStates[0].transform.FindChild("votePlayerBase");
             var maskTemplate = __instance.playerStates[0].transform.FindChild("MaskArea");
             var smallButtonTemplate = __instance.playerStates[0].Buttons.transform.Find("CancelButton");
