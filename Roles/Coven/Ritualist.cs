@@ -72,6 +72,15 @@ internal class Ritualist : CovenManager
             RitualLimit[pid] = MaxRitsPerRound.GetInt();
         }
     }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (target.GetCustomRole().IsCovenTeam())
+        {
+            killer.Notify(GetString("CovenDontKillOtherCoven"));
+            return false;
+        }
+        return true;
+    }
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)

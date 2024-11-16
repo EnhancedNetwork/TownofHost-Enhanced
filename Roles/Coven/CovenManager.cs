@@ -23,6 +23,8 @@ public abstract class CovenManager : RoleBase
 
     private static readonly Dictionary<CustomRoles, OptionItem> CovenImpVisOptions = [];
     private static readonly Dictionary<CustomRoles, OptionItem> CovenVentOptions = [];
+
+    public static readonly Dictionary<byte, byte> necroVotes = [];
     public static void RunSetUpImpVisOptions(int Id)
     {
             foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven()).ToArray())
@@ -122,6 +124,42 @@ public abstract class CovenManager : RoleBase
         necroHolder = target;
         GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
         SendRPC(necroHolder);
+    }
+    public static void GiveNecronomicon(PlayerControl target)
+    {
+        necroHolder = target.PlayerId;
+        GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
+        SendRPC(necroHolder);
+    }
+    public static void CheckNecroVotes()
+    {
+        Dictionary<byte, int> voteCount = new Dictionary<byte, int>();
+        byte currentResult = byte.MinValue;
+        byte lastResult = byte.MinValue;
+        foreach (byte voter in necroVotes.Keys)
+        {
+            voteCount[voter] = 0;
+        }
+        foreach (byte voter in necroVotes.Keys) {
+            voteCount[necroVotes[voter]]++;
+        }
+        foreach (byte vote in voteCount.Keys) {
+            if (voteCount[vote] >= voteCount[currentResult]) {
+                lastResult = currentResult;
+                currentResult = vote; 
+            }
+        }
+        if (currentResult == byte.MinValue) { }
+        else if (currentResult == lastResult)
+        {
+            Logger.Info($"{GetPlayerById(currentResult).GetRealName()} and {GetPlayerById(lastResult).GetRealName()} had equal Necronomicon votes, not changing Necronomicon", "Coven");
+        }
+        else
+        {
+            GiveNecronomicon(currentResult);
+            Logger.Info($"{GetPlayerById(currentResult).GetRealName()} had the most Necronomicon votes, giving them Necronomicon", "Coven");
+        }
+        necroVotes.Clear();
     }
 
     public static void NecronomiconCheck()

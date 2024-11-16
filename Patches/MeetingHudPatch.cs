@@ -696,8 +696,32 @@ class CastVotePatch
             }
         }
 
+        // Coven Necronomicon Voting
+
+        if (suspectPlayerId == 253 && voter.IsPlayerCoven())
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                SendMessage(GetString("VoteNotUseAbility"), voter.PlayerId);
+                __instance.RpcClearVoteDelay(voter.GetClientId());
+                return false;
+            }
+        }
+        else if (voter.IsPlayerCoven() && target.IsPlayerCoven())
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                CovenManager.necroVotes[voter.PlayerId] = target.PlayerId;
+                SendMessage(string.Format(GetString("NecronomiconVote"), target.GetRealName()), voter.PlayerId);
+                __instance.RpcClearVoteDelay(voter.GetClientId());
+                return false;
+            }
+        }
+
         // Coven Leader Retraining
-        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
             voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
@@ -707,14 +731,16 @@ class CastVotePatch
             CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
             CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
             __instance.RpcClearVoteDelay(voter.GetClientId());
+            return false;
         }
-        else if (CustomRoles.CovenLeader.RoleExist() && target != voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        else if (CustomRoles.CovenLeader.RoleExist() && target != voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
             SendMessage(string.Format(GetString("CovenLeaderDeclineRetrain"), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
             SendMessage(string.Format(GetString("RetrainDeclineOffer"), CustomRoles.CovenLeader.ToColoredString()), voter.PlayerId);
             CovenLeader.retrainPlayer.Clear();
             __instance.RpcClearVoteDelay(voter.GetClientId());
+            return false;
         }
 
         if (target != null && suspectPlayerId < 253)

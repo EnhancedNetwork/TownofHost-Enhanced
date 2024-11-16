@@ -1333,7 +1333,7 @@ class FixedUpdateInNormalGamePatch
                     if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                         Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
                 }
-                if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target) || CovenManager.HasNecronomicon(seer)))
+                if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
                 {
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
                 }
