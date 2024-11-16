@@ -1037,7 +1037,7 @@
   "NoGameEnd": "測試模式(遊戲不結束)",
   "AllowConsole": "開啟控制台(可能會被用於作弊)",
   "DebugMode": "偵錯模式",
-  "SyncButtonMode": "限制會議時間",
+  "SyncButtonMode": "限制會議次數",
   "RandomMapsMode": "隨機地圖模式",
   "SyncedButtonCount": "可用緊急會議次數",
   "HHSuccessKCDDecrease": "殺死目標減少的冷卻時間",
