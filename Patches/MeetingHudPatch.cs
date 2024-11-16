@@ -697,7 +697,7 @@ class CastVotePatch
         }
 
         // Coven Leader Retraining
-        if (target == voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
             voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
@@ -708,7 +708,7 @@ class CastVotePatch
             CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
             __instance.RpcClearVoteDelay(voter.GetClientId());
         }
-        else if (target != voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        else if (CustomRoles.CovenLeader.RoleExist() && target != voter && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
             SendMessage(string.Format(GetString("CovenLeaderDeclineRetrain"), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
