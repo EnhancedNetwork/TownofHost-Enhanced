@@ -104,8 +104,6 @@ enum CustomRPC : byte // 185/255 USED
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
     SyncVultureBodyAmount,
-    SpyRedNameSync,
-    SpyRedNameRemove,
     SetChameleonTimer,
     SyncAdmiredList,
     SyncAdmiredAbility,
@@ -616,12 +614,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
-                break;
-            case CustomRPC.SpyRedNameSync:
-                Spy.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SpyRedNameRemove:
-                Spy.ReceiveRPC(reader, isRemove: true);
                 break;
             //case CustomRPC.SetCleanserCleanLimit:
             //    Cleanser.ReceiveRPC(reader);
