@@ -14,7 +14,7 @@ public class dbConnect
     private static bool InitOnce = false;
     private static Dictionary<string, string> UserType = [];
 
-    private const string ApiUrl = "https://api.weareten.ca";
+    private const string ApiUrl = "https://tohre.niko233.me";
 
     public static IEnumerator Init()
     {
