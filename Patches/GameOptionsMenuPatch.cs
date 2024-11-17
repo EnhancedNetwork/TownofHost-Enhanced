@@ -677,7 +677,6 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
-            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
@@ -691,6 +690,8 @@ public static class StringOptionPatch
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }
+
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
         return true;
