@@ -110,6 +110,7 @@ enum CustomRPC : byte // 185/255 USED
     SyncAdmiredList,
     SyncAdmiredAbility,
     SetImitateLimit,
+    DictatorRPC,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -156,7 +157,8 @@ internal class RPCHandlerPatch
         or CustomRPC.SetSwapperVotes
         or CustomRPC.DumpLog
         or CustomRPC.SetFriendCode
-        or CustomRPC.BetterCheck;
+        or CustomRPC.BetterCheck
+        or CustomRPC.DictatorRPC;
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         var rpcType = (RpcCalls)callId;
@@ -216,85 +218,7 @@ internal class RPCHandlerPatch
         switch (rpcType)
         {
             case CustomRPC.AntiBlackout:
-                Logger.Fatal($"{__instance?.Data?.PlayerName}({__instance.PlayerId}): Error: {reader.ReadString()} - end the game according to the setting", "Anti-black");
-
-                if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
-                {
-                    //CoStartGame is running, we are fucked.
-                    ChatUpdatePatch.DoBlockChat = true;
-                    Main.OverrideWelcomeMsg = string.Format(GetString("RpcAntiBlackOutNotifyInLobby"), __instance?.Data?.PlayerName, GetString("EndWhenPlayerBug"));
-
-                    if (Options.EndWhenPlayerBug.GetBool())
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutEndGame"), __instance?.Data?.PlayerName));
-                        }, 3f, "RPC Anti-Black Msg SendInGame Error During Loading");
-
-                        if (AmongUsClient.Instance.AmHost)
-                        {
-                            if (GameStates.IsInGame && !GameStates.IsCoStartGame)
-                            {
-                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                                GameManager.Instance.LogicFlow.CheckEndCriteria();
-                                RPC.ForceEndGame(CustomWinner.Error);
-                            }
-                            else
-                            {
-                                _ = new LateTask(() =>
-                                {
-                                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                                    GameManager.Instance.LogicFlow.CheckEndCriteria();
-                                    RPC.ForceEndGame(CustomWinner.Error);
-                                }, 5.5f, "RPC Anti-Black End Game As Critical Error");
-                            }
-                        }
-                    }
-                    else
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutIgnored"), __instance?.Data?.PlayerName));
-                        }, 3f, "RPC Anti-Black Msg SendInGame Out Ignored");
-
-                        if (AmongUsClient.Instance.AmHost && __instance != null)
-                        {
-                            if (GameStates.IsInGame && !GameStates.IsCoStartGame)
-                            {
-                                AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                                Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
-                            }
-                            else
-                            {
-                                _ = new LateTask(() =>
-                                {
-                                    AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                                    Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
-                                }, 5.5f, "RPC Anti-Black Kicked As Critical Error");
-                            }
-
-                            ChatUpdatePatch.DoBlockChat = false;
-                        }
-                    }
-                }
-                else if (GameStartManager.Instance != null) 
-                {
-                    // We imagine rpc is received when starting game in lobby, not fucked yet
-                    if (AmongUsClient.Instance.AmHost)
-                    {
-                        GameStartManager.Instance.ResetStartState();
-                        if (__instance != null)
-                        {
-                            AmongUsClient.Instance.KickPlayer(__instance.GetClientId(), false);
-                        }
-                    }
-                    Logger.SendInGame(string.Format(GetString("RpcAntiBlackOutKicked"), __instance?.Data?.PlayerName));
-                }
-                else
-                {
-                    Logger.SendInGame("[Critical Error] Your client is in a unknow state while receiving AntiBlackOut rpcs from others.");
-                    Logger.Fatal($"Client is in a unknow state while receiving AntiBlackOut rpcs from others.", "Anti-black");
-                }
+                CriticalErrorManager.ReadRpc(__instance, reader);
                 break;
 
             case CustomRPC.VersionCheck:
@@ -710,6 +634,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetSwapperVotes:
                 Swapper.ReceiveSwapRPC(reader, __instance);
+                break;
+            case CustomRPC.DictatorRPC:
+                Dictator.OnReceiveDictatorRPC(reader, __instance);
                 break;
             case CustomRPC.SyncShieldPersonDiedFirst:
                 Main.FirstDied = reader.ReadString();

@@ -180,11 +180,7 @@ internal class ControllerManagerUpdatePatch
             {
                 HudManager.Instance.Chat.SetVisible(true);
             }
-            
-            if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
-            {
-                Utils.ErrorEnd("Test AntiBlackout");
-            }
+
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {
@@ -315,6 +311,11 @@ internal class ControllerManagerUpdatePatch
             // ========================================== Only host and in debug ==========================================
             // ############################################################################################################
             if (!DebugModeManager.IsDebugMode) return;
+
+            if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
+            {
+                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
+            }
 
             // Kill flash
             if (GetKeysDown(KeyCode.Return, KeyCode.F, KeyCode.LeftShift))
