@@ -77,7 +77,7 @@ internal class ChatCommands
         {
             goto Canceled;
         }
-        if (Exorcist.IsExorcismCurrentlyActive())
+        if (Exorcist.IsExorcismCurrentlyActive() && PlayerControl.LocalPlayer.IsAlive())
         {
             Exorcist.ExorcisePlayer(PlayerControl.LocalPlayer);
             goto Canceled;
@@ -2021,7 +2021,7 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if (Exorcist.IsExorcismCurrentlyActive())
+        if (Exorcist.IsExorcismCurrentlyActive() && player.IsAlive())
         {
             Exorcist.ExorcisePlayer(player);
             return;
