@@ -16,7 +16,6 @@ internal class Exorcist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
-    private static OptionItem KillCooldown;
     private static OptionItem ExorcismActiveFor;
     private static OptionItem ExorcismPerGame;
     private static OptionItem ExorcismDelay;
@@ -35,9 +34,6 @@ internal class Exorcist : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Exorcist);
-        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist])
-            .SetValueFormat(OptionFormat.Seconds);
         ExorcismActiveFor = FloatOptionItem.Create(Id + 11, "ExorcismActiveFor", new(1f, 10f, 1f), 3f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Exorcist])
             .SetValueFormat(OptionFormat.Seconds);
@@ -130,7 +126,7 @@ internal class Exorcist : RoleBase
 
     public static void ExorcisePlayer(PlayerControl player)
     {
-        if (ExorcismEndOnKill.GetBool() && IsExorcismActive && ExorcistPlayer == player)
+        if (ExorcismEndOnKill.GetBool() && IsExorcismActive)
         {
             IsExorcismActive = false;
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
@@ -182,8 +178,6 @@ internal class Exorcist : RoleBase
         if (Sacrifices >= ExorcismSacrificesToDispel.GetInt())
             Dispelled = true;
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
     public override string GetProgressText(byte playerId, bool coooms)
         => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Exorcist), $"({AbilityLimit})") ?? "Invalid";
 
