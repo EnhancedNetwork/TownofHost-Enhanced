@@ -88,6 +88,7 @@ internal class VoodooMaster : CovenManager
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (Dolls[_Player.PlayerId].Count < 1) return true;
+        if (killer.IsPlayerCoven()) return true;
 
         PlayerControl ChoosenTarget = GetPlayerById(Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
 

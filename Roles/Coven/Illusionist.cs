@@ -7,6 +7,8 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 using System;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Coven;
 
@@ -24,7 +26,7 @@ internal class Illusionist : CovenManager
     private static OptionItem MaxIllusions;
     public static OptionItem SnitchCanIllusioned;
 
-    private static readonly Dictionary<byte, List<byte>> IllusionedPlayers = [];
+    private static readonly Dictionary<byte, HashSet<byte>> IllusionedPlayers = [];
 
 
     public override void SetupCustomOption()
@@ -101,16 +103,18 @@ internal class Illusionist : CovenManager
     public static bool IsNonCovIllusioned(byte target)
     {
         byte pc = Utils.GetPlayerListByRole(CustomRoles.Illusionist).First().PlayerId;
-        return IllusionedPlayers[pc].Contains(target) && !GetPlayerById(target).IsPlayerCoven();
+        if (!IllusionedPlayers.ContainsKey(pc)) return false;
+        return IllusionedPlayers.TryGetValue(pc, out var Targets) && Targets.Contains(target) && !GetPlayerById(target).IsPlayerCoven();
     }
     public static bool IsCovIllusioned(byte target)
     {
         byte pc = Utils.GetPlayerListByRole(CustomRoles.Illusionist).First().PlayerId;
-        return IllusionedPlayers[pc].Contains(target) && GetPlayerById(target).IsPlayerCoven();
+        if (!IllusionedPlayers.ContainsKey(pc)) return false;
+        return IllusionedPlayers.TryGetValue(pc, out var Targets) && Targets.Contains(target) && GetPlayerById(target).IsPlayerCoven();
     }
     public override void AfterMeetingTasks()
     {
         IllusionedPlayers.Clear();
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => IllusionedPlayers[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Illusionist), "ø") : string.Empty;
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => (IllusionedPlayers.TryGetValue(seer.PlayerId, out var Targets) && Targets.Contains(seen.PlayerId)) ? ColorString(GetRoleColor(CustomRoles.Illusionist), "ø") : string.Empty;
 }

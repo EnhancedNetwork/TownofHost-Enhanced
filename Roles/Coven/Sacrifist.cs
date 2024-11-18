@@ -250,19 +250,24 @@ internal class Sacrifist : CovenManager
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
+        if (_Player == null) return;
+        if (randPlayer == byte.MaxValue) return;
         var sacrifist = _Player.PlayerId;
         DebuffID = 10;
 
         ReportDeadBodyPatch.CanReport[randPlayer] = true;
         GetPlayerById(randPlayer).ResetKillCooldown();
-        Camouflage.PlayerSkins[randPlayer] = OriginalPlayerSkins[randPlayer];
-
-        if (!Camouflage.IsCamouflage)
+        if (OriginalPlayerSkins.ContainsKey(randPlayer))
         {
-            PlayerControl pc =
-                Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == randPlayer);
+            Camouflage.PlayerSkins[randPlayer] = OriginalPlayerSkins[randPlayer];
 
-            pc.SetNewOutfit(OriginalPlayerSkins[randPlayer], setName: true, setNamePlate: true);
+            if (!Camouflage.IsCamouflage)
+            {
+                PlayerControl pc =
+                    Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == randPlayer);
+
+                pc.SetNewOutfit(OriginalPlayerSkins[randPlayer], setName: true, setNamePlate: true);
+            }
         }
         randPlayer = byte.MaxValue;
         Logger.Info($"Resetting Debuffs for Affected player", "Sacrifist");
@@ -271,14 +276,17 @@ internal class Sacrifist : CovenManager
         ReportDeadBodyPatch.CanReport[sacrifist] = true;
         _Player.ResetKillCooldown();
         maxDebuffTimer = DebuffCooldown.GetFloat();
-        Camouflage.PlayerSkins[sacrifist] = OriginalPlayerSkins[sacrifist];
-
-        if (!Camouflage.IsCamouflage)
+        if (OriginalPlayerSkins.ContainsKey(sacrifist))
         {
-            PlayerControl pc =
-                Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == sacrifist);
+            Camouflage.PlayerSkins[sacrifist] = OriginalPlayerSkins[sacrifist];
 
-            pc.SetNewOutfit(OriginalPlayerSkins[sacrifist], setName: true, setNamePlate: true);
+            if (!Camouflage.IsCamouflage)
+            {
+                PlayerControl pc =
+                    Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == sacrifist);
+
+                pc.SetNewOutfit(OriginalPlayerSkins[sacrifist], setName: true, setNamePlate: true);
+            }
         }
         Logger.Info($"Resetting Debuffs for Sacrifist", "Sacrifist");
     }

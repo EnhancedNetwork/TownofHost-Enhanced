@@ -167,16 +167,6 @@ internal class Necromancer : CovenManager
             AbilityTimer = 0;
         }, AbilityDuration.GetFloat(), "Necromancer Revert Role");
     }
-    public override void OnCoEndGame()
-    {
-        if (_Player.GetCustomRole() != CustomRoles.Necromancer)
-        {
-            _Player.GetRoleClass()?.OnRemove(_Player.PlayerId);
-        }
-        Main.PlayerStates[_Player.PlayerId].RemoveSubRole(CustomRoles.Enchanted);
-        _Player.RpcChangeRoleBasis(CustomRoles.Necromancer);
-        _Player.RpcSetCustomRole(CustomRoles.Necromancer);
-    }
     private static bool BlackList(CustomRoles role)
     {
         return role.IsNA() || role.IsGhostRole() || role is
