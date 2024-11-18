@@ -68,6 +68,7 @@ internal class Shocker : RoleBase
     public override void AfterMeetingTasks()
     {
         AbilityLimit = ShockerAbilityPerRound.GetValue();
+        SendSkillRPC();
         if (ShockerAbilityResetAfterMeeting.GetBool())
         {
             isShocking = false;
