@@ -16,7 +16,7 @@ internal class Dictator : RoleBase
     private const int Id = 11600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -38,7 +38,7 @@ internal class Dictator : RoleBase
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)
         => pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead;
-    public bool ExilePlayer(PlayerControl pc,string msg)
+    public bool ExilePlayer(PlayerControl pc, string msg, bool isUI = false)
     {
         if (!ChangeCommandToExpel.GetBool()) return false;
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -52,11 +52,12 @@ internal class Dictator : RoleBase
         else return false;
         List<MeetingHud.VoterState> statesList = [];
         MeetingHud.VoterState[] states;
+
         if (operate == 1)
         {
             Utils.SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
-           // GuessManager.TryHideMsg();
-           // ChatManager.SendPreviousMessagesToAll();
+            // GuessManager.TryHideMsg();
+            // ChatManager.SendPreviousMessagesToAll();
             return true;
         }
         if (operate == 2)
@@ -68,9 +69,9 @@ internal class Dictator : RoleBase
                 targetid = Convert.ToByte(num);
             }
             var target = Utils.GetPlayerById(targetid);
-            if (target == pc) 
+            if (target == pc)
             {
-                pc.ShowInfoMessage(false, GetString("DictatorExpelSelf"));
+                pc.ShowInfoMessage(isUI, GetString("DictatorExpelSelf"));
                 return true;
             }
             if (!target.IsAlive())
@@ -80,7 +81,7 @@ internal class Dictator : RoleBase
 
             if (target.Is(CustomRoles.Solsticer))
             {
-                pc.ShowInfoMessage(false,GetString("ExpelSolsticer"));
+                pc.ShowInfoMessage(isUI, GetString("ExpelSolsticer"));
                 MeetingHud.Instance.RpcClearVoteDelay(pc.GetClientId());
                 return true;
             }
@@ -134,7 +135,7 @@ internal class Dictator : RoleBase
     }
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
     => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
-    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) 
+    public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && ChangeCommandToExpel.GetBool() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
 
     private void SendDictatorRPC(byte playerId)
@@ -150,7 +151,7 @@ internal class Dictator : RoleBase
         if (pc.Is(CustomRoles.Dictator) && pc.IsAlive() && GameStates.IsVoting)
         {
             if (pc.GetRoleClass() is Dictator dictator)
-                dictator.ExilePlayer(pc, $"/exp {pid}");
+                dictator.ExilePlayer(pc, $"/exp {pid}", true);
         }
     }
 
@@ -163,10 +164,7 @@ internal class Dictator : RoleBase
         if (AmongUsClient.Instance.AmHost) ExilePlayer(PlayerControl.LocalPlayer, $"/exp {playerId}");
         else SendDictatorRPC(playerId);
 
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Swapper) && PlayerControl.LocalPlayer.IsAlive())
-        {
-            CreateDictatorButton(__instance);
-        }
+        CreateDictatorButton(__instance);
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
@@ -177,6 +175,19 @@ internal class Dictator : RoleBase
             if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dictator)
                 if (ChangeCommandToExpel.GetBool())
                     dictator.CreateDictatorButton(__instance);
+        }
+    }
+
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
+    class OnDestroyPatch
+    {
+        public static void Postfix(MeetingHud __instance)
+        {
+            foreach (var pva in __instance.playerStates)
+            {
+                if (pva.transform.Find("DictatorButton") != null) 
+                    UnityEngine.Object.Destroy(pva.transform.Find("DictatorButton").gameObject);
+            }
         }
     }
 
@@ -199,7 +210,8 @@ internal class Dictator : RoleBase
             renderer.sprite = CustomButton.Get("JudgeIcon");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
                 DictatorOnClick(pva.TargetPlayerId, __instance);
             }));
         }
