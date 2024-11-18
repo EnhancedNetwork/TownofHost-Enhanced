@@ -242,9 +242,10 @@ internal class PotionMaster : CovenManager
     => BarrierList[seer.PlayerId].Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.PotionMaster), "✚") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
+        if (_Player == null) return string.Empty;
         if (BarrierList[_Player.PlayerId].Contains(target.PlayerId) && seer.IsPlayerCoven() && seer.PlayerId != _Player.PlayerId)
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.PotionMaster), "✚");
+            return ColorString(GetRoleColor(CustomRoles.PotionMaster), "✚");
         }
         return string.Empty;
     }

@@ -713,7 +713,7 @@ class CastVotePatch
             if (!voter.GetRoleClass().HasVoted)
             {
                 voter.GetRoleClass().HasVoted = true;
-                CovenManager.necroVotes[voter.PlayerId] = target.PlayerId;
+                CovenManager.necroVotes.Add(voter.PlayerId, target.PlayerId);
                 SendMessage(string.Format(GetString("NecronomiconVote"), target.GetRealName()), voter.PlayerId);
                 __instance.RpcClearVoteDelay(voter.GetClientId());
                 return false;

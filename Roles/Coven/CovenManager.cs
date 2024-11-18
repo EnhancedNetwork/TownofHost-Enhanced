@@ -138,19 +138,26 @@ public abstract class CovenManager : RoleBase
         byte lastResult = byte.MinValue;
         foreach (byte voter in necroVotes.Keys)
         {
-            voteCount[voter] = 0;
+            if (!voteCount.ContainsKey(necroVotes[voter]))
+                voteCount.Add(necroVotes[voter], 0);
         }
         foreach (byte voter in necroVotes.Keys) {
             voteCount[necroVotes[voter]]++;
+            Logger.Info($"{voteCount[necroVotes[voter]]} votes tallied for {GetPlayerById(currentResult).GetRealName()} Necronomicon", "Coven");
         }
+        currentResult = voteCount.Keys.First();
         foreach (byte vote in voteCount.Keys) {
-            if (voteCount[vote] >= voteCount[currentResult]) {
+            if (voteCount[vote] >= voteCount[currentResult] && currentResult != vote) {
                 lastResult = currentResult;
-                currentResult = vote; 
+                currentResult = vote;
+                Logger.Info($"{GetPlayerById(currentResult).GetRealName()} has more votes than {GetPlayerById(lastResult).GetRealName()}", "Coven");
             }
         }
-        if (currentResult == byte.MinValue) { }
-        else if (currentResult == lastResult)
+        if (currentResult == byte.MinValue && !necroVotes.ContainsKey(byte.MinValue)) {
+            Logger.Info($"currentResult == byte.MinValue, return", "Coven");
+            return;
+        }
+        else if (voteCount[currentResult] == voteCount[lastResult] && currentResult != lastResult)
         {
             Logger.Info($"{GetPlayerById(currentResult).GetRealName()} and {GetPlayerById(lastResult).GetRealName()} had equal Necronomicon votes, not changing Necronomicon", "Coven");
         }
