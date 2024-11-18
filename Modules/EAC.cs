@@ -459,8 +459,8 @@ internal class EAC
         if (!GameStates.IsInGame)
         {
             WarnHost();
-            Report(player, "Report body out of game");
-            HandleCheat(player, "Report body out of game");
+            Report(player, "Report body out of game C");
+            HandleCheat(player, "Report body out of game C");
             Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】非游戏内开会，已驳回", "EAC");
             return true;
         }
