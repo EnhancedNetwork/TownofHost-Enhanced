@@ -102,15 +102,23 @@ internal class Illusionist : CovenManager
     // Affects the following roles: Snitch, Witness, Psychic, Inspector, Oracle, Investigator
     public static bool IsNonCovIllusioned(byte target)
     {
-        byte pc = Utils.GetPlayerListByRole(CustomRoles.Illusionist).First().PlayerId;
-        if (!IllusionedPlayers.ContainsKey(pc)) return false;
-        return IllusionedPlayers.TryGetValue(pc, out var Targets) && Targets.Contains(target) && !GetPlayerById(target).IsPlayerCoven();
+        if (IllusionedPlayers.Count < 1) return false;
+        bool result = false;
+        foreach (var player in IllusionedPlayers.Keys)
+        {
+            if (IllusionedPlayers[player].Contains(target) && !GetPlayerById(target).IsPlayerCoven()) result = true;
+        }
+        return result;
     }
     public static bool IsCovIllusioned(byte target)
     {
-        byte pc = Utils.GetPlayerListByRole(CustomRoles.Illusionist).First().PlayerId;
-        if (!IllusionedPlayers.ContainsKey(pc)) return false;
-        return IllusionedPlayers.TryGetValue(pc, out var Targets) && Targets.Contains(target) && GetPlayerById(target).IsPlayerCoven();
+        if (IllusionedPlayers.Count < 1) return false;
+        bool result = false;
+        foreach (var player in IllusionedPlayers.Keys)
+        {
+            if (IllusionedPlayers[player].Contains(target) && GetPlayerById(target).IsPlayerCoven()) result = true;
+        }
+        return result;
     }
     public override void AfterMeetingTasks()
     {

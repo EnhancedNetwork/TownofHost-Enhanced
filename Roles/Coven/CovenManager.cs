@@ -133,6 +133,7 @@ public abstract class CovenManager : RoleBase
     }
     public static void CheckNecroVotes()
     {
+        if (necroVotes.Count < 1) return;
         Dictionary<byte, int> voteCount = new Dictionary<byte, int>();
         byte currentResult = byte.MinValue;
         byte lastResult = byte.MinValue;
