@@ -207,13 +207,13 @@ internal class Exorcist : RoleBase
         Text_TMP.SetActive(false);
         PassiveButton button = exorcistButton.GetComponent<PassiveButton>();
         button.OnClick.RemoveAllListeners();
-        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => ExorcistOnClick()));
+        button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => ExorcistOnClick(exorcistButton)));
         GameObject ControllerHighlight = exorcistButton.transform.Find("ControllerHighlight").gameObject;
         ControllerHighlight.transform.localScale = new Vector3(0.5f, 2f, 0.5f);
     }
 
 
-    private static void ExorcistOnClick()
+    private static void ExorcistOnClick(GameObject exorcistButton)
     {
         if (!PlayerControl.LocalPlayer.IsAlive()) return;
         Logger.Msg($"Exorcist Click: ID {PlayerControl.LocalPlayer.PlayerId}", "Exorcist UI");
@@ -230,6 +230,8 @@ internal class Exorcist : RoleBase
         {
             SendExorcismRPC(PlayerControl.LocalPlayer.PlayerId);
         }
+        exorcistButton.SetActive(false);
+        _ = new LateTask(() => exorcistButton.SetActive(true), 1f, "ExorcistButton");
     }
 
     private static void SendExorcismRPC(byte exorcistId)
