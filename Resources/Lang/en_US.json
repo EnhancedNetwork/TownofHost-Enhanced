@@ -3800,7 +3800,7 @@
   "ShockerAbilityCooldown": "Ability Cooldown",
   "ShockerAbilityDuration": "Ability Duration",
   "ShockerAbilityPerRound": "Abilities Per Round",
-  "ShockeShockInVents": "Shock people in vents",
+  "ShockerShockInVents": "Shock people in vents",
   "ShockerAbilityResetAfterMeeting": "Reset marked rooms after meeting",
   "ShockerOutsideRadius": "Radius Of Outside Tasks",
   "ShockerCanShockHimself": "Can Shock Himself",

@@ -20,7 +20,7 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerAbilityDuration;
     private static OptionItem ShockerAbilityResetAfterMeeting;
     private static OptionItem ShockerAbilityPerRound;
-    private static OptionItem ShockeShockInVents;
+    private static OptionItem ShockerShockInVents;
     private static OptionItem ShockerOutsideRadius;
     private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
@@ -41,7 +41,7 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerAbilityResetAfterMeeting = BooleanOptionItem.Create(Id + 13, "ShockerAbilityResetAfterMeeting", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        ShockeShockInVents = BooleanOptionItem.Create(Id + 14, "ShockeShockInVents", false, TabGroup.NeutralRoles, false)
+        ShockerShockInVents = BooleanOptionItem.Create(Id + 14, "ShockerShockInVents", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerOutsideRadius = FloatOptionItem.Create(Id + 15, "ShockerOutsideRadius", new(0f, 5f, 0.5f), 3, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
@@ -144,10 +144,13 @@ internal class Shocker : RoleBase
         if (!player.IsAlive() || !playerId.HasValue)
             return;
 
-        if (!ShockeShockInVents.GetBool() && player.inVent)
+        if (!ShockerShockInVents.GetBool() && player.inVent)
+            return;
+        
+        if (!ShockerCanShockHimself.GetBool() && playerId == player.PlayerId)
             return;
 
-        if (isShocking && playerId != player.PlayerId && (!ShockerCanShockHimself.GetBool() || playerId != player.PlayerId))
+        if (isShocking)
         {
             foreach (Collider2D collider in shockedRooms)
             {
