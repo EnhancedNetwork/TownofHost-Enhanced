@@ -1,6 +1,5 @@
-﻿using AmongUs.GameOptions;
+﻿using TOHE.Roles.AddOns.Common;
 using UnityEngine;
-using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -8,7 +7,7 @@ namespace TOHE.Roles.Coven;
 
 internal class Poisoner : CovenManager
 {
-    private class PoisonedInfo(byte poisonerId, float killTimer) 
+    private class PoisonedInfo(byte poisonerId, float killTimer)
     {
         public byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;
@@ -70,7 +69,7 @@ internal class Poisoner : CovenManager
     {
         if (killer.CheckDoubleTrigger(target, () => { RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId); }))
         {
-            if (HasNecronomicon(killer) && !target.IsPlayerCoven()) 
+            if (HasNecronomicon(killer) && !target.IsPlayerCoven())
             {
                 if (target.Is(CustomRoles.Bait)) return true;
 

@@ -1,14 +1,12 @@
 
 using Hazel;
-using TOHE.Roles.Core;
 using InnerNet;
+using System;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using System;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Coven;
 
@@ -69,7 +67,8 @@ internal class Illusionist : CovenManager
     {
         if (killer.CheckDoubleTrigger(target, () => { IllusionedPlayers[killer.PlayerId].Add(target.PlayerId); }))
         {
-            if (HasNecronomicon(killer) && !target.IsPlayerCoven()) { 
+            if (HasNecronomicon(killer) && !target.IsPlayerCoven())
+            {
                 var randomDeathReason = ChangeRandomDeath();
                 Main.PlayerStates[target.PlayerId].deathReason = randomDeathReason;
                 Main.PlayerStates[target.PlayerId].SetDead();

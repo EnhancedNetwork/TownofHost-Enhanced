@@ -1,15 +1,15 @@
 using Hazel;
-using TOHE.Roles.Core;
 using InnerNet;
+using TOHE.Modules;
+using TOHE.Roles.AddOns;
+using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.AddOns;
-using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Impostor;
-using TOHE.Modules;
 
 namespace TOHE.Roles.Coven;
 
@@ -69,7 +69,7 @@ internal class MoonDancer : CovenManager
     private void SendRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); 
+        writer.WriteNetObject(_Player);
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {
@@ -214,8 +214,10 @@ internal class MoonDancer : CovenManager
             var addon = addons.RandomElement();
             var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
             var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
-            if (player.IsPlayerCoven() || player.Is(CustomRoles.Enchanted) || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers))) {
-                if (helpful.Count <= 0) {
+            if (player.IsPlayerCoven() || player.Is(CustomRoles.Enchanted) || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
+            {
+                if (helpful.Count <= 0)
+                {
                     SendMessage(string.Format(GetString("MoonDancerNoAddons"), player.GetRealName()), md.PlayerId);
                     Logger.Info("No addons to pass.", "MoonDancer");
                     continue;

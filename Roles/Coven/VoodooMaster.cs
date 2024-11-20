@@ -1,10 +1,10 @@
-﻿using TOHE.Roles.Core;
+﻿using Hazel;
+using InnerNet;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using Hazel;
-using InnerNet;
-using UnityEngine;
 
 namespace TOHE.Roles.Coven;
 
@@ -71,7 +71,8 @@ internal class VoodooMaster : CovenManager
         => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.VoodooMaster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        return HasNecronomicon(killer) && killer.CheckDoubleTrigger(target, () => {
+        return HasNecronomicon(killer) && killer.CheckDoubleTrigger(target, () =>
+        {
             if (AbilityLimit > 0 && (!target.IsPlayerCoven() || (target.IsPlayerCoven() && CanDollCoven.GetBool())))
             {
                 Dolls[killer.PlayerId].Add(target.PlayerId);
@@ -113,10 +114,11 @@ internal class VoodooMaster : CovenManager
     {
         if (!Dolls[_Player.PlayerId].Contains(target.PlayerId)) return false;
         if (!HasNecronomicon(_Player)) return false;
-        if (!killer.IsPlayerCoven() || (killer.IsPlayerCoven() && NecroAbilityCanKillCov.GetBool())) { 
+        if (!killer.IsPlayerCoven() || (killer.IsPlayerCoven() && NecroAbilityCanKillCov.GetBool()))
+        {
             killer.SetDeathReason(PlayerState.DeathReason.Sacrifice);
             killer.RpcMurderPlayer(killer);
-            killer.SetRealKiller(target); 
+            killer.SetRealKiller(target);
         }
         return false;
     }

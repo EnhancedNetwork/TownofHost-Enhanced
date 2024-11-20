@@ -1,11 +1,10 @@
 ﻿using AmongUs.GameOptions;
-using static TOHE.Translator;
-using static TOHE.Options;
-using static TOHE.Utils;
-using TOHE.Roles.Core;
-using static UnityEngine.GraphicsBuffer;
 using Hazel;
 using InnerNet;
+using TOHE.Roles.Core;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Coven;
 
@@ -95,7 +94,8 @@ internal class Medusa : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer)) {
+        if (HasNecronomicon(killer))
+        {
             if (target.GetCustomRole().IsCovenTeam())
             {
                 killer.Notify(GetString("CovenDontKillOtherCoven"));
@@ -104,7 +104,7 @@ internal class Medusa : CovenManager
             killer.RpcMurderPlayer(target);
             killer.ResetKillCooldown();
             Main.UnreportableBodies.Add(target.PlayerId);
-            return false; 
+            return false;
         }
         else
         {

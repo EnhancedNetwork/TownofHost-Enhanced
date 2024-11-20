@@ -1,11 +1,10 @@
-﻿using AmongUs.GameOptions;
-using UnityEngine;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
+﻿using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
-using Hazel;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Coven;
 
@@ -171,8 +170,8 @@ internal class Jinx : CovenManager
     //public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 
 
-    public override string GetProgressText(byte playerId, bool comms) 
+    public override string GetProgressText(byte playerId, bool comms)
         => ColorString(CanJinx(playerId) ? GetRoleColor(CustomRoles.Jinx).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
+
     private bool CanJinx(byte id) => AbilityLimit > 0;
 }
