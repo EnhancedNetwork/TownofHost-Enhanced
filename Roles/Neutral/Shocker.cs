@@ -53,7 +53,8 @@ internal class Shocker : RoleBase
     }
     public override void Init()
     {
-        Shocker.playerId = null;
+        playerId = null;
+        shockedRooms.Clear();
     }
 
     public override void Add(byte playerId)
