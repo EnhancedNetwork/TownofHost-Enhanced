@@ -1,6 +1,4 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
+﻿using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -53,13 +51,14 @@ internal class CovenLeader : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer)) { 
+        if (HasNecronomicon(killer))
+        {
             if (target.GetCustomRole().IsCovenTeam())
             {
                 killer.Notify(GetString("CovenDontKillOtherCoven"));
                 return false;
             }
-            else return true; 
+            else return true;
         }
         if (AbilityLimit <= 0)
         {
@@ -81,5 +80,5 @@ internal class CovenLeader : CovenManager
         killer.ResetKillCooldown();
         return false;
     }
-    
+
 }

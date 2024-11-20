@@ -1,12 +1,9 @@
-using Hazel;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
-using InnerNet;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using System;
-using UnityEngine;
-using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Coven;
 
@@ -113,7 +110,7 @@ internal class Conjurer : CovenManager
                         player.RpcMurderPlayer(player);
                         player.SetRealKiller(shapeshifter);
                     }
-                    
+
                 }
                 shapeshifter.Notify(GetString("ConjurerMeteor"));
                 state[shapeshifter.PlayerId] = ConjState.NecroMark;

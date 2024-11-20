@@ -1,12 +1,12 @@
-﻿using TOHE.Roles.Core;
-using static TOHE.Options;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TOHE.Modules;
+using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Modules;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using AmongUs.GameOptions;
-using Hazel;
 
 namespace TOHE.Roles.Coven;
 

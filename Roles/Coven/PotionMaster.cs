@@ -1,13 +1,11 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+﻿using Hazel;
 using InnerNet;
-using TOHE.Roles.Core;
 using System.Text;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
-using MS.Internal.Xml.XPath;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Coven;
 
@@ -146,7 +144,7 @@ internal class PotionMaster : CovenManager
                 }
                 else if (RevealLimit[killer.PlayerId] <= 0)
                 {
-                    killer.Notify(string.Format(GetString("PotionMasterNoPotions"),GetString("PotionMasterReveal")));
+                    killer.Notify(string.Format(GetString("PotionMasterNoPotions"), GetString("PotionMasterReveal")));
                 }
                 break;
             case 1:
@@ -169,7 +167,8 @@ internal class PotionMaster : CovenManager
     }
     public override void UnShapeShiftButton(PlayerControl pm)
     {
-        switch (PotionMode) { 
+        switch (PotionMode)
+        {
             case 0:
                 PotionMode = 1;
                 pm.Notify(string.Format(GetString("PotionMasterPotionSwitch"), GetString("PotionMasterBarrier")));
@@ -252,5 +251,5 @@ internal class PotionMaster : CovenManager
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target);
 
-    public override string GetProgressText(byte playerId, bool coooonms) => Utils.ColorString(RevealLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.PotionMaster).ShadeColor(0.25f) : Color.gray, $"({RevealLimit[playerId]})")+ Utils.ColorString(BarrierLimit[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, $" ({BarrierLimit[playerId]})");
+    public override string GetProgressText(byte playerId, bool coooonms) => Utils.ColorString(RevealLimit[playerId] > 0 ? GetRoleColor(CustomRoles.PotionMaster).ShadeColor(0.25f) : Color.gray, $"({RevealLimit[playerId]})") + ColorString(BarrierLimit[playerId] > 0 ? GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, $" ({BarrierLimit[playerId]})");
 }

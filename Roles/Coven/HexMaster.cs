@@ -1,12 +1,11 @@
 using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
-using System.Text;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using InnerNet;
 using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 
 namespace TOHE.Roles.Coven;
@@ -51,14 +50,14 @@ internal class HexMaster : CovenManager
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.HexMaster, 1, zeroOne: false);        
+        SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.HexMaster, 1, zeroOne: false);
         //ModeSwitchAction = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         HexCooldown = FloatOptionItem.Create(Id + 13, "HexMasterHexCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
             .SetValueFormat(OptionFormat.Seconds);
         MovingHexPassCooldown = FloatOptionItem.Create(Id + 15, "HexMasterMovingHexCooldown", new(0f, 5f, 0.25f), 1f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster])
             .SetValueFormat(OptionFormat.Seconds);
         CovenCanGetMovingHex = BooleanOptionItem.Create(Id + 14, "HexMasterCovenCanGetMovingHex", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision,  true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
     public override void Init()
@@ -408,7 +407,7 @@ internal class HexMaster : CovenManager
         return str.ToString();
     }
     */
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte playerid) => hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
 
 }

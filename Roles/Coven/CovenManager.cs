@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -27,19 +26,19 @@ public abstract class CovenManager : RoleBase
     public static readonly Dictionary<byte, byte> necroVotes = [];
     public static void RunSetUpImpVisOptions(int Id)
     {
-            foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven()).ToArray())
-            {
-                SetUpImpVisOption(cov, Id, true, CovenImpVisMode);
-                Id++;
-            }
+        foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven()).ToArray())
+        {
+            SetUpImpVisOption(cov, Id, true, CovenImpVisMode);
+            Id++;
+        }
     }
     public static void RunSetUpVentOptions(int Id)
     {
-            foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven()).ToArray())
-            {
-                SetUpVentOption(cov, Id, true, CovenVentMode);
-                Id++;
-            }
+        foreach (var cov in CustomRolesHelper.AllRoles.Where(x => x.IsCoven()).ToArray())
+        {
+            SetUpVentOption(cov, Id, true, CovenVentMode);
+            Id++;
+        }
     }
     private static void SetUpImpVisOption(CustomRoles role, int Id, bool defaultValue = true, OptionItem parent = null)
     {
@@ -107,7 +106,7 @@ public abstract class CovenManager : RoleBase
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => target.IsPlayerCoven() && seer.IsPlayerCoven();
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     */
-    
+
     public static void GiveNecronomicon()
     {
         var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven() && pc.IsAlive()).ToList();
@@ -142,19 +141,23 @@ public abstract class CovenManager : RoleBase
             if (!voteCount.ContainsKey(necroVotes[voter]))
                 voteCount.Add(necroVotes[voter], 0);
         }
-        foreach (byte voter in necroVotes.Keys) {
+        foreach (byte voter in necroVotes.Keys)
+        {
             voteCount[necroVotes[voter]]++;
             Logger.Info($"{voteCount[necroVotes[voter]]} votes tallied for {GetPlayerById(currentResult).GetRealName()} Necronomicon", "Coven");
         }
         currentResult = voteCount.Keys.First();
-        foreach (byte vote in voteCount.Keys) {
-            if (voteCount[vote] >= voteCount[currentResult] && currentResult != vote) {
+        foreach (byte vote in voteCount.Keys)
+        {
+            if (voteCount[vote] >= voteCount[currentResult] && currentResult != vote)
+            {
                 lastResult = currentResult;
                 currentResult = vote;
                 Logger.Info($"{GetPlayerById(currentResult).GetRealName()} has more votes than {GetPlayerById(lastResult).GetRealName()}", "Coven");
             }
         }
-        if (currentResult == byte.MinValue && !necroVotes.ContainsKey(byte.MinValue)) {
+        if (currentResult == byte.MinValue && !necroVotes.ContainsKey(byte.MinValue))
+        {
             Logger.Info($"currentResult == byte.MinValue, return", "Coven");
             return;
         }

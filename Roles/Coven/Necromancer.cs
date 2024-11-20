@@ -1,13 +1,9 @@
-﻿using AmongUs.GameOptions;
-using TOHE.Roles.Core;
-using MS.Internal.Xml.XPath;
+﻿using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.AddOns;
-using Rewired;
-using UnityEngine;
-using TOHE.Roles.Neutral;
-using TOHE.Roles.Crewmate;
 
 namespace TOHE.Roles.Coven;
 
@@ -122,9 +118,10 @@ internal class Necromancer : CovenManager
     public override void UnShapeShiftButton(PlayerControl nm)
     {
         if (nm == null) return;
-        if (!canUseAbility) {
+        if (!canUseAbility)
+        {
             nm.Notify(GetString("NecromancerCooldownNotDone"));
-            return; 
+            return;
         }
         var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
         List<CustomRoles> deadRoles = [];
@@ -171,14 +168,14 @@ internal class Necromancer : CovenManager
     {
         return role.IsNA() || role.IsGhostRole() || role is
             CustomRoles.Veteran or
-            CustomRoles.Solsticer or 
+            CustomRoles.Solsticer or
             CustomRoles.Lawyer or
             CustomRoles.Amnesiac or
-            CustomRoles.Imitator or 
+            CustomRoles.Imitator or
             CustomRoles.CopyCat or
             CustomRoles.Executioner or
             CustomRoles.Follower or
-            CustomRoles.Romantic or 
+            CustomRoles.Romantic or
             CustomRoles.God or
             CustomRoles.Innocent or
             CustomRoles.Jackal or
@@ -187,15 +184,15 @@ internal class Necromancer : CovenManager
             CustomRoles.Retributionist or
             CustomRoles.Nemesis or
             CustomRoles.NiceMini or
-            CustomRoles.Mini or 
+            CustomRoles.Mini or
             CustomRoles.EvilMini or
-            CustomRoles.SuperStar or 
-            CustomRoles.RuthlessRomantic or 
-            CustomRoles.VengefulRomantic or 
-            CustomRoles.CursedSoul or 
-            CustomRoles.Provocateur or 
+            CustomRoles.SuperStar or
+            CustomRoles.RuthlessRomantic or
+            CustomRoles.VengefulRomantic or
+            CustomRoles.CursedSoul or
+            CustomRoles.Provocateur or
             CustomRoles.Specter or
-            CustomRoles.Sunnyboy || 
+            CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool());
     }
@@ -214,7 +211,7 @@ internal class Necromancer : CovenManager
         {
             Timer = RevengeTime.GetInt();
             Success = false;
-            Killer = null; 
+            Killer = null;
             return;
         }
         if (GameStates.IsMeeting && player.IsAlive())
@@ -228,12 +225,12 @@ internal class Necromancer : CovenManager
             Killer = null;
             return;
         }
-        if (seconds <= 0) 
-        { 
-            player.RpcMurderPlayer(player); 
+        if (seconds <= 0)
+        {
+            player.RpcMurderPlayer(player);
             player.SetRealKiller(killer);
-            Killer = null; 
-            return; 
+            Killer = null;
+            return;
         }
         player.Notify(string.Format(GetString("NecromancerRevenge"), seconds, Killer.GetRealName()), 1.1f);
         Timer = seconds;
