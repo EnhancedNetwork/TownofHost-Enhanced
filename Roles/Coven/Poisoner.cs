@@ -1,4 +1,5 @@
 ﻿using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -149,7 +150,7 @@ internal class Poisoner : CovenManager
     public bool IsRoleblocked(byte id) => RoleblockedPlayers[_Player.PlayerId].Contains(id);
     public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
-        if (!IsRoleblocked(pc.PlayerId)) return false;
+        if (!IsRoleblocked(pc.PlayerId) && pc.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false; // I was told these roles should be roleblock immune
         if (pc == null) return false;
 
         pc.ResetKillCooldown();
