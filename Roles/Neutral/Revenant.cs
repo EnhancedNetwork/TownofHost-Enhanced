@@ -5,7 +5,7 @@ namespace TOHE.Roles.Neutral;
 internal class Revenant : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 30100;
+    private const int Id = 30200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Revenant);
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
