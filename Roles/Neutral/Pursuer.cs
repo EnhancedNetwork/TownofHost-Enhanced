@@ -93,10 +93,12 @@ internal class Pursuer : RoleBase
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;
-
-        target.SetDeathReason(PlayerState.DeathReason.Misfire);
-        target.RpcMurderPlayer(target);
-        target.SetRealKiller(killer);
+        if (target.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner)
+        {
+            target.SetDeathReason(PlayerState.DeathReason.Misfire);
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+        }
 
         Logger.Info($"赝品商 {pc.GetRealName()} 的客户 {target.GetRealName()} 因使用赝品走火自杀", "Pursuer");
         return true;

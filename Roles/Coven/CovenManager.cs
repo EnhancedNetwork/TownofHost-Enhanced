@@ -133,6 +133,14 @@ public abstract class CovenManager : RoleBase
     public static void CheckNecroVotes()
     {
         if (necroVotes.Count < 1) return;
+        if (necroVotes.Count == 1)
+        {
+            byte soloVote = necroVotes[necroVotes.Keys.First()];
+            GiveNecronomicon(soloVote);
+            Logger.Info($"Only one vote for Necronomicon, giving to {GetPlayerById(soloVote).GetRealName()}", "Coven");
+            necroVotes.Clear();
+            return;
+        }
         Dictionary<byte, int> voteCount = new Dictionary<byte, int>();
         byte currentResult = byte.MinValue;
         byte lastResult = byte.MinValue;
@@ -159,7 +167,6 @@ public abstract class CovenManager : RoleBase
         if (currentResult == byte.MinValue && !necroVotes.ContainsKey(byte.MinValue))
         {
             Logger.Info($"currentResult == byte.MinValue, return", "Coven");
-            return;
         }
         else if (voteCount[currentResult] == voteCount[lastResult] && currentResult != lastResult)
         {

@@ -244,7 +244,10 @@ internal class Baker : RoleBase
                         SendRPC(1, killer, target);
                         break;
                     case 1: // Roleblock
-                        target.SetKillCooldownV3(999f);
+                        if (target.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner)
+                        {
+                            target.SetKillCooldownV3(999f);
+                        }
                         break;
                     case 2: // Barrier
                         BarrierList[killer.PlayerId].Add(target.PlayerId);
