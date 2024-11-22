@@ -10,7 +10,7 @@ namespace TOHE.Roles.Coven;
 internal class CovenLeader : CovenManager
 {
     //===========================SETUP================================\\
-    private const int Id = 30200;
+    private const int Id = 30900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.CovenLeader);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

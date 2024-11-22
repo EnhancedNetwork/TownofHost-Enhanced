@@ -1175,6 +1175,7 @@ static class ExtendedPlayerControl
             CustomRoles.Soulless and not
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
+            CustomRoles.Enchanted and not
             CustomRoles.Contagious;
     }
 
