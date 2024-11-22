@@ -307,7 +307,8 @@ public static class CustomRolesHelper
             CustomRoles.Cultist or
             CustomRoles.Necromancer or
             CustomRoles.Virus or
-            CustomRoles.Spiritcaller;
+            CustomRoles.Spiritcaller or
+            CustomRoles.Ritualist;
 
     public static bool IsMadmate(this CustomRoles role)
     {

@@ -25,6 +25,7 @@ using static TOHE.Translator;
 using TOHE.Patches;
 using TOHE.Roles.Coven;
 using Epic.OnlineServices;
+using UnityEngine.UI;
 
 
 namespace TOHE;
@@ -1715,7 +1716,8 @@ public static class Utils
         {
             var Compare = player.GetCustomSubRoles().First(x => x.IsConverted());
 
-            team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
+            if (player.Is(CustomRoles.Enchanted)) team = Custom_Team.Coven;
+            else team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
             return target.Is(Compare);
         }
         else if (!target.IsAnySubRole(x => x.IsConverted()))
@@ -2062,6 +2064,11 @@ public static class Utils
 
                         if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
+
+                        if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
+                        {
+                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
+                        }
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));

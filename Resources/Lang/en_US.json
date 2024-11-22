@@ -1074,7 +1074,7 @@
   "AbilityExpired": "Ability expired, {0} uses remain",
 
   "RevenantTargeted": "Your role has changed to <b>{0}</b>",
-  "RevenantCanCopyAddons":  "Can Steal Addons",
+  "RevenantCanCopyAddons": "Can Steal Addons",
 
   "ShowArrows": "Has Arrows pointing toward bodies",
   "ArrowDelayMin": "Minimum Arrow show-up delay",
@@ -1892,6 +1892,7 @@
   "CultistKnowTargetRole": "Know <color=#cf6acd>Charmed</color> Player's Role",
   "CultistTargetKnowOtherTarget": "<color=#cf6acd>Charmed</color> players know each other",
   "CultistCanCharmNeutral": "Neutral Roles can be <color=#cf6acd>Charmed</color>",
+  "CultistCanCharmCoven": "Coven Roles can be <color=#cf6acd>Charmed</color>",
   "InfectiousBiteCooldown": "Infect Cooldown",
   "KnowTargetRole": "Knows role of target",
   "TargetKnowsLawyer": "Target knows their <color=#008080>Lawyer</color>",
@@ -2273,7 +2274,7 @@
   "Command.dump": "→ Output Log to Desktop",
   "Command.death": "→ Display info on how you died",
   "Command.icons": "<size=60%><br><color=#ff1919>╳</color> - The Player was marked by the <color=#ff1919>Blackmailer</color> and can't talk during the Meeting<br><color=#4682b4>☆</color> - Used by <color=#4682b4>Captain</color> to display themselves. Only Crewmates can see the <color=#4682b4>Captain's</color> star<br><color=#ff00ff>乂</color> - This player was hexed by the <color=#ff00ff>Hex Master</color> and will die if the <color=#ff00ff>Hex Master</color> isn't killed or ejected by the end of the Meeting.<br>♦ - Used by <color=#008080>Lawyer</color> or <color=#c0c0c0>Executioner</color> or <color=#ff9409>Follower</color>.<br><color=#ff9ace>♥</color> - Used by <color=#ff9ace>Lovers</color> or <color=#ff1493>Romantic</color>.<br><color=#00ff97>✚</color> - Used by <color=#00ff97>Medic</color> to mark their target.<br><color=#edc240>⦿</color> - This player is in a duel with the <color=#edc240>Pirate</color>.<br><color=#8666bd>!?</color> - This player was marked by the <color=#8666bd>Quizmaster</color> and must answer the question correctly to survive.<br><color=#404040>☜</color> - Used by <color=#404040>Schrödinger's cat</color> to mark their teammate.<br><color=#6697ff>◈</color> - This player marked by the <color=#6697ff>Shroud</color> and will die if the <color=#6697ff>Shroud</color> is not killed or ejected by the end of the meeting.<br><color=#b8fb4f>⚠</color> - This player is a <color=#b8fb4f>Snitch</color> or <color=#dee13d>Solsticer</color> who has finished their tasks.<br>★ - Used by <color=#f6f657>Super Star</color> or <color=#f46f4e>Cyber</color> or <color=#5573aa>Marshall</color>.<br><color=#ff1919>†</color> - This player was spelled and will die if the <color=#ff1919>Witch</color> is not killed by the end of the meeting.<br><color=#ff1919>∇</color> - Used by <color=#ff1919>Kamikaze</color> to mark their targets.<br><color=#ff1919>■</color> - Used by <color=#ff1919>Lightning</color> to mark their quantum ghosts.<br><color=#aa900d>⊠</color> - Used by <color=#aa900d>Jailer</color> to mark their prisoner.<br><color=#bf9f7a>●</color> - Used by <color=#bf9f7a>Baker</color> to mark who has Bread.<br><color=#A675A1>♠</color> - Used by <color=#A675A1>Soul Collector</color> to mark who's death they're predicting.<br><color=#e5f6b4>⦿</color> - Used by <color=#e5f6b4>Plaguebearer</color> to mark who they have plagued.",
-  "Command.start" : "[Seconds] → Start the game",
+  "Command.start": "[Seconds] → Start the game",
 
   "Command.iconinfo": "→ Display info on in-meeting icons",
   "Command.iconhelp": "→ Display info on in-meeting icons to everyone",
@@ -3303,6 +3304,7 @@
   "GanJudgeCanBeMadmate": "<color=#f8d85a>Judge</color> can be converted",
   "GanMarshallCanBeMadmate": "<color=#5573AA>Marshall</color> can be converted",
   "GanOverseerCanBeMadmate": "<color=#BA55D3>Overseer</color> can be converted",
+  "GanCovenCanBeMadmate": "<color=#ac42f2>Coven</color> can be converted",
   "RascalAppearAsMadmate": "Appear As <color=#ff1919>Madmate</color> On Ejection",
 
   "CouncillorDead": "Sorry, you can't murder from the dead.",
@@ -3451,6 +3453,7 @@
   "CursedSoulCurseMax": "Maximum Soul Snatches",
   "CursedSoulKnowTargetRole": "Know the roles of <color=#531269>Soulless</color> players",
   "CursedSoulCanCurseNeutral": "Neutral roles have souls",
+  "CursedSoulCanCurseCoven": "Coven roles have souls",
   "CursedSoulKillButtonText": "Snatch",
   "SoullessByCursedSoul": "A Cursed Soul snatched your soul",
   "CursedSoulSoullessPlayer": "Soul snatched",
