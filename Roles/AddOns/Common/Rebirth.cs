@@ -62,7 +62,7 @@ public class Rebirth : IAddon
         var ViablePlayer = list.Where(x => x != null && x.PlayerId != pc.PlayerId).Shuffle()
             .FirstOrDefault(x => !x.IsHost() && AntiBlackout.ExilePlayerId != x.PlayerId && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
 /*All converters */ !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) &&
-                !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.Is(CustomRoles.Doppelganger) && !x.GetCustomRole().IsImpostor());
+                !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.Is(CustomRoles.Doppelganger) && !x.GetCustomRole().IsImpostor() && !x.Is(CustomRoles.Solsticer) && !x.Is(CustomRoles.NiceMini));
 
         if (ViablePlayer == null)
         {
