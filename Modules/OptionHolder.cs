@@ -170,6 +170,9 @@ public static class Options
     public static OptionItem ApplyBanList;
     public static OptionItem ApplyModeratorList;
     public static OptionItem AllowSayCommand;
+    public static OptionItem AllowStartCommand;
+    public static OptionItem StartCommandMinCountdown;
+    public static OptionItem StartCommandMaxCountdown;
 
     //public static OptionItem ApplyReminderMsg;
     //public static OptionItem TimeForReminder;
@@ -1127,6 +1130,15 @@ public static class Options
         ApplyModeratorList = BooleanOptionItem.Create(60120, "ApplyModeratorList", false, TabGroup.SystemSettings, false);
         AllowSayCommand = BooleanOptionItem.Create(60121, "AllowSayCommand", false, TabGroup.SystemSettings, false)
             .SetParent(ApplyModeratorList);
+        AllowStartCommand = BooleanOptionItem.Create(60122, "AllowStartCommand", false, TabGroup.SystemSettings, false)
+            .SetParent(ApplyModeratorList);
+        StartCommandMinCountdown = IntegerOptionItem.Create(60123, "StartCommandMinCountdown", new(0, 99, 1), 0, TabGroup.SystemSettings, false)
+            .SetParent(AllowStartCommand)
+            .SetValueFormat(OptionFormat.Seconds);
+        StartCommandMaxCountdown = IntegerOptionItem.Create(60124, "StartCommandMaxCountdown", new(0, 99, 1), 15, TabGroup.SystemSettings, false)
+            .SetParent(AllowStartCommand)
+            .SetValueFormat(OptionFormat.Seconds);
+
         //ApplyReminderMsg = BooleanOptionItem.Create(60130, "ApplyReminderMsg", false, TabGroup.SystemSettings, false);
         /*TimeForReminder = IntegerOptionItem.Create(60131, "TimeForReminder", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
             .SetParent(TimeForReminder)

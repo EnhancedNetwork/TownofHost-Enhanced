@@ -837,6 +837,12 @@ static class ExtendedPlayerControl
             netTransform.SetDirtyBit(uint.MaxValue);
         }
 
+        if (!AmongUsClient.Instance.AmHost && !netTransform.AmOwner)
+        {
+            Logger.Error($"Canceled RpcTeleport bcz I am not host and not the owner of {player.PlayerId}'s netTransform.", "RpcTeleport");
+            return;
+        }
+
         ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(position, messageWriter);

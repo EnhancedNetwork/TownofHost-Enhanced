@@ -59,7 +59,7 @@ class CheckForEndVotingPatch
                     }
                 }
 
-                if (Dictator.CheckVotingForTarget(pc, pva))
+                if (Dictator.CheckVotingForTarget(pc, pva) && !Dictator.ChangeCommandToExpel.GetBool())
                 {
                     var voteTarget = GetPlayerById(pva.VotedFor);
                     TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
@@ -411,7 +411,7 @@ class CheckForEndVotingPatch
     }
 
     // Credit：https://github.com/music-discussion/TownOfHost-TheOtherRoles
-    private static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
+    public static void ConfirmEjections(NetworkedPlayerInfo exiledPlayer, bool AntiBlackoutStore = false)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (exiledPlayer == null) return;
@@ -621,7 +621,7 @@ class CheckForEndVotingPatch
         }
         CheckForDeathOnExile(deathReason, [.. AddedIdList]);
     }
-    private static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
+    public static void CheckForDeathOnExile(PlayerState.DeathReason deathReason, params byte[] playerIds)
     {
         if (deathReason == PlayerState.DeathReason.Vote)
         {
@@ -774,7 +774,7 @@ class CastVotePatch
                 case CustomRoles.Dictator:
                     if (target.Is(CustomRoles.Solsticer))
                     {
-                        SendMessage(GetString("VoteSolsticer"), srcPlayerId);
+                        SendMessage(GetString("ExpelSolsticer"), srcPlayerId);
                         __instance.RpcClearVoteDelay(voter.GetClientId());
                         return false;
                     }
@@ -1248,11 +1248,14 @@ class MeetingHudStartPatch
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
 
+            /*
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
             if (tempNemeText != string.Empty)
             {
                 pva.NameText.text = tempNemeText;
             }
+            */
+            // Due to the fact that playerid is shown with level to mod clients, this function is disabled.
 
             //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
             //{
