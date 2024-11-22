@@ -150,7 +150,7 @@ internal class Doomsayer : RoleBase
 
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (CheckCantGuess)
+        if (CheckCantGuess || GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt())
         {
             guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
             return true;
@@ -196,6 +196,7 @@ internal class Doomsayer : RoleBase
         {
             if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != target.PlayerId)
             {
+                CantGuess = true;
                 guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
                 return true;
             }
