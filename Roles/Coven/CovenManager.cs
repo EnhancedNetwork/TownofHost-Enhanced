@@ -168,7 +168,7 @@ public abstract class CovenManager : RoleBase
         {
             Logger.Info($"currentResult == byte.MinValue, return", "Coven");
         }
-        else if (voteCount[currentResult] == voteCount[lastResult] && currentResult != lastResult)
+        else if (voteCount.ContainsKey(lastResult) && voteCount[currentResult] == voteCount[lastResult] && currentResult != lastResult)
         {
             Logger.Info($"{GetPlayerById(currentResult).GetRealName()} and {GetPlayerById(lastResult).GetRealName()} had equal Necronomicon votes, not changing Necronomicon", "Coven");
         }

@@ -71,20 +71,38 @@ internal class VoodooMaster : CovenManager
         => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.VoodooMaster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        return HasNecronomicon(killer) && killer.CheckDoubleTrigger(target, () =>
+        if (!HasNecronomicon(killer))
         {
-            if (AbilityLimit > 0 && (!target.IsPlayerCoven() || (target.IsPlayerCoven() && CanDollCoven.GetBool())))
+            SetDoll(killer, target);
+            return false;
+        }
+        if (killer.CheckDoubleTrigger(target, () => { SetDoll(killer, target); }))
+        {
+            if (HasNecronomicon(killer))
             {
-                Dolls[killer.PlayerId].Add(target.PlayerId);
-                AbilityLimit--;
-                SendRPC(killer, target);
-                killer.RpcGuardAndKill(target);
-                killer.Notify(string.Format(GetString("VoodooMasterDolledSomeone"), target.GetRealName()));
-                if (HasNecronomicon(killer)) ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
+                if (target.GetCustomRole().IsCovenTeam())
+                {
+                    killer.Notify(GetString("CovenDontKillOtherCoven"));
+                    return false;
+                }
+                else return true;
             }
-            else if (target.IsPlayerCoven() && CanDollCoven.GetBool()) killer.Notify(GetString("VoodooMasterNoDollCoven"));
-            else killer.Notify(GetString("VoodooMasterNoDollsLeft"));
-        });
+        }
+        return false;
+    }
+    private void SetDoll(PlayerControl killer, PlayerControl target) {
+        if (AbilityLimit > 0 && (!target.IsPlayerCoven() || (target.IsPlayerCoven() && CanDollCoven.GetBool())))
+        {
+            Dolls[killer.PlayerId].Add(target.PlayerId);
+            AbilityLimit--;
+            SendRPC(killer, target);
+            killer.RpcGuardAndKill(target);
+            killer.Notify(string.Format(GetString("VoodooMasterDolledSomeone"), target.GetRealName()));
+            killer.SetKillCooldown();
+            if (HasNecronomicon(killer)) ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
+        }
+        else if (target.IsPlayerCoven() && CanDollCoven.GetBool()) killer.Notify(GetString("VoodooMasterNoDollCoven"));
+        else killer.Notify(GetString("VoodooMasterNoDollsLeft"));
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {

@@ -72,6 +72,11 @@ internal class Poisoner : CovenManager
         {
             if (HasNecronomicon(killer) && !target.IsPlayerCoven())
             {
+                if (target.GetCustomRole().IsCovenTeam())
+                {
+                    killer.Notify(GetString("CovenDontKillOtherCoven"));
+                    return false;
+                }
                 if (target.Is(CustomRoles.Bait)) return true;
 
                 killer.SetKillCooldown();
@@ -81,7 +86,6 @@ internal class Poisoner : CovenManager
                     PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
                 }
             }
-            killer.Notify(GetString("CovenDontKillOtherCoven"));
             return false;
         }
         else
