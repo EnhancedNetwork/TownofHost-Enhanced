@@ -1,4 +1,5 @@
 using Hazel;
+using InnerNet;
 using System;
 using UnityEngine;
 using static TOHE.Options;
@@ -22,12 +23,12 @@ internal class Spy : RoleBase
     private static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
     private static OptionItem SpyInteractionBlocked;
 
-    private static readonly Dictionary<byte, long> SpyRedNameList = [];
+    private readonly Dictionary<byte, long> SpyRedNameList = [];
     private static bool change = false;
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Spy, 1);
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Spy);
         UseLimitOpt = IntegerOptionItem.Create(Id + 10, "AbilityUseLimit", new(1, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy])
         .SetValueFormat(OptionFormat.Times);
         SpyRedNameDur = FloatOptionItem.Create(Id + 11, "SpyRedNameDur", new(0f, 70f, 1f), 3f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy])
@@ -52,23 +53,28 @@ internal class Spy : RoleBase
     {
         playerIdList.Remove(playerId);
     }
-    public static void SendRPC(byte susId)
+    public void SendRPC(byte susId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameSync, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write((byte)1);
         writer.Write(susId);
         writer.Write(SpyRedNameList[susId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void SendRPC(byte susId, bool changeColor)
+    public void SendRPC(byte susId, bool changeColor)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SpyRedNameRemove, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write((byte)2);
         writer.Write(susId);
         writer.Write(changeColor);
         Logger.Info($"RPC to remove player {susId} from red name list and change `change` to {changeColor}", "Spy");
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool isRemove = false)
+    public override void ReceiveRPC(MessageReader reader, PlayerControl player)
     {
+        bool isRemove = reader.ReadByte() == 2;
         if (isRemove)
         {
             SpyRedNameList.Remove(reader.ReadByte());
