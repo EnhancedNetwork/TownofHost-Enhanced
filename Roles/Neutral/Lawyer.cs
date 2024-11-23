@@ -54,7 +54,7 @@ internal class Lawyer : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Lawyer);
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Lawyer);
         CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "LawyerCanTargetImpostor", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 11, "LawyerCanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetNeutralApoc = BooleanOptionItem.Create(Id + 18, "LawyerCanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
@@ -125,6 +125,7 @@ internal class Lawyer : RoleBase
         }
         TargetList.Remove(TargetId);
         TargetId = byte.MaxValue;
+        CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
     }
     private void SendRPC(bool SetTarget = false)
     {

@@ -87,7 +87,8 @@ internal class CopyCat : RoleBase
         return role is CustomRoles.CopyCat or
             CustomRoles.Doomsayer or // CopyCat cannot guessed roles because he can be know others roles players
             CustomRoles.EvilGuesser or
-            CustomRoles.NiceGuesser;
+            CustomRoles.NiceGuesser or
+            CustomRoles.Baker or CustomRoles.Famine;
     }
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
