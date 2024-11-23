@@ -364,8 +364,11 @@ internal class Jackal : RoleBase
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
     {
+        if (!target.Is(CustomRoles.Jackal)) return;
+
         if (SidekickTurnIntoJackal.GetBool())
         {
+            Logger.Info("Starting Jackal Death Assign.", "Jackal");
             var readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick) && x.PlayerId != target.PlayerId).ToList();
 
             if (readySideKicks.Count < 1)
@@ -408,6 +411,10 @@ internal class Jackal : RoleBase
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
                 }
                 Utils.NotifyRoles();
+            }
+            else
+            {
+                Logger.Info($"Selected alive Sidekick [{newJackal.PlayerId}]{newJackal.GetNameWithRole()} is dead? wtf", "Jackal");
             }
         }
         else
