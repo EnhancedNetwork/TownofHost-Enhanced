@@ -23,6 +23,8 @@ static class ExtendedPlayerControl
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
+            //  player.GetRoleClass()?.OnAdd(player.PlayerId);
+            // Remember to manually add OnAdd if you are setting role mid game
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
@@ -834,6 +836,12 @@ static class ExtendedPlayerControl
             // And this cannot forced teleport the player
             netTransform.SnapTo(position, (ushort)(netTransform.lastSequenceId + 328));
             netTransform.SetDirtyBit(uint.MaxValue);
+        }
+
+        if (!AmongUsClient.Instance.AmHost && !netTransform.AmOwner)
+        {
+            Logger.Error($"Canceled RpcTeleport bcz I am not host and not the owner of {player.PlayerId}'s netTransform.", "RpcTeleport");
+            return;
         }
 
         ushort newSid = (ushort)(netTransform.lastSequenceId + 8);

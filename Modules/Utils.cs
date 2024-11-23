@@ -32,74 +32,6 @@ public static class Utils
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public static long TimeStamp => (long)(DateTime.Now.ToUniversalTime() - timeStampStartTime).TotalSeconds;
     public static long GetTimeStamp(DateTime? dateTime = null) => (long)((dateTime ?? DateTime.Now).ToUniversalTime() - timeStampStartTime).TotalSeconds;
-    
-    public static void ErrorEnd(string text)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            Logger.Fatal($"Error: {text} - triggering critical error", "Anti-black");
-            ChatUpdatePatch.DoBlockChat = true;
-            Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
-            
-            _ = new LateTask(() =>
-            {
-                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }, 8f, "Anti-Black Msg SendInGame Error During Loading");
-
-            if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
-            {
-                _ = new LateTask(() =>
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                    GameManager.Instance.LogicFlow.CheckEndCriteria();
-                    RPC.ForceEndGame(CustomWinner.Error);
-                }, 11f, "Anti-Black End Game As Critical Error");
-            }
-            else if (GameStartManager.Instance != null)
-            {
-                GameStartManager.Instance.ResetStartState();
-                AmongUsClient.Instance.RemoveUnownedObjects();
-                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }
-            else
-            {
-                Logger.SendInGame("Host in a unknow antiblack bugged state.");
-                Logger.Fatal($"Host in a unknow antiblack bugged state.", "Anti-black");
-            }
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
-            writer.Write(text);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-            Logger.Fatal($"Error: {text} - I'm triggering critical error", "Anti-black");
-
-            if (Options.EndWhenPlayerBug.GetBool())
-            {
-                _ = new LateTask(() =>
-                {
-                    Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
-                }, 8f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
-            }
-            else
-            {
-                _ = new LateTask(() =>
-                {
-                    Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
-                }, 8f, "Anti-Black Msg SendInGame Host Reject Force End");
-                
-                _ = new LateTask(() =>
-                {
-                    if (AmongUsClient.Instance.AmConnected)
-                    {
-                        AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                        Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
-                    }
-                }, 13f, "Anti-Black Exit Game Due Critical Error");
-            }
-        }
-    }
 
     // Should happen before EndGame messages is sent
     public static void NotifyGameEnding()
@@ -1415,6 +1347,7 @@ public static class Utils
             + $"\n  ○ /id {GetString("Command.idlist")}"
             + $"\n  ○ /qq {GetString("Command.qq")}"
             + $"\n  ○ /dump {GetString("Command.dump")}"
+            + $"\n  ○ /start {GetString("Command.start")}"
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
