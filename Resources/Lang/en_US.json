@@ -2770,6 +2770,7 @@
   "DeathMeetingTimeIncrease": "Increased Meeting time when <color=#ff174f>Death</color> exists",
   "SoulCollectorMeetingDeath": "Your target has died during the meeting. You have gained a soul.",
   "SoulCollectorKillButtonText": "Predict",
+  "SoulCollectorHasImpostorVision": "<color=#A675A1>Soul Collector</color> has Impostor vision",
 
   "ApocalypseIsNigh": "[ The Apocalypse Is Nigh! ]",
   "ApocalypseImmune": "This player is immune because they are invincible!",
@@ -2869,6 +2870,7 @@
   "BerserkerToWar": "You have become War!!!",
   "BerserkerTransform": "<align=\"center\"><size=150%>The <color=#FF0055><b>Berserker</b></color> has transformed into <color=#2B0804><b>War</b></color>, Horseman of the Apocalypse! Cry 'Havoc!', and let slip the dogs of war.</size></align>",
   "WarKillCooldown": "War kill cooldown",
+  "BerserkerCanKillTeamate": "Can kill other Neutral Apocalypse",
 
   "BlackmailerSkillCooldown": "Blackmail Cooldown",
   "BlackmailerMax": "Maximum times blackmailed players may speak",
@@ -3410,6 +3412,8 @@
   "PixieButtonText": "Mark",
 
   "PlagueBearerCooldown": "Plague cooldown",
+  "PlagueBearerCanVent": "Can vent",
+  "PlagueBearerHasImpostorVision": "Has Impostor vision",
   "PestilenceCooldown": "<color=#343136>Pestilence</color> Kill cooldown",
   "PestilenceCanVent": "<color=#343136>Pestilence</color> Can Vent",
   "PestilenceHasImpostorVision": "<color=#343136>Pestilence</color> Has <color=#ff1919>Impostor</color> Vision",
