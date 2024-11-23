@@ -53,7 +53,12 @@ internal class Godfather : RoleBase
     {
         if (GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))
         {
-            if (GodfatherChangeOpt.GetValue() == 0) killer.RpcSetCustomRole(CustomRoles.Refugee);
+            if (GodfatherChangeOpt.GetValue() == 0)
+            {
+                killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+                killer.RpcSetCustomRole(CustomRoles.Refugee);
+                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+            }
             else killer.RpcSetCustomRole(CustomRoles.Madmate);
         }
     }
