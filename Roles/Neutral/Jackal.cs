@@ -204,9 +204,11 @@ internal class Jackal : RoleBase
                 Utils.NotifyRoles(killer, target, true);
                 Utils.NotifyRoles(target, killer, true);
 
+                target.RpcGuardAndKill();
                 target.ResetKillCooldown();
-                target.SetKillCooldown(forceAnime: true);
-                killer.SetKillCooldown();
+                target.SetKillCooldown();
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
                 break;
             case 2: // Only Recruit
                 if (target.GetCustomRole().IsNeutral() && target.HasImpKillButton() || target.Is(CustomRoles.Lawyer))
@@ -229,6 +231,7 @@ internal class Jackal : RoleBase
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
 
                 target.RpcGuardAndKill(target);
+                target.ResetKillCooldown();
                 target.SetKillCooldown();
                 Main.PlayerStates[target.PlayerId].taskState.hasTasks = false;
                 break;
@@ -255,7 +258,8 @@ internal class Jackal : RoleBase
                 killer.ResetKillCooldown();
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
 
-                target.RpcGuardAndKill(target);
+                target.RpcGuardAndKill();
+                target.ResetKillCooldown();
                 target.SetKillCooldown();
                 break;
         }
@@ -382,7 +386,7 @@ internal class Jackal : RoleBase
                 newJackal.GetRoleClass()?.OnRemove(newJackal.PlayerId);
                 newJackal.RpcChangeRoleBasis(CustomRoles.Jackal);
                 newJackal.RpcSetCustomRole(CustomRoles.Jackal);
-                target.GetRoleClass()?.OnAdd(target.PlayerId);
+                newJackal.GetRoleClass()?.OnAdd(target.PlayerId);
 
                 if (inMeeting)
                 {
@@ -395,8 +399,9 @@ internal class Jackal : RoleBase
                 }
 
                 newJackal.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BecomeNewJackal")));
+                newJackal.RpcGuardAndKill();
                 newJackal.ResetKillCooldown();
-                newJackal.SetKillCooldown(forceAnime: true);
+                newJackal.SetKillCooldown();
 
                 foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
                 {
