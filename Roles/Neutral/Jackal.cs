@@ -101,10 +101,10 @@ internal class Jackal : RoleBase
         }
 
         Playerids.Add(playerId);
-        SendSkillRPC();
 
         if (AmongUsClient.Instance.AmHost)
         {
+            SendSkillRPC();
             CustomRoleManager.CheckDeadBodyOthers.Add(OthersPlayersDead);
             if (_Player.Is(CustomRoles.Recruit))
             {
@@ -158,7 +158,11 @@ internal class Jackal : RoleBase
     {
         if (target.Is(CustomRoles.Jackal)) return false;
         if ((target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return JackalCanKillSidekick.GetBool();
-        if (!CanRecruitSidekick.GetBool() || !CanRecruit()) return true;
+        if (!CanRecruitSidekick.GetBool() || !CanRecruit())
+        {
+            Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
+            return true;
+        }
 
         if (target.Is(CustomRoles.Loyal)
             || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
@@ -192,6 +196,7 @@ internal class Jackal : RoleBase
                 target.GetRoleClass()?.OnRemove(target.PlayerId);
                 target.RpcChangeRoleBasis(CustomRoles.Sidekick);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
+                target.GetRoleClass()?.OnAdd(target.PlayerId);
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
@@ -233,6 +238,7 @@ internal class Jackal : RoleBase
                     target.GetRoleClass()?.OnRemove(target.PlayerId);
                     target.RpcChangeRoleBasis(CustomRoles.Sidekick);
                     target.RpcSetCustomRole(CustomRoles.Sidekick);
+                    target.GetRoleClass()?.OnAdd(target.PlayerId);
                 }
                 else
                 {
@@ -376,6 +382,7 @@ internal class Jackal : RoleBase
                 newJackal.GetRoleClass()?.OnRemove(newJackal.PlayerId);
                 newJackal.RpcChangeRoleBasis(CustomRoles.Jackal);
                 newJackal.RpcSetCustomRole(CustomRoles.Jackal);
+                target.GetRoleClass()?.OnAdd(target.PlayerId);
 
                 if (inMeeting)
                 {
@@ -462,6 +469,11 @@ internal class Sidekick : RoleBase
     {
         playerIdList.Add(playerId);
         Main.PlayerStates[playerId].taskState.hasTasks = false;
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            SendSkillRPC();
+        }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Jackal.KillCooldownSK.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte ico) => opt.SetVision(Jackal.HasImpostorVision.GetBool());
