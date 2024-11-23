@@ -68,7 +68,8 @@ internal class ChatCommands
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Exorcist ex && ex.CheckCommand(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled; 
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dt && dt.ExilePlayer(PlayerControl.LocalPlayer, text)) goto Canceled;
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
@@ -1539,6 +1540,39 @@ internal class ChatCommands
                     }
                     Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
                     break;
+                case "/start":
+                case "/开始":
+                case "/старт":
+                    canceled = true;
+                    if (!GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (GameStates.IsCountDown)
+                    {
+                        Utils.SendMessage(GetString("StartCommandCountdown"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !int.TryParse(subArgs, out int countdown))
+                    {
+                        countdown = 5;
+                    }
+                    else
+                    {
+                        countdown = int.Parse(subArgs);
+                    }
+                    if (countdown < 0 || countdown > 99)
+                    {
+                        Utils.SendMessage(string.Format(GetString("StartCommandInvalidCountdown"), 0, 99), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    GameStartManager.Instance.BeginGame();
+                    GameStartManager.Instance.countDownTimer = countdown;
+                    Utils.SendMessage(string.Format(GetString("StartCommandStarted"), PlayerControl.LocalPlayer.name));
+                    Logger.Info("Game Starting", "ChatCommand");
+                    break;
 
                 default:
                     Main.isChatCommand = false;
@@ -2047,6 +2081,7 @@ internal class ChatCommands
         if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -3285,6 +3320,51 @@ internal class ChatCommands
                         Utils.SendMessage($"{(GetString("Message.MeCommandInvalidID"))}", player.PlayerId);
                     }
                 }
+                break;
+
+            case "/start":
+            case "/开始":
+            case "/старт":
+                if (!GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                    break;
+                }
+
+                if (!Utils.IsPlayerModerator(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
+
+                    break;
+
+                }
+                if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowStartCommand.GetBool() == false)
+                {
+                    Utils.SendMessage(GetString("StartCommandDisabled"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsCountDown)
+                {
+                    Utils.SendMessage(GetString("StartCommandCountdown"), player.PlayerId);
+                    break;
+                }
+                subArgs = args.Length < 2 ? "" : args[1];
+                if (string.IsNullOrEmpty(subArgs) || !int.TryParse(subArgs, out int countdown))
+                {
+                    countdown = 5;
+                }
+                else
+                {
+                    countdown = int.Parse(subArgs);
+                }
+                if (countdown < Options.StartCommandMinCountdown.CurrentValue || countdown > Options.StartCommandMaxCountdown.CurrentValue)
+                {
+                    Utils.SendMessage(string.Format(GetString("StartCommandInvalidCountdown"), Options.StartCommandMinCountdown.CurrentValue, Options.StartCommandMaxCountdown.CurrentValue), player.PlayerId);
+                    break;
+                }
+                GameStartManager.Instance.BeginGame();
+                GameStartManager.Instance.countDownTimer = countdown;
+                Utils.SendMessage(string.Format(GetString("StartCommandStarted"), player.name));
                 break;
 
 
