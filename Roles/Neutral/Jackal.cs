@@ -157,9 +157,8 @@ internal class Jackal : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Jackal)) return false;
-        if (!CanRecruitSidekick.GetBool() || !CanRecruit()) return true;
-
         if ((target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return JackalCanKillSidekick.GetBool();
+        if (!CanRecruitSidekick.GetBool() || !CanRecruit()) return true;
 
         if (target.Is(CustomRoles.Loyal)
             || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
