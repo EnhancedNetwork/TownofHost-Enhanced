@@ -525,6 +525,12 @@ public class Main : BasePlugin
         GodMode = Config.Bind("Client Options", "GodMode", false);
         AutoRehost = Config.Bind("Client Options", "AutoRehost", false);
 
+        if (!DebugModeManager.AmDebugger)
+        {
+            HorseMode.Value = false;
+            // Disable Horse Mode since it cause client crash
+        }
+
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         coroutines = AddComponent<Coroutines>();
         TOHE.Logger.Enable();
