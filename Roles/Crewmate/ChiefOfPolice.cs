@@ -1,115 +1,138 @@
-//namespace TOHE.Roles.Crewmate;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
 
+namespace TOHE.Roles.Crewmate;
 
-// Unused role
-/*
-public static class ChiefOfPolice
+internal class ChiefOfPolice : RoleBase
 {
+    //===========================SETUP================================\\
     private const int Id = 12600;
-    private static List<byte> playerIdList = [];
-    public static Dictionary<byte, int> PoliceLimit = [];
-    public static bool IsEnable = false;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.ChiefOfPolice);
+    public override bool IsDesyncRole => true;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    //==================================================================\\
 
     private static OptionItem SkillCooldown;
-    private static OptionItem CanImpostorAndNeutarl;
+    private static OptionItem CanRecruitImpostorAndNeutarl;
+    private static OptionItem PreventRecruitNonKiller;
+    private static OptionItem SuidiceWhenTargetNotKiller;
 
-    public override void SetupCustomOptions()
+    public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ChiefOfPolice);
-        SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])
+        SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ChiefOfPolice);
+        SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])
             .SetValueFormat(OptionFormat.Seconds);
-        CanImpostorAndNeutarl = BooleanOptionItem.Create(Id + 16, "PolicCanImpostorAndNeutarl", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        CanRecruitImpostorAndNeutarl = BooleanOptionItem.Create(Id + 11, "PolicCanImpostorAndNeutarl", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        PreventRecruitNonKiller = BooleanOptionItem.Create(Id + 12, "PolicRecruitNonKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        SuidiceWhenTargetNotKiller = BooleanOptionItem.Create(Id + 13, "PolicSuidiceWhenTargetNotKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
     }
-    public static void Init()
-    {
-        playerIdList = [];
-        PoliceLimit = [];
-        IsEnable = false;
-    }
-    public static void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-        PoliceLimit.TryAdd(playerId, 1);
-        IsEnable = true;
 
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (!Main.ResetCamPlayerList.Contains(playerId))
-            Main.ResetCamPlayerList.Add(playerId);
-    }
-    private static void SendRPC(byte playerId)
+    public override void Add(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WritePacked((int)CustomRoles.ChiefOfPolice);
-        writer.Write(playerId);
-        writer.Write(PoliceLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        AbilityLimit = 1;
     }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte PlayerId = reader.ReadByte();
-        int Limit = reader.ReadInt32();
-        if (PoliceLimit.ContainsKey(PlayerId))
-            PoliceLimit[PlayerId] = Limit;
-        else
-            PoliceLimit.Add(PlayerId, 1);
-    }
-    public static bool CanUseKillButton(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead
-        && (PoliceLimit.TryGetValue(playerId, out var x) ? x : 1) >= 1;
 
-    public static void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? SkillCooldown.GetFloat() : 300f;
+    public override bool CanUseKillButton(PlayerControl pc) => AbilityLimit > 0;
 
-    public static string GetSkillLimit(byte playerId) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.ChiefOfPolice) : Color.gray, PoliceLimit.TryGetValue(playerId, out var policeLimit) ? $"({policeLimit})" : "Invalid");
-    
-    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit > 0 ? SkillCooldown.GetFloat() : 999f;
+
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        PoliceLimit[killer.PlayerId]--;
-        SendRPC(killer.PlayerId);
-        if (CanBeSheriff(target))
+        if (AbilityLimit < 1) return false;
+        bool suidice = false;
+
+        if (target.GetCustomRole().IsCrewmate() && !target.IsAnySubRole(x => x.IsConverted()))
         {
-            target.RpcSetCustomRole(CustomRoles.Sheriff);
-            var targetId = target.PlayerId;
-            foreach (var player in Main.AllAlivePlayerControls)
+            if (PreventRecruitNonKiller.GetBool() && !target.HasImpKillButton())
             {
-                if (player.PlayerId == targetId)
+                suidice = true;
+            }
+            else
+            {
+                AbilityLimit--;
+                killer.RpcGuardAndKill(target);
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+
+                target.GetRoleClass()?.OnRemove(target.PlayerId);
+                target.RpcChangeRoleBasis(CustomRoles.Sheriff);
+                target.RpcSetCustomRole(CustomRoles.Sheriff);
+                target.GetRoleClass()?.OnAdd(target.PlayerId);
+
+                target.RpcGuardAndKill(killer);
+                target.ResetKillCooldown();
+                target.SetKillCooldown();
+
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("SheriffSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("BeSheriffByPolice")));
+
+                Utils.NotifyRoles(killer);
+                Utils.NotifyRoles(target);
+            }
+        }
+        else
+        {
+            if (!CanRecruitImpostorAndNeutarl.GetBool())
+            {
+                suidice = true;
+            }
+            else
+            {
+                if (PreventRecruitNonKiller.GetBool() && !target.HasImpKillButton())
                 {
-                   // Sheriff.Add(player.PlayerId);
-                  // Sheriff.Add(player.PlayerId);
+                    suidice = true;
+                }
+                else
+                {
+                    AbilityLimit--;
+                    killer.RpcGuardAndKill(target);
+                    killer.ResetKillCooldown();
+                    killer.SetKillCooldown();
+
+                    target.GetRoleClass()?.OnRemove(target.PlayerId);
+                    target.RpcChangeRoleBasis(CustomRoles.Sheriff);
+                    target.RpcSetCustomRole(CustomRoles.Sheriff);
+                    target.GetRoleClass()?.OnAdd(target.PlayerId);
+
+                    target.RpcGuardAndKill(killer);
+                    target.ResetKillCooldown();
+                    target.SetKillCooldown();
+
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("SheriffSuccessfullyRecruited")));
+                    target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("BeSheriffByPolice")));
+
+                    Utils.NotifyRoles(killer);
+                    Utils.NotifyRoles(target);
                 }
             }
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("SheriffSuccessfullyRecruited")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("BeSheriffByPolice")));
+        }
 
-            killer.ResetKillCooldown();
-            target.ResetKillCooldown();
-            killer.RpcGuardAndKill(target);
-            killer.SetKillCooldown(forceAnime: true);
-            target.RpcGuardAndKill(killer);
-            target.SetKillCooldown(forceAnime: true);
+        if (suidice && SuidiceWhenTargetNotKiller.GetBool())
+        {
+            AbilityLimit--;
+            killer.RpcMurderPlayer(killer);
+            killer.SetDeathReason(PlayerState.DeathReason.Misfire);
+            killer.SetRealKiller(killer);
         }
         else
         {
-            //if (ChiefOfPoliceCountMode.GetInt() == 1)
-            //{
-            //    killer.RpcMurderPlayer(killer);
-            //    return true;
-            //}
-            //if (ChiefOfPoliceCountMode.GetInt() == 2)
-            //{
-            //    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("NotSheriff!!!")));
-            //    return true;
-            //}
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown(forceAnime: true);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("PoliceFailedRecruit")));
+            Utils.NotifyRoles(killer);
         }
+
+        SendSkillRPC();
         return false;
     }
-    public static bool CanBeSheriff(this PlayerControl pc)
-    {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() && pc.CanUseKillButton()) || pc.GetCustomRole().IsNeutral() && pc.CanUseKillButton() && CanImpostorAndNeutarl.GetBool()|| pc.GetCustomRole().IsImpostor() && CanImpostorAndNeutarl.GetBool();
-    }
-
-    public static void SetAbilityButtonText(HudManager hud, byte playerId)
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
     }
+
+    public override string GetProgressText(byte playerId, bool commns)
+    => !commns ? Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.ChiefOfPolice).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})") : "";
 }
-*/
