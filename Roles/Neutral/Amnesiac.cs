@@ -30,7 +30,7 @@ internal class Amnesiac : RoleBase
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
         ImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
-        AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, "CanVent", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         VentCoolDown = FloatOptionItem.Create(Id + 14, "EngineerBase_VentCooldown", new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
         ReportWhenFailedRemember = BooleanOptionItem.Create(Id + 15, "ReportWhenFailedRemember", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]).SetHidden(true);
     }

@@ -71,12 +71,12 @@ internal class Jackal : RoleBase
         JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         SidekickAssignMode = StringOptionItem.Create(Id + 34, "Jackal_SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetHidden(false);
-        SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 2, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 1, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetValueFormat(OptionFormat.Times);
 
         SidekickCanKillWhenJackalAlive = BooleanOptionItem.Create(Id + 35, "Jackal_SidekickCanKillWhenJackalAlive", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
-        SidekickTurnIntoJackal = BooleanOptionItem.Create(Id + 36, "Jackal_SidekickTurnIntoJackal", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
-        RestoreLimitOnNewJackal = BooleanOptionItem.Create(Id + 37, "Jackal_RestoreLimitOnNewJackal", false, TabGroup.NeutralRoles, false).SetParent(SidekickTurnIntoJackal);
+        SidekickTurnIntoJackal = BooleanOptionItem.Create(Id + 36, "Jackal_SidekickTurnIntoJackal", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        RestoreLimitOnNewJackal = BooleanOptionItem.Create(Id + 37, "Jackal_RestoreLimitOnNewJackal", true, TabGroup.NeutralRoles, false).SetParent(SidekickTurnIntoJackal);
 
         KillCooldownSK = FloatOptionItem.Create(Id + 20, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
             .SetValueFormat(OptionFormat.Seconds);
