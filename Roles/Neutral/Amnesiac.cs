@@ -98,6 +98,8 @@ internal class Amnesiac : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl __instance, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
+        if (!__instance.Is(CustomRoles.Amnesiac)) return true;
+
         bool isSuccess = false;
         if (Main.PlayerStates.TryGetValue(deadBody.PlayerId, out var targetPlayerStates))
         {
