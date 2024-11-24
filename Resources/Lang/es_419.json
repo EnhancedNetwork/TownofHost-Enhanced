@@ -384,7 +384,7 @@
   "DoubleAgent": "Doble Agente",
   "Sloth": "Perezoso",
   "Prohibited": "Prohibido",
-  "Eavesdropper": "Eavesdropper",
+  "Eavesdropper": "Escuchón",
   "BracketAddons": "Dar Corchetes a Add-ons",
   "EngineerTOHEInfo": "Usa los conductos de ventilación para espiar a los <color=#ff1919>Impostores</color>",
   "ScientistTOHEInfo": "Ve los signos vitales de la tripulación desde cualquier sitio",
@@ -1006,7 +1006,7 @@
   "DoubleAgentInfoLong": "(Impostor):\nAs the Double Agent, you cannot access the kill button. However, you can vote for someone in a meeting to pass a bomb onto them, which can only be done one player at a time. Once the meeting has finished, the bomb will activate and explode in a set amount of time.\nNote: when you pass the bomb onto someone in a meeting, you can vote afterward.\n\nAdditionally depending on settings the Double Agent can diffuse <color=#696969>Bastion</color> and <color=#F4A460>Agitator</color> bombs when venting.\n\nThe Double Agent can change roles when they are the <color=#ff1919>Last Imposter</color>, depending on the settings the role can be a <color=#ee43c3>Admired Impostor</color>, <color=#ff1919>Trickster</color>, <color=#BA2E05>Traitor</color>, or stay as the Double Agent.",
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
   "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific vents that you can't use.\nHow many vents are disabled depends on the Host's settings.",
-  "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
+  "EavesdropperInfoLong": "(Agregos):\nComo el Escuchón, tienes la oportunidad de leer otros mensajes basados en roles o complementos como el Funerario o el Sabueso.",
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "ShowTextOverlay": "Superposición de texto",
   "Overlay.GuesserMode": "<size=50%>Modo de Adivinos</size>",
@@ -3490,8 +3490,8 @@
   "InfluencedChangeVote": "¡Uy! ¡Fuiste influenciado por los otros!\n¡No pudiste contener tu miedo y tu voto ha cambiado a {0}!",
   "FFA": "Todos Contra Todos",
   "ModeFFA": "Modo de Juego: TCT",
-  "ModeDescribe.FFA": "In the FFA (Free For All) gamemode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
-  "KillerInfoLong": "In the FFA (Free For All) game mode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
+  "ModeDescribe.FFA": "En el modo de juego TCT (Todos Contra Todos), todos son asesinos y se puede matar a quien sea. El último jugador con vida gana.\n\nAlgunos eventos pondrán hacer que esto sea mucho mas divertido de vez en cuando!",
+  "KillerInfoLong": "En el modo de juego TCT (Todos Contra Todos), todos son asesinos y se puede matar a quien sea. El último jugador con vida gana.\n\nAlgunos eventos pondrán hacer que esto sea mucho mas divertido de vez en cuando!",
   "FFA_GameTime": "Duración Máxima del Juego",
   "FFA_KCD": "Tiempo de Espera para Matar",
   "FFA_DisableVentingWhenTwoPlayersAlive": "Prevenir uso de conductos cuando solo dos jugadores estan vivos",
@@ -3635,5 +3635,5 @@
   "Minion_Blind": "cegado",
   "Evader_ChanceNotExiled": "Probabilidad de no ser exiliado",
   "EavesdropperMsgTitle": "Has encontrado un secreto",
-  "EavesdropPercentChance": "Chance to eavesdrop"
+  "EavesdropPercentChance": "Oportunidad de escuchar"
 }
