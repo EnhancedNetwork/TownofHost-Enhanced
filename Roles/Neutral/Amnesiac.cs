@@ -59,7 +59,6 @@ internal class Amnesiac : RoleBase
         opt.SetVision(ImpostorVision.GetBool());
         opt.SetFloat(FloatOptionNames.EngineerCooldown, AmnesiacCanUseVent.GetBool() ? VentCoolDown.GetFloat() : 999f);
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => AmnesiacCanUseVent.GetBool();
     public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.TryGetValue(pc.PlayerId, out var canUse) && canUse;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
