@@ -27,7 +27,7 @@ internal class ChiefOfPolice : RoleBase
         SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])
             .SetValueFormat(OptionFormat.Seconds);
         CanRecruitImpostorAndNeutarl = BooleanOptionItem.Create(Id + 11, "PolicCanImpostorAndNeutarl", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
-        PreventRecruitNonKiller = BooleanOptionItem.Create(Id + 12, "PolicRecruitNonKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        PreventRecruitNonKiller = BooleanOptionItem.Create(Id + 12, "PolicPreventRecruitNonKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
         SuidiceWhenTargetNotKiller = BooleanOptionItem.Create(Id + 13, "PolicSuidiceWhenTargetNotKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
         PassConverted = BooleanOptionItem.Create(Id + 14, "PolicPassConverted", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
     }

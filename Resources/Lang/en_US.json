@@ -3836,7 +3836,7 @@
   "BeSheriffByPolice": "You've been recruited by the police chief! Serve the crew!",
   "PoliceFailedRecruit": "Failed to recruit target.",
   "ChiefOfPoliceKillButtonText": "Recruitment",
-  "PolicRecruitNonKiller": "Can recruit players without kill button",
+  "PolicPreventRecruitNonKiller": "Prevent recruit players without kill button",
   "PolicSuidiceWhenTargetNotKiller": "Suidices when recruit a non killer or non crewmate",
   "PolicPassConverted": "Can pass Converted Addon to Sheriff"
 }
