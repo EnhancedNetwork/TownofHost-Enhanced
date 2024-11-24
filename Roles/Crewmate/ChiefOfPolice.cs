@@ -76,9 +76,8 @@ internal class ChiefOfPolice : RoleBase
                 target.RpcSetCustomRole(CustomRoles.Sheriff);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
 
-                target.RpcGuardAndKill(killer);
                 target.ResetKillCooldown();
-                target.SetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("SheriffSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("BeSheriffByPolice")));
@@ -112,9 +111,8 @@ internal class ChiefOfPolice : RoleBase
                     target.RpcSetCustomRole(CustomRoles.Sheriff);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
 
-                    target.RpcGuardAndKill(killer);
                     target.ResetKillCooldown();
-                    target.SetKillCooldown();
+                    target.SetKillCooldown(forceAnime: true);
 
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("SheriffSuccessfullyRecruited")));
                     target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("BeSheriffByPolice")));
