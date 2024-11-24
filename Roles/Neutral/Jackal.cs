@@ -204,9 +204,8 @@ internal class Jackal : RoleBase
                 Utils.NotifyRoles(killer, target, true);
                 Utils.NotifyRoles(target, killer, true);
 
-                target.RpcGuardAndKill();
                 target.ResetKillCooldown();
-                target.SetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
                 killer.ResetKillCooldown();
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
                 break;
@@ -230,9 +229,8 @@ internal class Jackal : RoleBase
                 killer.ResetKillCooldown();
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
 
-                target.RpcGuardAndKill(target);
                 target.ResetKillCooldown();
-                target.SetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
                 Main.PlayerStates[target.PlayerId].taskState.hasTasks = false;
                 break;
             case 0: // SideKick when failed Recruit
@@ -258,9 +256,8 @@ internal class Jackal : RoleBase
                 killer.ResetKillCooldown();
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
 
-                target.RpcGuardAndKill();
                 target.ResetKillCooldown();
-                target.SetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
                 break;
         }
 
@@ -402,9 +399,8 @@ internal class Jackal : RoleBase
                 }
 
                 newJackal.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BecomeNewJackal")));
-                newJackal.RpcGuardAndKill();
                 newJackal.ResetKillCooldown();
-                newJackal.SetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
 
                 foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
                 {
