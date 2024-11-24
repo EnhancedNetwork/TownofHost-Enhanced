@@ -744,7 +744,7 @@ public enum CustomRoles
     Captain,
     Celebrity, 
     Chameleon,
-    ChiefOfPolice, //police commisioner ///// UNUSED
+    ChiefOfPolice,
     Cleanser,
     CopyCat,
     Coroner, 

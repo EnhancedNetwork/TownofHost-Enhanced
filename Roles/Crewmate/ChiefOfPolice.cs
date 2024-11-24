@@ -39,6 +39,17 @@ internal class ChiefOfPolice : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit > 0 ? SkillCooldown.GetFloat() : 999f;
 
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
+    {
+        if (seer.IsAnySubRole(x => x.IsConverted()) || target.IsAnySubRole(x => x.IsConverted()))
+            return false;
+        if (seer.Is(CustomRoles.ChiefOfPolice) && target.Is(CustomRoles.Sheriff))
+            return true;
+        if (seer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.ChiefOfPolice))
+            return true;
+        return false;
+    }
+
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
@@ -46,7 +57,7 @@ internal class ChiefOfPolice : RoleBase
 
         if (target.GetCustomRole().IsCrewmate() && !target.IsAnySubRole(x => x.IsConverted()))
         {
-            if (PreventRecruitNonKiller.GetBool() && !target.HasImpKillButton())
+            if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
             {
                 suidice = true;
             }
@@ -81,7 +92,7 @@ internal class ChiefOfPolice : RoleBase
             }
             else
             {
-                if (PreventRecruitNonKiller.GetBool() && !target.HasImpKillButton())
+                if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
                 {
                     suidice = true;
                 }
