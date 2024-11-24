@@ -150,6 +150,7 @@ public static class CustomRolesHelper
         return target.IsCrewVenter()
                 || target.GetCustomRole() is
                 CustomRoles.Sheriff or
+                CustomRoles.ChiefOfPolice or
                 CustomRoles.LazyGuy or
                 CustomRoles.SuperStar or
                 CustomRoles.Celebrity or
@@ -790,7 +791,8 @@ public static class CustomRolesHelper
             case CustomRoles.Rascal:
                 if (pc.Is(CustomRoles.SuperStar)
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.Madmate))
+                    || pc.Is(CustomRoles.Madmate)
+                    || pc.Is(CustomRoles.ChiefOfPolice))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
                     return false;
