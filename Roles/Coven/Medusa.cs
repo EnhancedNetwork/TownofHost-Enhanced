@@ -119,7 +119,6 @@ internal class Medusa : CovenManager
         {
             dusa.Notify(GetString("MedusaStoningStart"), StoneDuration.GetFloat());
             isStoning = true;
-            originalSpeed.Remove(player);
             originalSpeed.Add(player, Main.AllPlayerSpeed[player]);
             Main.AllPlayerSpeed[player] = 0f;
             ReportDeadBodyPatch.CanReport[player] = false;
@@ -128,9 +127,11 @@ internal class Medusa : CovenManager
             {
                 dusa.Notify(GetString("MedusaStoningEnd"));
                 isStoning = false;
-                Main.AllPlayerSpeed[player] = originalSpeed[player];
+                // sometimes it doesn't contain the player for some stupid reason
+                if (originalSpeed.ContainsKey(player)) Main.AllPlayerSpeed[player] = originalSpeed[player];
+                else Main.AllPlayerSpeed[player] = AURoleOptions.PlayerSpeedMod;
                 GetPlayerById(player).SyncSettings();
-                originalSpeed.Remove(player);
+                if (originalSpeed.ContainsKey(player)) originalSpeed.Remove(player);
                 StonedPlayers[dusa.PlayerId].Remove(player);
             }, StoneDuration.GetFloat(), "Medusa Revert Stone");
         }
