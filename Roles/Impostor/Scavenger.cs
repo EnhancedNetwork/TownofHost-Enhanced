@@ -12,6 +12,7 @@ internal class Scavenger : RoleBase
     //==================================================================\\
 
     private static OptionItem ScavengerKillCooldown;
+    private static OptionItem ScavengerHasCustomDeathReason;
 
     public static readonly HashSet<byte> KilledPlayersId = [];
 
@@ -21,6 +22,8 @@ internal class Scavenger : RoleBase
         ScavengerKillCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(5f, 180f, 2.5f), 40f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Scavenger])
             .SetValueFormat(OptionFormat.Seconds);
+        ScavengerHasCustomDeathReason = BooleanOptionItem.Create(Id + 3, "ScavengerHasCustomDeathReason", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Scavenger]);
+        
     }
     public override void Init()
     {
@@ -36,6 +39,7 @@ internal class Scavenger : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (ScavengerHasCustomDeathReason.GetBool()) target.SetDeathReason(PlayerState.DeathReason.Scavenged);
         target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
         KilledPlayersId.Add(target.PlayerId);
 
