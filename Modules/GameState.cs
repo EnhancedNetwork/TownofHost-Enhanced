@@ -307,6 +307,7 @@ public class PlayerState(byte playerId)
         Armageddon,
         Sacrificed,
         Electrocuted,
+        Scavenged,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,

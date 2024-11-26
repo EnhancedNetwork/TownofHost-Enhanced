@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using System;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -50,6 +52,26 @@ internal class QuickShooter : RoleBase
         Storaging = false;
     }
 
+    public void SendRPC(bool timer = false)
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
+        writer.WriteNetObject(_Player);
+        writer.Write((byte)AbilityLimit);
+        writer.Write(timer);
+        writer.Write(_Player.GetKillTimer());
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        AbilityLimit = reader.ReadByte();
+        var shouldtime = reader.ReadBoolean();
+        var timer = reader.ReadSingle();
+
+        if (pc.AmOwner && shouldtime)
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, ShapeshiftCooldown.GetFloat());
+    }
+
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (shapeshifter.PlayerId == target.PlayerId) return false;
@@ -60,15 +82,21 @@ internal class QuickShooter : RoleBase
         if (killTimer <= 0)
         {
             AbilityLimit++;
-            SendSkillRPC();
+            SendRPC();
 
             resetCooldown = false;
             Storaging = true;
             shapeshifter.ResetKillCooldown();
             shapeshifter.SetKillCooldown();
+            shapeshifter.RpcResetAbilityCooldown();
 
             shapeshifter.Notify(Translator.GetString("QuickShooterStoraging"));
             Logger.Info($"{Utils.GetPlayerById(shapeshifter.PlayerId)?.GetNameWithRole()} : shot limit: {AbilityLimit}", "QuickShooter");
+        }
+        else
+        {
+            shapeshifter.Notify(Translator.GetString("QuickShooterFailed"));
+            SendRPC(true);
         }
         return false;
     }
@@ -77,14 +105,14 @@ internal class QuickShooter : RoleBase
         NewSL[_state.PlayerId] = Math.Clamp((int)AbilityLimit, 0, MeetingReserved.GetInt());
 
         AbilityLimit = NewSL[_state.PlayerId];
-        SendSkillRPC();
+        SendRPC();
         
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         AbilityLimit--;
         AbilityLimit = Math.Max(AbilityLimit, 0);
-        SendSkillRPC();
+        SendRPC();
 
         return true;
     }
