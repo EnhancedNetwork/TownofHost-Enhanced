@@ -41,7 +41,6 @@ internal class CovenLeader : CovenManager
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte playerId = reader.ReadByte();
         AbilityLimit = reader.ReadSingle();
     }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
@@ -78,6 +77,7 @@ internal class CovenLeader : CovenManager
         }
         killer.Notify(GetString("CovenLeaderRetrain"));
         killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return false;
     }
 

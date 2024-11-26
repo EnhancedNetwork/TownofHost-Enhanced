@@ -5,7 +5,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE;
-public abstract class CovenManager : RoleBase
+public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 {
     public static byte necroHolder = byte.MaxValue;
 
