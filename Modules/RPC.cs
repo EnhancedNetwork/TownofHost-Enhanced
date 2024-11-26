@@ -111,7 +111,6 @@ enum CustomRPC : byte // 185/255 USED
     SetImitateLimit,
     DictatorRPC,
     Necronomicon,
-    BloodRitual,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -590,9 +589,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetChameleonTimer:
                 Chameleon.ReceiveRPC_Custom(reader);
-                break;
-            case CustomRPC.BloodRitual:
-                Ritualist.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
