@@ -115,7 +115,13 @@ public static class AntiBlackout
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
-        if (dummyImp == null) return;
+
+        if (dummyImp == null)
+        {
+            Logger.Warn("Cant find a alive dummy Imp, AntiBlackout may break?", "AntiBlackout.RevivePlayersAndSetDummyImp");
+            Logger.SendInGame("Cant find a alive dummy Imp, AntiBlackout may break?");
+            return;
+        }
 
         foreach (var seer in Main.AllPlayerControls)
         {

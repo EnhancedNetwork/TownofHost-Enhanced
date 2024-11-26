@@ -1010,7 +1010,6 @@ public static class GuessManager
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
                     or CustomRoles.Oblivious
-                    or CustomRoles.ChiefOfPolice
                     or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     or CustomRoles.SuperStar

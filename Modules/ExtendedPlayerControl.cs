@@ -24,6 +24,8 @@ static class ExtendedPlayerControl
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
+            //  player.GetRoleClass()?.OnAdd(player.PlayerId);
+            // Remember to manually add OnAdd if you are setting role mid game
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
