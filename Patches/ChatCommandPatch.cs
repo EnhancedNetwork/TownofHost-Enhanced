@@ -228,12 +228,18 @@ internal class ChatCommands
                 case "/命名为":
                     canceled = true;
                     if (args.Length < 1) break;
-                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1) { 
+                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    {
                         Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    else Main.HostRealName = args.Skip(1).Join(delimiter: " ");
-                    Utils.SendMessage(string.Format(GetString("Message.SetName"), args.Skip(1).Join(delimiter: " ")), PlayerControl.LocalPlayer.PlayerId);
+                    else
+                    {
+                        var temp = args.Skip(1).Join(delimiter: " ");
+                        Main.HostRealName = temp;
+                        Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId] = temp;
+                        Utils.SendMessage(string.Format(GetString("Message.SetName"), temp), PlayerControl.LocalPlayer.PlayerId);
+                    }
                     break;
 
                 case "/hn":
