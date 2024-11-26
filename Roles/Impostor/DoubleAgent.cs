@@ -236,6 +236,8 @@ internal class DoubleAgent : RoleBase
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
 
                 Init();
+                player.GetRoleClass().OnRemove(player.PlayerId);
+                player.RpcChangeRoleBasis(Role);
                 player.RpcSetCustomRole(Role);
                 player.GetRoleClass()?.Add(player.PlayerId);
                 player.MarkDirtySettings();
