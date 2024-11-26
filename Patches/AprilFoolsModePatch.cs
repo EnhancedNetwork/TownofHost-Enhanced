@@ -142,9 +142,9 @@ public static class LongBoiPatches
     [HarmonyPrefix]
     public static bool CheckLongMode_Prefix(out bool __result, ref string cosmeticID)
     {
-        if (Main.HorseMode.Value)
+        if (AprilFoolsMode.ShouldHorseAround())
         {
-            __result = false;
+            __result = true;
             return false;
         }
 
