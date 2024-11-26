@@ -2194,6 +2194,7 @@
   "BecomeMadmateCuzMadmateMode": "You became a Madmate because you died",
   "CleanerCleanBody": "The body has been cleaned",
   "QuickShooterStoraging": "Bullets stored successfully",
+  "QuickShooterFailed": "You are still in cooldown.",
   "PoisonerTargetDead": "Target died",
   "HexesLookLikeSpells": "<color=#ff00ff>Hexes</color> appear as <color=#ff1919>spells</color>",
   "HexButtonText": "Hex",
