@@ -588,7 +588,7 @@ public static class GuessManager
         var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
         var rd = IRandom.Instance;
         string msg;
-        string[] command = ["bet", "bt", "guess", "gs", "shoot", "st", "rt", "赌", "猜", "审判", "tl", "判", "审"];
+        string[] command = ["bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审"];
         for (int i = 0; i < 20; i++)
         {
             msg = "/";

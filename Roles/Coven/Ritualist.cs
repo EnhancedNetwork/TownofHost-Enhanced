@@ -113,7 +113,7 @@ internal class Ritualist : CovenManager
             {
                 //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
                 //else GuessManager.TryHideMsg();
-                GuessManager.TryHideMsg();
+                TryHideMsgForRitual();
                 ChatManager.SendPreviousMessagesToAll();
             }
             if (RitualLimit[pc.PlayerId] <= 0)
@@ -151,6 +151,43 @@ internal class Ritualist : CovenManager
             return true;
         }
         return false;
+    }
+    private static void TryHideMsgForRitual()
+    {
+        ChatUpdatePatch.DoBlockChat = true;
+        List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
+        var rd = IRandom.Instance;
+        string msg;
+        string[] command = ["rt", "rit", "ritual", "bloodritual"];
+        for (int i = 0; i < 20; i++)
+        {
+            msg = "/";
+            if (rd.Next(1, 100) < 20)
+            {
+                msg += "id";
+            }
+            else
+            {
+                msg += command[rd.Next(0, command.Length - 1)];
+                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                msg += rd.Next(0, 15).ToString();
+                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                CustomRoles role = roles.RandomElement();
+                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                msg += Utils.GetRoleName(role);
+
+            }
+            var player = Main.AllAlivePlayerControls.RandomElement();
+            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+            writer.StartMessage(-1);
+            writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+                .Write(msg)
+                .EndRpc();
+            writer.EndMessage();
+            writer.SendMessage();
+        }
+        ChatUpdatePatch.DoBlockChat = false;
     }
     public override void AfterMeetingTasks()
     {

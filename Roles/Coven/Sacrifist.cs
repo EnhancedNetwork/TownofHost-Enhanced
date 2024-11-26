@@ -300,6 +300,10 @@ internal class Sacrifist : CovenManager
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Vision.GetFloat());
         }
     }
+    public override void AfterMeetingTasks()
+    {
+        debuffTimer = 0;
+    }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         return debuffTimer.ToString() + "s / " + maxDebuffTimer.ToString() + "s";
