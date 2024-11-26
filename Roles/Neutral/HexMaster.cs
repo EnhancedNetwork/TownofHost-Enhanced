@@ -277,4 +277,13 @@ internal class HexMaster : RoleBase
             hud.KillButton.OverrideText($"{GetString("KillButtonText")}");
         }
     }
+
+    public override void Remove(byte playerId)
+    {
+        if (HexedPlayer.ContainsKey(playerId))
+        {
+            HexedPlayer[playerId].Clear();
+            SendRPC(true, playerId);
+        }
+    }
 }
