@@ -233,6 +233,7 @@
   "TaskManager": "Task Manager",
   "Witness": "Witness",
   "Swapper": "Swapper",
+  "ChiefOfPolice": "Chief of Police",
   "NiceMini": "Nice Mini",
   "Mini": "Mini",
   "Spy": "Spy",
@@ -552,6 +553,7 @@
   "WitnessInfo": "Find out if someone killed recently",
   "GhastlyInfo": "Control somebody!",
   "SwapperInfo": "Swap the votes of two players",
+  "ChiefOfPoliceInfo": "Hire Sheriff to Serve the Crews!",
   "NiceMiniInfo": "No one can hurt you until you grow up.",
   "ArsonistInfo": "Douse everyone and ignite",
   "PyromaniacInfo": "Douse and kill everyone",
@@ -861,6 +863,7 @@
   "TaskManagerInfoLong": "(Crewmates):\nYou see the total number of tasks completed (by everyone all together) next to your role name, which updates in real-time.",
   "WitnessInfoLong": "(Crewmates):\nAs the Witness, when you use your kill button on someone, you will know if they killed in the last X seconds or not. (X depends on the settings).",
   "SwapperInfoLong": "(Crewmates):\nAs the Swapper, you can swap votes in meetings.\n\nTo swap votes, use '/sw [playerID]' twice.\n\nPlayer IDs are displayed next to player names in meetings, but you can also use /id to get a list of all player IDs.\n\nNote: Depending on the Host's settings, you can exchange your own votes.",
+  "ChiefOfPoliceInfoLong": "(Crewmates):\nPlayers with swords can be recruited to join the sheriff's team to serve the crew\nNote: only one recruitment opportunity\nDepending on settings, you may recruit non killers or non crews.\nYou may suidice for recruiting wrong target.",
   "NiceMiniInfoLong": "(Crewmates):\nAs a Nice Mini, your survival is crucial. You can't be killed until you grow up, and if you die or are evicted from the meeting before you grow up, everyone loses. This unique role adds a new dynamic to the game, where your survival is not just for your benefit but for the entire Crew's success.",
   "SpyInfoLong": "(Crewmates):\nAs the Spy, when someone uses their kill button on you (any ability used through the kill button), you'll see their name in orange for a few seconds.\nNote: If a Crewmate used their ability on you, you'll also see them with an orange name!\nNote: If you cannot use left, you won't see orange names!\nNote: If the kill button interaction is blocked, the player's cooldown will reset to 10s'",
   "RandomizerInfoLong": "(Crewmates):\nAs this Randomizer, when you die, your killer will do one of the following:\n  1. self-report your body\n  2. stand next to your body\n  3. have their kill cooldown set to 600s\n  4. Randomly avenge a player.",
@@ -918,7 +921,7 @@
   "BenefactorInfoLong": "(Crewmates):\nAs the Benefactor, whenever you finish a task, that task will be marked. When another player completes the marked task, they get a temporary shield.\n\n Note: Shield only protects from direct kill attacks.",
   "MedusaInfoLong": "(Neutrals):\nAs the Medusa, you can stone bodies much like cleaning a body.\nStoned bodies cannot be reported.\n\nKill everyone to win.",
   "SpiritcallerInfoLong": "(Neutrals):\nAs the Spiritcaller, your victims become Evil Spirits after they die. These spirits can help you win by freezing other players briefly or blocking their vision. Alternatively, the spirits can give you a shield that protects you briefly from an attempted kill.",
-  "AmnesiacInfoLong": "(Neutrals):\nAs the Amnesiac, use your report button to remember a role.\n\nIf the target was an Impostor, you'll become a <b><color=#ff1919>Refugee</color></b>.\nIf the target was a crewmate, you'll become the target role if compatible (otherwise you become an Engineer).\nIf the target was a passive neutral or a neutral killer not specified, you'll become the role defined in the settings.\nIf the target was a neutral killer of a select few, you'll become the role they are.",
+  "AmnesiacInfoLong": "(Neutrals):\nAs the Amnesiac, use your report button to remember a target and get its role.\nTo balance the game, you will not be able to vent after remembering your role if you can't vent as Amnesiac.'",
   "ImitatorInfoLong": "(Neutrals):\nAs the Imitator, use your kill button to imitate a player.\n\nYou'll either become a Sheriff, a Refugee, or some Neutral.",
   "BanditInfoLong": "(Neutrals):\nAs the Bandit, you can click your kill button one time to steal a player's addon and twice to kill. Depending on the settings, you may instantly steal the addon or after the meeting starts. After the maximum number of steals is reached, you will kill normally. Additionally, if there are no stealable addons on the target or the target is stubborn, you will kill the target.\n\nKill everyone to win.\n\nNote: Cleansed, Last Impostor, and Lovers cannot be stolen.\nNote: If Bandit can vent is on, Nimble will become unstealable.",
   "DoppelgangerInfoLong": "(Neutrals):\nAs the Doppelganger, use your kill button to steal a player's identity (their name and skin) and then kill your target.\n\nKill everyone to win.\n\nNote: You cannot steal the target's identity when Camouflage is active.",
@@ -1643,6 +1646,8 @@
   "EvilTrackerTargetMode.EveryMeeting": "Every Meeting",
   "EvilTrackerTargetMode.Always": "Any time",
 
+  "ScavengerHasCustomDeathReason": "Enable Custom Death Reason",
+
   "EvilHackerCanSeeDeadMark": "Can See The Location of Dead-bodies",
   "EvilHackerCanSeeImpostorMark": "Can See The Location of Other Impostors",
   "EvilHackerCanSeeKillFlash": "Can See Kill-Flash",
@@ -2030,6 +2035,7 @@
   "DeathReason.Equilibrium": "Equilibrium",
   "DeathReason.Sacrificed": "Sacrificed",
   "DeathReason.Electrocuted": "Electrocuted",
+  "DeathReason.Scavenged": "Scavenged",
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Disconnected": "Disconnected",
@@ -2195,6 +2201,7 @@
   "BecomeMadmateCuzMadmateMode": "You became a Madmate because you died",
   "CleanerCleanBody": "The body has been cleaned",
   "QuickShooterStoraging": "Bullets stored successfully",
+  "QuickShooterFailed": "You are still in cooldown.",
   "PoisonerTargetDead": "Target died",
   "HexesLookLikeSpells": "<color=#ff00ff>Hexes</color> appear as <color=#ff1919>spells</color>",
   "HexButtonText": "Hex",
@@ -2980,6 +2987,8 @@
   "RememberedPursuer": "You remembered you were a Pursuer!",
   "RememberedFollower": "You remembered you were a Follower!",
   "RememberedAmnesiac": "You failed to remember your role.",
+  "AmnesiacRemembered": "You remembered you were {0}!",
+  "ReportWhenFailedRemember": "Report Dead Body when failed to remember",
   "RememberedImitator": "You remembered you were an Imitator.",
   "RememberedImpostor": "You remembered you were an Impostor!",
   "RememberedCrewmate": "You remembered you were a crewmate!",
@@ -3841,5 +3850,15 @@
   "ShockerVentButtonText": "Shock",
 
   "EavesdropperMsgTitle": "You found a secret",
-  "EavesdropPercentChance": "Chance to eavesdrop"
+  "EavesdropPercentChance": "Chance to eavesdrop",
+
+  "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting sheriffs",
+  "PolicCanImpostorAndNeutarl": "Can recruit <color=#ff1919>Impostor</color> or <color=#7f8c8d>Neutral</color>",
+  "SheriffSuccessfullyRecruited": "You recruited a sheriff.",
+  "BeSheriffByPolice": "You've been recruited by the police chief! Serve the crew!",
+  "PoliceFailedRecruit": "Failed to recruit target.",
+  "ChiefOfPoliceKillButtonText": "Recruitment",
+  "PolicPreventRecruitNonKiller": "Prevent recruit players without kill button",
+  "PolicSuidiceWhenTargetNotKiller": "Suidices when recruit a non killer or non crewmate",
+  "PolicPassConverted": "Can pass Converted Addon to Sheriff"
 }
