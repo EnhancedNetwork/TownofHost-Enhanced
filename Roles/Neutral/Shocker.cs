@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -25,6 +26,7 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
 
+    private static List<Collider2D> markedRooms = new();
     private static List<Collider2D> shockedRooms = new();
     private static bool isShocking = false;
 
@@ -49,11 +51,11 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerImpostorVision = BooleanOptionItem.Create(Id + 17, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        OverrideTasksData.Create(Id + 20, TabGroup.NeutralRoles, CustomRoles.Shocker);
     }
     public override void Init()
     {
         playerId = null;
+        markedRooms.Clear();
         shockedRooms.Clear();
     }
 
@@ -65,6 +67,8 @@ internal class Shocker : RoleBase
     public override void Remove(byte playerId)
     {
         Shocker.playerId = null;
+        markedRooms.Clear();
+        shockedRooms.Clear();
     }
     public override void AfterMeetingTasks()
     {
@@ -73,6 +77,7 @@ internal class Shocker : RoleBase
         if (ShockerAbilityResetAfterMeeting.GetBool())
         {
             isShocking = false;
+            markedRooms.Clear();
             shockedRooms.Clear();
         }
     }
@@ -95,6 +100,8 @@ internal class Shocker : RoleBase
         SendSkillRPC();
         pc.Notify(Translator.GetString("ShockerAbilityActivate"));
         isShocking = true;
+        shockedRooms = new List<Collider2D>(markedRooms);
+        markedRooms.Clear();
         _ = new LateTask(() =>
         {
             shockedRooms.Clear();
@@ -106,19 +113,15 @@ internal class Shocker : RoleBase
     {
         if (completedTaskCount == totalTaskCount)
         {
-            AbilityLimit++;
-            SendSkillRPC();
-        }
-
-        if (isShocking && playerId == player.PlayerId)
-        {
-            player.Notify(Translator.GetString("ShockerIsShocking"));
-            return false;
+            TaskState taskState = player.GetPlayerTaskState();
+            player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+            taskState.CompletedTasksCount = 0;
+            taskState.AllTasksCount = player.Data.Tasks.Count;
         }
         if (player.GetPlainShipRoom() != null)
         {
             PlainShipRoom room = player.GetPlainShipRoom();
-            shockedRooms.Add(room.roomArea);
+            markedRooms.Add(room.roomArea);
             Logger.Info($"Player {player.PlayerId} is in a room {room.RoomId}", "Shocker");
         }
         else
@@ -128,18 +131,17 @@ internal class Shocker : RoleBase
             collider2D.transform.position = player.GetTruePosition();
             ((CircleCollider2D)collider2D).radius = ShockerOutsideRadius.GetFloat();
             collider2D.isTrigger = true;
-            shockedRooms.Add(collider2D);
+            markedRooms.Add(collider2D);
         }
         return true;
     }
-    public override bool CanUseKillButton(PlayerControl pc) => false;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(GetString("ShockerVentButtonText"));
         hud.AbilityButton.SetUsesRemaining((int)AbilityLimit);
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker).ShadeColor(0.25f), $"({AbilityLimit})");
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute && _Player.IsAlive();
     public static void OnUpdate(PlayerControl player)
     {
         if (!player.IsAlive() || !playerId.HasValue)
