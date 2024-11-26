@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using TMPro;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 using UnityEngine.Events;
 using static TOHE.Translator;
@@ -74,11 +75,10 @@ internal class Exorcist : RoleBase
 
     public bool CheckCommand(PlayerControl player, string msg, bool isUI = false)
     {
-        var originMsg = msg;
-
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || player == null || GameStates.IsExilling) return false;
-        if (!player.Is(CustomRoles.Exorcist)) return false;
+        if (!player.Is(CustomRoles.Exorcist) || !player.IsAlive()) return false;
+
 
         msg = msg.ToLower().Trim();
 
@@ -87,9 +87,6 @@ internal class Exorcist : RoleBase
         {
             if (msg.StartsWith("/" + cmd))
             {
-                if (!player.IsAlive()) return false;
-
-
                 if (AbilityLimit <= 0 || ExorcismLimitPerMeeting <= 0)
                 {
                     if (TryHideMsg.GetBool() && !player.Data.IsHost())
@@ -186,14 +183,20 @@ internal class Exorcist : RoleBase
     {
         public static void Postfix(MeetingHud __instance)
         {
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.Exorcist) && PlayerControl.LocalPlayer.IsAlive())
-                CreateExorcistButton(__instance);
+            if (PlayerControl.LocalPlayer.GetRoleClass() is Exorcist exorcist)
+                exorcist.CreateExorcistButton(__instance);
         }
     }
 
-    public static void CreateExorcistButton(MeetingHud __instance)
+    public void CreateExorcistButton(MeetingHud __instance)
     {
+
+        if (GameObject.Find("ExorcistButton") != null) 
+            GameObject.Destroy(GameObject.Find("ExorcistButton"));
+
         PlayerControl pc = PlayerControl.LocalPlayer;
+        if (!pc.IsAlive()) return;
+
         GameObject parent = GameObject.Find("Main Camera").transform.Find("Hud").Find("ChatUi").Find("ChatScreenRoot").Find("ChatScreenContainer").gameObject;
         GameObject template = __instance.transform.Find("MeetingContents").Find("ButtonStuff").Find("button_skipVoting").gameObject;
         GameObject exorcistButton = UnityEngine.Object.Instantiate(template, parent.transform);
