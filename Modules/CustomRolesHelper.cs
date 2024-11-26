@@ -48,6 +48,7 @@ public static class CustomRolesHelper
 
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
+        /*
         if (player == null) return false;
         var customRole = player.GetCustomRole();
         bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
@@ -59,6 +60,14 @@ public static class CustomRolesHelper
                                          (OriginalRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || OriginalRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom) : ModSideHasKillButton;
 
         return vanillaSideHasKillButton;
+        */
+
+        // Due to the fact that change role basis is widely used in mod
+        // this function now always uses current mod role to decide kill button access?
+
+        if (player == null) return false;
+        var customRole = player.GetCustomRole();
+        return customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
     }
     //This is a overall check for vanilla clients to see if they are imp basis 
     public static bool IsGhostRole(this CustomRoles role)
