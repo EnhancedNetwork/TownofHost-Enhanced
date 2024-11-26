@@ -1632,8 +1632,6 @@
   "EvilTrackerTargetMode.EveryMeeting": "Every Meeting",
   "EvilTrackerTargetMode.Always": "Any time",
 
-  "ScavengerHasCustomDeathReason": "Enable Custom Death Reason",
-
   "EvilHackerCanSeeDeadMark": "Can See The Location of Dead-bodies",
   "EvilHackerCanSeeImpostorMark": "Can See The Location of Other Impostors",
   "EvilHackerCanSeeKillFlash": "Can See Kill-Flash",
@@ -2004,7 +2002,6 @@
   "DeathReason.Starved": "Starved",
   "DeathReason.Equilibrium": "Equilibrium",
   "DeathReason.Sacrificed": "Sacrificed",
-  "DeathReason.Scavenged": "Scavenged",
   "OnlyEnabledDeathReasons": "Only Enabled Death Reasons",
   "Alive": "Alive",
   "Disconnected": "Disconnected",
