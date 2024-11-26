@@ -2055,11 +2055,6 @@ internal class ChatCommands
     {
         canceled = false;
         if (!AmongUsClient.Instance.AmHost) return;
-        if (Exorcist.IsExorcismCurrentlyActive() && player.IsAlive())
-        {
-            Exorcist.ExorcisePlayer(player);
-            return;
-        }
         if (!Blackmailer.CheckBlackmaile(player)) ChatManager.SendMessage(player, text);
 
         if (text.StartsWith("\n")) text = text[1..];
@@ -2094,6 +2089,11 @@ internal class ChatCommands
             ChatManager.cancel = false;
             canceled = true; 
             return; 
+        }
+        if (Exorcist.IsExorcismCurrentlyActive() && player.IsAlive())
+        {
+            Exorcist.ExorcisePlayer(player);
+            return;
         }
 
         switch (args[0])
