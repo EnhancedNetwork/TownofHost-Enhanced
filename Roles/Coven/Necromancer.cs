@@ -204,6 +204,10 @@ internal class Necromancer : CovenManager
         }
         else canUseAbility = true;
     }
+    public override void AfterMeetingTasks()
+    {
+        AbilityTimer = 0;
+    }
     private static void Countdown(int seconds, PlayerControl player)
     {
         var killer = Killer;
