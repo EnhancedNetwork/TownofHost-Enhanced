@@ -52,17 +52,6 @@ internal class Ritualist : CovenManager
         EnchantedPlayers[PlayerId] = [];
         RitualLimit.Add(PlayerId, MaxRitsPerRound.GetInt());
     }
-    private static void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BloodRitual, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
-    {
-        int PlayerId = reader.ReadByte();
-        RitualistMsgCheck(pc, $"/rt {PlayerId}", true);
-    }
     public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
     public override void OnReportDeadBody(PlayerControl hatsune, NetworkedPlayerInfo miku)
     {
