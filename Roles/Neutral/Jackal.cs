@@ -28,13 +28,13 @@ internal class Jackal : RoleBase
     private static OptionItem ResetKillCooldownOn;
     private static OptionItem JackalCanKillSidekick;
     private static OptionItem CanRecruitSidekick;
-    private static OptionItem SidekickRecruitLimitOpt;
+    public static OptionItem SidekickRecruitLimitOpt;
     public static OptionItem SidekickCountMode;
     private static OptionItem SidekickAssignMode;
     public static OptionItem KillCooldownSK;
     public static OptionItem SidekickCanKillWhenJackalAlive;
     public static OptionItem SidekickTurnIntoJackal;
-    private static OptionItem RestoreLimitOnNewJackal;
+    public static OptionItem RestoreLimitOnNewJackal;
     public static OptionItem CanVentSK;
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
@@ -477,6 +477,15 @@ internal class Sidekick : RoleBase
     {
         playerIdList.Add(playerId);
         Main.PlayerStates[playerId].taskState.hasTasks = false;
+
+        if (Jackal.RestoreLimitOnNewJackal.GetBool())
+        {
+            AbilityLimit = Jackal.SidekickRecruitLimitOpt.GetInt();
+        }
+        else
+        {
+            AbilityLimit = 0;
+        }
 
         if (AmongUsClient.Instance.AmHost)
         {
