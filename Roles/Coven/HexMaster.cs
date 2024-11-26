@@ -410,20 +410,6 @@ internal class HexMaster : CovenManager
 
     public override void SetAbilityButtonText(HudManager hud, byte playerid) => hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
 
-}
-    
-    public override void SetAbilityButtonText(HudManager hud, byte playerid)
-    {
-        if (IsHexMode(playerid) && NowSwitchTrigger != SwitchTriggerList.TriggerDouble)
-        {
-            hud.KillButton.OverrideText($"{GetString("HexButtonText")}");
-        }
-        else
-        {
-            hud.KillButton.OverrideText($"{GetString("KillButtonText")}");
-        }
-    }
-
     public override void Remove(byte playerId)
     {
         if (HexedPlayer.ContainsKey(playerId))
