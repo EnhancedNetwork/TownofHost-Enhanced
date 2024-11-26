@@ -3,6 +3,7 @@ using static TOHE.Translator;
 using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
 using AmongUs.GameOptions;
+using TOHE.Roles.Core.AssignManager;
 
 namespace TOHE.Roles.Neutral;
 
@@ -12,29 +13,26 @@ internal class Amnesiac : RoleBase
     private const int Id = 12700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Any();
-    public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => AmnesiacCanUseVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
-    private static OptionItem IncompatibleNeutralMode;
+    private static OptionItem ImpostorVision;
     private static OptionItem ShowArrows;
+    private static OptionItem AmnesiacCanUseVent;
+    private static OptionItem VentCoolDown;
+    private static OptionItem ReportWhenFailedRemember;
 
     private static readonly Dictionary<byte, bool> CanUseVent = [];
-    private enum AmnesiacIncompatibleNeutralModeSelectList
-    {
-        Role_Amnesiac,
-        Role_Pursuer,
-        Role_Follower,
-        Role_Maverick,
-        Role_Imitator,
-    }
-    
+
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 10, "IncompatibleNeutralMode", EnumHelper.GetAllNames<AmnesiacIncompatibleNeutralModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
-        ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        ImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        VentCoolDown = FloatOptionItem.Create(Id + 14, "EngineerBase_VentCooldown", new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
+        ReportWhenFailedRemember = BooleanOptionItem.Create(Id + 15, "ReportWhenFailedRemember", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]).SetHidden(true);
     }
     public override void Init()
     {
@@ -44,7 +42,7 @@ internal class Amnesiac : RoleBase
     public override void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        CanUseVent[playerId] = true;
+        CanUseVent[playerId] = AmnesiacCanUseVent.GetBool();
 
         if (ShowArrows.GetBool())
         {
@@ -54,26 +52,13 @@ internal class Amnesiac : RoleBase
     public override void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
+        CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        var player = playerId.GetPlayer();
-        if (player == null) return;
-
-        if (player.Is(Custom_Team.Crewmate))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod));
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod));
-        }
-        else
-        {
-            opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod));
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod));
-        }
+        opt.SetVision(ImpostorVision.GetBool());
+        opt.SetFloat(FloatOptionNames.EngineerCooldown, AmnesiacCanUseVent.GetBool() ? VentCoolDown.GetFloat() : 999f);
     }
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.TryGetValue(pc.PlayerId, out var canUse) && canUse;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
@@ -113,86 +98,67 @@ internal class Amnesiac : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl __instance, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        var tar = deadBody.Object;
-        if (__instance.Is(CustomRoles.Amnesiac))
+        if (__instance.PlayerId != _Player.PlayerId) return true;
+
+        bool isSuccess = false;
+        if (Main.PlayerStates.TryGetValue(deadBody.PlayerId, out var targetPlayerStates))
         {
-            var tempRole = CustomRoles.Amnesiac;
-            if (tar.GetCustomRole().IsImpostor() || tar.GetCustomRole().IsMadmate() || tar.Is(CustomRoles.Madmate))
+            if (targetPlayerStates.MainRole == CustomRoles.Amnesiac)
             {
-                tempRole = CustomRoles.Refugee;
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
             }
-            if (tar.GetCustomRole().IsCrewmate() && !tar.Is(CustomRoles.Madmate))
+
+            if (targetPlayerStates.MainRole.IsGhostRole())
             {
-                if (tar.IsAmneCrew())
+                if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
                 {
-                    tempRole = tar.GetCustomRole();
+                    __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
+                    __instance.RpcChangeRoleBasis(role);
+                    __instance.RpcSetCustomRole(role);
+                    __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
+
+                    __instance.RpcGuardAndKill();
+                    __instance.ResetKillCooldown();
+                    __instance.SetKillCooldown();
+
+                    role.GetActualRoleName(out var rolename);
+                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                    isSuccess = true;
                 }
                 else
                 {
-                    tempRole = CustomRoles.EngineerTOHE;
-                }
-                Main.TasklessCrewmate.Add(__instance.PlayerId);
-            }
-            if (tar.GetCustomRole().IsNA())
-            {
-                __instance.RpcSetCustomRole(tar.GetCustomRole());
-                __instance.GetRoleClass().Add(__instance.PlayerId);
-                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
-                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
-            }
-            if (tar.GetCustomRole().IsAmneNK())
-            {
-                tempRole = tar.GetCustomRole();
-            }
-            if (tar.GetCustomRole().IsAmneMaverick())
-            {
-                switch (IncompatibleNeutralMode.GetValue())
-                {
-                    case 0: // Amnesiac
-                        tempRole = CustomRoles.Amnesiac;
-                        break;
-                    case 1: // Pursuer
-                        tempRole = CustomRoles.Pursuer;
-                        break;
-                    case 2: // Follower
-                        tempRole = CustomRoles.Follower;
-                        break;
-                    case 3: // Maverick
-                        tempRole = CustomRoles.Maverick;
-                        break;
-                    case 4: // Imitator
-                        tempRole = CustomRoles.Imitator;
-                        break;
+                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
                 }
             }
-            if (tempRole != CustomRoles.Amnesiac)
+            else
             {
-                __instance.GetRoleClass().OnRemove(__instance.PlayerId);
-                __instance.RpcSetCustomRole(tempRole);
-                __instance.GetRoleClass().OnAdd(__instance.PlayerId);
-                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("YouRememberedRole")));
-                tar.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
+                var role = targetPlayerStates.MainRole;
+                __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
+                __instance.RpcChangeRoleBasis(role);
+                __instance.RpcSetCustomRole(role);
+                __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
 
-                __instance.SyncSettings();
+                __instance.RpcGuardAndKill();
+                __instance.ResetKillCooldown();
+                __instance.SetKillCooldown();
 
-                var roleClass = tar.GetRoleClass();
-                CanUseVent[__instance.PlayerId] = (roleClass?.ThisRoleBase) switch
-                {
-                    CustomRoles.Engineer => true,
-                    CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom => roleClass.CanUseImpostorVentButton(tar),
-                    _ => false,
-                };
-                Logger.Info($"player id: {__instance.PlayerId}, Can use vent: {CanUseVent[__instance.PlayerId]}", "Previous Amne Vent");
+                role.GetActualRoleName(out var rolename);
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                isSuccess = true;
             }
-            if (ShowArrows.GetBool())
-            {
-                foreach (var apc in playerIdList.ToArray())
-                {
-                    LocateArrow.RemoveAllTarget(apc);
-                }
-            }
+        }
+        else
+        {
+            __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
+        }
+
+        if (!isSuccess)
+        {
+            return ReportWhenFailedRemember.GetBool();
+        }
+        else
+        {
             return false;
         }
-        return true;
     }
 }

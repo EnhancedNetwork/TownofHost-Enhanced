@@ -126,6 +126,7 @@ internal class Eraser : RoleBase
                 return;
             }
             player.GetRoleClass()?.OnRemove(player.PlayerId);
+            player.RpcChangeRoleBasis(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.GetRoleClass()?.OnAdd(player.PlayerId);
             player.ResetKillCooldown();

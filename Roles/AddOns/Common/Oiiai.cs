@@ -93,8 +93,12 @@ public class Oiiai : IAddon
         }
         else if (!killer.GetCustomRole().IsNeutral())
         {
+            var readyrole = Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole());
             //Use eraser here LOL
-            killer.RpcSetCustomRole(Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole()));
+            killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+            killer.RpcChangeRoleBasis(readyrole);
+            killer.RpcSetCustomRole(readyrole);
+            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
         }
         else
@@ -106,6 +110,7 @@ public class Oiiai : IAddon
                 if (changeValue != 0)
                 {
                     killer.GetRoleClass().OnRemove(killer.PlayerId);
+                    killer.RpcChangeRoleBasis(NRoleChangeRoles[changeValue - 1]);
                     killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
 
@@ -116,7 +121,10 @@ public class Oiiai : IAddon
             }
             else
             {
+                killer.GetRoleClass().OnRemove(killer.PlayerId);
+                killer.RpcChangeRoleBasis(CustomRoles.Opportunist);
                 killer.RpcSetCustomRole(CustomRoles.Opportunist);
+                killer.GetRoleClass().OnAdd(killer.PlayerId);
                 Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals without kill button assign.", "Oiiai");
             }
         }
