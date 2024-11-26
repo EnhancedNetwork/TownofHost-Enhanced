@@ -37,6 +37,10 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
+
+    <Target Name="CheckTokenExists" BeforeTargets="Build">
+        <Exec Command="if not exist token.env echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env" />
+    </Target>
     
   <Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
         <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
