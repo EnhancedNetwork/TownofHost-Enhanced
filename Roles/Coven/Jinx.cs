@@ -116,6 +116,7 @@ internal class Jinx : CovenManager
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
+        AbilityLimit = reader.ReadSingle();
         byte jinxID = reader.ReadByte();
         byte jinxedID = reader.ReadByte();
         JinxedPlayers[jinxID].Add(jinxedID);
