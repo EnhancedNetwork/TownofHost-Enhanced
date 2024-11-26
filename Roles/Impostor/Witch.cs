@@ -242,4 +242,13 @@ internal class Witch : RoleBase
             hud.KillButton.OverrideText(GetString("KillButtonText"));
         }
     }
+
+    public override void Remove(byte playerId)
+    {
+        if (SpelledPlayer.ContainsKey(playerId))
+        {
+            SpelledPlayer[playerId].Clear();
+            SendRPC(true, playerId);
+        }
+    }
 }
