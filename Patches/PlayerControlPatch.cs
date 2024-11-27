@@ -1170,9 +1170,6 @@ class FixedUpdateInNormalGamePatch
                 }
             }
 
-            if (GameStates.InGame && Shocker.HasEnabled && PlayerControl.LocalPlayer.IsHost() && !GameStates.IsMeeting)
-                foreach (PlayerControl pc in Main.AllAlivePlayerControls)
-                    Shocker.OnUpdate(pc);
 
             if (!lowLoad)
             {
