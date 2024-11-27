@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -63,6 +64,8 @@ internal class Shocker : RoleBase
     {
         Shocker.playerId = playerId;
         AbilityLimit = ShockerAbilityPerRound.GetValue();
+        if (AmongUsClient.Instance.AmHost)
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateShocker);
     }
     public override void Remove(byte playerId)
     {
@@ -142,14 +145,14 @@ internal class Shocker : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker).ShadeColor(0.25f), $"({AbilityLimit})");
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute && _Player.IsAlive();
-    public static void OnUpdate(PlayerControl player)
+    private static void OnFixedUpdateShocker(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!player.IsAlive() || !playerId.HasValue)
             return;
 
         if (!ShockerShockInVents.GetBool() && player.inVent)
             return;
-        
+
         if (!ShockerCanShockHimself.GetBool() && playerId == player.PlayerId)
             return;
 
