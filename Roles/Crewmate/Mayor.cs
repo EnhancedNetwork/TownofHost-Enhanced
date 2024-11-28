@@ -107,6 +107,7 @@ internal partial class Mayor : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Mayor) return false;
         if (MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessMayor"));

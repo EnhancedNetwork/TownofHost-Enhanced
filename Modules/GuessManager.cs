@@ -195,7 +195,8 @@ public static class GuessManager
                 if (pc.GetRoleClass().GuessCheck(isUI, pc, target, role, ref guesserSuicide)) return true;
 
                 if (target.GetRoleClass().OnRoleGuess(isUI, target, pc, role, ref guesserSuicide)) return true;
-
+                // Used to be a exploit. Guess may be canceled even misguessed
+                // You need to manually check whether guessed correct and then perform role abilities
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
