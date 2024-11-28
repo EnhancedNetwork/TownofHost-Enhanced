@@ -73,6 +73,7 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.PunchingBag) return false;
         if (BlockGuess.Contains(pc.PlayerId))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessPunchingBagAgain"));

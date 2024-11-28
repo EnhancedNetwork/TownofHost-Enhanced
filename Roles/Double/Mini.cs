@@ -132,7 +132,7 @@ internal class Mini : RoleBase
 
             if (player.Is(CustomRoles.NiceMini))
                 player.RpcGuardAndKill();
-            
+
             /*Dont show guard animation for evil mini,
             this would simply stop them from murdering.
             Imagine reseting kill cool down every 20 seconds
@@ -170,6 +170,7 @@ internal class Mini : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role is not CustomRoles.NiceMini or CustomRoles.EvilMini) return false;
         if (Age < 18 && (target.Is(CustomRoles.NiceMini) || !CanGuessEvil.GetBool() && target.Is(CustomRoles.EvilMini)))
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessMini"));

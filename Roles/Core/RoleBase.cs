@@ -287,6 +287,7 @@ public abstract class RoleBase
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// When guesser trying guess target a role
+    /// Target need to check whether misguessed so it wont cancel mis guesses.
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
 
