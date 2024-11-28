@@ -169,12 +169,14 @@ internal class MoonDancer : CovenManager
                 {
                     BlastPlayer(killer, target);
                     if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
+                    killer.ResetKillCooldown();
                     killer.SetKillCooldown();
                     killer.RPCPlayCustomSound("BlastOff");
                     target.RPCPlayCustomSound("BlastOff");
                 }
                 else
                 {
+                    killer.ResetKillCooldown();
                     killer.SetKillCooldown();
                     killer.Notify(GetString("MoonDancerCantBlastOff"));
                 }
@@ -196,6 +198,8 @@ internal class MoonDancer : CovenManager
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
             killer.Notify(GetString("MoonDancerGiveHarmfulAddon"));
         }
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return false;
     }
 
