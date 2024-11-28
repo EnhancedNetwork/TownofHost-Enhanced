@@ -33,7 +33,14 @@ internal class Guardian : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (CannotBeKilled(target))
+        {
+            killer.SetKillCooldown(5f, target, forceAnime: true);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Guardian), GetString("GuardianCantKilled")));
+
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
             return false;
+        }
 
         return true;
     }
