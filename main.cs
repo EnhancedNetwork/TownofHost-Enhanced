@@ -191,6 +191,7 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
+    public static long LastMeetingEnded = Utils.GetTimeStamp();
     
 
     public static PlayerControl[] AllPlayerControls

@@ -233,6 +233,7 @@ internal class ControllerManagerUpdatePatch
                 }
                 else
                 {
+                    if (Utils.GetTimeStamp() - Main.LastMeetingEnded < 2) return;
                     PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
                 }
             }
