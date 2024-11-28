@@ -2441,13 +2441,27 @@ public static class Utils
     
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
-        var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
-        if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
-        else name = GetPlayerById(id)?.Data.PlayerName ?? name;
+        string name;
+        try
+        {
+            if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
+            else name = Main.AllClientRealNames[GameData.Instance.GetPlayerById(id).ClientId];
+        }
+        catch
+        {
+            Logger.Error("Failed to get name for {id} by real client names, try assign with AllPlayerNames", "Utils.SummaryTexts");
+            name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty) ?? "<color=#ff0000>ERROR</color>";
+        }
+
 
         var taskState = Main.PlayerStates?[id].TaskState;
 
-        Main.PlayerStates.TryGetValue(id, out var playerState);
+        // Impossible to output summarytexts for a player without playerState
+        if (!Main.PlayerStates.TryGetValue(id, out var playerState))
+        { 
+            Logger.Error("playerState for {id} not found", "Utils.SummaryTexts");
+            return $"[{id}]" + name + " : <b>ERROR</b>";
+        }
 
         string TaskCount;
 
