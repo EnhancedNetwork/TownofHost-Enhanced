@@ -3481,6 +3481,7 @@
   "EveryoneCanKnowMini": "Everyone can see the Mini",
   "CanBeEvil": "Mini can be an <color=#ff1919>Impostor</color>",
   "EvilMiniSpawnChances": "Probability of Mini being an <color=#ff1919>Impostor</color>",
+  "EvilMiniCanBeGuessed": "Evil Mini can be guessed before 18",
   "GuessMini": "Sorry, you can't hurt a kid Mini.",
   "GrowUpDuration": "Time required to grow (s)",
   "MajorCooldown": "Kill Cooldown when over 18",
