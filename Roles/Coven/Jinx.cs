@@ -101,6 +101,7 @@ internal class Jinx : CovenManager
         {
             JinxedPlayers[jinx.PlayerId].Add(target.PlayerId);
             jinx.ResetKillCooldown();
+            jinx.SetKillCooldown();
             AbilityLimit--;
             SendRPC(jinx, target);
         }

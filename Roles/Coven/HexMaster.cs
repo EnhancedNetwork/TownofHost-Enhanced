@@ -168,6 +168,7 @@ internal class HexMaster : CovenManager
             HexedPlayer[killer.PlayerId].Add(target.PlayerId);
             SendRPC(true, killer.PlayerId, target.PlayerId);
             //キルクールの適正化
+            killer.ResetKillCooldown();
             killer.SetKillCooldown();
         }
     }

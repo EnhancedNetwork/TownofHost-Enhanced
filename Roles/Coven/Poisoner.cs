@@ -151,7 +151,15 @@ internal class Poisoner : CovenManager
         }
         PoisonedPlayers.Clear();
     }
-    public bool IsRoleblocked(byte id) => RoleblockedPlayers[_Player.PlayerId].Contains(id);
+    public static bool IsRoleblocked(byte target)
+    {
+        if (RoleblockedPlayers.Count < 1) return false;
+        foreach (var player in RoleblockedPlayers.Keys)
+        {
+            if (RoleblockedPlayers[player].Contains(target)) return true;
+        }
+        return false;
+    }
     public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
         if (!IsRoleblocked(pc.PlayerId) && pc.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false; // I was told these roles should be roleblock immune

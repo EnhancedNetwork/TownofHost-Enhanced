@@ -103,12 +103,15 @@ internal class Medusa : CovenManager
             }
             killer.RpcMurderPlayer(target);
             killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             Main.UnreportableBodies.Add(target.PlayerId);
             return false;
         }
         else
         {
             StonedPlayers[killer.PlayerId].Add(target.PlayerId);
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             killer.Notify(string.Format(GetString("MedusaStonedPlayer"), target.GetRealName()));
             return false;
         }

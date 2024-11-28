@@ -140,6 +140,7 @@ internal class PotionMaster : CovenManager
                     NotifyRoles(SpecifySeer: killer);
                     SendRPC(PotionMode, killer, target);
 
+                    killer.ResetKillCooldown();
                     killer.SetKillCooldown();
                 }
                 else if (RevealLimit[killer.PlayerId] <= 0)
@@ -156,6 +157,7 @@ internal class PotionMaster : CovenManager
 
                     SendRPC(PotionMode, killer, target);
 
+                    killer.ResetKillCooldown();
                     killer.SetKillCooldown();
                 }
                 else if (BarrierLimit[killer.PlayerId] <= 0)

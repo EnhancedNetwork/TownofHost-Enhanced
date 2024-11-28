@@ -98,6 +98,7 @@ internal class VoodooMaster : CovenManager
             SendRPC(killer, target);
             killer.RpcGuardAndKill(target);
             killer.Notify(string.Format(GetString("VoodooMasterDolledSomeone"), target.GetRealName()));
+            killer.ResetKillCooldown();
             killer.SetKillCooldown();
             if (HasNecronomicon(killer)) ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         }
