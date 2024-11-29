@@ -100,7 +100,13 @@ public static class AntiBlackout
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
-        if (dummyImp == null) return;
+
+        if (dummyImp == null)
+        {
+            Logger.Warn("Cant find a alive dummy Imp, AntiBlackout may break?", "AntiBlackout.RevivePlayersAndSetDummyImp");
+            Logger.SendInGame("Cant find a alive dummy Imp, AntiBlackout may break?");
+            return;
+        }
 
         foreach (var seer in Main.AllPlayerControls)
         {
@@ -127,7 +133,25 @@ public static class AntiBlackout
         }
         isDeadCache.Clear();
         IsCached = false;
-        if (doSend) SendGameData();
+        if (doSend)
+        {
+            SendGameData();
+            _ = new LateTask(() => RestoreIsDeadByExile(), 0.3f, "AntiBlackOut_RestoreIsDeadByExile"); 
+        }
+    }
+
+    private static void RestoreIsDeadByExile()
+    {
+        var sender = CustomRpcSender.Create("AntiBlackout RestoreIsDeadByExile", SendOption.Reliable);
+        foreach (var player in Main.AllPlayerControls)
+        {
+            if (player.Data.IsDead && !player.Data.Disconnected)
+            {
+                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
+                sender.EndRpc();
+            }
+        }
+        sender.SendMessage();
     }
 
     public static void SendGameData([CallerMemberName] string callerMethodName = "")

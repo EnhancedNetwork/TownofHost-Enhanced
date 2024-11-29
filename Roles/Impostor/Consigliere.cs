@@ -70,7 +70,7 @@ internal class Consigliere : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (DivinationCount[killer.PlayerId] > 0)
         {
@@ -97,9 +97,7 @@ internal class Consigliere : RoleBase
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             SendRPC(killer.PlayerId, target.PlayerId);
-            //キルクールの適正化
-            killer.SetKillCooldown();
-            //killer.RpcGuardAndKill(target);
+            killer.SetKillCooldown(target: target, forceAnime: true);
         }
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)

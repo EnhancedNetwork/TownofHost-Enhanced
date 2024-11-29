@@ -19,7 +19,7 @@ internal class Traitor : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanUsesSabotage;
-    private static OptionItem KnowMadmate;
+    public static OptionItem KnowMadmate;
 
     public override void SetupCustomOption()
     {

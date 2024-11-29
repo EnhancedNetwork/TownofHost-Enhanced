@@ -226,6 +226,7 @@ internal class President : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.President) return false;
         if (CheckPresidentReveal[target.PlayerId] && !PresidentCanBeGuessedAfterRevealing.GetBool())
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessPresident"));
