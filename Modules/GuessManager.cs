@@ -210,7 +210,8 @@ public static class GuessManager
                 if (pc.GetRoleClass().GuessCheck(isUI, pc, target, role, ref guesserSuicide)) return true;
 
                 if (target.GetRoleClass().OnRoleGuess(isUI, target, pc, role, ref guesserSuicide)) return true;
-
+                // Used to be a exploit. Guess may be canceled even misguessed
+                // You need to manually check whether guessed correct and then perform role abilities
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
@@ -1027,14 +1028,13 @@ public static class GuessManager
                     or CustomRoles.Coven
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
+                if (role is CustomRoles.NiceMini && Mini.Age < 18) continue;
+                if (role is CustomRoles.EvilMini && Mini.Age < 18 && !Mini.CanGuessEvil.GetBool()) continue;
+
                 CreateRole(role);
             }
             void CreateRole(CustomRoles role)
             {
-                var tempMini = Mini.IsEvilMini;
-                if (role is CustomRoles.EvilMini) Mini.IsEvilMini = true;
-                else if (role is CustomRoles.NiceMini) Mini.IsEvilMini = false;
-
                 if (40 <= info[(int)role.GetCustomRoleTeam()]) info[(int)role.GetCustomRoleTeam()] = 0;
                 Transform buttonParent = new GameObject().transform;
                 buttonParent.SetParent(container);
@@ -1091,8 +1091,6 @@ public static class GuessManager
                 }));
                 info[(int)role.GetCustomRoleTeam()]++;
                 ind++;
-
-                Mini.IsEvilMini = tempMini;
             }
             container.transform.localScale *= 0.75f;
             GuesserSelectRole(Custom_Team.Crewmate);

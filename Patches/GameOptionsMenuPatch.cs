@@ -494,8 +494,10 @@ public static class NumberOptionPatch
                 __instance.Increment = 0.05f;
                 __instance.Value = (float)Math.Round(__instance.Value, 2);
                 break;
-            case StringNames.GameNumImpostors when DebugModeManager.IsDebugMode:
-                __instance.ValidRange.min = 0;
+            case StringNames.GameNumImpostors:
+                __instance.ValidRange = new(0, Crowded.MaxImpostors);
+                __instance.Value = (float)Math.Round(__instance.Value, 2);
+                // if (DebugModeManager.AmDebugger) __instance.ValidRange.min = 0;
                 break;
         }
 

@@ -148,7 +148,25 @@ public static class AntiBlackout
         }
         isDeadCache.Clear();
         IsCached = false;
-        if (doSend) SendGameData();
+        if (doSend)
+        {
+            SendGameData();
+            _ = new LateTask(() => RestoreIsDeadByExile(), 0.3f, "AntiBlackOut_RestoreIsDeadByExile"); 
+        }
+    }
+
+    private static void RestoreIsDeadByExile()
+    {
+        var sender = CustomRpcSender.Create("AntiBlackout RestoreIsDeadByExile", SendOption.Reliable);
+        foreach (var player in Main.AllPlayerControls)
+        {
+            if (player.Data.IsDead && !player.Data.Disconnected)
+            {
+                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
+                sender.EndRpc();
+            }
+        }
+        sender.SendMessage();
     }
 
     public static void SendGameData([CallerMemberName] string callerMethodName = "")

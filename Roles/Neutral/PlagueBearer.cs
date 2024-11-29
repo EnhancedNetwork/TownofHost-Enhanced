@@ -261,6 +261,7 @@ internal class Pestilence : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Pestilence) return false;
         pc.ShowInfoMessage(isUI, GetString("GuessPestilence"));
 
         guesserSuicide = true;

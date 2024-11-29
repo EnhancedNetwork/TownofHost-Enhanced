@@ -114,6 +114,12 @@ public abstract class RoleBase
     /// When the player presses the sabotage button
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
+    /// <summary>
+    /// When player is enginner role base but should not move in vents
+    /// </summary>
+    public virtual bool BlockMoveInVent(PlayerControl pc) => false;
+
+    public HashSet<int> LastBlockedMoveInVentVents = [];
 
     public virtual void SetupCustomOption()
     { }
@@ -287,6 +293,7 @@ public abstract class RoleBase
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// When guesser trying guess target a role
+    /// Target need to check whether misguessed so it wont cancel mis guesses.
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
 

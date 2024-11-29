@@ -34,6 +34,8 @@ public class PlayerState(byte playerId)
 
     public void SetMainRole(CustomRoles role)
     {
+        CustomRoles preMainRole = MainRole;
+
         MainRole = role;
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
@@ -41,23 +43,6 @@ public class PlayerState(byte playerId)
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
 
-        if (role == CustomRoles.Opportunist)
-        {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (!pc.HasImpKillButton(considerVanillaShift: true))
-                {
-                    var taskstate = pc.GetPlayerTaskState();
-                    if (taskstate != null)
-                    {
-                        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-                        taskstate.CompletedTasksCount = 0;
-                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
-                        taskstate.hasTasks = true;
-                    }
-                }
-            }
-        }
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
@@ -116,6 +101,16 @@ public class PlayerState(byte playerId)
             countTypes = CountTypes.Coven;
         }
 
+        if (GameStates.IsInGame && preMainRole != CustomRoles.NotAssigned)
+        {
+            // Role got assigned mid game.
+            // Since role basis may change, we need to re assign tasks?
+
+            //Some role may be bugged for this, need further testing.
+            Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
+            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+            InitTask(pc);
+        }
     }
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
@@ -314,6 +309,7 @@ public class PlayerState(byte playerId)
         Starved,
         Armageddon,
         Sacrificed,
+        Electrocuted,
         Scavenged,
         BlastedOff,
 
@@ -452,8 +448,7 @@ public static class GameStates
     {
         get
         {
-            if (!IsOnlineGame) return false;
-
+            if (IsLocalGame && !IsNotJoined) return true;
             const string Domain = "among.us";
 
             // From Reactor.gg
