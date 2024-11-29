@@ -24,9 +24,6 @@ using TOHE.Roles.Core;
 using static TOHE.Translator;
 using TOHE.Patches;
 using TOHE.Roles.Coven;
-using Epic.OnlineServices;
-using UnityEngine.UI;
-
 
 namespace TOHE;
 
