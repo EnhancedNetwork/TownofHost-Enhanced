@@ -2300,6 +2300,7 @@ public static class Utils
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Sacrificed => CustomRoles.Altruist.IsEnable(),
+            PlayerState.DeathReason.Electrocuted => CustomRoles.Shocker.IsEnable(),
             PlayerState.DeathReason.Scavenged => CustomRoles.Scavenger.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
