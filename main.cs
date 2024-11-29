@@ -52,8 +52,8 @@ public class Main : BasePlugin
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.2.0 Alpha 2
-    public static readonly bool canaryRelease = false; // Latest: V2.1.0 Beta 3
+    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 3
+    public static readonly bool canaryRelease = true; // Latest: V2.1.0 Beta 3
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
     public static bool hasAccess = true;

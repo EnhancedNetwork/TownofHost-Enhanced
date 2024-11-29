@@ -86,6 +86,8 @@ internal class Shocker : RoleBase
             customRooms.Remove(custom);
             Object.Destroy(custom.gameObject);
         }
+
+        CustomRoleManager.OnFixedUpdateOthers.Remove(OnFixedUpdateShocker);
     }
     public override void AfterMeetingTasks()
     {
@@ -162,7 +164,7 @@ internal class Shocker : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker).ShadeColor(0.25f), $"({AbilityLimit})");
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute && _Player.IsAlive();
-    private static void OnFixedUpdateShocker(PlayerControl player, bool lowLoad, long nowTime)
+    private void OnFixedUpdateShocker(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!player.IsAlive() || !playerId.HasValue)
             return;
@@ -182,7 +184,7 @@ internal class Shocker : RoleBase
                     Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");
                     player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
                     player.RpcMurderPlayer(player);
-                    player.SetRealKiller(Utils.GetPlayerById(playerId.Value));
+                    player.SetRealKiller(_Player);
                     break;
                 }
             }

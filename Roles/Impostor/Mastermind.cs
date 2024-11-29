@@ -15,6 +15,7 @@ internal class Mastermind : RoleBase
     
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
+    public override bool IsExperimental => true;
     //==================================================================\\
 
     private static OptionItem KillCooldown;

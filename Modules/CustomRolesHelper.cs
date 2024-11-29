@@ -574,6 +574,8 @@ public static class CustomRolesHelper
             case CustomRoles.Overclocked:
                 if (!pc.CanUseKillButton())
                     return false;
+                if (pc.Is(CustomRoles.Reverie))
+                    return false;
                 break;
 
             case CustomRoles.Lazy:
