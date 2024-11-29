@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -25,6 +26,8 @@ namespace TOHE;
 
 [BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
+[BepInIncompatibility("com.ten.thebetterroles")]
+[BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
@@ -610,6 +613,13 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
+        ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
+
+        NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
+        NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
 
         Harmony.PatchAll();
 
