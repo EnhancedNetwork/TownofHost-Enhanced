@@ -1,5 +1,4 @@
 ﻿using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;

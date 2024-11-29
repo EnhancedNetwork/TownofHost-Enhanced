@@ -293,7 +293,7 @@ internal class Sacrifist : CovenManager
     public static void SetVision(PlayerControl player, IGameOptions opt)
     {
         if (VisionChange.Any(a => a.Value.Contains(player.PlayerId) &&
-           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)) && DebuffID == 1)
+           Main.AllAlivePlayerControls.Any(b => b.PlayerId == a.Key)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Vision.GetFloat());
