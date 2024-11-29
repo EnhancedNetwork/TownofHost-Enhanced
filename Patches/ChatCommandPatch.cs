@@ -4362,9 +4362,9 @@ internal class UpdateCharCountPatch
     {
         int length = __instance.textArea.text.Length;
         __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
-        if (length < (AmongUsClient.Instance.AmHost ? 888 : 250))
+        if (length < (AmongUsClient.Instance.AmHost ? 888 : 444))
             __instance.charCountText.color = Color.black;
-        else if (length < (AmongUsClient.Instance.AmHost ? 999 : 300))
+        else if (length < (AmongUsClient.Instance.AmHost ? 1111 : 777))
             __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);
         else
             __instance.charCountText.color = Color.red;
