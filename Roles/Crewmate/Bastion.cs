@@ -17,6 +17,7 @@ internal class Bastion : RoleBase
     
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem BombsClearAfterMeeting;

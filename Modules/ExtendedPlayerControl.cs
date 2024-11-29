@@ -277,7 +277,7 @@ static class ExtendedPlayerControl
     public static void RpcExile(this PlayerControl player)
     {
         player.Exiled();
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.None, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcExileDesync(this PlayerControl player, PlayerControl seer)

@@ -145,7 +145,6 @@ internal class CopyCat : RoleBase
                 killer.RpcSetCustomRole(role);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
-                Main.PlayerStates[killer.PlayerId].InitTask(killer);
             }
             if (CopyTeamChangingAddon.GetBool())
             {

@@ -188,6 +188,7 @@ internal class Merchant : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Merchant) return false;
         if (IsBribedKiller(pc, target))
         {
             pc.ShowInfoMessage(isUI, GetString("BribedByMerchant2"));

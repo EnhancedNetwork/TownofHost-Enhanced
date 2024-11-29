@@ -124,6 +124,8 @@ internal class Enigma : RoleBase
             else if (tasksCompleted >= EnigmaClueStage1Tasks.GetInt())
                 stage = 1;
 
+            Logger.Info($"Enigma clue {playerId} is {stage} with taskcount {tasksCompleted}", "Enigma");
+
             var clues = EnigmaClues.Where(a => a.ClueStage <= stage &&
                 !ShownClues[playerId].Any(b => b.EnigmaClueType == a.EnigmaClueType && b.ClueStage == a.ClueStage))
                 .ToList();

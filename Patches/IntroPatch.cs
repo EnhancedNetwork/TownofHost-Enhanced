@@ -362,7 +362,25 @@ class BeginCrewmatePatch
 
             teamToDisplay = lawyerTeam;
         }
-       
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Traitor tr)
+        {
+            var traitorTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            traitorTeam.Add(PlayerControl.LocalPlayer);
+
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.GetCustomRole().IsImpostor())
+                {
+                    traitorTeam.Add(pc);
+                }
+                else if (pc.Is(CustomRoles.Madmate) && Traitor.KnowMadmate.GetBool())
+                {
+                    traitorTeam.Add(pc);
+                }
+            }
+            teamToDisplay = traitorTeam;
+        }
+        
         return true;
     }
     public static void Postfix(IntroCutscene __instance)

@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
+using TOHE.Patches;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -25,6 +26,8 @@ namespace TOHE;
 
 [BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
+[BepInIncompatibility("com.ten.thebetterroles")]
+[BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
@@ -44,13 +47,13 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1124.220.00031"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 3 Hotfix 1";
+    public const string PluginVersion = "2024.1129.220.00040"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 4";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.2.0 Alpha 2
-    public static readonly bool canaryRelease = false; // Latest: V2.1.0 Beta 3
+    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4
+    public static readonly bool canaryRelease = true; // Latest: V2.1.0 Beta 3
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
     public static bool hasAccess = true;
@@ -191,6 +194,7 @@ public class Main : BasePlugin
     public static int MadmateNum = 0;
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
+    public static long LastMeetingEnded = Utils.GetTimeStamp();
     
 
     public static PlayerControl[] AllPlayerControls
@@ -612,6 +616,13 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
+        ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
+        ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
+
+        NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
+        NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
 
         Harmony.PatchAll();
 
@@ -861,6 +872,7 @@ public enum CustomRoles
     Seeker,
     SerialKiller,
     Shaman,
+    Shocker,
     Shroud,
     Sidekick,
     Solsticer,
@@ -1058,6 +1070,7 @@ public enum CustomWinner
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
+    Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
 }

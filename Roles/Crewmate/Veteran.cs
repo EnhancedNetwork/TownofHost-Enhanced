@@ -17,6 +17,7 @@ internal class Veteran : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Veteran);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;

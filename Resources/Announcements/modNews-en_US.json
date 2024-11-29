@@ -1,13 +1,15 @@
 {
   "News": [
+/*
     {
       "Number": "100002",
       "Title": "Placeholder title",
       "Subtitle": "Placeholder Subtitle",
       "Short": "Placeholder short title",
-      "Body": ["Placeholder body"],
+      "Body": [ "Placeholder body" ],
       "Date": "2024-02-01T02:18:00Z"
     },
+*/
     {
       "Number": "100005",
       "Title": "Town of Host: Enhanced v1.6.0",
@@ -221,7 +223,36 @@
         "\n\n★ Welcome to Town of Host: Enhanced v2.0.0 ★"
       ],
       "Date": "2024-07-21T12:50:00Z"
+    },
+    {
+      "Number": "100007",
+      "Title": "Town of Host: Enhanced v2.1.0",
+      "Subtitle": "Place holder",
+      "Short": "TOH: Enhanced v2.1.0",
+      "Body": [
+        "Placeholder body"
+      ],
+      "Date": "2024-11-03T12:00:00Z"
+    },
+    {
+      "Number": "100008",
+      "Title": "Town of Host: Enhanced v2.1.1",
+      "Subtitle": "Place holder",
+      "Short": "TOH: Enhanced v2.1.1",
+      "Body": [
+        "Placeholder body"
+      ],
+      "Date": "2024-11-03T12:10:00Z"
+    },
+    {
+      "Number": "100009",
+      "Title": "Town of Host: Enhanced v2.2.0",
+      "Subtitle": "Place holder",
+      "Short": "TOH: Enhanced v2.2.0",
+      "Body": [
+        "Placeholder body"
+      ],
+      "Date": "2099-11-11T12:10:00Z"
     }
   ]
 }
-

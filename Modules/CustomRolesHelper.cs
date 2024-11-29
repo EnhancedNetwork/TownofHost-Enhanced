@@ -584,6 +584,8 @@ public static class CustomRolesHelper
             case CustomRoles.Overclocked:
                 if (!pc.CanUseKillButton())
                     return false;
+                if (pc.Is(CustomRoles.Reverie))
+                    return false;
                 break;
 
             case CustomRoles.Lazy:
@@ -1275,6 +1277,7 @@ public static class CustomRolesHelper
            CustomRoles.Glitch => CountTypes.Glitch,
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
+           CustomRoles.Shocker => CountTypes.Shocker,
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
@@ -1335,6 +1338,7 @@ public static class CustomRolesHelper
             CustomRoles.RuthlessRomantic => CustomWinner.RuthlessRomantic,
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
+            CustomRoles.Shocker => CustomWinner.Shocker,
             _ => throw new NotImplementedException()
 
         };
@@ -1368,6 +1372,7 @@ public static class CustomRolesHelper
             CountTypes.Spiritcaller => CustomRoles.Spiritcaller,
             CountTypes.Arsonist => CustomRoles.Arsonist,
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
+            CountTypes.Shocker => CustomRoles.Shocker,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1451,5 +1456,6 @@ public enum CountTypes
     Werewolf,
     Agitater,
     RuthlessRomantic,
+    Shocker,
     Coven
 }
