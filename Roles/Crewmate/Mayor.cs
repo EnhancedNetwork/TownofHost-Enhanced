@@ -14,6 +14,7 @@ internal partial class Mayor : RoleBase
     
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
@@ -107,6 +108,7 @@ internal partial class Mayor : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Mayor) return false;
         if (MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessMayor"));

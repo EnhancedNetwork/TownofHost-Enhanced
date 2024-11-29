@@ -12,6 +12,7 @@ internal class Jackal : RoleBase
     //===========================SETUP================================\\
     private const int Id = 16700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
+    public static readonly HashSet<byte> Playerids = [];
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -27,10 +28,13 @@ internal class Jackal : RoleBase
     private static OptionItem ResetKillCooldownOn;
     private static OptionItem JackalCanKillSidekick;
     private static OptionItem CanRecruitSidekick;
-    private static OptionItem SidekickRecruitLimitOpt;
+    public static OptionItem SidekickRecruitLimitOpt;
     public static OptionItem SidekickCountMode;
     private static OptionItem SidekickAssignMode;
     public static OptionItem KillCooldownSK;
+    public static OptionItem SidekickCanKillWhenJackalAlive;
+    public static OptionItem SidekickTurnIntoJackal;
+    public static OptionItem RestoreLimitOnNewJackal;
     public static OptionItem CanVentSK;
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
@@ -57,20 +61,28 @@ internal class Jackal : RoleBase
         CanUsesSabotage = BooleanOptionItem.Create(Id + 12, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         CanWinBySabotageWhenNoImpAlive = BooleanOptionItem.Create(Id + 14, "JackalCanWinBySabotageWhenNoImpAlive", true, TabGroup.NeutralRoles, false).SetParent(CanUsesSabotage);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+
         OptionResetKillCooldownWhenSbGetKilled = BooleanOptionItem.Create(Id + 16, "JackalResetKillCooldownWhenPlayerGetKilled", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         ResetKillCooldownOn = FloatOptionItem.Create(Id + 28, "JackalResetKillCooldownOn", new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(OptionResetKillCooldownWhenSbGetKilled)
             .SetValueFormat(OptionFormat.Seconds);
-        JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+
         CanRecruitSidekick = BooleanOptionItem.Create(Id + 30, "JackalCanRecruitSidekick", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+        JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
         SidekickAssignMode = StringOptionItem.Create(Id + 34, "Jackal_SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetHidden(false);
-        SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 2, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
+        SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 1, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetValueFormat(OptionFormat.Times);
+
+        SidekickCanKillWhenJackalAlive = BooleanOptionItem.Create(Id + 35, "Jackal_SidekickCanKillWhenJackalAlive", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        SidekickTurnIntoJackal = BooleanOptionItem.Create(Id + 36, "Jackal_SidekickTurnIntoJackal", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        RestoreLimitOnNewJackal = BooleanOptionItem.Create(Id + 37, "Jackal_RestoreLimitOnNewJackal", true, TabGroup.NeutralRoles, false).SetParent(SidekickTurnIntoJackal);
+
         KillCooldownSK = FloatOptionItem.Create(Id + 20, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
             .SetValueFormat(OptionFormat.Seconds);
         CanVentSK = BooleanOptionItem.Create(Id + 21, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         CanUseSabotageSK = BooleanOptionItem.Create(Id + 22, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+
         SidekickCanKillJackal = BooleanOptionItem.Create(Id + 23, "Jackal_SidekickCanKillJackal", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCanKillSidekick = BooleanOptionItem.Create(Id + 24, "Jackal_SidekickCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCountMode = StringOptionItem.Create(Id + 25, "Jackal_SidekickCountMode", EnumHelper.GetAllNames<SidekickCountModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
@@ -79,16 +91,33 @@ internal class Jackal : RoleBase
     public override void Init()
     {
         ResetKillCooldownWhenSbGetKilled = OptionResetKillCooldownWhenSbGetKilled;
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
+        if (Playerids.Count == 0 || RestoreLimitOnNewJackal.GetBool())
+        {
+            AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
+        }
+
+        Playerids.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
+            SendSkillRPC();
             CustomRoleManager.CheckDeadBodyOthers.Add(OthersPlayersDead);
+            if (_Player.Is(CustomRoles.Recruit))
+            {
+                Main.PlayerStates[playerId].RemoveSubRole(CustomRoles.Recruit);
+            }
         }
     }
+
+    public override void Remove(byte playerId)
+    {
+        CustomRoleManager.CheckDeadBodyOthers.Remove(OthersPlayersDead);
+    }
+
     public override void ApplyGameOptions(IGameOptions opt, byte babuyaga) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
@@ -104,10 +133,10 @@ internal class Jackal : RoleBase
 
         return false;
     }
-    private bool CanRecruit(byte id) => AbilityLimit > 0;
+    private bool CanRecruit() => AbilityLimit > 0;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        if (CanRecruit(playerId))
+        if (CanRecruit())
             hud.KillButton?.OverrideText($"{GetString("GangsterButtonText")}");
         else
             hud.KillButton?.OverrideText($"{GetString("KillButtonText")}");
@@ -127,6 +156,119 @@ internal class Jackal : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Jackal)) return false;
+        if ((target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return JackalCanKillSidekick.GetBool();
+        if (!CanRecruitSidekick.GetBool() || !CanRecruit())
+        {
+            Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
+            return true;
+        }
+
+        if (target.Is(CustomRoles.Loyal)
+            || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
+        {
+            // Loyal or Only Recruit & can not get addon
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
+            return true;
+        }
+
+        if (target.IsAnySubRole(x => (x.IsConverted() || x == CustomRoles.Admired) && x != CustomRoles.Recruit))
+        {
+            // Remove other team converted roles first
+            foreach (var x in target.GetCustomSubRoles())
+            {
+                if (x.IsConverted() && x != CustomRoles.Recruit)
+                {
+                    Main.PlayerStates[target.PlayerId].RemoveSubRole(x);
+                    Main.PlayerStates[target.PlayerId].SubRoles.Remove(CustomRoles.Rascal);
+                    Main.PlayerStates[target.PlayerId].SubRoles.Remove(CustomRoles.Admired);
+                }
+            }
+        }
+
+        switch (SidekickAssignMode.GetInt())
+        {
+            case 1: // Only SideKick
+                AbilityLimit--;
+
+                Logger.Info($"Jackal {killer.GetNameWithRole()} assigned SideKick to {target.GetNameWithRole()}", "Jackal");
+
+                target.GetRoleClass()?.OnRemove(target.PlayerId);
+                target.RpcChangeRoleBasis(CustomRoles.Sidekick);
+                target.RpcSetCustomRole(CustomRoles.Sidekick);
+                target.GetRoleClass()?.OnAdd(target.PlayerId);
+
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+
+                Utils.NotifyRoles(killer, target, true);
+                Utils.NotifyRoles(target, killer, true);
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
+                break;
+            case 2: // Only Recruit
+                if (target.GetCustomRole().IsNeutral() && target.HasImpKillButton() || target.Is(CustomRoles.Lawyer))
+                {
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
+                    return true;
+                }
+
+                AbilityLimit--;
+                Logger.Info($"Jackal {killer.GetNameWithRole()} assigned Recruit to {target.GetNameWithRole()}", "Jackal");
+                target.RpcSetCustomRole(CustomRoles.Recruit);
+
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
+                Main.PlayerStates[target.PlayerId].taskState.hasTasks = false;
+                break;
+            case 0: // SideKick when failed Recruit
+                if (target.GetCustomRole().IsNeutral() && target.HasImpKillButton() || target.Is(CustomRoles.Lawyer))
+                {
+                    target.GetRoleClass()?.OnRemove(target.PlayerId);
+                    target.RpcChangeRoleBasis(CustomRoles.Sidekick);
+                    target.RpcSetCustomRole(CustomRoles.Sidekick);
+                    target.GetRoleClass()?.OnAdd(target.PlayerId);
+                }
+                else
+                {
+                    target.RpcSetCustomRole(CustomRoles.Recruit);
+                }
+                AbilityLimit--;
+
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+                Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
+
+                target.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
+                break;
+        }
+
+        SendSkillRPC();
+        if (AbilityLimit < 1)
+            HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
+
+        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
+
+        return false;
+        /*
         if (target.Is(CustomRoles.Jackal)) return false;
         if (!CanRecruitSidekick.GetBool() || AbilityLimit < 1) return true;
         
@@ -204,24 +346,90 @@ internal class Jackal : RoleBase
         
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
         return true;
+        */
     }
 
+    // very very Long Dog shit lmao
     public static bool CanBeSidekick(PlayerControl pc)
     {
-        return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit) 
-            && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate) 
-            && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Paranoia) 
-            && !pc.Is(CustomRoles.Contagious) && pc.GetCustomRole().IsAbleToBeSidekicked() 
+        return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit)
+            && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate)
+            && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Paranoia)
+            && !pc.Is(CustomRoles.Contagious) && pc.GetCustomRole().IsAbleToBeSidekicked()
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 
-    private string GetRecruitLimit(byte playerId)
-        => Utils.ColorString(CanRecruit(playerId)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
+    {
+        if (!target.Is(CustomRoles.Jackal)) return;
+
+        if (SidekickTurnIntoJackal.GetBool())
+        {
+            Logger.Info("Starting Jackal Death Assign.", "Jackal");
+            var readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick) && x.PlayerId != target.PlayerId).ToList();
+
+            if (readySideKicks.Count < 1)
+            {
+                readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Recruit) && x.PlayerId != target.PlayerId).ToList();
+            }
+
+            if (readySideKicks.Count < 1)
+            {
+                Logger.Info("Jackal dead, but no alive sidekick can be assigned!", "Jackal");
+                return;
+            }
+
+            var newJackal = readySideKicks.RandomElement();
+            if (newJackal.IsAlive())
+            {
+                Logger.Info($"Assigned new Jackal {newJackal.GetNameWithRole()}", "Jackal");
+                newJackal.GetRoleClass()?.OnRemove(newJackal.PlayerId);
+                newJackal.RpcChangeRoleBasis(CustomRoles.Jackal);
+                newJackal.RpcSetCustomRole(CustomRoles.Jackal);
+                newJackal.GetRoleClass()?.OnAdd(target.PlayerId);
+
+                if (inMeeting)
+                {
+                    Utils.SendMessage(string.Format(GetString("Jackal_OnBecomeNewJackalMeeting"), target.GetRealName(true)), newJackal.PlayerId);
+                    foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
+                    {
+                        if (player.PlayerId == newJackal.PlayerId) continue;
+                        Utils.SendMessage(string.Format(GetString("Jackal_OnNewJackalSelectedMeeting"), target.GetRealName(true), newJackal.GetRealName(true)), player.PlayerId);
+                    }
+                }
+
+                newJackal.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BecomeNewJackal")));
+                newJackal.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
+
+                foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
+                {
+                    player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
+                }
+                Utils.NotifyRoles();
+            }
+            else
+            {
+                Logger.Info($"Selected alive Sidekick [{newJackal.PlayerId}]{newJackal.GetNameWithRole()} is dead? wtf", "Jackal");
+            }
+        }
+        else
+        {
+            Logger.Info("Opps, Jackal boss is dead!", "Jackal");
+            foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
+            {
+                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BossIsDead")));
+            }
+            Utils.NotifyRoles();
+        }
+    }
+    private string GetRecruitLimit()
+        => Utils.ColorString(CanRecruit()
             ? Utils.GetRoleColor(CustomRoles.Jackal).ShadeColor(0.25f)
             : Color.gray, $"({AbilityLimit})");
-    
+
     public override string GetProgressText(byte playerId, bool comms)
-        => CanRecruitSidekick.GetBool() ? GetRecruitLimit(playerId) : "";
+        => CanRecruitSidekick.GetBool() ? GetRecruitLimit() : "";
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
@@ -229,10 +437,6 @@ internal class Jackal : RoleBase
         {
             // Jackal can kill Sidekick/Recruit
             if (killer.Is(CustomRoles.Jackal) && (target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)))
-                return true;
-
-            // Sidekick/Recruit can kill Jackal
-            else if ((killer.Is(CustomRoles.Sidekick) || killer.Is(CustomRoles.Recruit)) && target.Is(CustomRoles.Jackal))
                 return true;
         }
 
@@ -254,5 +458,61 @@ internal class Jackal : RoleBase
                 return true;
         }
         return false;
+    }
+}
+
+internal class Sidekick : RoleBase
+{
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    public override bool IsDesyncRole => true;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+
+    public override void Init()
+    {
+        playerIdList.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
+        Main.PlayerStates[playerId].taskState.hasTasks = false;
+
+        if (Jackal.RestoreLimitOnNewJackal.GetBool())
+        {
+            AbilityLimit = Jackal.SidekickRecruitLimitOpt.GetInt();
+        }
+        else
+        {
+            AbilityLimit = 0;
+        }
+
+        if (AmongUsClient.Instance.AmHost)
+        {
+            SendSkillRPC();
+        }
+    }
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Jackal.KillCooldownSK.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt, byte ico) => opt.SetVision(Jackal.HasImpostorVision.GetBool());
+    public override bool CanUseKillButton(PlayerControl player) => Jackal.SidekickCanKillWhenJackalAlive.GetBool() || !CustomRoles.Jackal.RoleExist();
+    public override bool CanUseImpostorVentButton(PlayerControl player) => Jackal.CanVentSK.GetBool();
+    public override bool CanUseSabotage(PlayerControl player) => Jackal.CanUseSabotageSK.GetBool();
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        return "";
+    }
+
+    //public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => SidekickKnowRole(target);
+    //public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => SidekickKnowRole(target) ? Main.roleColors[CustomRoles.Jackal] : string.Empty;
+
+    //private static bool SidekickKnowRole(PlayerControl target)
+    //{
+    //    return target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
+    //}
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("KillButtonText"));
+        hud.SabotageButton.OverrideText(GetString("SabotageButtonText"));
     }
 }
