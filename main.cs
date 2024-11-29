@@ -875,6 +875,7 @@ public enum CustomRoles
     Seeker,
     SerialKiller,
     Shaman,
+    Shocker,
     Shroud,
     Sidekick,
     Solsticer,
@@ -1053,6 +1054,7 @@ public enum CustomWinner
     NiceMini = CustomRoles.Mini,
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
+    Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
 }
 public enum AdditionalWinners

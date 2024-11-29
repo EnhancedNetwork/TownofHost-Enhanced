@@ -923,7 +923,7 @@ class ReportDeadBodyPatch
             }
 
             PhantomRolePatch.OnReportDeadBody(pc, force);
-
+                
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
@@ -1178,6 +1178,7 @@ class FixedUpdateInNormalGamePatch
                 }
             }
 
+
             if (!lowLoad)
             {
                 if (!Main.DoBlockNameChange)
@@ -1191,6 +1192,7 @@ class FixedUpdateInNormalGamePatch
 
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
+
                     }
             }
         }
