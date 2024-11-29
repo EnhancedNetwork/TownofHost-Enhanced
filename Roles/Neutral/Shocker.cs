@@ -16,6 +16,7 @@ internal class Shocker : RoleBase
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem ShockerAbilityCooldown;
@@ -29,6 +30,7 @@ internal class Shocker : RoleBase
 
     private static List<Collider2D> markedRooms = new();
     private static List<Collider2D> shockedRooms = new();
+    private static List<Collider2D> customRooms = new();
     private static bool isShocking = false;
 
     public override void SetupCustomOption()
@@ -47,7 +49,7 @@ internal class Shocker : RoleBase
         ShockerShockInVents = BooleanOptionItem.Create(Id + 14, "ShockerShockInVents", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerOutsideRadius = FloatOptionItem.Create(Id + 15, "ShockerOutsideRadius", new(0f, 5f, 0.5f), 3, TabGroup.NeutralRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]).SetValueFormat(OptionFormat.Multiplier);
         ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         ShockerImpostorVision = BooleanOptionItem.Create(Id + 17, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
@@ -57,6 +59,12 @@ internal class Shocker : RoleBase
     {
         playerId = null;
         markedRooms.Clear();
+
+        foreach (var custom in customRooms)
+        {
+            customRooms.Remove(custom);
+            Object.Destroy(custom.gameObject);
+        }
         shockedRooms.Clear();
     }
 
@@ -72,6 +80,12 @@ internal class Shocker : RoleBase
         Shocker.playerId = null;
         markedRooms.Clear();
         shockedRooms.Clear();
+
+        foreach (var custom in customRooms)
+        {
+            customRooms.Remove(custom);
+            Object.Destroy(custom.gameObject);
+        }
     }
     public override void AfterMeetingTasks()
     {
@@ -96,12 +110,12 @@ internal class Shocker : RoleBase
             return;
         if (isShocking)
         {
-            pc.Notify(Translator.GetString("ShockerIsShocking"));
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerIsShocking")));
             return;
         }
         AbilityLimit--;
         SendSkillRPC();
-        pc.Notify(Translator.GetString("ShockerAbilityActivate"));
+        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityActivate")));
         isShocking = true;
         shockedRooms = new List<Collider2D>(markedRooms);
         markedRooms.Clear();
@@ -109,7 +123,7 @@ internal class Shocker : RoleBase
         {
             shockedRooms.Clear();
             isShocking = false;
-            pc.Notify(Translator.GetString("ShockerAbilityDeactivate"));
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityDeactivate")));
         }, ShockerAbilityDuration.GetValue(), "Shocker Is Shocking");
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
@@ -125,16 +139,19 @@ internal class Shocker : RoleBase
         {
             PlainShipRoom room = player.GetPlainShipRoom();
             markedRooms.Add(room.roomArea);
-            Logger.Info($"Player {player.PlayerId} is in a room {room.RoomId}", "Shocker");
+            Logger.Info($"Player {player.PlayerId} is in a room {room.RoomId} {room.name}", "Shocker");
+            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerRoomMarked")));
         }
         else
         {
-            Logger.Info($"Player {player.PlayerId} is not in a room", "Shocker");
-            Collider2D collider2D = new GameObject("Outside").AddComponent<CircleCollider2D>();
+            Logger.Info($"Player {player.PlayerId} is not in a room {player.GetTruePosition()}", "Shocker");
+            Collider2D collider2D = new GameObject("ShockerOutside").AddComponent<CircleCollider2D>();
             collider2D.transform.position = player.GetTruePosition();
             ((CircleCollider2D)collider2D).radius = ShockerOutsideRadius.GetFloat();
             collider2D.isTrigger = true;
             markedRooms.Add(collider2D);
+            customRooms.Add(collider2D);
+            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerRoomMarked")));
         }
         return true;
     }
