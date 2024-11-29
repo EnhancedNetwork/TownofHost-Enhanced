@@ -438,8 +438,7 @@ public static class GameStates
     {
         get
         {
-            if (!IsOnlineGame) return false;
-
+            if (IsLocalGame && !IsNotJoined) return true;
             const string Domain = "among.us";
 
             // From Reactor.gg
