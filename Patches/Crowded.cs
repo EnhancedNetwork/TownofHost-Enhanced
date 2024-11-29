@@ -11,12 +11,28 @@ namespace TOHE.Patches;
 
 internal static class Crowded
 {
+    private static CreateOptionsPicker instance;
     public static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
     public static int MaxImpostors = GameOptionsManager.Instance.currentHostOptions.MaxPlayers / 2;
 
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Awake))]
     public static class CreateOptionsPicker_Awake
     {
+        public static void Prefix(CreateOptionsPicker __instance)
+        {
+            instance = __instance;
+            if (GameStates.IsVanillaServer)
+            {
+                if (GameOptionsManager.Instance.GameHostOptions != null)
+                {
+                    if (GameOptionsManager.Instance.GameHostOptions.MaxPlayers > 15)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
+                    }
+                }
+            }
+        }
+
         public static void Postfix(CreateOptionsPicker __instance)
         {
             if (__instance.mode != SettingsMode.Host) return;
@@ -130,6 +146,39 @@ internal static class Crowded
                     __instance.SetImpostorButtons(newVal);
                     secondButtonText.text = newVal.ToString();
                 }));
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.SetRegion))]
+    public static class ServerManager_SetRegion
+    {
+        // I dont find a effect way to patch CreateOptionsPicker LOL
+        public static void Postfix(ServerManager __instance)
+        {
+            if (GameStates.IsVanillaServer)
+            {
+                if (GameOptionsManager.Instance.GameHostOptions != null)
+                {
+                    if (GameOptionsManager.Instance.GameHostOptions.MaxPlayers > 15)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
+                    }
+                }
+                if (instance)
+                {
+                    for (var i = 1; i < 11; i++)
+                    {
+                        var playerButton = instance.MaxPlayerButtons[i];
+
+                        var tmp = playerButton.GetComponentInChildren<TextMeshPro>();
+                        var newValue = Mathf.Min(byte.Parse(tmp.text) + 10,
+                            MaxPlayers - 14 + byte.Parse(playerButton.name));
+                        tmp.text = newValue.ToString();
+                    }
+
+                    instance.UpdateMaxPlayersButtons(instance.GetTargetOptions());
+                }
             }
         }
     }
