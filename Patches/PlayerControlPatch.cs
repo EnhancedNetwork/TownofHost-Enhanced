@@ -866,6 +866,14 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+                    if (playerStates.RoleClass?.BlockMoveInVent(playerStates.RoleClass._Player) ?? false)
+                    {
+                        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                        {
+                            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                        }
+                        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+                    }
                 }
                 catch (Exception error)
                 {
@@ -1499,6 +1507,21 @@ class CoEnterVentPatch
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
+
+        if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
+        {
+            playerRoleClass.LastBlockedMoveInVentVents.Clear();
+            var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
+            foreach (var nextvent in vent.NearbyVents.ToList())
+            {
+                if (nextvent == null) continue;
+                // Skip current vent or ventid 5 in Dleks to prevent stuck
+                if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Add(nextvent.Id);
+                playerRoleClass.LastBlockedMoveInVentVents.Add(nextvent.Id);
+            }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
         return true;
     }
     public static void Postfix()
@@ -1546,6 +1569,14 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
+        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? false)
+        {
+            foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+            }
+            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+        }
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }

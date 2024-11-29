@@ -114,6 +114,12 @@ public abstract class RoleBase
     /// When the player presses the sabotage button
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
+    /// <summary>
+    /// When player is enginner role base but should not move in vents
+    /// </summary>
+    public virtual bool BlockMoveInVent(PlayerControl pc) => false;
+
+    public HashSet<int> LastBlockedMoveInVentVents = [];
 
     public virtual void SetupCustomOption()
     { }

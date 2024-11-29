@@ -17,20 +17,25 @@ internal class Vector : RoleBase
     
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override bool BlockMoveInVent(PlayerControl pc) => VectorInVentMaxTime.GetFloat() <= 1f;
     //==================================================================\\
 
     private static OptionItem VectorVentNumWin;
     private static OptionItem VectorVentCD;
+    private static OptionItem VectorInVentMaxTime;
 
     private static readonly Dictionary<byte, int> VectorVentCount = [];
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(15500, TabGroup.NeutralRoles, CustomRoles.Vector);
-        VectorVentNumWin = IntegerOptionItem.Create(15502, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Vector);
+        VectorVentNumWin = IntegerOptionItem.Create(Id + 2, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Times);
-        VectorVentCD = FloatOptionItem.Create(15503, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+        VectorVentCD = FloatOptionItem.Create(Id + 3, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
+            .SetValueFormat(OptionFormat.Seconds);
+        VectorInVentMaxTime = FloatOptionItem.Create(Id + 4, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -64,7 +69,7 @@ internal class Vector : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerCooldown = VectorVentCD.GetFloat();
-        AURoleOptions.EngineerInVentMaxTime = 1;
+        AURoleOptions.EngineerInVentMaxTime = VectorInVentMaxTime.GetFloat();
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
