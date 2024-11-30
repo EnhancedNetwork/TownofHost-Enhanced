@@ -45,10 +45,22 @@ public static class NameColorManager
         // Impostor & Madmate
         if (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
-        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
+        if ((seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc)) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
+        if ((seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc)) && target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
 
+        // Narc,Impostors and Madmates
+        if ((seer.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Parasite) && !seer.Is(CustomRoles.Crewpostor)) && target.Is(CustomRoles.Crewpostor) && Crewpostor.AlliesKnowCrewpostor.GetBool()) color = Main.roleColors[CustomRoles.Traitor];
+        if ((seer.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Parasite) && !seer.Is(CustomRoles.Crewpostor)) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Traitor];
+        if ((seer.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Parasite) && !seer.Is(CustomRoles.Crewpostor)) && target.Is(CustomRoles.Refugee)) color = Main.roleColors[CustomRoles.Traitor];
+        if ((seer.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Crewpostor)) && target.Is(Custom_Team.Impostor) && Crewpostor.KnowsAllies.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
+
+        // Sheriff and Narc
+        if (seer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Narc)) color = Main.roleColors[CustomRoles.Narc];
+        if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Narc) && (seer == target)) color = Main.roleColors[CustomRoles.Narc];//This line only works for modded
+        if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)) color = Main.roleColors[CustomRoles.Sheriff];
+        
         // Cultist
         if (Cultist.NameRoleColor(seer, target)) color = Main.roleColors[CustomRoles.Cultist];
 

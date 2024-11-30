@@ -4,6 +4,7 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
@@ -97,7 +98,7 @@ class GameEndCheckerForNormal
                 {
                     case CustomWinner.Crewmate:
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
+                            pc.Is(CustomRoles.Admired) || (pc.Is(CustomRoles.Narc) && (Main.MeetingsPassed >= Narc.MeetingsNeededForWin.GetInt())) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
