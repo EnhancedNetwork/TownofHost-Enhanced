@@ -251,7 +251,7 @@ internal class HexMaster : CovenManager
         */
         if (!HasNecronomicon(killer))
         {
-            SetHexed(killer, target);
+            if (!target.GetCustomRole().IsCovenTeam()) SetHexed(killer, target);
             return false;
         }
         if (killer.CheckDoubleTrigger(target, () => { SetHexedNecronomicon(killer, target); }))
@@ -271,6 +271,11 @@ internal class HexMaster : CovenManager
     private static void SetHexedNecronomicon(PlayerControl killer, PlayerControl target)
     {
         if (!HasEnabled) return;
+        if (target.GetCustomRole().IsCovenTeam())
+        {
+            killer.Notify(GetString("CovenDontKillOtherCoven"));
+            return;
+        }
 
         CurrentHexedPlayer = target.PlayerId;
         LastHexedPlayer = killer.PlayerId;
