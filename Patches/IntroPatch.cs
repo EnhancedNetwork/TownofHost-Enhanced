@@ -456,9 +456,9 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
                 break;
 
-            case CustomRoles.Sheriff
-            case CustomRoles.NiceGuesser
-            case CustomRoles.Veteran
+            case CustomRoles.Sheriff:
+            case CustomRoles.NiceGuesser:
+            case CustomRoles.Veteran:
             case CustomRoles.Knight:
             case CustomRoles.KillingMachine:
             case CustomRoles.Reverie:
