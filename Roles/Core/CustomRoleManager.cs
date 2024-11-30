@@ -215,9 +215,6 @@ public static class CustomRoleManager
                     case CustomRoles.Madmate when target.Is(Custom_Team.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
                     case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
                     case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
-                        canceled = true;
-                        break;
-
                     case CustomRoles.Narc when target.Is(CustomRoles.Sheriff):
                         canceled = true;
                         break;
