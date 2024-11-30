@@ -363,7 +363,6 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
-            or CustomRoles.Admired
             or CustomRoles.Narc;
     }
 
