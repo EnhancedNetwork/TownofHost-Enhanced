@@ -142,8 +142,8 @@ internal class Jinx : CovenManager
         {
             killer.RpcGuardAndKill(target);
             killer.SetDeathReason(PlayerState.DeathReason.Jinx);
-            killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(jinx);
+            killer.RpcMurderPlayer(killer);
             if (HasNecronomicon(jinx))
             {
                 target.SetDeathReason(PlayerState.DeathReason.Jinx);
