@@ -105,7 +105,7 @@ internal class Oracle : RoleBase
                 string text = "Crewmate";
                 if (ChangeRecruitTeam.GetBool())
                 {
-                    if (target.Is(CustomRoles.Admired)) text = "Crewmate";
+                    if (target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)) text = "Crewmate";
                     else if (target.GetCustomRole().IsImpostorTeamV2() || target.GetCustomSubRoles().Any(role => role.IsImpostorTeamV2())) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutralTeamV2() || target.GetCustomSubRoles().Any(role => role.IsNeutralTeamV2())) text = "Neutral";
                     else if (target.GetCustomRole().IsCrewmateTeamV2() && (target.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target.GetCustomSubRoles().Count == 0))) text = "Crewmate";
