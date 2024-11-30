@@ -65,7 +65,7 @@ internal class Grenadier : RoleBase
     {
         // Grenadier or Mad Grenadier enter the vent
         if ((GrenadierBlinding.Any() &&
-            (player.GetCustomRole().IsImpostor() ||
+            ((player.GetCustomRole().IsImpostor() && !player.Is(CustomRoles.Narc)) ||
             (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
             )
             || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
