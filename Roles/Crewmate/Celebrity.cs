@@ -60,7 +60,7 @@ internal class Celebrity : RoleBase
             //Death Message
             foreach (var pc in Main.AllPlayerControls)
             {
-                if (!ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
+                if (!ImpKnowCelebrityDead.GetBool() && (pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc))) continue;
                 if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
 
                 SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
@@ -76,7 +76,7 @@ internal class Celebrity : RoleBase
     {
         foreach (var csId in CelebrityDead)
         {
-            if (!ImpKnowCelebrityDead.GetBool() && (pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc))) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && (targets.GetCustomRole().IsImpostor() && !trgets.Is(CustomRoles.Narc))) continue;
             if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
             AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
         }
