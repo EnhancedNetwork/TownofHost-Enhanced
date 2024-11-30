@@ -5,7 +5,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class Narc : IAddon
 {
-    private const int Id = 23400;
+    private const int Id = 31100;
     public AddonTypes Type => AddonTypes.Misc;
 
     public static OptionItem MeetingsNeededForWin;
