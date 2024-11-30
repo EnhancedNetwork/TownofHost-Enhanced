@@ -23,16 +23,5 @@ public class Narc : IAddon
     { }
     public void Remove(byte playerId)
     { }
-    public static void ApplyGameOptions(IGameOptions opt)
-    {
-        if (!Utils.IsActive(SystemTypes.Electrical))
-            opt.SetVision(true);
-        opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultCrewmateVision);
-
-        if (Utils.IsActive(SystemTypes.Electrical))
-            opt.SetVision(true);
-        opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision / 5);
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultCrewmateVision / 5);
-    }
+// Impy is the laziest girl I've ever seen.
 }
