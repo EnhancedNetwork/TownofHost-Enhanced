@@ -149,6 +149,10 @@ internal class Poisoner : CovenManager
             KillPoisoned(poisoner, target);
         }
         PoisonedPlayers.Clear();
+        foreach (var poisoner in RoleblockedPlayers.Keys)
+        {
+            RoleblockedPlayers[poisoner].Clear();
+        }
     }
     public static bool IsRoleblocked(byte target)
     {
