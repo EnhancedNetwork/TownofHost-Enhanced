@@ -110,6 +110,7 @@ internal class Captain : RoleBase
             var role = AllSubRoles[i];
             if (role == CustomRoles.Cleansed ||
                 role == CustomRoles.LastImpostor ||
+                role == CustomRoles.Narc ||
                 role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                 role.IsBetrayalAddon())
             {
@@ -161,7 +162,7 @@ internal class Captain : RoleBase
     {
         if (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool() &&
                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
-                ((seer.Is(Custom_Team.Crewmate) && !seer.Is(CustomRoles.Madmate)) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
+                ((seer.Is(Custom_Team.Crewmate) && !seer.Is(CustomRoles.Madmate)) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool()) || seer.Is(CustomRoles.Narc)))
         {
             return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
         }
