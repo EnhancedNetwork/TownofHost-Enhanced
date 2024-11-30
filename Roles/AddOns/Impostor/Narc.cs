@@ -13,7 +13,7 @@ public class Narc : IAddon
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Narc, canSetNum: false, tab: TabGroup.Addons);
-        MeetingsNeededForWin = IntegerOptionItem.Create(Id + 3, "MeetingsNeededForWin", new(0, 5, 1), 1, TabGroup.Addons, false)
+        MeetingsNeededForWin = IntegerOptionItem.Create(Id + 3, "MeetingsNeededForWin", new(0, 10, 1), 5, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc])
             .SetValueFormat(OptionFormat.Times);
     }
