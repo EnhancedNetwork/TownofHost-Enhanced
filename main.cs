@@ -916,7 +916,7 @@ public enum CustomRoles
     Rebirth,
     Mimic,
     Mundane,
-    Narc
+    Narc,
     Necroview,
     Nimble,
     Oblivious,
