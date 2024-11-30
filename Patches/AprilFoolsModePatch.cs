@@ -8,7 +8,7 @@ public static class ShouldShowTogglePatch
 {
     public static void Postfix(ref bool __result)
     {
-        __result = true;
+        __result = false;
     }
 }
 #region GameManager Patches
@@ -22,7 +22,7 @@ public static class GetNormalBodyType_Patch
             __result = PlayerBodyTypes.Horse;
             return;
         }
-        if (AprilFoolsMode.ShouldLongAround())
+        if (Main.LongMode.Value)
         {
             __result = PlayerBodyTypes.Long;
             return;
@@ -43,7 +43,7 @@ public static class GetHnsBodyType_Patch
                 __result = PlayerBodyTypes.Horse;
                 return;
             }
-            if (AprilFoolsMode.ShouldLongAround())
+            if (Main.LongMode.Value)
             {
                 __result = PlayerBodyTypes.Long;
                 return;
@@ -61,7 +61,7 @@ public static class GetHnsBodyType_Patch
             __result = PlayerBodyTypes.Horse;
             return;
         }
-        else if (AprilFoolsMode.ShouldLongAround())
+        else if (Main.LongMode.Value)
         {
             if (player.Data.Role.IsImpostor)
             {
