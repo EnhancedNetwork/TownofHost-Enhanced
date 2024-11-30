@@ -76,7 +76,15 @@ internal class Jinx : CovenManager
     }
     */
     //public override void ApplyGameOptions(IGameOptions opt, byte babushka) => opt.SetVision(HasImpostorVision.GetBool());
-    public bool IsJinxed(byte playerId) => JinxedPlayers[_Player.PlayerId].Contains(playerId);
+    public static bool IsJinxed(byte target)
+    {
+        if (JinxedPlayers.Count < 1) return false;
+        foreach (var player in JinxedPlayers.Keys)
+        {
+            if (JinxedPlayers[player].Contains(target)) return true;
+        }
+        return false;
+    }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
