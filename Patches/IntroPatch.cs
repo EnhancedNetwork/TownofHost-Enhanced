@@ -190,7 +190,7 @@ class SetUpRoleTextPatch
         sb.Append($"Disable Lobby Music: {Main.DisableLobbyMusic.Value}\n");
         sb.Append($"Show Text Overlay: {Main.ShowTextOverlay.Value}\n");
         sb.Append($"Horse Mode: {Main.HorseMode.Value}\n");
-        sb.Append($"Game Master: {Main.LongMode.Value}\n");
+        sb.Append($"Long Mode: {Main.LongMode.Value}\n");
         sb.Append($"Enable Custom Button: {Main.EnableCustomButton.Value}\n");
         sb.Append($"Enable Custom Sound Effect: {Main.EnableCustomSoundEffect.Value}\n");
         sb.Append($"Force Own Language: {Main.ForceOwnLanguage.Value}\n");
