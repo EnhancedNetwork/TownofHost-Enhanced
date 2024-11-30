@@ -218,6 +218,10 @@ public static class CustomRoleManager
                         canceled = true;
                         break;
 
+                    case CustomRoles.Narc when target.Is(CustomRoles.Sheriff):
+                        canceled = true;
+                        break;
+                        
                     case CustomRoles.Unlucky:
                         if (Unlucky.SuicideRand(killer, Unlucky.StateSuicide.TryKill))
                             canceled = true;
