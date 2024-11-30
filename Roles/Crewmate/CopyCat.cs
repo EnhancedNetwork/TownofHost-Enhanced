@@ -99,31 +99,42 @@ internal class CopyCat : RoleBase
             killer.ResetKillCooldown();
             return false;
         }
+        if (target.Is(CustomRoles.Narc))
+        {
+            killer.RpcChangeRoleBasis(CustomRoles.Sheriff);
+            killer.RpcSetCustomRole(CustomRoles.Sheriff);
+            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+            killer.SyncSettings();
+            Main.PlayerStates[killer.PlayerId].InitTask(killer);
+            killer.RpcGuardAndKill(killer);
+            killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Sheriff)));
+            return false;
+        }
         if (CopyCrewVar.GetBool())
         {
             role = role switch
             {
-                CustomRoles.Stealth => CustomRoles.Grenadier,
-                CustomRoles.TimeThief => CustomRoles.TimeManager,
-                CustomRoles.Consigliere => CustomRoles.Overseer,
-                CustomRoles.Mercenary => CustomRoles.Addict,
-                CustomRoles.Miner => CustomRoles.Mole,
+                CustomRoles.Stealth and not CustomRoles.Narc => CustomRoles.Grenadier,
+                CustomRoles.TimeThief and not CustomRoles.Narc => CustomRoles.TimeManager,
+                CustomRoles.Consigliere and not CustomRoles.Narc => CustomRoles.Overseer,
+                CustomRoles.Mercenary and not CustomRoles.Narc => CustomRoles.Addict,
+                CustomRoles.Miner and not CustomRoles.Narc => CustomRoles.Mole,
                 CustomRoles.PotionMaster => CustomRoles.Overseer,
-                CustomRoles.Twister => CustomRoles.TimeMaster,
-                CustomRoles.Disperser => CustomRoles.Transporter,
-                CustomRoles.Eraser => CustomRoles.Cleanser,
-                CustomRoles.Visionary => CustomRoles.Oracle,
+                CustomRoles.Twister and not CustomRoles.Narc => CustomRoles.TimeMaster,
+                CustomRoles.Disperser and not CustomRoles.Narc => CustomRoles.Transporter,
+                CustomRoles.Eraser and not CustomRoles.Narc => CustomRoles.Cleanser,
+                CustomRoles.Visionary and not CustomRoles.Narc => CustomRoles.Oracle,
                 CustomRoles.Workaholic => CustomRoles.Snitch,
                 CustomRoles.Sunnyboy => CustomRoles.Doctor,
-                CustomRoles.Councillor => CustomRoles.Judge,
+                CustomRoles.Councillor and not CustomRoles.Narc => CustomRoles.Judge,
                 CustomRoles.Taskinator => CustomRoles.Benefactor,
-                CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
-                CustomRoles.AntiAdminer => CustomRoles.Telecommunication,
+                CustomRoles.EvilTracker and not CustomRoles.Narc => CustomRoles.TrackerTOHE,
+                CustomRoles.AntiAdminer and not CustomRoles.Narc => CustomRoles.Telecommunication,
                 CustomRoles.Pursuer => CustomRoles.Deceiver,
-                CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
-                CustomRoles.Swooper or CustomRoles.Wraith => CustomRoles.Chameleon,
-                CustomRoles.Vindicator or CustomRoles.Pickpocket => CustomRoles.Mayor,
-                CustomRoles.Arrogance or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
+                (CustomRoles.CursedWolf and not CustomRoles.Narc) or CustomRoles.Jinx => CustomRoles.Veteran,
+                (CustomRoles.Swooper and not CustomRoles.Narc) or CustomRoles.Wraith => CustomRoles.Chameleon,
+                (CustomRoles.Vindicator and not CustomRoles.Narc) or CustomRoles.Pickpocket => CustomRoles.Mayor,
+                (CustomRoles.Arrogance and not CustomRoles.Narc) or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
                 CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
                 CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,
                 CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
