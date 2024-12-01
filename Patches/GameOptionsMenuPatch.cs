@@ -5,6 +5,7 @@ using UnityEngine;
 using TOHE.Patches;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
+using TOHE.Patches.Crowded;
 
 namespace TOHE;
 
@@ -495,9 +496,11 @@ public static class NumberOptionPatch
                 __instance.Value = (float)Math.Round(__instance.Value, 2);
                 break;
             case StringNames.GameNumImpostors:
+                // Changing the range of this option will make it always reset to the default value 3
+                // TO DO : Fix shit
                 __instance.ValidRange = new(0, Crowded.MaxImpostors);
-                __instance.Value = (float)Math.Round(__instance.Value, 2);
-                // if (DebugModeManager.AmDebugger) __instance.ValidRange.min = 0;
+                __instance.Increment = 1;
+                __instance.Value = (int)Math.Round(__instance.Value, 1);
                 break;
         }
 
