@@ -29,13 +29,13 @@ internal class Vector : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Vector);
-        VectorVentNumWin = IntegerOptionItem.Create(Id + 2, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
+        VectorVentNumWin = IntegerOptionItem.Create(Id + 10, "VectorVentNumWin", new(5, 500, 5), 40, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Times);
-        VectorVentCD = FloatOptionItem.Create(Id + 3, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+        VectorVentCD = FloatOptionItem.Create(Id + 11, GeneralOption.EngineerBase_VentCooldown, new(0f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Seconds);
-        VectorInVentMaxTime = FloatOptionItem.Create(Id + 4, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 1f), 1f, TabGroup.CrewmateRoles, false)
+        VectorInVentMaxTime = FloatOptionItem.Create(Id + 12, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Vector])
             .SetValueFormat(OptionFormat.Seconds);
     }
