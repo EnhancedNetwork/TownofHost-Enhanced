@@ -3432,6 +3432,13 @@ class ChatUpdatePatch
             player.SetName(name);
         }
 
+        if (clientId == AmongUsClient.Instance.ClientId || sendTo == PlayerControl.LocalPlayer.PlayerId)
+        {
+            player.SetName(title);
+            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
+            player.SetName(name);
+            return;
+        }
 
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
         writer.StartMessage(clientId);
@@ -3452,6 +3459,7 @@ class ChatUpdatePatch
         __instance.timeSinceLastMessage = 0f;
     }
 }
+
 [HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
 internal class UpdateCharCountPatch
 {
