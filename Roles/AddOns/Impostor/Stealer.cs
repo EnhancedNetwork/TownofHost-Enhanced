@@ -6,7 +6,6 @@ public class Stealer : IAddon
 {
     private const int Id = 23200;
     public AddonTypes Type => AddonTypes.Impostor;
-    private static readonly Dictionary<byte, int> killedplayers = [];
 
     private static OptionItem TicketsPerKill;
     private static OptionItem HideAdditionalVotes;
@@ -20,26 +19,20 @@ public class Stealer : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Stealer]);
     }
     public void Init()
-    {
-        killedplayers.Clear();
-    }
+    { }
     public void Add(byte playerId, bool gameIsLoading = true)
-    {
-        killedplayers[playerId] = 0;
-    }
+    { }
     public void Remove(byte playerId)
-    {
-        killedplayers.Remove(playerId);
-    }
+    { }
     public static int AddRealVotesNum(PlayerVoteArea ps)
     {
-        return (int)(killedplayers[ps.TargetPlayerId] * TicketsPerKill.GetFloat());
+        return (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * TicketsPerKill.GetFloat());
     }
     public static void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
     {
         if (HideAdditionalVotes.GetBool()) return;
 
-        var additionalVotes = (int)(killedplayers[votedPlayer.TargetPlayerId] * TicketsPerKill.GetFloat());
+        var additionalVotes = (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == votedPlayer.TargetPlayerId) * TicketsPerKill.GetFloat());
 
         for (var i = 0; i < additionalVotes; i++)
         {
@@ -52,9 +45,8 @@ public class Stealer : IAddon
     }
     public static void OnMurderPlayer(PlayerControl killer)
     {
-        killedplayers[killer.PlayerId]++;
         killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
-            (killedplayers[killer.PlayerId] * TicketsPerKill.GetFloat() + 1)
+            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * TicketsPerKill.GetFloat() + 1f)
             .ToString("0.0#####")));
     }
 }
