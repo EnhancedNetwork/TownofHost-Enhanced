@@ -67,7 +67,8 @@ internal class ChatCommands
         if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled; 
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dt && dt.ExilePlayer(PlayerControl.LocalPlayer, text)) goto Canceled;
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
@@ -227,12 +228,18 @@ internal class ChatCommands
                 case "/命名为":
                     canceled = true;
                     if (args.Length < 1) break;
-                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1) { 
+                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    {
                         Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    else Main.HostRealName = args.Skip(1).Join(delimiter: " ");
-                    Utils.SendMessage(string.Format(GetString("Message.SetName"), args.Skip(1).Join(delimiter: " ")), PlayerControl.LocalPlayer.PlayerId);
+                    else
+                    {
+                        var temp = args.Skip(1).Join(delimiter: " ");
+                        Main.HostRealName = temp;
+                        Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId] = temp;
+                        Utils.SendMessage(string.Format(GetString("Message.SetName"), temp), PlayerControl.LocalPlayer.PlayerId);
+                    }
                     break;
 
                 case "/hn":
@@ -1070,7 +1077,7 @@ internal class ChatCommands
                         if (setRole == roleName)
                         {
                             PlayerControl.LocalPlayer.GetRoleClass()?.OnRemove(PlayerControl.LocalPlayer.PlayerId);
-                            PlayerControl.LocalPlayer.RpcSetRole(rl.GetRoleTypes(), true);
+                            PlayerControl.LocalPlayer.RpcChangeRoleBasis(rl);
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
@@ -1532,6 +1539,39 @@ internal class ChatCommands
                             break;
                     }
                     Utils.SendMessage("<align=\"center\"><size=150%>" + str + "</align></size>", PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Medium), GetString("8BallTitle")));
+                    break;
+                case "/start":
+                case "/开始":
+                case "/старт":
+                    canceled = true;
+                    if (!GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    if (GameStates.IsCountDown)
+                    {
+                        Utils.SendMessage(GetString("StartCommandCountdown"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !int.TryParse(subArgs, out int countdown))
+                    {
+                        countdown = 5;
+                    }
+                    else
+                    {
+                        countdown = int.Parse(subArgs);
+                    }
+                    if (countdown < 0 || countdown > 99)
+                    {
+                        Utils.SendMessage(string.Format(GetString("StartCommandInvalidCountdown"), 0, 99), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    GameStartManager.Instance.BeginGame();
+                    GameStartManager.Instance.countDownTimer = countdown;
+                    Utils.SendMessage(string.Format(GetString("StartCommandStarted"), PlayerControl.LocalPlayer.name));
+                    Logger.Info("Game Starting", "ChatCommand");
                     break;
 
                 default:
@@ -2036,6 +2076,7 @@ internal class ChatCommands
         if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -3276,6 +3317,51 @@ internal class ChatCommands
                 }
                 break;
 
+            case "/start":
+            case "/开始":
+            case "/старт":
+                if (!GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                    break;
+                }
+
+                if (!Utils.IsPlayerModerator(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
+
+                    break;
+
+                }
+                if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowStartCommand.GetBool() == false)
+                {
+                    Utils.SendMessage(GetString("StartCommandDisabled"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsCountDown)
+                {
+                    Utils.SendMessage(GetString("StartCommandCountdown"), player.PlayerId);
+                    break;
+                }
+                subArgs = args.Length < 2 ? "" : args[1];
+                if (string.IsNullOrEmpty(subArgs) || !int.TryParse(subArgs, out int countdown))
+                {
+                    countdown = 5;
+                }
+                else
+                {
+                    countdown = int.Parse(subArgs);
+                }
+                if (countdown < Options.StartCommandMinCountdown.CurrentValue || countdown > Options.StartCommandMaxCountdown.CurrentValue)
+                {
+                    Utils.SendMessage(string.Format(GetString("StartCommandInvalidCountdown"), Options.StartCommandMinCountdown.CurrentValue, Options.StartCommandMaxCountdown.CurrentValue), player.PlayerId);
+                    break;
+                }
+                GameStartManager.Instance.BeginGame();
+                GameStartManager.Instance.countDownTimer = countdown;
+                Utils.SendMessage(string.Format(GetString("StartCommandStarted"), player.name));
+                break;
+
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
@@ -3346,6 +3432,13 @@ class ChatUpdatePatch
             player.SetName(name);
         }
 
+        if (clientId == AmongUsClient.Instance.ClientId || sendTo == PlayerControl.LocalPlayer.PlayerId)
+        {
+            player.SetName(title);
+            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg, false);
+            player.SetName(name);
+            return;
+        }
 
         var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
         writer.StartMessage(clientId);
@@ -3366,6 +3459,7 @@ class ChatUpdatePatch
         __instance.timeSinceLastMessage = 0f;
     }
 }
+
 [HarmonyPatch(typeof(FreeChatInputField), nameof(FreeChatInputField.UpdateCharCount))]
 internal class UpdateCharCountPatch
 {
@@ -3375,7 +3469,7 @@ internal class UpdateCharCountPatch
         __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
         if (length < (AmongUsClient.Instance.AmHost ? 888 : 444))
             __instance.charCountText.color = Color.black;
-        else if (length < (AmongUsClient.Instance.AmHost ? 111 : 777))
+        else if (length < (AmongUsClient.Instance.AmHost ? 1111 : 777))
             __instance.charCountText.color = new Color(1f, 1f, 0f, 1f);
         else
             __instance.charCountText.color = Color.red;
