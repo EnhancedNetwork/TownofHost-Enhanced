@@ -6,7 +6,7 @@ public class Stealer : IAddon
 {
     private const int Id = 23200;
     public AddonTypes Type => AddonTypes.Impostor;
-    private static Dictionary<byte, int> killedplayers;
+    private static readonly Dictionary<byte, int> killedplayers = [];
 
     private static OptionItem TicketsPerKill;
     private static OptionItem HideAdditionalVotes;
