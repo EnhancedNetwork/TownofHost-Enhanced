@@ -62,9 +62,12 @@ internal class Shocker : RoleBase
 
         foreach (var custom in customRooms)
         {
-            customRooms.Remove(custom);
-            Object.Destroy(custom.gameObject);
+            if (custom != null && custom.gameObject != null)
+            {
+                Object.Destroy(custom.gameObject);
+            }
         }
+        customRooms.Clear();
         shockedRooms.Clear();
     }
 
@@ -83,9 +86,12 @@ internal class Shocker : RoleBase
 
         foreach (var custom in customRooms)
         {
-            customRooms.Remove(custom);
-            Object.Destroy(custom.gameObject);
+            if (custom != null && custom.gameObject != null)
+            {
+                Object.Destroy(custom.gameObject);
+            }
         }
+        customRooms.Clear();
 
         CustomRoleManager.OnFixedUpdateOthers.Remove(OnFixedUpdateShocker);
     }
