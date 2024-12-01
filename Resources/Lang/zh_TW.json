@@ -3701,5 +3701,5 @@
   "ChiefOfPoliceKillButtonText": "招募",
   "PolicPreventRecruitNonKiller": "防止招募沒有擊殺按鈕的玩家",
   "PolicSuidiceWhenTargetNotKiller": "當招募到非船員或非帶刀玩家時自殺",
-  "PolicPassConverted": "Can pass Converted Addon to Sheriff"
+  "PolicPassConverted": "可以傳遞被招募的附加職業給警長"
 }
