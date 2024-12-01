@@ -76,7 +76,7 @@ internal class Celebrity : RoleBase
     {
         foreach (var csId in CelebrityDead)
         {
-            if (!ImpKnowCelebrityDead.GetBool() && (targets.GetCustomRole().IsImpostor() && !trgets.Is(CustomRoles.Narc))) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && (targets.GetCustomRole().IsImpostor() && !targets.Is(CustomRoles.Narc))) continue;
             if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
             AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
         }
