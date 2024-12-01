@@ -266,6 +266,10 @@ class StartMeetingPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class ShipStatusBeginPatch
 {
+    public static void Prefix()
+    {
+        RpcSetTasksPatch.decidedCommonTasks.Clear();
+    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
