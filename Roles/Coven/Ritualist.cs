@@ -100,11 +100,10 @@ internal class Ritualist : CovenManager
         {
             if (TryHideMsg.GetBool())
             {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else GuessManager.TryHideMsg();
                 TryHideMsgForRitual();
                 ChatManager.SendPreviousMessagesToAll();
             }
+            else if (pc.AmOwner) SendMessage(msg, 255, pc.GetRealName());
             if (RitualLimit[pc.PlayerId] <= 0)
             {
                 pc.ShowInfoMessage(isUI, GetString("RitualistRitualMax"));
