@@ -24,6 +24,8 @@ internal class Illusionist : CovenManager
     private static OptionItem MaxIllusions;
     public static OptionItem SnitchCanIllusioned;
     private static OptionItem ResetIllusionsPerRound;
+    private static OptionItem ClearIllusionsWhenDead;
+
 
 
     private static readonly Dictionary<byte, HashSet<byte>> IllusionedPlayers = [];
@@ -38,6 +40,7 @@ internal class Illusionist : CovenManager
             .SetValueFormat(OptionFormat.Times);
         SnitchCanIllusioned = BooleanOptionItem.Create(Id + 12, "IllusionistSnitchAffected", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist]);
         ResetIllusionsPerRound = BooleanOptionItem.Create(Id + 13, "IllusionistResetIllusionsPerRound", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist]);
+        ClearIllusionsWhenDead = BooleanOptionItem.Create(Id + 14, "IllusionistClearIllusionsWhenDead", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist]);
     }
 
     public override void Init()
@@ -49,6 +52,7 @@ internal class Illusionist : CovenManager
         AbilityLimit = MaxIllusions.GetInt();
         IllusionedPlayers[playerId] = [];
         GetPlayerById(playerId)?.AddDoubleTrigger();
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
     public void SendRPC(PlayerControl player, PlayerControl target)
     {
@@ -127,5 +131,15 @@ internal class Illusionist : CovenManager
         if (ResetIllusionsPerRound.GetBool())  
             IllusionedPlayers.Clear();
     }
+    private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
+    {
+        if (!ClearIllusionsWhenDead.GetBool()) return;
+        foreach (var player in IllusionedPlayers.Keys)
+        {
+            if (deadPlayer.PlayerId == player) IllusionedPlayers[player].Clear();
+        }
+    }
+
+
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => (IllusionedPlayers.TryGetValue(seer.PlayerId, out var Targets) && Targets.Contains(seen.PlayerId)) ? ColorString(GetRoleColor(CustomRoles.Illusionist), "ø") : string.Empty;
 }
