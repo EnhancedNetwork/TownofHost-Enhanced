@@ -498,9 +498,6 @@ public static class NumberOptionPatch
             case StringNames.GameNumImpostors:
                 // Changing the range of this option will make it always reset to the default value 3
                 // TO DO : Fix shit
-                __instance.ValidRange = new(0, Crowded.MaxImpostors);
-                __instance.Increment = 1;
-                __instance.Value = (int)Math.Round(__instance.Value, 1);
                 break;
         }
 
