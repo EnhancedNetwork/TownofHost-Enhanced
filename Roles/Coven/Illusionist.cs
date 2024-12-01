@@ -23,6 +23,8 @@ internal class Illusionist : CovenManager
     private static OptionItem IllusionCooldown;
     private static OptionItem MaxIllusions;
     public static OptionItem SnitchCanIllusioned;
+    private static OptionItem ResetIllusionsPerRound;
+
 
     private static readonly Dictionary<byte, HashSet<byte>> IllusionedPlayers = [];
 
@@ -35,6 +37,7 @@ internal class Illusionist : CovenManager
         MaxIllusions = IntegerOptionItem.Create(Id + 11, "IllusionistMaxIllusions", new(1, 100, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist])
             .SetValueFormat(OptionFormat.Times);
         SnitchCanIllusioned = BooleanOptionItem.Create(Id + 12, "IllusionistSnitchAffected", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist]);
+        ResetIllusionsPerRound = BooleanOptionItem.Create(Id + 13, "IllusionistResetIllusionsPerRound", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Illusionist]);
     }
 
     public override void Init()
@@ -121,7 +124,8 @@ internal class Illusionist : CovenManager
     }
     public override void AfterMeetingTasks()
     {
-        IllusionedPlayers.Clear();
+        if (ResetIllusionsPerRound.GetBool())  
+            IllusionedPlayers.Clear();
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => (IllusionedPlayers.TryGetValue(seer.PlayerId, out var Targets) && Targets.Contains(seen.PlayerId)) ? ColorString(GetRoleColor(CustomRoles.Illusionist), "ø") : string.Empty;
 }

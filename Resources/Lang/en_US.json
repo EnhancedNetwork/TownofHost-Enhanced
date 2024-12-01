@@ -2028,6 +2028,7 @@
   "IllusionCooldown": "Illusion Cooldown",
   "IllusionistMaxIllusions": "Max Illusions",
   "IllusionistSnitchAffected": "<color=#b8fb4f>Snitch</color> is Affected by Illusions",
+  "IllusionistResetIllusionsPerRound": "Reset Illusions After Meeting",
 
   "MedusaStoneCooldown": "Stone Cooldown",
   "MedusaStoneDuration": "Stone Duration",
