@@ -180,7 +180,7 @@ internal class HexMaster : CovenManager
         var now = GetTimeStamp();
         if (now - CurrentHexedPlayerTime < MovingHexPassCooldown.GetFloat()) return;
         if (target.PlayerId == LastHexedPlayer) return;
-        if (!CovenCanGetMovingHex.GetBool() && target.IsPlayerCoven()) return;
+        if (!CovenCanGetMovingHex.GetBool() && target.GetCustomRole().IsCovenTeam()) return;
 
 
         if (target.Is(CustomRoles.Pestilence))

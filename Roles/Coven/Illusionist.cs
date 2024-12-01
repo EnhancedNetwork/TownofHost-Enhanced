@@ -67,7 +67,7 @@ internal class Illusionist : CovenManager
     {
         if (killer.CheckDoubleTrigger(target, () => { IllusionedPlayers[killer.PlayerId].Add(target.PlayerId); }))
         {
-            if (HasNecronomicon(killer) && !target.IsPlayerCoven())
+            if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
             {
                 var randomDeathReason = ChangeRandomDeath();
                 Main.PlayerStates[target.PlayerId].deathReason = randomDeathReason;
@@ -105,7 +105,7 @@ internal class Illusionist : CovenManager
         bool result = false;
         foreach (var player in IllusionedPlayers.Keys)
         {
-            if (IllusionedPlayers[player].Contains(target) && !GetPlayerById(target).IsPlayerCoven()) result = true;
+            if (IllusionedPlayers[player].Contains(target) && !GetPlayerById(target).GetCustomRole().IsCovenTeam()) result = true;
         }
         return result;
     }
@@ -115,7 +115,7 @@ internal class Illusionist : CovenManager
         bool result = false;
         foreach (var player in IllusionedPlayers.Keys)
         {
-            if (IllusionedPlayers[player].Contains(target) && GetPlayerById(target).IsPlayerCoven()) result = true;
+            if (IllusionedPlayers[player].Contains(target) && GetPlayerById(target).GetCustomRole().IsCovenTeam()) result = true;
         }
         return result;
     }

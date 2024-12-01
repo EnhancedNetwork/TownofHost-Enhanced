@@ -144,7 +144,7 @@ internal class Jinx : CovenManager
             or CustomRoles.Veteran
             or CustomRoles.Deputy)
             return false;
-        if (killer.IsPlayerCoven() && !CovenCanDieToJinx.GetBool()) return false;
+        if (killer.GetCustomRole().IsCovenTeam() && !CovenCanDieToJinx.GetBool()) return false;
 
         if (jinx.CheckForInvalidMurdering(killer) && jinx.RpcCheckAndMurder(killer, true))
         {
