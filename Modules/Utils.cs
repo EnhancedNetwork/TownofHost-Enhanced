@@ -1427,7 +1427,7 @@ public static class Utils
         {
             if (ShouldSplit && text.Length > 1200)
             {
-                text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
+                text.SplitMessage().Do(x => SendMessage(x, sendTo, title, logforChatManager, noReplay, false));
                 return;
             }
             //else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
