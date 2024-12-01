@@ -91,7 +91,7 @@ internal class VoodooMaster : CovenManager
         return false;
     }
     private void SetDoll(PlayerControl killer, PlayerControl target) {
-        if (AbilityLimit > 0 && (!target.IsPlayerCoven() || (target.IsPlayerCoven() && CanDollCoven.GetBool())))
+        if (AbilityLimit > 0 && (!target.GetCustomRole().IsCovenTeam() || (target.GetCustomRole().IsCovenTeam() && CanDollCoven.GetBool())))
         {
             Dolls[killer.PlayerId].Add(target.PlayerId);
             AbilityLimit--;
@@ -102,13 +102,13 @@ internal class VoodooMaster : CovenManager
             killer.SetKillCooldown();
             if (HasNecronomicon(killer)) ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         }
-        else if (target.IsPlayerCoven() && CanDollCoven.GetBool()) killer.Notify(GetString("VoodooMasterNoDollCoven"));
+        else if (target.GetCustomRole().IsCovenTeam() && CanDollCoven.GetBool()) killer.Notify(GetString("VoodooMasterNoDollCoven"));
         else killer.Notify(GetString("VoodooMasterNoDollsLeft"));
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (Dolls[_Player.PlayerId].Count < 1) return true;
-        if (killer.IsPlayerCoven()) return true;
+        if (killer.GetCustomRole().IsCovenTeam()) return true;
 
         PlayerControl ChoosenTarget = GetPlayerById(Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
 
@@ -133,7 +133,7 @@ internal class VoodooMaster : CovenManager
     {
         if (!Dolls[_Player.PlayerId].Contains(target.PlayerId)) return false;
         if (!HasNecronomicon(_Player)) return false;
-        if (!killer.IsPlayerCoven() || (killer.IsPlayerCoven() && NecroAbilityCanKillCov.GetBool()))
+        if (!killer.GetCustomRole().IsCovenTeam() || (killer.GetCustomRole().IsCovenTeam() && NecroAbilityCanKillCov.GetBool()))
         {
             killer.SetDeathReason(PlayerState.DeathReason.Sacrifice);
             killer.RpcMurderPlayer(killer);

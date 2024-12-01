@@ -69,7 +69,7 @@ internal class Poisoner : CovenManager
     {
         if (killer.CheckDoubleTrigger(target, () => { RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId); }))
         {
-            if (HasNecronomicon(killer) && !target.IsPlayerCoven())
+            if (HasNecronomicon(killer))
             {
                 if (target.GetCustomRole().IsCovenTeam())
                 {

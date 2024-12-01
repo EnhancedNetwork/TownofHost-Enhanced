@@ -81,7 +81,7 @@ internal class Conjurer : CovenManager
                     {
                         var dis = GetDistance(pos, player.transform.position);
                         if (dis > ConjureRadius.GetFloat()) continue;
-                        if (player.IsPlayerCoven() && !CovenDiesInBlast.GetBool()) continue;
+                        if (player.GetCustomRole().IsCovenTeam() && !CovenDiesInBlast.GetBool()) continue;
                         else
                         {
                             player.SetDeathReason(PlayerState.DeathReason.Bombed);
@@ -103,7 +103,7 @@ internal class Conjurer : CovenManager
                 {
                     var dis = GetDistance(GetPlayerById(NecroBombHolder).transform.position, player.transform.position);
                     if (dis > NecroRadius.GetFloat()) continue;
-                    if (player.IsPlayerCoven() && !CovenDiesInBlast.GetBool()) continue;
+                    if (player.GetCustomRole().IsCovenTeam() && !CovenDiesInBlast.GetBool()) continue;
                     else
                     {
                         player.SetDeathReason(PlayerState.DeathReason.Bombed);

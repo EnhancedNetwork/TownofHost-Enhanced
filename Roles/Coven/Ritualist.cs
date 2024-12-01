@@ -250,7 +250,7 @@ internal class Ritualist : CovenManager
     }
     public static bool CanBeConverted(PlayerControl pc)
     {
-        return pc != null && (!pc.IsPlayerCoven() && !pc.Is(CustomRoles.Enchanted) && !pc.IsTransformedNeutralApocalypse()) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
+        return pc != null && (!pc.GetCustomRole().IsCovenTeam() && !pc.IsTransformedNeutralApocalypse()) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }

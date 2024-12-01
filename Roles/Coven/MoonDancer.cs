@@ -158,7 +158,7 @@ internal class MoonDancer : CovenManager
         if (HasNecronomicon(killer))
         {
             var rd = IRandom.Instance;
-            if (target.IsPlayerCoven())
+            if (target.GetCustomRole().IsCovenTeam())
             {
                 killer.Notify(GetString("MoonDancerCantBlastOff"));
                 return false;
@@ -188,7 +188,7 @@ internal class MoonDancer : CovenManager
                 return true;
             }
         }
-        if (target.IsPlayerCoven() || target.Is(CustomRoles.Enchanted))
+        if (target.GetCustomRole().IsCovenTeam())
         {
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
             killer.Notify(GetString("MoonDancerGiveHelpfulAddon"));
@@ -218,7 +218,7 @@ internal class MoonDancer : CovenManager
             var addon = addons.RandomElement();
             var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
             var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
-            if (player.IsPlayerCoven() || player.Is(CustomRoles.Enchanted) || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
+            if (player.GetCustomRole().IsCovenTeam() || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
             {
                 if (helpful.Count <= 0)
                 {
