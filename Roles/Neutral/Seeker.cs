@@ -109,7 +109,7 @@ internal class Seeker : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-       Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
+        Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
     }
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
@@ -126,7 +126,7 @@ internal class Seeker : RoleBase
         {
             ResetTarget(player);
         }
-        
+
         if (totalPoints >= PointsToWinOpt)
         {
             TotalPoints[seekerId] = PointsToWinOpt;
@@ -143,7 +143,7 @@ internal class Seeker : RoleBase
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
-        
+
         return targetId;
     }
     private static void FreezeSeeker(PlayerControl player)

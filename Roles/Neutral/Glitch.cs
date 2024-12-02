@@ -1,10 +1,10 @@
 using AmongUs.GameOptions;
-using System.Text;
-using static TOHE.Translator;
-using static TOHE.Options;
 using Hazel;
-using TOHE.Roles.Core;
 using InnerNet;
+using System.Text;
+using TOHE.Roles.Core;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -269,7 +269,7 @@ internal class Glitch : RoleBase
     }
     public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || killer == null) return true; 
+        if (killer == target || killer == null) return true;
         if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));

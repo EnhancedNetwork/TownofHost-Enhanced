@@ -64,7 +64,7 @@ internal class Terrorist : RoleBase
         if (taskState.IsTaskFinished && (!state.IsSuicide || CanTerroristSuicideWin.GetBool()) && (state.deathReason != PlayerState.DeathReason.Armageddon))
         {
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
-            
+
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);

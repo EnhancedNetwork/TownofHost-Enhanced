@@ -1,6 +1,6 @@
 ﻿using Hazel;
-using System;
 using InnerNet;
+using System;
 using static TOHE.Translator;
 
 namespace TOHE;

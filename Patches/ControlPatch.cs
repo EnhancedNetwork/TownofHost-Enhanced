@@ -127,7 +127,7 @@ internal class ControllerManagerUpdatePatch
                     {
                         if (Options.CustomRoleSpawnChances.TryGetValue(subRole, out var soi))
                             Utils.ShowChildrenSettings(soi, ref sb, command: false);
-                        
+
                         addSett.Add(sb.ToString());
                     }
 

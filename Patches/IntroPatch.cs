@@ -128,8 +128,8 @@ class SetUpRoleTextPatch
                 __instance.RoleBlurbText.color = color;
                 __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
             }
-            else 
-            { 
+            else
+            {
                 if (!role.IsVanilla())
                 {
                     __instance.YouAreText.color = Utils.GetRoleColor(role);
@@ -370,7 +370,7 @@ class BeginCrewmatePatch
             }
             teamToDisplay = traitorTeam;
         }
-        
+
         return true;
     }
     public static void Postfix(IntroCutscene __instance)
@@ -411,11 +411,11 @@ class BeginCrewmatePatch
                 break;
             case CustomRoles.SoulCatcher:
             case CustomRoles.Specter:
-            case CustomRoles.Stalker:    
+            case CustomRoles.Stalker:
             case CustomRoles.PhantomTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
                 break;
-            case CustomRoles.Coroner:    
+            case CustomRoles.Coroner:
             case CustomRoles.TrackerTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
                 break;
@@ -552,7 +552,7 @@ class BeginImpostorPatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
         var role = PlayerControl.LocalPlayer.GetCustomRole();
-        
+
         if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             yourTeam = new();
@@ -718,4 +718,4 @@ class IntroCutsceneDestroyPatch
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
- 
+

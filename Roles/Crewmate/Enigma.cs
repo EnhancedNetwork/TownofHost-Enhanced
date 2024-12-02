@@ -1,6 +1,6 @@
-﻿using static TOHE.Options;
+﻿using static TOHE.MeetingHudStartPatch;
+using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -10,7 +10,7 @@ internal class Enigma : RoleBase
     private const int Id = 8100;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\

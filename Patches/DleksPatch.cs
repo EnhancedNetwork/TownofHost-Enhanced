@@ -103,7 +103,7 @@ public static class VentSetButtonsPatch
         if (GameStates.DleksIsActive && Main.IntroDestroyed)
         {
             enabled = false;
-            if (GameStates.IsMeeting) 
+            if (GameStates.IsMeeting)
                 ShowButtons = false;
         }
         return true;

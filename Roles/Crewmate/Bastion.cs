@@ -3,8 +3,8 @@ using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,7 +14,7 @@ internal class Bastion : RoleBase
     private const int Id = 10200;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
@@ -56,7 +56,7 @@ internal class Bastion : RoleBase
     {
         if (player.IsAlive())
             AbilityLimit += BastionAbilityUseGainWithEachTaskCompleted.GetFloat();
-        
+
         return true;
     }
     public override string GetProgressText(byte playerId, bool comms)
@@ -81,7 +81,7 @@ internal class Bastion : RoleBase
         if (!BombedVents.Contains(ventId)) return false;
 
         var pc = physics.myPlayer;
-        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId)) 
+        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
         {
             Logger.Info("Crewmate enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
             return false;

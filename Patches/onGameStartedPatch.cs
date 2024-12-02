@@ -1,15 +1,15 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
-using System;
 using InnerNet;
+using System;
 using System.Text;
-using UnityEngine;
-using TOHE.Patches;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -183,7 +183,7 @@ internal class ChangeRoleSettings
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
-                
+
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
                 CustomRoleManager.DoNotUnlockVentsList[pc.PlayerId] = [];
