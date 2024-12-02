@@ -390,8 +390,13 @@ internal class ChatCommands
                 case "/玩家":
                     canceled = true;
                     subArgs = args.Length < 2 ? "" : args[1];
-                    Utils.SendMessage(GetString("Message.MaxPlayers") + subArgs);
                     var numbereer = Convert.ToByte(subArgs);
+                    if (numbereer > 15 && GameStates.IsVanillaServer)
+                    {
+                        Utils.SendMessage(GetString("Message.MaxPlayersFailByRegion"));
+                        break;
+                    }
+                    Utils.SendMessage(GetString("Message.MaxPlayers") + numbereer);
                     if (GameStates.IsNormalGame)
                         GameOptionsManager.Instance.currentNormalGameOptions.MaxPlayers = numbereer;
                     
