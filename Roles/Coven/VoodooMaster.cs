@@ -90,7 +90,8 @@ internal class VoodooMaster : CovenManager
         }
         return false;
     }
-    private void SetDoll(PlayerControl killer, PlayerControl target) {
+    private void SetDoll(PlayerControl killer, PlayerControl target)
+    {
         if (AbilityLimit > 0 && (!target.GetCustomRole().IsCovenTeam() || (target.GetCustomRole().IsCovenTeam() && CanDollCoven.GetBool())))
         {
             Dolls[killer.PlayerId].Add(target.PlayerId);

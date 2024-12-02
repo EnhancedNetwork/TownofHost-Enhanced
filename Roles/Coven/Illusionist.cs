@@ -128,7 +128,7 @@ internal class Illusionist : CovenManager
     }
     public override void AfterMeetingTasks()
     {
-        if (ResetIllusionsPerRound.GetBool())  
+        if (ResetIllusionsPerRound.GetBool())
             IllusionedPlayers.Clear();
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
