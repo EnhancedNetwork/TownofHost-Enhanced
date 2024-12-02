@@ -1,9 +1,9 @@
-using UnityEngine;
-using static TOHE.Translator;
-using static TOHE.Options;
-using static TOHE.Roles.Core.CustomRoleManager;
 using AmongUs.GameOptions;
 using TOHE.Roles.Core.AssignManager;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Roles.Core.CustomRoleManager;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -21,6 +21,7 @@ internal class Amnesiac : RoleBase
     private static OptionItem ShowArrows;
     private static OptionItem AmnesiacCanUseVent;
     private static OptionItem VentCoolDown;
+    private static OptionItem VentDuration;
     private static OptionItem ReportWhenFailedRemember;
 
     private static readonly Dictionary<byte, bool> CanUseVent = [];
@@ -31,7 +32,8 @@ internal class Amnesiac : RoleBase
         ImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
-        VentCoolDown = FloatOptionItem.Create(Id + 14, "EngineerBase_VentCooldown", new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
+        VentCoolDown = FloatOptionItem.Create(Id + 14, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
+        VentDuration = FloatOptionItem.Create(Id + 16, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
         ReportWhenFailedRemember = BooleanOptionItem.Create(Id + 15, "ReportWhenFailedRemember", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]).SetHidden(true);
     }
     public override void Init()
@@ -57,7 +59,8 @@ internal class Amnesiac : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         opt.SetVision(ImpostorVision.GetBool());
-        opt.SetFloat(FloatOptionNames.EngineerCooldown, AmnesiacCanUseVent.GetBool() ? VentCoolDown.GetFloat() : 999f);
+        AURoleOptions.EngineerCooldown = VentCoolDown.GetFloat();
+        AURoleOptions.EngineerInVentMaxTime = VentDuration.GetFloat();
     }
     public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.TryGetValue(pc.PlayerId, out var canUse) && canUse;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

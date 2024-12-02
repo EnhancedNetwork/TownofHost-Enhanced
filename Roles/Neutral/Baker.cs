@@ -171,7 +171,8 @@ internal class Baker : RoleBase
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (BTOS2Baker.GetBool()) {
+        if (BTOS2Baker.GetBool())
+        {
             var sb = new StringBuilder();
             switch (BreadID) // 0 = Reveal, 1 = Roleblock, 2 = Barrier
             {
@@ -224,7 +225,7 @@ internal class Baker : RoleBase
         else if (HasBread(killer.PlayerId, target.PlayerId))
             killer.Notify(GetString("BakerAlreadyBreaded"));
 
-        else 
+        else
         {
             BreadList[killer.PlayerId].Add(target.PlayerId);
             SendRPC(0, killer, target);
@@ -236,7 +237,7 @@ internal class Baker : RoleBase
             Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
 
             if (BTOS2Baker.GetBool())
-            { 
+            {
                 switch (BreadID)
                 {
                     case 0: // Reveal
@@ -253,7 +254,7 @@ internal class Baker : RoleBase
                         BarrierList[killer.PlayerId].Add(target.PlayerId);
                         SendRPC(2, killer, target);
                         break;
-                } 
+                }
             }
         }
         return false;

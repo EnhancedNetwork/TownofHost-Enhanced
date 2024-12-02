@@ -60,7 +60,7 @@ public class Tired : IAddon
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
         }
     }
-    
+
     public static void AfterActionTasks(PlayerControl player)
     {
         // Speed

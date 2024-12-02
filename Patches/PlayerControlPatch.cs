@@ -3,21 +3,21 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using UnityEngine;
+using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Coven;
-using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
@@ -29,7 +29,7 @@ class CheckProtectPatch
     public static bool Prefix(PlayerControl __instance, PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
-        Logger.Info($"{ __instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckProtect");
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckProtect");
         var angel = __instance;
 
         if (AntiBlackout.SkipTasks)
@@ -928,7 +928,7 @@ class ReportDeadBodyPatch
             }
 
             PhantomRolePatch.OnReportDeadBody(pc, force);
-                
+
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 

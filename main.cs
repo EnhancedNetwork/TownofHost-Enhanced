@@ -12,7 +12,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
-using TOHE.Patches;
+using TOHE.Patches.Crowded;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -47,12 +47,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1129.220.00040"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 4";
+    public const string PluginVersion = "2024.1202.220.00050"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 5";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4
+    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
     public static readonly bool canaryRelease = true; // Latest: V2.1.0 Beta 3
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
@@ -68,7 +68,7 @@ public class Main : BasePlugin
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
-    
+
     public static readonly bool ShowDonationButton = true;
     public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
 
@@ -96,6 +96,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
+    public static ConfigEntry<bool> LongMode { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
@@ -126,7 +127,7 @@ public class Main : BasePlugin
     public static ConfigEntry<float> PlayerSpawnTimeOutCooldown { get; private set; }
 
     public static OptionBackupData RealOptionsData;
-    
+
     public static Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
     public static readonly Dictionary<int, string> AllClientRealNames = [];
@@ -137,7 +138,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
     const string LANGUAGE_FOLDER_NAME = "Language";
-    
+
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static NetworkedPlayerInfo LastVotedPlayerInfo;
@@ -195,7 +196,7 @@ public class Main : BasePlugin
     public static int BardCreations = 0;
     public static int MeetingsPassed = 0;
     public static long LastMeetingEnded = Utils.GetTimeStamp();
-    
+
 
     public static PlayerControl[] AllPlayerControls
     {
@@ -245,7 +246,7 @@ public class Main : BasePlugin
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
     public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
-    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese 
+    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
         ? TName_Snacks_CN.RandomElement()
         : TName_Snacks_EN.RandomElement();
 
@@ -276,8 +277,8 @@ public class Main : BasePlugin
                         {
                             var color = tmp[1].Trim().TrimStart('#');
                             if (Utils.CheckColorHex(color))
-                            { 
-                                roleColors[role] = "#"+color;
+                            {
+                                roleColors[role] = "#" + color;
                             }
                             else TOHE.Logger.Error($"Invalid Hexcolor #{color}", "LoadCustomRoleColor");
                         }
@@ -330,7 +331,7 @@ public class Main : BasePlugin
                 if (stream != null)
                 {
                     using StreamReader reader = new(stream);
-                    
+
                     string jsonData = reader.ReadToEnd();
                     Dictionary<string, string> jsonDict = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonData);
                     foreach (var kvp in jsonDict)
@@ -371,7 +372,7 @@ public class Main : BasePlugin
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
             {
                 UpdateCustomTranslation();
-                LoadCustomRoleColor(); 
+                LoadCustomRoleColor();
             }
         }
         catch (ArgumentException ex)
@@ -520,6 +521,7 @@ public class Main : BasePlugin
         DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
+        LongMode = Config.Bind("Client Options", "LongMode", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
@@ -756,35 +758,35 @@ public enum CustomRoles
     Benefactor,
     Bodyguard,
     Captain,
-    Celebrity, 
+    Celebrity,
     Chameleon,
     ChiefOfPolice,
     Cleanser,
     CopyCat,
-    Coroner, 
+    Coroner,
     Crusader,
-    Deceiver, 
+    Deceiver,
     Deputy,
     Detective,
     Dictator,
     Doctor,
     Enigma,
-    FortuneTeller, 
+    FortuneTeller,
     Grenadier,
     Guardian,
     GuessMaster,
-    Inspector, 
+    Inspector,
     Investigator,
     Jailer,
     Judge,
     Keeper,
-    Knight, 
+    Knight,
     LazyGuy,
     Lighter,
     Lookout,
     Marshall,
     Mayor,
-    Mechanic, 
+    Mechanic,
     Medic,
     Medium,
     Merchant,
@@ -795,8 +797,8 @@ public enum CustomRoles
     NiceMini,
     Observer,
     Oracle,
-    Overseer, 
-    Pacifist, 
+    Overseer,
+    Pacifist,
     President,
     Psychic,
     Randomizer,
@@ -830,10 +832,10 @@ public enum CustomRoles
     Berserker,
     BloodKnight,
     Collector,
-    Cultist, 
+    Cultist,
     CursedSoul,
     Death,
-    Demon, 
+    Demon,
     Doomsayer,
     Doppelganger,
     Executioner,
@@ -1003,7 +1005,7 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber   
+    Youtuber
 }
 //WinData
 public enum CustomWinner

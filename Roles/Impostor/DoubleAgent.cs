@@ -1,14 +1,13 @@
 ﻿using Hazel;
 using InnerNet;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
-using static TOHE.Utils;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
@@ -275,7 +274,7 @@ internal class DoubleAgent : RoleBase
     // Set bomb mark on player.
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (seen == null ) return string.Empty;
+        if (seen == null) return string.Empty;
         if (CurrentBombedPlayers.Contains(seen.PlayerId)) return ColorString(Color.red, "Ⓑ"); // L Rizz :)
         return string.Empty;
     }

@@ -10,7 +10,7 @@ internal class Undertaker : RoleBase
     private const int Id = 4900;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -20,7 +20,7 @@ internal class Undertaker : RoleBase
     private static OptionItem FreezeTime;
 
     private static readonly Dictionary<byte, Vector2> MarkedLocation = [];
-    
+
     private static float DefaultSpeed = new();
 
     public override void SetupCustomOption()
@@ -72,7 +72,7 @@ internal class Undertaker : RoleBase
         float yLoc = reader.ReadSingle();
 
         if (MarkedLocation.ContainsKey(PlayerId))
-            MarkedLocation[PlayerId] = new Vector2(xLoc,yLoc);
+            MarkedLocation[PlayerId] = new Vector2(xLoc, yLoc);
         else
             MarkedLocation.Add(PlayerId, ExtendedPlayerControl.GetBlackRoomPosition());
     }
@@ -116,10 +116,10 @@ internal class Undertaker : RoleBase
             target.SetRealKiller(killer);
 
             MarkedLocation[killer.PlayerId] = ExtendedPlayerControl.GetBlackRoomPosition();
-            
+
             SendRPC(killer.PlayerId);
             FreezeUndertaker(killer);
-            
+
             killer.SyncSettings();
         }
         return false;
@@ -127,7 +127,7 @@ internal class Undertaker : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        foreach(var playerId in MarkedLocation.Keys)
+        foreach (var playerId in MarkedLocation.Keys)
         {
             MarkedLocation[playerId] = ExtendedPlayerControl.GetBlackRoomPosition();
             Main.AllPlayerSpeed[playerId] = DefaultSpeed;

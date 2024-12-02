@@ -11,7 +11,7 @@ internal class Minion : RoleBase
     private const int Id = 27900;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
@@ -58,7 +58,7 @@ internal class Minion : RoleBase
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
             target.MarkDirtySettings();
-            
+
             _ = new LateTask(() =>
             {
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;

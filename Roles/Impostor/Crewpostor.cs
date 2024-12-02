@@ -1,6 +1,6 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using static TOHE.Options;
-using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
@@ -10,7 +10,7 @@ internal class Crewpostor : RoleBase
     private const int Id = 5800;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
@@ -49,15 +49,15 @@ internal class Crewpostor : RoleBase
         TasksDone[playerId] = 0;
         PlayerIds.Add(playerId);
     }
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) 
-    { 
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
+    {
         if (ForRecompute & !player.IsDead)
             return false;
         if (player.IsDead)
             return false;
 
         return true;
-    
+
     }
 
     private static void SendRPC(byte cpID, int tasksDone)
@@ -150,7 +150,7 @@ internal class Crewpostor : RoleBase
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
             }
-            else 
+            else
             {
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill Apocalypse Member：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Apocalypse Immune");
