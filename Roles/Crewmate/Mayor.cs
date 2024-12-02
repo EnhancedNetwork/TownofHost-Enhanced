@@ -11,7 +11,7 @@ internal partial class Mayor : RoleBase
     private const int Id = 12000;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
@@ -120,7 +120,7 @@ internal partial class Mayor : RoleBase
     public static bool VisibleToEveryone(PlayerControl target) => target.Is(CustomRoles.Mayor) && MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished;
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");

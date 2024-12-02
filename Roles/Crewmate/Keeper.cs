@@ -1,10 +1,10 @@
 ﻿using Hazel;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
-using static TOHE.Translator;
+using UnityEngine;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,7 +14,7 @@ internal class Keeper : RoleBase
     private const int Id = 26500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -30,7 +30,7 @@ internal class Keeper : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Keeper);
         KeeperUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxProtections", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Keeper])
             .SetValueFormat(OptionFormat.Times);
-      
+
     }
     public override void Init()
     {
@@ -95,7 +95,7 @@ internal class Keeper : RoleBase
         {
             byte keeperId = reader.ReadByte();
             DidVote[keeperId] = true;
-            
+
             int uses = reader.ReadInt32();
             keeperUses[keeperId] = uses;
 

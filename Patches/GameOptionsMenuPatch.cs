@@ -1,8 +1,8 @@
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
-using UnityEngine;
 using TOHE.Patches;
+using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -76,7 +76,7 @@ public static class GameOptionsMenuPatch
         Instance ??= __instance;
         // When is vanilla tab, run vanilla code
         if (ModGameOptionsMenu.TabIndex < 3) return true;
-        
+
         __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
         __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
         return false;
@@ -298,7 +298,7 @@ public static class GameOptionsMenuPatch
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
-       
+
         if (index < 3)
             return;
 
@@ -368,13 +368,15 @@ public static class GameOptionsMenuPatch
 
         BaseGameSetting baseGameSetting = item switch
         {
-            BooleanOptionItem => CreateAndInvoke(() => {
+            BooleanOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<CheckboxGameSetting>();
                 x.Type = OptionTypes.Checkbox;
 
                 return x;
             }),
-            IntegerOptionItem integerOptionItem => CreateAndInvoke(() => {
+            IntegerOptionItem integerOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<IntGameSetting>();
                 x.Type = OptionTypes.Int;
                 x.Value = integerOptionItem.GetInt();
@@ -386,7 +388,8 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            FloatOptionItem floatOptionItem => CreateAndInvoke(() => {
+            FloatOptionItem floatOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<FloatGameSetting>();
                 x.Type = OptionTypes.Float;
                 x.Value = floatOptionItem.GetFloat();
@@ -398,15 +401,17 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            StringOptionItem stringOptionItem => CreateAndInvoke(() => {
+            StringOptionItem stringOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<StringGameSetting>();
-                x.Type = OptionTypes.String; 
-                x.Values = new StringNames[stringOptionItem.Selections.Length]; 
+                x.Type = OptionTypes.String;
+                x.Values = new StringNames[stringOptionItem.Selections.Length];
                 x.Index = stringOptionItem.GetInt();
 
                 return x;
             }),
-            PresetOptionItem presetOptionItem => CreateAndInvoke(() => {
+            PresetOptionItem presetOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<StringGameSetting>();
                 x.Type = OptionTypes.String;
                 x.Values = new StringNames[presetOptionItem.ValuePresets];
@@ -495,9 +500,8 @@ public static class NumberOptionPatch
                 __instance.Value = (float)Math.Round(__instance.Value, 2);
                 break;
             case StringNames.GameNumImpostors:
-                __instance.ValidRange = new(0, Crowded.MaxImpostors);
-                __instance.Value = (float)Math.Round(__instance.Value, 2);
-                // if (DebugModeManager.AmDebugger) __instance.ValidRange.min = 0;
+                // Changing the range of this option will make it always reset to the default value 3
+                // TO DO : Fix shit
                 break;
         }
 
@@ -622,7 +626,7 @@ public static class StringOptionPatch
                     _ => 0.35f,
                 };
 
-               SetupHelpIcon(role, __instance);
+                SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
             return false;
@@ -645,7 +649,8 @@ public static class StringOptionPatch
         icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
         var GameOptionsButton = icon.GetComponent<GameOptionButton>();
         GameOptionsButton.OnClick = new();
-        GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => {
+        GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
 
             if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
             {

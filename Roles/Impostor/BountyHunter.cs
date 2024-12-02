@@ -13,7 +13,7 @@ internal class BountyHunter : RoleBase
     private const int Id = 800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -219,7 +219,7 @@ internal class BountyHunter : RoleBase
         var target = cTargets.RandomElement();
         var targetId = target.PlayerId;
         Targets[playerId] = targetId;
-        
+
         if (ShowTargetArrow) TargetArrow.Add(playerId, targetId);
         Logger.Info($"Change {player.GetNameWithRole()} target to: {target.GetNameWithRole()}", "BountyHunter");
 

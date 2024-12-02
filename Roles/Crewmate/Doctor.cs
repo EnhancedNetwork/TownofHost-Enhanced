@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
-using static TOHE.Translator;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -10,7 +10,7 @@ internal class Doctor : RoleBase
     private const int Id = 6700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\

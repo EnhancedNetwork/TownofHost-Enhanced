@@ -12,7 +12,7 @@ internal class Tracefinder : RoleBase
     private const int Id = 7300;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -82,7 +82,8 @@ internal class Tracefinder : RoleBase
 
         var tempPositionTarget = target.transform.position;
 
-        _ = new LateTask(() => {
+        _ = new LateTask(() =>
+        {
             if (!GameStates.IsMeeting && GameStates.IsInTask)
             {
                 foreach (var pc in playerIdList)

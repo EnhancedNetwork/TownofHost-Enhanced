@@ -13,7 +13,7 @@ internal class Warlock : RoleBase
     private const int Id = 5100;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -67,7 +67,7 @@ internal class Warlock : RoleBase
         if (!Main.CheckShapeshift[killer.PlayerId] && !IsCurseAndKill[killer.PlayerId])
         {
             if (target.Is(CustomRoles.LazyGuy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18) return false;
-            
+
             IsCursed = true;
             killer.SetKillCooldown();
             killer.RPCPlayCustomSound("Line");
@@ -76,7 +76,7 @@ internal class Warlock : RoleBase
             IsCurseAndKill[killer.PlayerId] = true;
             return false;
         }
-        
+
         if (Main.CheckShapeshift[killer.PlayerId])
         {
             killer.RpcCheckAndMurder(target);
@@ -99,7 +99,7 @@ internal class Warlock : RoleBase
                 Vector2 cppos = cp.transform.position;
                 Dictionary<PlayerControl, float> cpdistance = [];
                 float dis;
-                
+
                 foreach (PlayerControl p in Main.AllAlivePlayerControls)
                 {
                     if (p.PlayerId == cp.PlayerId) continue;
@@ -107,7 +107,7 @@ internal class Warlock : RoleBase
                     if (!WarlockCanKillAllies.GetBool() && p.Is(Custom_Team.Impostor)) continue;
                     if (Pelican.IsEaten(p.PlayerId) || Medic.IsProtected(p.PlayerId)) continue;
                     if (p.Is(CustomRoles.Glitch) || p.Is(CustomRoles.Pestilence)) continue;
-                    
+
                     dis = Utils.GetDistance(cppos, p.transform.position);
                     cpdistance.Add(p, dis);
                     Logger.Info($"{p?.Data?.PlayerName} distance: {dis}", "Warlock");

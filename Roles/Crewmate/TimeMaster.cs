@@ -1,11 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -37,7 +37,7 @@ internal class TimeMaster : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         TimeMasterMaxUses = IntegerOptionItem.Create(Id + 12, "TimeMasterMaxUses", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
             .SetValueFormat(OptionFormat.Times);
-        TimeMasterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id+ 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
+        TimeMasterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.TimeMaster])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()

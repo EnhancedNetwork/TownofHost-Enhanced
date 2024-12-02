@@ -9,7 +9,7 @@ internal class Parasite : RoleBase
     private const int Id = 5900;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\

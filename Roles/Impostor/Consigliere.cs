@@ -10,7 +10,7 @@ internal class Consigliere : RoleBase
     private const int Id = 3100;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -61,7 +61,8 @@ internal class Consigliere : RoleBase
                 DivinationCount[playerId] = reader.ReadInt32();
             else
                 DivinationCount.Add(playerId, DivinationMaxCount.GetInt());
-        }{
+        }
+        {
             if (DivinationCount.ContainsKey(playerId))
                 DivinationTarget[playerId].Add(reader.ReadByte());
             else
@@ -76,7 +77,7 @@ internal class Consigliere : RoleBase
         {
             return killer.CheckDoubleTrigger(target, () => { SetDivination(killer, target); });
         }
-        else return true;  
+        else return true;
     }
 
     private static bool IsDivination(byte seer, byte target)
@@ -110,6 +111,6 @@ internal class Consigliere : RoleBase
         });
         return IsWatch;
     }
-    public override string GetProgressText(byte playerId, bool comms) 
+    public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(DivinationCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Consigliere).ShadeColor(0.25f) : Color.gray, DivinationCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
 }

@@ -9,7 +9,7 @@ public class Lazy : IAddon
 
     private static OptionItem TasklessCrewCanBeLazy;
     private static OptionItem TaskBasedCrewCanBeLazy;
-    
+
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Lazy, canSetNum: true);
@@ -30,8 +30,8 @@ public class Lazy : IAddon
             || player.Is(CustomRoles.LazyGuy))
             return false;
 
-        if (player.GetCustomRole().IsNeutral() 
-            || player.GetCustomRole().IsImpostor() 
+        if (player.GetCustomRole().IsNeutral()
+            || player.GetCustomRole().IsImpostor()
             || (player.GetCustomRole().IsTasklessCrewmate() && !TasklessCrewCanBeLazy.GetBool())
             || (player.GetCustomRole().IsTaskBasedCrewmate() && !TaskBasedCrewCanBeLazy.GetBool()))
             return false;

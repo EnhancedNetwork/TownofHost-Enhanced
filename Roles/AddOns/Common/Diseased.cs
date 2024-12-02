@@ -65,8 +65,8 @@ public class Diseased : IAddon
         }
     }
 
-   public static void CheckMurder(PlayerControl killer)
-   {
+    public static void CheckMurder(PlayerControl killer)
+    {
         if (KilledDiseased.ContainsKey(killer.PlayerId))
         {
             // Key already exists, update the value
@@ -77,7 +77,7 @@ public class Diseased : IAddon
             // Key doesn't exist, add the key-value pair
             KilledDiseased.Add(killer.PlayerId, 1);
         }
-   }
+    }
 }
 
 
