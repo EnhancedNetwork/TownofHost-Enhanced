@@ -34,7 +34,7 @@ public class Mare : IAddon
         playerIdList.Remove(playerId);
     }
     public static bool IsEnable => playerIdList.Any();
-    
+
     public static float GetKillCooldown => Utils.IsActive(SystemTypes.Electrical) ? KillCooldownInLightsOut.GetFloat() : DefaultKillCooldown;
 
     public static void ApplyGameOptions(byte playerId)

@@ -1,12 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -17,6 +17,7 @@ internal class Veteran : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Veteran);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;
@@ -56,7 +57,7 @@ internal class Veteran : RoleBase
         if (player.IsAlive())
             AbilityLimit += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
         SendSkillRPC();
-        
+
         return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
@@ -138,7 +139,7 @@ internal class Veteran : RoleBase
         => AbilityLimit < 1;
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => VeteranInProtect.Clear();
-    
+
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();

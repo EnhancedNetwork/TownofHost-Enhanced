@@ -1,15 +1,15 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
-using System;
 using InnerNet;
+using System;
 using System.Text;
-using UnityEngine;
-using TOHE.Patches;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -133,7 +133,7 @@ internal class ChangeRoleSettings
                     sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc != null).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
                     var msg = sb.ToString();
                     Utils.SendMessage(msg);
-                    Utils.ErrorEnd("Player Have Invalid Color");
+                    CriticalErrorManager.SetCreiticalError("Player Have Invalid Color", true);
                     Logger.Error(msg, "CoStartGame");
                 }
             }
@@ -183,7 +183,7 @@ internal class ChangeRoleSettings
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
-                
+
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
                 CustomRoleManager.DoNotUnlockVentsList[pc.PlayerId] = [];
@@ -241,7 +241,7 @@ internal class ChangeRoleSettings
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Change Role Setting Postfix");
+            CriticalErrorManager.SetCreiticalError("Change Role Setting Postfix", true, ex.ToString());
             Utils.ThrowException(ex);
         }
     }
@@ -509,7 +509,7 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Select Role Prefix");
+            CriticalErrorManager.SetCreiticalError("Select Role Prefix", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }

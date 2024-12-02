@@ -12,7 +12,7 @@ internal class Witch : RoleBase
     private const int Id = 2500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -182,7 +182,7 @@ internal class Witch : RoleBase
                 Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
-        
+
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
@@ -240,6 +240,15 @@ internal class Witch : RoleBase
         else
         {
             hud.KillButton.OverrideText(GetString("KillButtonText"));
+        }
+    }
+
+    public override void Remove(byte playerId)
+    {
+        if (SpelledPlayer.ContainsKey(playerId))
+        {
+            SpelledPlayer[playerId].Clear();
+            SendRPC(true, playerId);
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
-using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 internal class Agitater : RoleBase
@@ -98,7 +98,7 @@ internal class Agitater : RoleBase
         AgitaterHasBombed = true;
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        
+
         _ = new LateTask(() =>
         {
             if (CurrentBombedPlayer != byte.MaxValue && GameStates.IsInTask)

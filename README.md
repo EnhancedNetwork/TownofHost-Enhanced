@@ -109,6 +109,9 @@
 ### :star: [Reactor](https://github.com/NuclearPowered/Reactor)
 >
 > - Reference: Disable the 5s timeout on custom servers
+### :star: [CrowdedMod](https://github.com/CrowdedMods/CrowdedMod)
+>
+> - We included CrowdedMod in our Mod
 ---
 
 # Legal License Notice

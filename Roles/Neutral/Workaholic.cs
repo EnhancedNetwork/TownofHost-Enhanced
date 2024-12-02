@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
 
 //Thanks TOH_Y
 namespace TOHE.Roles.Neutral;
@@ -12,7 +12,7 @@ internal class Workaholic : RoleBase
     private const int Id = 15800;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -51,7 +51,7 @@ internal class Workaholic : RoleBase
     {
         PlayerIds.Add(playerId);
     }
-    
+
     public static bool OthersKnowWorka(PlayerControl target)
         => WorkaholicVisibleToEveryone.GetBool() && target.Is(CustomRoles.Workaholic);
 
@@ -109,6 +109,7 @@ internal class Workaholic : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Workaholic) return false;
         if (WorkaholicVisibleToEveryone.GetBool())
         {
             if (!isUI) Utils.SendMessage(GetString("GuessWorkaholic"), pc.PlayerId);
