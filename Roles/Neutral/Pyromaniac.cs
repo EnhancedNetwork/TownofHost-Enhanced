@@ -68,8 +68,8 @@ internal class Pyromaniac : RoleBase
         }
         else
         {
-            return killer.CheckDoubleTrigger(target, () => 
-            { 
+            return killer.CheckDoubleTrigger(target, () =>
+            {
                 DousedList.Add(target.PlayerId);
                 killer.SetKillCooldown(DouseCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);

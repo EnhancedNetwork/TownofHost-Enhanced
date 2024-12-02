@@ -67,7 +67,7 @@ internal class CopyCat : RoleBase
                 continue;
             }
             ////////////           /*remove the settings for current role*/             /////////////////////
-            
+
             var pcRole = pc.GetCustomRole();
             if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Retributionist)
             {
@@ -152,7 +152,7 @@ internal class CopyCat : RoleBase
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
             return false;
-            
+
         }
         killer.Notify(GetString("CopyCatCanNotCopy"));
         killer.ResetKillCooldown();

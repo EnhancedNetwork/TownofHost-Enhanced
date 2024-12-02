@@ -16,7 +16,7 @@ internal class Alchemist : RoleBase
     private const int Id = 6400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
@@ -385,14 +385,14 @@ internal class Alchemist : RoleBase
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (seer == null || !seer.IsAlive() || isForMeeting || !isForHud) return string.Empty;
-        
+
         var str = new StringBuilder();
         if (IsInvis(seer.PlayerId))
         {
             var remainTime = InvisTime[seer.PlayerId] + (long)InvisDuration.GetFloat() - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
         }
-        else 
+        else
         {
             switch (PotionID)
             {
@@ -434,7 +434,7 @@ internal class Alchemist : RoleBase
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null || !GameStates.IsInTask) return string.Empty;
-        
+
         var str = new StringBuilder();
         switch (PotionID)
         {
@@ -466,7 +466,7 @@ internal class Alchemist : RoleBase
                 break;
         }
         if (FixNextSabo) str.Append("<color=#3333ff>★</color>");
-        
+
         return str.ToString();
     }
     public override void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, PlayerControl player)

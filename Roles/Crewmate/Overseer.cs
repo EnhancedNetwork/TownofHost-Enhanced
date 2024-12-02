@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -198,7 +198,7 @@ internal class Overseer : RoleBase
         else
         {
             var (farTarget, farTime) = data;
-            
+
             if (!farTarget.IsAlive())
             {
                 OverseerTimer.Remove(playerId);

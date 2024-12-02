@@ -61,8 +61,8 @@ internal class PotionMaster : RoleBase
         byte playerId = reader.ReadByte();
 
         AbilityLimit = reader.ReadSingle();
-          RitualTarget[playerId].Add(reader.ReadByte());
-        
+        RitualTarget[playerId].Add(reader.ReadByte());
+
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

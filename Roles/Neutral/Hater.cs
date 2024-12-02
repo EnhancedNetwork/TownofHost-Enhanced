@@ -27,7 +27,7 @@ internal class Hater : RoleBase
     private static OptionItem CanKillContagious;
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
-    
+
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);
@@ -94,7 +94,7 @@ internal class Hater : RoleBase
 
         killer.SetDeathReason(PlayerState.DeathReason.Sacrifice);
         killer.RpcMurderPlayer(killer);
-        
+
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "Hater");
         return false;
     }

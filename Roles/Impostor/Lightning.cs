@@ -12,7 +12,7 @@ internal class Lightning : RoleBase
     private const int Id = 24100;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -72,10 +72,10 @@ internal class Lightning : RoleBase
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    
+
     public static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
     private static bool IsGhost(byte id) => GhostPlayer.Contains(id);
-    
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || !killer.Is(CustomRoles.Lightning)) return false;

@@ -16,7 +16,7 @@ class AddTasksFromListPatch
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
-        
+
         List<NormalPlayerTask> disabledTasks = [];
 
         foreach (var task in unusedTasks.GetFastEnumerator())
@@ -253,7 +253,7 @@ class RpcSetTasksPatch
         {
             TasksList.Add((byte)shortTasks[i].Index);
         }
-        
+
         if (AmongUsClient.Instance.AmClient)
         {
             __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());

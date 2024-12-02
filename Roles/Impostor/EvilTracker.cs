@@ -13,7 +13,7 @@ internal class EvilTracker : RoleBase
     private const int Id = 1400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => (TargetMode)OptionTargetMode.GetValue() == TargetMode.Never ? CustomRoles.Impostor : CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -101,10 +101,10 @@ internal class EvilTracker : RoleBase
 
     private static bool CanTarget(byte playerId)
         => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
-    
+
     private static byte GetTargetId(byte playerId)
         => Target.TryGetValue(playerId, out var targetId) ? targetId : byte.MaxValue;
-    
+
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
@@ -153,7 +153,7 @@ internal class EvilTracker : RoleBase
             Target[trackerId] = targetId; // Set Target
             if (CurrentTargetMode != TargetMode.Always)
                 CanSetTarget[trackerId] = false; // Target cannot be re-set
-            
+
             if (AmongUsClient.Instance.AmHost)
                 TargetArrow.Add(trackerId, targetId);
         }

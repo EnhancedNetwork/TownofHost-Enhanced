@@ -45,7 +45,7 @@ internal class Disperser : RoleBase
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (shapeshifter.PlayerId == target.PlayerId) return false;
-        
+
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (!pc.CanBeTeleported())

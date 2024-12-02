@@ -16,7 +16,7 @@ internal class Puppeteer : RoleBase
     private const int Id = 4300;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -82,19 +82,19 @@ internal class Puppeteer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.LazyGuy) 
+        if (target.Is(CustomRoles.LazyGuy)
             || target.Is(CustomRoles.Lazy)
             || target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
             return false;
 
-            return killer.CheckDoubleTrigger(target, () => 
-            {         
-                PuppeteerList[target.PlayerId] = killer.PlayerId;
-                killer.SetKillCooldown();
-                SendRPC(killer.PlayerId, target.PlayerId, 1);
-                killer.RPCPlayCustomSound("Line");
-                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-            });
+        return killer.CheckDoubleTrigger(target, () =>
+        {
+            PuppeteerList[target.PlayerId] = killer.PlayerId;
+            killer.SetKillCooldown();
+            SendRPC(killer.PlayerId, target.PlayerId, 1);
+            killer.RPCPlayCustomSound("Line");
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
+        });
     }
 
     private void OnFixedUpdateOthers(PlayerControl puppet, bool lowLoad, long nowTime)
