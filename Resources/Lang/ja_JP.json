@@ -2295,6 +2295,7 @@
   "Message.YTPlanNotice": "注意：このロビーでは「YouTuberプラン」が有効になっており、ホストは次のゲームで役割を指定してコンテンツを作成しやすくすることができます。ホストがこの機能を乱用した場合、ゲームを終了するか、報告してください。\n現在の作成者の資格:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>エラー</b></size></color>\n<color=#ff1919>このコマンドはホストのみ使用できます。</color>",
   "Message.MaxPlayers": "最大プレイヤー数が設定されました ",
+  "Message.MaxPlayersFailByRegion": "Could not set max players: Vanilla regions support a maximum of 15 players.",
   "Message.GhostRoleInfo": "<size=90%><b>ゴーストロール情報</b></size>\nこんにちは！ゴーストロールについて少し…<size=75%>\n\n<size=75%>ゴーストロールはゲームに大きな影響を与えるため、あまり詳しくない場合や小さなロビーではお勧めしません。説明に特に記載がない限り、ガードボタンが彼らの能力ボタンです ;) </size>\n\n<size=75%><b>スポーンについて：</b>\nゴーストロールは死後にのみスポーンします。死亡した最初のx人の (チーム) メンバーがそれらを得ます。</size>\n\n<size=50%><b>PS：</b>以前のロールにタスクがなかった場合 (例：シェリフ) 、ゴーストロールとしてのタスクはタスク勝利には必要ありません</size>",
   "ApocalypseInfoTitle": "中立黙示録情報:",
   "Message.ApocalypseInfo": "<color=#ff174f>黙示録</color>チームの各役割には、変身を遂げるための独自の目標があります。\n<color=#2B0804>変身後の</color> <color=#ff174f>黙示録</color>メンバーはゲームに大きな変化をもたらし、不死身になります (投票でのみ排除可能) が、変身したことは全員に通知されます。\n\n役割: <color=#e5f6b4>疫病媒介者</color>, <color=#A675A1>魂の収集者</color>, <color=#bf9f7a>パン職人</color>, <color=#cc0044>狂戦士</color>\n変身後: <color=#343136>ペスティレンス</color>, <color=#644661>死</color>, <color=#83461c>飢饉</color>, <color=#2B0804>戦争</color>\n\n黙示録のメンバーはお互いの役割や能力アイコンを見ることができます。\n中立のキラーと同様に、黙示録のメンバーもゲームを続ける存在です。楽しんでください！",
