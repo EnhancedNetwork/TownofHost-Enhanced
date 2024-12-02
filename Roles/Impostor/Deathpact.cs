@@ -16,7 +16,7 @@ internal class Deathpact : RoleBase
     private const int Id = 1200;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -147,7 +147,7 @@ internal class Deathpact : RoleBase
             return;
         }
 
-        if (PlayersInDeathpact.Any(a => a.Value.Any(b => b.PlayerId == player.PlayerId) && a.Value.Count == NumberOfPlayersInPact.GetInt() ))
+        if (PlayersInDeathpact.Any(a => a.Value.Any(b => b.PlayerId == player.PlayerId) && a.Value.Count == NumberOfPlayersInPact.GetInt()))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, VisionWhileInPact.GetFloat());
@@ -219,7 +219,7 @@ internal class Deathpact : RoleBase
     {
         if (deathpact == null || target == null || target.Data.Disconnected) return;
         if (!target.IsAlive()) return;
-        
+
         target.SetDeathReason(PlayerState.DeathReason.Suicide);
         target.RpcMurderPlayer(target);
         target.SetRealKiller(deathpact);

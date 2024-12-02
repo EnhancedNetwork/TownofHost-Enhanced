@@ -16,13 +16,13 @@ public class Influenced : IAddon
     public void Remove(byte playerId)
     { }
     public static void ChangeVotingData(Dictionary<byte, int> VotingData)
-    { 
+    {
         //The incoming votedata does not count influenced votes
         HashSet<byte> playerIdList = [];
 
         Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Influenced))
             .Do(x => playerIdList.Add(x.PlayerId));
-        
+
         if (playerIdList.Count == 0) return;
         if (playerIdList.Count >= Main.AllAlivePlayerControls.Length) return;
 

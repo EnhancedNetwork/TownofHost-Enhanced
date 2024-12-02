@@ -1,9 +1,9 @@
 using Hazel;
-using UnityEngine;
-using static TOHE.Translator;
-using static TOHE.Options;
 using InnerNet;
 using TOHE.Roles.Coven;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -13,7 +13,7 @@ internal class Snitch : RoleBase
     private const int Id = 9500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\

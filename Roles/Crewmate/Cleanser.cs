@@ -20,7 +20,7 @@ internal class Cleanser : RoleBase
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<byte> CleansedPlayers = [];
-    private readonly Dictionary<byte,byte> CleanserTarget = [];
+    private readonly Dictionary<byte, byte> CleanserTarget = [];
     private bool DidVote;
 
     public override void SetupCustomOption()

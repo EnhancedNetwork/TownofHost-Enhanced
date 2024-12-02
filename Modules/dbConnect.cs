@@ -1,11 +1,11 @@
-﻿using System;
-using System.Text.Json;
+﻿using AmongUs.Data;
+using System;
 using System.IO;
 using System.Reflection;
-using static TOHE.Translator;
-using AmongUs.Data;
-using IEnumerator = System.Collections.IEnumerator;
+using System.Text.Json;
 using UnityEngine.Networking;
+using static TOHE.Translator;
+using IEnumerator = System.Collections.IEnumerator;
 
 namespace TOHE;
 
@@ -104,7 +104,7 @@ public class dbConnect
             // Build not found
             shouldDisconnect = true;
         }
-        
+
         if (shouldDisconnect)
         {
             if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)

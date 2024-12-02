@@ -110,7 +110,7 @@ internal class Executioner : RoleBase
             }
             else
             {
-                Logger.Warn("Warning! No suitableable target was found for executioner, switching role","Executioner.Add");
+                Logger.Warn("Warning! No suitableable target was found for executioner, switching role", "Executioner.Add");
                 ChangeRole();
             }
         }

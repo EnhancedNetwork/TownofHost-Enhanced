@@ -17,7 +17,7 @@ internal class Inspector : RoleBase
     //===========================SETUP================================\\
     private const int Id = 8300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -237,7 +237,7 @@ internal class Inspector : RoleBase
                 }
                 else
                 {
-                    if 
+                    if
                     (
                         (
                         ((target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId))) 
@@ -454,7 +454,7 @@ internal class Inspector : RoleBase
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
-    
+
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
 }

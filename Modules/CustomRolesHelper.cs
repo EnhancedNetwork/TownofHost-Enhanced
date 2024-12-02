@@ -2,11 +2,11 @@ using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Core;
 using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE;
@@ -140,7 +140,7 @@ public static class CustomRolesHelper
             CustomRoles.Doomsayer or
             CustomRoles.SoulCollector or
             CustomRoles.Death or
-            CustomRoles.Berserker or 
+            CustomRoles.Berserker or
             CustomRoles.War or
             CustomRoles.Baker or
             CustomRoles.Famine or
@@ -549,7 +549,7 @@ public static class CustomRolesHelper
                     return false;
 
 
-                if (pc.Is(CustomRoles.CopyCat) 
+                if (pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool()
                     || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool())
                     || (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool()))
@@ -769,9 +769,9 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Rebirth:
-                if (pc.Is(CustomRoles.Doppelganger) 
+                if (pc.Is(CustomRoles.Doppelganger)
                     || pc.Is(CustomRoles.Jester)
-                    || pc.Is(CustomRoles.Zombie) 
+                    || pc.Is(CustomRoles.Zombie)
                     || pc.Is(CustomRoles.Solsticer) || pc.IsNeutralApocalypse()) return false;
                 break;
 
@@ -1037,7 +1037,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Oiiai:
-                if (pc.Is(CustomRoles.Loyal) 
+                if (pc.Is(CustomRoles.Loyal)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Innocent)
                     || pc.Is(CustomRoles.PunchingBag))
@@ -1090,14 +1090,14 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sloth))
                     return false;
                 break;
-            
-             case CustomRoles.Susceptible:
+
+            case CustomRoles.Susceptible:
                 if (pc.Is(CustomRoles.Jester))
                     return false;
                 break;
 
             case CustomRoles.Sloth:
-                if (pc.Is(CustomRoles.Swooper) 
+                if (pc.Is(CustomRoles.Swooper)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Statue)
@@ -1112,7 +1112,7 @@ public static class CustomRolesHelper
                 break;
             case CustomRoles.Evader:
                 if (pc.IsNeutralApocalypse())
-                    return false; 
+                    return false;
                 break;
         }
 

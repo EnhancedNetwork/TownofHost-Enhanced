@@ -1,9 +1,9 @@
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using UnityEngine;
-using static TOHE.Utils;
 using static TOHE.Translator;
-using AmongUs.GameOptions;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -13,14 +13,14 @@ internal class Telecommunication : RoleBase
     private const int Id = 12500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
     private static OptionItem CanCheckCamera;
     private static OptionItem CanVent;
-    
+
     private static bool IsAdminWatch;
     private static bool IsVitalWatch;
     private static bool IsDoorLogWatch;

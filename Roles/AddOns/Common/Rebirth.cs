@@ -1,7 +1,7 @@
 ﻿using TOHE.Modules;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -31,7 +31,7 @@ public class Rebirth : IAddon
         Rebirths[playerId] = RebirthUses.GetInt();
         VotedCount[playerId] = [];
     }
-    public void Remove(byte Playerid) 
+    public void Remove(byte Playerid)
     {
         Rebirths.Remove(Playerid);
     }
@@ -44,7 +44,7 @@ public class Rebirth : IAddon
     }
     public static void OnReportDeadBody()
     {
-        foreach(var KvP in VotedCount)
+        foreach (var KvP in VotedCount)
         {
             KvP.Value.Clear();
         }
@@ -53,14 +53,14 @@ public class Rebirth : IAddon
     {
         NewExiledPlayer = default;
         if (!pc.Is(CustomRoles.Rebirth)) return false;
-        List<PlayerControl> list = [..Main.AllAlivePlayerControls];
+        List<PlayerControl> list = [.. Main.AllAlivePlayerControls];
         if (OnlyVoted.GetBool())
         {
-            list = [..VotedCount[pc.PlayerId].Select(x => GetPlayerById(x))];
+            list = [.. VotedCount[pc.PlayerId].Select(x => GetPlayerById(x))];
         }
 
         var ViablePlayer = list.Where(x => x != null && x.PlayerId != pc.PlayerId).Shuffle()
-            .FirstOrDefault(x => !x.IsHost() && AntiBlackout.ExilePlayerId != x.PlayerId && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) && 
+            .FirstOrDefault(x => !x.IsHost() && AntiBlackout.ExilePlayerId != x.PlayerId && !x.IsAnySubRole(x => x.IsConverted()) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Knighted) &&
 /*All converters */ !x.Is(CustomRoles.Cultist) && !x.Is(CustomRoles.Infectious) && !x.Is(CustomRoles.Virus) && !x.Is(CustomRoles.Jackal) && !x.Is(CustomRoles.Admirer) &&
                 !x.Is(CustomRoles.Lovers) && !x.Is(CustomRoles.Romantic) && !x.Is(CustomRoles.Doppelganger) && !x.GetCustomRole().IsImpostor() && !x.Is(CustomRoles.Solsticer) && !x.Is(CustomRoles.NiceMini));
 

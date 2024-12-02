@@ -10,7 +10,7 @@ internal class Benefactor : RoleBase
     private const int Id = 26400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -146,13 +146,13 @@ internal class Benefactor : RoleBase
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        
+
         if (!HasEnabled) return;
         if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;
-        
+
         byte playerId = player.PlayerId;
-        
+
         if (player.Is(CustomRoles.Benefactor))
         {
             if (!TaskMarkPerRound.ContainsKey(playerId)) TaskMarkPerRound[playerId] = 0;
@@ -216,7 +216,7 @@ internal class Benefactor : RoleBase
             shieldedPlayers.Remove(targetId);
             target?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BKProtectOut")));
             target?.RpcGuardAndKill();
-            
+
             SendRPC(type: 4, targetId: targetId);
         }
     }

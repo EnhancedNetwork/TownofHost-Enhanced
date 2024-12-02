@@ -1,5 +1,5 @@
-﻿using static TOHE.Options;
-using UnityEngine;
+﻿using UnityEngine;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 

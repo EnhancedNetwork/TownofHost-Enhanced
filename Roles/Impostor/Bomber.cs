@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
@@ -11,7 +11,7 @@ internal class Bomber : RoleBase
     private const int Id = 700;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\

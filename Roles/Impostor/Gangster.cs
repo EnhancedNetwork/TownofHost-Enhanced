@@ -1,12 +1,12 @@
 ﻿using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Impostor;
 
@@ -155,7 +155,7 @@ internal class Gangster : RoleBase
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
         return true;
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId)? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     private bool CanRecruit(byte id) => AbilityLimit >= 1;
     private static bool CanBeGansterRecruit(PlayerControl pc)

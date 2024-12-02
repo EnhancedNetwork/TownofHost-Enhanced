@@ -11,7 +11,7 @@ internal class Captain : RoleBase
     private const int Id = 26300;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -82,7 +82,7 @@ internal class Captain : RoleBase
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()) 
                               ||                           (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()) ||
-                                                           (CaptainCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven())
+                                                           (CaptainCanTargetCoven.GetBool() && x.GetCustomRole().IsCovenTeam())
                               )).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
@@ -140,7 +140,7 @@ internal class Captain : RoleBase
         for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
         {
             var captainTarget = CaptainVoteTargets[playerId][i];
-            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue; 
+            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue;
             var SelectedAddOn = SelectRandomAddon(captainTarget);
             if (SelectedAddOn == null) continue;
             Main.PlayerStates[captainTarget].RemoveSubRole((CustomRoles)SelectedAddOn);

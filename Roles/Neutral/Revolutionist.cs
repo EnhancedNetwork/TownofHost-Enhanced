@@ -1,11 +1,11 @@
-﻿using Hazel;
-using AmongUs.GameOptions;
-using UnityEngine;
-using TOHE.Roles.Core;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
@@ -69,7 +69,7 @@ internal class Revolutionist : RoleBase
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
-        
+
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
 

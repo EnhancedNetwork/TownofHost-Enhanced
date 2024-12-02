@@ -38,7 +38,7 @@ internal class Infectious : RoleBase
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "InfectiousKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "InfectiousTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 15, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
-        CanVent = BooleanOptionItem.Create(Id + 17, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);        
+        CanVent = BooleanOptionItem.Create(Id + 17, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
         DoubleClickKill = BooleanOptionItem.Create(Id + 18, "DoubleClickKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Infectious]);
     }
     public override void Init()
@@ -59,7 +59,7 @@ internal class Infectious : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BiteCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl player) => BiteLimit >= 1;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    
+
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
         if (CanBeBitten(target))
@@ -120,7 +120,7 @@ internal class Infectious : RoleBase
             return false;
         }
         if (DoubleClickKill.GetBool())
-        { 
+        {
             bool check = killer.CheckDoubleTrigger(target, () => { InfectOrMurder(killer, target); });
             //Logger.Warn("VALUE OF CHECK IS")
             if (check)
@@ -165,7 +165,7 @@ internal class Infectious : RoleBase
     }
 
     public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(BiteLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Infectious).ShadeColor(0.25f) : Color.gray, $"({BiteLimit})");
-    
+
     public static bool CanBeBitten(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() 
