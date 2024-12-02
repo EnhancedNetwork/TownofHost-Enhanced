@@ -35,10 +35,10 @@ internal class Traitor : RoleBase
         KnowMadmate = BooleanOptionItem.Create(Id + 16, "TraitorKnowMadmate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         LegacyTraitor = BooleanOptionItem.Create(Id + 18, "LegacyNemesis", false, TabGroup.NeutralRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
-        TraitorShapeshiftCD = FloatOptionItem.Create(Id + 21, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+        TraitorShapeshiftCD = FloatOptionItem.Create(Id + 19, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
                 .SetParent(LegacyTraitor)
                 .SetValueFormat(OptionFormat.Seconds);
-        TraitorShapeshiftDur = FloatOptionItem.Create(Id + 22, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 30f, TabGroup.NeutralRoles, false)
+        TraitorShapeshiftDur = FloatOptionItem.Create(Id + 20, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 30f, TabGroup.NeutralRoles, false)
                 .SetParent(LegacyTraitor)
                 .SetValueFormat(OptionFormat.Seconds);
     }
