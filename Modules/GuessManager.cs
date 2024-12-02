@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -251,7 +251,7 @@ public static class GuessManager
                     return true;
                 }
 
-                if (role.IsTNA() && role != CustomRoles.Pestilence && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())
+                if (role.IsTNA() && role != CustomRoles.Pestilence && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool() || role == CustomRoles.Pestilence && !PlagueBearer.PestilenceKillsGuessers.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
                     return true;
