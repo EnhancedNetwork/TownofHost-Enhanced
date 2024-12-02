@@ -41,7 +41,10 @@ internal class PlagueBearer : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
         PestilenceHasImpostorVision = BooleanOptionItem.Create(Id + 13, "PestilenceHasImpostorVision", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
-        PestilenceKillsGuessers = BooleanOptionItem.Create(Id + 14, "PestilenceKillGuessers", true, TabGroup.NeutralRoles, false)
+        PlagueBearerCanVent = BooleanOptionItem.Create(Id + 14, "PlagueBearerCanVent", true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
+        PlagueBearerHasImpostorVision = BooleanOptionItem.Create(Id + 15, "PlagueBearerHasImpostorVision", true, TabGroup.NeutralRoles, false)
+        PestilenceKillsGuessers = BooleanOptionItem.Create(Id + 16, "PestilenceKillGuessers", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
     }
 
