@@ -24,8 +24,6 @@ internal class Traitor : RoleBase
     private static OptionItem TraitorShapeshiftCD;
     private static OptionItem TraitorShapeshiftDur;
 
-
-
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Traitor, 1, zeroOne: false);
