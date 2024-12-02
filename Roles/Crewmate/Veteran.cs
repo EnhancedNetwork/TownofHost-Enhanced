@@ -1,12 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -57,7 +57,7 @@ internal class Veteran : RoleBase
         if (player.IsAlive())
             AbilityLimit += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
         SendSkillRPC();
-        
+
         return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
@@ -139,7 +139,7 @@ internal class Veteran : RoleBase
         => AbilityLimit < 1;
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => VeteranInProtect.Clear();
-    
+
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();

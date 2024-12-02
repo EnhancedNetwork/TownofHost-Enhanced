@@ -106,7 +106,7 @@ internal class QuickShooter : RoleBase
 
         AbilityLimit = NewSL[_state.PlayerId];
         SendRPC();
-        
+
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -119,7 +119,7 @@ internal class QuickShooter : RoleBase
 
     public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(AbilityLimit > 0
-            ? Utils.GetRoleColor(CustomRoles.QuickShooter).ShadeColor(0.25f) 
+            ? Utils.GetRoleColor(CustomRoles.QuickShooter).ShadeColor(0.25f)
             : Color.gray, $"({AbilityLimit})");
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

@@ -95,6 +95,7 @@ internal class Jackal : RoleBase
     }
     public override void Add(byte playerId)
     {
+        AbilityLimit = 0;
         if (Playerids.Count == 0 || RestoreLimitOnNewJackal.GetBool())
         {
             AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
@@ -477,14 +478,11 @@ internal class Sidekick : RoleBase
     {
         playerIdList.Add(playerId);
         Main.PlayerStates[playerId].taskState.hasTasks = false;
+        AbilityLimit = 0;
 
         if (Jackal.RestoreLimitOnNewJackal.GetBool())
         {
             AbilityLimit = Jackal.SidekickRecruitLimitOpt.GetInt();
-        }
-        else
-        {
-            AbilityLimit = 0;
         }
 
         if (AmongUsClient.Instance.AmHost)

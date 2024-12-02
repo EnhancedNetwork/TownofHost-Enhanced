@@ -10,7 +10,7 @@ internal class Mercenary : RoleBase
     private const int Id = 2000;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -110,11 +110,11 @@ internal class Mercenary : RoleBase
         foreach (var id in playerIdList)
         {
             var pc = Utils.GetPlayerById(id);
-            
+
             if (pc != null && pc.IsAlive())
             {
                 pc.RpcResetAbilityCooldown();
-                
+
                 if (HasKilled(pc))
                     SuicideTimer[id] = 0f;
             }

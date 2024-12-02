@@ -1,7 +1,7 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
-using static TOHE.Options;
 using static TOHE.MeetingHudStartPatch;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -11,7 +11,7 @@ internal class Mortician : RoleBase
     private const int Id = 8900;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -58,7 +58,7 @@ internal class Mortician : RoleBase
             LocateArrow.RemoveAllTarget(apc);
         }
         if (pc == null || target == null || !pc.Is(CustomRoles.Mortician) || pc.PlayerId == target.PlayerId) return;
-        
+
         string name = string.Empty;
         var killer = target.PlayerId.GetRealKillerById();
         if (killer == null)

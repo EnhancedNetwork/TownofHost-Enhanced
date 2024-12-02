@@ -1,10 +1,10 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using UnityEngine;
-using TOHE.Roles.Double;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
@@ -113,7 +113,7 @@ internal class Ghastly : RoleBase
         return false;
     }
     private bool CheckConflicts(PlayerControl target) => target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
-    
+
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad) return;
@@ -126,10 +126,10 @@ internal class Ghastly : RoleBase
     }
     public void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!lowLoad && killertarget.Item1 == player.PlayerId 
+        if (!lowLoad && killertarget.Item1 == player.PlayerId
             && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= nowTime)
         {
-            _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
+            _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", player.GetRealName()));
             TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
             LastTime.Remove(player.PlayerId);
             KillerIsChosen = false;
@@ -147,7 +147,7 @@ internal class Ghastly : RoleBase
                 killer.Notify(GetString("GhastlyNotUrTarget"));
                 return true;
             }
-            else 
+            else
             {
                 _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);

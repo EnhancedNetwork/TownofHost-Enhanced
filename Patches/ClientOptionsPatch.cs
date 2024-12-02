@@ -83,40 +83,40 @@ public static class OptionsMenuBehaviourStartPatch
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
+        {
+            HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
+
+            static void SwitchHorseMode()
             {
-                HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
+                Main.LongMode.Value = false;
+                HorseMode.UpdateToggle();
+                LongMode.UpdateToggle();
 
-                static void SwitchHorseMode()
+                foreach (PlayerControl pc in Main.AllPlayerControls)
                 {
-                    Main.LongMode.Value = false;
-                    HorseMode.UpdateToggle();
-                    LongMode.UpdateToggle();
-
-                    foreach (PlayerControl pc in Main.AllPlayerControls)
-                    {
-                        pc.MyPhysics.SetBodyType(pc.BodyType);
-                        if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
-                    }
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                    if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
                 }
             }
+        }
 
-            if (LongMode == null || LongMode.ToggleButton == null)
+        if (LongMode == null || LongMode.ToggleButton == null)
+        {
+            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
+
+            static void SwitchLongMode()
             {
-                LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
+                Main.HorseMode.Value = false;
+                HorseMode.UpdateToggle();
+                LongMode.UpdateToggle();
 
-                static void SwitchLongMode()
+                foreach (PlayerControl pc in Main.AllPlayerControls)
                 {
-                    Main.HorseMode.Value = false;
-                    HorseMode.UpdateToggle();
-                    LongMode.UpdateToggle();
-
-                    foreach (PlayerControl pc in Main.AllPlayerControls)
-                    {
-                        pc.MyPhysics.SetBodyType(pc.BodyType);
-                        if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
-                    }
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                    if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
                 }
             }
+        }
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);

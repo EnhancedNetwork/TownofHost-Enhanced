@@ -7,13 +7,13 @@ using UnityEngine;
 // https://github.com/CrowdedMods/CrowdedMod/blob/master/src/CrowdedMod
 // Niko adjusted mono behavior patches to fit into non-reactor mods
 
-namespace TOHE.Patches;
+namespace TOHE.Patches.Crowded;
 
 internal static class Crowded
 {
     private static CreateOptionsPicker instance;
     public static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
-    public static int MaxImpostors = GameOptionsManager.Instance.currentHostOptions.MaxPlayers / 2;
+    public static int MaxImpostors => MaxPlayers / 2;
 
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Awake))]
     public static class CreateOptionsPicker_Awake
@@ -21,18 +21,7 @@ internal static class Crowded
         public static void Prefix(CreateOptionsPicker __instance)
         {
             instance = __instance;
-            if (GameStates.IsVanillaServer)
-            {
-                if (GameOptionsManager.Instance.GameHostOptions != null)
-                {
-                    if (GameOptionsManager.Instance.GameHostOptions.MaxPlayers > 15)
-                    {
-                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
-                    }
-                }
-            }
         }
-
         public static void Postfix(CreateOptionsPicker __instance)
         {
             if (__instance.mode != SettingsMode.Host) return;
@@ -245,19 +234,6 @@ internal static class Crowded
             __instance.UpdateMaxPlayersButtons(targetOptions);
 
             return false;
-        }
-    }
-
-    [HarmonyPatch(typeof(GameOptionsData), nameof(GameOptionsData.AreInvalid))]
-    public static class InvalidOptionsPatches
-    {
-        public static bool Prefix(GameOptionsData __instance, [HarmonyArgument(0)] int maxExpectedPlayers)
-        {
-            return __instance.MaxPlayers > maxExpectedPlayers ||
-                   __instance.NumImpostors < 1 ||
-                   __instance.NumImpostors + 1 > maxExpectedPlayers / 2 ||
-                   __instance.KillDistance is < 0 or > 2 ||
-                   __instance.PlayerSpeedMod is <= 0f or > 3f;
         }
     }
 

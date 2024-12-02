@@ -174,7 +174,7 @@ internal class Romantic : RoleBase
                 killer.RPCPlayCustomSound("Shield");
                 killer.Notify(GetString("RomanticProtectPartner"));
                 tpc.Notify(GetString("RomanticIsProtectingYou"));
-                
+
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsInTask || !tpc.IsAlive()) return;
@@ -195,7 +195,7 @@ internal class Romantic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seer == seen) return string.Empty; 
+        if (seer == seen) return string.Empty;
 
         return BetPlayer.ContainsValue(seen.PlayerId)
             ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;

@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Hazel;
+using System;
 using TOHE.Modules.ChatManager;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using TOHE.Roles.Core;
 using UnityEngine;
-using Hazel;
-using InnerNet;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -185,7 +184,7 @@ internal class Dictator : RoleBase
         {
             foreach (var pva in __instance.playerStates)
             {
-                if (pva.transform.Find("DictatorButton") != null) 
+                if (pva.transform.Find("DictatorButton") != null)
                     UnityEngine.Object.Destroy(pva.transform.Find("DictatorButton").gameObject);
             }
         }
