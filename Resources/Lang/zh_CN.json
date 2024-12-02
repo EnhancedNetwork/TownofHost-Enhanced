@@ -2295,6 +2295,7 @@
   "Message.YTPlanNotice": "提示：该房间启用了「创作者素材保护计划」，房主可以指定自己的职业。\n该功能仅允许创作者用于获取视频素材，如遇滥用情况，请退出游戏或举报。\n当前创作者认证：",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>错误</b></size></color>\n<color=#ff1919>该指令只能由房主使用</color>",
   "Message.MaxPlayers": "最大玩家数量设置为",
+  "Message.MaxPlayersFailByRegion": "Could not set max players: Vanilla regions support a maximum of 15 players.",
   "Message.GhostRoleInfo": "<size=90%>幽灵职业信息</size>\n关于幽灵职业的一些信息…<size=75%>\n幽灵职业会对游戏产生巨大影响，因此如果您不熟悉幽灵职业，不建议在少人房间中使用。如果描述中没有明确说明，守护按钮就是幽灵的技能按钮 :)\n<b>出现：</b>\n幽灵职业只有在死亡后才会出现，阵营中最先死亡的人会获得幽灵职业（除中立阵营）</size>\n<size=50%>注：如果您之前的职业没有任务（如警长），则变成幽灵职业的您不需要为任务胜利而去做任务（前提是你没任务）</b></size>",
   "ApocalypseInfoTitle": "灾厄中立的信息：",
   "Message.ApocalypseInfo": "<#ff174f>灾厄</color>阵营中每个职业都有其自己的目标，以实现转变\n<#2B0804>转变</color>后的<#ff174f>灾厄</color>职业将对游戏产生巨大影响，并且它们将不会死亡（除了被投票淘汰外），但所有人都会被通知到它们已经发生了转变。\n职业：<#e5f6b4>瘟疫使者</color>，<#A675A1>灵魂收集者</color>，<#bf9f7a>面包师</color>，<#cc0044>狂战士</color>\n转变后：<#343136>瘟疫</color>，<#644661>死亡</color>，<#83461c>饥荒</color>，<#2B0804>战争者</color>\n灾厄阵营玩家可以看到彼此的职业和技能图标。\n就像带刀中立一样，灾厄玩家也会让游戏继续下去，玩得开心！",
