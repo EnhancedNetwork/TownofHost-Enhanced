@@ -22,6 +22,8 @@ internal class PlagueBearer : RoleBase
 
     private static OptionItem PlagueBearerCooldownOpt;
     public static OptionItem PestilenceCooldownOpt;
+    private static OptionItem PlagueBearerCanVent;
+    private static OptionItem PlagueBearerHasImpostorVision;
     public static OptionItem PestilenceCanVent;
     public static OptionItem PestilenceHasImpostorVision;
     public static OptionItem PestilenceKillsGuessers;
