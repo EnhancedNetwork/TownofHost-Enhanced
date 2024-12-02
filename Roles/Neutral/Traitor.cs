@@ -20,7 +20,7 @@ internal class Traitor : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanUsesSabotage;
     private static OptionItem KnowMadmate;
-    private static OptionItem LegacyTraitor;
+    public static OptionItem LegacyTraitor;
     private static OptionItem TraitorShapeshiftCD;
     private static OptionItem TraitorShapeshiftDur;
 
