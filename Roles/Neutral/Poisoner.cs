@@ -1,13 +1,13 @@
 using AmongUs.GameOptions;
-using UnityEngine;
 using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Poisoner : RoleBase
 {
-    private class PoisonedInfo(byte poisonerId, float killTimer) 
+    private class PoisonedInfo(byte poisonerId, float killTimer)
     {
         public byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;

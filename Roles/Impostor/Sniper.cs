@@ -12,7 +12,7 @@ internal class Sniper : RoleBase
     private const int Id = 2400;
     private static readonly HashSet<byte> PlayerIdList = [];
     public static bool HasEnabled => PlayerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -329,7 +329,7 @@ internal class Sniper : RoleBase
         seen ??= seer;
         var sniper = Utils.GetPlayerById(PlayerIdList.First());
         if (!(sniper == seer) || !(sniper == seen)) return string.Empty;
-        
+
         var seerId = seer.PlayerId;
 
         if (AimAssist)

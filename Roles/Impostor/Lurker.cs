@@ -9,7 +9,7 @@ internal class Lurker : RoleBase
 
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -35,7 +35,7 @@ internal class Lurker : RoleBase
         playerIdList.Add(playerId);
     }
 
-    public  override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
 
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {

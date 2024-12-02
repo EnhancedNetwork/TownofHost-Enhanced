@@ -6,7 +6,7 @@ internal class Trapster : RoleBase
     private const int Id = 2600;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -65,12 +65,12 @@ internal class Trapster : RoleBase
             reporter.SetRealKiller(deadBody.Object);
 
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
-            
+
             if (TrapConsecutiveTrapsterBodies.GetBool())
             {
                 BoobyTrapBody.Add(reporter.PlayerId);
             }
-            
+
             return false;
         }
 

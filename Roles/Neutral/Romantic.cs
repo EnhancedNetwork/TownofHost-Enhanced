@@ -174,7 +174,7 @@ internal class Romantic : RoleBase
                 killer.RPCPlayCustomSound("Shield");
                 killer.Notify(GetString("RomanticProtectPartner"));
                 tpc.Notify(GetString("RomanticIsProtectingYou"));
-                
+
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsInTask || !tpc.IsAlive()) return;
@@ -195,7 +195,7 @@ internal class Romantic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seer == seen) return string.Empty; 
+        if (seer == seen) return string.Empty;
 
         return BetPlayer.ContainsValue(seen.PlayerId)
             ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;
@@ -264,7 +264,9 @@ internal class Romantic : RoleBase
         if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
+            pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
+            pc.GetRoleClass()?.OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();

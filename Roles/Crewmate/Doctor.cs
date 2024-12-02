@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
-using static TOHE.Translator;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -10,7 +10,7 @@ internal class Doctor : RoleBase
     private const int Id = 6700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -48,6 +48,7 @@ internal class Doctor : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Doctor) return false;
         if (VisibleToEveryoneOpt.GetBool() && !target.GetCustomSubRoles().Any(sub => sub.IsBetrayalAddon()))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessDoctor"));

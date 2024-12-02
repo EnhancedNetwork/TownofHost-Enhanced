@@ -52,7 +52,7 @@ internal class Stealth : RoleBase
             playersToDarken = playersToDarken.Where(player => !player.Is(CustomRoles.Impostor)).ToArray();
         }
         DarkenPlayers(playersToDarken);
-        
+
         return true;
     }
     /// <summary>Get all players in the same room as you</summary>

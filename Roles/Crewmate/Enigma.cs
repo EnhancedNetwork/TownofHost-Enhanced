@@ -1,6 +1,6 @@
-﻿using static TOHE.Options;
+﻿using static TOHE.MeetingHudStartPatch;
+using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -10,7 +10,7 @@ internal class Enigma : RoleBase
     private const int Id = 8100;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -123,6 +123,8 @@ internal class Enigma : RoleBase
             }
             else if (tasksCompleted >= EnigmaClueStage1Tasks.GetInt())
                 stage = 1;
+
+            Logger.Info($"Enigma clue {playerId} is {stage} with taskcount {tasksCompleted}", "Enigma");
 
             var clues = EnigmaClues.Where(a => a.ClueStage <= stage &&
                 !ShownClues[playerId].Any(b => b.EnigmaClueType == a.EnigmaClueType && b.ClueStage == a.ClueStage))

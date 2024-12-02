@@ -10,7 +10,7 @@ internal class Spiritualist : RoleBase
     private const int Id = 9600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -81,14 +81,14 @@ internal class Spiritualist : RoleBase
         foreach (var spiritualist in playerIdList)
         {
             PlayerControl player = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == spiritualist);
-            
+
             if (!player.IsAlive()) continue;
 
             LastGhostArrowShowTime[spiritualist] = 0;
             ShowGhostArrowUntil[spiritualist] = 0;
 
             PlayerControl target = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
-            
+
             if (target == null) continue;
 
             TargetArrow.Add(spiritualist, target.PlayerId);
@@ -118,7 +118,7 @@ internal class Spiritualist : RoleBase
         if (GameStates.IsMeeting) return string.Empty;
         if (SpiritualistTarget != byte.MaxValue && ShowArrow(seer.PlayerId))
         {
-            return Utils.ColorString(seer.GetRoleColor(), TargetArrow.GetArrows(seer, SpiritualistTarget)); 
+            return Utils.ColorString(seer.GetRoleColor(), TargetArrow.GetArrows(seer, SpiritualistTarget));
         }
         return string.Empty;
     }

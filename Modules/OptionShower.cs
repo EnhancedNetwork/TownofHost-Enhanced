@@ -65,7 +65,7 @@ public static class OptionShower
                             mode = Utils.GetChance(Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat());
 
                         }
-                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n"); 
+                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n");
                     }
                 pages.Add(sb.ToString() + "\n\n");
                 sb.Clear();
