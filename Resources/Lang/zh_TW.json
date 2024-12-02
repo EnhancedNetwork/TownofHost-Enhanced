@@ -2295,7 +2295,7 @@
   "Message.YTPlanNotice": "提醒: 該房間已啟用【創作者素材保護計畫】，房主可以指定自己的職業。\n該功能只允許創作者錄製影片素材，如有濫用情況，請退出遊戲或舉報。\n目前創作者認證:",
   "Message.OnlyCanBeUsedByHost": "<color=#ff1919><size=150%><b>錯誤</b></size></color>\n<color=#ff1919>該指令只能由房主使用</color>",
   "Message.MaxPlayers": "最大玩家數量已設定為 ",
-  "Message.MaxPlayersFailByRegion": "Could not set max players: Vanilla regions support a maximum of 15 players.",
+  "Message.MaxPlayersFailByRegion": "無法設定最大玩家人數: 原版伺服器最多支援 15 名玩家。",
   "Message.GhostRoleInfo": "<size=90%>關於幽靈職業</size>\n你好!這裡是有關於幽靈職業的一些介紹<size=75%>\n\n請注意: 幽靈職業會對遊戲產生極大的影響，因此如果您不熟悉幽靈職業，不建議在小型房間中使用。\n如果沒有明確的說明，幽靈職業的技能按鈕就是守護按鍵。\n\n<b>幽靈職業的生成:</b>\n幽靈職業只有在死亡後才會出現，一個陣營中最先死亡的玩家將會獲得幽靈職業。</size>\n\n<size=50%>注意：如果您以前的職業沒有任務(例如: 警長)，則您作為幽靈職業的任務不需要用於任務勝利</b></size>",
   "ApocalypseInfoTitle": "中立災厄陣營簡介:",
   "Message.ApocalypseInfo": "<color=#ff174f>災厄</color>陣營的每個職業都有自己的目標轉變職業。\n<color=#2B0804>轉變的</color> <color=#ff174f>災厄</color>成員將在遊戲中發生巨大的變化並且處於無敵狀態(除了投票之外)，但每個人都會被通知他們已經轉變。\n\n職業：<color=#e5f6b4>瘟疫之源</color>、<color=#A675A1>靈魂收割者</color>、<color=#bf9f7a>麵包師</color>、<color=#cc0044>狂戰士</color>\n轉變目標職業：<color=#343136>萬疫之神</color>、<color=#644661>死亡使者</color>、<color=#83461c>飢餓之神</color>、<color=#2B0804>戰神</color>\n\n災厄成員可以看到彼此的職業和能力圖示。\n與帶刀中立一樣，災厄成員也讓遊戲繼續進行，玩得開心！",
