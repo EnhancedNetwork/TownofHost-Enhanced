@@ -3440,6 +3440,7 @@
   "PestilenceCooldown": "<color=#343136>Pestilence</color> Kill cooldown",
   "PestilenceCanVent": "<color=#343136>Pestilence</color> Can Vent",
   "PestilenceHasImpostorVision": "<color=#343136>Pestilence</color> Has <color=#ff1919>Impostor</color> Vision",
+  "PestilenceKillGuessers": "Kill players who guess <color=#343136>Pestilence</color>",
   "PlagueBearerAlreadyPlagued": "Player has already been plagued",
   "PlagueBearerToPestilence": "You have turned into Pestilence!!",
   "GuessPestilence": "You just tried to guess Pestilence!\n\nSorry, Pestilence killed you.",
