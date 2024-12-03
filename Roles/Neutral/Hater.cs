@@ -120,7 +120,7 @@ internal class Hater : RoleBase
             CustomRoles.Jackal or
             CustomRoles.Virus or
             CustomRoles.Infectious or
-            CustomRoles.Admirer or 
+            CustomRoles.Admirer or
             CustomRoles.Ritualist
             => true,
 

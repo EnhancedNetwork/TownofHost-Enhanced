@@ -8,10 +8,10 @@ using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -1255,7 +1255,7 @@ static class ExtendedPlayerControl
     public static bool IsMurderedThisRound(this PlayerControl player) => player.PlayerId.IsMurderedThisRound();
     public static bool IsMurderedThisRound(this byte playerId) => Main.MurderedThisRound.Contains(playerId);
 
-    
+
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl target)
         => (Options.EveryoneCanSeeDeathReason.GetBool()
         || seer.Is(CustomRoles.Doctor) || seer.Is(CustomRoles.Autopsy)
@@ -1322,7 +1322,7 @@ static class ExtendedPlayerControl
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
-                or CustomRoles.Enchanted) 
+                or CustomRoles.Enchanted)
             && KnowSubRoleTarget(seer, target))
             return true;
 

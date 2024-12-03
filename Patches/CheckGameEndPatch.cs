@@ -115,7 +115,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Coven:
-                        if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted)) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless))) 
+                        if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted)) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
                             || pc.Is(CustomRoles.Enchanted) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
