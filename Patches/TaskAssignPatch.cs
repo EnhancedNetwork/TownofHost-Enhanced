@@ -257,6 +257,7 @@ class RpcSetTasksPatch
                 else
                 {
                     usedTaskTypes.Add(longTasks[list].TaskType);
+                    TasksList.Add((byte)longTasks[list].Index);
                     assigned++;
                     list++;
                 }
@@ -286,6 +287,7 @@ class RpcSetTasksPatch
                 else
                 {
                     usedTaskTypes.Add(shortTasks[list].TaskType);
+                    TasksList.Add((byte)shortTasks[list].Index);
                     assigned++;
                     list++;
                 }
