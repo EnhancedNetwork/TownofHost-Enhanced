@@ -2809,7 +2809,7 @@
   "BakerBarrierBread": "Barrier",
   "BakerCurrentBread": "Current Bread: ",
   "BakerSwitchBread": "Bread Switched to: ",
-  "BakerCanVent": "<color=#bf9f7a>Baker</color> can Vent",
+  "BakerCanVent": "Baker can Vent",
   "BakerBreadGivesEffects": "Bread gives additional effects",
   "BakerTransformNoMoreBread": "Baker transforms if they do not have enough bread",
   "FamineKillButtonText": "Starve",
