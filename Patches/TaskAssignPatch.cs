@@ -267,15 +267,26 @@ class RpcSetTasksPatch
                 list++;
             }
 
-            if (list >= longTasks.Count)
+            if (list >= longTasks.Count - 1)
             {
                 list = 0;
+                longTasks = longTasks.Shuffle().ToList();
                 usedTaskTypes.Clear();
             }
         }
 
         list = 0; assigned = 0;
+
         usedTaskTypes.Clear();
+        foreach (var task in longTasks)
+        {
+            if (TasksList.Contains((byte)task.Index))
+            {
+                if (!usedTaskTypes.Contains(task.TaskType))
+                    usedTaskTypes.Add(task.TaskType);
+            }
+        }
+
         while (assigned < System.Math.Min(shortTasks.Count, NumShortTasks))
         {
             if (!TasksList.Contains((byte)shortTasks[list].Index))
@@ -300,6 +311,7 @@ class RpcSetTasksPatch
             if (list >= shortTasks.Count - 1)
             {
                 list = 0;
+                shortTasks = shortTasks.Shuffle().ToList();
                 usedTaskTypes.Clear();
             }
         }
