@@ -222,7 +222,7 @@
         "\n     - Swift can no longer get Tricky and vice versa (By TommyXL)",
         "\n     - Remove unnecessary parenthesis for Lighter (By TommyXL)",
         "\n     - Fixed bug when Fortune Teller shows «INVALID:NotAssigned» (By Drakos)",
-        "\n     - Fixed broken Auto Start",
+        "\n     - 修复自动开始不起作用的问题",
         "\n     - Fixed bug (hopefully) when the host changed his nickname to his own when he was killed by Doppelganger (By TommyXL)",
         "\n     - Fixed bug when F1 shows role settings (By TommyXL)",
         "\n     - Fixed bug when Veteran kills Taskinator (By TommyXL)",
