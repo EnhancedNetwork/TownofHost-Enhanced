@@ -287,6 +287,7 @@ internal class Baker : RoleBase
         if (lowLoad || ( !AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
         if (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 < Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()) return;
 
+        player.RpcChangeRoleBasis(CustomRoles.Famine);
         player.RpcSetCustomRole(CustomRoles.Famine);
         player.GetRoleClass()?.OnAdd(_Player.PlayerId);
 
