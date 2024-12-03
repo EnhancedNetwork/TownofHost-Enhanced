@@ -198,6 +198,7 @@ class RpcSetTasksPatch
             longTasks.RemoveAll(x => x.TaskType == TaskTypes.SubmitScan);
             // Niko admits this is shit.
         }
+        List<TaskTypes> usedTaskTypes = [];
 
         int defaultcommoncount = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
         int commonTasksNum = System.Math.Min(commonTasks.Count, defaultcommoncount);
@@ -244,14 +245,61 @@ class RpcSetTasksPatch
             }
         }
 
-        for (int i = 0; i < System.Math.Min(longTasks.Count, NumLongTasks); i++)
+        byte list = 0; byte assigned = 0;
+        while (assigned < System.Math.Min(longTasks.Count, NumLongTasks))
         {
-            TasksList.Add((byte)longTasks[i].Index);
+            if (!TasksList.Contains((byte)longTasks[list].Index))
+            {
+                if (usedTaskTypes.Contains(longTasks[list].TaskType))
+                {
+                    list++;
+                }
+                else
+                {
+                    usedTaskTypes.Add(longTasks[list].TaskType);
+                    assigned++;
+                    list++;
+                }
+            }
+            else
+            {
+                list++;
+            }
+
+            if (list >= longTasks.Count)
+            {
+                list = 0;
+                usedTaskTypes.Clear();
+            }
         }
 
-        for (int i = 0; i < System.Math.Min(shortTasks.Count, NumShortTasks); i++)
+        list = 0; assigned = 0;
+        usedTaskTypes.Clear();
+        while (assigned < System.Math.Min(shortTasks.Count, NumShortTasks))
         {
-            TasksList.Add((byte)shortTasks[i].Index);
+            if (!TasksList.Contains((byte)shortTasks[list].Index))
+            {
+                if (usedTaskTypes.Contains(shortTasks[list].TaskType))
+                {
+                    list++;
+                }
+                else
+                {
+                    usedTaskTypes.Add(shortTasks[list].TaskType);
+                    assigned++;
+                    list++;
+                }
+            }
+            else
+            {
+                list++;
+            }
+
+            if (list >= shortTasks.Count - 1)
+            {
+                list = 0;
+                usedTaskTypes.Clear();
+            }
         }
 
         if (AmongUsClient.Instance.AmClient)
