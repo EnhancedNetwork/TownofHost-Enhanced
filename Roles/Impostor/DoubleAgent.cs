@@ -8,6 +8,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
