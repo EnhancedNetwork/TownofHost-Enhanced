@@ -265,11 +265,11 @@ internal class Pestilence : RoleBase
     {
         if (PlagueBearer.PestilenceKillsGuessers.GetBool())
         {
-        if (role != CustomRoles.Pestilence) return false;
-        pc.ShowInfoMessage(isUI, GetString("GuessPestilence"));
+            if (role != CustomRoles.Pestilence) return false;
+            pc.ShowInfoMessage(isUI, GetString("GuessPestilence"));
 
-        guesserSuicide = true;
-        Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
+            guesserSuicide = true;
+            Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
         }
         return false;
     }
