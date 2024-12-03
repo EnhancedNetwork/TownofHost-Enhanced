@@ -303,9 +303,9 @@ public static class CustomRolesHelper
     public static bool IsCoven(this CustomRoles role)
     {
         return role.GetStaticRoleClass().ThisRoleType is
-            Custom_RoleType.CovenKilling or 
-            Custom_RoleType.CovenPower or 
-            Custom_RoleType.CovenTrickery or 
+            Custom_RoleType.CovenKilling or
+            Custom_RoleType.CovenPower or
+            Custom_RoleType.CovenTrickery or
             Custom_RoleType.CovenUtility;
     }
     public static bool IsAbleToBeSidekicked(this CustomRoles role)
@@ -334,7 +334,7 @@ public static class CustomRolesHelper
             CustomRoles.Infected or
             CustomRoles.Contagious or
             CustomRoles.Soulless or
-            CustomRoles.Madmate or 
+            CustomRoles.Madmate or
             CustomRoles.Enchanted;
 
     public static bool IsNotKnightable(this CustomRoles role)
@@ -400,7 +400,7 @@ public static class CustomRolesHelper
         // Only add-ons
         if (!role.IsAdditionRole() || pc == null) return false;
 
-        if (Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()) || (!o.Coven.GetBool() && pc.GetCustomRole().IsCoven()))) 
+        if (Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()) || (!o.Coven.GetBool() && pc.GetCustomRole().IsCoven())))
             return false;
 
         // if player already has this addon
@@ -456,7 +456,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Guesser:
-                if (Options.GuesserMode.GetBool() && ((pc.GetCustomRole().IsCrewmate() && !Guesser.CrewCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Guesser.NeutralCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Guesser.ImpCanBeGuesser.GetBool())|| (pc.GetCustomRole().IsCoven() && !Guesser.CovenCanBeGuesser.GetBool())))
+                if (Options.GuesserMode.GetBool() && ((pc.GetCustomRole().IsCrewmate() && !Guesser.CrewCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Guesser.NeutralCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Guesser.ImpCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsCoven() && !Guesser.CovenCanBeGuesser.GetBool())))
                     return false;
                 if (pc.Is(CustomRoles.EvilGuesser)
                     || pc.Is(CustomRoles.NiceGuesser)

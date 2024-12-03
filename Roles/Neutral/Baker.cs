@@ -287,7 +287,7 @@ internal class Baker : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || ( !AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
+        if (lowLoad || (!AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
         if (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 < Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()) return;
 
         player.RpcChangeRoleBasis(CustomRoles.Famine);

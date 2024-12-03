@@ -4,12 +4,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.CheckForEndVotingPatch;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
-using TOHE.Roles.Coven;
 
 namespace TOHE.Roles.Crewmate;
 

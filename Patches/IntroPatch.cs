@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using MonoMod.Cil;
 using System;
 using System.IO;
 using System.Security.Cryptography;

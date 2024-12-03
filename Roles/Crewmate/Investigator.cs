@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
 using TOHE.Roles.Coven;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
