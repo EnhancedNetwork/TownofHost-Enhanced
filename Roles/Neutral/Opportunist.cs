@@ -22,16 +22,16 @@ internal class Opportunist : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(13300, TabGroup.NeutralRoles, CustomRoles.Opportunist);
-        OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(13302, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+        OppoImmuneToAttacksWhenTasksDone = BooleanOptionItem.Create(Id + 10, "ImmuneToAttacksWhenTasksDone", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
-        OpportunistCanUseVent = BooleanOptionItem.Create(Id + 13303, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false)
+        OpportunistCanUseVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Opportunist]);
-        VentCoolDown = FloatOptionItem.Create(Id + 13304, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false)
+        VentCoolDown = FloatOptionItem.Create(Id + 12, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false)
             .SetParent(OpportunistCanUseVent);
-        VentDuration = FloatOptionItem.Create(Id + 13305, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
+        VentDuration = FloatOptionItem.Create(Id + 13, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(OpportunistCanUseVent);
-        OverrideTasksData.Create(13306, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+        OverrideTasksData.Create(Id + 20, TabGroup.NeutralRoles, CustomRoles.Opportunist);
     }
     public override void Init()
     {
