@@ -1,0 +1,16 @@
+name: Greetings
+
+on: [pull_request_target, issues]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+    - uses: actions/first-interaction@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        issue-message: "Hi! Seems like this is your first time opening a issue.\nDid you try to use the bug-reports channel on our Discord? Most bug reports is created and got fixed there.\nIf you need any help regarding installing and playing the mod, you can use mod-help channel on our Discord! Volunteers will try their best to help you with your issue!\nJoin our discord at https://discord.gg/ten"
+        pr-message: "Congragulations! This is your first pr on our mod!\nThank you for helping with the mod, and to make sure your pr can be properly issued by us, please follow the guidelines below!\nA. Check whether your pr can build the mod. This helps find issues before code review\nB. Use code formating to make your codes pretty.\nC.Follow the overall coding styles of the mod. Like if you are coding a new role, reference others roles and try not create unnecessary new api methods."
