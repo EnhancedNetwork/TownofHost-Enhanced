@@ -8,7 +8,7 @@ on:
       - synchronize
       - reopened
     branches-ignore:
-      - "l10n_main"
+      - 'l10n_main'
 
 jobs:
   build:
