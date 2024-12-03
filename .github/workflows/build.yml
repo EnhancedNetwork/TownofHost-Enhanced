@@ -1,5 +1,5 @@
 name: Build the mod on pull request
-run-name: Build PR#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
+run-name: Test PR#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
 
 on:
   pull_request:
@@ -7,12 +7,14 @@ on:
       - opened
       - synchronize
       - reopened
+    branches-ignore:
+      - "l10n_main"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.head_ref }}
+      group: pr#${{ github.event.pull_request.number }}
       cancel-in-progress: true
 
     steps:
