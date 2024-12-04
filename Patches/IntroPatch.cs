@@ -317,7 +317,7 @@ class BeginCrewmatePatch
                     teamToDisplay.Add(pc);
             }
 
-            __instance.overlayHandle.color = new Color32(55, 154, 206, byte.MaxValue);
+            __instance.overlayHandle.color = new Color32(255, 154, 206, byte.MaxValue);
             return true;
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
@@ -363,7 +363,7 @@ class BeginCrewmatePatch
 
             teamToDisplay = exeTeam;
         }
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Lawyer lw)
+        else if (PlayerControl.LocalPlayer.GetRoleClass() is Lawyer lw)
         {
             var lawyerTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             lawyerTeam.Add(PlayerControl.LocalPlayer);
@@ -374,15 +374,16 @@ class BeginCrewmatePatch
 
             teamToDisplay = lawyerTeam;
         }
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Traitor tr)
+        else if (PlayerControl.LocalPlayer.GetRoleClass() is Traitor)
         {
             var traitorTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             traitorTeam.Add(PlayerControl.LocalPlayer);
 
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (pc.GetCustomRole().IsImpostor())
+                if (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Madmate))
                 {
+                    // Crewpostor here
                     traitorTeam.Add(pc);
                 }
                 else if (pc.Is(CustomRoles.Madmate) && Traitor.KnowMadmate.GetBool())
@@ -535,7 +536,7 @@ class BeginCrewmatePatch
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
         {
             __instance.TeamTitle.text = GetString("TeamLovers");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(55, 154, 206, byte.MaxValue);
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Lovers");
         }
@@ -618,6 +619,16 @@ class BeginImpostorPatch
         // Do not make them call each other!
 
         var role = PlayerControl.LocalPlayer.GetCustomRole();
+
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers)
+            || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            __instance.BeginCrewmate(yourTeam);
+            return false;
+        }
+        // Madmate called from BeginCrewmate, need to skip previous lovers and egoist check here
 
         if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
