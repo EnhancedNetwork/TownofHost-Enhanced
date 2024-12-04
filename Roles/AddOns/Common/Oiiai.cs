@@ -43,12 +43,15 @@ public class Oiiai : IAddon
     }
     public void Add(byte playerId, bool gameIsLoading = true)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         IsEnable = true;
     }
     public static void PassOnKiller(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         IsEnable = true;
     }
     public void Remove(byte playerId)

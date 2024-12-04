@@ -14,8 +14,6 @@ internal class Poisoner : CovenManager
     }
     //===========================SETUP================================\\
     private const int Id = 17500;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -46,7 +44,6 @@ internal class Poisoner : CovenManager
 
     public override void Init()
     {
-        playerIdList.Clear();
         PoisonedPlayers.Clear();
         RoleblockedPlayers.Clear();
 
@@ -54,7 +51,6 @@ internal class Poisoner : CovenManager
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         RoleblockedPlayers[playerId] = [];
         GetPlayerById(playerId)?.AddDoubleTrigger();
 

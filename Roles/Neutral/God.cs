@@ -6,8 +6,6 @@ internal class God : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 25100;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -22,15 +20,6 @@ internal class God : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.God]);
         CanGuess = BooleanOptionItem.Create(Id + 4, GeneralOption.CanGuess, false, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.God]);
-    }
-
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
 
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)

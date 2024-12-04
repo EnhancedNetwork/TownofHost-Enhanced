@@ -33,19 +33,10 @@ internal class AntiAdminer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
     }
 
     private static int Count = 0;
@@ -136,11 +127,8 @@ internal class AntiAdminer : RoleBase
 
         if (isChange)
         {
-            foreach (var pc in playerIdList.ToArray())
-            {
-                var antiAdminer = pc.GetPlayer();
-                NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
-            }
+            if (_Player)
+                NotifyRoles(SpecifySeer: _Player, ForceLoop: false);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)

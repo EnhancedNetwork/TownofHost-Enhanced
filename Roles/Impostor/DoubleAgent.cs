@@ -15,9 +15,6 @@ internal class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 29000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -67,7 +64,6 @@ internal class DoubleAgent : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         CurrentBombedPlayers.Clear();
         CurrentBombedTime = -1;
         BombIsActive = false;
@@ -77,7 +73,6 @@ internal class DoubleAgent : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         if (Main.AllAlivePlayerControls.Count(player => player.Is(Custom_Team.Impostor)) > 1)
             StartedWithMoreThanOneImp = true;
@@ -369,3 +364,4 @@ internal class DoubleAgent : RoleBase
 
 // FieryFlower was here ඞ
 // Drakos wasn't here, 100% not
+// Niko is here, what dog shxt has you guys code

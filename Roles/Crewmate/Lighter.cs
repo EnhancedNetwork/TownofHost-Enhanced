@@ -11,8 +11,8 @@ internal class Lighter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -47,18 +47,18 @@ internal class Lighter : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         Timer.Clear();
         LighterNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         LighterNumOfUsed.Add(playerId, LighterSkillMaxOfUseage.GetInt());
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
         LighterNumOfUsed.Remove(playerId);
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)

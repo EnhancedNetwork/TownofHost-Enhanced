@@ -58,7 +58,9 @@ internal class PlagueBearer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         PlaguedList[playerId] = [];
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
