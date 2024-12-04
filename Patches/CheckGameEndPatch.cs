@@ -6,7 +6,6 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Impostor;
 using UnityEngine;
 using static TOHE.CustomWinnerHolder;
 using static TOHE.Translator;
