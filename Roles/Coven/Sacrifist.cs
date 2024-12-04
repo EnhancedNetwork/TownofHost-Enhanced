@@ -14,7 +14,6 @@ internal class Sacrifist : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 30600;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sacrifist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;

@@ -16,7 +16,6 @@ internal class Ritualist : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 30800;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ritualist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;

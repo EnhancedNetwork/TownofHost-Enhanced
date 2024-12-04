@@ -13,7 +13,6 @@ internal class PotionMaster : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 17700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PotionMaster);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;

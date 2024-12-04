@@ -14,8 +14,6 @@ internal class HexMaster : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 16400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenKilling;
@@ -62,7 +60,6 @@ internal class HexMaster : CovenManager
     }
     public override void Init()
     {
-        playerIdList.Clear();
         HexedPlayer.Clear();
         CurrentHexedPlayer = byte.MaxValue;
         LastHexedPlayer = byte.MaxValue;
@@ -71,7 +68,6 @@ internal class HexMaster : CovenManager
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         HexedPlayer.Add(playerId, []);
         // NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();
 
@@ -155,7 +151,7 @@ internal class HexMaster : CovenManager
     */
     private static bool IsHexed(byte target)
     {
-        foreach (var hexmaster in playerIdList)
+        foreach (var hexmaster in HexedPlayer.Keys)
         {
             if (HexedPlayer[hexmaster].Contains(target)) return true;
         }
@@ -227,7 +223,7 @@ internal class HexMaster : CovenManager
     }
     public override void AfterMeetingTasks()
     {
-        foreach (var hexmaster in playerIdList)
+        foreach (var hexmaster in HexedPlayer.Keys)
         {
             HexedPlayer[hexmaster].Clear();
             SendRPC(true, hexmaster);
@@ -270,7 +266,7 @@ internal class HexMaster : CovenManager
     }
     private static void SetHexedNecronomicon(PlayerControl killer, PlayerControl target)
     {
-        if (!HasEnabled) return;
+        if (!CustomRoles.HexMaster.RoleExist()) return;
         if (target.GetCustomRole().IsCovenTeam())
         {
             killer.Notify(GetString("CovenDontKillOtherCoven"));
@@ -357,7 +353,7 @@ internal class HexMaster : CovenManager
     }
     private static void RemoveHexedPlayer()
     {
-        foreach (var hexmaster in playerIdList)
+        foreach (var hexmaster in HexedPlayer.Keys)
         {
             HexedPlayer[hexmaster].Clear();
             SendRPC(true, hexmaster);
