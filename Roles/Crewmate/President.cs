@@ -9,8 +9,8 @@ internal class President : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -40,14 +40,14 @@ internal class President : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         CheckPresidentReveal.Clear();
         EndLimit.Clear();
         RevealLimit.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         CheckPresidentReveal.Add(playerId, false);
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);

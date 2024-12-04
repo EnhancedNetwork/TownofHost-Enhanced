@@ -15,8 +15,8 @@ internal class Judge : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -62,18 +62,18 @@ internal class Judge : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         TrialLimitMeeting.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         TrialLimitMeeting[playerId] = TrialLimitPerMeeting.GetInt();
         AbilityLimit = TrialLimitPerGame.GetInt();
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
         TrialLimitMeeting.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)

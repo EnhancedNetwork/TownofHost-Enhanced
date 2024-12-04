@@ -52,7 +52,9 @@ internal class HexMaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();

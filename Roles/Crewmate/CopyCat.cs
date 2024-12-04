@@ -10,7 +10,7 @@ internal class CopyCat : RoleBase
     //===========================SETUP================================\\
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -39,12 +39,14 @@ internal class CopyCat : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
-        //playerIdList.Remove(playerId);
+        // Copy cat role wont be removed for now i guess
+        // playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);

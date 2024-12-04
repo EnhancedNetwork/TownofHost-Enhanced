@@ -464,19 +464,19 @@ internal class Jackal : RoleBase
 
 internal class Sidekick : RoleBase
 {
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
 
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         Main.PlayerStates[playerId].taskState.hasTasks = false;
         AbilityLimit = 0;
 

@@ -67,7 +67,8 @@ internal class Sniper : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIdList.Add(playerId);
+        if (!PlayerIdList.Contains(playerId))
+            PlayerIdList.Add(playerId);
 
         maxBulletCount = SniperBulletCount.GetInt();
         precisionShooting = SniperPrecisionShooting.GetBool();
