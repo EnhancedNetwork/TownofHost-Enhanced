@@ -55,7 +55,7 @@ internal class ControllerManagerUpdatePatch
             //}
 
             //Show role info
-            if (Input.GetKeyDown(KeyCode.F1) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F1) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -74,7 +74,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
             // Show add-ons info
-            if (Input.GetKeyDown(KeyCode.F2) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F2) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -97,7 +97,7 @@ internal class ControllerManagerUpdatePatch
                     throw;
                 }
             }
-            if (Input.GetKeyDown(KeyCode.F3) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F3) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -113,7 +113,7 @@ internal class ControllerManagerUpdatePatch
                     Utils.ThrowException(ex);
                 }
             }
-            if (Input.GetKeyDown(KeyCode.F4) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F4) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
