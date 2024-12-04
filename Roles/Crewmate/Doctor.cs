@@ -8,8 +8,8 @@ internal class Doctor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6700;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
@@ -29,11 +29,11 @@ internal class Doctor : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

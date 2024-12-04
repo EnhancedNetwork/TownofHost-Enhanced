@@ -6,8 +6,8 @@ internal class TrackerTOHE : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6250;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Tracker;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
@@ -33,11 +33,11 @@ internal class TrackerTOHE : RoleBase
 
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

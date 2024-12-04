@@ -4,8 +4,8 @@ internal class Vindicator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 3800;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -25,11 +25,11 @@ internal class Vindicator : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)

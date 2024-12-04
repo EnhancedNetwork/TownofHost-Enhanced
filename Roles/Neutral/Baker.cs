@@ -15,7 +15,7 @@ internal class Baker : RoleBase
     private const int Id = 28600;
 
     public static readonly HashSet<byte> playerIdList = [];
-    
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => BTOS2Baker.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
@@ -48,7 +48,7 @@ internal class Baker : RoleBase
     }
     public override void Init()
     {
-        
+
         BreadList.Clear();
         RevealList.Clear();
         BarrierList.Clear();
@@ -58,7 +58,7 @@ internal class Baker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        
+
         BreadList[playerId] = [];
         RevealList[playerId] = [];
         BarrierList[playerId] = [];
@@ -284,7 +284,7 @@ internal class Baker : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || ( !AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
+        if (lowLoad || (!AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
         if (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 < Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()) return;
 
         player.RpcChangeRoleBasis(CustomRoles.Famine);

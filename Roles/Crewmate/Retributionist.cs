@@ -13,8 +13,8 @@ internal class Retributionist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11000;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -41,12 +41,12 @@ internal class Retributionist : RoleBase
     }
     public override void Init()
     {
-        
+
         RetributionistRevenged.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
         RetributionistRevenged[playerId] = 0;
     }
 

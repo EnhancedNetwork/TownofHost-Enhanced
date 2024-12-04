@@ -9,8 +9,8 @@ internal class Captain : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 26300;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -52,14 +52,14 @@ internal class Captain : RoleBase
 
     public override void Init()
     {
-        
+
         OriginalSpeed.Clear();
         CaptainVoteTargets.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        
+
     }
     public static void ReceiveRPCRevertAllSpeed()
     {

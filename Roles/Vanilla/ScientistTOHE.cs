@@ -7,8 +7,8 @@ internal class ScientistTOHE : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6200;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
@@ -30,11 +30,11 @@ internal class ScientistTOHE : RoleBase
 
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

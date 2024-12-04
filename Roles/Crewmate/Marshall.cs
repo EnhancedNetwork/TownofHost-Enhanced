@@ -9,8 +9,8 @@ internal class Marshall : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11900;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -25,11 +25,11 @@ internal class Marshall : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
     private static bool GetExpose(PlayerControl pc)
     {

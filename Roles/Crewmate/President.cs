@@ -9,8 +9,8 @@ internal class President : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12300;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -40,14 +40,14 @@ internal class President : RoleBase
     }
     public override void Init()
     {
-        
+
         CheckPresidentReveal.Clear();
         EndLimit.Clear();
         RevealLimit.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
         CheckPresidentReveal.Add(playerId, false);
         EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);

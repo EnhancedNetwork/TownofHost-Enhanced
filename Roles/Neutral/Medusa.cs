@@ -8,8 +8,8 @@ internal class Medusa : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17000;
-    
-    
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -32,11 +32,11 @@ internal class Medusa : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());

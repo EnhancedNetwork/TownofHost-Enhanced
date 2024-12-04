@@ -5,8 +5,8 @@ internal class ImpostorTOHE : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 300;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorVanilla;
@@ -19,10 +19,10 @@ internal class ImpostorTOHE : RoleBase
 
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 }

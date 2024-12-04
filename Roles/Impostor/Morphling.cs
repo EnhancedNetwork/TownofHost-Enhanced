@@ -7,8 +7,8 @@ internal class Morphling : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 3500;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -31,11 +31,11 @@ internal class Morphling : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public override bool CanUseKillButton(PlayerControl player)

@@ -10,8 +10,8 @@ internal class CursedSoul : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14000;
-    
-    
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
@@ -39,12 +39,12 @@ internal class CursedSoul : RoleBase
     }
     public override void Init()
     {
-        
+
         CurseLimit = CurseMax.GetInt();
     }
     public override void Add(byte playerId)
     {
-        
+
         CurseLimit = CurseMax.GetInt();
     }
 

@@ -10,8 +10,8 @@ internal class Witness : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10100;
-    
-    
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -30,11 +30,11 @@ internal class Witness : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
 
         if (AmongUsClient.Instance.AmHost)
         {

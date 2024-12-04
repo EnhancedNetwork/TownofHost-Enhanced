@@ -8,8 +8,8 @@ internal class Transporter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7400;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
@@ -27,11 +27,11 @@ internal class Transporter : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {

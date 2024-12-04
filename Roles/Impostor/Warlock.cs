@@ -11,8 +11,8 @@ internal class Warlock : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 5100;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -41,7 +41,7 @@ internal class Warlock : RoleBase
     }
     public override void Init()
     {
-        
+
         CursedPlayers.Clear();
         IsCurseAndKill.Clear();
         WarlockTimer.Clear();
@@ -49,7 +49,7 @@ internal class Warlock : RoleBase
     }
     public override void Add(byte playerId)
     {
-        
+
         CursedPlayers.Add(playerId, null);
         IsCurseAndKill.Add(playerId, false);
     }

@@ -10,8 +10,8 @@ internal class Mastermind : RoleBase
     //===========================SETUP================================\\
     private const int Id = 4100;
 
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -41,7 +41,7 @@ internal class Mastermind : RoleBase
 
     public override void Init()
     {
-        
+
         ManipulatedPlayers.Clear();
         ManipulateDelays.Clear();
         TempKCDs.Clear();
@@ -49,7 +49,7 @@ internal class Mastermind : RoleBase
 
     public override void Add(byte playerId)
     {
-        
+
         ManipulateCD = KillCooldown.GetFloat() + (TimeLimit.GetFloat() / 2) + (Delay.GetFloat() / 2);
 
         // Double Trigger

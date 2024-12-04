@@ -13,8 +13,8 @@ internal class Dictator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11600;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -28,11 +28,11 @@ internal class Dictator : RoleBase
 
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)

@@ -8,8 +8,8 @@ internal class Reverie : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11100;
-    
-    
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -45,17 +45,17 @@ internal class Reverie : RoleBase
     }
     public override void Init()
     {
-        
+
         NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
     }
     public override void Remove(byte playerId)
     {
-        
+
         NowCooldown.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl HES, NetworkedPlayerInfo HIM)
