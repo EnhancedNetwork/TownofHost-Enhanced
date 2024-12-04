@@ -1316,7 +1316,7 @@ static class ExtendedPlayerControl
     {
         //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         
-        if (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc))
+        if (seer.Is(Custom_Team.Impostor))
         {
             // Imp know Madmate
             if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
