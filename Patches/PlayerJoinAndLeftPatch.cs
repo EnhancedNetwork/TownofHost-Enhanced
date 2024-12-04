@@ -154,6 +154,7 @@ class DisconnectInternalPatch
 {
     public static void Prefix(InnerNetClient __instance, DisconnectReasons reason, string stringReason)
     {
+        GameStates.InGame = false;
         Logger.Info($"Disconnect (Reason:{reason}:{stringReason}, ping:{__instance.Ping})", "Reason Disconnect");
         RehostManager.OnDisconnectInternal(reason);
     }
@@ -492,13 +493,14 @@ class OnPlayerLeftPatch
 
 
             if (data != null)
+            {
                 Main.playerVersion.Remove(data.Id);
+                Main.SayStartTimes.Remove(data.Id);
+                Main.SayBanwordsTimes.Remove(data.Id);
+            }
 
             if (AmongUsClient.Instance.AmHost)
             {
-                Main.SayStartTimes.Remove(__instance.ClientId);
-                Main.SayBanwordsTimes.Remove(__instance.ClientId);
-
                 if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
@@ -524,6 +526,19 @@ class OnPlayerLeftPatch
                     if (MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                     {
                         MeetingHud.Instance.CheckForEndVoting();
+                    }
+                }
+
+                if (GameStates.IsInGame)
+                {
+                    if (data != null)
+                    {
+                        var networkedPlayerInfo = GameData.Instance.GetPlayerByClient(data);
+                        if (networkedPlayerInfo != null)
+                        {
+                            networkedPlayerInfo.PlayerName = Main.AllClientRealNames[networkedPlayerInfo.ClientId];
+                            networkedPlayerInfo.MarkDirty();
+                        }
                     }
                 }
             }

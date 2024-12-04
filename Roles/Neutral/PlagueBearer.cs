@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
@@ -26,6 +26,7 @@ internal class PlagueBearer : RoleBase
     private static OptionItem PlagueBearerHasImpostorVision;
     public static OptionItem PestilenceCanVent;
     public static OptionItem PestilenceHasImpostorVision;
+    public static OptionItem PestilenceKillsGuessers;
 
     private static readonly Dictionary<byte, HashSet<byte>> PlaguedList = [];
 
@@ -45,6 +46,8 @@ internal class PlagueBearer : RoleBase
         PlagueBearerCanVent = BooleanOptionItem.Create(Id + 14, "PlagueBearerCanVent", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
         PlagueBearerHasImpostorVision = BooleanOptionItem.Create(Id + 15, "PlagueBearerHasImpostorVision", true, TabGroup.NeutralRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
+        PestilenceKillsGuessers = BooleanOptionItem.Create(Id + 16, "PestilenceKillGuessers", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.PlagueBearer]);
     }
 
@@ -261,11 +264,14 @@ internal class Pestilence : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
-        if (role != CustomRoles.Pestilence) return false;
-        pc.ShowInfoMessage(isUI, GetString("GuessPestilence"));
+        if (PlagueBearer.PestilenceKillsGuessers.GetBool())
+        {
+            if (role != CustomRoles.Pestilence) return false;
+            pc.ShowInfoMessage(isUI, GetString("GuessPestilence"));
 
-        guesserSuicide = true;
-        Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
+            guesserSuicide = true;
+            Logger.Msg($"Is Active: {guesserSuicide}", "guesserSuicide - Pestilence");
+        }
         return false;
     }
 }

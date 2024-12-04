@@ -1,0 +1,31 @@
+name: Build the mod on pull request
+run-name: Test PR#${{ github.event.pull_request.number }} - ${{ github.event.pull_request.title }}
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches-ignore:
+      - "l10n_main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: pr#${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Create token.env file
+      run: echo "Github Actions" > token.env
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore

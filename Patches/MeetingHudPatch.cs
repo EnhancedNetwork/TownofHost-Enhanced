@@ -1224,6 +1224,8 @@ class MeetingHudUpdatePatch
 
     public static void Postfix(MeetingHud __instance)
     {
+        if (__instance == null || !GameStates.IsInGame) return;
+
         //Meeting Skip with vote counting on keystroke (m + delete)
         if (AmongUsClient.Instance.AmHost && Input.GetKeyDown(KeyCode.F6))
         {
