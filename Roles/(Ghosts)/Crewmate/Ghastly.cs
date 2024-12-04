@@ -1,4 +1,6 @@
 ﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -41,12 +43,40 @@ internal class Ghastly : RoleBase
         GhastlyKillAllies = BooleanOptionItem.Create(Id + 14, "GhastlyKillAllies", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly]);
     }
+
+    public override void Init()
+    {
+        KillerIsChosen = false;
+        killertarget = (byte.MaxValue, byte.MaxValue);
+        LastTime.Clear();
+    }
+
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxPossesions.GetInt();
 
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+    }
+
+    public void SendRPC()
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.PlayerId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.Write(KillerIsChosen);
+        writer.Write(killertarget.Item1);
+        writer.Write(killertarget.Item2);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        AbilityLimit = reader.ReadSingle();
+        KillerIsChosen = reader.ReadBoolean();
+        var item1 = reader.ReadByte();
+        var item2 = reader.ReadByte();
+        killertarget = (item1, item2);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -61,8 +91,10 @@ internal class Ghastly : RoleBase
             angel.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantPosses")));
             return true;
         }
+
         if (AbilityLimit <= 0)
         {
+            SendRPC();
             angel.Notify(GetString("GhastlyNoMorePossess"));
             return false;
         }
@@ -90,7 +122,6 @@ internal class Ghastly : RoleBase
         {
             Target = target.PlayerId;
             AbilityLimit--;
-            SendSkillRPC();
             LastTime.Add(killer, GetTimeStamp());
 
             KillerIsChosen = false;
@@ -109,6 +140,7 @@ internal class Ghastly : RoleBase
         }
 
         killertarget = (killer, Target);
+        SendRPC();
 
         return false;
     }
@@ -134,8 +166,8 @@ internal class Ghastly : RoleBase
             LastTime.Remove(player.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);
+            SendRPC();
         }
-
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
@@ -154,6 +186,7 @@ internal class Ghastly : RoleBase
                 LastTime.Remove(killer.PlayerId);
                 KillerIsChosen = false;
                 killertarget = (byte.MaxValue, byte.MaxValue);
+                SendRPC();
             }
         }
         return false;
@@ -188,6 +221,7 @@ internal class Ghastly : RoleBase
             LastTime.Remove(target.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);
+            SendRPC();
         }
     }
 

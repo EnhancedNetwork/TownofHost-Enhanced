@@ -114,6 +114,13 @@ public class PlayerState(byte playerId)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
 
+            // Remove lovers on Cleansed
+            if (pc.Is(CustomRoles.Lovers))
+            {
+                var lover = Main.PlayerStates.Values.FirstOrDefault(x => x.PlayerId != pc.PlayerId && x.SubRoles.Contains(CustomRoles.Lovers));
+                lover?.RemoveSubRole(CustomRoles.Lovers);
+            }
+
             foreach (var subRole in SubRoles.ToArray())
             {
                 RemoveSubRole(subRole);

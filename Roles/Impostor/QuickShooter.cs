@@ -57,8 +57,11 @@ internal class QuickShooter : RoleBase
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);
         writer.Write((byte)AbilityLimit);
+
+        if (_Player == null) { timer = false; }
         writer.Write(timer);
-        writer.Write(_Player.GetKillTimer());
+        if (timer)
+            writer.Write(_Player.GetKillTimer());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
@@ -66,7 +69,11 @@ internal class QuickShooter : RoleBase
     {
         AbilityLimit = reader.ReadByte();
         var shouldtime = reader.ReadBoolean();
-        var timer = reader.ReadSingle();
+        float timer = 0f;
+        if (shouldtime)
+        {
+            timer = reader.ReadSingle();
+        }
 
         if (pc.AmOwner && shouldtime)
             DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, ShapeshiftCooldown.GetFloat());
@@ -106,7 +113,6 @@ internal class QuickShooter : RoleBase
 
         AbilityLimit = NewSL[_state.PlayerId];
         SendRPC();
-
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
