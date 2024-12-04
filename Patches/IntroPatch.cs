@@ -313,7 +313,7 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
-        if (role.IsMixed() || PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -321,7 +321,7 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = new Color32(55, 154, 206, byte.MaxValue);
             return false;
         }
-        if (role.IsMixed() || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -533,14 +533,14 @@ class BeginCrewmatePatch
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Madmate");
         }
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers) || role.IsMixed())
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
         {
             __instance.TeamTitle.text = GetString("TeamLovers");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(55, 154, 206, byte.MaxValue);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Lovers");
         }
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist) || role.IsMixed())
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
         {
             __instance.TeamTitle.text = GetString("TeamEgoist");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(86, 0, 255, byte.MaxValue);
@@ -613,7 +613,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return true;
         }
-        if (role.IsMixed() || PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -621,7 +621,7 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = new Color32(55, 154, 206, byte.MaxValue);
             return true;
         }
-        if (role.IsMixed() || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
