@@ -7,8 +7,8 @@ internal class NiceGuesser : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -31,15 +31,15 @@ internal class NiceGuesser : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+        
     }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)

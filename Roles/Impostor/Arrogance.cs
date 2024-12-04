@@ -8,7 +8,7 @@ internal class Arrogance : RoleBase
     //===========================SETUP================================\\
     private const int Id = 500;
     public static HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -36,17 +36,17 @@ internal class Arrogance : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+        
         NowCooldown.Remove(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];

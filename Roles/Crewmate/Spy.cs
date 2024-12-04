@@ -11,8 +11,8 @@ internal class Spy : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 9700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -40,13 +40,13 @@ internal class Spy : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         SpyRedNameList.Clear();
         change = false;
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
         AbilityLimit = UseLimitOpt.GetInt();
 
         if (!SpyInteractionBlocked.GetBool())
@@ -56,7 +56,7 @@ internal class Spy : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+        
     }
     public void SendRPC(byte susId)
     {

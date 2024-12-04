@@ -7,8 +7,8 @@ internal class SerialKiller : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -35,11 +35,11 @@ internal class SerialKiller : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());

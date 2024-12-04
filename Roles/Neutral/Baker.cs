@@ -15,7 +15,7 @@ internal class Baker : RoleBase
     private const int Id = 28600;
 
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => BTOS2Baker.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
@@ -48,7 +48,7 @@ internal class Baker : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         BreadList.Clear();
         RevealList.Clear();
         BarrierList.Clear();
@@ -58,7 +58,7 @@ internal class Baker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
         BreadList[playerId] = [];
         RevealList[playerId] = [];
         BarrierList[playerId] = [];

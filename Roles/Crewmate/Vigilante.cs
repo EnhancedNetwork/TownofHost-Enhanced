@@ -7,8 +7,8 @@ internal class Vigilante : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -25,11 +25,11 @@ internal class Vigilante : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = VigilanteKillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;

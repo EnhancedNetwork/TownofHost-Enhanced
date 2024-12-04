@@ -9,7 +9,7 @@ internal class Mercenary : RoleBase
     //===========================SETUP================================\\
     private const int Id = 2000;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -32,7 +32,7 @@ internal class Mercenary : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         SuicideTimer.Clear();
     }
     public override void Add(byte serial)

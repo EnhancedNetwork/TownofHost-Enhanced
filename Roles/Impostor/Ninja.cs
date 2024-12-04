@@ -13,8 +13,8 @@ internal class Ninja : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -38,12 +38,12 @@ internal class Ninja : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         MarkedPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
