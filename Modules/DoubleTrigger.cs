@@ -13,7 +13,7 @@ static class DoubleTrigger
 
     public static void Init()
     {
-        
+        PlayerIdList.Clear();
         FirstTriggerTimer.Clear();
         FirstTriggerAction.Clear();
     }

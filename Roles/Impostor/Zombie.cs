@@ -7,8 +7,8 @@ internal class Zombie : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 23900;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -29,11 +29,11 @@ internal class Zombie : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

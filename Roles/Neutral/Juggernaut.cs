@@ -8,8 +8,8 @@ internal class Juggernaut : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 16900;
-    
-    
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -37,12 +37,12 @@ internal class Juggernaut : RoleBase
     }
     public override void Init()
     {
-        
+
         NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NowCooldown[id];

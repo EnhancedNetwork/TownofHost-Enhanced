@@ -6,8 +6,8 @@ internal class Instigator : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 1700;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -31,11 +31,11 @@ internal class Instigator : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
         AbilityLimit = AbilityLimitt.GetInt();
     }
 

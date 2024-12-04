@@ -6,8 +6,8 @@ internal class PhantomTOHE : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 450;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Phantom;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorVanilla;
@@ -29,11 +29,11 @@ internal class PhantomTOHE : RoleBase
 
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

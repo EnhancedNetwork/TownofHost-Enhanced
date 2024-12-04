@@ -11,8 +11,8 @@ internal class Telecommunication : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12500;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -34,7 +34,7 @@ internal class Telecommunication : RoleBase
     }
     public override void Init()
     {
-        
+
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
@@ -42,11 +42,11 @@ internal class Telecommunication : RoleBase
     }
     public override void Add(byte playerId)
     {
-        
+
     }
     public override void Remove(byte playerId)
     {
-        
+
     }
 
     public static bool CanUseVent() => CanVent.GetBool();

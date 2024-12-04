@@ -8,8 +8,8 @@ internal class Enigma : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8100;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -73,19 +73,19 @@ internal class Enigma : RoleBase
     }
     public override void Init()
     {
-        
+
         ShownClues.Clear();
         MsgToSend.Clear();
         MsgToSendTitle.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
         ShownClues.Add(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-        
+
         ShownClues.Remove(playerId);
     }
 

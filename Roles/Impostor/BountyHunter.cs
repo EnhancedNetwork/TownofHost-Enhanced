@@ -11,8 +11,8 @@ internal class BountyHunter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 800;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -44,14 +44,14 @@ internal class BountyHunter : RoleBase
     }
     public override void Init()
     {
-        
+
 
         Targets.Clear();
         ChangeTimer.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
 
         TargetChangeTime = OptionTargetChangeTime.GetFloat();
         SuccessKillCooldown = OptionSuccessKillCooldown.GetFloat();
@@ -66,7 +66,7 @@ internal class BountyHunter : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        
+
     }
 
     private static void SendRPC(byte bountyId, byte targetId)

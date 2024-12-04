@@ -8,8 +8,8 @@ internal class Pyromaniac : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 17800;
-    
-    
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -37,12 +37,12 @@ internal class Pyromaniac : RoleBase
     }
     public override void Init()
     {
-        
+
         DousedList.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
 
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);

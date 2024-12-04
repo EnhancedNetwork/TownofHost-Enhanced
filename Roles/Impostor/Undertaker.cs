@@ -8,8 +8,8 @@ internal class Undertaker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 4900;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -36,14 +36,14 @@ internal class Undertaker : RoleBase
 
     public override void Init()
     {
-        
+
         MarkedLocation.Clear();
         DefaultSpeed = new();
     }
 
     public override void Add(byte playerId)
     {
-        
+
         MarkedLocation.TryAdd(playerId, ExtendedPlayerControl.GetBlackRoomPosition());
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }

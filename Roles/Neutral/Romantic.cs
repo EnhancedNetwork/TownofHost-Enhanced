@@ -380,8 +380,8 @@ internal class VengefulRomantic : RoleBase
 internal class RuthlessRomantic : RoleBase
 {
     //===========================SETUP================================\\
-    
-    
+
+
 
     public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
@@ -389,11 +389,11 @@ internal class RuthlessRomantic : RoleBase
     //==================================================================\\
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.RuthlessKCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;

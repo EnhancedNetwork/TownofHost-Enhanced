@@ -9,8 +9,8 @@ internal partial class Mayor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12000;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -47,17 +47,17 @@ internal partial class Mayor : RoleBase
 
     public override void Init()
     {
-        
+
         MayorUsedButtonCount.Clear();
     }
     public override void Add(byte playerId)
     {
-        
+
         MayorUsedButtonCount[playerId] = 0;
     }
     public override void Remove(byte playerId)
     {
-        
+
         MayorUsedButtonCount[playerId] = 0;
     }
 

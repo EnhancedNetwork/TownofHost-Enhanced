@@ -6,8 +6,8 @@ internal class LazyGuy : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6800;
-    
-    
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
@@ -19,10 +19,10 @@ internal class LazyGuy : RoleBase
     }
     public override void Init()
     {
-        
+
     }
     public override void Add(byte playerId)
     {
-        
+
     }
 }
