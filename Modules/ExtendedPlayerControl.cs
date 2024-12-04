@@ -1305,7 +1305,8 @@ static class ExtendedPlayerControl
                 or CustomRoles.Charmed
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
-                or CustomRoles.Egoist) 
+                or CustomRoles.Egoist
+                or CustomRoles.Narc) 
             && KnowSubRoleTarget(seer, target))
             return true;
 
@@ -1316,7 +1317,7 @@ static class ExtendedPlayerControl
     {
         //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         
-        if (seer.Is(Custom_Team.Impostor))
+        if (seer.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Narc))
         {
             // Imp know Madmate
             if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
