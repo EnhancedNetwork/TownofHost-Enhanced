@@ -115,8 +115,8 @@ public static class CustomRoleManager
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
-        if (Medusa.HasEnabled) Medusa.SetStoned(player, opt);
-        if (Sacrifist.HasEnabled) Sacrifist.SetVision(player, opt);
+        if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
+        if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);
 
 
         var playerSubRoles = player.GetCustomSubRoles();

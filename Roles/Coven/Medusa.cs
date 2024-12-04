@@ -12,7 +12,6 @@ internal class Medusa : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 17000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medusa);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;

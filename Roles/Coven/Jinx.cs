@@ -12,7 +12,6 @@ internal class Jinx : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 16800;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jinx);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenKilling;

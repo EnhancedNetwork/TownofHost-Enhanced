@@ -11,8 +11,6 @@ internal class Necromancer : CovenManager
 {
     //===========================SETUP================================\\
     private const int Id = 17100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
@@ -52,7 +50,6 @@ internal class Necromancer : CovenManager
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsRevenge = false;
         Success = false;
         Killer = null;
@@ -63,7 +60,6 @@ internal class Necromancer : CovenManager
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         Timer = RevengeTime.GetInt();
         UsedRoles[playerId] = [];
     }
