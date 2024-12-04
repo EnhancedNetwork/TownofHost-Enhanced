@@ -18,6 +18,9 @@ enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
+
+    // Adding Role rpcs that overrides TOHE section and changing BetterCheck will be rejected
+    // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -40,6 +43,7 @@ enum CustomRPC : byte // 185/255 USED
     SetNameColorData,
     GuessKill,
     Judge,
+    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     Guess,
     CouncillorJudge,
     NemesisRevenge,
