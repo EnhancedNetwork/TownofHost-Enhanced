@@ -8,9 +8,6 @@ internal class Mercenary : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2000;
-    public static readonly HashSet<byte> playerIdList = [];
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -32,12 +29,10 @@ internal class Mercenary : RoleBase
     }
     public override void Init()
     {
-
         SuicideTimer.Clear();
     }
     public override void Add(byte serial)
     {
-        playerIdList.Add(serial);
         OptTimeLimit = TimeLimit.GetFloat();
     }
 
@@ -107,7 +102,7 @@ internal class Mercenary : RoleBase
 
     public override void AfterMeetingTasks()
     {
-        foreach (var id in playerIdList)
+        foreach (var id in _playerIdList)
         {
             var pc = Utils.GetPlayerById(id);
 

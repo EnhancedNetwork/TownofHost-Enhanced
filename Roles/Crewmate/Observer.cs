@@ -24,7 +24,12 @@ internal class Observer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+    }
+    public override void Remove(byte playerId)
+    {
+        playerIdList.Remove(playerId);
     }
     public static void ActivateGuardAnimation(byte killerId, PlayerControl target)
     {

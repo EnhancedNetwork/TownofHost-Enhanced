@@ -45,13 +45,14 @@ internal class Hater : RoleBase
 
     public override void Init()
     {
-
+        playerIdList.Clear();
         isWon = false;
     }
 
     public override void Add(byte playerId)
     {
-
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

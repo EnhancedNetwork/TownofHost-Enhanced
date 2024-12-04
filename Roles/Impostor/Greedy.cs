@@ -7,9 +7,6 @@ internal class Greedy : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 1500;
-    public static HashSet<byte> playerIdList = [];
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -31,12 +28,10 @@ internal class Greedy : RoleBase
     }
     public override void Init()
     {
-
         IsOdd.Clear();
     }
     public override void Add(byte playerId)
     {
-
         IsOdd.Add(playerId, true);
     }
 
@@ -57,7 +52,7 @@ internal class Greedy : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OddKillCooldown.GetFloat();
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        foreach (var greedyId in playerIdList.ToArray())
+        foreach (var greedyId in _playerIdList)
         {
             IsOdd[greedyId] = true;
             SendRPC(greedyId);

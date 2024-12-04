@@ -67,13 +67,15 @@ internal class Executioner : RoleBase
     }
     public override void Init()
     {
-
+        playerIdList.Clear();
         TargetList.Clear();
         TargetId = byte.MaxValue;
     }
     public override void Add(byte playerId)
     {
-
+        if (!playerIdList.Contains(playerId)) {
+            playerIdList.Add(playerId);
+        }
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
 
