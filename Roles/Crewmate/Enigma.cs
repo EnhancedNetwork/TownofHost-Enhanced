@@ -8,8 +8,8 @@ internal class Enigma : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -73,19 +73,19 @@ internal class Enigma : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         ShownClues.Clear();
         MsgToSend.Clear();
         MsgToSendTitle.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
         ShownClues.Add(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+        
         ShownClues.Remove(playerId);
     }
 
@@ -100,7 +100,7 @@ internal class Enigma : RoleBase
         string msg;
         var rd = IRandom.Instance;
 
-        foreach (var playerId in playerIdList.ToArray())
+        foreach (var playerId in _playerIdList.ToArray())
         {
             if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) continue;
 

@@ -10,8 +10,8 @@ internal class Lightning : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -35,13 +35,13 @@ internal class Lightning : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
         GhostPlayer.Clear();
         RealKiller.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
 
     }
     private static void SendRPC(byte playerId)

@@ -9,8 +9,8 @@ internal class Marshall : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    
+    
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -25,11 +25,11 @@ internal class Marshall : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+        
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        
     }
     private static bool GetExpose(PlayerControl pc)
     {
