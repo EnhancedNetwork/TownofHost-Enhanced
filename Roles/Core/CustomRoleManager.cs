@@ -109,7 +109,7 @@ public static class CustomRoleManager
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
-        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -180,7 +180,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
+        if (CustomRoles.PlagueBearer.RoleExist(true) && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }

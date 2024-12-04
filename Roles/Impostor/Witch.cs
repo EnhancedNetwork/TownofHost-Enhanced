@@ -44,7 +44,8 @@ internal class Witch : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         SpellMode.Add(playerId, false);
         SpelledPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTriggerList)ModeSwitchActionOpt.GetValue();

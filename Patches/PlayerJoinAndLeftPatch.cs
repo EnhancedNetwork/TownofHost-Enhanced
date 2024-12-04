@@ -373,7 +373,7 @@ class OnPlayerLeftPatch
                     }
                 }
 
-                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
+                Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 var state = Main.PlayerStates[data.Character.PlayerId];
                 state.Disconnected = true;

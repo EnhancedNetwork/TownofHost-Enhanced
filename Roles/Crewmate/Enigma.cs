@@ -100,12 +100,13 @@ internal class Enigma : RoleBase
         string msg;
         var rd = IRandom.Instance;
 
-        foreach (var playerId in _playerIdList.ToArray())
+        if (_Player)
         {
-            if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) continue;
+            var playerId = _Player.PlayerId;
+            if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) return;
 
             var enigmaPlayer = Utils.GetPlayerById(playerId);
-            if (enigmaPlayer == null) continue;
+            if (enigmaPlayer == null) return;
 
             int tasksCompleted = enigmaPlayer.GetPlayerTaskState().CompletedTasksCount;
             int stage = 0;
@@ -129,7 +130,7 @@ internal class Enigma : RoleBase
             var clues = EnigmaClues.Where(a => a.ClueStage <= stage &&
                 !ShownClues[playerId].Any(b => b.EnigmaClueType == a.EnigmaClueType && b.ClueStage == a.ClueStage))
                 .ToList();
-            if (clues.Count == 0) continue;
+            if (clues.Count == 0) return;
             if (showStageClue && clues.Any(a => a.ClueStage == stage))
                 clues = clues.Where(a => a.ClueStage == stage).ToList();
 
