@@ -23,6 +23,8 @@
   "SubText.Neutral": "Work alone to achieve your victory",
   "SubText.Apocalypse": "Become unstoppable with your team",
   "SubText.Madmate": "Help the <color=#ff1919>Impostors</color>",
+  "SubText.Lovers": "Stay alive and win together",
+  "SubText.Egoist": "Win on your own",
 
   "TypeImpostor": "Impostors",
   "TypeCrewmate": "Crewmates",
