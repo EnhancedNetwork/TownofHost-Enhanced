@@ -14,8 +14,6 @@ internal class Baker : RoleBase
     //===========================SETUP================================\\
     private const int Id = 28600;
 
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => BTOS2Baker.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
@@ -48,7 +46,6 @@ internal class Baker : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         BreadList.Clear();
         RevealList.Clear();
         BarrierList.Clear();
@@ -58,7 +55,6 @@ internal class Baker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         BreadList[playerId] = [];
         RevealList[playerId] = [];
         BarrierList[playerId] = [];
@@ -140,7 +136,8 @@ internal class Baker : RoleBase
     }
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (playerIdList.Any() && HasBread(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First())
+        if (!_Player) return string.Empty;
+        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
         {
             return ColorString(GetRoleColor(CustomRoles.Baker), "●");
         }
@@ -279,12 +276,12 @@ internal class Baker : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        if (playerIdList.Any())
-            BarrierList[playerIdList.First()].Clear();
+        if (_Player)
+            BarrierList[_Player.PlayerId].Clear();
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || ( !AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
+        if (lowLoad || (!AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
         if (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 < Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()) return;
 
         player.RpcChangeRoleBasis(CustomRoles.Famine);

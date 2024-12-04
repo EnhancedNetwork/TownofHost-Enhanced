@@ -7,8 +7,8 @@ internal class Traitor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => LegacyTraitor.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
@@ -44,11 +44,11 @@ internal class Traitor : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -58,7 +58,7 @@ internal class Traitor : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    
+
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();

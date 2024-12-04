@@ -10,7 +10,7 @@ internal class Executioner : RoleBase
     //===========================SETUP================================\\
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
@@ -73,7 +73,9 @@ internal class Executioner : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId)) {
+            playerIdList.Add(playerId);
+        }
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
 
@@ -118,7 +120,7 @@ internal class Executioner : RoleBase
         {
             SendRPC(SetTarget: false);
         }
-        playerIdList.Remove(playerId);
+
         TargetList.Remove(TargetId);
         TargetId = byte.MaxValue;
     }
