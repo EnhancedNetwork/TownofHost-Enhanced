@@ -76,11 +76,11 @@ enum CustomRPC : byte // 185/255 USED
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
-    SetCrewpostorTasksDone,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
