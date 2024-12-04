@@ -12,9 +12,6 @@ internal class Bastion : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
@@ -39,12 +36,10 @@ internal class Bastion : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         BombedVents.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         AbilityLimit = BastionMaxBombs.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
