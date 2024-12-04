@@ -537,7 +537,6 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = GetString("TeamLovers");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(55, 154, 206, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Lovers");
         }
@@ -545,7 +544,7 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = GetString("TeamEgoist");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(86, 0, 255, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Egoist");
         }
