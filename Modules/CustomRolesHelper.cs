@@ -321,6 +321,20 @@ public static class CustomRolesHelper
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
     /// </summary>
+    public static bool IsLovers(this CustomRoles role)
+    {
+        return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Lovers;
+    }
+    /// <summary>
+    /// Role Changes the Crewmates, Impostors, or Neutrals Team.
+    /// </summary>
+    public static bool IsEgoist(this CustomRoles role)
+    {
+        return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Egoist;
+    }
+    /// <summary>
+    /// Role Changes the Crewmates or Impostors Team, Including changing to Neutral.
+    /// </summary>
     public static bool IsConverted(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
         || role is
             CustomRoles.Charmed or
@@ -1392,8 +1406,10 @@ public enum Custom_RoleType
     ImpostorConcealing,
     ImpostorHindering,
     ImpostorGhosts,
-
+    
     Madmate,
+    Lovers,
+    Egoist,
 
     // Crewmate
     CrewmateVanilla,
