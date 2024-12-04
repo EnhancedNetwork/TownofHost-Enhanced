@@ -436,6 +436,7 @@ class BeginCrewmatePatch
             case CustomRoles.ShapeshifterTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                 break;
+            case CustomRoles.CursedSoul:    
             case CustomRoles.SoulCatcher:
             case CustomRoles.Specter:
             case CustomRoles.Stalker:
@@ -446,6 +447,7 @@ class BeginCrewmatePatch
             case CustomRoles.TrackerTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
                 break;
+            case CustomRoles.Celebrity:    
             case CustomRoles.NoisemakerTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Noisemaker);
                 break;
@@ -456,6 +458,10 @@ class BeginCrewmatePatch
             case CustomRoles.Medic:
             case CustomRoles.ScientistTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Scientist);
+                break;
+            case CustomRoles.Observer:
+            case CustomRoles.Spiritualist:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.GuardianAngel);
                 break;
 
             case CustomRoles.Terrorist:
@@ -487,6 +493,11 @@ class BeginCrewmatePatch
             case CustomRoles.Mechanic:
             case CustomRoles.Provocateur:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
+                break;
+                
+            case CustomRoles.Pixie:
+            case CustomRoles.Seeker:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                 break;
 
             case CustomRoles.GM:
