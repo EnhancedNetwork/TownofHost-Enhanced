@@ -1393,7 +1393,6 @@ public enum Custom_RoleType
     ImpostorConcealing,
     ImpostorHindering,
     ImpostorGhosts,
-    
     Madmate,
     
     // Crewmate
