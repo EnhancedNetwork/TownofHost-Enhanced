@@ -313,6 +313,22 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
+        if (role.IsLovers() || PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
+        {
+            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            teamToDisplay.Add(PlayerControl.LocalPlayer);
+            __instance.BeginImpostor(teamToDisplay);
+            __instance.overlayHandle.color = new Color32(55, 154, 206, byte.MaxValue);
+            return false;
+        }
+        if (role.IsEgoist() || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+        {
+            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            teamToDisplay.Add(PlayerControl.LocalPlayer);
+            __instance.BeginImpostor(teamToDisplay);
+            __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
+            return false;
+        }
         else if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
         {
             var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -396,11 +412,22 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.text = GetString("SubText.Crewmate");
                 break;
             case Custom_Team.Neutral:
-                __instance.TeamTitle.text = GetString("TeamNeutral");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(127, 140, 141, byte.MaxValue);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
-                __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("SubText.Neutral");
+                if (!role.IsNA())
+                {
+                    __instance.TeamTitle.text = GetString("TeamNeutral");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(127, 140, 141, byte.MaxValue);
+                    PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                    __instance.ImpostorText.gameObject.SetActive(true);
+                    __instance.ImpostorText.text = GetString("SubText.Neutral");
+                }
+                else
+                {
+                    __instance.TeamTitle.text = GetString("TeamApocalypse");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 23, 79, byte.MaxValue);
+                    PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                    __instance.ImpostorText.gameObject.SetActive(true);
+                    __instance.ImpostorText.text = GetString("SubText.Apocalypse");
+                }
                 break;
         }
         switch (role)
@@ -495,6 +522,22 @@ class BeginCrewmatePatch
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Madmate");
         }
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers) || role.IsLovers())
+        {
+            __instance.TeamTitle.text = GetString("TeamLovers");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(55, 154, 206, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Lovers");
+        }
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist) || role.IsEgoist())
+        {
+            __instance.TeamTitle.text = GetString("TeamEgoist");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(86, 0, 255, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Egoist");
+        }
 
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
@@ -558,6 +601,21 @@ class BeginImpostorPatch
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
             __instance.overlayHandle.color = Palette.ImpostorRed;
+            return true;
+        }
+        if (role.IsLovers() || PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            foreach(var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            __instance.overlayHandle.color = new Color32(55, 154, 206, byte.MaxValue);
+            return true;
+        }
+        if (role.IsEgoist() || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
             return true;
         }
 
@@ -718,4 +776,3 @@ class IntroCutsceneDestroyPatch
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
-
