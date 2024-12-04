@@ -4,12 +4,12 @@ using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Neutral;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.CustomWinnerHolder;
+using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE;
 
