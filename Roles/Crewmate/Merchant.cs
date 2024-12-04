@@ -8,8 +8,8 @@ internal class Merchant : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -61,7 +61,7 @@ internal class Merchant : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
 
         addons.Clear();
         addonsSold.Clear();
@@ -89,13 +89,13 @@ internal class Merchant : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         addonsSold[playerId] = 0;
         bribedKiller.TryAdd(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
         addonsSold.Remove(playerId);
         bribedKiller.Remove(playerId);
     }

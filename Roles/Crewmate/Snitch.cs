@@ -75,7 +75,8 @@ internal class Snitch : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
 
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;

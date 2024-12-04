@@ -8,8 +8,8 @@ internal class Enigma : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 8100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -73,19 +73,19 @@ internal class Enigma : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         ShownClues.Clear();
         MsgToSend.Clear();
         MsgToSendTitle.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         ShownClues.Add(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
         ShownClues.Remove(playerId);
     }
 
@@ -100,12 +100,13 @@ internal class Enigma : RoleBase
         string msg;
         var rd = IRandom.Instance;
 
-        foreach (var playerId in playerIdList.ToArray())
+        if (_Player)
         {
-            if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) continue;
+            var playerId = _Player.PlayerId;
+            if (!EnigmaGetCluesWithoutReporting.GetBool() && playerId != player.PlayerId) return;
 
             var enigmaPlayer = Utils.GetPlayerById(playerId);
-            if (enigmaPlayer == null) continue;
+            if (enigmaPlayer == null) return;
 
             int tasksCompleted = enigmaPlayer.GetPlayerTaskState().CompletedTasksCount;
             int stage = 0;
@@ -129,7 +130,7 @@ internal class Enigma : RoleBase
             var clues = EnigmaClues.Where(a => a.ClueStage <= stage &&
                 !ShownClues[playerId].Any(b => b.EnigmaClueType == a.EnigmaClueType && b.ClueStage == a.ClueStage))
                 .ToList();
-            if (clues.Count == 0) continue;
+            if (clues.Count == 0) return;
             if (showStageClue && clues.Any(a => a.ClueStage == stage))
                 clues = clues.Where(a => a.ClueStage == stage).ToList();
 
