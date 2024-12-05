@@ -317,7 +317,7 @@ class BeginCrewmatePatch
                     teamToDisplay.Add(pc);
             }
 
-            __instance.overlayHandle.color = new Color32(55, 154, 206, byte.MaxValue);
+            __instance.overlayHandle.color = new Color32(255, 154, 206, byte.MaxValue);
             return true;
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
@@ -536,7 +536,7 @@ class BeginCrewmatePatch
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
         {
             __instance.TeamTitle.text = GetString("TeamLovers");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(55, 154, 206, byte.MaxValue);
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Lovers");
         }
