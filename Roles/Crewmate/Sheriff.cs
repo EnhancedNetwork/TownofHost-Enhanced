@@ -105,6 +105,11 @@ internal class Sheriff : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Narc))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantArrestNarc")));
+            return false;
+        }
         AbilityLimit--;
         Logger.Info($"{killer.GetNameWithRole()} : Number of kills left: {AbilityLimit}", "Sheriff");
         SendSkillRPC();
