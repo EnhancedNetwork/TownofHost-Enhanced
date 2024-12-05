@@ -178,12 +178,14 @@ internal class Ritualist : CovenManager
     }
     public override void AfterMeetingTasks()
     {
-        var rit = Utils.GetPlayerListByRole(CustomRoles.Ritualist).First();
-        foreach (var pc in EnchantedPlayers[rit.PlayerId])
-        {
-            GetPlayerById(pc).RpcSetCustomRole(CustomRoles.Enchanted);
+        foreach (var rit in EnchantedPlayers.Keys)
+        {    
+            foreach (var pc in EnchantedPlayers[rit])
+            {
+                GetPlayerById(pc).RpcSetCustomRole(CustomRoles.Enchanted);
+            }
+            EnchantedPlayers[rit].Clear();
         }
-        EnchantedPlayers[rit.PlayerId].Clear();
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {

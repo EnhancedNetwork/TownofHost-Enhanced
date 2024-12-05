@@ -205,8 +205,9 @@ internal class MoonDancer : CovenManager
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         KillBlastedOff();
-        var md = Utils.GetPlayerListByRole(CustomRoles.MoonDancer).First();
-        DistributeAddOns(md);
+        foreach (var md in BatonPassList.Keys) {        
+            DistributeAddOns(GetPlayerById(md));
+        }
     }
     private void DistributeAddOns(PlayerControl md)
     {

@@ -137,7 +137,6 @@ internal class Necromancer : CovenManager
         nm.RpcSetCustomRole(role);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
         nm.RpcSetCustomRole(CustomRoles.Enchanted);
-        nm.AddInSwitchAddons(nm, CustomRoles.Enchanted);
         nm.SyncSettings();
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
         nm.RpcGuardAndKill(nm);
@@ -188,7 +187,11 @@ internal class Necromancer : CovenManager
             CustomRoles.CursedSoul or
             CustomRoles.Provocateur or
             CustomRoles.Specter or
+            // Just in case
             CustomRoles.GM or
+            CustomRoles.Killer or
+            CustomRoles.Coven or
+            CustomRoles.Apocalypse or
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool());
