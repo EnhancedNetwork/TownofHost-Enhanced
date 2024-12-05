@@ -188,6 +188,7 @@ internal class Necromancer : CovenManager
             CustomRoles.CursedSoul or
             CustomRoles.Provocateur or
             CustomRoles.Specter or
+            CustomRoles.GameMaster or
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool());
