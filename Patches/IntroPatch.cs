@@ -635,20 +635,23 @@ class BeginImpostorPatch
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
 
-            // Crew postor is counted as madmate but should be a impostor
-            if (Madmate.MadmateKnowWhosImp.GetBool() || role != CustomRoles.Madmate)
+            if (role != CustomRoles.Parasite) // Parasite and Impostor doesnt know each other
             {
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                // Crew postor is counted as madmate but should be a impostor
+                if (Madmate.MadmateKnowWhosImp.GetBool() || role != CustomRoles.Madmate)
                 {
-                    yourTeam.Add(pc);
+                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                    {
+                        yourTeam.Add(pc);
+                    }
                 }
-            }
-            // Crew postor is counted as madmate but should be a impostor
-            if (Madmate.MadmateKnowWhosMadmate.GetBool() || role != CustomRoles.Madmate && Madmate.ImpKnowWhosMadmate.GetBool())
-            {
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                // Crew postor is counted as madmate but should be a impostor
+                if (Madmate.MadmateKnowWhosMadmate.GetBool() || role != CustomRoles.Madmate && Madmate.ImpKnowWhosMadmate.GetBool())
                 {
-                    yourTeam.Add(pc);
+                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                    {
+                        yourTeam.Add(pc);
+                    }
                 }
             }
 
@@ -681,7 +684,9 @@ class BeginImpostorPatch
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
-            foreach (var pc in Main.AllAlivePlayerControls.Where (x => !x.AmOwner && (x.GetCustomRole().IsImpostor() || !x.Is(CustomRoles.Madmate) && x.GetCustomRole().IsMadmate())))
+
+            // Parasite and Impostor doesnt know each other
+            foreach (var pc in Main.AllAlivePlayerControls.Where (x => !x.AmOwner && !x.Is(CustomRoles.Parasite) && (x.GetCustomRole().IsImpostor() || !x.Is(CustomRoles.Madmate) && x.GetCustomRole().IsMadmate())))
             {
                 yourTeam.Add(pc);
             }
