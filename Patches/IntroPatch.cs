@@ -328,6 +328,17 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
             return true;
         }
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
+        {
+            var narcDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            narcDisplay.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc != PlayerControl.LocalPlayer)
+                    narcDisplay.Add(pc);
+            }
+            teamToDisplay = narcDisplay;
+        }
         else if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -548,6 +559,14 @@ class BeginCrewmatePatch
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Egoist");
         }
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
+        {
+            __instance.TeamTitle.text = GetString("TeamCrewmate");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(140, 255, 255, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Crewmate");
+        }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
         {
             __instance.TeamTitle.text = GetString("TeamMadmate");
@@ -630,7 +649,7 @@ class BeginImpostorPatch
         }
         // Madmate called from BeginCrewmate, need to skip previous lovers and egoist check here
 
-        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+        if ((role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)) && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -659,7 +678,7 @@ class BeginImpostorPatch
             return true;
         }
 
-        if (role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor)
+        if ((role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor) || PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -680,7 +699,7 @@ class BeginImpostorPatch
         }
 
         // We only check impostor main role here!
-        if (role.IsImpostor())
+        if (role.IsImpostor() && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
