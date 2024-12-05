@@ -23,5 +23,5 @@ public class Narc : IAddon
     { }
     public void Remove(byte playerId)
     { }
-// Impy is the laziest girl I've ever seen.
+// .. -- .--. -.-- / .. ... / .-.. .- --.. -.--
 }
