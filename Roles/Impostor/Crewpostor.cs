@@ -15,8 +15,8 @@ internal class Crewpostor : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 
-    private static OptionItem CanKillAllies;
-    private static OptionItem KnowsAllies;
+    public static OptionItem CanKillAllies;
+    public static OptionItem KnowsAllies;
     private static OptionItem AlliesKnowCrewpostor;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
@@ -97,8 +97,8 @@ internal class Crewpostor : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target) ? Utils.GetRoleColorCode(CustomRoles.Crewpostor) : string.Empty;
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor))
-            || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(Custom_Team.Impostor));
+        => (AlliesKnowCrewpostor.GetBool() && (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc)) && target.Is(CustomRoles.Crewpostor))
+            || (KnowsAllies.GetBool() && (seer.Is(CustomRoles.Crewpostor) && !seer.Is(CustomRoles.Narc)) && target.Is(Custom_Team.Impostor));
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
