@@ -27,7 +27,7 @@ public class Swift : IAddon
             killer.TrapperKilled(target);
 
         killer.SetKillCooldown();
-        
+
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         return false;
     }

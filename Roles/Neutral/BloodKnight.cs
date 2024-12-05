@@ -56,7 +56,7 @@ internal class BloodKnight : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
     private bool InProtect() => TimeStamp > Utils.GetTimeStamp();
-    
+
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (InProtect())

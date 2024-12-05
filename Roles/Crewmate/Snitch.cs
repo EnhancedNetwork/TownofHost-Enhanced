@@ -1,8 +1,8 @@
 using Hazel;
-using UnityEngine;
-using static TOHE.Translator;
-using static TOHE.Options;
 using InnerNet;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -12,7 +12,7 @@ internal class Snitch : RoleBase
     private const int Id = 9500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -70,7 +70,8 @@ internal class Snitch : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
 
         IsExposed[playerId] = false;
         IsComplete[playerId] = false;
@@ -94,8 +95,8 @@ internal class Snitch : RoleBase
     }
 
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse)|| (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
-    
+        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+
     private void CheckTask(PlayerControl snitch)
     {
         if (!snitch.IsAlive() || snitch.Is(CustomRoles.Madmate)) return;
@@ -175,7 +176,7 @@ internal class Snitch : RoleBase
                     foreach (var target in Main.AllAlivePlayerControls)
                     {
                         if (!IsSnitchTarget(target)) continue;
-                        
+
                         var targetId = target.PlayerId;
 
                         if (!TargetList.Contains(targetId))
@@ -235,6 +236,7 @@ internal class Snitch : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Snitch) return false;
         if (target.GetPlayerTaskState().IsTaskFinished)
         {
             pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));

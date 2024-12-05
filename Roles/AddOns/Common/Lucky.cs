@@ -22,7 +22,7 @@ public class Lucky : IAddon
     {
         LuckyAvoid.Clear();
     }
-    public  void Add(byte playerId, bool gameIsLoading = true)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         LuckyAvoid[playerId] = false;
     }

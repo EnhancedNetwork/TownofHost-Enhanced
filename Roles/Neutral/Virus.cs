@@ -1,11 +1,11 @@
-﻿using System;
-using UnityEngine;
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
+using System;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
@@ -106,16 +106,16 @@ internal class Virus : RoleBase
         if (!_Player.IsAlive() || !KillInfectedPlayerAfterMeeting.GetBool()) return;
 
         var virus = _Player;
-        if (exileIds.Contains(virus.PlayerId)) 
+        if (exileIds.Contains(virus.PlayerId))
         {
             InfectedPlayer.Clear();
             return;
-        } 
+        }
 
         var infectedIdList = new List<byte>();
         foreach (var infectedId in InfectedPlayer)
         {
-            var infected =  infectedId.GetPlayer();
+            var infected = infectedId.GetPlayer();
             if (virus.IsAlive() && infected != null)
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(infectedId))
