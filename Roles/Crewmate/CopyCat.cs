@@ -137,7 +137,7 @@ internal class CopyCat : RoleBase
                 (CustomRoles.CursedWolf and not CustomRoles.Narc) or CustomRoles.Jinx => CustomRoles.Veteran,
                 (CustomRoles.Swooper and not CustomRoles.Narc) or CustomRoles.Wraith => CustomRoles.Chameleon,
                 (CustomRoles.Vindicator and not CustomRoles.Narc) or CustomRoles.Pickpocket => CustomRoles.Mayor,
-                (CustomRoles.Arrogance and not CustomRoles.Narc) or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie
+                (CustomRoles.Arrogance and not CustomRoles.Narc) or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
                 _ => role
             };
         }
