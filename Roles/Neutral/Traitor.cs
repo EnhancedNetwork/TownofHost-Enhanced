@@ -56,12 +56,6 @@ internal class Traitor : RoleBase
         AURoleOptions.ShapeshifterCooldown = TraitorShapeshiftCD.GetFloat();
         AURoleOptions.ShapeshifterDuration = TraitorShapeshiftDur.GetFloat();
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
-    {
-        opt.SetVision(HasImpostorVision.GetBool());
-        AURoleOptions.ShapeshifterCooldown = TraitorShapeshiftCD.GetFloat();
-        AURoleOptions.ShapeshifterDuration = TraitorShapeshiftDur.GetFloat();
-    }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
