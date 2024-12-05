@@ -900,7 +900,6 @@ public enum CustomRoles
     Coven,
     Conjurer,
     CovenLeader,
-    Dreamweaver,
     HexMaster,
     Illusionist,
     Jinx,
@@ -911,7 +910,6 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
-    Sorceress,
     VoodooMaster,
 
     //two-way camp
