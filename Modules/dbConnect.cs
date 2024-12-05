@@ -1,11 +1,11 @@
-﻿using System;
-using System.Text.Json;
+﻿using AmongUs.Data;
+using System;
 using System.IO;
 using System.Reflection;
-using static TOHE.Translator;
-using AmongUs.Data;
-using IEnumerator = System.Collections.IEnumerator;
+using System.Text.Json;
 using UnityEngine.Networking;
+using static TOHE.Translator;
+using IEnumerator = System.Collections.IEnumerator;
 
 namespace TOHE;
 
@@ -90,7 +90,7 @@ public class dbConnect
             shouldDisconnect = false;
 
             // Show waring message
-            if (GameStates.IsLobby || GameStates.InGame)
+            if (GameStates.IsLobby || GameStates.IsInGame)
             {
                 DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailurePublic"));
             }
@@ -104,7 +104,7 @@ public class dbConnect
             // Build not found
             shouldDisconnect = true;
         }
-        
+
         if (shouldDisconnect)
         {
             if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
@@ -116,8 +116,12 @@ public class dbConnect
         }
     }
 
+    private static string decidedApiToken = "";
     private static string GetToken()
     {
+        if (decidedApiToken != "")
+            return decidedApiToken;
+
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -140,13 +144,29 @@ public class dbConnect
                 // Process the content as needed
                 apiToken = content.Replace("API_TOKEN=", string.Empty).Trim();
             }
-            if (stream == null || apiToken == "")
+        }
+
+        // Check if the token contains spaces or is empty
+        if (string.IsNullOrWhiteSpace(apiToken) || apiToken.Contains(' '))
+        {
+            Logger.Info("No api token provided in token.env", "db.Connect");
+            if (!string.IsNullOrEmpty(Main.FileHash) && Main.FileHash.Length >= 16)
             {
-                Logger.Warn("Embedded resource not found.", "apiToken.error");
+                string prefix = Main.FileHash.Substring(0, 8);
+                string suffix = Main.FileHash.Substring(Main.FileHash.Length - 8, 8);
+                apiToken = $"hash{prefix}{suffix}";
+            }
+            else
+            {
+                Logger.Info("Main.FileHash is not valid for generating token.", "db.Connect");
+                return "";
             }
         }
+
+        decidedApiToken = apiToken;
         return apiToken;
     }
+
     private static IEnumerator GetRoleTable()
     {
         var tempUserType = new Dictionary<string, string>(); // Create a temporary dictionary

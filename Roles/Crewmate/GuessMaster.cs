@@ -8,7 +8,7 @@ internal class GuessMaster : RoleBase
     private const int Id = 26800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -24,7 +24,8 @@ internal class GuessMaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

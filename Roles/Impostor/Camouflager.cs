@@ -13,7 +13,7 @@ internal class Camouflager : RoleBase
     private const int Id = 2900;
     public static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\

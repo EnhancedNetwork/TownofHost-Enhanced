@@ -11,9 +11,6 @@ internal class Pitfall : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 5600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -56,7 +53,6 @@ internal class Pitfall : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         Traps.Clear();
         ReducedVisionPlayers.Clear();
         DefaultSpeed = new();
@@ -65,7 +61,6 @@ internal class Pitfall : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
 
         TrapMaxPlayerCount = TrapMaxPlayerCountOpt.GetFloat();

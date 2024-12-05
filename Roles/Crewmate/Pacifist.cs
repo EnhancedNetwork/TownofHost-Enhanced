@@ -1,13 +1,13 @@
-﻿using System;
+﻿using AmongUs.GameOptions;
+using System;
 using System.Text;
-using UnityEngine;
-using AmongUs.GameOptions;
-using TOHE.Roles.Impostor;
 using TOHE.Modules;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -18,6 +18,7 @@ internal class Pacifist : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pacifist);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem PacifistCooldown;
@@ -48,7 +49,7 @@ internal class Pacifist : RoleBase
         {
             AbilityLimit -= 1;
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
-            
+
             Main.AllAlivePlayerControls.Where(x =>
             pc.Is(CustomRoles.Madmate)
                 ? (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate())
@@ -58,9 +59,9 @@ internal class Pacifist : RoleBase
                 x.RPCPlayCustomSound("Dove");
                 x.ResetKillCooldown();
                 x.SetKillCooldown();
-                
+
                 if (x.Is(CustomRoles.Mercenary))
-                    { Mercenary.ClearSuicideTimer(); }
+                { Mercenary.ClearSuicideTimer(); }
 
                 x.Notify(ColorString(GetRoleColor(CustomRoles.Pacifist), GetString("PacifistSkillNotify")));
             });
@@ -75,7 +76,7 @@ internal class Pacifist : RoleBase
     {
         if (player.IsAlive())
             AbilityLimit += PacifistAbilityUseGainWithEachTaskCompleted.GetFloat();
-        
+
         return true;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

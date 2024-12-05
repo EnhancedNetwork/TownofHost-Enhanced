@@ -1,6 +1,6 @@
-﻿using static TOHE.Translator;
+﻿using TOHE.Roles.Core;
 using static TOHE.Options;
-using TOHE.Roles.Core;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
@@ -73,5 +73,5 @@ internal class Shaman : RoleBase
     }
     private PlayerControl ChangeTarget(PlayerControl target)
         => target.IsAlive() && ShamanTargetChoosen ? Utils.GetPlayerById(ShamanTarget) : target;
-    
+
 }

@@ -1,12 +1,12 @@
 ﻿using AmongUs.GameOptions;
-using UnityEngine;
 using Hazel;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
@@ -103,16 +103,16 @@ internal class Arsonist : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ArsonistCooldown.GetFloat();
-    
+
     public override bool CanUseKillButton(PlayerControl pc)
         => CanIgniteAnytime() ? GetDousedPlayerCount(pc.PlayerId).Item1 < ArsonistMaxPlayersToIgnite.GetInt() : !IsDouseDone(pc);
-    
+
     public override bool CanUseImpostorVentButton(PlayerControl pc)
         => IsDouseDone(pc) || (CanIgniteAnytime() && (GetDousedPlayerCount(pc.PlayerId).Item1 >= ArsonistMinPlayersToIgnite.GetInt() || pc.inVent));
-    
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(ArsonistDouseTime.GetFloat());
         if (!IsDoused[(killer.PlayerId, target.PlayerId)] && !ArsonistTimer.ContainsKey(killer.PlayerId))
@@ -127,7 +127,7 @@ internal class Arsonist : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (!_Player.IsAlive() || target.PlayerId == _Player.PlayerId || inMeeting || Main.MeetingIsStarted) return;
-        
+
         _Player.RpcSetVentInteraction();
         _ = new LateTask(() => { NotifyRoles(SpecifySeer: _Player, ForceLoop: false); }, 1f, $"Update name for Arsonist {_Player?.PlayerId}", shoudLog: false);
     }
@@ -183,7 +183,7 @@ internal class Arsonist : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
         => ArsonistTimer.Clear();
-    
+
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (seen == null) return string.Empty;
@@ -197,7 +197,7 @@ internal class Arsonist : RoleBase
         return string.Empty;
     }
 
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) 
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
         => !isForMeeting && IsDouseDone(seer) ? ColorString(GetRoleColor(CustomRoles.Arsonist), GetString("EnterVentToWin")) : string.Empty;
 
     public override string GetProgressText(byte playerId, bool comms)
@@ -209,16 +209,16 @@ internal class Arsonist : RoleBase
         else
             return ColorString(GetRoleColor(CustomRoles.Arsonist).ShadeColor(0.25f), $"({doused}/{ArsonistMaxPlayersToIgnite.GetInt()})");
     }
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("ArsonistDouseButtonText"));
         hud.ImpostorVentButton.OverrideText(GetString("ArsonistVentButtonText"));
     }
-   
+
     public override Sprite ImpostorVentButtonSprite(PlayerControl player)
         => (IsDouseDone(player) || (CanIgniteAnytime() && GetDousedPlayerCount(player.PlayerId).Item1 >= ArsonistMinPlayersToIgnite.GetInt())) ? CustomButton.Get("Ignite") : null;
-    
+
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Douse");
 
     public override void OnCoEnterVent(PlayerPhysics __instance, int ventId)

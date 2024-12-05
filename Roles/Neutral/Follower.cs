@@ -13,8 +13,8 @@ internal class Follower : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
@@ -46,13 +46,13 @@ internal class Follower : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         BetTimes.Clear();
         BetPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         BetTimes.Add(playerId, MaxBetTimes.GetInt());
     }
     private void SendRPC(byte playerId)
@@ -108,7 +108,7 @@ internal class Follower : RoleBase
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: Utils.GetPlayerById(originalTarget), ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget), SpecifyTarget: killer, ForceLoop: true);
         }
-        
+
         BetPlayer.Remove(killer.PlayerId);
         BetPlayer.Add(killer.PlayerId, target.PlayerId);
         SendRPC(killer.PlayerId);
