@@ -79,7 +79,7 @@ internal class Reverie : RoleBase
         if (killer == null || target == null) return true;
 
         float kcd;
-        if ((!target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Trickster)) || (ConvertedReverieRogue.GetBool() && killer.GetCustomSubRoles().Any(subrole => subrole.IsConverted() || subrole == CustomRoles.Madmate))) // if killed non crew or if converted
+        if ((!target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Trickster) && !target.Is(CustomRoles.Narc)) || (ConvertedReverieRogue.GetBool() && killer.GetCustomSubRoles().Any(subrole => subrole.IsConverted() || subrole == CustomRoles.Madmate))) // if killed non crew or if converted
             kcd = NowCooldown[killer.PlayerId] - ReduceKillCooldown.GetFloat();
         else kcd = NowCooldown[killer.PlayerId] + IncreaseKillCooldown.GetFloat();
         NowCooldown[killer.PlayerId] = Math.Clamp(kcd, MinKillCooldown.GetFloat(), MaxKillCooldown.GetFloat());
