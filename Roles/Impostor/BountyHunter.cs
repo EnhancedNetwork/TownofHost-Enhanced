@@ -11,9 +11,9 @@ internal class BountyHunter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -44,14 +44,14 @@ internal class BountyHunter : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
 
         Targets.Clear();
         ChangeTimer.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
 
         TargetChangeTime = OptionTargetChangeTime.GetFloat();
         SuccessKillCooldown = OptionSuccessKillCooldown.GetFloat();
@@ -66,7 +66,7 @@ internal class BountyHunter : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
     }
 
     private static void SendRPC(byte bountyId, byte targetId)
@@ -219,7 +219,7 @@ internal class BountyHunter : RoleBase
         var target = cTargets.RandomElement();
         var targetId = target.PlayerId;
         Targets[playerId] = targetId;
-        
+
         if (ShowTargetArrow) TargetArrow.Add(playerId, targetId);
         Logger.Info($"Change {player.GetNameWithRole()} target to: {target.GetNameWithRole()}", "BountyHunter");
 
@@ -229,7 +229,7 @@ internal class BountyHunter : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
     public override void AfterMeetingTasks()
     {
-        foreach (var id in playerIdList.ToArray())
+        foreach (var id in _playerIdList.ToArray())
         {
             if (!Main.PlayerStates[id].IsDead)
             {

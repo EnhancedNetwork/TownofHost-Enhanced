@@ -1,10 +1,10 @@
 using System;
 using System.Reflection;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Impostor;
-using UnityEngine;
-using TOHE.Roles.Core;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -169,6 +169,9 @@ public static class Options
     public static OptionItem ApplyBanList;
     public static OptionItem ApplyModeratorList;
     public static OptionItem AllowSayCommand;
+    public static OptionItem AllowStartCommand;
+    public static OptionItem StartCommandMinCountdown;
+    public static OptionItem StartCommandMaxCountdown;
 
     //public static OptionItem ApplyReminderMsg;
     //public static OptionItem TimeForReminder;
@@ -633,7 +636,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 30100 last id for roles/add-ons (Next use 30200)
+        // 31000 last id for roles/add-ons (Next use 31100)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -736,7 +739,7 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla).ForEach(r => r.SetupCustomOption());
-       
+
         if (CustomRoleManager.RoleClass.Where(x => x.Key.IsImpostor()).Any(r => r.Value.IsExperimental))
         {
             TextOptionItem.Create(10000020, "Experimental.Roles", TabGroup.ImpostorRoles)
@@ -1048,6 +1051,15 @@ public static class Options
         ApplyModeratorList = BooleanOptionItem.Create(60120, "ApplyModeratorList", false, TabGroup.SystemSettings, false);
         AllowSayCommand = BooleanOptionItem.Create(60121, "AllowSayCommand", false, TabGroup.SystemSettings, false)
             .SetParent(ApplyModeratorList);
+        AllowStartCommand = BooleanOptionItem.Create(60122, "AllowStartCommand", false, TabGroup.SystemSettings, false)
+            .SetParent(ApplyModeratorList);
+        StartCommandMinCountdown = IntegerOptionItem.Create(60123, "StartCommandMinCountdown", new(0, 99, 1), 0, TabGroup.SystemSettings, false)
+            .SetParent(AllowStartCommand)
+            .SetValueFormat(OptionFormat.Seconds);
+        StartCommandMaxCountdown = IntegerOptionItem.Create(60124, "StartCommandMaxCountdown", new(0, 99, 1), 15, TabGroup.SystemSettings, false)
+            .SetParent(AllowStartCommand)
+            .SetValueFormat(OptionFormat.Seconds);
+
         //ApplyReminderMsg = BooleanOptionItem.Create(60130, "ApplyReminderMsg", false, TabGroup.SystemSettings, false);
         /*TimeForReminder = IntegerOptionItem.Create(60131, "TimeForReminder", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
             .SetParent(TimeForReminder)
@@ -1128,9 +1140,9 @@ public static class Options
             .SetHeader(true);
         AllowConsole = BooleanOptionItem.Create(60382, "AllowConsole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red);
-       /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Color.red);*/
+        /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
+             .SetGameMode(CustomGameMode.Standard)
+             .SetColor(Color.red);*/
 
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
@@ -1232,7 +1244,7 @@ public static class Options
 
         // Random Spawn
         RandomSpawn.SetupCustomOption();
-        
+
         MapModification = BooleanOptionItem.Create(60480, "MapModification", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Airship Variable Electrical
@@ -1775,7 +1787,7 @@ public static class Options
         WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
-        EnableVoteCommand  = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
+        EnableVoteCommand = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
         ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.ModSettings, false)
@@ -1815,7 +1827,7 @@ public static class Options
         ShieldedCanUseKillButton = BooleanOptionItem.Create(60782, "ShieldedCanUseKillButton", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-            
+
         EveryoneCanSeeDeathReason = BooleanOptionItem.Create(60781, "EveryoneCanSeeDeathReason", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
@@ -1850,7 +1862,7 @@ public static class Options
             .SetParent(ConvertedCanBecomeGhost)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-            
+
         MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)

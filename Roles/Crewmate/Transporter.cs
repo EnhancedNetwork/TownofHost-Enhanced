@@ -8,9 +8,9 @@ internal class Transporter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -27,11 +27,11 @@ internal class Transporter : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {

@@ -7,8 +7,8 @@ internal class Traitor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 18200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => LegacyTraitor.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
@@ -23,8 +23,6 @@ internal class Traitor : RoleBase
     private static OptionItem LegacyTraitor;
     private static OptionItem TraitorShapeshiftCD;
     private static OptionItem TraitorShapeshiftDur;
-
-
 
     public override void SetupCustomOption()
     {
@@ -46,11 +44,17 @@ internal class Traitor : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
+    }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        opt.SetVision(HasImpostorVision.GetBool());
+        AURoleOptions.ShapeshifterCooldown = TraitorShapeshiftCD.GetFloat();
+        AURoleOptions.ShapeshifterDuration = TraitorShapeshiftDur.GetFloat();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
