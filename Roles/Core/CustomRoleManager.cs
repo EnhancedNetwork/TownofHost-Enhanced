@@ -62,7 +62,7 @@ public static class CustomRoleManager
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
-    public static RoleBase CreateRoleClass(this CustomRoles role) 
+    public static RoleBase CreateRoleClass(this CustomRoles role)
     {
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
@@ -109,7 +109,7 @@ public static class CustomRoleManager
         if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
         if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
-        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -176,11 +176,11 @@ public static class CustomRoleManager
         var killerSubRoles = killer.GetCustomSubRoles();
 
         // If Target is possessed by Dollmaster swap controllers.
-        target = DollMaster.SwapPlayerInfo(target);   
+        target = DollMaster.SwapPlayerInfo(target);
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
+        if (CustomRoles.PlagueBearer.RoleExist(true) && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }
@@ -250,7 +250,7 @@ public static class CustomRoleManager
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             __state = true;
-            if (cancelbutkill && target.IsAlive() 
+            if (cancelbutkill && target.IsAlive()
                 && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out _)) // some roles have an internal rpcmurderplayer, but still had to cancel
             {
                 target.RpcMurderPlayer(target);
@@ -287,7 +287,7 @@ public static class CustomRoleManager
             Oiiai.OnMurderPlayer(killer, target);
             return false;
         }
-                
+
         return true;
     }
     /// <summary>
@@ -384,13 +384,13 @@ public static class CustomRoleManager
             FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
         }
     }
-    
+
     /// <summary>
     /// Check if this task is marked by a role and do something.
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
         => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
-    
+
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
@@ -498,7 +498,8 @@ public static class CustomRoleManager
 
     // ADDONS ////////////////////////////
 
-    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x => {
+    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x =>
+    {
         if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
             IAddon.OnFixedUpdate(pc);
         else return;

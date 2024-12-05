@@ -11,6 +11,7 @@ internal class Parasite : RoleBase
     public static bool HasEnabled => Playerids.Any();
 
     public override CustomRoles ThisRoleBase => LegacyParasite.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 

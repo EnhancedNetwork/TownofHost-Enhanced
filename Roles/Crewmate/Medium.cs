@@ -1,12 +1,12 @@
 ﻿using Hazel;
+using InnerNet;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
-using InnerNet;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 

@@ -16,7 +16,7 @@ internal class Innocent : RoleBase
     //==================================================================\\
 
     private static OptionItem InnocentCanWinByImp;
-    private bool TargetIsKilled = false; 
+    private bool TargetIsKilled = false;
 
     public override void SetupCustomOption()
     {

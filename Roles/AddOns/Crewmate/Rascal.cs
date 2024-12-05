@@ -8,7 +8,7 @@ public class Rascal : IAddon
     public AddonTypes Type => AddonTypes.Harmful;
 
     private static OptionItem RascalAppearAsMadmate;
-    
+
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rascal, canSetNum: true, tab: TabGroup.Addons);

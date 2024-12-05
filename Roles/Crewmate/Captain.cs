@@ -9,9 +9,9 @@ internal class Captain : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 26300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -52,14 +52,14 @@ internal class Captain : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
+
         OriginalSpeed.Clear();
         CaptainVoteTargets.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
     }
     public static void ReceiveRPCRevertAllSpeed()
     {
@@ -78,8 +78,8 @@ internal class Captain : RoleBase
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
                                                            (CaptainCanTargetNE.GetBool() && x.GetCustomRole().IsNE()) ||
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
-                                                           (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()) 
-                              ||                           (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()))).ToList();
+                                                           (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam())
+                              || (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()))).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
         if (allTargets.Count == 0) return true;
@@ -136,7 +136,7 @@ internal class Captain : RoleBase
         for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
         {
             var captainTarget = CaptainVoteTargets[playerId][i];
-            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue; 
+            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue;
             var SelectedAddOn = SelectRandomAddon(captainTarget);
             if (SelectedAddOn == null) continue;
             Main.PlayerStates[captainTarget].RemoveSubRole((CustomRoles)SelectedAddOn);

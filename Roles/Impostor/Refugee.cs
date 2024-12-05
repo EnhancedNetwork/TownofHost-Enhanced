@@ -9,7 +9,7 @@ internal class Refugee : RoleBase
     private const int Id = 60009;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\

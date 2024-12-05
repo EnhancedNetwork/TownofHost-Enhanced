@@ -6,8 +6,8 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Crewmate;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -112,7 +112,7 @@ class OnGameJoinedPatch
                 if (!GameStates.IsOnlineGame) return;
                 if (!GameStates.IsModHost)
                     RPC.RpcRequestRetryVersionCheck();
-                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
+                if (BanManager.CheckEACList(EOSManager.Instance.FriendCode, BanManager.GetHashedPuid(EOSManager.Instance.ProductUserId)) && GameStates.IsOnlineGame)
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
@@ -154,6 +154,7 @@ class DisconnectInternalPatch
 {
     public static void Prefix(InnerNetClient __instance, DisconnectReasons reason, string stringReason)
     {
+        GameStates.InGame = false;
         Logger.Info($"Disconnect (Reason:{reason}:{stringReason}, ping:{__instance.Ping})", "Reason Disconnect");
         RehostManager.OnDisconnectInternal(reason);
     }
@@ -372,7 +373,7 @@ class OnPlayerLeftPatch
                     }
                 }
 
-                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
+                Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 var state = Main.PlayerStates[data.Character.PlayerId];
                 state.Disconnected = true;
@@ -411,7 +412,8 @@ class OnPlayerLeftPatch
                 var msg = "";
                 if (GameStates.IsInGame)
                 {
-                    Utils.ErrorEnd("Host exits the game");
+                    CriticalErrorManager.SetCreiticalError("Host exits the game", false);
+                    CriticalErrorManager.CheckEndGame();
                     msg = GetString("Message.HostLeftGameInGame");
                 }
                 else if (GameStates.IsLobby)
@@ -486,18 +488,19 @@ class OnPlayerLeftPatch
             // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
             if (Main.AssignRolesIsStarted)
             {
-                Utils.ErrorEnd("The player left the game during assigning roles");
+                CriticalErrorManager.SetCreiticalError("The player left the game during assigning roles", true);
             }
 
 
             if (data != null)
+            {
                 Main.playerVersion.Remove(data.Id);
+                Main.SayStartTimes.Remove(data.Id);
+                Main.SayBanwordsTimes.Remove(data.Id);
+            }
 
             if (AmongUsClient.Instance.AmHost)
             {
-                Main.SayStartTimes.Remove(__instance.ClientId);
-                Main.SayBanwordsTimes.Remove(__instance.ClientId);
-                
                 if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
@@ -523,6 +526,19 @@ class OnPlayerLeftPatch
                     if (MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                     {
                         MeetingHud.Instance.CheckForEndVoting();
+                    }
+                }
+
+                if (GameStates.IsInGame)
+                {
+                    if (data != null)
+                    {
+                        var networkedPlayerInfo = GameData.Instance.GetPlayerByClient(data);
+                        if (networkedPlayerInfo != null)
+                        {
+                            networkedPlayerInfo.PlayerName = Main.AllClientRealNames[networkedPlayerInfo.ClientId];
+                            networkedPlayerInfo.MarkDirty();
+                        }
                     }
                 }
             }
