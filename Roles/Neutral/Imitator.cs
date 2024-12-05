@@ -98,7 +98,7 @@ internal class Imitator : RoleBase
             }
 
         }
-        else if (role.IsCrewmate())
+        else if (role.IsCrewmate() || target.Is(CustomRoles.Narc))
         {
             AbilityLimit--;
             SendSkillRPC();
