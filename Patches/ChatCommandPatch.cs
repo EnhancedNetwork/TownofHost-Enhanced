@@ -3372,7 +3372,7 @@ internal class UpdateCharCountPatch
     public static void Postfix(FreeChatInputField __instance)
     {
         int length = __instance.textArea.text.Length;
-        __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
+            __instance.charCountText.SetText(length <= 0 ? GetString("ThankYouForUsingTOHE") : $"{length}/{__instance.textArea.characterLimit}");
         if (length < (AmongUsClient.Instance.AmHost ? 888 : 250))
             __instance.charCountText.color = Color.black;
         else if (length < (AmongUsClient.Instance.AmHost ? 999 : 300))
