@@ -14,7 +14,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 185/255 USED
+public enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -76,11 +76,11 @@ enum CustomRPC : byte // 185/255 USED
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-    SetDrawPlayer,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,

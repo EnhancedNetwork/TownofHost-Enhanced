@@ -24,6 +24,8 @@ internal class Disperser : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Disperser);
         DisperserShapeshiftCooldown = FloatOptionItem.Create(Id + 5, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 20f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])
             .SetValueFormat(OptionFormat.Seconds);
+        DisperserShapeshiftDuration = FloatOptionItem.Create(Id + 7, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 60f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])
+            .SetValueFormat(OptionFormat.Seconds);
     }
 
     public override void Init()
@@ -38,8 +40,9 @@ internal class Disperser : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = DisperserShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterDuration = DisperserShapeshiftDuration.GetFloat();
     }
-    public override void UnShapeShiftButton(PlayerControl shapeshifter)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (shapeshifter.PlayerId == target.PlayerId) return false;
 
@@ -55,5 +58,7 @@ internal class Disperser : RoleBase
             pc.RpcRandomVentTeleport();
             pc.Notify(ColorString(GetRoleColor(CustomRoles.Disperser), GetString("TeleportedInRndVentByDisperser")));
         }
+
+        return false;
     }
 }

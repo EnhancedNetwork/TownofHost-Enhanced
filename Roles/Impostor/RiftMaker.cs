@@ -14,8 +14,6 @@ internal class RiftMaker : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 27200;
-    private static readonly HashSet<byte> Playerids = [];
-    public static bool HasEnabled => Playerids.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -46,7 +44,6 @@ internal class RiftMaker : RoleBase
 
     public override void Init()
     {
-        Playerids.Clear();
         MarkedLocation.Clear();
         LastTP.Clear();
         TPCooldown = new();
@@ -57,7 +54,6 @@ internal class RiftMaker : RoleBase
         LastTP[playerId] = now;
 
         TPCooldown = TPCooldownOpt.GetFloat();
-        Playerids.Add(playerId);
     }
 
     private void SendRPC(byte riftID, int operate)
@@ -177,29 +173,30 @@ internal class RiftMaker : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (player == null) return;
+        if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;
+
         byte playerId = player.PlayerId;
-        if (lowLoad || Pelican.IsEaten(playerId) || !player.IsAlive()) return;
-        if (!MarkedLocation.TryGetValue(playerId, out var locationList)) return;
+        if (MarkedLocation.Count != 2) return;
 
-        if (locationList.Count != 2) return;
-
-        if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = nowTime;
-        if (nowTime - LastTP[playerId] <= TPCooldown) return;
+        var now = Utils.GetTimeStamp();
+        if (!LastTP.ContainsKey(playerId)) LastTP[playerId] = now;
+        if (now - LastTP[playerId] <= TPCooldown) return;
 
         Vector2 position = player.GetCustomPosition();
         Vector2 TPto;
 
-        if (Utils.GetDistance(position, locationList[0]) <= RiftRadius.GetFloat())
+        if (Vector2.Distance(position, MarkedLocation.ElementAt(0).Key) <= RiftRadius.GetFloat())
         {
-            TPto = locationList[1];
+            TPto = MarkedLocation.ElementAt(1).Key;
         }
-        else if (Utils.GetDistance(position, locationList[1]) <= RiftRadius.GetFloat())
+        else if (Vector2.Distance(position, MarkedLocation.ElementAt(1).Key) <= RiftRadius.GetFloat())
         {
-            TPto = locationList[0];
+            TPto = MarkedLocation.ElementAt(0).Key;
         }
         else return;
 
-        LastTP[playerId] = nowTime;
+        LastTP[playerId] = now;
         //SENDRPC
         SendRPC(playerId, 2);
         player.RpcTeleport(TPto);
