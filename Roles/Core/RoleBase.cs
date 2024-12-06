@@ -10,7 +10,7 @@ public abstract class RoleBase
 {
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId);
+    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
@@ -19,6 +19,8 @@ public abstract class RoleBase
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
     public virtual bool IsDesyncRole => false;
+    public virtual bool IsSideKick => false;
+
     public void OnInit() // CustomRoleManager.RoleClass executes this
     {
         IsEnable = false;
@@ -28,10 +30,12 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        try {
+        try
+        {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
             this.IsEnable = true; // Not supposed to be used, but some methods may have still implemented that check.
-        } catch { } // temporary try catch
+        }
+        catch { } // temporary try catch
 
 
         Add(playerid);
@@ -84,6 +88,16 @@ public abstract class RoleBase
     /// </summary>
     public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
 
+
+    //this is a draft, it is not usable yet, Imma fix it in another PR
+
+    /// <summary>
+    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen. (they will also not be able to kill eachother)
+    /// </summary>
+    public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
+    {
+
+    }
     /// <summary>
     /// A generic method to set if a impostor/SS base may use kill button.
     /// </summary>
@@ -102,6 +116,12 @@ public abstract class RoleBase
     /// When the player presses the sabotage button
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
+    /// <summary>
+    /// When player is enginner role base but should not move in vents
+    /// </summary>
+    public virtual bool BlockMoveInVent(PlayerControl pc) => false;
+
+    public HashSet<int> LastBlockedMoveInVentVents = [];
 
     public virtual void SetupCustomOption()
     { }
@@ -123,12 +143,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl pc)
-    { }
-    /// <summary>
-    /// A local method to check conditions during gameplay, which aren't prioritized
-    /// </summary>
-    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     { }
 
     /// <summary>
@@ -151,22 +166,22 @@ public abstract class RoleBase
     public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
-    /// A method for activating actions where the role starts playing an animation when entering a vent
-    /// </summary>
-    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
-    { }
-    /// <summary>
     /// When role need force boot from vent
     /// </summary>
     public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the others roles starts playing an animation when entering a vent
     /// </summary>
     public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions where the role starts playing an animation when entering a vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
+    { }
+    /// <summary>
+    /// A method for activating actions when role is already in vent
+    /// </summary>
+    public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
     /// <summary>
     /// A generic method to activate actions once (CustomRole)player exists vent.
@@ -216,19 +231,6 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// A method to always check the state when targets have died (murder, exiled, execute etc..)
-    /// </summary>
-    public virtual void OnOtherTargetsReducedToAtoms(PlayerControl DeadPlayer)
-    { }
-
-
-    /// <summary>
-    /// A method to always check the state player has died (murder, exiled, execute etc..). If there is a meeting it will only happen after it.
-    /// </summary>
-    public virtual void OnSelfReducedToAtoms(bool IsAfterMeeting)
-    { }
-
-    /// <summary>
     /// When someone was died and need to run kill flash for specific role
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
@@ -262,7 +264,7 @@ public abstract class RoleBase
     // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
     // So OnCheckShapeShift and OnShapeshift are pointless when using it.
     // Last thing, while the button may say "shift" after resetability, the game still thinks you're shapeshifted and will work instantly as intended.
-    
+
     /// <summary>
     /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
@@ -293,6 +295,7 @@ public abstract class RoleBase
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// When guesser trying guess target a role
+    /// Target need to check whether misguessed so it wont cancel mis guesses.
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
 
@@ -339,6 +342,11 @@ public abstract class RoleBase
     /// </summary>
     public virtual string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target) => string.Empty;
 
+    /// <summary>
+    /// Used when player should be dead after meeting
+    /// </summary>
+    public virtual void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    { }
     /// <summary>
     /// Notify a specific role about something after the meeting was ended.
     /// </summary>
@@ -434,7 +442,7 @@ public abstract class RoleBase
     public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    
+
 
 
     // Player know role target, color role target
@@ -443,7 +451,7 @@ public abstract class RoleBase
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
 
-    public void OnReceiveRPC(MessageReader reader) 
+    public void OnReceiveRPC(MessageReader reader)
     {
         float Limit = reader.ReadSingle();
         AbilityLimit = Limit;
@@ -471,8 +479,10 @@ public abstract class RoleBase
         CanKill,
         KillCooldown,
         CanVent,
+        CantMoveOnVents,
         ImpostorVision,
         CanUseSabotage,
+        CanHaveAccessToVitals,
 
         // General settings
         CanKillImpostors,

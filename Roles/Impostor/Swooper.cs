@@ -46,11 +46,11 @@ internal class Swooper : RoleBase
     }
     private void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WriteNetObject(_Player);
-        writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
+        writer.Write(InvisCooldown.GetValueOrDefault(pc.PlayerId, -1).ToString());
+        writer.Write(InvisDuration.GetValueOrDefault(pc.PlayerId, -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -60,7 +60,7 @@ internal class Swooper : RoleBase
         long cooldown = long.Parse(reader.ReadString());
         long invis = long.Parse(reader.ReadString());
         if (cooldown > 0) InvisCooldown.Add(PlayerControl.LocalPlayer.PlayerId, cooldown);
-        if (invis > 0) InvisCooldown.Add(PlayerControl.LocalPlayer.PlayerId, invis);
+        if (invis > 0) InvisDuration.Add(PlayerControl.LocalPlayer.PlayerId, invis);
     }
 
     private static bool CanGoInvis(byte id)
@@ -88,7 +88,7 @@ internal class Swooper : RoleBase
         var swooperId = swooper.PlayerId;
 
         if (!AmongUsClient.Instance.AmHost || IsInvis(swooperId)) return;
-        
+
         _ = new LateTask(() =>
         {
             if (CanGoInvis(swooperId))
@@ -101,7 +101,7 @@ internal class Swooper : RoleBase
                 InvisDuration.Remove(swooperId);
                 InvisDuration.Add(swooperId, Utils.GetTimeStamp());
                 SendRPC(swooper);
-                
+
                 swooper.Notify(GetString("SwooperInvisState"), SwooperDuration.GetFloat());
             }
             else
@@ -115,16 +115,16 @@ internal class Swooper : RoleBase
         }, 0.8f, "Swooper Vent");
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var nowTime = Utils.GetTimeStamp();
+        if (lowLoad) return;
         var playerId = player.PlayerId;
         var needSync = false;
 
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)SwooperCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
-            if (!player.IsModClient()) player.Notify(GetString("SwooperCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("SwooperCanVent"));
             needSync = true;
         }
 
@@ -152,7 +152,7 @@ internal class Swooper : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!swooper.IsModClient())
+                if (!swooper.IsModded())
                     swooper.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }
@@ -212,7 +212,7 @@ internal class Swooper : RoleBase
     {
         // Only for modded
         if (seer == null || !isForHud || isForMeeting || !seer.IsAlive()) return string.Empty;
-        
+
         var str = new StringBuilder();
         var seerId = seer.PlayerId;
 

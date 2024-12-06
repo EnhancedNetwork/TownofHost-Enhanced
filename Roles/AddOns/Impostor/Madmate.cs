@@ -66,7 +66,22 @@ public static class Madmate
         JudgeCanBeMadmate = BooleanOptionItem.Create(Id2 + 13, "JudgeCanBeMadmate", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Madmate]);
     }
 
-    public static void ApplyGameOptions(IGameOptions opt) => opt.SetVision(MadmateHasImpostorVision.GetBool());
+    public static void ApplyGameOptions(IGameOptions opt)
+    {
+        if (MadmateHasImpostorVision.GetBool())
+        {
+            var impVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            if (Utils.IsActive(SystemTypes.Electrical))
+            {
+                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision * 5);
+            }
+            else
+            {
+                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
+            }
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, impVision);
+        }
+    }
 
     private static readonly string[] madmateSpawnMode =
     [
@@ -85,6 +100,7 @@ public static class Madmate
     {
         return pc != null && !pc.Is(CustomRoles.Madmate) && (pc.GetCustomRole().IsCrewmate() || (forAdmirer && pc.GetCustomRole().IsNeutral()))
         && !(pc.CheckCanBeMadmate(forGangster) ||
+            pc.Is(CustomRoles.ChiefOfPolice) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Lazy) ||
             pc.Is(CustomRoles.Loyal) ||

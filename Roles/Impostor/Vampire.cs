@@ -1,6 +1,6 @@
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -15,9 +15,9 @@ internal class Vampire : RoleBase
 
     //===========================SETUP================================\\
     private const int Id = 5000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -47,7 +47,7 @@ internal class Vampire : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         BittenPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
@@ -55,7 +55,7 @@ internal class Vampire : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
 
         if (NowActionMode == ActionModeList.TriggerDouble)
         {
@@ -96,10 +96,10 @@ internal class Vampire : RoleBase
         return false;
     }
 
-    public override void OnFixedUpdate(PlayerControl vampire)
+    public override void OnFixedUpdate(PlayerControl vampire, bool lowLoad, long nowTime)
     {
-        var vampireID = vampire.PlayerId;
-        List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireID).Select(b => b.Key));
+        var vampireId = vampire.PlayerId;
+        List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireId).Select(b => b.Key));
 
         foreach (var targetId in targetList)
         {
@@ -109,7 +109,7 @@ internal class Vampire : RoleBase
             {
                 Logger.Info("KillTimer >= KillDelay", "Vampire");
 
-                var target = Utils.GetPlayerById(targetId);
+                var target = targetId.GetPlayer();
                 KillBitten(vampire, target);
                 BittenPlayers.Remove(targetId);
             }
@@ -134,10 +134,10 @@ internal class Vampire : RoleBase
             if (vampire.IsAlive())
             {
                 RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);
-                
+
                 if (target.Is(CustomRoles.Trapper))
                     vampire.TrapperKilled(target);
-                
+
                 vampire.Notify(GetString("VampireTargetDead"));
                 vampire.SetKillCooldown();
             }

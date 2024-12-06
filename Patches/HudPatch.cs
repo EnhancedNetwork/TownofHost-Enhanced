@@ -1,10 +1,10 @@
-using System.Text;
 using System;
+using System.Text;
 using TMPro;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -119,13 +119,12 @@ class HudManagerPatch
                     __instance.KillButton.ToggleVisible(false);
                 }
 
-                bool CanUseVent = player.CanUseImpostorVentButton();
-                __instance.ImpostorVentButton.ToggleVisible(CanUseVent);
-                player.Data.Role.CanVent = CanUseVent;
+                __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
+                player.Data.Role.CanVent = player.CanUseVents();
 
                 // Sometimes sabotage button was visible for non-host modded clients
-                if (!AmongUsClient.Instance.AmHost)
-                    __instance.SabotageButton.ToggleVisible(player.CanUseSabotage());
+                if (!AmongUsClient.Instance.AmHost && !player.CanUseSabotage())
+                    __instance.SabotageButton.Hide();
             }
             else
             {
@@ -222,7 +221,7 @@ class SetHudActivePatch
 
         if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
             __instance.ReportButton.ToggleVisible(false);
-        
+
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
             __instance.KillButton.ToggleVisible(false);
 
@@ -306,7 +305,7 @@ class TaskPanelBehaviourPatch
                         if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb.Length < 1 && !line.Contains('(')) continue;
                         sb.Append(line + "\r\n");
                     }
-                    
+
                     if (sb.Length > 1)
                     {
                         var text = sb.ToString().TrimEnd('\n').TrimEnd('\r');

@@ -98,17 +98,18 @@ internal static class FFAManager
             FFAVentDuration = [];
             FFAEnterVentTime = [];
         }
+    }
+    public static void SetData()
+    {
+        if (Options.CurrentGameMode != CustomGameMode.FFA) return;
 
-        _ = new LateTask( ()=>
+        RoundTime = FFA_GameTime.GetInt() + 8;
+        var now = Utils.GetTimeStamp() + 8;
+        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
         {
-            RoundTime = FFA_GameTime.GetInt() + 8;
-            var now = Utils.GetTimeStamp() + 8;
-            foreach (PlayerControl pc in Main.AllAlivePlayerControls)
-            {
-                KBScore.TryAdd(pc.PlayerId, 0);
-                if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill.TryAdd(pc.PlayerId, now);
-            }
-        }, 15f, "Set Chat Visible for Everyone");
+            KBScore[pc.PlayerId] = 0;
+            if (FFA_DisableVentingWhenKCDIsUp.GetBool()) FFALastKill[pc.PlayerId] = now;
+        }
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {
@@ -124,7 +125,7 @@ internal static class FFAManager
     }
     public static void SendRPCSyncNameNotify(PlayerControl pc)
     {
-        if (pc.AmOwner || !pc.IsModClient()) return;
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncFFANameNotify, SendOption.Reliable, pc.GetClientId());
         if (NameNotify.ContainsKey(pc.PlayerId))
             writer.Write(NameNotify[pc.PlayerId].TEXT);
@@ -151,7 +152,7 @@ internal static class FFAManager
     public static string GetDisplayScore(byte playerId)
     {
         int rank = GetRankOfScore(playerId);
-        string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "Invalid";
+        string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "0";
         string text = string.Format(GetString("FFADisplayScore"), rank.ToString(), score);
         Color color = Utils.GetRoleColor(CustomRoles.Killer);
         return Utils.ColorString(color, text);
@@ -218,11 +219,13 @@ internal static class FFAManager
             bool mark = false;
             var nowKCD = Main.AllPlayerKillCooldown[killer.PlayerId];
             byte EffectType;
-            if (!GameStates.AirshipIsActive) EffectType = (byte)HashRandom.Next(0, 10);
-            else EffectType = (byte)HashRandom.Next(4, 10);
+            var random = IRandom.Instance;
+
+            if (!GameStates.AirshipIsActive) EffectType = (byte)random.Next(0, 10);
+            else EffectType = (byte)random.Next(4, 10);
             if (EffectType <= 7) // Buff
             {
-                byte EffectID = (byte)HashRandom.Next(0, 3);
+                byte EffectID = (byte)random.Next(0, 3);
                 if (GameStates.AirshipIsActive) EffectID = 2;
                 switch (EffectID)
                 {
@@ -260,7 +263,7 @@ internal static class FFAManager
             }
             else if (EffectType == 8) // De-Buff
             {
-                byte EffectID = (byte)HashRandom.Next(0, 3);
+                byte EffectID = (byte)random.Next(0, 3);
                 if (GameStates.AirshipIsActive) EffectID = 1;
                 switch (EffectID)
                 {

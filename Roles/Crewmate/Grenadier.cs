@@ -1,12 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
-using static TOHE.Utils;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -17,6 +17,7 @@ internal class Grenadier : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Grenadier);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static readonly Dictionary<byte, long> GrenadierBlinding = [];
@@ -29,7 +30,7 @@ internal class Grenadier : RoleBase
     private static OptionItem GrenadierSkillMaxOfUseage;
     private static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
 
-    public override void SetupCustomOption() 
+    public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Grenadier);
         GrenadierSkillCooldown = FloatOptionItem.Create(Id + 10, "GrenadierSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
@@ -78,7 +79,7 @@ internal class Grenadier : RoleBase
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (player.IsAlive())
-        { 
+        {
             AbilityLimit += GrenadierAbilityUseGainWithEachTaskCompleted.GetFloat();
             SendSkillRPC();
         }
@@ -99,7 +100,7 @@ internal class Grenadier : RoleBase
             {
                 MadGrenadierBlinding.Remove(pc.PlayerId);
                 MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
-                Main.AllPlayerControls.Where(x => x.IsModClient())
+                Main.AllPlayerControls.Where(x => x.IsModded())
                     .Where(x => !x.GetCustomRole().IsImpostorTeam() && !x.Is(CustomRoles.Madmate))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
@@ -107,23 +108,28 @@ internal class Grenadier : RoleBase
             {
                 GrenadierBlinding.Remove(pc.PlayerId);
                 GrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
-                Main.AllPlayerControls.Where(x => x.IsModClient())
+                Main.AllPlayerControls.Where(x => x.IsModded())
                     .Where(x => x.GetCustomRole().IsImpostor() || (x.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("FlashBang");
-            pc.Notify(GetString("GrenadierSkillInUse"), GrenadierSkillDuration.GetFloat());
+            pc.Notify(GetString("AbilityInUse"), GrenadierSkillDuration.GetFloat());
             AbilityLimit -= 1;
             SendSkillRPC();
             MarkEveryoneDirtySettings();
+        }
+        else
+        {
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
     }
 
     public static bool stopGrenadierSkill = false;
     public static bool stopMadGrenadierSkill = false;
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (!GrenadierBlinding.ContainsKey(player.PlayerId) && !MadGrenadierBlinding.ContainsKey(player.PlayerId)) return;
 
         var nowStamp = GetTimeStamp();
@@ -147,7 +153,7 @@ internal class Grenadier : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
-            player.Notify(GetString("GrenadierSkillStop"));
+            player.Notify(GetString("AbilityExpired"));
             MarkEveryoneDirtySettings();
             stopGrenadierSkill = false;
             stopMadGrenadierSkill = false;

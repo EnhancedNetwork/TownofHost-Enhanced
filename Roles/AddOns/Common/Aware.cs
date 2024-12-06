@@ -1,5 +1,5 @@
-﻿using static TOHE.Translator;
-using static TOHE.Options;
+﻿using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -14,7 +14,7 @@ public class Aware : IAddon
     public static OptionItem NeutralCanBeAware;
     private static OptionItem AwareknowRole;
 
-    public static Dictionary<byte, List<string>> AwareInteracted = [];
+    public static readonly Dictionary<byte, HashSet<string>> AwareInteracted = [];
 
     public void SetupCustomOption()
     {
@@ -22,19 +22,28 @@ public class Aware : IAddon
         AwareknowRole = BooleanOptionItem.Create(Id + 13, "AwareKnowRole", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Aware]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        AwareInteracted = [];
+        AwareInteracted.Clear();
         IsEnable = false;
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         AwareInteracted[playerId] = [];
         IsEnable = true;
     }
+    public void Remove(byte playerId)
+    {
+        AwareInteracted.Remove(playerId);
+
+        if (!AwareInteracted.Any())
+            IsEnable = false;
+    }
 
     public static void OnCheckMurder(CustomRoles killerRole, PlayerControl target)
     {
+        if (!target.Is(CustomRoles.Aware)) return;
+
         switch (killerRole)
         {
             case CustomRoles.Consigliere:
@@ -51,18 +60,18 @@ public class Aware : IAddon
         }
     }
 
-    public static void OnReportDeadBody() 
+    public static void OnReportDeadBody()
     {
-        foreach (var pid in AwareInteracted.Keys.ToArray())
+        foreach (var (pid, list) in AwareInteracted)
         {
-            var Awarepc = Utils.GetPlayerById(pid);
-            if (AwareInteracted[pid].Any() && Awarepc.IsAlive())
+            var Awarepc = pid.GetPlayer();
+            if (list.Any() && Awarepc.IsAlive())
             {
                 string rolelist = "Someone";
                 _ = new LateTask(() =>
                 {
                     if (AwareknowRole.GetBool())
-                        rolelist = string.Join(", ", AwareInteracted[pid]);
+                        rolelist = string.Join(", ", list);
 
                     Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
                     AwareInteracted[pid] = [];
@@ -77,9 +86,7 @@ public class Aware : IAddon
         {
             case CustomRoles.FortuneTeller:
             case CustomRoles.Oracle:
-                if (!AwareInteracted.ContainsKey(pva.VotedFor)) AwareInteracted[pva.VotedFor] = [];
-                if (!AwareInteracted[pva.VotedFor].Contains(Utils.GetRoleName(pc.GetCustomRole())))
-                    AwareInteracted[pva.VotedFor].Add(Utils.GetRoleName(pc.GetCustomRole()));
+                AwareInteracted[pva.VotedFor].Add(Utils.GetRoleName(pc.GetCustomRole()));
                 break;
         }
     }

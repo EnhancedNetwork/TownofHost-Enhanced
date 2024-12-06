@@ -32,7 +32,7 @@ internal class Wraith : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Wraith, 1, zeroOne: false);        
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Wraith, 1, zeroOne: false);
         WraithCooldown = FloatOptionItem.Create(Id + 2, "WraithCooldown", new(1f, 180f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wraith])
             .SetValueFormat(OptionFormat.Seconds);
         WraithDuration = FloatOptionItem.Create(Id + 4, "WraithDuration", new(1f, 60f, 1f), 15f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Wraith])
@@ -48,7 +48,7 @@ internal class Wraith : RoleBase
     }
     private void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WriteNetObject(_Player);//SetWraithTimer
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
@@ -100,30 +100,30 @@ internal class Wraith : RoleBase
             SendRPC(wraith);
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var now = Utils.GetTimeStamp();
+        if (lowLoad) return;
 
-        if (lastTime.TryGetValue(player.PlayerId, out var time) && time + (long)WraithCooldown.GetFloat() < now)
+        if (lastTime.TryGetValue(player.PlayerId, out var time) && time + (long)WraithCooldown.GetFloat() < nowTime)
         {
             lastTime.Remove(player.PlayerId);
-            if (!player.IsModClient()) player.Notify(GetString("WraithCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("WraithCanVent"));
             SendRPC(player);
         }
 
-        if (lastFixedTime != now)
+        if (lastFixedTime != nowTime)
         {
-            lastFixedTime = now;
+            lastFixedTime = nowTime;
             Dictionary<byte, long> newList = [];
             List<byte> refreshList = [];
             foreach (var it in InvisTime)
             {
-                var pc = Utils.GetPlayerById(it.Key);
+                var pc = it.Key.GetPlayer();
                 if (pc == null) continue;
-                var remainTime = it.Value + (long)WraithDuration.GetFloat() - now;
+                var remainTime = it.Value + (long)WraithDuration.GetFloat() - nowTime;
                 if (remainTime < 0 || !pc.IsAlive())
                 {
-                    lastTime.Add(pc.PlayerId, now);
+                    lastTime.Add(pc.PlayerId, nowTime);
                     pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
                     ventedId.Remove(pc.PlayerId);
                     pc.Notify(GetString("WraithInvisStateOut"));
@@ -132,7 +132,7 @@ internal class Wraith : RoleBase
                 }
                 else if (remainTime <= 10)
                 {
-                    if (!pc.IsModClient()) pc.Notify(string.Format(GetString("WraithInvisStateCountdown"), remainTime + 1));
+                    if (!pc.IsModded()) pc.Notify(string.Format(GetString("WraithInvisStateCountdown"), remainTime + 1));
                 }
                 newList.Add(it.Key, it.Value);
             }

@@ -12,11 +12,14 @@ public class Bloodthirst : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Bloodthirst, canSetNum: true);
     }
-
-    public static void Add()
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
         Alchemist.AddBloodlus();
     }
+    public void Remove(byte playerId)
+    { }
 
     public static void OnTaskComplete(PlayerControl player)
     {

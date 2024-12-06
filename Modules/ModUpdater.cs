@@ -1,13 +1,13 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using UnityEngine;
-using static TOHE.Translator;
 using UnityEngine.Networking;
+using static TOHE.Translator;
 using IEnumerator = System.Collections.IEnumerator;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace TOHE;
 
@@ -68,7 +68,7 @@ public class ModUpdater
                 new(3.68f, -2.68f, 1f),
                 new(255, 165, 0, byte.MaxValue),
                 new(255, 200, 0, byte.MaxValue),
-                () => StartUpdate(downloadUrl),
+                (UnityEngine.Events.UnityAction)(() => StartUpdate(downloadUrl)),
                 GetString("update"));
             updateButton.transform.localScale = Vector3.one;
         }
@@ -305,7 +305,7 @@ public class ModUpdater
                 button.GetChild(0).GetComponent<TextTranslatorTMP>().ResetText();
                 button.GetComponent<PassiveButton>().OnClick = new();
                 if (onClick != null) button.GetComponent<PassiveButton>().OnClick.AddListener(onClick);
-                else button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => InfoPopup.Close()));
+                else button.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopup.Close()));
             }
         }
     }

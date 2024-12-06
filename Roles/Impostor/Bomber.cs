@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
@@ -11,7 +11,7 @@ internal class Bomber : RoleBase
     private const int Id = 700;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -75,10 +75,10 @@ internal class Bomber : RoleBase
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsModClient()) target.KillFlash();
+            if (!target.IsModded()) target.KillFlash();
             if (target.PlayerId == shapeshifter.PlayerId) continue;
 
-            if (!target.IsAlive() || Medic.ProtectList.Contains(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
+            if (!target.IsAlive() || Medic.IsProtected(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
 
             var pos = shapeshifter.transform.position;
             var dis = Utils.GetDistance(pos, target.transform.position);

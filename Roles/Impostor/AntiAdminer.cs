@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Text;
-using TOHE.Roles.Neutral;
 using UnityEngine;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
@@ -15,7 +14,7 @@ internal class AntiAdminer : RoleBase
     private const int Id = 2800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -34,30 +33,22 @@ internal class AntiAdminer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
     }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
-    }
 
     private static int Count = 0;
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 3;
 
         bool Admin = false, Camera = false, DoorLog = false, Vital = false;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
         {
-            if (Pelican.IsEaten(pc.PlayerId) || pc.inVent || pc.GetCustomRole().IsImpostor()) continue;
+            if (pc.inVent || pc.GetCustomRole().IsImpostor()) continue;
 
             try
             {
@@ -136,14 +127,11 @@ internal class AntiAdminer : RoleBase
 
         if (isChange)
         {
-            foreach (var pc in playerIdList.ToArray())
-            {
-                var antiAdminer = GetPlayerById(pc);
-                NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
-            }
+            if (_Player)
+                NotifyRoles(SpecifySeer: _Player, ForceLoop: false);
         }
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 

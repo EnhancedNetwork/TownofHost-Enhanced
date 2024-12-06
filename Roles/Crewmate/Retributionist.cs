@@ -1,12 +1,11 @@
 ﻿using Hazel;
-using System;
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -14,9 +13,9 @@ internal class Retributionist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -42,15 +41,15 @@ internal class Retributionist : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         RetributionistRevenged.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         RetributionistRevenged[playerId] = 0;
     }
-    
+
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
@@ -156,6 +155,7 @@ internal class Retributionist : RoleBase
         else if (pc.RpcCheckAndMurder(target, true) == false)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
+            Logger.Info($"Guess Immune target {target.PlayerId} have role {target.GetCustomRole()}", "Retributionist");
             return true;
         }
 
@@ -183,7 +183,8 @@ internal class Retributionist : RoleBase
             }
             target.SetRealKiller(pc);
 
-            _ = new LateTask(() => {
+            _ = new LateTask(() =>
+            {
                 SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
             }, 0.6f, "Retributionist Kill");
 
@@ -216,7 +217,7 @@ internal class Retributionist : RoleBase
         if (!pc.IsAlive())
             AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
     }
-    
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch
     {
@@ -241,7 +242,7 @@ internal class Retributionist : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => RetributionistOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

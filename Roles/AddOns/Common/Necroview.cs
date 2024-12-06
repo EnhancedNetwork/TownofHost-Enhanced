@@ -11,6 +11,12 @@ public class Necroview : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Necroview, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 
     public static string NameColorOptions(PlayerControl target)
     {
@@ -27,7 +33,7 @@ public class Necroview : IAddon
                 return Main.roleColors[CustomRoles.Knight];
         }
 
-        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
+        if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired))
         {
             return Main.roleColors[CustomRoles.Impostor];
         }

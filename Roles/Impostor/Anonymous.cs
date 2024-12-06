@@ -81,7 +81,7 @@ internal class Anonymous : RoleBase
 
         // No body found. Look for another body
         if (targetId == byte.MaxValue && DeadBodyList.Any())
-            targetId = DeadBodyList[IRandom.Instance.Next(0, DeadBodyList.Count)];
+            targetId = DeadBodyList.RandomElement();
 
         // Anonymous report Self
         if (targetId == byte.MaxValue)

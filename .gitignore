@@ -9,3 +9,5 @@ token.env
 FodyWeavers.xsd
 TOHE.sln
 .vscode/settings.json
+/token.env
+token.env

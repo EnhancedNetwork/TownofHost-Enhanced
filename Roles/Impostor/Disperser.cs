@@ -41,6 +41,8 @@ internal class Disperser : RoleBase
     }
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
+
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (!pc.CanBeTeleported())

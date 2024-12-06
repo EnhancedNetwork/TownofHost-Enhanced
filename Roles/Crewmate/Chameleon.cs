@@ -2,11 +2,11 @@ using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
-using static TOHE.Utils;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -76,7 +76,7 @@ internal class Chameleon : RoleBase
             float limit = reader.ReadSingle();
             Main.PlayerStates[pid].RoleClass.AbilityLimit = limit;
         }
-        else 
+        else
         {
             InvisCooldown.Clear();
             InvisDuration.Clear();
@@ -91,12 +91,12 @@ internal class Chameleon : RoleBase
         AURoleOptions.EngineerCooldown = ChameleonCooldown.GetFloat() + 1f;
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
-    
+
     private static bool CanGoInvis(byte id)
         => GameStates.IsInTask && !InvisDuration.ContainsKey(id) && !InvisCooldown.ContainsKey(id);
-    
+
     private static bool IsInvis(byte id) => InvisDuration.ContainsKey(id);
-   
+
     public override void OnReportDeadBody(PlayerControl y, NetworkedPlayerInfo x)
     {
         foreach (var chameleonId in _playerIdList.ToArray())
@@ -138,23 +138,23 @@ internal class Chameleon : RoleBase
         }
         return true;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        var nowTime = GetTimeStamp();
+        if (lowLoad) return;
         var playerId = player.PlayerId;
         var needSync = false;
 
         if (InvisCooldown.TryGetValue(playerId, out var oldTime) && (oldTime + (long)ChameleonCooldown.GetFloat() - nowTime) < 0)
         {
             InvisCooldown.Remove(playerId);
-            if (!player.IsModClient()) player.Notify(GetString("ChameleonCanVent"));
+            if (!player.IsModded()) player.Notify(GetString("ChameleonCanVent"));
             needSync = true;
         }
 
         foreach (var chameleonInfo in InvisDuration)
         {
             var chameleonId = chameleonInfo.Key;
-            var chameleon = GetPlayerById(chameleonId);
+            var chameleon = chameleonId.GetPlayer();
             if (chameleon == null) continue;
 
             var remainTime = chameleonInfo.Value + (long)ChameleonDuration.GetFloat() - nowTime;
@@ -169,13 +169,13 @@ internal class Chameleon : RoleBase
                 InvisCooldown.Add(chameleonId, nowTime);
 
                 chameleon.Notify(GetString("ChameleonInvisStateOut"));
-                
+
                 needSync = true;
                 InvisDuration.Remove(chameleonId);
             }
             else if (remainTime <= 10)
             {
-                if (!chameleon.IsModClient())
+                if (!chameleon.IsModded())
                     chameleon.Notify(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }

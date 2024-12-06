@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using System;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -11,9 +10,6 @@ internal class Tracefinder : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -39,14 +35,8 @@ internal class Tracefinder : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
@@ -54,46 +44,21 @@ internal class Tracefinder : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
-    }
-    private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetTracefinderArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(add);
-        if (add)
-        {
-            writer.Write(loc.x);
-            writer.Write(loc.y);
-            writer.Write(loc.z);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerid)
     {
         AURoleOptions.ScientistCooldown = VitalsCooldown.GetFloat();
         AURoleOptions.ScientistBatteryCharge = VitalsDuration.GetFloat();
     }
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        bool add = reader.ReadBoolean();
-        if (add)
-            LocateArrow.Add(playerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-        else
-            LocateArrow.RemoveAllTarget(playerId);
-    }
 
     public override void OnReportDeadBody(PlayerControl GODZILLA_VS, NetworkedPlayerInfo KINGKONG)
     {
-        foreach (var apc in playerIdList)
-        {
-            LocateArrow.RemoveAllTarget(apc);
-            SendRPC(apc, false);
-        }
+        if (_Player)
+            LocateArrow.RemoveAllTarget(_Player.PlayerId);
     }
 
-    public static void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || target.IsDisconnected()) return;
 
@@ -106,17 +71,13 @@ internal class Tracefinder : RoleBase
 
         var tempPositionTarget = target.transform.position;
 
-        _ = new LateTask(() => {
+        _ = new LateTask(() =>
+        {
             if (!GameStates.IsMeeting && GameStates.IsInTask)
             {
-                foreach (var pc in playerIdList)
-                {
-                    var player = Utils.GetPlayerById(pc);
-                    if (player == null || !player.IsAlive()) continue;
-                    LocateArrow.Add(pc, tempPositionTarget);
-                    SendRPC(pc, true, tempPositionTarget);
-                    Utils.NotifyRoles(SpecifySeer: player);
-                }
+                var player = _Player;
+                if (player == null || !player.IsAlive()) return;
+                LocateArrow.Add(player.PlayerId, tempPositionTarget);
             }
         }, delay, "Get Arrow Tracefinder");
     }

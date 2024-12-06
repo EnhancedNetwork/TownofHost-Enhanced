@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
@@ -30,11 +31,17 @@ public static class NameColorManager
     }
     private static bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target, bool isMeeting, out string color)
     {
+        if (Altruist.HasEnabled && seer.IsMurderedThisRound())
+        {
+            color = "";
+            return false;
+        }
+
         if (seer != target)
-        target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
+            target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
 
         color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // returns "" unless overriden
-        
+
         // Impostor & Madmate
         if (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
         if (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
@@ -60,10 +67,10 @@ public static class NameColorManager
 
         // Infectious
         if (Infectious.InfectedKnowColorOthersInfected(seer, target)) color = Main.roleColors[CustomRoles.Infectious];
-        
+
         // Cyber
         if (!seer.Is(CustomRoles.Visionary) && target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool()) color = Main.roleColors[CustomRoles.Cyber];
-       
+
         // Necroview
         if (seer.Is(CustomRoles.Necroview) && seer.IsAlive())
         {
@@ -84,10 +91,10 @@ public static class NameColorManager
         if (color != "" && color != string.Empty) return true;
 
         else return seer == target
-            || (Main.GodMode.Value && seer.AmOwner)
+            || (Main.GodMode.Value && seer.IsHost())
             || (Options.CurrentGameMode == CustomGameMode.FFA)
-            || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
+            || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)
             || (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor))
@@ -111,7 +118,7 @@ public static class NameColorManager
     {
         if (colorCode == "")
         {
-            var target = Utils.GetPlayerById(targetId);
+            var target = targetId.GetPlayer();
             if (target == null) return;
             colorCode = target.GetRoleColorCode();
         }

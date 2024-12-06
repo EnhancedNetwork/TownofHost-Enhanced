@@ -10,11 +10,12 @@ internal class Mastermind : RoleBase
     //===========================SETUP================================\\
     private const int Id = 4100;
 
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
+    public override bool IsExperimental => true;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -40,7 +41,7 @@ internal class Mastermind : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
+
         ManipulatedPlayers.Clear();
         ManipulateDelays.Clear();
         TempKCDs.Clear();
@@ -48,7 +49,7 @@ internal class Mastermind : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         ManipulateCD = KillCooldown.GetFloat() + (TimeLimit.GetFloat() / 2) + (Delay.GetFloat() / 2);
 
         // Double Trigger
@@ -77,8 +78,9 @@ internal class Mastermind : RoleBase
         });
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl mastermind)
+    public override void OnFixedUpdate(PlayerControl mastermind, bool lowLoad, long nowTime)
     {
+        if (lowLoad) return;
         if (ManipulatedPlayers.Count == 0 && ManipulateDelays.Count == 0) return;
 
         foreach (var x in ManipulateDelays)
@@ -90,10 +92,10 @@ internal class Mastermind : RoleBase
                 ManipulateDelays.Remove(x.Key);
                 continue;
             }
-            if (x.Value + Delay.GetInt() < GetTimeStamp())
+            if (x.Value + Delay.GetInt() < nowTime)
             {
                 ManipulateDelays.Remove(x.Key);
-                ManipulatedPlayers.TryAdd(x.Key, GetTimeStamp());
+                ManipulatedPlayers.TryAdd(x.Key, nowTime);
 
                 TempKCDs.TryAdd(pc.PlayerId, pc.killTimer);
                 pc.SetKillCooldown(time: 1f);
@@ -138,7 +140,7 @@ internal class Mastermind : RoleBase
             {
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);
-                pc.SetRealKiller(GetPlayerById(playerIdList.First()));
+                pc.SetRealKiller(GetPlayerById(_playerIdList.First()));
             }
         }
         ManipulateDelays.Clear();
@@ -148,12 +150,11 @@ internal class Mastermind : RoleBase
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null) return true;
         if (!PlayerIsManipulated(killer)) return false;
 
         ManipulatedPlayers.Remove(killer.PlayerId);
 
-        var mastermind = GetPlayerById(playerIdList.First());
+        var mastermind = GetPlayerById(_playerIdList.First());
         mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), killer.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));

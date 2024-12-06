@@ -12,7 +12,7 @@ internal class Dazzler : RoleBase
     private const int Id = 5400;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -24,7 +24,7 @@ internal class Dazzler : RoleBase
     private static OptionItem ResetDazzledVisionOnDeath;
     private static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static Dictionary<byte, List<byte>> PlayersDazzled = [];
+    private static Dictionary<byte, HashSet<byte>> PlayersDazzled = [];
 
     public override void SetupCustomOption()
     {
@@ -88,7 +88,7 @@ internal class Dazzler : RoleBase
     {
         if (!PlayersDazzled[shapeshifter.PlayerId].Contains(target.PlayerId) && PlayersDazzled[shapeshifter.PlayerId].Count < DazzleLimit.GetInt())
         {
-            Tired.Remove(shapeshifter.PlayerId);
+            Tired.RemoveMidGame(shapeshifter.PlayerId);
             target.Notify(ColorString(GetRoleColor(CustomRoles.Dazzler), GetString("DazzlerDazzled")));
             PlayersDazzled[shapeshifter.PlayerId].Add(target.PlayerId);
             MarkEveryoneDirtySettings();

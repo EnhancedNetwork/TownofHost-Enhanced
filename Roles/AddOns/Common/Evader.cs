@@ -9,7 +9,9 @@ public class Evader : IAddon
     private static OptionItem SkillLimitTimes;
     private static OptionItem ChanceNotExiled;
 
+    private static readonly Dictionary<byte, bool> AlredyCheck = [];
     private static readonly Dictionary<byte, int> SkillLimit = [];
+    private static int RememberRandomForExile;
 
     public void SetupCustomOption()
     {
@@ -21,21 +23,48 @@ public class Evader : IAddon
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Evader])
             .SetValueFormat(OptionFormat.Percent);
     }
-    public static void Init()
+    public void Init()
     {
+        AlredyCheck.Clear();
         SkillLimit.Clear();
     }
-    public static void Add(byte playerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        AlredyCheck[playerId] = false;
         SkillLimit[playerId] = SkillLimitTimes.GetInt();
+    }
+    public void Remove(byte playerId)
+    {
+        AlredyCheck.Remove(playerId);
+        SkillLimit.Remove(playerId);
+    }
+    public static void ReportDeadBody()
+    {
+        if (AlredyCheck.Any())
+        {
+            foreach (var evaderId in AlredyCheck.Keys)
+            {
+                AlredyCheck[evaderId] = false;
+            }
+        }
+    }
+    public static void RememberRandom()
+    {
+        RememberRandomForExile = IRandom.Instance.Next(1, 100);
     }
     public static void CheckExile(byte evaderId, ref int VoteNum)
     {
+        if (AlredyCheck[evaderId] && RememberRandomForExile < ChanceNotExiled.GetInt())
+        {
+            VoteNum = 0;
+            return;
+        }
         if (SkillLimit[evaderId] <= 0) return;
 
-        if (IRandom.Instance.Next(1, 100) < ChanceNotExiled.GetInt())
+        if (RememberRandomForExile < ChanceNotExiled.GetInt())
         {
             SkillLimit[evaderId]--;
+            AlredyCheck[evaderId] = true;
             VoteNum = 0;
         }
     }

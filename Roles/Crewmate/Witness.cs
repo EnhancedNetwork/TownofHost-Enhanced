@@ -10,8 +10,8 @@ internal class Witness : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 10100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -30,15 +30,15 @@ internal class Witness : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
 
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -51,7 +51,7 @@ internal class Witness : RoleBase
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Examine");
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown();
         if (Main.AllKillers.ContainsKey(target.PlayerId))
@@ -60,9 +60,9 @@ internal class Witness : RoleBase
             killer.Notify(GetString("WitnessFoundInnocent"));
         return false;
     }
-    public static void OnFixedUpdateLowLoadOthers(PlayerControl player)
+    public static void OnFixedUpdateLowLoadOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + WitnessTime.GetInt() < Utils.GetTimeStamp())
+        if (!lowLoad && Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + WitnessTime.GetInt() < nowTime)
             Main.AllKillers.Remove(player.PlayerId);
     }
 }

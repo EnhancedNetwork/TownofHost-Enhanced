@@ -95,7 +95,7 @@ internal class PlagueDoctor : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => InfectCount != 0;
     public override string GetProgressText(byte plr, bool coomns)
         => Utils.ColorString(Utils.GetRoleColor(CustomRoles.PlagueDoctor).ShadeColor(0.25f), $"({InfectCount})");
-    
+
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(false);
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
@@ -154,7 +154,7 @@ internal class PlagueDoctor : RoleBase
     {
         InfectActive = false;
     }
-    private void OnCheckPlayerPosition(PlayerControl player)
+    private void OnCheckPlayerPosition(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (LateCheckWin)
         {
@@ -271,7 +271,7 @@ internal class PlagueDoctor : RoleBase
     }
     private void CheckWin()
     {
-        if (!HasEnabled) return;
+        if (_Player == null) return;
         if (!AmongUsClient.Instance.AmHost) return;
         // Invalid if someone's victory is being processed
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
@@ -280,10 +280,13 @@ internal class PlagueDoctor : RoleBase
         {
             InfectActive = false;
 
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+            if (!CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
             {
-                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
+                foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)).ToArray())
+                {
+                    CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+                }
             }
 
             foreach (PlayerControl player in Main.AllAlivePlayerControls)
@@ -291,6 +294,7 @@ internal class PlagueDoctor : RoleBase
                 if (player.Is(CustomRoles.PlagueDoctor)) continue;
                 player.SetDeathReason(PlayerState.DeathReason.Infected);
                 player.RpcMurderPlayer(player);
+                player.SetRealKiller(_Player);
             }
         }
     }

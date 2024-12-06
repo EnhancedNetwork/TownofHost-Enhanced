@@ -52,7 +52,7 @@ internal class Stealth : RoleBase
             playersToDarken = playersToDarken.Where(player => !player.Is(CustomRoles.Impostor)).ToArray();
         }
         DarkenPlayers(playersToDarken);
-        
+
         return true;
     }
     /// <summary>Get all players in the same room as you</summary>
@@ -78,7 +78,7 @@ internal class Stealth : RoleBase
             player.MarkDirtySettings();
         }
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         // when you're darkening someone
         if (darkenedPlayers == null) return;

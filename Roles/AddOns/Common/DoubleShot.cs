@@ -4,7 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class DoubleShot : IAddon
 {
-    public static HashSet<byte> IsActive = [];
+    public static readonly HashSet<byte> IsActive = [];
     public AddonTypes Type => AddonTypes.Guesser;
 
 
@@ -14,7 +14,7 @@ public class DoubleShot : IAddon
 
     public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
+        SetupAdtRoleOptions(19200, CustomRoles.DoubleShot, canSetNum: true, tab: TabGroup.Addons);
         ImpCanBeDoubleShot = BooleanOptionItem.Create(19210, "ImpCanBeDoubleShot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
         CrewCanBeDoubleShot = BooleanOptionItem.Create(19211, "CrewCanBeDoubleShot", true, TabGroup.Addons, false)
@@ -22,8 +22,12 @@ public class DoubleShot : IAddon
         NeutralCanBeDoubleShot = BooleanOptionItem.Create(19212, "NeutralCanBeDoubleShot", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleShot]);
     }
-    public static void Init()
+    public void Init()
     {
-        IsActive = [];
+        IsActive.Clear();
     }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }

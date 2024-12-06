@@ -1,7 +1,7 @@
-using System;
-using System.Text;
 using Hazel;
 using InnerNet;
+using System;
+using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -25,6 +25,7 @@ internal class EvilHacker : RoleBase
     private static OptionItem OptionCanSeeMurderRoom;
 
     private static byte player = 0;
+    private string message;
 
     public enum OptionName
     {
@@ -56,6 +57,7 @@ internal class EvilHacker : RoleBase
     public override void Init()
     {
         evilHackerPlayer = null;
+        message = string.Empty;
 
         canSeeDeadMark = OptionCanSeeDeadMark.GetBool();
         canSeeImpostorMark = OptionCanSeeImpostorMark.GetBool();
@@ -116,18 +118,15 @@ internal class EvilHacker : RoleBase
             builder.Append('\n');
         }
 
-        var message = builder.ToString();
-        var title = Utils.ColorString(Color.green, Translator.GetString("EvilHackerLastAdminInfoTitle"));
-
-        _ = new LateTask(() =>
-        {
-            if (GameStates.IsInGame)
-            {
-                Utils.SendMessage(message, evilHackerPlayer.PlayerId, title, false);
-            }
-        }, 5f, "EvilHacker Admin Message");
-        return;
+        message = builder.ToString();
     }
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (message == string.Empty || !evilHackerPlayer.IsAlive()) return;
+
+        MeetingHudStartPatch.AddMsg(message, evilHackerPlayer.PlayerId, Utils.ColorString(Color.green, Translator.GetString("EvilHackerLastAdminInfoTitle")));
+    }
+    public override void MeetingHudClear() => message = string.Empty;
 
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
         => CheckKillFlash(killer, target) && killer.PlayerId != seer.PlayerId;
@@ -182,9 +181,9 @@ internal class EvilHacker : RoleBase
             Utils.NotifyRoles(SpecifySeer: evilHackerPlayer);
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!activeNotifies.Any())
+        if (lowLoad || !activeNotifies.Any())
         {
             return;
         }

@@ -24,7 +24,7 @@ internal class Admirer : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem SkillLimit;
 
-    public static readonly Dictionary<byte, List<byte>> AdmiredList = [];
+    public static readonly Dictionary<byte, HashSet<byte>> AdmiredList = [];
 
     public override void SetupCustomOption()
     {
@@ -41,8 +41,8 @@ internal class Admirer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit =  SkillLimit.GetInt();
-        AdmiredList.Add(playerId, []);
+        AbilityLimit = SkillLimit.GetInt();
+        AdmiredList[playerId] = [];
     }
     public override void Remove(byte playerId)
     {
@@ -81,7 +81,7 @@ internal class Admirer : RoleBase
             else AdmiredList[playerId].Add(targetId);
         }
     }
-    
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? AdmireCooldown.GetFloat() : 300f;
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
 
@@ -97,7 +97,7 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (AbilityLimit< 1) return false;
+        if (AbilityLimit < 1) return false;
         if (CanBeAdmired(target, killer))
         {
             if (KnowTargetRole.GetBool())
@@ -162,18 +162,18 @@ internal class Admirer : RoleBase
             target.RpcGuardAndKill(killer);
             target.ResetKillCooldown();
             target.SetKillCooldown(forceAnime: true);
-            
+
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
-            
+
             return false;
         }
 
-        AdmirerFailed:
+    AdmirerFailed:
         SendRPC(killer.PlayerId); //Sync skill
-        
+
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
-        
+
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
         return false;
     }

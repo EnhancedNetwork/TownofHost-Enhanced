@@ -120,7 +120,15 @@ internal class Eraser : RoleBase
                 Logger.Info($"Canceled {player.GetNameWithRole()} Eraser bcz already erased.", "Eraser");
                 return;
             }
+            if (player.HasGhostRole())
+            {
+                Logger.Info($"Canceled {player.GetNameWithRole()} because player have ghost role", "Eraser");
+                return;
+            }
+            player.GetRoleClass()?.OnRemove(player.PlayerId);
+            player.RpcChangeRoleBasis(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+            player.GetRoleClass()?.OnAdd(player.PlayerId);
             player.ResetKillCooldown();
             player.SetKillCooldown();
             Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");
