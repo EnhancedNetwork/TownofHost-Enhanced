@@ -122,21 +122,22 @@ internal class RiftMaker : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override void UnShapeShiftButton(PlayerControl shapeshifter)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         var shapeshifterId = shapeshifter.PlayerId;
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var currentPos = shapeshifter.GetCustomPosition();
         var totalMarked = MarkedLocation.Count;
         if (totalMarked == 1 && Utils.GetDistance(currentPos, MarkedLocation.ElementAt(0).Key) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
-            return;
+            return false;
         }
         else if (totalMarked == 2 && Utils.GetDistance(currentPos, MarkedLocation.ElementAt(1).Key) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
-            return;
+            return false;
         }
 
         if (totalMarked >= 2)
@@ -152,6 +153,7 @@ internal class RiftMaker : RoleBase
 
         SendRPC(shapeshifterId, 0);
         //sendrpc for marked location and lasttp
+        return false;
     }
 
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)

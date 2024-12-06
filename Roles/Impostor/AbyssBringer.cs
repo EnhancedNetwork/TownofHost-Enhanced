@@ -57,13 +57,15 @@ internal class AbyssBringer : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public override void UnShapeShiftButton(PlayerControl shapeshifter)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
         var pos = shapeshifter.GetCustomPosition();
         var room = shapeshifter.GetPlainShipRoom();
         var roomName = room == null ? string.Empty : Translator.GetString($"{room.RoomId}");
         BlackHoles.Add(new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
         Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, pos, roomName);
+        return false;
     }
 
     public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
