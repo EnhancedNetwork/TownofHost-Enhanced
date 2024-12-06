@@ -7,17 +7,13 @@ using UnityEngine;
 // Credit: https://github.com/Rabek009/MoreGamemodes/blob/e054eb498094dfca0a365fc6b6fea8d17f9974d7/Modules/CustomObjects, https://github.com/Gurge44/EndlessHostRoles/blob/main/Modules/CustomNetObject.cs
 // Huge thanks to Rabek009 for this code! And thanks to Gurge for some modifications
 
-
-
-
-
 // 8x8 + Animator : https://ultradragon005.github.io/AmongUs-Utilities/animator.html
 // 10x10 : https://ultradragon005.github.io/AmongUs-Utilities/10xeditor.html
 // For special grid such as "8x6" jsut copy 10x10 code and ask gpt to make u that specific grid.
 
 //Sidenote: 8x8 on 100% size is a pretty golden standard and trying to make something smaller than that is very ugly (as the grean bean is very visible) so I wouldn't recommend it. 
 
-namespace TOHE
+namespace TOHE.Modules
 {
     internal class CustomNetObject
     {
@@ -88,14 +84,14 @@ namespace TOHE
 
         public void Despawn()
         {
-            Logger.Info($" Despawn Custom Net Object {this.GetType().Name} (ID {Id})", "CNO.Despawn");
+            Logger.Info($" Despawn Custom Net Object {GetType().Name} (ID {Id})", "CNO.Despawn");
             playerControl.Despawn();
             AllObjects.Remove(this);
         }
 
         protected void Hide(PlayerControl player)
         {
-            Logger.Info($" Hide Custom Net Object {this.GetType().Name} (ID {Id}) from {player.GetNameWithRole()}", "CNO.Hide");
+            Logger.Info($" Hide Custom Net Object {GetType().Name} (ID {Id}) from {player.GetNameWithRole()}", "CNO.Hide");
 
             HiddenList.Add(player.PlayerId);
             if (player.AmOwner)
@@ -140,9 +136,9 @@ namespace TOHE
             PlayerControlTimer += Time.fixedDeltaTime;
             if (PlayerControlTimer > 20f)
             {
-                Logger.Info($" Recreate Custom Net Object {this.GetType().Name} (ID {Id})", "CNO.OnFixedUpdate");
+                Logger.Info($" Recreate Custom Net Object {GetType().Name} (ID {Id})", "CNO.OnFixedUpdate");
                 PlayerControl oldPlayerControl = playerControl;
-                playerControl = GameObject.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
+                playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
                 playerControl.PlayerId = 255;
                 playerControl.isNew = false;
                 playerControl.notRealPlayer = true;
@@ -274,8 +270,8 @@ namespace TOHE
 
         public void CreateNetObject(string sprite, Vector2 position)
         {
-            Logger.Info($" Create Custom Net Object {this.GetType().Name} (ID {Id}) at {position}", "CNO.CreateNetObject");
-            playerControl = GameObject.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
+            Logger.Info($" Create Custom Net Object {GetType().Name} (ID {Id}) at {position}", "CNO.CreateNetObject");
+            playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
             playerControl.PlayerId = 255;
             playerControl.isNew = false;
             playerControl.notRealPlayer = true;

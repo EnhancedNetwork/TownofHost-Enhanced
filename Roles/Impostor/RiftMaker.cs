@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
