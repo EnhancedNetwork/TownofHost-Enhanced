@@ -1,12 +1,12 @@
 ﻿using Hazel;
+using InnerNet;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -19,7 +19,6 @@ internal class Coroner : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    private static readonly HashSet<byte> UnreportablePlayers = [];
     private static readonly Dictionary<byte, HashSet<byte>> CoronerTargets = [];
 
     private static OptionItem ArrowsPointingToDeadBody;
@@ -42,7 +41,6 @@ internal class Coroner : RoleBase
     }
     public override void Init()
     {
-        UnreportablePlayers.Clear();
         CoronerTargets.Clear();
     }
     public override void Add(byte playerId)
@@ -60,19 +58,6 @@ internal class Coroner : RoleBase
         CoronerTargets.Remove(playerId);
     }
 
-    private static void SendRPC(byte playerId, bool add, Vector3 loc = new())
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(add);
-        if (add)
-        {
-            writer.Write(loc.x);
-            writer.Write(loc.y);
-            writer.Write(loc.z);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     private void SendRPCLimit(byte playerId, int operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -94,45 +79,7 @@ internal class Coroner : RoleBase
             byte tid = reader.ReadByte();
             if (!CoronerTargets.ContainsKey(pid)) CoronerTargets[pid] = [];
             CoronerTargets[pid].Add(tid);
-            if (opt == 1) UnreportablePlayers.Add(tid);
-        }
-    }
-    private static void SendRPCKiller(byte playerId, byte killerId, bool add)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCoronerkKillerArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(killerId);
-        writer.Write(add);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-    }
-    public static void ReceiveRPCKiller(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        byte killerId = reader.ReadByte();
-        bool add = reader.ReadBoolean();
-        if (add)
-        {
-            CoronerTargets[playerId].Add(killerId);
-            TargetArrow.Add(playerId, killerId);
-        }
-        else
-        {
-            CoronerTargets[playerId].Remove(killerId);
-            TargetArrow.Remove(playerId, killerId);
-        }
-    }
-
-    public static void ReceiveRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        bool add = reader.ReadBoolean();
-        if (add)
-            LocateArrow.Add(playerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-        else
-        { 
-            LocateArrow.RemoveAllTarget(playerId);
-            if (CoronerTargets.ContainsKey(playerId)) CoronerTargets[playerId].Clear();
+            if (opt == 1) Main.UnreportableBodies.Add(tid);
         }
     }
 
@@ -148,7 +95,7 @@ internal class Coroner : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.ReportButton.OverrideText(GetString("CoronerReportButtonText"));
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (UnreportablePlayers.Contains(deadBody.PlayerId)) return false;
+        if (Main.UnreportableBodies.Contains(deadBody.PlayerId)) return false;
 
         if (reporter.Is(CustomRoles.Coroner))
         {
@@ -173,20 +120,18 @@ internal class Coroner : RoleBase
         }
 
         LocateArrow.Remove(pc.PlayerId, deadBody.Object.transform.position);
-        SendRPC(pc.PlayerId, false);
 
         if (AbilityLimit >= 1)
         {
             CoronerTargets[pc.PlayerId].Add(killer.PlayerId);
             TargetArrow.Add(pc.PlayerId, killer.PlayerId);
-            SendRPCKiller(pc.PlayerId, killer.PlayerId, add: true);
 
             pc.Notify(GetString("CoronerTrackRecorded"));
             AbilityLimit -= 1;
             int operate = 0;
             if (LeaveDeadBodyUnreportable.GetBool())
             {
-                UnreportablePlayers.Add(deadBody.PlayerId);
+                Main.UnreportableBodies.Add(deadBody.PlayerId);
                 operate = 1;
             }
             SendRPCLimit(pc.PlayerId, operate, targetId: deadBody.PlayerId);
@@ -208,7 +153,6 @@ internal class Coroner : RoleBase
         foreach (var apc in _playerIdList.ToArray())
         {
             LocateArrow.RemoveAllTarget(apc);
-            SendRPC(apc, false);
         }
 
         foreach (var bloodhound in CoronerTargets)
@@ -216,7 +160,6 @@ internal class Coroner : RoleBase
             foreach (var tar in bloodhound.Value.ToArray())
             {
                 TargetArrow.Remove(bloodhound.Key, tar);
-                SendRPCKiller(bloodhound.Key, tar, add: false);
             }
 
             CoronerTargets[bloodhound.Key].Clear();
@@ -232,7 +175,6 @@ internal class Coroner : RoleBase
             var player = GetPlayerById(pc);
             if (player == null || !player.IsAlive()) continue;
             LocateArrow.Add(pc, target.transform.position);
-            SendRPC(pc, true, target.transform.position);
         }
     }
 

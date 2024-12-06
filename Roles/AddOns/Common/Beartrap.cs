@@ -15,6 +15,12 @@ public class Trapper : IAddon
         TrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "TrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Trapper])
             .SetValueFormat(OptionFormat.Seconds);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }
 public static class TrapperExtension
 {

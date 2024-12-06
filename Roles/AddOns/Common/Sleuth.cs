@@ -6,19 +6,23 @@ public class Sleuth : IAddon
     public AddonTypes Type => AddonTypes.Helpful;
 
     public static OptionItem SleuthCanKnowKillerRole;
-    
-    public static Dictionary<byte, string> SleuthNotify = [];
+
+    public static readonly Dictionary<byte, string> SleuthNotify = [];
 
     public void SetupCustomOption()
     {
-        Options.SetupAdtRoleOptions(Id, CustomRoles.Sleuth, canSetNum: true);
+        Options.SetupAdtRoleOptions(Id, CustomRoles.Sleuth, canSetNum: true, teamSpawnOptions: true);
         SleuthCanKnowKillerRole = BooleanOptionItem.Create(Id + 13, "SleuthCanKnowKillerRole", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sleuth]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        SleuthNotify = [];
+        SleuthNotify.Clear();
     }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static void Clear()
     {
         SleuthNotify.Clear();

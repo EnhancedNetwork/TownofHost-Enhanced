@@ -14,13 +14,12 @@ internal class Alchemist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
+    private static List<byte> PlayerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Alchemist).Select(x => x.PlayerId).ToList();
     private static OptionItem VentCooldown;
     private static OptionItem ShieldDuration;
     private static OptionItem Vision;
@@ -61,7 +60,6 @@ internal class Alchemist : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         BloodthirstList.Clear();
         PotionID = 10;
         PlayerName = string.Empty;
@@ -72,7 +70,6 @@ internal class Alchemist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         PlayerName = Utils.GetPlayerById(playerId).GetRealName();
 
         if (AmongUsClient.Instance.AmHost)
@@ -84,7 +81,7 @@ internal class Alchemist : RoleBase
     {
         if (AmongUsClient.Instance.AmHost)
         {
-            CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdatesBloodlus);
+            CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdatesBloodlus);
         }
     }
 
@@ -146,7 +143,7 @@ internal class Alchemist : RoleBase
 
     private static void SendRPC(PlayerControl pc)
     {
-        if (pc.AmOwner) return;
+        if (pc.IsHost()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
         writer.Write(FixNextSabo);
         writer.Write(PotionID);
@@ -173,9 +170,9 @@ internal class Alchemist : RoleBase
         return false;
     }
 
-    private static void OnFixedUpdatesBloodlus(PlayerControl player)
+    private static void OnFixedUpdatesBloodlus(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!IsBloodthirst(player.PlayerId)) return;
+        if (lowLoad || !IsBloodthirst(player.PlayerId)) return;
 
         if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId))
         {
@@ -199,7 +196,7 @@ internal class Alchemist : RoleBase
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
                 var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
-                if (min.Value <= KillRange && player.CanMove && target.CanMove)
+                if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat)
                 {
                     if (player.RpcCheckAndMurder(target, true))
                     {
@@ -216,13 +213,11 @@ internal class Alchemist : RoleBase
             }
         }
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!IsInvis(player.PlayerId)) return;
+        if (lowLoad || !IsInvis(player.PlayerId)) return;
 
-        var nowTime = Utils.GetTimeStamp();
         var needSync = false;
-
         foreach (var AlchemistInfo in InvisTime)
         {
             var alchemistId = AlchemistInfo.Key;
@@ -244,7 +239,7 @@ internal class Alchemist : RoleBase
             }
             else if (remainTime <= 10)
             {
-                if (!alchemist.IsModClient())
+                if (!alchemist.IsModded())
                     alchemist.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime), sendInLog: false);
             }
         }
@@ -254,9 +249,10 @@ internal class Alchemist : RoleBase
             SendRPC(player);
         }
     }
+
     public static void OnReportDeadBodyGlobal()
     {
-        foreach (var alchemistId in playerIdList)
+        foreach (var alchemistId in PlayerIdList)
         {
             if (!IsInvis(alchemistId)) continue;
             var alchemist = Utils.GetPlayerById(alchemistId);
@@ -386,14 +382,14 @@ internal class Alchemist : RoleBase
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         if (seer == null || !seer.IsAlive() || isForMeeting || !isForHud) return string.Empty;
-        
+
         var str = new StringBuilder();
         if (IsInvis(seer.PlayerId))
         {
             var remainTime = InvisTime[seer.PlayerId] + (long)InvisDuration.GetFloat() - Utils.GetTimeStamp();
             str.Append(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
         }
-        else 
+        else
         {
             switch (PotionID)
             {
@@ -435,7 +431,7 @@ internal class Alchemist : RoleBase
     {
         var player = Utils.GetPlayerById(playerId);
         if (player == null || !GameStates.IsInTask) return string.Empty;
-        
+
         var str = new StringBuilder();
         switch (PotionID)
         {
@@ -467,7 +463,7 @@ internal class Alchemist : RoleBase
                 break;
         }
         if (FixNextSabo) str.Append("<color=#3333ff>★</color>");
-        
+
         return str.ToString();
     }
     public override void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, PlayerControl player)

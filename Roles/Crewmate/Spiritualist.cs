@@ -8,9 +8,6 @@ internal class Spiritualist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 9600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -32,21 +29,18 @@ internal class Spiritualist : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         LastGhostArrowShowTime.Clear();
         ShowGhostArrowUntil.Clear();
         SpiritualistTarget = new();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         SpiritualistTarget = byte.MaxValue;
         LastGhostArrowShowTime.Add(playerId, 0);
         ShowGhostArrowUntil.Add(playerId, 0);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         LastGhostArrowShowTime.Remove(playerId);
         ShowGhostArrowUntil.Remove(playerId);
     }
@@ -78,59 +72,57 @@ internal class Spiritualist : RoleBase
 
     public override void AfterMeetingTasks()
     {
-        foreach (var spiritualist in playerIdList)
-        {
-            PlayerControl player = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == spiritualist);
-            
-            if (!player.IsAlive()) continue;
+        PlayerControl player = _Player;
 
-            LastGhostArrowShowTime[spiritualist] = 0;
-            ShowGhostArrowUntil[spiritualist] = 0;
+        if (!player || !player.IsAlive()) return;
 
-            PlayerControl target = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
-            
-            if (target == null) continue;
+        LastGhostArrowShowTime[player.PlayerId] = 0;
+        ShowGhostArrowUntil[player.PlayerId] = 0;
 
-            TargetArrow.Add(spiritualist, target.PlayerId);
+        PlayerControl target = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == SpiritualistTarget);
 
-            var writer = CustomRpcSender.Create("SpiritualistSendMessage", SendOption.None);
-            writer.StartMessage(target.GetClientId());
-            writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
-                .Write(target.Data.NetId)
-                .Write(GetString("SpiritualistNoticeTitle"))
-                .EndRpc();
-            writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
-                .Write(GetString("SpiritualistNoticeMessage"))
-                .EndRpc();
-            writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
-                .Write(target.Data.NetId)
-                .Write(target.Data.PlayerName)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
-        }
+        if (target == null) return;
+
+        TargetArrow.Add(player.PlayerId, target.PlayerId);
+
+        var writer = CustomRpcSender.Create("SpiritualistSendMessage", SendOption.None);
+        writer.StartMessage(target.GetClientId());
+        writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+            .Write(target.Data.NetId)
+            .Write(GetString("SpiritualistNoticeTitle"))
+            .EndRpc();
+        writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
+            .Write(GetString("SpiritualistNoticeMessage"))
+            .EndRpc();
+        writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
+            .Write(target.Data.NetId)
+            .Write(target.Data.PlayerName)
+            .EndRpc();
+        writer.EndMessage();
+        writer.SendMessage();
     }
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Spiritualist) || !seer.IsAlive()) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
+        if (!seer.Is(CustomRoles.Spiritualist) || !seer.IsAlive()) return string.Empty;
+        if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
+        if (GameStates.IsMeeting) return string.Empty;
         if (SpiritualistTarget != byte.MaxValue && ShowArrow(seer.PlayerId))
         {
-            return Utils.ColorString(seer.GetRoleColor(), TargetArrow.GetArrows(seer, SpiritualistTarget)); 
+            return Utils.ColorString(seer.GetRoleColor(), TargetArrow.GetArrows(seer, SpiritualistTarget));
         }
-        return "";
+        return string.Empty;
     }
 
     public static void RemoveTarget(byte player)
     {
         if (SpiritualistTarget != player) return;
 
-        foreach (var spiritualist in playerIdList)
-        {
-            TargetArrow.Remove(spiritualist, SpiritualistTarget);
-        }
+        if (AmongUsClient.Instance.AmHost)
+            foreach (var spiritualist in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Spiritualist)).Select(x => x.PlayerId).ToList())
+            {
+                TargetArrow.Remove(spiritualist, SpiritualistTarget);
+            }
 
         SpiritualistTarget = byte.MaxValue;
     }

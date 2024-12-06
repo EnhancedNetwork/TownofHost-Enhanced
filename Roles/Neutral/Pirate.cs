@@ -32,7 +32,7 @@ internal class Pirate : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pirate);
+        Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Pirate);
         DuelCooldown = FloatOptionItem.Create(Id + 12, "DuelCooldown", new(0f, 180f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pirate])
                 .SetValueFormat(OptionFormat.Seconds);
         TryHideMsg = BooleanOptionItem.Create(Id + 10, "PirateTryHideMsg", true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Pirate])
@@ -51,26 +51,23 @@ internal class Pirate : RoleBase
     }
     public override void Add(byte playerId)
     {
-        DuelDone.Add(playerId, false);
+        DuelDone[playerId] = false;
     }
-    public override void MeetingHudClear()
+    public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (!HasEnabled || PirateTarget == byte.MaxValue) return;
 
-        var pc = _Player;
         var tpc = GetPlayerById(PirateTarget);
         if (!tpc.IsAlive()) return;
-        _ = new LateTask(() =>
-        {
-            SendMessage(GetString("PirateMeetingMsg"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
-            SendMessage(GetString("PirateTargetMeetingMsg"), tpc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
-        }, 3f, "Pirate Meeting Messages");
+
+        MeetingHudStartPatch.AddMsg(GetString("PirateMeetingMsg"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
+        MeetingHudStartPatch.AddMsg(GetString("PirateTargetMeetingMsg"), tpc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DuelCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string GetProgressText(byte playerId, bool comms)
             => ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({NumWin}/{SuccessfulDuelsToWin.GetInt()})");
-    
+
     public void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -113,7 +110,7 @@ internal class Pirate : RoleBase
         Logger.Msg($"{killer.GetNameWithRole()} chose a target {target.GetNameWithRole()}", "Pirate");
         PirateTarget = target.PlayerId;
         SendRPC(operate: 0, target: target.PlayerId, points: -1);
-        DuelDone.Add(PirateTarget, false);
+        DuelDone[PirateTarget] = false;
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         else killer.SetKillCooldown();
         return false;
@@ -122,43 +119,43 @@ internal class Pirate : RoleBase
     {
         hud.KillButton.OverrideText(GetString("PirateDuelButtonText"));
     }
+
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Challenge");
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
+        => isMeeting && target.PlayerId == PirateTarget ? ColorString(GetRoleColor(CustomRoles.Pirate), " ⦿") : string.Empty;
+
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
-        if (target != null && isMeeting && target.PlayerId == PirateTarget)
-        {
-            return ColorString(GetRoleColor(CustomRoles.Pirate), " ⦿");
-        }
-        return "";
-    }
-    public override void AfterMeetingTasks()
-    {
+        if (_Player == null || PirateTarget == byte.MaxValue) return;
+
         var pirateId = _state.PlayerId;
-        if (PirateTarget != byte.MaxValue)
+        if (!DuelDone[pirateId]) return;
+
+        var pirateTarget = PirateTarget.GetPlayer();
+        if (DuelDone[PirateTarget])
         {
-            if (DuelDone[pirateId])
+            if (targetChose == pirateChose)
             {
-                if (DuelDone[PirateTarget])
-                {
-                    if (targetChose == pirateChose)
-                    {
-                        NumWin++;
-                        if (GetPlayerById(PirateTarget).IsAlive())
-                        {
-                            CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
-                            GetPlayerById(PirateTarget).SetRealKiller(GetPlayerById(pirateId));
-                        }
-                    }
-                }
-                else
-                if (GetPlayerById(PirateTarget).IsAlive())
+                NumWin++;
+                if (pirateTarget.IsAlive())
                 {
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
-                    GetPlayerById(PirateTarget).SetRealKiller(GetPlayerById(pirateId));
+                    pirateTarget.SetRealKiller(_Player);
                 }
             }
         }
+        else if (pirateTarget.IsAlive())
+        {
+            CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
+            pirateTarget.SetRealKiller(_Player);
+        }
+    }
+    public override void AfterMeetingTasks()
+    {
+        if (_Player == null) return;
+        var pirateId = _state.PlayerId;
+
         if (NumWin >= SuccessfulDuelsToWin.GetInt())
         {
             NumWin = SuccessfulDuelsToWin.GetInt();
@@ -168,10 +165,12 @@ internal class Pirate : RoleBase
                 CustomWinnerHolder.WinnerIds.Add(pirateId);
             }
         }
+
         DuelDone.Clear();
         PirateTarget = byte.MaxValue;
+
         SendRPC(operate: 1, target: byte.MaxValue, points: NumWin);
-        foreach (byte playerId in Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Pirate).Select(x => x.PlayerId)) { DuelDone.Add(playerId, false); }
+        foreach (byte playerId in Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Pirate).Select(x => x.PlayerId)) { DuelDone[playerId] = false; }
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {

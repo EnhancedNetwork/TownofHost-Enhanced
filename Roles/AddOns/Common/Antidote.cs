@@ -8,13 +8,11 @@ public class Antidote : IAddon
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Mixed;
 
-    public static OptionItem ImpCanBeAntidote;
-    public static OptionItem CrewCanBeAntidote;
-    public static OptionItem NeutralCanBeAntidote;
     private static OptionItem AntidoteCDOpt;
     private static OptionItem AntidoteCDReset;
 
-    private static Dictionary<byte, int> KilledAntidote = [];
+    private static readonly HashSet<byte> playerList = [];
+    private static readonly Dictionary<byte, int> KilledAntidote = [];
 
     public void SetupCustomOption()
     {
@@ -24,14 +22,23 @@ public class Antidote : IAddon
         AntidoteCDReset = BooleanOptionItem.Create(Id + 14, "AntidoteCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Antidote]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        KilledAntidote = [];
         IsEnable = false;
+        playerList.Clear();
+        KilledAntidote.Clear();
     }
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        playerList.Add(playerId);
         IsEnable = true;
+    }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
+
+        if (!playerList.Any())
+            IsEnable = false;
     }
 
     public static void ReduceKCD(PlayerControl player)
@@ -56,7 +63,7 @@ public class Antidote : IAddon
                 if (kapc == null) continue;
                 kapc.ResetKillCooldown();
             }
-            KilledAntidote = [];
+            KilledAntidote.Clear();
         }
     }
 

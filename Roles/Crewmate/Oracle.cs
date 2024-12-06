@@ -1,12 +1,12 @@
 using Hazel;
-using System.Text;
+using InnerNet;
 using System;
+using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -39,7 +39,7 @@ internal class Oracle : RoleBase
         OracleAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Times);
-        ChangeRecruitTeam = BooleanOptionItem.Create(Id+15,"OracleCheckAddons",false,TabGroup.CrewmateRoles, false)
+        ChangeRecruitTeam = BooleanOptionItem.Create(Id + 15, "OracleCheckAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
 
     }
@@ -112,17 +112,17 @@ internal class Oracle : RoleBase
                 }
                 else
                 {
-                    if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Trickster)) text = "Impostor";
+                    if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
                     else text = "Crewmate";
                 }
 
                 if (FailChance.GetInt() > 0)
                 {
-                    int random_number_1 = HashRandom.Next(1, 100);
+                    int random_number_1 = IRandom.Instance.Next(1, 100);
                     if (random_number_1 <= FailChance.GetInt())
                     {
-                        int random_number_2 = HashRandom.Next(1, 3);
+                        int random_number_2 = IRandom.Instance.Next(1, 3);
                         if (text == "Crewmate")
                         {
                             if (random_number_2 == 1) text = "Neutral";
@@ -160,10 +160,10 @@ internal class Oracle : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo tagret)
     {
         DidVote.Clear();
-            
+
         TempCheckLimit[_state.PlayerId] = AbilityLimit;
         SendRPC(_state.PlayerId, isTemp: true);
-        
+
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

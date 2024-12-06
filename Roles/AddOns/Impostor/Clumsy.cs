@@ -9,7 +9,7 @@ public class Clumsy : IAddon
 
     private static OptionItem ChanceToMiss;
 
-    private static Dictionary<byte, bool> HasMissed;
+    private static readonly Dictionary<byte, bool> HasMissed = [];
 
     public void SetupCustomOption()
     {
@@ -19,17 +19,17 @@ public class Clumsy : IAddon
             .SetValueFormat(OptionFormat.Percent);
     }
 
-    public static void Init()
+    public void Init()
     {
-        HasMissed = [];
+        HasMissed.Clear();
     }
-    public static void Add(byte PlayerId)
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
-        HasMissed.Add(PlayerId, false);
+        HasMissed.Add(playerId, false);
     }
-    public static void Remove(byte player)
+    public void Remove(byte playerId)
     {
-        HasMissed.Remove(player);
+        HasMissed.Remove(playerId);
     }
 
     private static void MissChance(PlayerControl killer)

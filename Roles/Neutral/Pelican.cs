@@ -25,7 +25,7 @@ internal class Pelican : RoleBase
     private static OptionItem HasImpostorVision;
     private static OptionItem CanVent;
 
-    private static readonly Dictionary<byte, List<byte>> eatenList = [];
+    private static readonly Dictionary<byte, HashSet<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
     public static Dictionary<byte, Vector2> PelicanLastPosition = [];
 
@@ -81,7 +81,7 @@ internal class Pelican : RoleBase
         {
             int eatenNum = reader.ReadInt32();
             eatenList.Remove(playerId);
-            List<byte> list = [];
+            HashSet<byte> list = [];
             for (int i = 0; i < eatenNum; i++)
                 list.Add(reader.ReadByte());
             eatenList.Add(playerId, list);
@@ -114,7 +114,7 @@ internal class Pelican : RoleBase
             }
         }
 
-        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.ProtectList.Contains(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id);
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
@@ -231,7 +231,7 @@ internal class Pelican : RoleBase
             Vector2 teleportPosition;
             if (Scavenger.KilledPlayersId.Contains(pelicanId) && PelicanLastPosition.TryGetValue(pelicanId, out var lastPosition))
                 teleportPosition = lastPosition;
-            else 
+            else
                 teleportPosition = pelican.GetCustomPosition();
 
             foreach (var tar in eatenList[pelicanId])
@@ -263,20 +263,22 @@ internal class Pelican : RoleBase
         GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
-    public override void OnFixedUpdateLowLoad(PlayerControl pelican)
-    {        
-        Count--;
-        
-        if (Count > 0) return; 
-        
-        Count = 2;
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (lowLoad) return;
 
-        foreach (var pc in eatenList.Values)
+        Count--;
+
+        if (Count > 0) return;
+
+        Count = 4;
+
+        if (eatenList.TryGetValue(player.PlayerId, out var playerList))
         {
-            foreach (var tar in pc.ToArray())
+            foreach (var tar in playerList.ToArray())
             {
-                var target = Utils.GetPlayerById(tar);
-                if (target == null) continue;
+                var target = tar.GetPlayer();
+                if (!target.IsAlive()) continue;
 
                 var pos = GetBlackRoomPSForPelican();
                 var dis = Utils.GetDistance(pos, target.GetCustomPosition());

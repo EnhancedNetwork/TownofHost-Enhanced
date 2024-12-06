@@ -15,7 +15,7 @@ internal class Inspector : RoleBase
     //===========================SETUP================================\\
     private const int Id = 8300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -213,7 +213,7 @@ internal class Inspector : RoleBase
                 }
                 else
                 {
-                    if 
+                    if
                     (
                         (
                         (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired)
@@ -293,13 +293,11 @@ internal class Inspector : RoleBase
                     {
                         if (target1.Is(CustomRoles.Aware))
                         {
-                            if (!Aware.AwareInteracted.ContainsKey(target1.PlayerId)) Aware.AwareInteracted[target1.PlayerId] = [];
-                            if (!Aware.AwareInteracted[target1.PlayerId].Contains(GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target1.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
+                            Aware.AwareInteracted[target1.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
                         }
                         if (target2.Is(CustomRoles.Aware))
                         {
-                            if (!Aware.AwareInteracted.ContainsKey(target2.PlayerId)) Aware.AwareInteracted[target2.PlayerId] = [];
-                            if (!Aware.AwareInteracted[target2.PlayerId].Contains(GetRoleName(CustomRoles.Inspector))) Aware.AwareInteracted[target2.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
+                            Aware.AwareInteracted[target2.PlayerId].Add(GetRoleName(CustomRoles.Inspector));
                         }
                     }
                     MaxCheckLimit[pc.PlayerId] -= 1;
@@ -427,7 +425,7 @@ internal class Inspector : RoleBase
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
-    
+
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
 }

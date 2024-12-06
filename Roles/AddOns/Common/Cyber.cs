@@ -7,7 +7,7 @@ public class Cyber : IAddon
     private const int Id = 19100;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    public static List<byte> CyberDead = [];
+    public static readonly HashSet<byte> CyberDead = [];
 
     public static OptionItem ImpKnowCyberDead;
     public static OptionItem CrewKnowCyberDead;
@@ -23,10 +23,15 @@ public class Cyber : IAddon
         CyberKnown = BooleanOptionItem.Create(Id + 16, "CyberKnown", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
     }
 
-    public static void Init()
+    public void Init()
     {
-        CyberDead = [];
+        CyberDead.Clear();
     }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
+
     public static void Clear()
     {
         CyberDead.Clear();

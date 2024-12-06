@@ -21,7 +21,7 @@ internal class Fireworker : RoleBase
     private const int Id = 3200;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -33,7 +33,7 @@ internal class Fireworker : RoleBase
     private static OptionItem PlaceCooldown;
 
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
-    private static readonly Dictionary<byte, List<Vector3>> FireworkerPosition = [];
+    private static readonly Dictionary<byte, HashSet<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
     private static readonly Dictionary<byte, int> FireworkerBombKill = [];
     private readonly List<Firework> Fireworks = [];

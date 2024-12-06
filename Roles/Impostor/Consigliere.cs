@@ -10,7 +10,7 @@ internal class Consigliere : RoleBase
     private const int Id = 3100;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -19,7 +19,7 @@ internal class Consigliere : RoleBase
     private static OptionItem DivinationMaxCount;
 
     private static readonly Dictionary<byte, int> DivinationCount = [];
-    private static readonly Dictionary<byte, List<byte>> DivinationTarget = [];
+    private static readonly Dictionary<byte, HashSet<byte>> DivinationTarget = [];
 
     public override void SetupCustomOption()
     {
@@ -61,7 +61,8 @@ internal class Consigliere : RoleBase
                 DivinationCount[playerId] = reader.ReadInt32();
             else
                 DivinationCount.Add(playerId, DivinationMaxCount.GetInt());
-        }{
+        }
+        {
             if (DivinationCount.ContainsKey(playerId))
                 DivinationTarget[playerId].Add(reader.ReadByte());
             else
@@ -70,13 +71,13 @@ internal class Consigliere : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (DivinationCount[killer.PlayerId] > 0)
         {
             return killer.CheckDoubleTrigger(target, () => { SetDivination(killer, target); });
         }
-        else return true;  
+        else return true;
     }
 
     private static bool IsDivination(byte seer, byte target)
@@ -97,9 +98,7 @@ internal class Consigliere : RoleBase
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             SendRPC(killer.PlayerId, target.PlayerId);
-            //キルクールの適正化
-            killer.SetKillCooldown();
-            //killer.RpcGuardAndKill(target);
+            killer.SetKillCooldown(target: target, forceAnime: true);
         }
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
@@ -112,6 +111,6 @@ internal class Consigliere : RoleBase
         });
         return IsWatch;
     }
-    public override string GetProgressText(byte playerId, bool comms) 
+    public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(DivinationCount[playerId] > 0 ? Utils.GetRoleColor(CustomRoles.Consigliere).ShadeColor(0.25f) : Color.gray, DivinationCount.TryGetValue(playerId, out var shotLimit) ? $"({shotLimit})" : "Invalid");
 }

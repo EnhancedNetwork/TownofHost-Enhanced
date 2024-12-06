@@ -11,6 +11,7 @@ public class Bewilder : IAddon
     private static OptionItem BewilderVision;
     private static OptionItem KillerGetBewilderVision;
 
+    private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable;
 
     public void SetupCustomOption()
@@ -20,22 +21,29 @@ public class Bewilder : IAddon
             .SetValueFormat(OptionFormat.Multiplier);
         KillerGetBewilderVision = BooleanOptionItem.Create(Id + 14, "KillerGetBewilderVision", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Bewilder]);
     }
-
-    public static void Init()
+    public void Init()
     {
         IsEnable = false;
+        playerList.Clear();
     }
-
-    public static void Add()
+    public void Add(byte playerId, bool gameIsLoading = true)
     {
+        playerList.Add(playerId);
         IsEnable = true;
     }
+    public void Remove(byte playerId)
+    {
+        playerList.Remove(playerId);
 
-    public static void ApplyVisionOptions(IGameOptions opt) 
-    { 
-        opt.SetVision(false); 
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat()); 
-        opt.SetFloat(FloatOptionNames.CrewLightMod, BewilderVision.GetFloat()); 
+        if (!playerList.Any())
+            IsEnable = false;
+    }
+
+    public static void ApplyVisionOptions(IGameOptions opt)
+    {
+        opt.SetVision(false);
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat());
+        opt.SetFloat(FloatOptionNames.CrewLightMod, BewilderVision.GetFloat());
     }
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {

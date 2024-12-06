@@ -1,5 +1,4 @@
 using TMPro;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -10,8 +9,8 @@ namespace TOHE.Patches;
 public class ShowHostMeetingPatch
 {
     private static PlayerControl HostControl = null;
-    private static string hostName = string.Empty;
-    private static int hostColor = int.MaxValue;
+    private static string HostName = string.Empty;
+    private static int HostColor = int.MaxValue;
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.OnDestroy))]
     [HarmonyPostfix]
@@ -22,14 +21,8 @@ public class ShowHostMeetingPatch
             if (GameStates.IsInGame && HostControl == null)
             {
                 HostControl = AmongUsClient.Instance.GetHost().Character;
-                hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
-                hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
-
-                if (Main.OvverideOutfit.ContainsKey(AmongUsClient.Instance.GetHost().Character.PlayerId))
-                {
-                    hostName = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.PlayerName;
-                    hostColor = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.ColorId;
-                }
+                HostName = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.PlayerName;
+                HostColor = Main.PlayerStates[AmongUsClient.Instance.GetHost().Character.Data.PlayerId].NormalOutfit.ColorId;
             }
         }
         catch { }
@@ -40,8 +33,8 @@ public class ShowHostMeetingPatch
     public static void ShowRole_Postfix()
     {
         HostControl = AmongUsClient.Instance.GetHost().Character;
-        hostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
-        hostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
+        HostName = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.PlayerName;
+        HostColor = AmongUsClient.Instance.GetHost().Character.CurrentOutfit.ColorId;
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
@@ -51,8 +44,8 @@ public class ShowHostMeetingPatch
         // Not display in local game, because it will be impossible to complete the meeting
         if (!GameStates.IsOnlineGame) return;
 
-        PlayerMaterial.SetColors(hostColor, __instance.HostIcon);
-        __instance.ProceedButton.gameObject.GetComponentInChildren<TextMeshPro>().text = string.Format(Translator.GetString("HostIconInMeeting"), hostName);
+        PlayerMaterial.SetColors(HostColor, __instance.HostIcon);
+        __instance.ProceedButton.gameObject.GetComponentInChildren<TextMeshPro>().text = string.Format(Translator.GetString("HostIconInMeeting"), HostName);
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]

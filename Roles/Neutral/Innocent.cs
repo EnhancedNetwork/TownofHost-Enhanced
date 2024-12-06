@@ -16,6 +16,7 @@ internal class Innocent : RoleBase
     //==================================================================\\
 
     private static OptionItem InnocentCanWinByImp;
+    private bool TargetIsKilled = false;
 
     public override void SetupCustomOption()
     {
@@ -26,20 +27,25 @@ internal class Innocent : RoleBase
     public override void Init()
     {
         PlayerIds.Clear();
+        TargetIsKilled = false;
     }
     public override void Add(byte playerId)
     {
         PlayerIds.Add(playerId);
+        TargetIsKilled = false;
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        TargetIsKilled = true;
         target.RpcMurderPlayer(killer);
         return false;
     }
 
     public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
     {
+        if (exiled == null || !TargetIsKilled) return;
+
         var exiledRole = exiled.GetCustomRole();
         var innocentArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Innocent) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == exiled.PlayerId);
 

@@ -17,6 +17,9 @@ namespace TOHE.Roles.AddOns
         public AddonTypes Type { get; }
         public void SetupCustomOption();
 
+        public void Init();
+        public void Add(byte playerId, bool gameIsLoading = true);
+        public void Remove(byte playerId);
         public void OnFixedUpdate(PlayerControl pc)
         { }
         public void OnFixedUpdateLowLoad(PlayerControl pc)

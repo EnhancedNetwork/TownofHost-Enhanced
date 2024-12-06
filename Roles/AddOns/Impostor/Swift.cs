@@ -12,6 +12,12 @@ public class Swift : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Swift, canSetNum: true, tab: TabGroup.Addons);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (!DisableShieldAnimations.GetBool())
@@ -21,7 +27,7 @@ public class Swift : IAddon
             killer.TrapperKilled(target);
 
         killer.SetKillCooldown();
-        
+
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         return false;
     }

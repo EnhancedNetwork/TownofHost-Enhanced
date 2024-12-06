@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -14,8 +14,6 @@ internal class Overseer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 12200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -87,15 +85,12 @@ internal class Overseer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         OverseerTimer.Clear();
         RandomRole.Clear();
         IsRevealed.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-
         foreach (var ar in Main.AllPlayerControls)
         {
             IsRevealed.Add((playerId, ar.PlayerId), false);
@@ -176,6 +171,7 @@ internal class Overseer : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OverseerCooldown.GetFloat();
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        Aware.OnCheckMurder(CustomRoles.Overseer, target);
         killer.SetKillCooldown(OverseerRevealTime.GetFloat());
         if (!IsRevealed[(killer.PlayerId, target.PlayerId)] && !OverseerTimer.ContainsKey(killer.PlayerId))
         {
@@ -187,24 +183,22 @@ internal class Overseer : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!OverseerTimer.ContainsKey(player.PlayerId)) return;
+        if (!OverseerTimer.TryGetValue(player.PlayerId, out var data)) return;
 
         var playerId = player.PlayerId;
         if (!player.IsAlive() || Pelican.IsEaten(playerId))
         {
-
-            OverseerTimer[playerId].Item1.RpcSetSpecificScanner(player, false);
+            data.Item1.RpcSetSpecificScanner(player, false);
             OverseerTimer.Remove(playerId);
             SendTimerRPC(2, playerId);
             NotifyRoles(SpecifySeer: player);
-
         }
         else
         {
-            var (farTarget, farTime) = OverseerTimer[playerId];
-            
+            var (farTarget, farTime) = data;
+
             if (!farTarget.IsAlive())
             {
                 OverseerTimer.Remove(playerId);
@@ -224,6 +218,8 @@ internal class Overseer : RoleBase
                 SetRevealtPlayerRPC(player, farTarget, true);
 
                 NotifyRoles(SpecifySeer: player);
+
+                Logger.Info($"Revealed: {player.GetNameWithRole()}", "Overseer");
             }
             else
             {
@@ -251,6 +247,13 @@ internal class Overseer : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
+        if (_Player == null) return;
+        if (OverseerTimer.TryGetValue(_Player.PlayerId, out var data))
+        {
+            var farTarget = data.Item1;
+            farTarget?.RpcSetSpecificScanner(_Player, false);
+        }
+
         OverseerTimer.Clear();
         SendTimerRPC(0, byte.MaxValue);
     }

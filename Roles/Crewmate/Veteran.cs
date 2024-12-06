@@ -1,12 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -17,6 +17,7 @@ internal class Veteran : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Veteran);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;
@@ -56,7 +57,7 @@ internal class Veteran : RoleBase
         if (player.IsAlive())
             AbilityLimit += VeteranAbilityUseGainWithEachTaskCompleted.GetFloat();
         SendSkillRPC();
-        
+
         return true;
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
@@ -95,22 +96,22 @@ internal class Veteran : RoleBase
             }
         return true;
     }
-    public override void OnFixedUpdateLowLoad(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (VeteranInProtect.TryGetValue(pc.PlayerId, out var vtime) && vtime + VeteranSkillDuration.GetInt() < GetTimeStamp())
+        if (!lowLoad && VeteranInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + VeteranSkillDuration.GetInt() < nowTime)
         {
-            VeteranInProtect.Remove(pc.PlayerId);
+            VeteranInProtect.Remove(player.PlayerId);
 
             if (!DisableShieldAnimations.GetBool())
             {
-                pc.RpcGuardAndKill();
+                player.RpcGuardAndKill();
             }
             else
             {
-                pc.RpcResetAbilityCooldown();
+                player.RpcResetAbilityCooldown();
             }
 
-            pc.Notify(string.Format(GetString("VeteranOffGuard"), AbilityLimit));
+            player.Notify(string.Format(GetString("AbilityExpired"), AbilityLimit));
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
@@ -118,7 +119,7 @@ internal class Veteran : RoleBase
         // Ability use limit reached
         if (AbilityLimit <= 0)
         {
-            pc.Notify(GetString("VeteranMaxUsage"));
+            pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
             return;
         }
 
@@ -131,14 +132,14 @@ internal class Veteran : RoleBase
             SendSkillRPC();
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("Gunload");
-            pc.Notify(GetString("VeteranOnGuard"), VeteranSkillDuration.GetFloat());
+            pc.Notify(GetString("AbilityInUse"), VeteranSkillDuration.GetFloat());
         }
     }
     public override bool CheckBootFromVent(PlayerPhysics physics, int ventId)
         => AbilityLimit < 1;
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => VeteranInProtect.Clear();
-    
+
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();

@@ -18,6 +18,12 @@ public class Stealer : IAddon
         HideAdditionalVotes = BooleanOptionItem.Create(Id + 4, "HideAdditionalVotes", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Stealer]);
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
     public static int AddRealVotesNum(PlayerVoteArea ps)
     {
         return (int)(Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == ps.TargetPlayerId) * TicketsPerKill.GetFloat());
@@ -40,7 +46,7 @@ public class Stealer : IAddon
     public static void OnMurderPlayer(PlayerControl killer)
     {
         killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
-            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * TicketsPerKill.GetFloat())
+            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * TicketsPerKill.GetFloat() + 1f)
             .ToString("0.0#####")));
     }
 }

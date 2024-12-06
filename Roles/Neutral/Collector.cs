@@ -89,13 +89,13 @@ internal class Collector : RoleBase
         }
         return false;
     }
-    public static void CollectorVotes(PlayerControl target, PlayerVoteArea ps)//集票者投票给谁
+    public static void CollectorVotes(PlayerControl target, PlayerVoteArea ps)
     {
         if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.Collector))
             CollectorVoteFor.TryAdd(target.PlayerId, ps.TargetPlayerId);
     }
     public override void AfterMeetingTasks() => calculated = false;
-    public void CollectAmount(Dictionary<byte, int> VotingData, MeetingHud __instance)//得到集票者收集到的票
+    public void CollectAmount(Dictionary<byte, int> VotingData, MeetingHud __instance)
     {
         if (calculated) return;
         int VoteAmount;

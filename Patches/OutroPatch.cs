@@ -1,16 +1,16 @@
 using Hazel;
-using TMPro;
 using System;
 using System.Text;
+using TMPro;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.Crewmate;
-using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -60,7 +60,7 @@ class EndGamePatch
 
         foreach (var id in Main.PlayerStates.Keys.ToArray())
         {
-            if (Main.OvverideOutfit.TryGetValue(id, out var RealOutfit))
+            if (AmongUsClient.Instance.AmHost && Main.OvverideOutfit.TryGetValue(id, out var RealOutfit))
             {
                 var dpc = Utils.GetPlayerById(id);
                 if (dpc != null)
@@ -102,14 +102,14 @@ class EndGamePatch
                 if (killerId != byte.MaxValue && killerId != targetId)
                     sb.Append($"<br>\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
             }
-            
+
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
 
         if (GameStates.IsNormalGame)
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
-        
+
         //winnerListリセット
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
@@ -146,6 +146,9 @@ class EndGamePatch
         ChatManager.ChatSentBySystem = [];
 
         Main.VisibleTasksCount = false;
+        Main.GameIsLoaded = false;
+        Main.IntroDestroyed = false;
+
         if (AmongUsClient.Instance.AmHost)
         {
             Main.RealOptionsData.Restore(GameOptionsManager.Instance.CurrentGameOptions);
@@ -197,7 +200,7 @@ class SetEverythingUpPatch
         {
             CustomWinnerText = GetWinnerRoleName(winnerRole);
             CustomWinnerColor = Utils.GetRoleColorCode(winnerRole);
-       //     __instance.WinText.color = Utils.GetRoleColor(winnerRole);
+            //     __instance.WinText.color = Utils.GetRoleColor(winnerRole);
             __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
             if (winnerRole.IsNeutral())
             {
@@ -208,7 +211,7 @@ class SetEverythingUpPatch
         {
             __instance.WinText.text = GetString("GameOver");
             __instance.WinText.color = Utils.GetRoleColor(CustomRoles.GM);
-           __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
+            __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
         }
         switch (CustomWinnerHolder.WinnerTeam)
         {
@@ -224,14 +227,12 @@ class SetEverythingUpPatch
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Egoist);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Egoist);
                 break;
-            //特殊勝利
             case CustomWinner.Terrorist:
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Terrorist);
                 break;
             case CustomWinner.Lovers:
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Lovers);
                 break;
-            //引き分け処理
             case CustomWinner.Draw:
                 __instance.WinText.text = GetString("ForceEnd");
                 __instance.WinText.color = Color.white;
@@ -240,9 +241,9 @@ class SetEverythingUpPatch
                 WinnerText.color = Color.gray;
                 break;
             case CustomWinner.NiceMini:
-            //    __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Mini);
+                //    __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Mini);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.NiceMini);
-            //    WinnerText.text = GetString("NiceMiniDied");
+                //    WinnerText.text = GetString("NiceMiniDied");
                 WinnerText.color = Utils.GetRoleColor(CustomRoles.NiceMini);
                 break;
             case CustomWinner.Neutrals:
@@ -252,7 +253,6 @@ class SetEverythingUpPatch
                 WinnerText.text = GetString("NeutralsLeftText");
                 WinnerText.color = Utils.GetRoleColor(CustomRoles.Executioner);
                 break;
-            //全滅
             case CustomWinner.None:
                 __instance.WinText.text = "";
                 __instance.WinText.color = Color.black;
@@ -356,6 +356,8 @@ class SetEverythingUpPatch
         Logger.Info($"{CustomWinnerHolder.WinnerTeam}", "Winner Team");
         Logger.Info($"{LastWinsReason}", "Wins Reason");
         Logger.Info($"{RoleSummary.text.RemoveHtmlTags()}", "Role Summary");
+
+        Utils.ShowLastRoles(sendMessage: false);
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

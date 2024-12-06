@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -11,7 +12,6 @@ internal class Doppelganger : RoleBase
     //===========================SETUP================================\\
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
-    public override bool IsExperimental => true;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -40,6 +40,7 @@ internal class Doppelganger : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

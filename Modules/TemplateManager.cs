@@ -76,7 +76,7 @@ public static class TemplateManager
                 return string.Empty;
             }
         }
-};
+    };
 
     public static void Init()
     {
@@ -154,7 +154,7 @@ public static class TemplateManager
         Func<string> playerName = () => "";
         if (playerId != 0xff)
         {
-            playerName = () => Main.AllPlayerNames[playerId];   
+            playerName = () => Main.AllPlayerNames[playerId];
         }
 
         _replaceDictionaryNormalOptions["PlayerName"] = playerName;
@@ -229,7 +229,7 @@ public static class TemplateManager
             title = Text.Substring(start, end);
             title = title.Replace("<title>", "");
             title = title.Replace("</title>", "");
-            
+
         }
 
 

@@ -1,14 +1,13 @@
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using AmongUs.GameOptions;
+using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
-using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.AddOns.Impostor;
+using UnityEngine;
 using static TOHE.Utils;
-using Hazel;
 
 namespace TOHE;
 
@@ -35,29 +34,15 @@ public class PlayerState(byte playerId)
 
     public void SetMainRole(CustomRoles role)
     {
+        CustomRoles preMainRole = MainRole;
+
         MainRole = role;
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
 
-        var pc = GetPlayerById(PlayerId);
+        var pc = PlayerId.GetPlayer();
+        if (pc == null) return;
 
-        if (role == CustomRoles.Opportunist)
-        {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (!pc.HasImpKillButton(considerVanillaShift: true))
-                {
-                    var taskstate = pc.GetPlayerTaskState();
-                    if (taskstate != null)
-                    {
-                        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-                        taskstate.CompletedTasksCount = 0;
-                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
-                        taskstate.hasTasks = true;
-                    }
-                }
-            }
-        }
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
@@ -112,32 +97,48 @@ public class PlayerState(byte playerId)
             countTypes = CountTypes.OutOfGame;
         }
 
+        if (GameStates.IsInGame && preMainRole != CustomRoles.NotAssigned)
+        {
+            // Role got assigned mid game.
+            // Since role basis may change, we need to re assign tasks?
+
+            //Some role may be bugged for this, need further testing.
+            Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
+            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+            InitTask(pc);
+        }
     }
-    public void SetSubRole(CustomRoles role, bool AllReplace = false, PlayerControl pc = null)
+    public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
-            AllReplace = true;
-        }
-        if (AllReplace)
-        {
-            var sync = false;
+
+            // Remove lovers on Cleansed
+            if (pc.Is(CustomRoles.Lovers))
+            {
+                var lover = Main.PlayerStates.Values.FirstOrDefault(x => x.PlayerId != pc.PlayerId && x.SubRoles.Contains(CustomRoles.Lovers));
+                lover?.RemoveSubRole(CustomRoles.Lovers);
+            }
+
             foreach (var subRole in SubRoles.ToArray())
             {
-                if (pc.Is(CustomRoles.Flash))
-                {
-                    Flash.SetSpeed(pc.PlayerId, true);
-                    sync = true;
-                }
-                SubRoles.Remove(subRole);
-
-                if (sync) MarkEveryoneDirtySettings();
+                RemoveSubRole(subRole);
             }
         }
 
         if (!SubRoles.Contains(role))
             SubRoles.Add(role);
+
+        if (CustomRoleManager.AddonClasses.TryGetValue(role, out var IAddOn))
+        {
+            var target = PlayerId.GetPlayer();
+            if (target != null)
+            {
+                IAddOn?.Add(target.PlayerId, !Main.IntroDestroyed);
+            }
+        }
+
         if (role.IsConverted())
         {
             SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
@@ -214,16 +215,25 @@ public class PlayerState(byte playerId)
                 break;
         }
     }
-    public void RemoveSubRole(CustomRoles role)
+    public void RemoveSubRole(CustomRoles addOn)
     {
-        if (SubRoles.Contains(role))
-            SubRoles.Remove(role);
+        if (SubRoles.Contains(addOn))
+            SubRoles.Remove(addOn);
+
+        if (CustomRoleManager.AddonClasses.TryGetValue(addOn, out var IAddon))
+        {
+            var target = PlayerId.GetPlayer();
+            if (target != null)
+            {
+                IAddon?.Remove(target.PlayerId);
+            }
+        }
 
         if (!AmongUsClient.Instance.AmHost) return;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
         writer.Write(PlayerId);
-        writer.WritePacked((int)role);
+        writer.WritePacked((int)addOn);
         writer.EndMessage();
     }
 
@@ -298,6 +308,9 @@ public class PlayerState(byte playerId)
         WrongAnswer,
         Starved,
         Armageddon,
+        Sacrificed,
+        Electrocuted,
+        Scavenged,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
@@ -427,15 +440,14 @@ public static class GameStates
     public static bool IsLobby => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Joined;
     public static bool IsCoStartGame => !InGame && !DestroyableSingleton<GameStartManager>.InstanceExists;
     public static bool IsInGame => InGame;
-    public static bool IsEnded => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.Ended;
+    public static bool IsEnded => AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameEndCheckerForNormal.GameIsEnded;
     public static bool IsNotJoined => AmongUsClient.Instance.GameState == InnerNet.InnerNetClient.GameStates.NotJoined;
     public static bool IsOnlineGame => AmongUsClient.Instance.NetworkMode == NetworkModes.OnlineGame;
     public static bool IsVanillaServer
     {
         get
         {
-            if (!IsOnlineGame) return false;
-
+            if (IsLocalGame && !IsNotJoined) return true;
             const string Domain = "among.us";
 
             // From Reactor.gg
