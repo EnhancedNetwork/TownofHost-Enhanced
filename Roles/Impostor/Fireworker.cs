@@ -19,8 +19,6 @@ internal class Fireworker : RoleBase
     }
     //===========================SETUP================================\\
     private const int Id = 3200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -55,7 +53,6 @@ internal class Fireworker : RoleBase
 
     public override void Init()
     {
-        PlayerIds.Clear();
         nowFireworkerCount.Clear();
         FireworkerPosition.Clear();
         state.Clear();
@@ -71,7 +68,6 @@ internal class Fireworker : RoleBase
         FireworkerPosition[playerId] = [];
         state.TryAdd(playerId, FireworkerState.Initial);
         FireworkerBombKill[playerId] = 0;
-        PlayerIds.Add(playerId);
     }
 
     private static void SendRPC(byte playerId)
@@ -113,9 +109,10 @@ internal class Fireworker : RoleBase
         return canUse;
     }
 
-    public override void UnShapeShiftButton(PlayerControl shapeshifter)
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
+        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])
@@ -174,7 +171,7 @@ internal class Fireworker : RoleBase
         SendRPC(shapeshifterId);
         Utils.NotifyRoles(ForceLoop: true);
 
-        return;
+        return false;
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
