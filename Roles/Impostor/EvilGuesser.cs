@@ -7,8 +7,8 @@ internal class EvilGuesser : RoleBase
     //===========================SETUP================================\\
     private const int Id = 1300;
 
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -38,11 +38,11 @@ internal class EvilGuesser : RoleBase
     }
     public override void Init()
     {
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        PlayerIds.Add(playerId);
     }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)

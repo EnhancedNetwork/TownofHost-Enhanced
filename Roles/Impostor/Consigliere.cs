@@ -8,8 +8,8 @@ internal class Consigliere : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 3100;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -33,13 +33,13 @@ internal class Consigliere : RoleBase
     {
         DivinationCount.Clear();
         DivinationTarget.Clear();
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         DivinationCount.TryAdd(playerId, DivinationMaxCount.GetInt());
         DivinationTarget.TryAdd(playerId, []);
-
+        PlayerIds.Add(playerId);
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();

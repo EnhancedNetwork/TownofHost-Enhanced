@@ -6,8 +6,8 @@ internal class Saboteur : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2300;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -24,11 +24,11 @@ internal class Saboteur : RoleBase
     }
     public override void Init()
     {
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        PlayerIds.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = SaboteurCD.GetFloat();

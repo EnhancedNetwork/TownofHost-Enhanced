@@ -4,8 +4,8 @@ internal class Scavenger : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 4400;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -27,12 +27,12 @@ internal class Scavenger : RoleBase
     }
     public override void Init()
     {
-
+        PlayerIds.Clear();
         KilledPlayersId.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        PlayerIds.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ScavengerKillCooldown.GetFloat();

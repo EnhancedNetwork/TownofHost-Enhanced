@@ -14,8 +14,8 @@ internal class Berserker : RoleBase
     //===========================SETUP================================\\
     private const int Id = 600;
 
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
@@ -78,13 +78,13 @@ internal class Berserker : RoleBase
     public override void Init()
     {
         BerserkerKillMax.Clear();
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         Main.AllPlayerKillCooldown[playerId] = BerserkerKillCooldown.GetFloat();
         BerserkerKillMax[playerId] = 0;
-
+        PlayerIds.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

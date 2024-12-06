@@ -9,6 +9,8 @@ internal class Bomber : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 700;
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -41,6 +43,14 @@ internal class Bomber : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber]);
         BomberDiesInExplosion = BooleanOptionItem.Create(Id + 7, "BomberDiesInExplosion", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber]);
+    }
+    public override void Init()
+    {
+        Playerids.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        Playerids.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => BomberCanKill.GetBool() && pc.IsAlive();
     public override void SetKillCooldown(byte id)
