@@ -9,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 //EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/Impostor/Abyssbringer.cs
 internal class AbyssBringer : RoleBase
 {
+    const int Id = 31300;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     private static OptionItem BlackHolePlaceCooldown;
@@ -22,23 +23,22 @@ internal class AbyssBringer : RoleBase
 
     public override void SetupCustomOption()
     {
-        int id = 29100;
         const TabGroup tab = TabGroup.ImpostorRoles;
         const CustomRoles role = CustomRoles.Abyssbringer;
-        Options.SetupRoleOptions(id++, tab, role);
-        BlackHolePlaceCooldown = IntegerOptionItem.Create(++id, "BlackHolePlaceCooldown", new(1, 180, 1), 30, tab, false)
+        Options.SetupRoleOptions(Id, tab, role);
+        BlackHolePlaceCooldown = IntegerOptionItem.Create(Id + 10, "BlackHolePlaceCooldown", new(1, 180, 1), 30, tab, false)
             .SetParent(Options.CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Seconds);
-        BlackHoleDespawnMode = StringOptionItem.Create(++id, "BlackHoleDespawnMode", Enum.GetNames<DespawnMode>(), 0, tab, false)
+        BlackHoleDespawnMode = StringOptionItem.Create(Id + 11, "BlackHoleDespawnMode", Enum.GetNames<DespawnMode>(), 0, tab, false)
             .SetParent(Options.CustomRoleSpawnChances[role]);
-        BlackHoleDespawnTime = IntegerOptionItem.Create(++id, "BlackHoleDespawnTime", new(1, 60, 1), 15, tab, false)
+        BlackHoleDespawnTime = IntegerOptionItem.Create(Id + 12, "BlackHoleDespawnTime", new(1, 60, 1), 15, tab, false)
             .SetParent(BlackHoleDespawnMode)
             .SetValueFormat(OptionFormat.Seconds);
-        BlackHoleMovesTowardsNearestPlayer = BooleanOptionItem.Create(++id, "BlackHoleMovesTowardsNearestPlayer", true, tab, false)
+        BlackHoleMovesTowardsNearestPlayer = BooleanOptionItem.Create(Id + 13, "BlackHoleMovesTowardsNearestPlayer", true, tab, false)
             .SetParent(Options.CustomRoleSpawnChances[role]);
-        BlackHoleMoveSpeed = FloatOptionItem.Create(++id, "BlackHoleMoveSpeed", new(0.25f, 10f, 0.25f), 1f, tab, false)
+        BlackHoleMoveSpeed = FloatOptionItem.Create(Id + 14, "BlackHoleMoveSpeed", new(0.25f, 10f, 0.25f), 1f, tab, false)
             .SetParent(BlackHoleMovesTowardsNearestPlayer);
-        BlackHoleRadius = FloatOptionItem.Create(++id, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
+        BlackHoleRadius = FloatOptionItem.Create(Id + 15, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
             .SetParent(Options.CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Multiplier);
     }
