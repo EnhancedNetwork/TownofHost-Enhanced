@@ -42,14 +42,7 @@ internal class Traitor : RoleBase
                 .SetParent(LegacyTraitor)
                 .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
 
-    }
-    public override void Add(byte playerId)
-    {
-
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         opt.SetVision(HasImpostorVision.GetBool());
