@@ -1,10 +1,5 @@
 ﻿using Hazel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using System.Text;
-using System.Threading.Tasks;
 
 //Thanks EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Modules/Extensions/HazelExtensions.cs
 

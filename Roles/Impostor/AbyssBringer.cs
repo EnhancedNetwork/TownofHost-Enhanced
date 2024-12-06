@@ -66,7 +66,7 @@ internal class AbyssBringer : RoleBase
         Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, pos, roomName);
     }
 
-    public override void OnFixedUpdate(PlayerControl pc)
+    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
     {
         var abyssbringer = _Player;
         int count = BlackHoles.Count;
@@ -152,7 +152,7 @@ internal class AbyssBringer : RoleBase
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl target = null, bool isMeeting = false, bool isForHud = false)
     {
-        if (seer.PlayerId != target.PlayerId || seer.PlayerId != _state.PlayerId || (seer.IsModClient() && !isForHud) || isMeeting || BlackHoles.Count == 0) return string.Empty;
+        if (seer.PlayerId != target.PlayerId || seer.PlayerId != _state.PlayerId || (seer.IsModded() && !isForHud) || isMeeting || BlackHoles.Count == 0) return string.Empty;
         return string.Format(Translator.GetString("Abyssbringer.Suffix"), BlackHoles.Count, string.Join('\n', BlackHoles.Select(x => GetBlackHoleFormatText(x.RoomName, x.PlayersConsumed))));
 
         static string GetBlackHoleFormatText(string roomName, int playersConsumed)
