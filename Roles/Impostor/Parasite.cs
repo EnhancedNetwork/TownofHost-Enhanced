@@ -1,5 +1,4 @@
-﻿
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
@@ -32,7 +31,7 @@ internal class Parasite : RoleBase
                 .SetParent(LegacyParasite)
                 .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) 
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         opt.SetVision(true);
         AURoleOptions.ShapeshifterCooldown = ParasiteShapeshiftCD.GetFloat();
