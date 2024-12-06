@@ -7,8 +7,8 @@ internal class Specter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14900;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -32,11 +32,11 @@ internal class Specter : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
