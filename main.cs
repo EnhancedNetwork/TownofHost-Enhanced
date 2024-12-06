@@ -667,6 +667,7 @@ public enum CustomRoles
     Possessor,
 
     //Impostor
+    Abyssbringer,
     Anonymous,
     AntiAdminer,
     Arrogance,
