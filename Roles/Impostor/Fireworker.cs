@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 

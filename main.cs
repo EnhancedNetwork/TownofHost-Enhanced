@@ -667,6 +667,7 @@ public enum CustomRoles
     Possessor,
 
     //Impostor
+    Abyssbringer,
     Anonymous,
     AntiAdminer,
     Arrogance,
@@ -726,7 +727,6 @@ public enum CustomRoles
     SoulCatcher,
     Stealth,
     YinYanger,
-    Abyssbringer,
     Swooper,
     TimeThief,
     Trapster,

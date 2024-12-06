@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Hazel;
+﻿using Hazel;
 using InnerNet;
-using TMPro;
-using TOHE;
+using System;
 using UnityEngine;
 
 
@@ -39,7 +35,8 @@ namespace TOHE
         protected void RpcChangeSprite(string sprite)
         {
             Sprite = sprite;
-            _ = new LateTask(() => {
+            _ = new LateTask(() =>
+            {
                 playerControl.RawSetName(sprite);
                 var name = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
                 var colorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
@@ -105,20 +102,21 @@ namespace TOHE
             {
                 _ = new LateTask(() =>
                 {
-                   playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false);
+                    playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false);
                 }, 0.1f);
                 playerControl.Visible = false;
                 return;
             }
-                
-            _ = new LateTask(() => {
+
+            _ = new LateTask(() =>
+            {
                 CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
                 sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO, player.GetClientId())
                     .WriteNetObject(playerControl)
                     .Write(false)
                     .EndRpc();
                 sender.SendMessage();
-            }, 0.4f); 
+            }, 0.4f);
 
             MessageWriter writer = MessageWriter.Get();
             writer.StartMessage(6);
@@ -131,10 +129,10 @@ namespace TOHE
             AmongUsClient.Instance.SendOrDisconnect(writer);
             writer.Recycle();
 
-            
+
         }
 
-        protected virtual void OnFixedUpdate() 
+        protected virtual void OnFixedUpdate()
         {
             //
             // Need to respawn player every 20s because of 30s timeout
@@ -253,12 +251,15 @@ namespace TOHE
                 {
                     Hide(pc);
                 }
-                _ = new LateTask(() => { // Fix for host
+                _ = new LateTask(() =>
+                { // Fix for host
                     if (!HiddenList.Contains(PlayerControl.LocalPlayer.PlayerId))
                         playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
                 }, 0.1f);
-                _ = new LateTask(() => { // Fix for Modded
-                    foreach (var visiblePC in Main.AllPlayerControls.ExceptBy(HiddenList, x => x.PlayerId)) {
+                _ = new LateTask(() =>
+                { // Fix for Modded
+                    foreach (var visiblePC in Main.AllPlayerControls.ExceptBy(HiddenList, x => x.PlayerId))
+                    {
                         CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
                         sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO, visiblePC.GetClientId())
                             .WriteNetObject(playerControl)
@@ -384,10 +385,12 @@ namespace TOHE
                     sender.SendMessage();
                 }, 0.1f);
             }
-            _ = new LateTask(() => { // Fix for host
+            _ = new LateTask(() =>
+            { // Fix for host
                 playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
             }, 0.1f);
-            _ = new LateTask(() => { // Fix for Modded
+            _ = new LateTask(() =>
+            { // Fix for Modded
                 CustomRpcSender sender = CustomRpcSender.Create("FixModdedClientCNOText", sendOption: SendOption.Reliable);
                 sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.FixModdedClientCNO)
                     .WriteNetObject(playerControl)
