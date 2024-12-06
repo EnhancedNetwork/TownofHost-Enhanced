@@ -1387,6 +1387,8 @@
   "PlayerIsShieldedByGame": "Player is protected by the game!",
 
   "LegacyNemesis": "Use Legacy Version",
+  "LegacyParasite": "Use Legacy Version",
+  "LegacyTraitor": "Use Legacy Version",
   "ArsonistKeepsGameGoing": "<color=#ff6633>Arsonist</color> keeps the game going",
   "ArsonistCanIgniteAnytime": "Can Ignite Anytime",
   "ArsonistMinPlayersToIgnite": "Minimum doused needed for ignite",
@@ -2127,6 +2129,7 @@
   "ShowMadmatesInLeftCommand": "Show <color=#ff1919>Madmates</color> (including add-ons)",
   "ShowApocalypseInLeftCommand": "Show <color=#ff174f>Neutral Apocalypse</color>",
   "SeeEjectedRolesInMeeting": "See ejected roles in meetings",
+  "ThankYouForUsingTOHE": "Thank you for using TOHE!",
 
   "SkillUsedLeft": "You have activated your skill to call a meeting. \nRemaining amount of uses left:",
   "NemesisDeadMsg": "The death of the Nemesis means the beginning of the revenge. \nPlease use /rv + [player ID] to kill the specified player \nYou can see player IDs in front of their names. \nOr type /rv to get a list of player IDs",
