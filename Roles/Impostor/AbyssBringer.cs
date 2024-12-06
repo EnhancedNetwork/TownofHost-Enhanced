@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AmongUs.GameOptions;
-using Il2CppSystem.CodeDom;
-using TOHE.Roles.Core;
-using TOHE.Roles.Double;
-using UnityEngine;
-using static TOHE.Options;
-using static TOHE.Modules.HazelExtensions;
-using static TOHE.Translator;
+﻿using AmongUs.GameOptions;
 using Hazel;
-using static UnityEngine.GraphicsBuffer;
+using System;
+using UnityEngine;
+using static TOHE.Modules.HazelExtensions;
 
 namespace TOHE.Roles.Impostor;
 
