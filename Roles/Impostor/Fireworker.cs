@@ -18,8 +18,6 @@ internal class Fireworker : RoleBase
     }
     //===========================SETUP================================\\
     private const int Id = 3200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -29,17 +27,22 @@ internal class Fireworker : RoleBase
     private static OptionItem FireworkerCount;
     private static OptionItem FireworkerRadius;
     private static OptionItem CanKill;
+    private static OptionItem PlaceCooldown;
 
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
     private static readonly Dictionary<byte, HashSet<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
     private static readonly Dictionary<byte, int> FireworkerBombKill = [];
+    private readonly List<Firework> Fireworks = [];
+
     private static int fireworkerCount = 1;
     private static float fireworkerRadius = 1;
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Fireworker);
+        PlaceCooldown = FloatOptionItem.Create(Id + 9, "FireworkerCooldown", new(1f, 180f, 0.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
+            .SetValueFormat(OptionFormat.Multiplier);
         FireworkerCount = IntegerOptionItem.Create(Id + 10, "FireworkerMaxCount", new(1, 20, 1), 3, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
             .SetValueFormat(OptionFormat.Pieces);
         FireworkerRadius = FloatOptionItem.Create(Id + 11, "FireworkerRadius", new(0.5f, 5f, 0.5f), 2f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Fireworker])
@@ -49,7 +52,6 @@ internal class Fireworker : RoleBase
 
     public override void Init()
     {
-        PlayerIds.Clear();
         nowFireworkerCount.Clear();
         FireworkerPosition.Clear();
         state.Clear();
@@ -65,7 +67,6 @@ internal class Fireworker : RoleBase
         FireworkerPosition[playerId] = [];
         state.TryAdd(playerId, FireworkerState.Initial);
         FireworkerBombKill[playerId] = 0;
-        PlayerIds.Add(playerId);
     }
 
     private static void SendRPC(byte playerId)
@@ -88,8 +89,7 @@ internal class Fireworker : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterDuration = state[playerId] != FireworkerState.FireEnd ? 1f : 30f;
-        AURoleOptions.ShapeshifterLeaveSkin = true;
+        AURoleOptions.ShapeshifterCooldown = PlaceCooldown.GetFloat();
     }
 
     public override bool CanUseKillButton(PlayerControl pc)
@@ -121,6 +121,7 @@ internal class Fireworker : RoleBase
                 Logger.Info("One firework set up", "Fireworker");
 
                 FireworkerPosition[shapeshifterId].Add(shapeshifter.transform.position);
+                Fireworks.Add(new(shapeshifter.GetCustomPosition(), [.. Main.AllPlayerControls.Where(x => x.GetCountTypes() == CountTypes.Impostor).Select(x => x.PlayerId)], _state.PlayerId));
                 nowFireworkerCount[shapeshifterId]--;
                 state[shapeshifterId] = nowFireworkerCount[shapeshifterId] == 0
                     ? Main.AliveImpostorCount <= 1 ? FireworkerState.ReadyFire : FireworkerState.WaitTime
@@ -132,6 +133,8 @@ internal class Fireworker : RoleBase
             case FireworkerState.ReadyFire:
                 Logger.Info("Blowing up fireworks", "Fireworker");
                 bool suicide = false;
+                Fireworks.Do(x => x.Despawn());
+                Fireworks.Clear();
                 foreach (var player in Main.AllAlivePlayerControls)
                 {
                     foreach (var pos in FireworkerPosition[shapeshifterId].ToArray())

@@ -328,7 +328,10 @@ class OnPlayerLeftPatch
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
+        {
+            if (data.Character != null) CustomNetObject.DespawnOnQuit(data.Character.PlayerId);
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+        }
 
         if (AmongUsClient.Instance.AmHost && data.Character != null)
         {
