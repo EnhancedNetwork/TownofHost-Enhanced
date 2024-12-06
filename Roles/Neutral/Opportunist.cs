@@ -7,6 +7,9 @@ internal class Opportunist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 13300;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled = PlayerIds.Any();
+
     public override CustomRoles ThisRoleBase => OpportunistCanUseVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -29,6 +32,14 @@ internal class Opportunist : RoleBase
         VentDuration = FloatOptionItem.Create(Id + 13, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(OpportunistCanUseVent);
         OverrideTasksData.Create(Id + 20, TabGroup.NeutralRoles, CustomRoles.Opportunist);
+    }
+    public override void Init()
+    {
+        PlayerIds.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        PlayerIds.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id)
     {

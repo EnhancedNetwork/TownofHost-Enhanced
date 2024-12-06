@@ -8,8 +8,8 @@ internal class Crewpostor : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 5800;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
@@ -42,12 +42,12 @@ internal class Crewpostor : RoleBase
     public override void Init()
     {
         TasksDone = [];
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         TasksDone[playerId] = 0;
-
+        PlayerIds.Add(playerId);
     }
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
     {

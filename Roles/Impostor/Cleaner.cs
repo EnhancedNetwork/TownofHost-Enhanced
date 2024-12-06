@@ -6,8 +6,8 @@ internal class Cleaner : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 3000;
-
-
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -30,11 +30,11 @@ internal class Cleaner : RoleBase
     }
     public override void Init()
     {
-
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        Playerids.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

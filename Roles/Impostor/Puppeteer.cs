@@ -14,8 +14,8 @@ internal class Puppeteer : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 4300;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -33,7 +33,7 @@ internal class Puppeteer : RoleBase
     }
     public override void Init()
     {
-
+        PlayerIds.Clear();
         PuppeteerList.Clear();
     }
     public override void Add(byte playerId)
@@ -42,7 +42,7 @@ internal class Puppeteer : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-
+        PlayerIds.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

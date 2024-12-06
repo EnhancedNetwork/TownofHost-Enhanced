@@ -6,8 +6,8 @@ internal class ShapeMaster : RoleBase // Should be deleted tbh, because it's lit
 {
     //===========================SETUP================================\\
     private const int Id = 4500;
-
-
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -24,11 +24,11 @@ internal class ShapeMaster : RoleBase // Should be deleted tbh, because it's lit
     }
     public override void Init()
     {
-
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        Playerids.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

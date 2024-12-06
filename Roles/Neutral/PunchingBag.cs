@@ -10,8 +10,8 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
 {
     //===========================SETUP================================\\
     private const int Id = 14500;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
@@ -31,13 +31,13 @@ internal class PunchingBag : RoleBase// bad roll, plz don't use this hosts
     }
     public override void Init()
     {
-
+        PlayerIds.Clear();
         PunchingBagMax.Clear();
         BlockGuess.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        PlayerIds.Add(playerId);
         PunchingBagMax.Add(playerId, 0);
     }
 

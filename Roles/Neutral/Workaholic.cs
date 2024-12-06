@@ -10,8 +10,8 @@ internal class Workaholic : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15800;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -45,11 +45,11 @@ internal class Workaholic : RoleBase
     public override void Init()
     {
         WorkaholicAlive.Clear();
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        PlayerIds.Add(playerId);
     }
 
     public static bool OthersKnowWorka(PlayerControl target)

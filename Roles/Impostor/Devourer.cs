@@ -12,8 +12,8 @@ internal class Devourer : RoleBase
 
     //===========================SETUP================================\\
     private const int Id = 5500;
-
-
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
@@ -48,19 +48,20 @@ internal class Devourer : RoleBase
         PlayerSkinsCosumed.Clear();
         OriginalPlayerSkins.Clear();
         NowCooldown.Clear();
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayerSkinsCosumed.TryAdd(playerId, []);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-
+        PlayerIds.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
         OnDevourerDied(Utils.GetPlayerById(playerId));
         PlayerSkinsCosumed.Remove(playerId);
         NowCooldown.Remove(playerId);
+        PlayerIds.Remove(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

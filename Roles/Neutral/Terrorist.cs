@@ -8,6 +8,8 @@ internal class Terrorist : RoleBase
 {
     //===========================SETUP================================\\
     private const int id = 15400;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled = PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -26,6 +28,14 @@ internal class Terrorist : RoleBase
         TerroristCanGuess = BooleanOptionItem.Create(15403, GeneralOption.CanGuess, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
         OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
+    }
+    public override void Init()
+    {
+        PlayerIds.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
