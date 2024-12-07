@@ -475,12 +475,12 @@ public static class CustomRolesHelper
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !God.CanGuess.GetBool()))
                     return false; //Based on guess manager
-                if ((pc.GetCustomRole().IsCrewmate() && !Guesser.CrewCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Guesser.NeutralCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Guesser.ImpCanBeGuesser.GetBool()))
+                if ((pc.GetCustomRole().IsCrewmate() && !Guesser.CrewCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Guesser.NeutralCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Guesser.ImpCanBeGuesser.GetBool()) || (pc.GetCustomRole().IsCoven() && !Guesser.CovenCanBeGuesser.GetBool()))
                     return false;
                 break;
 
             case CustomRoles.Mundane:
-                if (pc.HasImpKillButton() || !Utils.HasTasks(pc.Data, false) || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(Custom_Team.Impostor))
+                if (pc.HasImpKillButton() || !Utils.HasTasks(pc.Data, false) || pc.GetCustomRole().IsTasklessCrewmate() || pc.Is(Custom_Team.Impostor) || pc.Is(Custom_Team.Coven))
                     return false;
                 if ((pc.GetCustomRole().IsCrewmate() && !Mundane.CanBeOnCrew.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Mundane.CanBeOnNeutral.GetBool()))
                     return false;
@@ -797,7 +797,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;
                 if ((pc.GetCustomRole().IsImpostor() && !Egoist.ImpCanBeEgoist.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Egoist.CrewCanBeEgoist.GetBool()))
                     return false;
@@ -999,7 +999,6 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Ventguard)
                     || pc.Is(CustomRoles.Circumvent)
                     || pc.Is(CustomRoles.Jester) && Jester.CantMoveInVents.GetBool()
-                    || pc.Is(CustomRoles.Medusa) // Medusa needs to be able to vent to use ability
                     )
                     return false;
                 break;
