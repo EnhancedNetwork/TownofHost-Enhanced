@@ -136,7 +136,6 @@ internal class Necromancer : CovenManager
         nm.RpcChangeRoleBasis(role);
         nm.RpcSetCustomRole(role);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
-        nm.RpcSetCustomRole(CustomRoles.Enchanted);
         nm.SyncSettings();
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
         nm.RpcGuardAndKill(nm);
@@ -147,7 +146,6 @@ internal class Necromancer : CovenManager
             {
                 nm.GetRoleClass()?.OnRemove(nm.PlayerId);
             }
-            Main.PlayerStates[nm.PlayerId].RemoveSubRole(CustomRoles.Enchanted);
             nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
             nm.RpcSetCustomRole(CustomRoles.Necromancer);
             nm.ResetKillCooldown();
@@ -161,19 +159,20 @@ internal class Necromancer : CovenManager
     }
     private static bool BlackList(CustomRoles role)
     {
-        return role.IsNA() || role.IsGhostRole() || role is
+        return role.IsGhostRole() || role is
             CustomRoles.Veteran or
             CustomRoles.Solsticer or
             CustomRoles.Lawyer or
             CustomRoles.Amnesiac or
             CustomRoles.Imitator or
             CustomRoles.CopyCat or
-            CustomRoles.Executioner or
             CustomRoles.Follower or
             CustomRoles.Romantic or
             CustomRoles.God or
             CustomRoles.Innocent or
             CustomRoles.Jackal or
+            CustomRoles.Workaholic or
+            CustomRoles.Specter or
             CustomRoles.Marshall or
             CustomRoles.Captain or
             CustomRoles.Retributionist or
@@ -192,9 +191,11 @@ internal class Necromancer : CovenManager
             CustomRoles.Killer or
             CustomRoles.Coven or
             CustomRoles.Apocalypse or
+            CustomRoles.Solsticer or
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
-            (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool());
+            (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool()) ||
+            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool());
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {

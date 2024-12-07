@@ -1229,6 +1229,12 @@ class MeetingHudStartPatch
                 target.cosmetics.SetNameColor(Color.white);
                 pva.NameText.color = Color.white;
             }
+            if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer)
+            {
+                // When target is impostor, set name color as white
+                target.cosmetics.SetNameColor(Color.white);
+                pva.NameText.color = Color.white;
+            }
 
             var sb = new StringBuilder();
 
