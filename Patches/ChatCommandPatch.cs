@@ -445,8 +445,8 @@ internal class ChatCommands
                     if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
 
                     var allAlivePlayers = Main.AllAlivePlayerControls;
-                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
-                    int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmateV4Narc() || pc.Is(CustomRoles.Madmate));
+                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                    int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                     int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
 
