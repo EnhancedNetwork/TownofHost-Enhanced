@@ -23,7 +23,7 @@ internal class Executioner : RoleBase
     private static OptionItem CanTargetNeutralChaos;
     private static OptionItem CanTargetNeutralApocalypse;
     private static OptionItem CanTargetCoven;
-    private static OptionItem KnowTargetRole;
+    public static OptionItem KnowTargetRole;
     private static OptionItem ChangeRolesAfterTargetKilled;
     private static OptionItem RevealExeTargetUponEjection;
 

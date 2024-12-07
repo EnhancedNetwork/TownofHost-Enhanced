@@ -43,6 +43,11 @@ internal class Visionary : RoleBase
                 return Main.roleColors[CustomRoles.Knight];
         }
 
+        if (Main.PlayerStates[target.PlayerId].IsNecromancer)
+        {
+            return Main.roleColors[CustomRoles.Coven];
+        }
+
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
         {
             return Main.roleColors[CustomRoles.Impostor];

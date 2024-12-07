@@ -19,6 +19,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -278,9 +279,6 @@ class CheckMurderPatch
         // Impostors can kill Madmate
         if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
-
-        // Coven CAN'T kill Coven/Enchanted
-        // if ((killer.Is(Custom_Team.Coven) || killer.Is(CustomRoles.Enchanted)) && (target.Is(Custom_Team.Coven) || target.Is(CustomRoles.Enchanted))) return false;
 
         Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
 
@@ -1664,7 +1662,7 @@ class PlayerControlCompleteTaskPatch
                             break;
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor)).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) || !Main.PlayerStates[pc.PlayerId].IsNecromancer).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1792,7 +1790,9 @@ public static class PlayerControlMixupOutfitPatch
         }
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
-        if (!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
+        if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
+            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer // Necromancer
+            ) &&  
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names

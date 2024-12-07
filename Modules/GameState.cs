@@ -26,6 +26,7 @@ public class PlayerState(byte playerId)
 #pragma warning restore IDE1006
     public TaskState taskState = new();
     public bool IsBlackOut { get; set; } = false;
+    public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
@@ -42,6 +43,10 @@ public class PlayerState(byte playerId)
 
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
+
+        if (pc.Is(CustomRoles.Necromancer)) {
+            IsNecromancer = true;
+        }
 
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
@@ -97,6 +102,10 @@ public class PlayerState(byte playerId)
             countTypes = CountTypes.OutOfGame;
         }
         if (pc.Is(CustomRoles.Enchanted))
+        {
+            countTypes = CountTypes.Coven;
+        }
+        if (Main.PlayerStates[pc.PlayerId].IsNecromancer)
         {
             countTypes = CountTypes.Coven;
         }

@@ -35,15 +35,15 @@ public static class AntiBlackout
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
             // Impostors
-            if (pc.Is(Custom_Team.Impostor))
+            if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse())
+            else if ((pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                 NeutralKillers.Add(pc.PlayerId);
 
             //Coven
-            if (pc.Is(Custom_Team.Coven))
+            if (pc.Is(Custom_Team.Coven) || Main.PlayerStates[pc.PlayerId].IsNecromancer)
                 Coven.Add(pc.PlayerId);
 
             // Crewmate

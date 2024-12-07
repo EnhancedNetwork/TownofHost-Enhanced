@@ -771,6 +771,20 @@ class IntroCutsceneDestroyPatch
                     target.Data.Role.NameColor = Color.white;
                 }
             }
+            if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer)
+            {
+                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+
+                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator().Where(x => !x.IsPlayerCoven()))
+                {
+                    // Set all players as killable players
+                    target.Data.Role.CanBeKilled = true;
+
+                    // When target is impostor, set name color as white
+                    target.cosmetics.SetNameColor(Color.white);
+                    target.Data.Role.NameColor = Color.white;
+                }
+            }
 
             if (Main.UnShapeShifter.Any())
             {

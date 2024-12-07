@@ -70,6 +70,9 @@ internal class CovenLeader : CovenManager
         }
         var roleList = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable() && !role.RoleExist(countDead: true)))).ToList();
         retrainPlayer[target.PlayerId] = roleList.RandomElement();
+        // if every enabled coven role is already in the game then use one of them anyways
+        if (retrainPlayer[target.PlayerId] == CustomRoles.Crewmate || retrainPlayer[target.PlayerId] == CustomRoles.CrewmateTOHE) 
+            retrainPlayer[target.PlayerId] = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable()))).ToList().RandomElement();
         foreach (byte cov in retrainPlayer.Keys)
         {
             SendMessage(string.Format(GetString("RetrainNotification"), CustomRoles.CovenLeader.ToColoredString(), retrainPlayer[cov].ToColoredString()), cov);
