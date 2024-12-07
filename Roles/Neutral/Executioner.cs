@@ -75,7 +75,8 @@ internal class Executioner : RoleBase
     }
     public override void Add(byte playerId)
     {
-        if (!playerIdList.Contains(playerId)) {
+        if (!playerIdList.Contains(playerId))
+        {
             playerIdList.Add(playerId);
         }
 
