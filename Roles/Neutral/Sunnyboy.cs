@@ -19,7 +19,8 @@ internal class Sunnyboy : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+        if (!PlayerIds.Contains(playerId))
+            PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

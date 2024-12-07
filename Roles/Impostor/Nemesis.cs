@@ -13,8 +13,8 @@ internal class Nemesis : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 3600;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+
+
 
     public override CustomRoles ThisRoleBase => LegacyNemesis.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -45,11 +45,11 @@ internal class Nemesis : RoleBase
     public override void Init()
     {
         NemesisRevenged.Clear();
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

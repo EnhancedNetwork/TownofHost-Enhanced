@@ -43,12 +43,15 @@ public class Oiiai : IAddon
     }
     public void Add(byte playerId, bool gameIsLoading = true)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         IsEnable = true;
     }
     public static void PassOnKiller(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         IsEnable = true;
     }
     public void Remove(byte playerId)
@@ -90,6 +93,19 @@ public class Oiiai : IAddon
         {
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
             return;
+        }
+        else if (killer.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(killer))
+        {
+            killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
+            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            killer.RpcSetCustomRole(CustomRoles.Enchanted);
+            killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");
+        }
+        else if (CovenManager.HasNecronomicon(killer))
+        {
+            // Necronomicon holder immune to Oiiai
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven with Necronomicon.", "Oiiai");
         }
         else if (!killer.GetCustomRole().IsNeutral())
         {
