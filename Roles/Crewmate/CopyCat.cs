@@ -113,31 +113,31 @@ internal class CopyCat : RoleBase
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Sheriff)));
             return false;
         }
-        if (CopyCrewVar.GetBool())
+        if (CopyCrewVar.GetBool() && !target.Is(CustomRoles.Narc))
         {
             role = role switch
             {
-                CustomRoles.Stealth and not CustomRoles.Narc => CustomRoles.Grenadier,
-                CustomRoles.TimeThief and not CustomRoles.Narc => CustomRoles.TimeManager,
-                CustomRoles.Consigliere and not CustomRoles.Narc => CustomRoles.Overseer,
-                CustomRoles.Mercenary and not CustomRoles.Narc => CustomRoles.Addict,
-                CustomRoles.Miner and not CustomRoles.Narc => CustomRoles.Mole,
+                CustomRoles.Stealth => CustomRoles.Grenadier,
+                CustomRoles.TimeThief => CustomRoles.TimeManager,
+                CustomRoles.Consigliere => CustomRoles.Overseer,
+                CustomRoles.Mercenary => CustomRoles.Addict,
+                CustomRoles.Miner => CustomRoles.Mole,
                 CustomRoles.PotionMaster => CustomRoles.Overseer,
-                CustomRoles.Twister and not CustomRoles.Narc => CustomRoles.TimeMaster,
-                CustomRoles.Disperser and not CustomRoles.Narc => CustomRoles.Transporter,
-                CustomRoles.Eraser and not CustomRoles.Narc => CustomRoles.Cleanser,
-                CustomRoles.Visionary and not CustomRoles.Narc => CustomRoles.Oracle,
+                CustomRoles.Twister => CustomRoles.TimeMaster,
+                CustomRoles.Disperser => CustomRoles.Transporter,
+                CustomRoles.Eraser => CustomRoles.Cleanser,
+                CustomRoles.Visionary => CustomRoles.Oracle,
                 CustomRoles.Workaholic => CustomRoles.Snitch,
                 CustomRoles.Sunnyboy => CustomRoles.Doctor,
-                CustomRoles.Councillor and not CustomRoles.Narc => CustomRoles.Judge,
+                CustomRoles.Councillor => CustomRoles.Judge,
                 CustomRoles.Taskinator => CustomRoles.Benefactor,
-                CustomRoles.EvilTracker and not CustomRoles.Narc => CustomRoles.TrackerTOHE,
-                CustomRoles.AntiAdminer and not CustomRoles.Narc => CustomRoles.Telecommunication,
+                CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
+                CustomRoles.AntiAdminer => CustomRoles.Telecommunication,
                 CustomRoles.Pursuer => CustomRoles.Deceiver,
-                (CustomRoles.CursedWolf and not CustomRoles.Narc) or CustomRoles.Jinx => CustomRoles.Veteran,
-                (CustomRoles.Swooper and not CustomRoles.Narc) or CustomRoles.Wraith => CustomRoles.Chameleon,
-                (CustomRoles.Vindicator and not CustomRoles.Narc) or CustomRoles.Pickpocket => CustomRoles.Mayor,
-                (CustomRoles.Arrogance and not CustomRoles.Narc) or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
+                CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
+                CustomRoles.Swooper or CustomRoles.Wraith => CustomRoles.Chameleon,
+                CustomRoles.Vindicator or CustomRoles.Pickpocket => CustomRoles.Mayor,
+                CustomRoles.Arrogance or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
                 _ => role
             };
         }
