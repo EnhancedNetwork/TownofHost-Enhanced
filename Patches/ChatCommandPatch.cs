@@ -445,8 +445,8 @@ internal class ChatCommands
                     if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
 
                     var allAlivePlayers = Main.AllAlivePlayerControls;
-                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
-                    int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Narc));
+                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                    int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                     int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
 
@@ -3472,7 +3472,8 @@ internal class UpdateCharCountPatch
     public static void Postfix(FreeChatInputField __instance)
     {
         int length = __instance.textArea.text.Length;
-        __instance.charCountText.SetText($"{length}/{__instance.textArea.characterLimit}");
+        __instance.charCountText.SetText(length <= 0 ? GetString("ThankYouForUsingTOHE") : $"{length}/{__instance.textArea.characterLimit}");
+        __instance.charCountText.enableWordWrapping = false;
         if (length < (AmongUsClient.Instance.AmHost ? 888 : 444))
             __instance.charCountText.color = Color.black;
         else if (length < (AmongUsClient.Instance.AmHost ? 1111 : 777))
