@@ -45,8 +45,8 @@ internal class Celebrity : RoleBase
         if (target.PlayerId == _Player.PlayerId && seer.PlayerId == _Player.PlayerId) return true;
 
         // Hide kill flash for some team
-        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) return false;
-        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) return false;
+        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostorV4Narc()) return false;
+        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutralV4Narc()) return false;
 
         seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
         return true;
@@ -60,8 +60,8 @@ internal class Celebrity : RoleBase
             //Death Message
             foreach (var pc in Main.AllPlayerControls)
             {
-                if (!ImpKnowCelebrityDead.GetBool() && (pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc))) continue;
-                if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                if (!ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostorV4Narc()) continue;
+                if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutralV4Narc()) continue;
 
                 SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
             }
