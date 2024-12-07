@@ -111,8 +111,8 @@ public static class CustomRoleManager
         }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
-        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
+        if (CustomRoles.Dazzler.RoleExist()) Dazzler.SetDazzled(player, opt);
+        if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
         if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);

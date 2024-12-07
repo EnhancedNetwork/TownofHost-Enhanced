@@ -100,7 +100,8 @@ internal class Jackal : RoleBase
             AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
         }
 
-        Playerids.Add(playerId);
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {

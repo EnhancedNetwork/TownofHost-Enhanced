@@ -15,7 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 185/255 USED
+public enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -55,6 +55,7 @@ enum CustomRPC : byte // 185/255 USED
     ShowChat,
     SyncShieldPersonDiedFirst,
     RemoveSubRole,
+    FixModdedClientCNO,
     SyncGeneralOptions,
     SyncSpeedPlayer,
     Arrow,
@@ -76,11 +77,11 @@ enum CustomRPC : byte // 185/255 USED
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-    SetDrawPlayer,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,
@@ -92,7 +93,6 @@ enum CustomRPC : byte // 185/255 USED
     KeeperRPC,
     SetAlchemistTimer,
     UndertakerLocationSync,
-    RiftMakerSyncData,
     LightningSetGhostPlayer,
     SetDarkHiderKillCount,
     SetConsigliere,
@@ -421,9 +421,6 @@ internal class RPCHandlerPatch
             case CustomRPC.UndertakerLocationSync:
                 Undertaker.ReceiveRPC(reader);
                 break;
-            case CustomRPC.RiftMakerSyncData:
-                RiftMaker.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetLoversPlayers:
                 Main.LoversPlayers.Clear();
                 int count = reader.ReadInt32();
@@ -618,12 +615,14 @@ internal class RPCHandlerPatch
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
                 break;
+            case CustomRPC.FixModdedClientCNO:
+                var CNO = reader.ReadNetObject<PlayerControl>();
+                bool active = reader.ReadBoolean();
+                CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
                 break;
-            //case CustomRPC.SetCleanserCleanLimit:
-            //    Cleanser.ReceiveRPC(reader);
-            //    break;
             case CustomRPC.SetInspectorLimit:
                 Inspector.ReceiveRPC(reader);
                 break;
