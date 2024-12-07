@@ -57,6 +57,9 @@ internal class RiftMaker : RoleBase
         TPCooldown = TPCooldownOpt.GetFloat();
         Playerids.Add(playerId);
     }
+    
+    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("RiftMakerButtonText"));
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Create Rift");
 
     private static void SendRPC(byte riftID, int operate)
     {
