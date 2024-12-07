@@ -38,7 +38,7 @@ public class Necroview : IAddon
             return "ff1919";
         }
 
-        if (customRole.IsCrewmate() || target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc))
+        if (customRole.IsCrewmateTeamV4Narc() || target.Is(CustomRoles.Admired))
         {
             return "00ffff";
         }
