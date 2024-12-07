@@ -65,7 +65,9 @@ internal class Fireworker : RoleBase
         FireworkerPosition[playerId] = [];
         state.TryAdd(playerId, FireworkerState.Initial);
         FireworkerBombKill[playerId] = 0;
-        PlayerIds.Add(playerId);
+
+        if (!PlayerIds.Contains(playerId))
+            PlayerIds.Add(playerId);
     }
 
     private static void SendRPC(byte playerId)

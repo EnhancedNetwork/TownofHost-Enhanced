@@ -55,7 +55,9 @@ internal class RiftMaker : RoleBase
         LastTP[playerId] = now;
 
         TPCooldown = TPCooldownOpt.GetFloat();
-        Playerids.Add(playerId);
+
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
     }
 
     private static void SendRPC(byte riftID, int operate)
