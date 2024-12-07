@@ -459,7 +459,7 @@ class CheckForEndVotingPatch
             else if (pc_role.IsNA() && pc != exiledPlayer.Object)
                 apocnum++;
 
-            if (pc != exiledPlayer.Object && pc_role.IsBad()))
+            if (pc != exiledPlayer.Object && pc_role.IsBad())
                 badnum++; //counts everything that keeps the game going
         }
         switch (Options.CEMode.GetInt())
