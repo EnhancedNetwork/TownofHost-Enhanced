@@ -33,7 +33,7 @@ internal class Traitor : RoleBase
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         CanUsesSabotage = BooleanOptionItem.Create(Id + 15, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         KnowMadmate = BooleanOptionItem.Create(Id + 16, "TraitorKnowMadmate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
-        LegacyTraitor = BooleanOptionItem.Create(Id + 17, "LegacyNemesis", false, TabGroup.NeutralRoles, false)
+        LegacyTraitor = BooleanOptionItem.Create(Id + 17, "LegacyTraitor", false, TabGroup.NeutralRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Traitor]);
         TraitorShapeshiftCD = FloatOptionItem.Create(Id + 19, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
                 .SetParent(LegacyTraitor)
@@ -42,14 +42,7 @@ internal class Traitor : RoleBase
                 .SetParent(LegacyTraitor)
                 .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
 
-    }
-    public override void Add(byte playerId)
-    {
-
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         opt.SetVision(HasImpostorVision.GetBool());
