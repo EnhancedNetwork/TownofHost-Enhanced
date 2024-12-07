@@ -1325,6 +1325,12 @@ class FixedUpdateInNormalGamePatch
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
+                if (target.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Sheriff))
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), "★"));
+
+                if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), "★"));
+                
                 if (target.Is(CustomRoles.Lovers) && seer.Is(CustomRoles.Lovers))
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
