@@ -49,7 +49,9 @@ internal class Infectious : RoleBase
     public override void Add(byte playerId)
     {
         BiteLimit = BiteMax.GetInt();
-        PlayerIds.Add(playerId);
+        if (!PlayerIds.Contains(playerId))
+            PlayerIds.Add(playerId);
+
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
     }
