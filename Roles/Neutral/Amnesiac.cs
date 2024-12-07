@@ -131,6 +131,20 @@ internal class Amnesiac : RoleBase
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
                 }
             }
+            else if (targetPlayerStates.MainRole == CustomRoles.Narc)
+            {
+                __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
+                __instance.RpcChangeRoleBasis(CustomRoles.Sheriff);
+                __instance.RpcSetCustomRole(CustomRoles.Sheriff);
+                __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
+
+                __instance.RpcGuardAndKill();
+                __instance.ResetKillCooldown();
+                __instance.SetKillCooldown();
+
+                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), Utils.GetRoleName(CustomRoles.Sheriff))));
+                isSuccess = true;
+            }
             else
             {
                 var role = targetPlayerStates.MainRole;
