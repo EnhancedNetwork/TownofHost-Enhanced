@@ -74,7 +74,7 @@ internal class Captain : RoleBase
         if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
         if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return true;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
-                                                           ((x.GetCustomRole().IsImpostorTeamV3() && !x.Is(CustomRoles.Narc)) ||
+                                                           (x.GetCustomRole().IsImpostorTeamV4Narc() ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
                                                            (CaptainCanTargetNE.GetBool() && x.GetCustomRole().IsNE()) ||
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
