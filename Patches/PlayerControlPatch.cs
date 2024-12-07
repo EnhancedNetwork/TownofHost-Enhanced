@@ -952,7 +952,7 @@ class FixedUpdateInNormalGamePatch
     {
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null) return;
+        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
@@ -988,6 +988,7 @@ class FixedUpdateInNormalGamePatch
         // For example: 15 players will called 450 times every 1 second
 
         var player = __instance;
+        bool localplayer = __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId;
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
@@ -1105,6 +1106,11 @@ class FixedUpdateInNormalGamePatch
                             KickPlayerPatch.AttemptedKickPlayerList.Remove(item.Key);
                     }
                 }
+            }
+            else // We are not in lobby
+            {
+                if (localplayer)
+                    CustomNetObject.FixedUpdate();
             }
 
             DoubleTrigger.OnFixedUpdate(player);
