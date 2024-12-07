@@ -127,7 +127,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
-                if (!pc.Is(CustomRoles.Narc))//Narc cannot be cleansed
+                if (subRole != CustomRoles.Narc)//Narc cannot be cleansed
                 RemoveSubRole(subRole);
             }
         }
