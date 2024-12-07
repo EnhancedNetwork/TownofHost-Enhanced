@@ -2174,6 +2174,7 @@
   "GuessKnighted": "Sorry, Monarchs cannot guess Knighted.",
   "GuessMonarch": "There's a knighted player alive, so the Monarch cannot be guessed.",
   "GuessShielded": "Sorry, you can't guess the player who the Medic shields",
+  "GuessSheriffOrNarc": "Sorry,Sheriff and Narc can't guess each other",
   "MayorRevealWhenDoneTasks": "<color=#204d42>Mayor</color> is revealed to everyone on task completion",
   "MimicDeadMsg": "Mimic's hint: ",
   "FortuneTellerCheck": "According to your fortune...",
