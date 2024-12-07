@@ -289,6 +289,7 @@ public class PlayerState(byte playerId)
         PissedOff,
         Dismembered,
         LossOfHead,
+        Consumed,
         Trialed,
         Infected,
         Jinx,

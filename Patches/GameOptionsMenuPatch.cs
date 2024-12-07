@@ -500,8 +500,7 @@ public static class NumberOptionPatch
                 __instance.Value = (float)Math.Round(__instance.Value, 2);
                 break;
             case StringNames.GameNumImpostors:
-                // Changing the range of this option will make it always reset to the default value 3
-                // TO DO : Fix shit
+                __instance.ValidRange = new(0f, GameOptionsManager.Instance.CurrentGameOptions.MaxPlayers / 2);
                 break;
         }
 
@@ -560,11 +559,13 @@ public static class NumberOptionPatch
     [HarmonyPatch(nameof(NumberOption.Increase)), HarmonyPrefix]
     public static bool IncreasePrefix(NumberOption __instance)
     {
-        if (__instance.Value == __instance.ValidRange.max)
+        // This is for mod options. Vanilla options's button should be disabled at this moment
+        if (__instance.Value >= __instance.ValidRange.max)
         {
             __instance.Value = __instance.ValidRange.min;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -574,6 +575,7 @@ public static class NumberOptionPatch
             __instance.Value += increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -582,11 +584,13 @@ public static class NumberOptionPatch
     [HarmonyPatch(nameof(NumberOption.Decrease)), HarmonyPrefix]
     public static bool DecreasePrefix(NumberOption __instance)
     {
-        if (__instance.Value == __instance.ValidRange.min)
+        // This is for mod options. Vanilla options's button should be disabled at this moment
+        if (__instance.Value <= __instance.ValidRange.min)
         {
             __instance.Value = __instance.ValidRange.max;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -596,6 +600,7 @@ public static class NumberOptionPatch
             __instance.Value -= increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
