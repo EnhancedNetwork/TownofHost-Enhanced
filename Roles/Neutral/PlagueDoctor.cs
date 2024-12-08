@@ -95,7 +95,7 @@ internal class PlagueDoctor : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => InfectCount != 0;
     public override string GetProgressText(byte plr, bool coomns)
         => Utils.ColorString(Utils.GetRoleColor(CustomRoles.PlagueDoctor).ShadeColor(0.25f), $"({InfectCount})");
-    
+
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(false);
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

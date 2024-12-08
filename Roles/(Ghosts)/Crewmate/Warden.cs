@@ -42,7 +42,7 @@ internal class Warden : RoleBase
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var getTargetRole = target.GetCustomRole();
-        if (AbilityLimit > 0) 
+        if (AbilityLimit > 0)
         {
             if (getTargetRole.IsSpeedRole() || target.IsAnySubRole(x => x.IsSpeedRole()) || IsAffected.Contains(target.PlayerId)) goto Notifiers; // Incompactible speed-roles 
 
@@ -61,7 +61,7 @@ internal class Warden : RoleBase
 
         Notifiers:
             target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));
-            
+
             killer.RpcResetAbilityCooldown();
             AbilityLimit--;
             SendSkillRPC();

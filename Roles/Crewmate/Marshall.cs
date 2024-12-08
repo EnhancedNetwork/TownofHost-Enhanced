@@ -1,5 +1,5 @@
-using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -9,9 +9,9 @@ internal class Marshall : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -25,11 +25,11 @@ internal class Marshall : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
     }
     private static bool GetExpose(PlayerControl pc)
     {
@@ -48,9 +48,10 @@ internal class Marshall : RoleBase
     private static bool VisibleToCrewmate(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && target.Is(CustomRoles.Marshall) && seer.Is(Custom_Team.Crewmate);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToCrewmate(seer, target);
-    
+
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Marshall) return false;
         if (target.GetPlayerTaskState().IsTaskFinished)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessMarshallTask"));

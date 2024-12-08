@@ -42,7 +42,7 @@ public class Tricky : IAddon
         {
             var killer = target.GetRealKiller();
             if (killer == null || !killer.Is(CustomRoles.Tricky)) return;
-            
+
             var randomDeathReason = ChangeRandomDeath();
             Main.PlayerStates[target.PlayerId].deathReason = randomDeathReason;
             Main.PlayerStates[target.PlayerId].SetDead();

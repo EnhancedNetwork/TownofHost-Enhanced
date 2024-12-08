@@ -39,11 +39,11 @@ public class Bewilder : IAddon
             IsEnable = false;
     }
 
-    public static void ApplyVisionOptions(IGameOptions opt) 
-    { 
-        opt.SetVision(false); 
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat()); 
-        opt.SetFloat(FloatOptionNames.CrewLightMod, BewilderVision.GetFloat()); 
+    public static void ApplyVisionOptions(IGameOptions opt)
+    {
+        opt.SetVision(false);
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat());
+        opt.SetFloat(FloatOptionNames.CrewLightMod, BewilderVision.GetFloat());
     }
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {

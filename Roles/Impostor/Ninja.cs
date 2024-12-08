@@ -13,9 +13,9 @@ internal class Ninja : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 2100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -38,12 +38,12 @@ internal class Ninja : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         MarkedPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -67,7 +67,7 @@ internal class Ninja : RoleBase
     }
 
     private static bool Shapeshifting(byte id) => Main.CheckShapeshift.TryGetValue(id, out bool shapeshifting) && shapeshifting;
-    
+
     public override void SetKillCooldown(byte id)
         => Main.AllPlayerKillCooldown[id] = Shapeshifting(id) ? DefaultKillCooldown : MarkCooldown.GetFloat();
 
@@ -85,9 +85,9 @@ internal class Ninja : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantMark")));
             return true;
         }
-        
+
         return killer.CheckDoubleTrigger(target,
-            () => 
+            () =>
             {
                 MarkedPlayer.Remove(killer.PlayerId);
                 MarkedPlayer.Add(killer.PlayerId, target.PlayerId);
@@ -124,7 +124,7 @@ internal class Ninja : RoleBase
         if (MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
         {
             var marketTarget = Utils.GetPlayerById(targetId);
-            
+
             MarkedPlayer.Remove(shapeshifter.PlayerId);
             SendRPC(shapeshifter.PlayerId);
 

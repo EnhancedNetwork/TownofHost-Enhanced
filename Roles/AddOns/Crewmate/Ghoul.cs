@@ -30,7 +30,7 @@ public class Ghoul : IAddon
             IsEnable = false;
     }
 
-    public static void ApplyGameOptions(PlayerControl player) 
+    public static void ApplyGameOptions(PlayerControl player)
     {
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {

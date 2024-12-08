@@ -1,5 +1,5 @@
-﻿using static TOHE.Options;
-using UnityEngine;
+﻿using UnityEngine;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -26,7 +26,7 @@ internal class Spurt : IAddon
         MaxSpeed = FloatOptionItem.Create(id + 7, "SpurtMaxSpeed", new(1.5f, 3f, 0.25f), 3f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt])
             .SetValueFormat(OptionFormat.Multiplier);
-        Modulator =FloatOptionItem.Create(id + 8, "SpurtModule", new(0.25f, 3f, 0.25f), 1.25f, TabGroup.Addons, false)
+        Modulator = FloatOptionItem.Create(id + 8, "SpurtModule", new(0.25f, 3f, 0.25f), 1.25f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt])
             .SetValueFormat(OptionFormat.Multiplier);
         DisplaysCharge = BooleanOptionItem.Create(id + 9, "EnableSpurtCharge", false, TabGroup.Addons, false)

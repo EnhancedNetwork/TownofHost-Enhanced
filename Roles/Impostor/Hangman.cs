@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
-using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
