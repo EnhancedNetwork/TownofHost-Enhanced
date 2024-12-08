@@ -3334,7 +3334,7 @@
   "PestilenceCooldown": "<color=#343136>瘟疫</color>击杀冷却",
   "PestilenceCanVent": "<color=#343136>瘟疫</color>可以使用通风口",
   "PestilenceHasImpostorVision": "<color=#343136>瘟疫</color>有<color=#ff1919>内鬼</color>视野",
-  "PestilenceKillGuessers": "Kill players who guess <color=#343136>Pestilence</color>",
+  "PestilenceKillGuessers": "击杀试图猜测<color=#343136>瘟疫</color>的玩家",
   "PlagueBearerAlreadyPlagued": "玩家已经受到瘟疫使者攻击",
   "PlagueBearerToPestilence": "你变成了瘟疫使者！！",
   "GuessPestilence": "你只是想猜测瘟疫！\n抱歉，瘟疫杀死了你",
