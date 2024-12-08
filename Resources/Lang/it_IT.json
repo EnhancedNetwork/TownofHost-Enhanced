@@ -1867,7 +1867,7 @@
   "Jackal_SidekickAssignMode_Recruit": "Solo <color=#00b4eb>Recluta</color>",
   "Jackal_SidekickCanKillSidekick": "Le <color=#00b4eb>Spalle</color> possono uccidere altre <color=#00b4eb>Spalle</color>",
   "Jackal_SidekickCanKillJackal": "<color=#00b4eb>Spalla</color> può uccidere <color=#00b4eb>Sciacallo</color>",
-  "Jackal_RecruitFailed": "You can not recruit this player!",
+  "Jackal_RecruitFailed": "Non puoi reclutare questo giocatore!",
   "JackalCanKillSidekick": "Lo <color=#00b4eb>Sciacallo</color> può uccidere la <color=#00b4eb>Spalla</color>",
   "Jackal_SidekickCanKillWhenJackalAlive": "<color=#00b4eb>Spalla</color> può uccidere quando <color=#00b4eb>Sciacallo</color> è vivo",
   "Jackal_SidekickTurnIntoJackal": "<color=#00b4eb>Spalla</color> può trasformarsi in <color=#00b4eb>Sciacallo</color> dopo la sua morte",
