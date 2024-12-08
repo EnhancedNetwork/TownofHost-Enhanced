@@ -85,9 +85,9 @@ internal class Psychic : RoleBase
         if (!_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
         List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x =>
-        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
+        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Narc)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
-        (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
+        ((x.GetCustomRole().IsCrewKiller() || x.Is(CustomRoles.Narc)) && CkshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNE() && NEshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNC() && NCshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNB() && NBshowEvil.GetBool()) ||

@@ -32,7 +32,8 @@ internal class Bodyguard : RoleBase
         if (killerRole is CustomRoles.Taskinator
             or CustomRoles.Crusader
             or CustomRoles.Veteran
-            or CustomRoles.Deputy)
+            or CustomRoles.Deputy
+            or CustomRoles.Narc)
             return false;
 
         var pos = target.transform.position;

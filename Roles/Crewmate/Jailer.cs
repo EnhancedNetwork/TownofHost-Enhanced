@@ -186,7 +186,7 @@ internal class Jailer : RoleBase
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
                 (role.IsNA() && NACanBeExe.GetBool()) ||
                 (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
-                role.IsImpostorTeamV3();
+                role.IsImpostorTeamV4Narc();
     }
 
     public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)

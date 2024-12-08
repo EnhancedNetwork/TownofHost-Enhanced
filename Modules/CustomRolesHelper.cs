@@ -233,6 +233,9 @@ public static class CustomRolesHelper
     }
     public static bool IsCrewKiller(this CustomRoles role)
     {
+        {
+            if (role is CustomRoles.Narc) return true;
+        }
         return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.CrewmateKilling;
     }
     public static bool IsCrewVenter(this PlayerControl target)
@@ -318,6 +321,18 @@ public static class CustomRolesHelper
     {
         return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Madmate;
     }
+    public static bool IsBad(this CustomRoles role) //everything that keeps the game going
+    {
+        return role != CustomRoles.Admired && 
+              (role.IsImpostorTeamV4Narc() || role.IsNK() || role.IsNA()) 
+              || role == CustomRoles.Infected 
+              || role == CustomRoles.Cultist 
+              || (role == CustomRoles.Madmate && Madmate.MadmateCountMode.GetInt() == 1) 
+              || (role == CustomRoles.Charmed && Cultist.CharmedCountMode.GetInt() == 1) 
+              || (role == CustomRoles.Recruit && Jackal.SidekickCountMode.GetInt() == 1) 
+              || (role == CustomRoles.Contagious && Virus.ContagiousCountMode.GetInt() == 1) 
+              || (role == CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool());
+    }
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
     /// </summary>
@@ -373,7 +388,8 @@ public static class CustomRolesHelper
             or CustomRoles.Infected
             or CustomRoles.Contagious
             or CustomRoles.Rascal
-            or CustomRoles.Soulless;
+            or CustomRoles.Soulless
+            or CustomRoles.Narc;
     }
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
@@ -785,7 +801,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Gangster)
                     || pc.Is(CustomRoles.Admirer)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Narc)
+                    || (pc.Is(CustomRoles.Sheriff) && CustomRoles.Narc.RoleExist()))                   
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
                     return false;
@@ -794,7 +812,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Nemesis))
+                if (pc.Is(CustomRoles.Nemesis) || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -827,7 +845,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Swooper)
-                    || pc.Is(CustomRoles.DoubleAgent))
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -850,7 +869,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
-                    || pc.Is(CustomRoles.Tired))
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -882,7 +902,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Stealer)
                     || pc.Is(CustomRoles.Tricky)
                     || pc.Is(CustomRoles.DoubleAgent)
-                    || pc.Is(CustomRoles.YinYanger))
+                    || pc.Is(CustomRoles.YinYanger)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1103,6 +1124,17 @@ public static class CustomRolesHelper
                 if (pc.IsNeutralApocalypse())
                     return false;
                 break;
+            case CustomRoles.Narc:
+                if ((!pc.GetCustomRole().IsImpostor() 
+                    && !pc.Is(CustomRoles.Parasite) 
+                    && !pc.Is(CustomRoles.Crewpostor))
+                    || pc.Is(CustomRoles.Visionary)
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || pc.Is(CustomRoles.Egoist)
+                    || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.Mimic))
+                    return false;
+                break;
         }
 
         return true;
@@ -1146,6 +1178,40 @@ public static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
+    /// <summary>
+    /// Role is crewmate or Narc
+    /// </summary>
+    public static bool IsCrewmateTeamV4Narc(this CustomRoles role)
+    {
+        return role.IsCrewmate() || role == CustomRoles.Narc;
+    }
+    /// <summary>
+    /// Role is impostor or madmate and role is not Narc
+    /// </summary>
+    public static bool IsImpostorV4Narc(this CustomRoles role)
+    {
+        return role.IsImpostor() && role != CustomRoles.Narc;
+    }
+    public static bool IsMadmateV4Narc(this CustomRoles role)
+    {
+        return role.IsMadmate() && role != CustomRoles.Narc;
+    }
+    public static bool IsImpostorTeamV4Narc(this CustomRoles role)
+    {
+        return role.IsImpostorV4Narc() || role.IsMadmateV4Narc();
+    }
+    /// <summary>
+    /// idk why I added this but this checks neutrals and non-Narc madmates
+    /// </summary>
+    public static bool IsNeutralV4Narc(this CustomRoles role)
+    {
+        return role.IsNeutral() && role != CustomRoles.Narc;
+    }
+    public static bool IsNeutralTeamV4Narc(this CustomRoles role)
+    {
+        return role.IsNeutralV4Narc() && !role.IsMadmate();
+    }
+
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
