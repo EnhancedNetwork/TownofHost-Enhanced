@@ -109,6 +109,12 @@ internal class Amnesiac : RoleBase
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
             }
 
+            if (targetPlayerStates.MainRole == CustomRoles.Narc)
+            {
+                __instance.GetCustomSubRoles()?.Add(CustomRoles.Narc);
+            }
+
+
             if (targetPlayerStates.MainRole.IsGhostRole())
             {
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
@@ -130,20 +136,6 @@ internal class Amnesiac : RoleBase
                 {
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
                 }
-            }
-            else if (targetPlayerStates.MainRole == CustomRoles.Narc)
-            {
-                __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
-                __instance.RpcChangeRoleBasis(CustomRoles.Sheriff);
-                __instance.RpcSetCustomRole(CustomRoles.Sheriff);
-                __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
-
-                __instance.RpcGuardAndKill();
-                __instance.ResetKillCooldown();
-                __instance.SetKillCooldown();
-
-                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), Utils.GetRoleName(CustomRoles.Sheriff))));
-                isSuccess = true;
             }
             else
             {
