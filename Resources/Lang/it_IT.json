@@ -1027,7 +1027,7 @@
   "RevenantInfoLong": "(Neutrale):\nCome Revenant, il tuo obiettivo è di essere ucciso. Se sei ucciso, prenderai il ruolo del tuo assassino e ucciderai il tuo assassino. Non puoi vincere prima di essere ucciso.\nNota che Revenant funziona solo quando viene ucciso direttamente.",
   "ShowTextOverlay": "Sovrapposizione Testo",
   "Overlay.GuesserMode": "<size=50%>Modalità Indovino</size>",
-  "Overlay.NoGameEnd": "<size=50%>Gioco senza fine</size>",
+  "Overlay.NoGameEnd": "<size=50%>Nessuna Fine del Gioco</size>",
   "Overlay.DebugMode": "<size=50%>Modalità Debug</size>",
   "Overlay.LowLoadMode": "<size=50%>Modalità Leggera</size>",
   "Overlay.AllowConsole": "<size=50%>Console</size>",
@@ -1053,7 +1053,7 @@
   "DisableMeeting": "Disabilita le Riunioni",
   "DisableCloseDoor": "Disabilita il Sabotaggio delle Porte",
   "DisableSabotage": "Disabilita i Sabotaggi",
-  "NoGameEnd": "Gioco Senza Fine",
+  "NoGameEnd": "Nessuna Fine del Gioco",
   "AllowConsole": "Console BepInEx",
   "DebugMode": "Modalità di Debug",
   "SyncButtonMode": "Limite Utilizzi Riunioni",
@@ -3730,5 +3730,5 @@
   "ChiefOfPoliceKillButtonText": "Reclutamento",
   "PolicPreventRecruitNonKiller": "Impedisci di reclutare giocatori senza pulsante uccidi",
   "PolicSuidiceWhenTargetNotKiller": "Si suicida quando reclutano un non assassino o non astronauta",
-  "PolicPassConverted": "Can pass Converted Addon to Sheriff"
+  "PolicPassConverted": "Puo passare Modificatore Convertito a Sceriffo"
 }
