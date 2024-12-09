@@ -106,6 +106,11 @@ public class PlayerState(byte playerId)
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
             pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
             InitTask(pc);
+
+            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            {
+                Main.UnShapeShifter.Add(pc.PlayerId);
+            }
         }
     }
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
