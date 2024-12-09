@@ -11,6 +11,7 @@
 		<Configurations>Debug;Release;Canary</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>True</Optimize>
+		<CodePage>65001</CodePage>
 	</PropertyGroup>
 
 	<ItemGroup>

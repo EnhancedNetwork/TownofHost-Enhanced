@@ -34,7 +34,8 @@ internal class TimeThief : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

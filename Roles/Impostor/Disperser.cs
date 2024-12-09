@@ -10,8 +10,8 @@ internal class Disperser : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -30,11 +30,11 @@ internal class Disperser : RoleBase
 
     public override void Init()
     {
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

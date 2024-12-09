@@ -10,8 +10,8 @@ internal class Detective : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 7900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
+
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -31,19 +31,19 @@ internal class Detective : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
+
         DetectiveNotify.Clear();
         InfoAboutDeadPlayerAndKiller.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         CustomRoleManager.CheckDeadBodyOthers.Add(GetInfoFromDeadBody);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
         CustomRoleManager.CheckDeadBodyOthers.Remove(GetInfoFromDeadBody);
     }
     private void GetInfoFromDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)

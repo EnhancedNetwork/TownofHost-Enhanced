@@ -12,6 +12,7 @@ public class Cyber : IAddon
     public static OptionItem ImpKnowCyberDead;
     public static OptionItem CrewKnowCyberDead;
     public static OptionItem NeutralKnowCyberDead;
+    public static OptionItem CovenKnowCyberDead;
     public static OptionItem CyberKnown;
 
     public void SetupCustomOption()
@@ -20,6 +21,7 @@ public class Cyber : IAddon
         ImpKnowCyberDead = BooleanOptionItem.Create(Id + 13, "ImpKnowCyberDead", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
         CrewKnowCyberDead = BooleanOptionItem.Create(Id + 14, "CrewKnowCyberDead", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
         NeutralKnowCyberDead = BooleanOptionItem.Create(Id + 15, "NeutralKnowCyberDead", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
+        CovenKnowCyberDead = BooleanOptionItem.Create(Id + 17, "CovenKnowCyberDead", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
         CyberKnown = BooleanOptionItem.Create(Id + 16, "CyberKnown", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cyber]);
     }
 
@@ -46,6 +48,7 @@ public class Cyber : IAddon
             if (!ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
             if (!NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
             if (!CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+            if (!CovenKnowCyberDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
 
             if (inMeeting)
             {

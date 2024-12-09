@@ -25,8 +25,13 @@ class ChatBubbleSetNamePatch
 
         var seerRoleClass = seer.GetRoleClass();
 
-        // if based role is Shapeshifter and is Desync Shapeshifter
+        // if based role is Shapeshifter and is Desync Shapeshifter or Necromancer
         if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
+        {
+            // When target is impostor, set name color as white
+            __instance.NameText.color = Color.white;
+        }
+        if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer)
         {
             // When target is impostor, set name color as white
             __instance.NameText.color = Color.white;

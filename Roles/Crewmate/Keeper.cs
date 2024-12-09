@@ -12,8 +12,6 @@ internal class Keeper : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 26500;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -34,7 +32,6 @@ internal class Keeper : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         keeperTarget.Clear();
         keeperUses.Clear();
         DidVote.Clear();
@@ -42,13 +39,11 @@ internal class Keeper : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DidVote.Add(playerId, false);
         keeperUses[playerId] = 0;
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         DidVote.Remove(playerId);
         keeperUses.Remove(playerId);
     }

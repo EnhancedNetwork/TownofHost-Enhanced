@@ -86,9 +86,12 @@ internal class Deceiver : RoleBase
         var target = pc;
         if (killer == null) return false;
 
-        target.SetDeathReason(PlayerState.DeathReason.Misfire);
-        target.RpcMurderPlayer(target);
-        target.SetRealKiller(killer);
+        if (target.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner)
+        {
+            target.SetDeathReason(PlayerState.DeathReason.Misfire);
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+        }
 
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");
         return true;

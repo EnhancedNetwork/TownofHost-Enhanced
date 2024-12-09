@@ -13,8 +13,8 @@ internal class Revolutionist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+
+
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -64,11 +64,11 @@ internal class Revolutionist : RoleBase
         RevolutionistCountdown.Clear();
         CurrentDrawTarget = byte.MaxValue;
 
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
 
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);

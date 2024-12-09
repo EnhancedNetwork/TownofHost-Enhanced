@@ -90,7 +90,7 @@ public class dbConnect
             shouldDisconnect = false;
 
             // Show waring message
-            if (GameStates.IsLobby || GameStates.InGame)
+            if (GameStates.IsLobby || GameStates.IsInGame)
             {
                 DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailurePublic"));
             }

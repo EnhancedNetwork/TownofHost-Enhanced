@@ -47,8 +47,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1203.220.00051"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 5 Hotfix 1";
+    public const string PluginVersion = "2024.1207.220.00069"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 7 Coven";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -360,6 +360,9 @@ public class Main : BasePlugin
                     case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
+                    case Custom_Team.Coven:
+                        roleColors.TryAdd(role, "#ac42f2");
+                        break;
                     default:
                         break;
                 }
@@ -667,6 +670,7 @@ public enum CustomRoles
     Possessor,
 
     //Impostor
+    Abyssbringer,
     Anonymous,
     AntiAdminer,
     Arrogance,
@@ -841,19 +845,15 @@ public enum CustomRoles
     Glitch,
     God,
     Hater,
-    HexMaster,
     Huntsman,
     Imitator,
     Infectious,
     Innocent,
     Jackal,
     Jester,
-    Jinx,
     Juggernaut,
     Lawyer,
     Maverick,
-    Medusa,
-    Necromancer,
     Opportunist,
     Pelican,
     Pestilence,
@@ -862,8 +862,6 @@ public enum CustomRoles
     Pixie,
     PlagueBearer,
     PlagueDoctor,
-    Poisoner,
-    PotionMaster,
     Provocateur,
     PunchingBag,
     Pursuer,
@@ -899,6 +897,22 @@ public enum CustomRoles
     Workaholic,
     Wraith,
 
+    //Coven
+    Coven,
+    Conjurer,
+    CovenLeader,
+    HexMaster,
+    Illusionist,
+    Jinx,
+    Medusa,
+    MoonDancer,
+    Necromancer,
+    Poisoner,
+    PotionMaster,
+    Ritualist,
+    Sacrifist,
+    VoodooMaster,
+
     //two-way camp
     Mini,
 
@@ -931,6 +945,7 @@ public enum CustomRoles
     DoubleShot,
     Eavesdropper,
     Egoist,
+    Enchanted,
     Evader,
     EvilSpirit,
     Flash,
@@ -1058,6 +1073,7 @@ public enum CustomWinner
     Solsticer = CustomRoles.Solsticer,
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
+    Coven = CustomRoles.Coven,
 }
 public enum AdditionalWinners
 {
