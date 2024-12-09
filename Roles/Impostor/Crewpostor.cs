@@ -1,6 +1,6 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using static TOHE.Options;
-using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Impostor;
 
@@ -18,7 +18,7 @@ internal class Crewpostor : RoleBase
     private static OptionItem CanKillAllies;
     private static OptionItem KnowsAllies;
     private static OptionItem AlliesKnowCrewpostor;
-    private static OptionItem LungeKill;
+    public static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
     private static Dictionary<byte, int> TasksDone = [];
