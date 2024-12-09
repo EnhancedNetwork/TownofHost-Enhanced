@@ -115,7 +115,11 @@ internal class Ritualist : CovenManager
                 return true;
             }
             var target = GetPlayerById(targetId);
-
+            if (role.IsAdditionRole())
+            {
+                pc.ShowInfoMessage(isUI, GetString("RitualistGuessAddon"));
+                return true;
+            }
             if (!target.Is(role))
             {
                 pc.ShowInfoMessage(isUI, GetString("RitualistRitualFail"));
