@@ -111,7 +111,7 @@ internal class Amnesiac : RoleBase
 
             if (targetPlayerStates.MainRole == CustomRoles.Narc)
             {
-                __instance.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+                __instance.GetCustomSubRoles()?.Add(CustomRoles.Narc);
             }
 
 
