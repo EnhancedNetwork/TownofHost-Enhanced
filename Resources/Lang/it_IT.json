@@ -3723,12 +3723,12 @@
   "EavesdropperMsgTitle": "Hai trovato un segreto",
   "EavesdropPercentChance": "Possibilità di origliare",
   "ChiefOfPoliceSkillCooldown": "Ricarica per reclutare sceriffi",
-  "PolicCanImpostorAndNeutarl": "Can recruit <color=#ff1919>Impostor</color> or <color=#7f8c8d>Neutral</color>",
+  "PolicCanImpostorAndNeutarl": "Puoi reclutare <color=#ff1919>Impostori</color> o <color=#7f8c8d>Neutrali</color>",
   "SheriffSuccessfullyRecruited": "Hai reclutato uno Sceriffo.",
   "BeSheriffByPolice": "Sei stato reclutato dal capo della polizia! Servi l'equipaggio!",
   "PoliceFailedRecruit": "Impossibile reclutare il bersaglio.",
   "ChiefOfPoliceKillButtonText": "Reclutamento",
-  "PolicPreventRecruitNonKiller": "Prevent recruit players without kill button",
-  "PolicSuidiceWhenTargetNotKiller": "Suidices when recruit a non killer or non crewmate",
+  "PolicPreventRecruitNonKiller": "Impedisci di reclutare giocatori senza pulsante uccidi",
+  "PolicSuidiceWhenTargetNotKiller": "Si suicida quando reclutano un non assassino o non astronauta",
   "PolicPassConverted": "Can pass Converted Addon to Sheriff"
 }
