@@ -98,7 +98,7 @@ internal class Imitator : RoleBase
             }
 
         }
-        else if (role.IsCrewmateTeamV4Narc())
+        else if (role.IsCrewmate() && target.Is(CustomRoles.Narc))
         {
             AbilityLimit--;
             SendSkillRPC();
@@ -107,7 +107,7 @@ internal class Imitator : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
-        else if (role.IsImpostorV4Narc())
+        else if (role.IsImpostor())
         {
             AbilityLimit--;
             SendSkillRPC();
