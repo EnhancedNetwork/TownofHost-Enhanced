@@ -205,7 +205,7 @@
         "\n     - Fixed Immediate autostart settings (By NikoCat)",
         "\n     - Fixed Bait self-reporting (By NikoCat)",
         "\n     - Fixed Modded client seeing the Medic shield icon when Medic is dead (By D1GQ)",
-        "\n     - Mini can not be duelled, marked, blooded, and sliced (By Lezaiya)",
+        "\n     - Mini non può essere duellato, contrassegnato, insanguinato e affettato (Da Lezaiya)",
         "\n     - Fixed typos, inconsistencies, and mistakes in descriptions, names, etc. (By Moe, TommyXL, Drakos, WaterPanda, Sunnyboi, LezaiYa)",
         "\n     - Fixed bug when after guessing, Judge, etc. the meeting status was not checked (By TommyXL)",
         "\n     - Fixed bug when Pelican ended the game when eaten players returned (By TommyXL)",
