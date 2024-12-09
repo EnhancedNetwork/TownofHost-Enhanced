@@ -1533,6 +1533,10 @@
   "MechanicFixesCommunications": "Can Fix Both Comms Alone In MIRA HQ",
   "MechanicFixesElectrical": "Can Fix Lights With One Switch",
 
+  "NarcCanSeeTeammates": "Narc Impostor(Or Crewpostor) Can See Madmates(Or Impostors)",
+  "NarcCanKillMadmates": "Narc Impostor Can Kill Madmates",
+  "NarcCanUseSabotage": "Narc Can Sabotage",
+  
   "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
   "SheriffCanKill%role%": "Can Kill %role%",
   "SheriffCanKillNeutrals": "Can Kill <color=#7f8c8d>Neutrals</color>",
