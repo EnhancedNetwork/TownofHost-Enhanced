@@ -53,10 +53,13 @@ public static class CustomWinnerHolder
     {
         foreach (var role in playerId.GetPlayer()?.GetCustomSubRoles().ToArray())
         {
-            if (!(role == CustomRoles.Madmate || role == CustomRoles.Admired || role.IsConverted())) continue;
+            if (!(role == CustomRoles.Madmate || role == CustomRoles.Admired || role == CustomRoles.Narc || role.IsConverted())) continue;
             switch (role)
             {
                 case CustomRoles.Admired:
+                    ResetAndSetWinner(CustomWinner.Crewmate);
+                    return true;
+                case CustomRoles.Narc:
                     ResetAndSetWinner(CustomWinner.Crewmate);
                     return true;
                 case CustomRoles.Madmate:

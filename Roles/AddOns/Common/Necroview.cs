@@ -30,20 +30,20 @@ public class Necroview : IAddon
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
                 or CustomRoles.Soulless)
-                return Main.roleColors[CustomRoles.Knight];
+                return "7f8c8d";
         }
 
-        if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired))
+        if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired) && !target.Is(CustomRoles.Narc))
         {
-            return Main.roleColors[CustomRoles.Impostor];
+            return "ff1919";
         }
 
-        if (customRole.IsCrewmate())
+        if (customRole.IsCrewmate() || target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc))
         {
-            return Main.roleColors[CustomRoles.Bait];
+            return "00ffff";
         }
 
-        return Main.roleColors[CustomRoles.Knight];
+        return "7f8c8d";
     }
 }
 

@@ -94,6 +94,12 @@ internal class Admirer : RoleBase
             return false;
         }
 
+        if (target.Is(CustomRoles.Narc))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantRecruitNarc")));
+            return false;
+        }
+
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
