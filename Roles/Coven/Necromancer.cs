@@ -109,7 +109,7 @@ internal class Necromancer : CovenManager
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return GetString("NecromancerAbilityCooldown") + ": " + AbilityTimer.ToString() + "s / " + AbilityCooldown.GetFloat().ToString() + "s";
+        return string.Format(GetString("NecromancerAbilityCooldown") + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
     }
     public override void UnShapeShiftButton(PlayerControl nm)
     {
@@ -142,21 +142,30 @@ internal class Necromancer : CovenManager
         nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
         _ = new LateTask(() =>
         {
-            if (nm.GetCustomRole() != CustomRoles.Necromancer)
-            {
-                nm.GetRoleClass()?.OnRemove(nm.PlayerId);
-            }
-            nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
-            nm.RpcSetCustomRole(CustomRoles.Necromancer);
-            nm.ResetKillCooldown();
-            nm.SyncSettings();
-            nm.RpcGuardAndKill(nm);
-            nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Necromancer)));
-            UsedRoles[nm.PlayerId].Add(role);
-            canUseAbility = false;
-            AbilityTimer = 0;
+            if (!GameStates.IsMeeting)
+                RevertRole(nm, role);
         }, AbilityDuration.GetFloat(), "Necromancer Revert Role");
     }
+    private static void RevertRole(PlayerControl nm, CustomRoles role)
+    {
+        if (nm == null) return;
+        if (nm.GetCustomRole() != CustomRoles.Necromancer)
+        {
+            nm.GetRoleClass()?.OnRemove(nm.PlayerId);
+        }
+        if (nm.IsAlive())
+            nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
+        nm.RpcSetCustomRole(CustomRoles.Necromancer);
+        nm.ResetKillCooldown();
+        nm.SyncSettings();
+        nm.RpcGuardAndKill(nm);
+        nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Necromancer)));
+        UsedRoles[nm.PlayerId].Add(role);
+        canUseAbility = false;
+        AbilityTimer = 0;
+        Logger.Info($"Reverted Role for {nm.GetRealName()}", "Necromancer");
+    }
+
     private static bool BlackList(CustomRoles role)
     {
         return role.IsGhostRole() || role is
@@ -205,9 +214,16 @@ internal class Necromancer : CovenManager
         }
         else canUseAbility = true;
     }
-    public override void AfterMeetingTasks()
+    public static void UnAfterMeetingTasks()
     {
         AbilityTimer = 0;
+        foreach (var nm in Main.AllPlayerControls.Where(x => Main.PlayerStates[x.PlayerId].IsNecromancer))
+        {
+            if (nm.GetCustomRole() != CustomRoles.Necromancer)
+            {
+                RevertRole(nm, nm.GetCustomRole());
+            }
+        }
     }
     private static void Countdown(int seconds, PlayerControl player)
     {

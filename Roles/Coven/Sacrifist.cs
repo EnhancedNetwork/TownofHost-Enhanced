@@ -305,7 +305,7 @@ internal class Sacrifist : CovenManager
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return debuffTimer.ToString() + "s / " + maxDebuffTimer.ToString() + "s";
+        return GetString("SacrifistDebuffCooldown") + ": " + string.Format("{0:f0}", debuffTimer) + "s / " + string.Format("{0:f0}", maxDebuffTimer) + "s";
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {

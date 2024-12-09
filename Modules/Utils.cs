@@ -546,6 +546,7 @@ public static class Utils
                             case CustomRoles.Infected:
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
+                            case CustomRoles.Enchanted:
                                 RoleColor = GetRoleColor(subRole);
                                 RoleText = GetRoleString($"{subRole}-") + RoleText;
                                 break;
@@ -639,6 +640,7 @@ public static class Utils
                 case CustomRoles.EvilSpirit:
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
+                case CustomRoles.Enchanted:
                 case CustomRoles.Rascal:
                     hasTasks &= !ForRecompute;
                     break;
@@ -2431,6 +2433,7 @@ public static class Utils
             if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+            if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks(); 
         }
         catch (Exception error)
         {

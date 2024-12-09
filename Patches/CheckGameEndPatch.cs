@@ -99,7 +99,7 @@ class GameEndCheckerForNormal
                 {
                     case CustomWinner.Crewmate:
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId) || !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
@@ -110,7 +110,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Impostor:
-                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) || !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -124,7 +124,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Apocalypse:
-                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) || !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -441,7 +441,7 @@ class GameEndCheckerForNormal
                     foreach (var id in WinnerIds)
                     {
                         var pc = Utils.GetPlayerById(id);
-                        if (pc == null || !pc.GetCustomRole().IsNeutral() || !Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
+                        if (pc == null || !pc.GetCustomRole().IsNeutral() || Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
 
                         foreach (var tar in Main.AllPlayerControls)
                             if (!WinnerIds.Contains(tar.PlayerId) && tar.GetCustomRole() == pc.GetCustomRole())
