@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
@@ -9,6 +9,9 @@ public class Narc : IAddon
     public AddonTypes Type => AddonTypes.Misc;
 
     public static OptionItem MeetingsNeededForWin;
+    public static OptionItem NarcCanKillMadmates;
+    public static OptionItem NarcCanSeeTeammates;
+    public static OptionItem NarcCanUseSabotage;
 
     public void SetupCustomOption()
     {
@@ -16,6 +19,12 @@ public class Narc : IAddon
         MeetingsNeededForWin = IntegerOptionItem.Create(Id + 3, "MeetingsNeededForWin", new(0, 10, 1), 5, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc])
             .SetValueFormat(OptionFormat.Times);
+        NarcCanSeeTeammates = BooleanOptionItem.Create(Id + 4, "NarcCanSeeTeammates", false, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        NarcCanKillMadmates = BooleanOptionItem.Create(Id + 5, "NarcCanKillMadmates", false, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        NarcCanUseSabotage = BooleanOptionItem.Create(Id + 6, "NarcCanUseSabotage", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
     { }
@@ -23,5 +32,6 @@ public class Narc : IAddon
     { }
     public void Remove(byte playerId)
     { }
-// yep.It's the end.If you have better ideas on Narc's win condition,please inform me at https://discord.com/channels/1094344790910455908/1309925307163086948
+    public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
+// Note:Narc Parasite and Narc Crewpostor are still shown as neutral to some roles
 }
