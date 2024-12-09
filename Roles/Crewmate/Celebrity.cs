@@ -45,8 +45,8 @@ internal class Celebrity : RoleBase
         if (target.PlayerId == _Player.PlayerId && seer.PlayerId == _Player.PlayerId) return true;
 
         // Hide kill flash for some team
-        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostorV4Narc()) return false;
-        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutralV4Narc()) return false;
+        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Narc)) return false;
+        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) return false;
 
         seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
         return true;
