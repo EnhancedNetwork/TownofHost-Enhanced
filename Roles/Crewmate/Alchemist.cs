@@ -14,14 +14,12 @@ internal class Alchemist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 6400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
+    private static List<byte> PlayerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Alchemist).Select(x => x.PlayerId).ToList();
     private static OptionItem VentCooldown;
     private static OptionItem ShieldDuration;
     private static OptionItem Vision;
@@ -62,7 +60,6 @@ internal class Alchemist : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         BloodthirstList.Clear();
         PotionID = 10;
         PlayerName = string.Empty;
@@ -73,7 +70,6 @@ internal class Alchemist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         PlayerName = Utils.GetPlayerById(playerId).GetRealName();
 
         if (AmongUsClient.Instance.AmHost)
@@ -253,9 +249,10 @@ internal class Alchemist : RoleBase
             SendRPC(player);
         }
     }
+
     public static void OnReportDeadBodyGlobal()
     {
-        foreach (var alchemistId in playerIdList)
+        foreach (var alchemistId in PlayerIdList)
         {
             if (!IsInvis(alchemistId)) continue;
             var alchemist = Utils.GetPlayerById(alchemistId);

@@ -27,7 +27,8 @@ public class Mare : IAddon
     }
     public void Add(byte playerId, bool gameIsLoading = true)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public void Remove(byte playerId)
     {

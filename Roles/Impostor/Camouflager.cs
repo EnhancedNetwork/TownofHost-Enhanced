@@ -57,7 +57,8 @@ internal class Camouflager : RoleBase
         CanUseCommsSabotage = CanUseCommsSabotagOpt.GetBool();
         DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
 
-        Playerids.Add(playerId);
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

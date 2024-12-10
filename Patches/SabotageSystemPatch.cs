@@ -3,6 +3,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -128,7 +129,7 @@ public class SabotageSystemPatch
 
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
+                if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                 {
                     // Need for hiding player names if player is desync Impostor
                     Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
@@ -186,7 +187,7 @@ public class SabotageSystemPatch
 
                     foreach (var pc in Main.AllAlivePlayerControls)
                     {
-                        if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
+                        if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                         {
                             // Need for display player names if player is desync Impostor
                             Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);

@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -50,6 +51,10 @@ public static class CustomRoleManager
 
             case Custom_Team.Neutral:
                 roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
+                break;
+
+            case Custom_Team.Coven:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven()).Select(r => r.Value).ToList();
                 break;
 
             default:
@@ -106,10 +111,13 @@ public static class CustomRoleManager
         }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
-        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
+        if (CustomRoles.Dazzler.RoleExist()) Dazzler.SetDazzled(player, opt);
+        if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
-        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
+        if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);
+
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -180,7 +188,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
+        if (CustomRoles.PlagueBearer.RoleExist(true) && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }

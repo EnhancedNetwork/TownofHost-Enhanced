@@ -1,11 +1,11 @@
-using AmongUs.GameOptions;
-using TOHE.Roles.AddOns.Common;
+﻿using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
-namespace TOHE.Roles.Neutral;
+namespace TOHE.Roles.Coven;
 
-internal class Poisoner : RoleBase
+internal class Poisoner : CovenManager
 {
     private class PoisonedInfo(byte poisonerId, float killTimer)
     {
@@ -14,61 +14,81 @@ internal class Poisoner : RoleBase
     }
     //===========================SETUP================================\\
     private const int Id = 17500;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenTrickery;
     //==================================================================\\
 
     private static OptionItem OptionKillDelay;
-    private static OptionItem CanVent;
+    //private static OptionItem CanVent;
     public static OptionItem KillCooldown;
-    private static OptionItem HasImpostorVision;
+    //private static OptionItem HasImpostorVision;
 
     private static readonly Dictionary<byte, PoisonedInfo> PoisonedPlayers = [];
+    private static readonly Dictionary<byte, List<byte>> RoleblockedPlayers = [];
+
 
     private static float KillDelay;
 
     public override void SetupCustomOption()
     {
-        Options.SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Poisoner, 1, zeroOne: false);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "PoisonCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner])
+        Options.SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Poisoner, 1, zeroOne: false);
+        KillCooldown = FloatOptionItem.Create(Id + 10, "PoisonCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner])
             .SetValueFormat(OptionFormat.Seconds);
-        OptionKillDelay = FloatOptionItem.Create(Id + 11, "PoisonerKillDelay", new(1f, 60f, 1f), 10f, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner])
+        OptionKillDelay = FloatOptionItem.Create(Id + 11, "PoisonerKillDelay", new(1f, 60f, 1f), 10f, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
+        //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
+        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Poisoner]);
     }
 
     public override void Init()
     {
-        playerIdList.Clear();
         PoisonedPlayers.Clear();
+        RoleblockedPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        RoleblockedPlayers[playerId] = [];
+        GetPlayerById(playerId)?.AddDoubleTrigger();
+
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
+    //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    //public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.Bait)) return true;
-
-        killer.SetKillCooldown();
-
-        if (!PoisonedPlayers.ContainsKey(target.PlayerId))
+        if (killer.CheckDoubleTrigger(target, () => { RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId); }))
         {
-            PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
+            if (HasNecronomicon(killer))
+            {
+                if (target.GetCustomRole().IsCovenTeam())
+                {
+                    killer.Notify(GetString("CovenDontKillOtherCoven"));
+                    return false;
+                }
+                if (target.Is(CustomRoles.Bait)) return true;
+
+                killer.SetKillCooldown();
+
+                if (!PoisonedPlayers.ContainsKey(target.PlayerId))
+                {
+                    PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
+                }
+            }
+            return false;
         }
-        return false;
+        else
+        {
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            return false;
+        }
     }
 
     public override void OnFixedUpdate(PlayerControl poisoner, bool lowLoad, long nowTime)
@@ -120,11 +140,35 @@ internal class Poisoner : RoleBase
     {
         foreach (var targetId in PoisonedPlayers.Keys)
         {
-            var target = Utils.GetPlayerById(targetId);
-            var poisoner = Utils.GetPlayerById(PoisonedPlayers[targetId].PoisonerId);
+            var target = GetPlayerById(targetId);
+            var poisoner = GetPlayerById(PoisonedPlayers[targetId].PoisonerId);
             KillPoisoned(poisoner, target);
         }
         PoisonedPlayers.Clear();
+        foreach (var poisoner in RoleblockedPlayers.Keys)
+        {
+            RoleblockedPlayers[poisoner].Clear();
+        }
+    }
+    public static bool IsRoleblocked(byte target)
+    {
+        if (RoleblockedPlayers.Count < 1) return false;
+        foreach (var player in RoleblockedPlayers.Keys)
+        {
+            if (RoleblockedPlayers[player].Contains(target)) return true;
+        }
+        return false;
+    }
+    public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
+    {
+        if (!IsRoleblocked(pc.PlayerId) && pc.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false; // I was told these roles should be roleblock immune
+        if (pc == null) return false;
+
+        pc.ResetKillCooldown();
+        pc.SetKillCooldown();
+
+        Logger.Info($"{pc.GetRealName()} fail ability because roleblocked", "Poisoner");
+        return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

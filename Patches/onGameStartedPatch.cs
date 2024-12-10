@@ -72,6 +72,7 @@ internal class ChangeRoleSettings
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
+            Main.DeadPassedMeetingPlayers.Clear();
             Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
 
@@ -225,6 +226,7 @@ internal class ChangeRoleSettings
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
+            CustomNetObject.Reset();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
