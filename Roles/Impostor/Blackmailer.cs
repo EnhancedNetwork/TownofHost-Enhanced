@@ -62,9 +62,16 @@ internal class Blackmailer : RoleBase
         var targetId = reader.ReadByte();
 
         if (targetId == byte.MaxValue)
+        {
             ClearBlackmaile(false);
+        }
         else
-            ForBlackmailer.Add(targetId, _Player.PlayerId);
+        {
+            if (!ForBlackmailer.ContainsKey(targetId))
+            {
+                ForBlackmailer.Add(targetId, _Player.PlayerId);
+            }
+        }
     }
     public override bool OnCheckShapeshift(PlayerControl blackmailer, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
