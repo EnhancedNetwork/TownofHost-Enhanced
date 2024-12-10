@@ -86,6 +86,12 @@ internal class AbyssBringer : RoleBase
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
+        if (!Main.AllAlivePlayerControls.Where(x => x.PlayerId != shapeshifter.PlayerId).Any())
+        {
+            return;
+        }
+        // When no player exists, Instantly spawm and despawn networked object will cause error spam
+
         var pos = shapeshifter.GetCustomPosition();
         var room = shapeshifter.GetPlainShipRoom();
         var roomName = room == null ? string.Empty : Translator.GetString($"{room.RoomId}");
