@@ -71,16 +71,17 @@ internal class CopyCat : RoleBase
             ////////////           /*remove the settings for current role*/             /////////////////////
 
             var pcRole = pc.GetCustomRole();
-            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Retributionist)
+            if (pcRole is not CustomRoles.Sidekick && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
+                    pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
                 }
-                pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
-                pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
             pc.ResetKillCooldown();
+            pc.SetKillCooldown();
         }
     }
 
@@ -100,6 +101,7 @@ internal class CopyCat : RoleBase
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
             killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return false;
         }
         if (CopyCrewVar.GetBool())
@@ -158,6 +160,7 @@ internal class CopyCat : RoleBase
         }
         killer.Notify(GetString("CopyCatCanNotCopy"));
         killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return false;
     }
 
