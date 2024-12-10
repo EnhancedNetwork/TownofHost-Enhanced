@@ -876,6 +876,14 @@ class ReportDeadBodyPatch
                         }
                         player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
                     }
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
                 }
                 catch (Exception error)
                 {

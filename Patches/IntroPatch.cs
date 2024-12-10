@@ -534,8 +534,9 @@ class BeginCrewmatePatch
                 __instance.TeamTitle.text = Utils.GetRoleName(role);
                 __instance.TeamTitle.color = Utils.GetRoleColor(role);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
-                __instance.ImpostorText.gameObject.SetActive(false);
+                __instance.ImpostorText.gameObject.SetActive(true);
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+                __instance.ImpostorText.text = GetString("SubText.GM");
                 break;
 
             case CustomRoles.ChiefOfPolice:

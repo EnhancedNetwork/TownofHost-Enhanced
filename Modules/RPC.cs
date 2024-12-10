@@ -618,7 +618,7 @@ internal class RPCHandlerPatch
             case CustomRPC.FixModdedClientCNO:
                 var CNO = reader.ReadNetObject<PlayerControl>();
                 bool active = reader.ReadBoolean();
-                CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                CNO?.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
                 break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
