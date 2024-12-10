@@ -212,7 +212,7 @@ internal class AbyssBringer : RoleBase
                 {
                     BlackHoles.Remove(id);
                 }
-                BlackHoles.Add(id ,new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
+                BlackHoles.Add(id, new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
                 break;
             case 2:
                 var key = reader.ReadByte();
