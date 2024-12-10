@@ -1190,6 +1190,7 @@
   "FixKillCooldownValue": "Starting Kill Cooldown",
   "OverclockedReduction": "Kill Cooldown Reduction",
   "GhostCanSeeOtherRoles": "Ghosts Can See Other Roles",
+  "PreventSeeRolesImmediatelyAfterDeath": "Prevent seeing other's roles immediately after death",
   "GhostCanSeeOtherVotes": "Ghosts Can See Vote Colors",
   "GhostCanSeeDeathReason": "Ghost Can See Cause Of Death",
   "GhostIgnoreTasks": "Ghosts Exempt From Tasks",

@@ -34,9 +34,9 @@ internal class RiftMaker : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         SSCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
             .SetValueFormat(OptionFormat.Seconds);
-        TPCooldownOpt = FloatOptionItem.Create(Id + 12, "TPCooldown", new(5f, 25f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
+        TPCooldownOpt = FloatOptionItem.Create(Id + 12, "TPCooldown", new(2.5f, 25f, 2.5f), 5f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
             .SetValueFormat(OptionFormat.Seconds);
-        RiftRadius = FloatOptionItem.Create(Id + 13, "RiftRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
+        RiftRadius = FloatOptionItem.Create(Id + 13, "RiftRadius", new(0.5f, 4f, 0.5f), 1f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.RiftMaker])
             .SetValueFormat(OptionFormat.Multiplier);
     }
 
@@ -123,22 +123,21 @@ internal class RiftMaker : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
         var shapeshifterId = shapeshifter.PlayerId;
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var currentPos = shapeshifter.GetCustomPosition();
         var totalMarked = MarkedLocation.Count;
         if (totalMarked == 1 && Utils.GetDistance(currentPos, MarkedLocation.ElementAt(0).Key) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
-            return false;
+            return;
         }
         else if (totalMarked == 2 && Utils.GetDistance(currentPos, MarkedLocation.ElementAt(1).Key) <= 5f)
         {
             shapeshifter.Notify(GetString("RiftsTooClose"));
-            return false;
+            return;
         }
 
         if (totalMarked >= 2)
@@ -154,7 +153,7 @@ internal class RiftMaker : RoleBase
 
         SendRPC(shapeshifterId, 0);
         //sendrpc for marked location and lasttp
-        return false;
+        return;
     }
 
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)

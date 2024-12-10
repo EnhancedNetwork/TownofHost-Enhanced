@@ -54,6 +54,8 @@ public abstract class RoleBase
     {
         Remove(playerId);
         IsEnable = false;
+
+        Main.UnShapeShifter.Remove(playerId);
     }
 
     /// <summary>
