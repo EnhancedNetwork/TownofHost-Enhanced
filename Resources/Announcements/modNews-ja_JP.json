@@ -178,7 +178,7 @@
         "\n     - Changed the logic for disconnecting from the game if the API crashes (By TommyXL)",
         "\n     - Set 300 CD for Nemesis if they cannot use the kill button (By TommyXL)",
         "\n     - Changed warning message about Api Error Connection (By Drakos)",
-        "\n\r<b>【Bug Fixes】</b>",
+        "\n\n<b>【バグ修正】</b>",
         "\n     - Many roles will no longer be able to receive some add-ons that were incompatible (By TommyXL, ryuk, WaterPanda)",
         "\n     - Fixed Bounty Hunter resetting incorrect targets (By TommyXL)",
         "\n     - Fixed null error post-meeting for Vulture and Seeker and error after votes in Airship (By TommyXL)",
