@@ -44,15 +44,11 @@ internal class BountyHunter : RoleBase
     }
     public override void Init()
     {
-
-
         Targets.Clear();
         ChangeTimer.Clear();
     }
     public override void Add(byte playerId)
     {
-
-
         TargetChangeTime = OptionTargetChangeTime.GetFloat();
         SuccessKillCooldown = OptionSuccessKillCooldown.GetFloat();
         FailureKillCooldown = OptionFailureKillCooldown.GetFloat();
@@ -64,11 +60,6 @@ internal class BountyHunter : RoleBase
             //CustomRoleManager.OnFixedUpdateLowLoadOthers.Add(OnFixedUpdateLowLoadOthers);
         }
     }
-    public override void Remove(byte playerId)
-    {
-
-    }
-
     private static void SendRPC(byte bountyId, byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBountyTarget, SendOption.Reliable, -1);
