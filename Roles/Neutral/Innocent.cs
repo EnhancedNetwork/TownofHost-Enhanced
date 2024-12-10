@@ -8,15 +8,15 @@ internal class Innocent : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 14300;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
     private static OptionItem InnocentCanWinByImp;
-    private bool TargetIsKilled = false; 
+    private bool TargetIsKilled = false;
 
     public override void SetupCustomOption()
     {
@@ -26,12 +26,12 @@ internal class Innocent : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
+
         TargetIsKilled = false;
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
         TargetIsKilled = false;
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;

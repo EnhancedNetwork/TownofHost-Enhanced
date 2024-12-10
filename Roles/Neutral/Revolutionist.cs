@@ -1,11 +1,11 @@
-﻿using Hazel;
-using AmongUs.GameOptions;
-using UnityEngine;
-using TOHE.Roles.Core;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
@@ -13,8 +13,8 @@ internal class Revolutionist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 15200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
+
+
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -64,12 +64,12 @@ internal class Revolutionist : RoleBase
         RevolutionistCountdown.Clear();
         CurrentDrawTarget = byte.MaxValue;
 
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-        
+
+
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
 

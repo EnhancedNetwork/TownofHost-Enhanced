@@ -30,8 +30,8 @@ public class LastImpostor : IAddon
         Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
-        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor)&& !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor);
-    
+        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor);
+
     public static void SetSubRole()
     {
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;

@@ -49,7 +49,7 @@ internal class Imitator : RoleBase
         if (role is CustomRoles.Jackal
             or CustomRoles.HexMaster
             or CustomRoles.Poisoner
-            or CustomRoles.Juggernaut 
+            or CustomRoles.Juggernaut
             or CustomRoles.BloodKnight
             or CustomRoles.Sheriff)
         {

@@ -68,7 +68,7 @@ internal class Cultist : RoleBase
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
-            
+
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
@@ -101,9 +101,9 @@ internal class Cultist : RoleBase
     public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Cultist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public static bool CanBeCharmed(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed)
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
@@ -112,7 +112,7 @@ internal class Cultist : RoleBase
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
         if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && TargetKnowOtherTarget.GetBool()) return true;
-        
+
         return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

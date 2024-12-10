@@ -46,7 +46,7 @@ public class Stealer : IAddon
     public static void OnMurderPlayer(PlayerControl killer)
     {
         killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
-            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * TicketsPerKill.GetFloat())
+            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * TicketsPerKill.GetFloat() + 1f)
             .ToString("0.0#####")));
     }
 }
