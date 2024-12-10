@@ -13,9 +13,6 @@ internal class Retributionist : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11000;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -23,6 +20,7 @@ internal class Retributionist : RoleBase
     private static OptionItem RetributionistCanKillNum;
     private static OptionItem MinimumPlayersAliveToRetri;
     private static OptionItem CanOnlyRetributeWithTasksDone;
+    private static OptionItem PreventSeeRolesBeforeSkillUsedUp;
 
     private static readonly Dictionary<byte, int> RetributionistRevenged = [];
 
@@ -32,6 +30,8 @@ internal class Retributionist : RoleBase
         RetributionistCanKillNum = IntegerOptionItem.Create(Id + 10, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
+        PreventSeeRolesBeforeSkillUsedUp = BooleanOptionItem.Create(Id + 20, "PreventSeeRolesBeforeSkillUsedUp", true, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
         MinimumPlayersAliveToRetri = IntegerOptionItem.Create(Id + 11, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
@@ -41,15 +41,19 @@ internal class Retributionist : RoleBase
     }
     public override void Init()
     {
-
         RetributionistRevenged.Clear();
     }
     public override void Add(byte playerId)
     {
-
         RetributionistRevenged[playerId] = 0;
     }
-
+    public static bool PreventKnowRole(PlayerControl seer)
+    {
+        if (!seer.Is(CustomRoles.Retributionist) || seer.IsAlive()) return false;
+        if (PreventSeeRolesBeforeSkillUsedUp.GetBool() && RetributionistRevenged.TryGetValue(seer.PlayerId, out var killNum) && killNum < RetributionistCanKillNum.GetInt())
+            return true;
+        return false;
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
