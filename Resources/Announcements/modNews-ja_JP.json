@@ -178,7 +178,7 @@
         "\n     - Changed the logic for disconnecting from the game if the API crashes (By TommyXL)",
         "\n     - Set 300 CD for Nemesis if they cannot use the kill button (By TommyXL)",
         "\n     - Changed warning message about Api Error Connection (By Drakos)",
-        "\n\r<b>【Bug Fixes】</b>",
+        "\n\n<b>【バグ修正】</b>",
         "\n     - Many roles will no longer be able to receive some add-ons that were incompatible (By TommyXL, ryuk, WaterPanda)",
         "\n     - Fixed Bounty Hunter resetting incorrect targets (By TommyXL)",
         "\n     - Fixed null error post-meeting for Vulture and Seeker and error after votes in Airship (By TommyXL)",
@@ -356,12 +356,12 @@
         "\n     - Italian (By alot, Baphojack, Mattix606)",
         "\n     - Japanese (By Sunnyboi)",
         "\n     - Latin American (By CreepPower)",
-        "\n     - Russian (By TommyXL, Shoulder Devil, chill_ultimated, Nevermore59)",
-        "\n     - Simplified Chinese (By CrewCyan, LezaiYa, NikoCat)",
-        "\n     - Spanish (By Dawson, Sunnyboi, thewhiskas27, xxSShadow)",
-        "\n     - Traditional Chinese (By FlyFlyTurtle, Hinharrrrr, netherdragontw, Pomelo_)",
-        "\n<b> Check out all of our translators on our website</b>\r\n",
-        "\n\n★ Welcome to Town of Host: Enhanced v2.1.0 ★"
+        "\n- ロシア語 (製作者：TommyXL、Shoulder Devil、chill_ultimated、Nevermore59)",
+        "\n- 簡体字中国語 (製作者：CrewCyan、LezaiYa、NikoCat)",
+        "\n- スペイン語 (製作者：Dawson、Sunnyboi、thewhiskas27、xxSShadow)",
+        "\n- 繁体字中国語 (製作者：FlyFlyTurtle、Hinharrrrr、netherdragontw、Pomelo_)",
+        "\n<b>当社のウェブサイトで、すべての翻訳者をご覧ください</b>\n",
+        "\n\n★ Town of Host: Enhanced v2.1.0 へようこそ ★"
       ],
       "Date": "2024-11-3T12:50:00Z"
     }
