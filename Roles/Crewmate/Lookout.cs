@@ -7,9 +7,9 @@ internal class Lookout : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 11800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -18,14 +18,14 @@ internal class Lookout : RoleBase
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Lookout);
     }
-    
+
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)

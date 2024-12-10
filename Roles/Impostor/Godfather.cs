@@ -1,6 +1,6 @@
 ﻿using TOHE.Roles.Core;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
@@ -8,9 +8,9 @@ internal class Godfather : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 3400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+
+
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -35,12 +35,12 @@ internal class Godfather : RoleBase
 
     public override void Init()
     {
-        PlayerIds.Clear();
+
         GodfatherTarget.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -51,10 +51,25 @@ internal class Godfather : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => GodfatherTarget.Clear();
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))
+        if (GodfatherTarget.Contains(target.PlayerId))
         {
-            if (GodfatherChangeOpt.GetValue() == 0) killer.RpcSetCustomRole(CustomRoles.Refugee);
-            else killer.RpcSetCustomRole(CustomRoles.Madmate);
+            if (GodfatherChangeOpt.GetValue() == 0)
+            {
+                killer.RpcChangeRoleBasis(CustomRoles.Refugee);
+                killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+                killer.RpcSetCustomRole(CustomRoles.Refugee);
+                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+            }
+            else
+            {
+                killer.RpcSetCustomRole(CustomRoles.Madmate);
+            }
+
+            killer.RpcGuardAndKill();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Godfather), GetString("GodfatherRefugeeMsg")));
+            NotifyRoles(killer);
         }
     }
     public override void AfterMeetingTasks() => Didvote = false;

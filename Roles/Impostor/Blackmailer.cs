@@ -12,7 +12,7 @@ internal class Blackmailer : RoleBase
     //===========================SETUP================================\\
     private const int Id = 24600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Blackmailer);
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -96,7 +96,7 @@ internal class Blackmailer : RoleBase
         ForBlackmailer.Clear();
         if (sendRpc) SendRPC();
     }
-    
+
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
@@ -107,7 +107,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName(isMeeting: true);
-            if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name; 
+            if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name;
             AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }

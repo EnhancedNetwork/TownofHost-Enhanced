@@ -231,7 +231,7 @@ internal class Pelican : RoleBase
             Vector2 teleportPosition;
             if (Scavenger.KilledPlayersId.Contains(pelicanId) && PelicanLastPosition.TryGetValue(pelicanId, out var lastPosition))
                 teleportPosition = lastPosition;
-            else 
+            else
                 teleportPosition = pelican.GetCustomPosition();
 
             foreach (var tar in eatenList[pelicanId])
@@ -268,9 +268,9 @@ internal class Pelican : RoleBase
         if (lowLoad) return;
 
         Count--;
-        
-        if (Count > 0) return; 
-        
+
+        if (Count > 0) return;
+
         Count = 4;
 
         if (eatenList.TryGetValue(player.PlayerId, out var playerList))

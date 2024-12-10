@@ -1,14 +1,14 @@
-using System.Collections;
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
-using UnityEngine;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Neutral;
+using System.Collections;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
-using static TOHE.Translator;
+using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.CustomWinnerHolder;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -244,7 +244,7 @@ class GameEndCheckerForNormal
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
-                    
+
                     if (godArray.Any())
                     {
                         bool isGodWinConverted = false;
@@ -338,7 +338,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Romantic:
-                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
+                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
                             {
                                 WinnerIds.Add(pc.PlayerId);

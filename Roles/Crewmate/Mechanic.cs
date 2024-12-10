@@ -1,9 +1,9 @@
+using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
-using AmongUs.GameOptions;
-using static TOHE.Utils;
 using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -136,7 +136,7 @@ internal class Mechanic : RoleBase
         if (!FixesElectrical.GetBool()) return;
 
         //var playerId = player.PlayerId;
-        
+
         if (SkillLimit.GetFloat() > 0 &&
             AbilityLimit + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 <= 0)
             return;

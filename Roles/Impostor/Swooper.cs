@@ -88,7 +88,7 @@ internal class Swooper : RoleBase
         var swooperId = swooper.PlayerId;
 
         if (!AmongUsClient.Instance.AmHost || IsInvis(swooperId)) return;
-        
+
         _ = new LateTask(() =>
         {
             if (CanGoInvis(swooperId))
@@ -101,7 +101,7 @@ internal class Swooper : RoleBase
                 InvisDuration.Remove(swooperId);
                 InvisDuration.Add(swooperId, Utils.GetTimeStamp());
                 SendRPC(swooper);
-                
+
                 swooper.Notify(GetString("SwooperInvisState"), SwooperDuration.GetFloat());
             }
             else
@@ -212,7 +212,7 @@ internal class Swooper : RoleBase
     {
         // Only for modded
         if (seer == null || !isForHud || isForMeeting || !seer.IsAlive()) return string.Empty;
-        
+
         var str = new StringBuilder();
         var seerId = seer.PlayerId;
 

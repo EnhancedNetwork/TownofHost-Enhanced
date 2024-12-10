@@ -56,7 +56,7 @@ internal class Deputy : RoleBase
 
             return false;
         }
-        
+
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
         return false;
     }

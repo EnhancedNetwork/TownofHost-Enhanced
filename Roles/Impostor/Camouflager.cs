@@ -13,7 +13,7 @@ internal class Camouflager : RoleBase
     private const int Id = 2900;
     public static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -57,7 +57,8 @@ internal class Camouflager : RoleBase
         CanUseCommsSabotage = CanUseCommsSabotagOpt.GetBool();
         DisableReportWhenCamouflageIsActive = DisableReportWhenCamouflageIsActiveOpt.GetBool();
 
-        Playerids.Add(playerId);
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
     }
     public override void Remove(byte playerId)
     {

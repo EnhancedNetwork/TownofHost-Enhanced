@@ -34,10 +34,10 @@ public class OptionBackupData
             if (option.TryGetInt(name, out var value))
                 AllValues.Add(new IntOptionBackupValue(name, value));
         }
-        
+
         // [Vanilla bug] Only the number of people in the room cannot be obtained with GetInt, so obtain it separately.
         AllValues.Add(new IntOptionBackupValue(Int32OptionNames.MaxPlayers, option.MaxPlayers));
-       
+
         // TryGetUInt is not implemented, so get it separately
         AllValues.Add(new UIntOptionBackupValue(UInt32OptionNames.Keywords, (uint)option.Keywords));
 

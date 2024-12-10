@@ -57,7 +57,7 @@ internal class Pixie : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => false;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));

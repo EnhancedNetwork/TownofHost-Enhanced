@@ -44,7 +44,7 @@ public class Eavesdropper : IAddon
             {
                 // Get all specific msg
                 var eavesdropperMsg = MeetingHudStartPatch.msgToSend.Where(x => x.Item2 != 255).Select(x => x.Item1).ToList();
-                
+
                 // Check any data
                 if (eavesdropperMsg.Any())
                 {

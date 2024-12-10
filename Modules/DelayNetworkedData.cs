@@ -65,7 +65,7 @@ public class InnerNetClientPatch
 
             foreach (var player in batch)
             {
-                if (messageWriter.Length > 1600) break;
+                if (messageWriter.Length > 500) break;
                 if (player != null && player.ClientId != clientId && !player.Disconnected)
                 {
                     __instance.WriteSpawnMessage(player, player.OwnerId, player.SpawnFlags, messageWriter);

@@ -64,7 +64,7 @@ internal class Pickpocket : RoleBase
         if (isSuicide || inMeeting) return;
 
         killer.Notify(string.Format(GetString("PickpocketGetVote"),
-            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * VotesPerKill.GetFloat())
+            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * VotesPerKill.GetFloat() + 1f)
             .ToString("0.0#####")));
     }
 }

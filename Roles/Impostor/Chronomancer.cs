@@ -1,11 +1,11 @@
-﻿using System;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
+using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
 
 namespace TOHE.Roles.Impostor;
 

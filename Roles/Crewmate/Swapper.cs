@@ -1,12 +1,12 @@
 using Hazel;
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using UnityEngine;
-using System.Text;
-using static TOHE.Translator;
 using static TOHE.CheckForEndVotingPatch;
+using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
@@ -68,7 +68,7 @@ internal class Swapper : RoleBase
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
-    
+
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
@@ -363,7 +363,7 @@ internal class Swapper : RoleBase
         Logger.Msg($"Click: ID {playerId}", "Swapper UI");
         var pc = playerId.GetPlayer();
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        
+
         if (AmongUsClient.Instance.AmHost) SwapMsg(PlayerControl.LocalPlayer, $"/sw {playerId}", true);
         else SendSwapRPC(playerId);
 
@@ -419,8 +419,9 @@ internal class Swapper : RoleBase
             renderer.sprite = CustomButton.Get("SwapNo");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { 
-                 SwapperOnClick(pva.TargetPlayerId, __instance); 
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SwapperOnClick(pva.TargetPlayerId, __instance);
             }));
         }
     }

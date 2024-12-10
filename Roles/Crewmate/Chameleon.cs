@@ -2,11 +2,11 @@ using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
-using static TOHE.Utils;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -76,7 +76,7 @@ internal class Chameleon : RoleBase
             float limit = reader.ReadSingle();
             Main.PlayerStates[pid].RoleClass.AbilityLimit = limit;
         }
-        else 
+        else
         {
             InvisCooldown.Clear();
             InvisDuration.Clear();
@@ -91,12 +91,12 @@ internal class Chameleon : RoleBase
         AURoleOptions.EngineerCooldown = ChameleonCooldown.GetFloat() + 1f;
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
-    
+
     private static bool CanGoInvis(byte id)
         => GameStates.IsInTask && !InvisDuration.ContainsKey(id) && !InvisCooldown.ContainsKey(id);
-    
+
     private static bool IsInvis(byte id) => InvisDuration.ContainsKey(id);
-   
+
     public override void OnReportDeadBody(PlayerControl y, NetworkedPlayerInfo x)
     {
         foreach (var chameleonId in _playerIdList.ToArray())
@@ -169,7 +169,7 @@ internal class Chameleon : RoleBase
                 InvisCooldown.Add(chameleonId, nowTime);
 
                 chameleon.Notify(GetString("ChameleonInvisStateOut"));
-                
+
                 needSync = true;
                 InvisDuration.Remove(chameleonId);
             }

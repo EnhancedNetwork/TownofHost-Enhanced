@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
 using System.Text;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -39,10 +39,10 @@ internal class HexMaster : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.HexMaster, 1, zeroOne: false);        
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.HexMaster, 1, zeroOne: false);
         ModeSwitchAction = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision,  true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
     public override void Init()
     {
@@ -52,7 +52,9 @@ internal class HexMaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();
@@ -265,7 +267,7 @@ internal class HexMaster : RoleBase
 
         return str.ToString();
     }
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte playerid)
     {
         if (IsHexMode(playerid) && NowSwitchTrigger != SwitchTriggerList.TriggerDouble)
@@ -275,6 +277,15 @@ internal class HexMaster : RoleBase
         else
         {
             hud.KillButton.OverrideText($"{GetString("KillButtonText")}");
+        }
+    }
+
+    public override void Remove(byte playerId)
+    {
+        if (HexedPlayer.ContainsKey(playerId))
+        {
+            HexedPlayer[playerId].Clear();
+            SendRPC(true, playerId);
         }
     }
 }
