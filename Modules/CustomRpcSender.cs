@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
+using System.Reflection;
 
 namespace TOHE;
 
@@ -218,7 +219,7 @@ public class CustomRpcSender
 
         return this;
     }
-
+    [Obfuscation(Exclude = true)]
     public enum State
     {
         BeforeInit = 0, //初期化前 何もできない

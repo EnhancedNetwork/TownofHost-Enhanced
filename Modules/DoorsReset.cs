@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace TOHE.Modules;
 
 public static class DoorsReset
@@ -88,6 +90,6 @@ public static class DoorsReset
         // Airship lounge toilets and Polus decontamination room doors are not closed
         return door.Room is not (SystemTypes.Lounge or SystemTypes.Decontamination);
     }
-
+    [Obfuscation(Exclude = true)]
     public enum ResetModeList { AllOpen, AllClosed, RandomByDoor, }
 }

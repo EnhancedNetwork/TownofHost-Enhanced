@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using InnerNet;
+using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -31,6 +32,7 @@ internal class DoubleAgent : RoleBase
     private static OptionItem ExplosionRadius;
     private static OptionItem ChangeRoleToOnLast;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectOnLast
     {
         Role_NoChange,

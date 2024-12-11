@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
@@ -31,6 +32,7 @@ internal class EvilTracker : RoleBase
     private static readonly Dictionary<byte, bool> CanSetTarget = [];
     private static readonly Dictionary<byte, HashSet<byte>> ImpostorsId = [];
 
+    [Obfuscation(Exclude = true)]
     private enum TargetMode
     {
         Never,

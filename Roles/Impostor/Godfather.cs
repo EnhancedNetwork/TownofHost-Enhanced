@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+﻿using System.Reflection;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -20,6 +21,7 @@ internal class Godfather : RoleBase
     private static readonly HashSet<byte> GodfatherTarget = [];
     private bool Didvote = false;
 
+    [Obfuscation(Exclude = true)]
     private enum GodfatherChangeModeList
     {
         GodfatherCount_Refugee,

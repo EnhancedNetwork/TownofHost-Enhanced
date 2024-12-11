@@ -309,6 +309,7 @@ public class dbConnect
         return true;
     }
 
+    [Obfuscation(Exclude = true)]
     private enum FailedConnectReason
     {
         Build_Not_Specified,

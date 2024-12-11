@@ -634,6 +634,7 @@ public class Main : BasePlugin
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
+[Obfuscation(Exclude = true)]
 public enum CustomRoles
 {
     // Crewmate(Vanilla)
@@ -994,6 +995,7 @@ public enum CustomRoles
     Youtuber
 }
 //WinData
+[Obfuscation(Exclude = true)]
 public enum CustomWinner
 {
     Draw = -1,
@@ -1061,6 +1063,7 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
 }
+[Obfuscation(Exclude = true)]
 public enum AdditionalWinners
 {
     None = -1,
@@ -1089,6 +1092,7 @@ public enum AdditionalWinners
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }
+[Obfuscation(Exclude = true)]
 public enum SuffixModes
 {
     None = 0,
@@ -1101,6 +1105,7 @@ public enum SuffixModes
     NoAndroidPlz,
     AutoHost
 }
+[Obfuscation(Exclude = true)]
 public enum VoteMode
 {
     Default,
@@ -1108,6 +1113,7 @@ public enum VoteMode
     SelfVote,
     Skip
 }
+[Obfuscation(Exclude = true)]
 public enum TieMode
 {
     Default,

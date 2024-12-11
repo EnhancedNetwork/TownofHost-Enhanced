@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System.Reflection;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -8,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Fireworker : RoleBase
 {
+    [Obfuscation(Exclude = true)]
     private enum FireworkerState
     {
         Initial = 1,

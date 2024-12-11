@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -145,6 +146,7 @@ public class ErrorText : MonoBehaviour
     public bool CheatDetected;
     public bool SBDetected;
 }
+[Obfuscation(Exclude = true)]
 public enum ErrorCode
 {
     //xxxyyyz: ERR-xxx-yyy-z

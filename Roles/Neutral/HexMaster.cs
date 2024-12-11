@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System.Reflection;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
@@ -29,6 +30,7 @@ internal class HexMaster : RoleBase
     private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
+    [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
     {
         TriggerKill,

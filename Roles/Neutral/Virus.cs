@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using System;
+using System.Reflection;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -32,6 +33,7 @@ internal class Virus : RoleBase
     private readonly HashSet<byte> InfectedPlayer = [];
     private readonly Dictionary<byte, string> VirusNotify = [];
 
+    [Obfuscation(Exclude = true)]
     private enum ContagiousCountModeSelectList
     {
         Virus_ContagiousCountMode_None,

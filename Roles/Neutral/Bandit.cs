@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System.Reflection;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -29,6 +30,7 @@ internal class Bandit : RoleBase
     private float killCooldown;
     private readonly Dictionary<byte, CustomRoles> Targets = [];
 
+    [Obfuscation(Exclude = true)]
     private enum BanditStealModeOptList
     {
         BanditStealMode_OnMeeting,

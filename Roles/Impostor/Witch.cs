@@ -1,4 +1,5 @@
 using Hazel;
+using System.Reflection;
 using System.Text;
 using TOHE.Modules;
 using static TOHE.Options;
@@ -22,6 +23,7 @@ internal class Witch : RoleBase
     private static readonly Dictionary<byte, bool> SpellMode = [];
     private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
+    [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
     {
         TriggerKill,
