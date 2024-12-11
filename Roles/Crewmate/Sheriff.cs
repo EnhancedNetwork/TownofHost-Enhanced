@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using System.Reflection;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -39,6 +40,7 @@ internal class Sheriff : RoleBase
 
     private static readonly Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
 
+    [Obfuscation(Exclude = true)]
     private enum KillOptionList
     {
         SheriffCanKillAll,

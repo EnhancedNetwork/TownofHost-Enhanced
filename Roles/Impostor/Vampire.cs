@@ -1,3 +1,4 @@
+using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
@@ -26,6 +27,7 @@ internal class Vampire : RoleBase
     private static OptionItem CanVent;
     private static OptionItem ActionModeOpt;
 
+    [Obfuscation(Exclude = true)]
     private enum ActionModeList
     {
         Vampire_OnlyBites,

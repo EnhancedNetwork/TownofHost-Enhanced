@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
@@ -14,6 +15,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true)]
 public enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
@@ -117,6 +119,7 @@ public enum CustomRPC : byte // 185/255 USED
     SyncFFAPlayer,
     SyncFFANameNotify,
 }
+[Obfuscation(Exclude = true)]
 public enum Sounds
 {
     KillSound,

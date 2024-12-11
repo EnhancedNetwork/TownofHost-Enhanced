@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using InnerNet;
 using System;
+using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
@@ -741,6 +742,7 @@ class SabotageQuestion : QuizQuestionBase
     }
 }
 
+[Obfuscation(Exclude = true)]
 public enum QuizmasterQuestionType
 {
     FirstRoundSabotageQuestion,
@@ -762,6 +764,7 @@ public enum QuizmasterQuestionType
     PlrDeathKillerFactionQuestion,
 }
 
+[Obfuscation(Exclude = true)]
 public enum Sabotages
 {
     None = -1,

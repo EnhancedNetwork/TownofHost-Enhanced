@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System.Reflection;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -470,6 +471,7 @@ public abstract class RoleBase
         OnReceiveRPC(reader); // Default implementation
     }
 
+    [Obfuscation(Exclude = true)]
     public enum GeneralOption
     {
         // Ability

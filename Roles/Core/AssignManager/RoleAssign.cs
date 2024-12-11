@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using System.Reflection;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -11,6 +12,7 @@ public class RoleAssign
     public static Dictionary<byte, CustomRoles> RoleResult = [];
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
+    [Obfuscation(Exclude = true)]
     enum RoleAssignType
     {
         Impostor,

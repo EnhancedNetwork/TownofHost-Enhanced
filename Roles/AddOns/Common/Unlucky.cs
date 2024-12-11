@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using System.Reflection;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -13,6 +14,7 @@ public class Unlucky : IAddon
     private static OptionItem UnluckyReportSuicideChance;
     private static OptionItem UnluckyOpenDoorSuicideChance;
 
+    [Obfuscation(Exclude = true)]
     public enum StateSuicide
     {
         TryKill,

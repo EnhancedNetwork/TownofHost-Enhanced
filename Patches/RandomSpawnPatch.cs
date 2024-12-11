@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using System;
+using System.Reflection;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using UnityEngine;
@@ -159,6 +160,7 @@ class RandomSpawn
     public static bool IsRandomSpawn() => RandomSpawnMode.GetBool();
     public static bool CanSpawnInFirstRound() => SpawnInFirstRound.GetBool();
 
+    [Obfuscation(Exclude = true)]
     private enum RandomSpawnOpt
     {
         RandomSpawnMode,

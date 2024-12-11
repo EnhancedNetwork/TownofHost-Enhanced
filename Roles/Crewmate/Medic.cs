@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -33,6 +34,7 @@ internal class Medic : RoleBase
     private readonly HashSet<byte> ProtectedList = [];
     private readonly HashSet<byte> TempMarkProtected = [];
 
+    [Obfuscation(Exclude = true)]
     private enum SelectOptionsList
     {
         Medic_SeeMedicAndTarget,
@@ -40,7 +42,7 @@ internal class Medic : RoleBase
         Medic_SeeTarget,
         Medic_SeeNoOne
     }
-
+    [Obfuscation(Exclude = true)]
     private enum ShieldDeactivationIsVisibleList
     {
         MedicShieldDeactivationIsVisible_Immediately,

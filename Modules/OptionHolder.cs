@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true)]
 [Flags]
 public enum CustomGameMode
 {
@@ -72,6 +73,7 @@ public static class Options
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
 
     public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew)> AddonCanBeSettings = [];
+    [Obfuscation(Exclude = true)]
     public enum SpawnChance
     {
         Chance0,
@@ -96,6 +98,7 @@ public static class Options
         Chance95,
         Chance100,
     }
+    [Obfuscation(Exclude = true)]
     private enum RatesZeroOne
     {
         RoleOff,

@@ -1,4 +1,5 @@
-﻿using static TOHE.MeetingHudStartPatch;
+﻿using System.Reflection;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -521,6 +522,7 @@ internal class Enigma : RoleBase
         }
     }
 
+    [Obfuscation(Exclude = true)]
     private enum EnigmaClueType
     {
         HatClue,

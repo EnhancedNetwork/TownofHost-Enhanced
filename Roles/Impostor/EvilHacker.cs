@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using System;
+using System.Reflection;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -27,6 +28,7 @@ internal class EvilHacker : RoleBase
     private static byte player = 0;
     private string message;
 
+    [Obfuscation(Exclude = true)]
     public enum OptionName
     {
         EvilHackerCanSeeDeadMark,

@@ -1,3 +1,4 @@
+using System.Reflection;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -18,6 +19,7 @@ internal class Imitator : RoleBase
     private static OptionItem RememberCooldown;
     private static OptionItem IncompatibleNeutralMode;
 
+    [Obfuscation(Exclude = true)]
     private enum ImitatorIncompatibleNeutralModeSelectList
     {
         Role_Imitator,

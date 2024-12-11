@@ -1,4 +1,5 @@
-﻿using TOHE.Modules;
+﻿using System.Reflection;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
@@ -17,6 +18,7 @@ public class Oiiai : IAddon
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_NoChange,

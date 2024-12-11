@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.AddOns.Crewmate;
+﻿using System.Reflection;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -25,6 +26,7 @@ internal class Cultist : RoleBase
     private static OptionItem CanCharmNeutral;
     public static OptionItem CharmedCountMode;
 
+    [Obfuscation(Exclude = true)]
     private enum CharmedCountModeSelectList
     {
         Cultist_CharmedCountMode_None,
