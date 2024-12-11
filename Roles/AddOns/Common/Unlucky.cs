@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Unlucky : IAddon
 {
+    public CustomRoles Role => CustomRoles.Unlucky;
     private const int Id = 21000;
     public AddonTypes Type => AddonTypes.Harmful;
 

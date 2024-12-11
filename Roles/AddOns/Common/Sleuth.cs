@@ -2,6 +2,7 @@
 
 public class Sleuth : IAddon
 {
+    public CustomRoles Role => CustomRoles.Sleuth;
     private const int Id = 20100;
     public AddonTypes Type => AddonTypes.Helpful;
 

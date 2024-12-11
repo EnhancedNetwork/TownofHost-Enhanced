@@ -7,6 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Rebirth : IAddon
 {
+    public CustomRoles Role => CustomRoles.Rebirth;
     private const int Id = 29500;
     public AddonTypes Type => AddonTypes.Helpful;
     public static OptionItem RebirthUses;

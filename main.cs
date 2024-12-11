@@ -390,18 +390,19 @@ public class Main : BasePlugin
                 .GetTypes()
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
 
+            var roleInstances = RoleTypes.Select(x => (RoleBase)Activator.CreateInstance(x)).ToList();
+
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
                 { CustomRoles.NiceMini, typeof(Mini) },
                 { CustomRoles.EvilMini, typeof(Mini) }
             };
 
-
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
                 if (!CustomRolesHelper.DuplicatedRoles.TryGetValue(role, out Type roleType))
                 {
-                    roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup);
+                    roleType = roleInstances.FirstOrDefault(x => x.Role == role)?.GetType() ?? typeof(DefaultSetup);
                 }
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
@@ -426,7 +427,7 @@ public class Main : BasePlugin
             .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
-            .ToDictionary(x => Enum.Parse<CustomRoles>(x.GetType().Name, true), x => x));
+            .ToDictionary(x => x.Role, x => x));
 
             TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
         }
