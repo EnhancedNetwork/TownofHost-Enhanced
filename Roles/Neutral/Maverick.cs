@@ -8,6 +8,7 @@ namespace TOHE.Roles.Neutral;
 internal class Maverick : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Maverick;
     private const int Id = 13200;
     public static bool HasEnabled = CustomRoleManager.HasEnabled(CustomRoles.Maverick);
     public override bool IsDesyncRole => true;

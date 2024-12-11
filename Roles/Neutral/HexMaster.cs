@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class HexMaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.HexMaster;
     private const int Id = 16400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();

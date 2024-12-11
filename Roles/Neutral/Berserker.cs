@@ -12,10 +12,8 @@ namespace TOHE.Roles.Neutral;
 internal class Berserker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Berserker;
     private const int Id = 600;
-
-
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
@@ -78,13 +76,11 @@ internal class Berserker : RoleBase
     public override void Init()
     {
         BerserkerKillMax.Clear();
-
     }
     public override void Add(byte playerId)
     {
         Main.AllPlayerKillCooldown[playerId] = BerserkerKillCooldown.GetFloat();
         BerserkerKillMax[playerId] = 0;
-
     }
     public override void Remove(byte playerId)
     {

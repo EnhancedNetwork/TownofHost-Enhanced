@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class Demon : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Demon;
     private const int Id = 16200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Demon);
     public override bool IsDesyncRole => true;

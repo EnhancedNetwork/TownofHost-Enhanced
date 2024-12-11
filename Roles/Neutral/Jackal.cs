@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jackal;
     private const int Id = 16700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
     public static readonly HashSet<byte> Playerids = [];
