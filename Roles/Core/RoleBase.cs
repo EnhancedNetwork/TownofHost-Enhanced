@@ -8,6 +8,7 @@ namespace TOHE;
 
 public abstract class RoleBase
 {
+    public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
     public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
@@ -88,7 +89,7 @@ public abstract class RoleBase
     /// <summary>
     /// Defines the custom role
     /// </summary>
-    public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
+    public CustomRoles ThisCustomRole => Role;
 
 
     //this is a draft, it is not usable yet, Imma fix it in another PR

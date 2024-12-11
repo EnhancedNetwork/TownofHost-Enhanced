@@ -6,10 +6,8 @@ namespace TOHE.Roles.Crewmate;
 internal class NiceGuesser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.NiceGuesser;
     private const int Id = 10900;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -28,18 +26,6 @@ internal class NiceGuesser : RoleBase
         GGCanGuessAdt = BooleanOptionItem.Create(Id + 12, "GGCanGuessAdt", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
         GGTryHideMsg = BooleanOptionItem.Create(Id + 13, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetColor(Color.green);
-    }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
-    }
-    public override void Remove(byte playerId)
-    {
-
     }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)

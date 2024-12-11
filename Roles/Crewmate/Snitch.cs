@@ -9,6 +9,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Snitch : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Snitch;
     private const int Id = 9500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
