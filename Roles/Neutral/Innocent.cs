@@ -7,9 +7,8 @@ namespace TOHE.Roles.Neutral;
 internal class Innocent : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Innocent;
     private const int Id = 14300;
-
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
@@ -26,12 +25,10 @@ internal class Innocent : RoleBase
     }
     public override void Init()
     {
-
         TargetIsKilled = false;
     }
     public override void Add(byte playerId)
     {
-
         TargetIsKilled = false;
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;

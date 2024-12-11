@@ -12,6 +12,7 @@ namespace TOHE.Roles.Neutral;
 internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Virus;
     private const int Id = 18300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Virus);
     public override bool IsDesyncRole => true;

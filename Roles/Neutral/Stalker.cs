@@ -7,9 +7,8 @@ namespace TOHE.Roles.Neutral;
 internal class Stalker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Stalker;
     private const int Id = 18100;
-
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => SnatchesWins ? Custom_RoleType.NeutralEvil : Custom_RoleType.NeutralKilling;
@@ -37,13 +36,11 @@ internal class Stalker : RoleBase
     }
     public override void Init()
     {
-
         IsWinKill.Clear();
         SnatchesWins = SnatchesWin.GetBool();
     }
     public override void Add(byte playerId)
     {
-
         IsWinKill[playerId] = false;
 
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
