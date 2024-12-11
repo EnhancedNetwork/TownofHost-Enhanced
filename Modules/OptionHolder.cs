@@ -592,7 +592,7 @@ public static class Options
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
             .GroupBy(x => x.Type)
-            .ToDictionary(x => x.Key, x => x.Select(y => Enum.Parse<CustomRoles>(y.GetType().Name, true)).ToList());
+            .ToDictionary(x => x.Key, x => x.Select(y => y.Role).ToList());
     }
 
 
