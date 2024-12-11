@@ -2,6 +2,7 @@
 
 public class Tiebreaker : IAddon
 {
+    public CustomRoles Role => CustomRoles.Tiebreaker;
     private const int Id = 20200;
     public AddonTypes Type => AddonTypes.Helpful;
 

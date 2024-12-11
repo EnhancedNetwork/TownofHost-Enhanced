@@ -8,6 +8,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Oiiai : IAddon
 {
+    public CustomRoles Role => CustomRoles.Oiiai;
     private const int Id = 25700;
     private readonly static List<byte> playerIdList = [];
     public static bool IsEnable = false;

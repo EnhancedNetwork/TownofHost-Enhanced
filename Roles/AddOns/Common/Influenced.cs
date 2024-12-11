@@ -2,6 +2,7 @@
 
 public class Influenced : IAddon
 {
+    public CustomRoles Role => CustomRoles.Influenced;
     private const int Id = 21200;
     public AddonTypes Type => AddonTypes.Harmful;
 
