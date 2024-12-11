@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using static TOHE.MeetingHudStartPatch;
+﻿using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
 

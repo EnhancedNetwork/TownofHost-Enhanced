@@ -7,7 +7,6 @@ using Il2CppInterop.Runtime.Injection;
 using MonoMod.Utils;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;

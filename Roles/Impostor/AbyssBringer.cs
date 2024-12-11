@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System;
-using System.Reflection;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Modules.HazelExtensions;
