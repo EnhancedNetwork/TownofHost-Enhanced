@@ -270,6 +270,7 @@ public abstract class RoleBase
     /// <summary>
     /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
+    [Obfuscation(Exclude = true)]
     public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
 
     /// <summary>
@@ -376,6 +377,7 @@ public abstract class RoleBase
     /// <summary>
     /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
     /// </summary>
+    [Obfuscation(Exclude = true)]
     public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
 
     /// <summary>
