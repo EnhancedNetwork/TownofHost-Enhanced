@@ -109,6 +109,7 @@ public static class OptionSaver
         LoadOptionsData(JsonSerializer.Deserialize<SerializableOptionsData>(jsonString));
     }
 
+    [Obfuscation(Exclude = true, ApplyToMembers = true)]
     /// <summary>Optional data suitable for json storage</summary>
     public class SerializableOptionsData
     {
