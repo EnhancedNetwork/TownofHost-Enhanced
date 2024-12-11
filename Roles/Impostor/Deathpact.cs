@@ -13,6 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class Deathpact : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Deathpact;
     private const int Id = 1200;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

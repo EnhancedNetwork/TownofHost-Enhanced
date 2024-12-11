@@ -10,10 +10,8 @@ namespace TOHE.Roles.Impostor;
 internal class BountyHunter : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.BountyHunter;
     private const int Id = 800;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
