@@ -1864,7 +1864,7 @@
   "Jackal_SidekickCountMode_Jackal": "<color=#00b4eb>Sciacallo</color>",
   "Jackal_SidekickCountMode_Original": "Squadra Originale",
   "Jackal_SidekickAssignMode": "Modalità Assegnazione <color=#00b4eb>Spalle</color>",
-  "Jackal_SidekickAssignMode_SidekickAndRecruit": "<color=#00b4eb>Sidekick</color> when failed <color=#00b4eb>Recruit</color>",
+  "Jackal_SidekickAssignMode_SidekickAndRecruit": "<color=#00b4eb>Spalla</color> quando fallisce <color=#00b4eb>Recluta</color>",
   "Jackal_SidekickAssignMode_Sidekick": "Solo <color=#00b4eb>Spalla</color>",
   "Jackal_SidekickAssignMode_Recruit": "Solo <color=#00b4eb>Recluta</color>",
   "Jackal_SidekickCanKillSidekick": "Le <color=#00b4eb>Spalle</color> possono uccidere altre <color=#00b4eb>Spalle</color>",
