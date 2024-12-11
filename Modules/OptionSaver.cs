@@ -6,7 +6,9 @@ namespace TOHE.Modules;
 // https://github.com/tukasa0001/TownOfHost/blob/main/Modules/OptionSaver.cs
 public static class OptionSaver
 {
+    [Obfuscation(Exclude = true)]
     private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TOHE-DATA/SaveData/");
+    [Obfuscation(Exclude = true)]
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
 
     public static void Initialize()

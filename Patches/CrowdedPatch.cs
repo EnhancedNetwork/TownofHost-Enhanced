@@ -346,6 +346,7 @@ internal static class Crowded
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class AbstractPagingBehaviour : MonoBehaviour
 {
     public AbstractPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -395,6 +396,7 @@ public class AbstractPagingBehaviour : MonoBehaviour
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 {
     public MeetingHudPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -449,6 +451,7 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
 {
     public ShapeShifterPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -503,6 +506,8 @@ public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
         }
     }
 }
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 
 public class VitalsPagingBehaviour : AbstractPagingBehaviour
 {
