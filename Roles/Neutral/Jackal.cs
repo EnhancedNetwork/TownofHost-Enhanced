@@ -468,7 +468,7 @@ internal class Jackal : RoleBase
 
 internal class Sidekick : RoleBase
 {
-
+    public override CustomRoles Role => CustomRoles.Sidekick;
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

@@ -11,6 +11,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Bastion : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bastion;
     private const int Id = 10200;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;

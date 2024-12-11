@@ -238,6 +238,7 @@ internal class PlagueBearer : RoleBase
 internal class Pestilence : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pestilence;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pestilence);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

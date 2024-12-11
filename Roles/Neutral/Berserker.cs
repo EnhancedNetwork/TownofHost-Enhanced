@@ -192,6 +192,7 @@ internal class Berserker : RoleBase
 internal class War : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.War;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Berserker);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

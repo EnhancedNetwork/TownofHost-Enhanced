@@ -13,6 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Medic : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Medic;
     private const int Id = 8600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medic);
     public override bool IsDesyncRole => true;
