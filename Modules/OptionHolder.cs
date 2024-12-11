@@ -36,6 +36,7 @@ public static class Options
     }
 
     // Presets
+    [Obfuscation(Exclude = true)]
     private static readonly string[] presets =
     [
         Main.Preset1.Value, Main.Preset2.Value, Main.Preset3.Value,
@@ -51,7 +52,6 @@ public static class Options
             2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
-
     public static readonly string[] gameModes =
     [
         "Standard",
