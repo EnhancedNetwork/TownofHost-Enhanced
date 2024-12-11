@@ -3,6 +3,7 @@ namespace TOHE.Roles.Crewmate;
 internal class TimeManager : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.TimeManager;
     private const int Id = 9800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();

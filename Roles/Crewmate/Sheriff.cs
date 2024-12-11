@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Sheriff : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Sheriff;
     private const int Id = 11200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sheriff);
     public override bool IsDesyncRole => true;
