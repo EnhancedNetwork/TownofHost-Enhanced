@@ -8,11 +8,8 @@ namespace TOHE.Roles.Impostor;
 internal class Mastermind : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mastermind;
     private const int Id = 4100;
-
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     public override bool IsExperimental => true;
@@ -41,7 +38,6 @@ internal class Mastermind : RoleBase
 
     public override void Init()
     {
-
         ManipulatedPlayers.Clear();
         ManipulateDelays.Clear();
         TempKCDs.Clear();
@@ -49,13 +45,16 @@ internal class Mastermind : RoleBase
 
     public override void Add(byte playerId)
     {
-
         ManipulateCD = KillCooldown.GetFloat() + (TimeLimit.GetFloat() / 2) + (Delay.GetFloat() / 2);
 
         // Double Trigger
         var pc = GetPlayerById(playerId);
         pc.AddDoubleTrigger();
+    }
 
+    public override void Remove(byte playerId)
+    {
+        DoubleTrigger.PlayerIdList.Remove(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

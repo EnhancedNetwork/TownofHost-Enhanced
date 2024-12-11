@@ -9,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 internal class Dazzler : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Dazzler;
     private const int Id = 5400;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;

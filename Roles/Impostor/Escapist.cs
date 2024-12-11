@@ -7,11 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class Escapist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Escapist;
     private const int Id = 4000;
-
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -35,11 +32,6 @@ internal class Escapist : RoleBase
     public override void Init()
     {
         EscapeLocation.Clear();
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

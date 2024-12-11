@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class QuickShooter : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.QuickShooter;
     private const int Id = 2200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.QuickShooter);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

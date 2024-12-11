@@ -6,10 +6,8 @@ namespace TOHE.Roles.Impostor;
 internal class Zombie : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Zombie;
     private const int Id = 23900;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -26,14 +24,6 @@ internal class Zombie : RoleBase
         ZombieSpeedReduce = FloatOptionItem.Create(Id + 4, "ZombieSpeedReduce", new(0.0f, 1.0f, 0.1f), 0.1f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Zombie])
             .SetValueFormat(OptionFormat.Multiplier);
-    }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

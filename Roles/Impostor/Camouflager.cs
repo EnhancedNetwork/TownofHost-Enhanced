@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Camouflager : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Camouflager;
     private const int Id = 2900;
     public static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();

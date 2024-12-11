@@ -19,6 +19,7 @@ internal class Fireworker : RoleBase
         CanUseKill = Initial | FireEnd
     }
     //===========================SETUP================================\\
+    [Obfuscation(Exclude = true)]
     private const int Id = 3200;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

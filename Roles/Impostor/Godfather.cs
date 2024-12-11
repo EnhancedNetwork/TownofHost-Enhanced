@@ -7,10 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class Godfather : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Godfather;
     private const int Id = 3400;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -36,17 +34,18 @@ internal class Godfather : RoleBase
 
     public override void Init()
     {
-
         GodfatherTarget.Clear();
     }
     public override void Add(byte playerId)
     {
-
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
         }
+    }
+    public override void Remove(byte playerId)
+    {
+        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => GodfatherTarget.Clear();
