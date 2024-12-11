@@ -1,4 +1,3 @@
-using System.Reflection;
 using UnityEngine;
 using static TOHE.Translator;
 
