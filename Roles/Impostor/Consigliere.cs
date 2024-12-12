@@ -92,7 +92,7 @@ internal class Consigliere : RoleBase
         {
             DivinationCount[killer.PlayerId]--;
             DivinationTarget[killer.PlayerId].Add(target.PlayerId);
-            Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{DivinationCount[killer.PlayerId]}回", "Consigliere");
+            Logger.Info($"{killer.GetNameWithRole()}：Checked→{target.GetNameWithRole()} || Remaining Ability: {DivinationCount[killer.PlayerId]}", "Consigliere");
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             SendRPC(killer.PlayerId, target.PlayerId);
