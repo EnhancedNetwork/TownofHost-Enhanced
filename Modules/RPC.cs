@@ -59,6 +59,7 @@ public enum CustomRPC : byte // 185/255 USED
     SyncSpeedPlayer,
     Arrow,
     NotificationPopper,
+    SyncDeadPassedMeetingList,
 
     //Roles 
     SetBountyTarget,
@@ -75,11 +76,11 @@ public enum CustomRPC : byte // 185/255 USED
     SetLoversPlayers,
     SendFireworkerState,
     SetCurrentDousingTarget,
-    SetEvilTrackerTarget,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
@@ -637,6 +638,12 @@ internal class RPCHandlerPatch
                 Main.FirstDied = reader.ReadString();
                 Main.FirstDiedPrevious = reader.ReadString();
                 break;
+            case CustomRPC.SyncDeadPassedMeetingList:
+                Main.DeadPassedMeetingPlayers.Clear();
+                var pnum = reader.ReadPackedInt32();
+                for (int i = 0; i < pnum; i++)
+                    Main.DeadPassedMeetingPlayers.Add(reader.ReadByte());
+                break;
         }
     }
 
@@ -970,6 +977,17 @@ internal static class RPC
         foreach (var lp in Main.LoversPlayers)
         {
             writer.Write(lp.PlayerId);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncDeadPassedMeetingList()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncDeadPassedMeetingList, SendOption.Reliable, -1);
+        writer.WritePacked(Main.DeadPassedMeetingPlayers.Count);
+        foreach (var dead in Main.DeadPassedMeetingPlayers)
+        {
+            writer.Write(dead);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
