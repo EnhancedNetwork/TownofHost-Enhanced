@@ -104,11 +104,15 @@
 > - Host icon during the meeting
 ### :star: [MoreGamemodes](https://github.com/Rabek009/MoreGamemodes)
 >
+> - CustomNetObjects (CustomNetObjects.cs)
 > - Changer Role Basis (RoleBasisChanger.cs)
 > - Disable use vent for vanilla players (VentSystemPatch.cs)
 ### :star: [Reactor](https://github.com/NuclearPowered/Reactor)
 >
 > - Reference: Disable the 5s timeout on custom servers
+### :star: [CrowdedMod](https://github.com/CrowdedMods/CrowdedMod)
+>
+> - We included CrowdedMod in our Mod
 ---
 
 # Legal License Notice
