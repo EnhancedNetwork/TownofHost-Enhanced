@@ -3,6 +3,7 @@
 namespace TOHE.Roles.AddOns.Impostor;
 public class Tricky : IAddon
 {
+    public CustomRoles Role => CustomRoles.Tricky;
     private const int Id = 19900;
     public AddonTypes Type => AddonTypes.Impostor;
     private static OptionItem EnabledDeathReasons;

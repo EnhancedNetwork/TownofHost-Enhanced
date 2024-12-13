@@ -5,11 +5,8 @@ namespace TOHE.Roles.Impostor;
 internal class EvilGuesser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.EvilGuesser;
     private const int Id = 1300;
-
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -35,14 +32,6 @@ internal class EvilGuesser : RoleBase
         EGTryHideMsg = BooleanOptionItem.Create(Id + 6, "GuesserTryHideMsg", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser])
             .SetColor(Color.green);
-    }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)

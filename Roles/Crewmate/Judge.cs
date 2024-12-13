@@ -14,10 +14,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Judge : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Judge;
     private const int Id = 10700;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -62,18 +60,15 @@ internal class Judge : RoleBase
     }
     public override void Init()
     {
-
         TrialLimitMeeting.Clear();
     }
     public override void Add(byte playerId)
     {
-
         TrialLimitMeeting[playerId] = TrialLimitPerMeeting.GetInt();
         AbilityLimit = TrialLimitPerGame.GetInt();
     }
     public override void Remove(byte playerId)
     {
-
         TrialLimitMeeting.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)

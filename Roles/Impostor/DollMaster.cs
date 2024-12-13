@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class DollMaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.DollMaster;
     private const int Id = 28500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DollMaster);
     public override bool IsExperimental => true;

@@ -13,6 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Inspector : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Inspector;
     private const int Id = 8300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
 

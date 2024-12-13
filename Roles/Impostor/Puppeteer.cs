@@ -13,10 +13,8 @@ namespace TOHE.Roles.Impostor;
 internal class Puppeteer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Puppeteer;
     private const int Id = 4300;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -33,7 +31,6 @@ internal class Puppeteer : RoleBase
     }
     public override void Init()
     {
-
         PuppeteerList.Clear();
     }
     public override void Add(byte playerId)
@@ -42,12 +39,15 @@ internal class Puppeteer : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
-
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
+    }
+    public override void Remove(byte playerId)
+    {
+        DoubleTrigger.PlayerIdList.Remove(playerId);
+        CustomRoleManager.OnFixedUpdateOthers.Remove(OnFixedUpdateOthers);
     }
 
     private static void SendRPC(byte puppetId, byte targetId, byte typeId)

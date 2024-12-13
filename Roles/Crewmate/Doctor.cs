@@ -7,10 +7,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Doctor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Doctor;
     private const int Id = 6700;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -26,14 +24,6 @@ internal class Doctor : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         VisibleToEveryoneOpt = BooleanOptionItem.Create(Id + 11, "DoctorVisibleToEveryone", false, TabGroup.CrewmateRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor]);
-    }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

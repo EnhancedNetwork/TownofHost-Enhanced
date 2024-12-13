@@ -7,6 +7,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 internal class GuardianAngelTOHE : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.GuardianAngelTOHE;
     private const int Id = 20900;
 
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;

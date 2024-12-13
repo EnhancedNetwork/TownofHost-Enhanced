@@ -5,10 +5,8 @@ namespace TOHE.Roles.Impostor;
 internal class Saboteur : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Saboteur;
     private const int Id = 2300;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -21,14 +19,6 @@ internal class Saboteur : RoleBase
         SaboteurCD = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Saboteur])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = SaboteurCD.GetFloat();

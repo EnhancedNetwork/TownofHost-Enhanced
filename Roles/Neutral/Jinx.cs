@@ -8,6 +8,7 @@ namespace TOHE.Roles.Neutral;
 internal class Jinx : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jinx;
     private const int Id = 16800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jinx);
     public override bool IsDesyncRole => true;

@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Deputy : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Deputy;
     private const int Id = 7800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

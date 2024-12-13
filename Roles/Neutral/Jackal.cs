@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jackal;
     private const int Id = 16700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
     public static readonly HashSet<byte> Playerids = [];
@@ -39,12 +40,14 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
+    [Obfuscation(Exclude = true)]
     private enum SidekickAssignModeSelectList
     {
         Jackal_SidekickAssignMode_SidekickAndRecruit,
         Jackal_SidekickAssignMode_Sidekick,
         Jackal_SidekickAssignMode_Recruit,
     }
+    [Obfuscation(Exclude = true)]
     private enum SidekickCountModeSelectList
     {
         Jackal_SidekickCountMode_Jackal,
@@ -465,7 +468,7 @@ internal class Jackal : RoleBase
 
 internal class Sidekick : RoleBase
 {
-
+    public override CustomRoles Role => CustomRoles.Sidekick;
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

@@ -3,10 +3,8 @@
 internal class Scavenger : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Scavenger;
     private const int Id = 4400;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -27,14 +25,8 @@ internal class Scavenger : RoleBase
     }
     public override void Init()
     {
-
         KilledPlayersId.Clear();
     }
-    public override void Add(byte playerId)
-    {
-
-    }
-
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ScavengerKillCooldown.GetFloat();
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

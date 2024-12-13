@@ -7,10 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class Crewpostor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Crewpostor;
     private const int Id = 5800;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\

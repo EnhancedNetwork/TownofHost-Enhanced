@@ -8,6 +8,7 @@ namespace TOHE.Roles.Impostor;
 internal class Bomber : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bomber;
     private const int Id = 700;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
