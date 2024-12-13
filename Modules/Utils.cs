@@ -27,6 +27,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
