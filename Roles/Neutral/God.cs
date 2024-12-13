@@ -5,6 +5,7 @@ namespace TOHE.Roles.Neutral;
 internal class God : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.God;
     private const int Id = 25100;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;

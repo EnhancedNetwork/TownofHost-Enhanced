@@ -9,6 +9,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Tracefinder : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Tracefinder;
     private const int Id = 7300;
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;

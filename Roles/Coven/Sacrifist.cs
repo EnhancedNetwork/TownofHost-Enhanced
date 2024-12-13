@@ -13,6 +13,7 @@ namespace TOHE.Roles.Coven;
 internal class Sacrifist : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Sacrifist;
     private const int Id = 30600;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

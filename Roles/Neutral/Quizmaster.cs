@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Quizmaster;
     private const int Id = 27000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Quizmaster);
     public override bool IsExperimental => true;
@@ -741,6 +742,7 @@ class SabotageQuestion : QuizQuestionBase
     }
 }
 
+[Obfuscation(Exclude = true)]
 public enum QuizmasterQuestionType
 {
     FirstRoundSabotageQuestion,
@@ -762,6 +764,7 @@ public enum QuizmasterQuestionType
     PlrDeathKillerFactionQuestion,
 }
 
+[Obfuscation(Exclude = true)]
 public enum Sabotages
 {
     None = -1,

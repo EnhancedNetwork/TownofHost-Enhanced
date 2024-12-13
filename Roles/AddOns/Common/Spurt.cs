@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 internal class Spurt : IAddon
 {
+    public CustomRoles Role => CustomRoles.Spurt;
     private static OptionItem MinSpeed;
     private static OptionItem Modulator;
     private static OptionItem MaxSpeed;

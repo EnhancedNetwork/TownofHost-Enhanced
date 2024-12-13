@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Rascal : IAddon
 {
+    public CustomRoles Role => CustomRoles.Rascal;
     private const int Id = 20800;
     public AddonTypes Type => AddonTypes.Harmful;
 

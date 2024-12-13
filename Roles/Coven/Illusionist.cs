@@ -13,6 +13,7 @@ namespace TOHE.Roles.Coven;
 internal class Illusionist : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Illusionist;
     private const int Id = 30400;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

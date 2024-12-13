@@ -7,10 +7,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Merchant : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Merchant;
     private const int Id = 8800;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -61,8 +59,6 @@ internal class Merchant : RoleBase
     }
     public override void Init()
     {
-
-
         addons.Clear();
         addonsSold.Clear();
         bribedKiller.Clear();
@@ -89,13 +85,11 @@ internal class Merchant : RoleBase
 
     public override void Add(byte playerId)
     {
-
         addonsSold[playerId] = 0;
         bribedKiller.TryAdd(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-
         addonsSold.Remove(playerId);
         bribedKiller.Remove(playerId);
     }

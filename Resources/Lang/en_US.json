@@ -4094,6 +4094,8 @@
   "EavesdropperMsgTitle": "You found a secret",
   "EavesdropPercentChance": "Chance to eavesdrop",
 
+  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
+
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting sheriffs",
   "PolicCanImpostorAndNeutarl": "Can recruit <color=#ff1919>Impostor</color> or <color=#7f8c8d>Neutral</color>",
   "SheriffSuccessfullyRecruited": "You recruited a sheriff.",

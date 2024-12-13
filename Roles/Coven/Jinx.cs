@@ -11,6 +11,7 @@ namespace TOHE.Roles.Coven;
 internal class Jinx : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jinx;
     private const int Id = 16800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

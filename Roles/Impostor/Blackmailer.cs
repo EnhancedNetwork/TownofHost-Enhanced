@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Blackmailer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Blackmailer;
     private const int Id = 24600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Blackmailer);
 

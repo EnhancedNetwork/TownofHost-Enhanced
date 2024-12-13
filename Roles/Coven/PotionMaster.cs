@@ -12,6 +12,7 @@ namespace TOHE.Roles.Coven;
 internal class PotionMaster : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.PotionMaster;
     private const int Id = 17700;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

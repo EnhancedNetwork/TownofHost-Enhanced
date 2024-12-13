@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class RiftMaker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.RiftMaker;
     private const int Id = 27200;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -53,7 +54,7 @@ internal class RiftMaker : RoleBase
 
         TPCooldown = TPCooldownOpt.GetFloat();
     }
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("RiftMakerButtonText"));
     // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Create Rift");
 

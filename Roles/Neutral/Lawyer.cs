@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Lawyer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Lawyer;
     private const int Id = 13100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Lawyer);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -30,6 +31,7 @@ internal class Lawyer : RoleBase
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,

@@ -8,6 +8,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Oiiai : IAddon
 {
+    public CustomRoles Role => CustomRoles.Oiiai;
     private const int Id = 25700;
     private readonly static List<byte> playerIdList = [];
     public static bool IsEnable = false;
@@ -17,6 +18,7 @@ public class Oiiai : IAddon
     private static OptionItem CanPassOn;
     private static OptionItem ChangeNeutralRole;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_NoChange,

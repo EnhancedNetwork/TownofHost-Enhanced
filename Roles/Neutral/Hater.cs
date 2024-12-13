@@ -7,6 +7,7 @@ namespace TOHE.Roles.Neutral;
 internal class Hater : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Hater;
     private const int Id = 12900;
     public static readonly HashSet<byte> playerIdList = [];
 

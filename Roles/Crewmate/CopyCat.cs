@@ -9,6 +9,7 @@ namespace TOHE.Roles.Crewmate;
 internal class CopyCat : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.CopyCat;
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
 

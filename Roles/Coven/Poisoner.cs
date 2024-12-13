@@ -13,6 +13,7 @@ internal class Poisoner : CovenManager
         public float KillTimer = killTimer;
     }
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Poisoner;
     private const int Id = 17500;
 
     public override bool IsDesyncRole => true;

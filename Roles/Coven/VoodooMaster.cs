@@ -11,6 +11,7 @@ namespace TOHE.Roles.Coven;
 internal class VoodooMaster : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.VoodooMaster;
     private const int Id = 30700;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

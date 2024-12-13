@@ -13,6 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class Gangster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Gangster;
     private const int Id = 3300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Gangster);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

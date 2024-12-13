@@ -5,6 +5,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Observer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Observer;
     private const int Id = 9000;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();

@@ -13,6 +13,7 @@ namespace TOHE.Roles.Coven;
 internal class HexMaster : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.HexMaster;
     private const int Id = 16400;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
