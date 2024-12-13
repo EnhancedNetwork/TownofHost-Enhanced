@@ -13,6 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Medium : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Medium;
     private const int Id = 8700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medium);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

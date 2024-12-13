@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class Vulture : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vulture;
     private const int Id = 15600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();

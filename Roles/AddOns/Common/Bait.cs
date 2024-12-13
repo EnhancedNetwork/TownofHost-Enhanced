@@ -7,6 +7,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Bait : IAddon
 {
+    public CustomRoles Role => CustomRoles.Bait;
     private const int Id = 18700;
     public AddonTypes Type => AddonTypes.Helpful;
 

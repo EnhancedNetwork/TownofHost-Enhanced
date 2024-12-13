@@ -13,6 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.DoubleAgent;
     private const int Id = 29000;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
@@ -31,6 +32,7 @@ internal class DoubleAgent : RoleBase
     private static OptionItem ExplosionRadius;
     private static OptionItem ChangeRoleToOnLast;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectOnLast
     {
         Role_NoChange,

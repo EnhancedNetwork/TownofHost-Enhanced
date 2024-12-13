@@ -14,6 +14,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Swapper : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Swapper;
     private const int Id = 12400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swapper);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

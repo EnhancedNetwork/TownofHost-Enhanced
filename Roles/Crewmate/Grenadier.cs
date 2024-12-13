@@ -13,6 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Grenadier : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Grenadier;
     private const int Id = 8200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Grenadier);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;

@@ -12,6 +12,7 @@ namespace TOHE.Roles.Neutral;
 internal class Baker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Baker;
     private const int Id = 28600;
 
     public override bool IsDesyncRole => true;
@@ -296,6 +297,7 @@ internal class Baker : RoleBase
 internal class Famine : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Famine;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Famine);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

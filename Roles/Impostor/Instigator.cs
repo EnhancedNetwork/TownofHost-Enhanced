@@ -5,10 +5,8 @@ namespace TOHE.Roles.Impostor;
 internal class Instigator : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Instigator;
     private const int Id = 1700;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -29,13 +27,8 @@ internal class Instigator : RoleBase
         KillsPerAbilityUse = IntegerOptionItem.Create(Id + 12, "InstigatorKillsPerAbilityUse", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
             .SetValueFormat(OptionFormat.Times);
     }
-    public override void Init()
-    {
-
-    }
     public override void Add(byte playerId)
     {
-
         AbilityLimit = AbilityLimitt.GetInt();
     }
 

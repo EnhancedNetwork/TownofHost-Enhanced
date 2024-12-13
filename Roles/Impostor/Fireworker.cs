@@ -8,6 +8,7 @@ namespace TOHE.Roles.Impostor;
 
 internal class Fireworker : RoleBase
 {
+    [Obfuscation(Exclude = true)]
     private enum FireworkerState
     {
         Initial = 1,
@@ -18,6 +19,8 @@ internal class Fireworker : RoleBase
         CanUseKill = Initial | FireEnd
     }
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Fireworker;
+    [Obfuscation(Exclude = true)]
     private const int Id = 3200;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -109,10 +112,9 @@ internal class Fireworker : RoleBase
         return canUse;
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
         Logger.Info($"Fireworker ShapeShift", "Fireworker");
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])
@@ -170,8 +172,6 @@ internal class Fireworker : RoleBase
         }
         SendRPC(shapeshifterId);
         Utils.NotifyRoles(ForceLoop: true);
-
-        return false;
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)

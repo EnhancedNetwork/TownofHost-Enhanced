@@ -3,10 +3,8 @@
 internal class Visionary : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Visionary;
     private const int Id = 3900;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -14,14 +12,6 @@ internal class Visionary : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
-    }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)

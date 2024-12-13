@@ -13,9 +13,8 @@ namespace TOHE.Roles.Neutral;
 internal class Arsonist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Arsonist;
     private const int id = 15900;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled = PlayerIds.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => CanIgniteAnytime() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralBenign;
@@ -46,7 +45,7 @@ internal class Arsonist : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
+
         ArsonistTimer.Clear();
         IsDoused.Clear();
         CurrentDousingTarget = byte.MaxValue;
@@ -54,7 +53,7 @@ internal class Arsonist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+
 
         foreach (var ar in Main.AllPlayerControls)
             IsDoused.Add((playerId, ar.PlayerId), false);

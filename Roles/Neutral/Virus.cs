@@ -12,6 +12,7 @@ namespace TOHE.Roles.Neutral;
 internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Virus;
     private const int Id = 18300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Virus);
     public override bool IsDesyncRole => true;
@@ -32,6 +33,7 @@ internal class Virus : RoleBase
     private readonly HashSet<byte> InfectedPlayer = [];
     private readonly Dictionary<byte, string> VirusNotify = [];
 
+    [Obfuscation(Exclude = true)]
     private enum ContagiousCountModeSelectList
     {
         Virus_ContagiousCountMode_None,

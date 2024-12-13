@@ -7,6 +7,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Benefactor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Benefactor;
     private const int Id = 26400;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

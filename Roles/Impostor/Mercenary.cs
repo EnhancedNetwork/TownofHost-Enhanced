@@ -7,6 +7,7 @@ namespace TOHE.Roles.Impostor;
 internal class Mercenary : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mercenary;
     private const int Id = 2000;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;

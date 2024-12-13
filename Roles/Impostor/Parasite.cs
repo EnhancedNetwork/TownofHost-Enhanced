@@ -5,6 +5,7 @@ namespace TOHE.Roles.Impostor;
 internal class Parasite : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Parasite;
     private const int Id = 5900;
 
     public override CustomRoles ThisRoleBase => LegacyParasite.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;

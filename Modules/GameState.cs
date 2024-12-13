@@ -106,6 +106,12 @@ public class PlayerState(byte playerId)
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
             pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
             InitTask(pc);
+
+            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            {
+                Main.UnShapeShifter.Add(pc.PlayerId);
+                Logger.Info($"Added {pc.GetNameWithRole()} to UnShapeShifter list mid game", "PlayerState.SetMainRole");
+            }
         }
     }
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
@@ -260,6 +266,7 @@ public class PlayerState(byte playerId)
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
+    [Obfuscation(Exclude = true)]
     public enum DeathReason
     {
         Kill,

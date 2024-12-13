@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Guesser : IAddon
 {
+    public CustomRoles Role => CustomRoles.Guesser;
     private const int Id = 22200;
     public AddonTypes Type => AddonTypes.Guesser;
 

@@ -12,9 +12,8 @@ namespace TOHE.Roles.Neutral;
 internal class Follower : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Follower;
     private const int Id = 12800;
-
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
@@ -46,13 +45,11 @@ internal class Follower : RoleBase
     }
     public override void Init()
     {
-
         BetTimes.Clear();
         BetPlayer.Clear();
     }
     public override void Add(byte playerId)
     {
-
         BetTimes.Add(playerId, MaxBetTimes.GetInt());
     }
     private void SendRPC(byte playerId)
