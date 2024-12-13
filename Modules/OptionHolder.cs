@@ -501,7 +501,7 @@ public static class Options
     public static OptionItem ImpsCanSeeEachOthersRoles;
     public static OptionItem ImpsCanSeeEachOthersAddOns;
 
-    //public static OptionItem MadmateCanFixSabotage;
+    public static OptionItem MadmateCanGetImpOnlyAddOn;
     public static OptionItem DefaultShapeshiftCooldown;
     public static OptionItem DeadImpCantSabotage;
 
@@ -681,8 +681,9 @@ public static class Options
 
         Madmate.SetupMenuOptions();
 
-        //MadmateCanFixSabotage = BooleanOptionItem.Create(50010, "MadmateCanFixSabotage", false, TabGroup.ImpostorRoles, false)
-        //.SetGameMode(CustomGameMode.Standard);
+        MadmateCanGetImpOnlyAddOn = BooleanOptionItem.Create(60024, "MadmateCanGetImpOnlyAddOn", false, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
 
         DefaultShapeshiftCooldown = FloatOptionItem.Create(60011, "DefaultShapeshiftCooldown", new(5f, 180f, 5f), 15f, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)

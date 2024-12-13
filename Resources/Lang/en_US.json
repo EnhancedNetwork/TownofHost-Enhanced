@@ -1466,7 +1466,7 @@
   "ImpCanKillMadmate": "<color=#ff1919>Impostors</color> can kill <color=#ff1919>Madmates</color>",
   "MadmateCanKillImp": "<color=#ff1919>Madmates</color> can kill <color=#ff1919>Impostors</color>",
   "MadmateHasImpostorVision": "<color=#ff1919>Madmates</color> Have <color=#ff1919>Impostor</color> Vision",
-  "MadmateCanFixSabotage": "<color=#ff1919>Madmates</color> Can Fix Sabotages",
+  "MadmateCanGetImpOnlyAddOn": "<color=#ff1919>Madmates</color> can get <color=#ff1919>Impostor</color>-only Add-ons",
   "EGCanGuessImp": "Can Guess <color=#ff1919>Impostor</color> Roles",
   "GGCanGuessCrew": "Can Guess <color=#8cffff>Crewmate</color> Roles",
   "EGCanGuessAdt": "Can Guess Add-Ons",

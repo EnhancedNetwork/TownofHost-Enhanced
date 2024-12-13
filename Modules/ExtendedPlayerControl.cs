@@ -1258,11 +1258,11 @@ static class ExtendedPlayerControl
         && target.Data.IsDead || target.Is(CustomRoles.Gravestone) && target.Data.IsDead;
 
     public static bool KnowDeadTeam(this PlayerControl seer, PlayerControl target)
-        => (seer.Is(CustomRoles.Necroview))
+        => seer.Is(CustomRoles.Necroview)
         && target.Data.IsDead;
 
     public static bool KnowLivingTeam(this PlayerControl seer, PlayerControl target)
-        => (seer.Is(CustomRoles.Visionary))
+        => seer.Is(CustomRoles.Visionary)
         && !target.Data.IsDead;
 
     private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
