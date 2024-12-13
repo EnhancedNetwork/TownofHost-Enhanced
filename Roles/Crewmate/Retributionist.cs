@@ -2,20 +2,18 @@
 using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Retributionist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Retributionist;
     private const int Id = 11000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -23,6 +21,7 @@ internal class Retributionist : RoleBase
     private static OptionItem RetributionistCanKillNum;
     private static OptionItem MinimumPlayersAliveToRetri;
     private static OptionItem CanOnlyRetributeWithTasksDone;
+    private static OptionItem PreventSeeRolesBeforeSkillUsedUp;
 
     private static readonly Dictionary<byte, int> RetributionistRevenged = [];
 
@@ -32,6 +31,8 @@ internal class Retributionist : RoleBase
         RetributionistCanKillNum = IntegerOptionItem.Create(Id + 10, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
+        PreventSeeRolesBeforeSkillUsedUp = BooleanOptionItem.Create(Id + 20, "PreventSeeRolesBeforeSkillUsedUp", true, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
         MinimumPlayersAliveToRetri = IntegerOptionItem.Create(Id + 11, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
@@ -41,15 +42,19 @@ internal class Retributionist : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         RetributionistRevenged.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         RetributionistRevenged[playerId] = 0;
     }
-    
+    public static bool PreventKnowRole(PlayerControl seer)
+    {
+        if (!seer.Is(CustomRoles.Retributionist) || seer.IsAlive()) return false;
+        if (PreventSeeRolesBeforeSkillUsedUp.GetBool() && RetributionistRevenged.TryGetValue(seer.PlayerId, out var killNum) && killNum < RetributionistCanKillNum.GetInt())
+            return true;
+        return false;
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
@@ -183,7 +188,8 @@ internal class Retributionist : RoleBase
             }
             target.SetRealKiller(pc);
 
-            _ = new LateTask(() => {
+            _ = new LateTask(() =>
+            {
                 SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
             }, 0.6f, "Retributionist Kill");
 
@@ -216,7 +222,7 @@ internal class Retributionist : RoleBase
         if (!pc.IsAlive())
             AddMsg(GetString("RetributionistDeadMsg"), pc.PlayerId);
     }
-    
+
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch
     {

@@ -1,23 +1,21 @@
 ﻿using Hazel;
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
-using static TOHE.Utils;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
-using System.Text;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Judge : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Judge;
     private const int Id = 10700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -62,18 +60,15 @@ internal class Judge : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         TrialLimitMeeting.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         TrialLimitMeeting[playerId] = TrialLimitPerMeeting.GetInt();
         AbilityLimit = TrialLimitPerGame.GetInt();
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         TrialLimitMeeting.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)
@@ -111,7 +106,7 @@ internal class Judge : RoleBase
         else if (operate == 2)
         {
 
-            if (TryHideMsg.GetBool()) 
+            if (TryHideMsg.GetBool())
             {
                 //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
                 //else GuessManager.TryHideMsg();

@@ -1,21 +1,20 @@
 using AmongUs.GameOptions;
-using UnityEngine;
 using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Poisoner : RoleBase
 {
-    private class PoisonedInfo(byte poisonerId, float killTimer) 
+    private class PoisonedInfo(byte poisonerId, float killTimer)
     {
         public byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;
     }
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Poisoner;
     private const int Id = 17500;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -44,14 +43,9 @@ internal class Poisoner : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         PoisonedPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

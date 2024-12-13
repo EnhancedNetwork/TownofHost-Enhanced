@@ -3,20 +3,20 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using UnityEngine;
+using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -27,7 +27,7 @@ class CheckProtectPatch
     public static bool Prefix(PlayerControl __instance, PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
-        Logger.Info($"{ __instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckProtect");
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckProtect");
         var angel = __instance;
 
         if (AntiBlackout.SkipTasks)
@@ -866,6 +866,22 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+                    if (playerStates.RoleClass?.BlockMoveInVent(playerStates.RoleClass._Player) ?? false)
+                    {
+                        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                        {
+                            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                        }
+                        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+                    }
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -919,6 +935,7 @@ class ReportDeadBodyPatch
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
+        RPC.SyncDeadPassedMeetingList();
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 
@@ -944,7 +961,7 @@ class FixedUpdateInNormalGamePatch
     {
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null) return;
+        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
@@ -980,6 +997,7 @@ class FixedUpdateInNormalGamePatch
         // For example: 15 players will called 450 times every 1 second
 
         var player = __instance;
+        bool localplayer = __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId;
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
@@ -1098,6 +1116,11 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
+            else // We are not in lobby
+            {
+                if (localplayer)
+                    CustomNetObject.FixedUpdate();
+            }
 
             DoubleTrigger.OnFixedUpdate(player);
             KillTimerManager.FixedUpdate(player);
@@ -1170,6 +1193,7 @@ class FixedUpdateInNormalGamePatch
                 }
             }
 
+
             if (!lowLoad)
             {
                 if (!Main.DoBlockNameChange)
@@ -1183,6 +1207,7 @@ class FixedUpdateInNormalGamePatch
 
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
+
                     }
             }
         }
@@ -1499,6 +1524,21 @@ class CoEnterVentPatch
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
+
+        if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
+        {
+            playerRoleClass.LastBlockedMoveInVentVents.Clear();
+            var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
+            foreach (var nextvent in vent.NearbyVents.ToList())
+            {
+                if (nextvent == null) continue;
+                // Skip current vent or ventid 5 in Dleks to prevent stuck
+                if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Add(nextvent.Id);
+                playerRoleClass.LastBlockedMoveInVentVents.Add(nextvent.Id);
+            }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
         return true;
     }
     public static void Postfix()
@@ -1546,6 +1586,14 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
+        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? false)
+        {
+            foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+            }
+            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+        }
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
