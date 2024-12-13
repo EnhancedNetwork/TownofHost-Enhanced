@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class PlagueDoctor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.PlagueDoctor;
     private const int Id = 27600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueDoctor);
     public override bool IsDesyncRole => true;

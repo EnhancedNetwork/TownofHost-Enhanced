@@ -317,8 +317,36 @@ internal static class Crowded
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
+    public static class MeetingHudStartPatch
+    {
+        public static void Postfix(MeetingHud __instance)
+        {
+            __instance.gameObject.AddComponent<MeetingHudPagingBehaviour>().meetingHud = __instance;
+        }
+    }
+
+    [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.Begin))]
+    public static class ShapeshifterMinigameBeginPatch
+    {
+        public static void Postfix(ShapeshifterMinigame __instance)
+        {
+            __instance.gameObject.AddComponent<ShapeShifterPagingBehaviour>().shapeshifterMinigame = __instance;
+        }
+    }
+
+    [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Begin))]
+    public static class VitalsMinigameBeginPatch
+    {
+        public static void Postfix(VitalsMinigame __instance)
+        {
+            __instance.gameObject.AddComponent<VitalsPagingBehaviour>().vitalsMinigame = __instance;
+        }
+    }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class AbstractPagingBehaviour : MonoBehaviour
 {
     public AbstractPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -368,6 +396,7 @@ public class AbstractPagingBehaviour : MonoBehaviour
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 {
     public MeetingHudPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -422,6 +451,7 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
 {
     public ShapeShifterPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -476,6 +506,8 @@ public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
         }
     }
 }
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 
 public class VitalsPagingBehaviour : AbstractPagingBehaviour
 {

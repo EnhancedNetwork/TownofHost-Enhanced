@@ -7,7 +7,6 @@ using Il2CppInterop.Runtime.Injection;
 using MonoMod.Utils;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -47,8 +46,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1207.220.00070"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 7";
+    public const string PluginVersion = "2024.1213.220.00082"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 8 Hotfix 2";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -169,6 +168,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, bool> CheckShapeshift = [];
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
     public static readonly HashSet<byte> UnShapeShifter = [];
+    public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 
@@ -390,18 +390,19 @@ public class Main : BasePlugin
                 .GetTypes()
                 .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
 
+            var roleInstances = RoleTypes.Select(x => (RoleBase)Activator.CreateInstance(x)).ToList();
+
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
                 { CustomRoles.NiceMini, typeof(Mini) },
                 { CustomRoles.EvilMini, typeof(Mini) }
             };
 
-
             foreach (var role in CustomRolesHelper.AllRoles.Where(x => x < CustomRoles.NotAssigned))
             {
                 if (!CustomRolesHelper.DuplicatedRoles.TryGetValue(role, out Type roleType))
                 {
-                    roleType = RoleTypes.FirstOrDefault(x => x.Name.Equals(role.ToString(), StringComparison.OrdinalIgnoreCase)) ?? typeof(DefaultSetup);
+                    roleType = roleInstances.FirstOrDefault(x => x.Role == role)?.GetType() ?? typeof(DefaultSetup);
                 }
 
                 CustomRoleManager.RoleClass.Add(role, (RoleBase)Activator.CreateInstance(roleType));
@@ -426,7 +427,7 @@ public class Main : BasePlugin
             .Where(t => IAddonType.IsAssignableFrom(t) && !t.IsInterface)
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
-            .ToDictionary(x => Enum.Parse<CustomRoles>(x.GetType().Name, true), x => x));
+            .ToDictionary(x => x.Role, x => x));
 
             TOHE.Logger.Info("AddonClasses Loaded Successfully", "LoadAddonClasses");
         }
@@ -633,6 +634,7 @@ public class Main : BasePlugin
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
+[Obfuscation(Exclude = true)]
 public enum CustomRoles
 {
     // Crewmate(Vanilla)
@@ -993,6 +995,7 @@ public enum CustomRoles
     Youtuber
 }
 //WinData
+[Obfuscation(Exclude = true)]
 public enum CustomWinner
 {
     Draw = -1,
@@ -1060,6 +1063,7 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
 }
+[Obfuscation(Exclude = true)]
 public enum AdditionalWinners
 {
     None = -1,
@@ -1088,6 +1092,7 @@ public enum AdditionalWinners
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }
+[Obfuscation(Exclude = true)]
 public enum SuffixModes
 {
     None = 0,
@@ -1100,6 +1105,7 @@ public enum SuffixModes
     NoAndroidPlz,
     AutoHost
 }
+[Obfuscation(Exclude = true)]
 public enum VoteMode
 {
     Default,
@@ -1107,6 +1113,7 @@ public enum VoteMode
     SelfVote,
     Skip
 }
+[Obfuscation(Exclude = true)]
 public enum TieMode
 {
     Default,

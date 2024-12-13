@@ -8,6 +8,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pickpocket : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pickpocket;
     private const int Id = 17400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pickpocket);
     public override bool IsDesyncRole => true;

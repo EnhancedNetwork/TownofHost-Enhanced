@@ -7,10 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class Godfather : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Godfather;
     private const int Id = 3400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -20,6 +18,7 @@ internal class Godfather : RoleBase
     private static readonly HashSet<byte> GodfatherTarget = [];
     private bool Didvote = false;
 
+    [Obfuscation(Exclude = true)]
     private enum GodfatherChangeModeList
     {
         GodfatherCount_Refugee,
@@ -35,17 +34,18 @@ internal class Godfather : RoleBase
 
     public override void Init()
     {
-        PlayerIds.Clear();
         GodfatherTarget.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
         }
+    }
+    public override void Remove(byte playerId)
+    {
+        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => GodfatherTarget.Clear();

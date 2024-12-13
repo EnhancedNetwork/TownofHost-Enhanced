@@ -7,9 +7,8 @@ namespace TOHE.Roles.Neutral;
 internal class Necromancer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Necromancer;
     private const int Id = 17100;
-
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -38,7 +37,6 @@ internal class Necromancer : RoleBase
     }
     public override void Init()
     {
-
         IsRevenge = false;
         Success = false;
         Killer = null;
@@ -46,7 +44,6 @@ internal class Necromancer : RoleBase
     }
     public override void Add(byte playerId)
     {
-
         Timer = RevengeTime.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());

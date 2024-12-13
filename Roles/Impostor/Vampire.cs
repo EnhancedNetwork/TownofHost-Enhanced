@@ -14,10 +14,8 @@ internal class Vampire : RoleBase
     }
 
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vampire;
     private const int Id = 5000;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -26,6 +24,7 @@ internal class Vampire : RoleBase
     private static OptionItem CanVent;
     private static OptionItem ActionModeOpt;
 
+    [Obfuscation(Exclude = true)]
     private enum ActionModeList
     {
         Vampire_OnlyBites,
@@ -47,7 +46,6 @@ internal class Vampire : RoleBase
     }
     public override void Init()
     {
-
         BittenPlayers.Clear();
 
         KillDelay = OptionKillDelay.GetFloat();
@@ -55,8 +53,6 @@ internal class Vampire : RoleBase
     }
     public override void Add(byte playerId)
     {
-
-
         if (NowActionMode == ActionModeList.TriggerDouble)
         {
             Utils.GetPlayerById(playerId)?.AddDoubleTrigger();

@@ -7,7 +7,6 @@ using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,6 +27,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -2406,6 +2406,7 @@ public static class Utils
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
 
+        RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
 
         // Empty Deden bug support Empty vent after meeting

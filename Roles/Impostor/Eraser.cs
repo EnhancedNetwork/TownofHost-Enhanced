@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Eraser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Eraser;
     private const int Id = 24200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Eraser);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

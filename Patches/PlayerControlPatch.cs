@@ -874,6 +874,14 @@ class ReportDeadBodyPatch
                         }
                         player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
                     }
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -927,6 +935,7 @@ class ReportDeadBodyPatch
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
+        RPC.SyncDeadPassedMeetingList();
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 

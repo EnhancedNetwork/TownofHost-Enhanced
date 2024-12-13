@@ -13,6 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Overseer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Overseer;
     private const int Id = 12200;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

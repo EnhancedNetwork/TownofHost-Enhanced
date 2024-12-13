@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 //EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/Impostor/Abyssbringer.cs
 internal class AbyssBringer : RoleBase
 {
+    public override CustomRoles Role => CustomRoles.Abyssbringer;
     const int Id = 31300;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -20,7 +21,7 @@ internal class AbyssBringer : RoleBase
     private static OptionItem BlackHoleMoveSpeed;
     private static OptionItem BlackHoleRadius;
 
-    private readonly List<BlackHoleData> BlackHoles = [];
+    private readonly Dictionary<byte, BlackHoleData> BlackHoles = [];
 
     public override void SetupCustomOption()
     {
@@ -50,24 +51,64 @@ internal class AbyssBringer : RoleBase
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void Init()
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
+        lastBlackHoleId = 0;
+
+        if (BlackHoles.Count > 0)
+        {
+            foreach (var blackHole in BlackHoles)
+            {
+                if (blackHole.Value.NetObject != null && AmongUsClient.Instance.AmHost)
+                    blackHole.Value.NetObject.Despawn();
+            }
+            BlackHoles.Clear();
+        }
+    }
+
+    private byte lastBlackHoleId = 0;
+
+    private byte GetNextBlackHoleId()
+    {
+        for (byte i = 0; i < byte.MaxValue; i++)
+        {
+            lastBlackHoleId++;
+            if (lastBlackHoleId == byte.MaxValue)
+            {
+                lastBlackHoleId = 0;
+            }
+            if (!BlackHoles.ContainsKey(lastBlackHoleId))
+            {
+                return lastBlackHoleId;
+            }
+        }
+        throw new InvalidOperationException("No available BlackHole ID.");
+    }
+
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
+    {
+        if (!Main.AllAlivePlayerControls.Where(x => x.PlayerId != shapeshifter.PlayerId).Any())
+        {
+            return;
+        }
+        // When no player exists, Instantly spawm and despawn networked object will cause error spam
+
         var pos = shapeshifter.GetCustomPosition();
         var room = shapeshifter.GetPlainShipRoom();
         var roomName = room == null ? string.Empty : Translator.GetString($"{room.RoomId}");
-        BlackHoles.Add(new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
-        Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, pos, roomName);
-        return false;
+        var blackHoleId = GetNextBlackHoleId();
+        BlackHoles.Add(blackHoleId, new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
+        Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, blackHoleId, pos, roomName);
     }
-
+    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("AbyssbringerButtonText"));
+    // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Black Hole");
     public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
     {
         var abyssbringer = _Player;
-        int count = BlackHoles.Count;
-        for (int i = 0; i < count; i++)
+        foreach (var item in BlackHoles)
         {
-            var blackHole = BlackHoles[i];
+            var blackHole = item.Value;
+            var id = item.Key;
 
             var despawnMode = (DespawnMode)BlackHoleDespawnMode.GetValue();
             switch (despawnMode)
@@ -98,7 +139,7 @@ internal class AbyssBringer : RoleBase
                 {
                     nearestPlayer.RpcExileV2();
                     blackHole.PlayersConsumed++;
-                    Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, i);
+                    Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, id, (byte)blackHole.PlayersConsumed);
                     Notify();
 
                     var state = Main.PlayerStates[nearestPlayer.PlayerId];
@@ -112,14 +153,48 @@ internal class AbyssBringer : RoleBase
                     }
                 }
             }
+            else
+            {
+                // No players to follow, despawn
+                RemoveBlackHole();
+                Notify();
+            }
 
             continue;
 
             void RemoveBlackHole()
             {
-                BlackHoles.RemoveAt(i);
+                BlackHoles.Remove(id);
                 blackHole.NetObject.Despawn();
-                Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 3, i);
+                Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 3, id);
+                Notify();
+            }
+
+            void Notify() => Utils.NotifyRoles(SpecifySeer: abyssbringer, SpecifyTarget: abyssbringer);
+        }
+    }
+
+    public override void AfterMeetingTasks()
+    {
+        var abyssbringer = _Player;
+        int count = BlackHoles.Count;
+        foreach (var item in BlackHoles)
+        {
+            var blackHole = item.Value;
+            var despawnMode = (DespawnMode)BlackHoleDespawnMode.GetValue();
+
+            if (despawnMode == DespawnMode.AfterMeeting)
+            {
+                RemoveBlackHole();
+            }
+
+            continue;
+
+            void RemoveBlackHole()
+            {
+                BlackHoles.Remove(item.Key);
+                blackHole.NetObject.Despawn();
+                Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 3, item.Key);
                 Notify();
             }
 
@@ -132,23 +207,30 @@ internal class AbyssBringer : RoleBase
         switch (reader.ReadPackedInt32())
         {
             case 1:
+                var id = reader.ReadByte();
                 var pos = reader.ReadVector2();
                 var roomName = reader.ReadString();
-                BlackHoles.Add(new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
+                if (BlackHoles.ContainsKey(id))
+                {
+                    BlackHoles.Remove(id);
+                }
+                BlackHoles.Add(id, new(new(pos, _state.PlayerId), Utils.TimeStamp, pos, roomName, 0));
                 break;
             case 2:
-                var blackHole = BlackHoles[reader.ReadPackedInt32()];
-                blackHole.PlayersConsumed++;
+                var key = reader.ReadByte();
+                if (!BlackHoles.ContainsKey(key)) return;
+
+                BlackHoles[key].PlayersConsumed = reader.ReadByte();
                 break;
             case 3:
-                BlackHoles.RemoveAt(reader.ReadPackedInt32());
+                BlackHoles.Remove(reader.ReadByte());
                 break;
         }
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl target = null, bool isMeeting = false, bool isForHud = false)
     {
         if (seer.PlayerId != target.PlayerId || seer.PlayerId != _state.PlayerId || (seer.IsModded() && !isForHud) || isMeeting || BlackHoles.Count == 0) return string.Empty;
-        return string.Format(Translator.GetString("Abyssbringer.Suffix"), BlackHoles.Count, string.Join('\n', BlackHoles.Select(x => GetBlackHoleFormatText(x.RoomName, x.PlayersConsumed))));
+        return string.Format(Translator.GetString("Abyssbringer.Suffix"), BlackHoles.Count, string.Join('\n', BlackHoles.Select(x => GetBlackHoleFormatText(x.Value.RoomName, x.Value.PlayersConsumed))));
 
         static string GetBlackHoleFormatText(string roomName, int playersConsumed)
         {
@@ -157,6 +239,7 @@ internal class AbyssBringer : RoleBase
         }
     }
 
+    [Obfuscation(Exclude = true)]
     enum DespawnMode
     {
         None,

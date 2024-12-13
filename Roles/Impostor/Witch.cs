@@ -9,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 internal class Witch : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Witch;
     private const int Id = 2500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
@@ -22,6 +23,7 @@ internal class Witch : RoleBase
     private static readonly Dictionary<byte, bool> SpellMode = [];
     private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
+    [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
     {
         TriggerKill,

@@ -18,6 +18,7 @@
 
   "HostIconInMeeting": "HOST: {0}",
 
+  "SubText.GM": "Spectate the chaos!",
   "SubText.Crewmate": "Find and exile the <color=#ff1919>Impostors</color>",
   "SubText.Impostor": "Sabotage and kill everyone",
   "SubText.Neutral": "Work alone to achieve your victory",
@@ -526,7 +527,7 @@
   "PacifistInfo": "Vent to reset kill cooldowns",
   "RebirthInfo": "Arise Again",
   "MonarchInfo": "Give your crew extra voting power!",
-  "AbyssbringerInfo": "Create Black Holes",
+  "AbyssbringerInfo": "Place Black Holes",
   "SpurtInfo": "Spring Like A rabbit!",
   "StealthInfo": "Killing Blinds Everyone in the Room",
   "PenguinInfo": "Drag your victims",
@@ -1189,6 +1190,7 @@
   "FixKillCooldownValue": "Starting Kill Cooldown",
   "OverclockedReduction": "Kill Cooldown Reduction",
   "GhostCanSeeOtherRoles": "Ghosts Can See Other Roles",
+  "PreventSeeRolesImmediatelyAfterDeath": "Prevent seeing other's roles immediately after death",
   "GhostCanSeeOtherVotes": "Ghosts Can See Vote Colors",
   "GhostCanSeeDeathReason": "Ghost Can See Cause Of Death",
   "GhostIgnoreTasks": "Ghosts Exempt From Tasks",
@@ -2599,6 +2601,9 @@
   "WarlockShapeshiftButtonText": "Spell",
   "BountyHunterChangeButtonText": "Swap",
   "EvilTrackerChangeButtonText": "Track",
+  "RiftMakerButtonText": "Create Rift",
+  "AbyssbringerButtonText": "Black Hole",
+  "PitfallButtonText": "Set Trap",
   "InnocentButtonText": "Frame",
   "PelicanButtonText": "Eat",
   "DeceiverButtonText": "Cheat",
@@ -3883,6 +3888,8 @@
 
   "EavesdropperMsgTitle": "You found a secret",
   "EavesdropPercentChance": "Chance to eavesdrop",
+
+  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
 
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting sheriffs",
   "PolicCanImpostorAndNeutarl": "Can recruit <color=#ff1919>Impostor</color> or <color=#7f8c8d>Neutral</color>",
