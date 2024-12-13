@@ -321,6 +321,18 @@ public static class CustomRolesHelper
     {
         return role.GetStaticRoleClass().ThisRoleType is Custom_RoleType.Madmate;
     }
+    public static bool IsBad(PlayerControl pc) //gets all players that keep the game going
+    {
+        var pc_role = pc.GetCustomRole();
+        return (!pc.Is(CustomRoles.Admired) && 
+               (IsNarcImpV3(pc) || pc_role.IsNK() || pc_role.IsNA())) ||
+               pc.Is(CustomRoles.Infected) ||
+               (pc.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1) ||
+               (pc.Is(CustomRoles.Charmed) && Cultist.CharmedCountMode.GetInt() == 1) || 
+               (pc.Is(CustomRoles.Recruit) && Jackal.SidekickCountMode.GetInt() == 1) || 
+               (pc.Is(CustomRoles.Contagious) && Virus.ContagiousCountMode.GetInt() == 1) ||
+               (pc.Is(CustomRoles.Egoist) && Egoist.EgoistCountAsConverted.GetBool());
+    }
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
     /// </summary>
@@ -333,7 +345,15 @@ public static class CustomRolesHelper
             CustomRoles.Contagious or
             CustomRoles.Soulless or
             CustomRoles.Madmate;
-
+    public static bool IsConvertedV2(PlayerControl pc) //add-ons that make players counted as a converted neutral
+    {
+        return pc.Is(CustomRoles.Charmed) || 
+               pc.Is(CustomRoles.Infected) || 
+               pc.Is(CustomRoles.Contagious) || 
+               pc.Is(CustomRoles.Recruit) || 
+               (pc.Is(CustomRoles.Egoist) && Egoist.EgoistCountAsConverted.GetBool());
+    }
+    
     public static bool IsNotKnightable(this CustomRoles role)
     {
         return role is
@@ -378,6 +398,11 @@ public static class CustomRolesHelper
             or CustomRoles.Rascal
             or CustomRoles.Soulless
             or CustomRoles.Narc;
+    }
+    public static bool IsBetrayalAddonV2(this CustomRoles role)
+    {
+        return (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
+               || role is CustomRoles.Admired;
     }
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
@@ -1113,10 +1138,9 @@ public static class CustomRolesHelper
                     return false;
                 break;
             case CustomRoles.Narc:
-                if ((!pc.GetCustomRole().IsImpostor() 
-                    && !pc.Is(CustomRoles.Parasite) 
-                    && !pc.Is(CustomRoles.Crewpostor))
-                    || pc.Is(CustomRoles.Visionary)
+                if (!pc.GetCustomRole().IsImpostorTeamV3())
+                    return false;
+                if (pc.Is(CustomRoles.Visionary)
                     || pc.Is(CustomRoles.DoubleAgent)
                     || pc.Is(CustomRoles.Egoist)
                     || pc.Is(CustomRoles.Mare)
@@ -1166,7 +1190,31 @@ public static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
-
+    /// <summary>
+    /// A lot of team type features did not function properly when I used "CustomRoles role",
+    /// so I used "PlayerControl pc" and the features worked again.
+    /// </summary>
+    public static bool IsNarcCrew(PlayerControl pc)// gets Crewmate or Narc
+    {
+        return pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Narc);
+    }
+    public static bool IsNarcImp(PlayerControl pc)//gets non-Narc Impostors
+    {
+        return pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc);
+    }
+    public static bool IsNarcMM(PlayerControl pc)//gets non-Narc Madmates
+    {
+        return pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc);
+    }
+    public static bool IsNarcImpV3(PlayerControl pc)// gets non-Narc Impostors/Madmates
+    {
+        return IsNarcImp(pc) || IsNarcMM(pc);
+    }
+    public static bool IsNarcNeutral(PlayerControl pc)// gets non-Madmate,non-Narc Neutrals
+    {
+        return pc.GetCustomRole().IsNeutral() && !pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc);
+    }
+    
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
