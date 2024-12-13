@@ -13,6 +13,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 internal class Ghastly : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Ghastly;
     private const int Id = 22060;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ghastly);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;

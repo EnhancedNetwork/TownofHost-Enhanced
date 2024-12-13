@@ -7,6 +7,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Addict : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Addict;
     private const int Id = 6300;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;

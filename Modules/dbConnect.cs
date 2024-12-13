@@ -1,7 +1,6 @@
 ﻿using AmongUs.Data;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Text.Json;
 using UnityEngine.Networking;
 using static TOHE.Translator;
@@ -309,6 +308,7 @@ public class dbConnect
         return true;
     }
 
+    [Obfuscation(Exclude = true)]
     private enum FailedConnectReason
     {
         Build_Not_Specified,

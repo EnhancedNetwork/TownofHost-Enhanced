@@ -9,6 +9,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pursuer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pursuer;
     private const int Id = 13400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pursuer);
     public override bool IsDesyncRole => true;

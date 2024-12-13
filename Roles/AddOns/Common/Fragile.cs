@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Fragile : IAddon
 {
+    public CustomRoles Role => CustomRoles.Fragile;
     private const int Id = 20600;
     public AddonTypes Type => AddonTypes.Harmful;
 

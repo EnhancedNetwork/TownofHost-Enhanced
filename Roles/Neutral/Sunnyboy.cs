@@ -5,6 +5,7 @@ namespace TOHE.Roles.Neutral;
 internal class Sunnyboy : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Sunnyboy;
     private const int Id = 14400;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();

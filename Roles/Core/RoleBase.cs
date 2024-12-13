@@ -8,6 +8,7 @@ namespace TOHE;
 
 public abstract class RoleBase
 {
+    public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
     public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
@@ -88,7 +89,7 @@ public abstract class RoleBase
     /// <summary>
     /// Defines the custom role
     /// </summary>
-    public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
+    public CustomRoles ThisCustomRole => Role;
 
 
     //this is a draft, it is not usable yet, Imma fix it in another PR
@@ -270,6 +271,7 @@ public abstract class RoleBase
     /// <summary>
     /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
+    [Obfuscation(Exclude = true)]
     public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
 
     /// <summary>
@@ -376,6 +378,7 @@ public abstract class RoleBase
     /// <summary>
     /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
     /// </summary>
+    [Obfuscation(Exclude = true)]
     public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
 
     /// <summary>
@@ -470,6 +473,7 @@ public abstract class RoleBase
         OnReceiveRPC(reader); // Default implementation
     }
 
+    [Obfuscation(Exclude = true)]
     public enum GeneralOption
     {
         // Ability

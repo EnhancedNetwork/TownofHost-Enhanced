@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Gravestone : IAddon
 {
+    public CustomRoles Role => CustomRoles.Gravestone;
     private const int Id = 22100;
     public AddonTypes Type => AddonTypes.Mixed;
 

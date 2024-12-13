@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Amnesiac : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Amnesiac;
     private const int Id = 12700;
     public override CustomRoles ThisRoleBase => AmnesiacCanUseVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;

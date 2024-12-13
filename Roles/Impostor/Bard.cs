@@ -3,7 +3,7 @@
 internal class Bard : RoleBase
 {
     //===========================SETUP================================\\
-
+    public override CustomRoles Role => CustomRoles.Bard;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\

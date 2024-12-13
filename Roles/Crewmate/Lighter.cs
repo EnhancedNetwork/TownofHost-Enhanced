@@ -10,10 +10,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Lighter : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Lighter;
     private const int Id = 8400;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
@@ -47,18 +45,15 @@ internal class Lighter : RoleBase
     }
     public override void Init()
     {
-
         Timer.Clear();
         LighterNumOfUsed.Clear();
     }
     public override void Add(byte playerId)
     {
-
         LighterNumOfUsed.Add(playerId, LighterSkillMaxOfUseage.GetInt());
     }
     public override void Remove(byte playerId)
     {
-
         LighterNumOfUsed.Remove(playerId);
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
