@@ -18,10 +18,10 @@ public static class CustomRoleManager
     public static readonly Dictionary<CustomRoles, IAddon> AddonClasses = [];
     public static RoleBase GetStaticRoleClass(this CustomRoles role)
     {
-        var roleClass = RoleClass.FirstOrDefault(x => x.Value.Role == role).Value;
+        var roleClass = RoleClass.FirstOrDefault(x => x.Key == role).Value;
 
         if (!role.IsVanilla() && !role.IsAdditionRole()
-            && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.EvilMini and not CustomRoles.NiceMini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
+            && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
         {
             if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
                 Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
