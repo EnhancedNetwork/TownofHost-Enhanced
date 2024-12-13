@@ -275,7 +275,10 @@ class CheckMurderPatch
         }
 
         // Impostors can kill Madmate
-        if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+        if (killer.Is(Custom_Team.Impostor) && !killer.Is(CustomRoles.Narc) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+            return false;
+
+        if (killer.Is(Custom_Team.Impostor) && killer.Is(CustomRoles.Narc) && !Narc.NarcCanKillMadmates.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
         Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
@@ -1340,6 +1343,12 @@ class FixedUpdateInNormalGamePatch
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
+                if (target.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Sheriff))
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), "★"));
+
+                if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), "★"));
+                
                 if (target.Is(CustomRoles.Lovers) && seer.Is(CustomRoles.Lovers))
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");

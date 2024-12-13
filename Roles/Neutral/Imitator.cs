@@ -68,6 +68,23 @@ internal class Imitator : RoleBase
             // Notify target
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
+        else if (CustomRolesHelper.IsNarcCrew(target))
+        {
+            AbilityLimit--;
+            SendSkillRPC();
+            killer.RpcSetCustomRole(CustomRoles.Sheriff);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+        }
+        else if (CustomRolesHelper.IsNarcImp(target))
+        {
+            AbilityLimit--;
+            SendSkillRPC();
+            killer.RpcSetCustomRole(CustomRoles.Refugee);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+        }
         else if (role.IsAmneMaverick())
         {
             AbilityLimit--;
@@ -99,23 +116,6 @@ internal class Imitator : RoleBase
                     break;
             }
 
-        }
-        else if (role.IsCrewmate())
-        {
-            AbilityLimit--;
-            SendSkillRPC();
-            killer.RpcSetCustomRole(CustomRoles.Sheriff);
-            killer.GetRoleClass().OnAdd(killer.PlayerId);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-        }
-        else if (role.IsImpostor())
-        {
-            AbilityLimit--;
-            SendSkillRPC();
-            killer.RpcSetCustomRole(CustomRoles.Refugee);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
 
         var killerRole = killer.GetCustomRole();

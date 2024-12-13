@@ -14,8 +14,8 @@ internal class Crewpostor : RoleBase
     //==================================================================\\
 
     private static OptionItem CanKillAllies;
-    private static OptionItem KnowsAllies;
-    private static OptionItem AlliesKnowCrewpostor;
+    public static OptionItem KnowsAllies;
+    public static OptionItem AlliesKnowCrewpostor;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
@@ -95,8 +95,8 @@ internal class Crewpostor : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target) ? Utils.GetRoleColorCode(CustomRoles.Crewpostor) : string.Empty;
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor))
-            || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(Custom_Team.Impostor));
+        => (AlliesKnowCrewpostor.GetBool() && (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc)) && target.Is(CustomRoles.Crewpostor))
+            || (KnowsAllies.GetBool() && (seer.Is(CustomRoles.Crewpostor) && !seer.Is(CustomRoles.Narc)) && target.Is(Custom_Team.Impostor));
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
@@ -108,7 +108,7 @@ internal class Crewpostor : RoleBase
             TasksDone[player.PlayerId] = 0;
 
         SendRPC(player.PlayerId, TasksDone[player.PlayerId]);
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
+        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam()) && (player.Is(CustomRoles.Narc) && !x.Is(CustomRoles.Narc))).ToList();
 
         if (!list.Any())
         {
