@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Eavesdropper : IAddon
 {
+    public CustomRoles Role => CustomRoles.Eavesdropper;
     public const int Id = 30100;
     private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable = false;

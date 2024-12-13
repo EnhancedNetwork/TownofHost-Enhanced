@@ -11,10 +11,8 @@ internal class Devourer : RoleBase
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = [];
 
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Devourer;
     private const int Id = 5500;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -48,13 +46,11 @@ internal class Devourer : RoleBase
         PlayerSkinsCosumed.Clear();
         OriginalPlayerSkins.Clear();
         NowCooldown.Clear();
-
     }
     public override void Add(byte playerId)
     {
         PlayerSkinsCosumed.TryAdd(playerId, []);
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
-
     }
     public override void Remove(byte playerId)
     {

@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class Kamikaze : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Kamikaze;
     private const int Id = 26900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Kamikaze);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

@@ -159,6 +159,7 @@ class RandomSpawn
     public static bool IsRandomSpawn() => RandomSpawnMode.GetBool();
     public static bool CanSpawnInFirstRound() => SpawnInFirstRound.GetBool();
 
+    [Obfuscation(Exclude = true)]
     private enum RandomSpawnOpt
     {
         RandomSpawnMode,

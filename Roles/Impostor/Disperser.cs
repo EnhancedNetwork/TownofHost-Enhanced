@@ -9,9 +9,8 @@ namespace TOHE.Roles.Impostor;
 internal class Disperser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Disperser;
     private const int Id = 24400;
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -26,15 +25,6 @@ internal class Disperser : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         DisperserShapeshiftDuration = FloatOptionItem.Create(Id + 7, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 60f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Disperser])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

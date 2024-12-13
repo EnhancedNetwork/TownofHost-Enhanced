@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Altruist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Altruist;
     private const int Id = 29800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Altruist);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;

@@ -14,6 +14,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Admirer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Admirer;
     private const int Id = 24800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admired);
     public override bool IsDesyncRole => true;

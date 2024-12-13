@@ -16,6 +16,7 @@ namespace TOHE.Roles.Coven;
 internal class MoonDancer : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.MoonDancer;
     private const int Id = 30500;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

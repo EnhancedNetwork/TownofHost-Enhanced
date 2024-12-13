@@ -8,12 +8,13 @@ namespace TOHE;
 public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 {
     public static byte necroHolder = byte.MaxValue;
-
+    [Obfuscation(Exclude = true)]
     public enum VisOptionList
     {
         On,
         CovenPerRole
     }
+    [Obfuscation(Exclude = true)]
     public enum VentOptionList
     {
         On,

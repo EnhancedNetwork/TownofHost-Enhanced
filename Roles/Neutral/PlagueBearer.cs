@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class PlagueBearer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.PlagueBearer;
     private const int Id = 17600;
     public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
@@ -237,6 +238,7 @@ internal class PlagueBearer : RoleBase
 internal class Pestilence : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pestilence;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pestilence);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

@@ -9,10 +9,8 @@ namespace TOHE.Roles.Neutral;
 internal class Workaholic : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Workaholic;
     private const int Id = 15800;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -45,10 +43,6 @@ internal class Workaholic : RoleBase
     public override void Init()
     {
         WorkaholicAlive.Clear();
-
-    }
-    public override void Add(byte playerId)
-    {
 
     }
 

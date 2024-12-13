@@ -5,10 +5,8 @@ namespace TOHE.Roles.Vanilla;
 internal class TrackerTOHE : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.TrackerTOHE;
     private const int Id = 6250;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Tracker;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
@@ -29,15 +27,6 @@ internal class TrackerTOHE : RoleBase
         TrackDelay = IntegerOptionItem.Create(Id + 4, GeneralOption.TrackerBase_TrackingDelay, new(0, 10, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

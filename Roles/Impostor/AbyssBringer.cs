@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 //EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/Impostor/Abyssbringer.cs
 internal class AbyssBringer : RoleBase
 {
+    public override CustomRoles Role => CustomRoles.Abyssbringer;
     const int Id = 31300;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
@@ -238,6 +239,7 @@ internal class AbyssBringer : RoleBase
         }
     }
 
+    [Obfuscation(Exclude = true)]
     enum DespawnMode
     {
         None,

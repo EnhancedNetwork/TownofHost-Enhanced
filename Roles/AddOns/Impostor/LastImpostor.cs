@@ -3,6 +3,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class LastImpostor : IAddon
 {
+    public CustomRoles Role => CustomRoles.LastImpostor;
     private const int Id = 22800;
     public AddonTypes Type => AddonTypes.Impostor;
     public static byte currentId = byte.MaxValue;

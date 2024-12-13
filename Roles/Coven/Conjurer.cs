@@ -9,6 +9,7 @@ namespace TOHE.Roles.Coven;
 
 internal class Conjurer : CovenManager
 {
+    [Obfuscation(Exclude = true)]
     private enum ConjState
     {
         NormalMark,
@@ -17,6 +18,7 @@ internal class Conjurer : CovenManager
         NecroBomb
     }
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Conjurer;
     private const int Id = 30300;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

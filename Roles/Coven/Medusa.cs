@@ -11,6 +11,7 @@ namespace TOHE.Roles.Coven;
 internal class Medusa : CovenManager
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Medusa;
     private const int Id = 17000;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

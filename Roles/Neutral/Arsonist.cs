@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Arsonist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Arsonist;
     private const int id = 15900;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
