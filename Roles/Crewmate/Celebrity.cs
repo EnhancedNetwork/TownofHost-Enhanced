@@ -45,8 +45,8 @@ internal class Celebrity : RoleBase
         if (target.PlayerId == _Player.PlayerId && seer.PlayerId == _Player.PlayerId) return true;
 
         // Hide kill flash for some team
-        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor() && !seer.Is(CustomRoles.Narc)) return false;
-        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) return false;
+        if (!ImpKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcImpV3(seer)) return false;
+        if (!NeutralKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcNeutral(seer)) return false;
 
         seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
         return true;
@@ -60,8 +60,8 @@ internal class Celebrity : RoleBase
             //Death Message
             foreach (var pc in Main.AllPlayerControls)
             {
-                if (!ImpKnowCelebrityDead.GetBool() && (pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc))) continue;
-                if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcImpV3(targets)) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcNeutral(targets)) continue;
 
                 SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
             }
@@ -76,8 +76,8 @@ internal class Celebrity : RoleBase
     {
         foreach (var csId in CelebrityDead)
         {
-            if (!ImpKnowCelebrityDead.GetBool() && (targets.GetCustomRole().IsImpostor() && !targets.Is(CustomRoles.Narc))) continue;
-            if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcImpV3(targets)) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcNeutral(targets)) continue;
             AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
         }
     }
