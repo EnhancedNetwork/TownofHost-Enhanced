@@ -60,8 +60,8 @@ internal class Celebrity : RoleBase
             //Death Message
             foreach (var pc in Main.AllPlayerControls)
             {
-            if (!ImpKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcImpV3(targets)) continue;
-            if (!NeutralKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcNeutral(targets)) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcImpV3(pc)) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && CustomRolesHelper.IsNarcNeutral(pc)) continue;
 
                 SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
             }
