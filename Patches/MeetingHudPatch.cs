@@ -452,24 +452,14 @@ class CheckForEndVotingPatch
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var pc_role = pc.GetCustomRole();
-            if (pc_role.IsImpostorTeamV3() && !pc.Is(CustomRoles.Narc) && pc != exiledPlayer.Object)
+            if (CustomRolesHelper.IsNarcImpV3(pc) && pc != exiledPlayer.Object)
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
             else if (pc_role.IsNA() && pc != exiledPlayer.Object)
                 apocnum++;
 
-            if (pc != exiledPlayer.Object && (!pc.Is(CustomRoles.Admired) && (
-               (pc_role.IsImpostorTeamV3() && !pc.Is(CustomRoles.Narc)) ||
-               pc_role.IsNK() ||
-               pc_role.IsNA()) ||
-               pc.Is(CustomRoles.Infected) ||
-               (pc.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1) ||
-               (pc.Is(CustomRoles.Charmed) && Cultist.CharmedCountMode.GetInt() == 1) || 
-               (pc.Is(CustomRoles.Recruit) && Jackal.SidekickCountMode.GetInt() == 1) || 
-               (pc.Is(CustomRoles.Contagious) && Virus.ContagiousCountMode.GetInt() == 1) ||
-               (pc.Is(CustomRoles.Egoist) && Egoist.EgoistCountAsConverted.GetBool()))
-               )
+            if (pc != exiledPlayer.Object && CustomRolesHelper.IsBad(pc))
                 badnum++; //counts everything that keeps the game going
         }
         switch (Options.CEMode.GetInt())
@@ -484,17 +474,16 @@ class CheckForEndVotingPatch
                 else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.Is(CustomRoles.Charmed) || player.Is(CustomRoles.Infected) || player.Is(CustomRoles.Contagious) || player.Is(CustomRoles.Recruit)
-                         || (player.Is(CustomRoles.Egoist) && Egoist.EgoistCountAsConverted.GetBool()))  
+                else if (CustomRolesHelper.IsConvertedV2(player))  
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
-                else if (player.GetCustomRole().IsImpostorTeamV3()) 
+                else if (CustomRolesHelper.IsNarcImpV3(player)) 
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
+                else if (CustomRolesHelper.IsNarcNeutral(player))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 break;
@@ -505,14 +494,13 @@ class CheckForEndVotingPatch
                     name += " (";
                     if (player.Is(CustomRoles.Madmate))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.Is(CustomRoles.Charmed) || player.Is(CustomRoles.Infected) || player.Is(CustomRoles.Contagious) || player.Is(CustomRoles.Recruit)
-                             || (player.Is(CustomRoles.Egoist) && Egoist.EgoistCountAsConverted.GetBool()))
+                    else if (CustomRolesHelper.IsConvertedV2(player))
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
-                    else if (player.GetCustomRole().IsImpostorTeamV3())
+                    else if (CustomRolesHelper.IsNarcImpV3(player))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
+                    else if (CustomRolesHelper.IsNarcNeutral(player))
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.GetCustomRole().IsCrewmate())
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
