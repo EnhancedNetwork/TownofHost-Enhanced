@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Crusader : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Crusader;
     private const int Id = 10400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Crusader);
     public override bool IsDesyncRole => true;
@@ -38,9 +39,9 @@ internal class Crusader : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
 
     public override bool CanUseKillButton(PlayerControl pc) => AbilityLimit > 0;
-    
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    
+
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -53,10 +54,10 @@ internal class Crusader : RoleBase
         SendSkillRPC();
 
         killer.SetKillCooldown();
-        
+
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(killer);
-        
+
         return false;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)

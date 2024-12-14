@@ -1,13 +1,13 @@
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using AmongUs.GameOptions;
+using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
-using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Impostor;
+using UnityEngine;
 using static TOHE.Utils;
-using Hazel;
 
 namespace TOHE;
 
@@ -106,6 +106,12 @@ public class PlayerState(byte playerId)
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
             pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
             InitTask(pc);
+
+            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            {
+                Main.UnShapeShifter.Add(pc.PlayerId);
+                Logger.Info($"Added {pc.GetNameWithRole()} to UnShapeShifter list mid game", "PlayerState.SetMainRole");
+            }
         }
     }
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
@@ -113,6 +119,13 @@ public class PlayerState(byte playerId)
         if (role == CustomRoles.Cleansed)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
+
+            // Remove lovers on Cleansed
+            if (pc.Is(CustomRoles.Lovers))
+            {
+                var lover = Main.PlayerStates.Values.FirstOrDefault(x => x.PlayerId != pc.PlayerId && x.SubRoles.Contains(CustomRoles.Lovers));
+                lover?.RemoveSubRole(CustomRoles.Lovers);
+            }
 
             foreach (var subRole in SubRoles.ToArray())
             {
@@ -253,6 +266,7 @@ public class PlayerState(byte playerId)
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
+    [Obfuscation(Exclude = true)]
     public enum DeathReason
     {
         Kill,
@@ -282,6 +296,7 @@ public class PlayerState(byte playerId)
         PissedOff,
         Dismembered,
         LossOfHead,
+        Consumed,
         Trialed,
         Infected,
         Jinx,

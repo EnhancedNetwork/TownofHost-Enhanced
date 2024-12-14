@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class Mare : IAddon
 {
+    public CustomRoles Role => CustomRoles.Mare;
     private const int Id = 23000;
     public AddonTypes Type => AddonTypes.Impostor;
     public static readonly HashSet<byte> playerIdList = [];
@@ -27,14 +28,15 @@ public class Mare : IAddon
     }
     public void Add(byte playerId, bool gameIsLoading = true)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public void Remove(byte playerId)
     {
         playerIdList.Remove(playerId);
     }
     public static bool IsEnable => playerIdList.Any();
-    
+
     public static float GetKillCooldown => Utils.IsActive(SystemTypes.Electrical) ? KillCooldownInLightsOut.GetFloat() : DefaultKillCooldown;
 
     public static void ApplyGameOptions(byte playerId)

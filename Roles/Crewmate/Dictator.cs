@@ -1,22 +1,19 @@
-﻿using System;
+﻿using Hazel;
+using System;
 using TOHE.Modules.ChatManager;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using TOHE.Roles.Core;
 using UnityEngine;
-using Hazel;
-using InnerNet;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Dictator : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Dictator;
     private const int Id = 11600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -25,15 +22,6 @@ internal class Dictator : RoleBase
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Dictator);
         ChangeCommandToExpel = BooleanOptionItem.Create(Id + 10, "DictatorChangeCommandToExpel", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Dictator]);
-    }
-
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)
@@ -185,7 +173,7 @@ internal class Dictator : RoleBase
         {
             foreach (var pva in __instance.playerStates)
             {
-                if (pva.transform.Find("DictatorButton") != null) 
+                if (pva.transform.Find("DictatorButton") != null)
                     UnityEngine.Object.Destroy(pva.transform.Find("DictatorButton").gameObject);
             }
         }
