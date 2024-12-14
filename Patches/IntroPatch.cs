@@ -800,11 +800,21 @@ class IntroCutsceneDestroyPatch
             }
 
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
+                {
+                    PlayerControl.LocalPlayer.RpcExile();
+                    Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+        }
+
+        foreach (byte spectator in ChatCommands.Spectators)
             {
-                PlayerControl.LocalPlayer.RpcExile();
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+                _ = new LateTask(() =>
+                {
+                    spectator.GetPlayer().RpcExileV2();
+                    Main.PlayerStates[spectator].SetDead();
+                }, spectator, $"Set Spectator Dead)");
             }
-            else if (GhostRoleAssign.forceRole.Any())
+
+            if (GhostRoleAssign.forceRole.Any())
             {
                 // Needs to be delayed for the game to load it properly
                 _ = new LateTask(() =>
