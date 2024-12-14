@@ -3,6 +3,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Hurried : IAddon
 {
+    public CustomRoles Role => CustomRoles.Hurried;
     private const int Id = 21300;
     public AddonTypes Type => AddonTypes.Harmful;
 

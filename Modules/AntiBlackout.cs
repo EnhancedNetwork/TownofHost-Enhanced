@@ -38,7 +38,7 @@ public static class AntiBlackout
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) 
+            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse())
                 NeutralKillers.Add(pc.PlayerId);
 
             // Crewmate
@@ -133,7 +133,25 @@ public static class AntiBlackout
         }
         isDeadCache.Clear();
         IsCached = false;
-        if (doSend) SendGameData();
+        if (doSend)
+        {
+            SendGameData();
+            _ = new LateTask(() => RestoreIsDeadByExile(), 0.3f, "AntiBlackOut_RestoreIsDeadByExile");
+        }
+    }
+
+    private static void RestoreIsDeadByExile()
+    {
+        var sender = CustomRpcSender.Create("AntiBlackout RestoreIsDeadByExile", SendOption.Reliable);
+        foreach (var player in Main.AllPlayerControls)
+        {
+            if (player.Data.IsDead && !player.Data.Disconnected)
+            {
+                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
+                sender.EndRpc();
+            }
+        }
+        sender.SendMessage();
     }
 
     public static void SendGameData([CallerMemberName] string callerMethodName = "")
@@ -232,7 +250,7 @@ public static class AntiBlackout
         {
             // skip host
             if (seerId == 0) continue;
-            
+
             var seer = seerId.GetPlayer();
             var target = targetId.GetPlayer();
 

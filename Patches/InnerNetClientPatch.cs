@@ -4,6 +4,7 @@ using TOHE.Modules;
 
 namespace TOHE.Patches;
 
+[Obfuscation(Exclude = true)]
 public enum GameDataTag : byte
 {
     DataFlag = 1,

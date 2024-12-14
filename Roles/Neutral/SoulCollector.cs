@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class SoulCollector : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.SoulCollector;
     private const int Id = 15300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.SoulCollector);
     public override bool IsDesyncRole => true;
@@ -49,7 +50,7 @@ internal class SoulCollector : RoleBase
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
-    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f),  $"({AbilityLimit}/{SoulCollectorPointsOpt.GetInt()})");
+    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), $"({AbilityLimit}/{SoulCollectorPointsOpt.GetInt()})");
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("SoulCollectorKillButtonText"));
     private void SendRPC()
     {
@@ -65,15 +66,15 @@ internal class SoulCollector : RoleBase
         byte target = reader.ReadByte();
 
         AbilityLimit = limit;
-        TargetId =  target;
+        TargetId = target;
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
-    
+
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
         => TargetId == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠") : string.Empty;
-    
+
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
@@ -83,7 +84,7 @@ internal class SoulCollector : RoleBase
         }
         return string.Empty;
     }
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) 
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
         => opt.SetVision(SoulCollectorHasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => pc.Is(CustomRoles.SoulCollector);
     public override bool CanUseImpostorVentButton(PlayerControl pc) => SoulCollectorCanVent.GetBool();
@@ -103,7 +104,7 @@ internal class SoulCollector : RoleBase
     public override void OnReportDeadBody(PlayerControl ryuak, NetworkedPlayerInfo iscute)
     {
         if (_Player == null || !_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
-        
+
         AbilityLimit++;
         SendRPC();
     }
@@ -165,6 +166,7 @@ internal class SoulCollector : RoleBase
 internal class Death : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Death;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Death);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -176,11 +178,11 @@ internal class Death : RoleBase
         => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => SoulCollector.SoulCollectorCanVent.GetBool();
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => false;
- 
+
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
         if (_Player == null || exileIds == null || exileIds.Contains(_Player.PlayerId)) return;
-        
+
         var deathList = new List<byte>();
         var death = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
