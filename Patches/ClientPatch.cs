@@ -1,5 +1,4 @@
 using InnerNet;
-using System.Threading.Tasks;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -97,7 +96,7 @@ internal class RunLoginPatch
         if (!EOSManager.Instance.loginFlowFinished) return;
 
         var friendcode = EOSManager.Instance.friendCode;
-        Task.Run(dbConnect.Init);
+        Main.Instance.StartCoroutine(dbConnect.Init());
         if (friendcode == null || friendcode == "")
         {
             EOSManager.Instance.attemptAuthAgain = true;
