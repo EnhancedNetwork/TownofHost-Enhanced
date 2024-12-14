@@ -1,20 +1,18 @@
-﻿using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
-using UnityEngine;
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Vector : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vector;
     private const int Id = 15500;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     public override bool BlockMoveInVent(PlayerControl pc) => VectorInVentMaxTime.GetFloat() <= 1f;
@@ -42,19 +40,19 @@ internal class Vector : RoleBase
     public override void Init()
     {
         VectorVentCount.Clear();
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
         VectorVentCount[playerId] = 0;
-        PlayerIds.Add(playerId);
+
     }
     private void SendRPC()
     {
         if (!_Player.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);
-        writer.WritePacked(VectorVentCount[_Player.PlayerId]); 
+        writer.WritePacked(VectorVentCount[_Player.PlayerId]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
@@ -76,9 +74,9 @@ internal class Vector : RoleBase
         VectorVentCount[pc.PlayerId]++;
         SendRPC();
         NotifyRoles(SpecifySeer: pc);
-        
+
         Logger.Info($"Vent count {VectorVentCount[pc.PlayerId]}", "Vector");
-        
+
         if (VectorVentCount[pc.PlayerId] >= VectorVentNumWin.GetInt())
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))

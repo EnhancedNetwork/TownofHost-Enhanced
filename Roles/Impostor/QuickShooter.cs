@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class QuickShooter : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.QuickShooter;
     private const int Id = 2200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.QuickShooter);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -57,8 +58,11 @@ internal class QuickShooter : RoleBase
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);
         writer.Write((byte)AbilityLimit);
+
+        if (_Player == null) { timer = false; }
         writer.Write(timer);
-        writer.Write(_Player.GetKillTimer());
+        if (timer)
+            writer.Write(_Player.GetKillTimer());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
@@ -66,7 +70,11 @@ internal class QuickShooter : RoleBase
     {
         AbilityLimit = reader.ReadByte();
         var shouldtime = reader.ReadBoolean();
-        var timer = reader.ReadSingle();
+        float timer = 0f;
+        if (shouldtime)
+        {
+            timer = reader.ReadSingle();
+        }
 
         if (pc.AmOwner && shouldtime)
             DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, ShapeshiftCooldown.GetFloat());
@@ -106,7 +114,6 @@ internal class QuickShooter : RoleBase
 
         AbilityLimit = NewSL[_state.PlayerId];
         SendRPC();
-        
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -119,7 +126,7 @@ internal class QuickShooter : RoleBase
 
     public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(AbilityLimit > 0
-            ? Utils.GetRoleColor(CustomRoles.QuickShooter).ShadeColor(0.25f) 
+            ? Utils.GetRoleColor(CustomRoles.QuickShooter).ShadeColor(0.25f)
             : Color.gray, $"({AbilityLimit})");
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

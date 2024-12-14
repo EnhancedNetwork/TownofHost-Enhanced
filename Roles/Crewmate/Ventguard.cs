@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -10,6 +10,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Ventguard : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Ventguard;
     private const int Id = 30000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ventguard);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;

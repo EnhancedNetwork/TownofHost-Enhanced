@@ -11,6 +11,7 @@
 		<Configurations>Debug;Release;Canary</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>True</Optimize>
+		<CodePage>65001</CodePage>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -39,7 +40,8 @@
 	</ItemGroup>
 
 	<Target Name="EnsureTokenEnvExists" BeforeTargets="BeforeBuild">
-		<Exec Command="if not exist token.env echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env" />
+		<Exec Condition=" '$(OS)' == 'Windows_NT' " Command="if not exist token.env (echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env)" />
+		<Exec Condition=" '$(OS)' != 'Windows_NT' " Command="if [ ! -f token.env ]; then echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env; fi" />
 	</Target>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

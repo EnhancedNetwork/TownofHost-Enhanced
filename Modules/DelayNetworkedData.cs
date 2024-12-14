@@ -239,6 +239,7 @@ public class InnerNetClientPatch
             }
         }
     }
+    [Obfuscation(Exclude = true)]
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendOrDisconnect)), HarmonyPrefix]
     public static void SendOrDisconnectPatch(InnerNetClient __instance, MessageWriter msg)
     {

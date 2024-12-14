@@ -1,6 +1,6 @@
 ﻿using Hazel;
-using System;
 using InnerNet;
+using System;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -250,6 +250,37 @@ internal class EAC
                     catch
                     {
                         // Do nothing
+                    }
+                    break;
+                case 119: // KN Chat
+                    try
+                    {
+                        var firstString = sr.ReadString();
+                        var secondString = sr.ReadString();
+                        sr.ReadInt32();
+
+                        var flag = string.IsNullOrEmpty(firstString) && string.IsNullOrEmpty(secondString);
+
+                        if (!flag)
+                        {
+                            Report(pc, "KN Chat RPC");
+                            HandleCheat(pc, "KN Chat RPC");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KN聊天，已驳回", "EAC");
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        // Do nothing
+                    }
+                    break;
+                case 250: // KN
+                    if (sr.BytesRemaining == 0)
+                    {
+                        Report(pc, "KN RPC");
+                        HandleCheat(pc, "KN RPC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KN RPC，已驳回", "EAC");
+                        return true;
                     }
                     break;
                 case unchecked((byte)420): // 164 Sicko
