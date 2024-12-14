@@ -13,6 +13,8 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem DarkTheme;
     private static ClientOptionItem DisableLobbyMusic;
     private static ClientOptionItem ShowTextOverlay;
+    private static ClientOptionItem HorseMode;
+    private static ClientOptionItem LongMode;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
@@ -24,7 +26,6 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem VersionCheat;
     private static ClientOptionItem GodMode;
     private static ClientOptionItem AutoRehost;
-    private static ClientOptionItem HorseMode;
 #endif
 
     public static void Postfix(OptionsMenuBehaviour __instance)
@@ -81,24 +82,41 @@ public static class OptionsMenuBehaviourStartPatch
         {
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
         }
-#if DEBUG
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
             HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
+
             static void SwitchHorseMode()
             {
+                Main.LongMode.Value = false;
                 HorseMode.UpdateToggle();
-                foreach (var pc in PlayerControl.AllPlayerControls)
+                LongMode.UpdateToggle();
+
+                foreach (PlayerControl pc in Main.AllPlayerControls)
                 {
                     pc.MyPhysics.SetBodyType(pc.BodyType);
-                    if (pc.BodyType == PlayerBodyTypes.Normal)
-                    {
-                        pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
-                    }
+                    if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
                 }
             }
         }
-#endif
+
+        if (LongMode == null || LongMode.ToggleButton == null)
+        {
+            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
+
+            static void SwitchLongMode()
+            {
+                Main.HorseMode.Value = false;
+                HorseMode.UpdateToggle();
+                LongMode.UpdateToggle();
+
+                foreach (PlayerControl pc in Main.AllPlayerControls)
+                {
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                    if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
+                }
+            }
+        }
         if (ForceOwnLanguage == null || ForceOwnLanguage.ToggleButton == null)
         {
             ForceOwnLanguage = ClientOptionItem.Create("ForceOwnLanguage", Main.ForceOwnLanguage, __instance);

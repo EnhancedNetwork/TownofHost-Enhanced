@@ -2,6 +2,7 @@
 
 namespace TOHE.Roles.AddOns
 {
+    [Obfuscation(Exclude = true)]
     public enum AddonTypes
     {
         Impostor,
@@ -14,6 +15,7 @@ namespace TOHE.Roles.AddOns
     }
     public interface IAddon
     {
+        public CustomRoles Role { get; }
         public AddonTypes Type { get; }
         public void SetupCustomOption();
 

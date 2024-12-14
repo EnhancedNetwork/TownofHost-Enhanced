@@ -10,10 +10,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Spy : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Spy;
     private const int Id = 9700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -36,22 +34,25 @@ internal class Spy : RoleBase
         SpyAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 12, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 0.5f, TabGroup.CrewmateRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Spy])
         .SetValueFormat(OptionFormat.Times);
-        SpyInteractionBlocked = BooleanOptionItem.Create(Id + 13, "SpyInteractionBlocked", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy]);
+        SpyInteractionBlocked = BooleanOptionItem.Create(Id + 13, "SpyInteractionBlocked", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Spy]).SetHidden(true);
     }
     public override void Init()
     {
-        playerIdList.Clear();
         SpyRedNameList.Clear();
         change = false;
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         AbilityLimit = UseLimitOpt.GetInt();
+
+        if (!SpyInteractionBlocked.GetBool())
+        {
+            SpyInteractionBlocked.SetValue(1, false);
+        }
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
     }
     public void SendRPC(byte susId)
     {
@@ -95,11 +96,15 @@ internal class Spy : RoleBase
             AbilityLimit -= 1;
             SendSkillRPC();
             SpyRedNameList.TryAdd(killer.PlayerId, GetTimeStamp());
-            SendRPC(killer.PlayerId);                
-            if (SpyInteractionBlocked.GetBool()) 
-                killer.SetKillCooldown(time: 10f);
-            NotifyRoles(SpecifySeer: target, ForceLoop: true);
-            return false;
+            SendRPC(killer.PlayerId);
+            if (SpyInteractionBlocked.GetBool())
+            {
+                killer.SetKillCooldown(time: 10f, target, forceAnime: true);
+                NotifyRoles(SpecifySeer: target, ForceLoop: true);
+                killer.ResetKillCooldown();
+                killer.SyncSettings();
+                return false;
+            }
         }
         return true;
     }
@@ -109,7 +114,7 @@ internal class Spy : RoleBase
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || !SpyRedNameList.Any()) return;
-        
+
         change = false;
         foreach (var x in SpyRedNameList)
         {

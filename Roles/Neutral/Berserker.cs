@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -12,10 +12,8 @@ namespace TOHE.Roles.Neutral;
 internal class Berserker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Berserker;
     private const int Id = 600;
-
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
@@ -78,13 +76,11 @@ internal class Berserker : RoleBase
     public override void Init()
     {
         BerserkerKillMax.Clear();
-        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         Main.AllPlayerKillCooldown[playerId] = BerserkerKillCooldown.GetFloat();
         BerserkerKillMax[playerId] = 0;
-        PlayerIds.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -196,6 +192,7 @@ internal class Berserker : RoleBase
 internal class War : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.War;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Berserker);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

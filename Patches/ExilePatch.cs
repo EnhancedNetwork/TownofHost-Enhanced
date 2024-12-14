@@ -108,13 +108,13 @@ class ExileControllerWrapUpPatch
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
-        
+
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        
+
         foreach (var player in Main.AllPlayerControls)
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
@@ -158,7 +158,7 @@ class ExileControllerWrapUpPatch
                 {
                     var player = x.Key.GetPlayer();
                     var state = Main.PlayerStates[x.Key];
-                    
+
                     Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
@@ -172,7 +172,7 @@ class ExileControllerWrapUpPatch
                 });
 
                 Main.AfterMeetingDeathPlayers.Clear();
-                
+
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();

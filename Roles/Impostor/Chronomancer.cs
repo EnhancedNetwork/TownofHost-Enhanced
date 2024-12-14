@@ -1,17 +1,18 @@
-﻿using System;
+﻿using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
+using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Chronomancer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Chronomancer;
     private const int Id = 900;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;

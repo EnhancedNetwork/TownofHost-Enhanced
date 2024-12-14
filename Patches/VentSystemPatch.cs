@@ -70,7 +70,7 @@ static class VentSystemDeterioratePatch
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (pc.AmOwner || (player != null && pc != player)) continue;
-            
+
             if (pc.BlockVentInteraction())
             {
                 pc.RpcCloseVent(__instance);

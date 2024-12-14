@@ -6,10 +6,8 @@ namespace TOHE.Roles.Neutral;
 internal class SerialKiller : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.SerialKiller;
     private const int Id = 17900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -32,14 +30,6 @@ internal class SerialKiller : RoleBase
         //ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
         //    .SetParent(HasSerialKillerBuddy)
         //    .SetValueFormat(OptionFormat.Percent); 
-    }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
