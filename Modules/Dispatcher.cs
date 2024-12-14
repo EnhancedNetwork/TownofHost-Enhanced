@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace TOHE.Modules;
 
-public class MainThreadDispatcher : MonoBehaviour
+public class Dispatcher : MonoBehaviour
 {
-    public static MainThreadDispatcher Instance;
+    public static Dispatcher Instance;
     private readonly Queue<Action> _executionQueue = new();
 
     public void Awake()
@@ -24,11 +24,16 @@ public class MainThreadDispatcher : MonoBehaviour
         }
     }
 
-    public void ExecuteOnMainThread(Action action)
+    public void m_dispatch(Action action)
     {
         lock (_executionQueue)
         {
             _executionQueue.Enqueue(action);
         }
+    }
+
+    public static void Dispatch(Action action)
+    {
+        Instance.m_dispatch(action);
     }
 }
