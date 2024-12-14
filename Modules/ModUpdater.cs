@@ -8,6 +8,8 @@ using UnityEngine.Networking;
 using IEnumerator = System.Collections.IEnumerator;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using TOHE.Modules;
+using System.Threading.Tasks;
 
 namespace TOHE;
 
@@ -171,7 +173,7 @@ public class ModUpdater
     public static void StartUpdate(string url)
     {
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
-        Main.Instance.StartCoroutine(DownloadDLL(url));
+        Task.Run(() => DownloadDLLAsync(url));
         return;
     }
     public static bool NewVersionCheck()
@@ -206,7 +208,6 @@ public class ModUpdater
         InfoPopup.Close();
         yield return new WaitForSeconds(0.3f);
         DeleteOldFiles();
-        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
         yield break;
     }
     public static void DeleteOldFiles()
@@ -233,64 +234,79 @@ public class ModUpdater
     private static readonly object downloadLock = new();
     private static FileStream cachedfileStream;
 
-    private static IEnumerator DownloadDLL(string url)
+    private static async Task DownloadDLLAsync(string url)
     {
         var savePath = "BepInEx/plugins/TOHE.dll.temp";
-        Application.targetFrameRate = -1;
 
         // Delete the temporary file if it exists
         DeleteOldFiles();
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.timeout = 10;
-        request.SetRequestHeader("Connection", "Keep-Alive");
-        request.SetRequestHeader("User-Agent", "Mozilla/5.0");
-        request.chunkedTransfer = false;
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+        try
         {
-            Logger.Error($"File retrieval failed with status code: {request.responseCode}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
-            Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
-            yield break;
-        }
-
-        var total = request.downloadedBytes;
-        using (var stream = new MemoryStream(request.downloadHandler.data))
-        {
-            using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+            using (HttpClient client = new HttpClient())
             {
-                cachedfileStream = fileStream;
-                byte[] buffer = new byte[1024];
-                long readLength = 0;
-                int length;
+                client.Timeout = TimeSpan.FromSeconds(10);
+                client.DefaultRequestHeaders.Connection.Add("Keep-Alive");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
 
-                while ((length = stream.Read(buffer, 0, buffer.Length)) > 0)
+                // Download the data
+                using (HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    yield return null;
-
-                    fileStream.Write(buffer, 0, length);
-
-                    readLength += length;
-                    double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
-
-                    lock (downloadLock)
+                    if (!response.IsSuccessStatusCode)
                     {
-                        DownloadCallBack(total, readLength, progress ?? 0); // Call back with progress info
+                        Logger.Error($"File retrieval failed with status code: {response.StatusCode}", "DownloadDLL", false);
+                        ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+                        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
+                        return;
+                    }
+
+                    var total = response.Content.Headers.ContentLength ?? -1L;
+                    using (var stream = await response.Content.ReadAsStreamAsync())
+                    {
+                        using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+                        {
+                            byte[] buffer = new byte[1024];
+                            long readLength = 0;
+                            int length;
+
+                            while ((length = await stream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            {
+                                await fileStream.WriteAsync(buffer, 0, length);
+
+                                readLength += length;
+                                double progress = total > 0 ? Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero) : 0;
+
+                                lock (downloadLock)
+                                {
+                                    DownloadCallBack(total, readLength, progress); // Call back with progress info
+                                }
+                            }
+                        }
                     }
                 }
             }
-        }
 
-        var fileName = Assembly.GetExecutingAssembly().Location;
-        File.Move(fileName, fileName + ".bak");
-        File.Move(savePath, fileName);
-        ShowPopup(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
+            var fileName = Assembly.GetExecutingAssembly().Location;
+            if (File.Exists(fileName))
+            {
+                File.Move(fileName, fileName + ".bak", overwrite: true);
+            }
+            File.Move(savePath, fileName);
+
+            ShowPopup(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"An error occurred during the download: {ex.Message}", "DownloadDLL", false);
+            ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+        }
     }
-    private static void DownloadCallBack(ulong total, long downloaded, double progress)
+    private static void DownloadCallBack(long total, long downloaded, double progress)
     {
-        ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
+        MainThreadDispatcher.Instance.ExecuteOnMainThread(() => 
+        {
+            ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
+        });
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {
