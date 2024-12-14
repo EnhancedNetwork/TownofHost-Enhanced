@@ -21,6 +21,7 @@ public enum CustomGameMode
 [HarmonyPatch]
 public static class Options
 {
+
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
     public static void OptionsLoadStart_Postfix()
     {
@@ -321,7 +322,7 @@ public static class Options
     public static OptionItem DisableMeeting;
     public static OptionItem DisableSabotage;
     public static OptionItem DisableCloseDoor;
-
+        
     public static OptionItem DisableDevices;
     public static OptionItem DisableSkeldDevices;
     public static OptionItem DisableSkeldAdmin;
@@ -346,6 +347,8 @@ public static class Options
     public static OptionItem DisableDevicesIgnoreNeutrals;
     public static OptionItem DisableDevicesIgnoreCrewmates;
     public static OptionItem DisableDevicesIgnoreAfterAnyoneDied;
+
+    public static OptionItem DisableSpectateCommand;
 
     // Meeting Settings
     public static OptionItem SyncButtonMode;
@@ -1450,7 +1453,7 @@ public static class Options
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableCloseDoor = BooleanOptionItem.Create(60566, "DisableCloseDoor", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));        
         // Disable Devices
         DisableDevices = BooleanOptionItem.Create(60570, "DisableDevices", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
@@ -1525,6 +1528,11 @@ public static class Options
         DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(60593, "IgnoreAfterAnyoneDied", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
+
+        //Disable Spectate
+        DisableSpectateCommand = BooleanOptionItem.Create(60567, "DisableSpectate", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
 
         //Disable Short Tasks
         DisableShortTasks = BooleanOptionItem.Create(60594, "DisableShortTasks", false, TabGroup.ModifierSettings, false)
