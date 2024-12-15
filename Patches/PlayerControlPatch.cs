@@ -1181,9 +1181,29 @@ class FixedUpdateInNormalGamePatch
                                 }
                                 if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
 
-                                var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
-                                UnShapeshifter.RpcShapeshift(randomPlayer, false);
-                                UnShapeshifter.RpcRejectShapeshift();
+                                var sstarget = PlayerControl.LocalPlayer;
+                                UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
+                                var writer = MessageWriter.Get(SendOption.Reliable);
+                                writer.StartMessage(6);
+                                writer.Write(AmongUsClient.Instance.GameId);
+                                writer.WritePacked(UnShapeshifter.OwnerId);
+
+                                writer.StartMessage(2);
+                                writer.WritePacked(UnShapeshifter.NetId);
+                                writer.Write((byte)RpcCalls.Shapeshift);
+                                writer.WriteNetObject(sstarget);
+                                writer.Write(false);
+                                writer.EndMessage();
+
+                                writer.StartMessage(2);
+                                writer.WritePacked(UnShapeshifter.NetId);
+                                writer.Write((byte)RpcCalls.RejectShapeshift);
+                                writer.EndMessage();
+
+                                writer.EndMessage();
+                                AmongUsClient.Instance.SendOrDisconnect(writer);
+                                writer.Recycle();
+
                                 UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
