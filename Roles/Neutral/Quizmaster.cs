@@ -432,17 +432,17 @@ internal class Quizmaster : RoleBase
                 }
                 else
                 {
-                    Utils.SendMessage(GetString("QuizmasterAnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                    Utils.SendMessage(GetString("QuizmasterChat.AnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
                 }
             }
             else
             {
-                Utils.SendMessage(GetString("QuizmasterSyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                Utils.SendMessage(GetString("QuizmasterChat.SyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
             }
         }
         else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
         {
-            Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+            Utils.SendMessage(GetString("QuizmasterChat.CantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
         }
     }
 
