@@ -750,11 +750,12 @@ class IntroCutsceneDestroyPatch
                             return;
                         }
 
-                        var sstarget = PlayerControl.LocalPlayer;
-                        UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
-                        UnShapeshifter.RejectShapeshift();
                         if (!UnShapeshifter.AmOwner)
                         {
+                            var sstarget = PlayerControl.LocalPlayer;
+                            UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
+                            UnShapeshifter.RejectShapeshift();
+
                             var writer = MessageWriter.Get(SendOption.Reliable);
                             writer.StartMessage(6);
                             writer.Write(AmongUsClient.Instance.GameId);
@@ -775,9 +776,19 @@ class IntroCutsceneDestroyPatch
                             writer.EndMessage();
                             AmongUsClient.Instance.SendOrDisconnect(writer);
                             writer.Recycle();
+
+                            UnShapeshifter.ResetPlayerOutfit(force: true);
+                        }
+                        else
+                        {
+                            // Host is Unshapeshifter, make button into unshapeshift state
+                            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+                            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+                            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+                            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+                            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
                         }
 
-                        UnShapeshifter.ResetPlayerOutfit(force: true);
                         Main.CheckShapeshift[x] = false;
                     });
                     Main.GameIsLoaded = true;
