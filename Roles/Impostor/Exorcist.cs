@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class Exorcist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Exorcist;
     private const int Id = 31100;
     public static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
