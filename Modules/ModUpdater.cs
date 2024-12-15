@@ -268,15 +268,16 @@ public class ModUpdater
 
                 var total = response.Content.Headers.ContentLength ?? -1L;
                 using var stream = await response.Content.ReadAsStreamAsync(token);
-                cachedfileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
 
+                cachedfileStream = fileStream;
                 byte[] buffer = new byte[1024];
                 long readLength = 0;
                 int length;
 
                 while ((length = await stream.ReadAsync(buffer, token)) > 0)
                 {
-                    await cachedfileStream.WriteAsync(buffer.AsMemory(0, length), token);
+                    await fileStream.WriteAsync(buffer.AsMemory(0, length), token);
 
                     readLength += length;
                     double progress = total > 0 ? Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero) : 0;
@@ -286,15 +287,13 @@ public class ModUpdater
                         DownloadCallBack(total, readLength, progress);
                     }
                 }
+
+                await fileStream.DisposeAsync();
             }
 
             var fileName = Assembly.GetExecutingAssembly().Location;
-            if (File.Exists(fileName))
-            {
-                File.Move(fileName, fileName + ".bak", overwrite: true);
-            }
+            File.Move(fileName, fileName + ".bak");
             File.Move(savePath, fileName);
-
             ShowPopupAsync(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
         }
         catch (OperationCanceledException)
