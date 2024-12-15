@@ -247,7 +247,7 @@ public static class OnPlayerJoinedPatch
             }
         }
 
-        if (Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+        if (AmongUsClient.Instance.AmHost && Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, false);
             Logger.SendInGame(string.Format(GetString("Message.KickedByWhiteList"), client.PlayerName));
