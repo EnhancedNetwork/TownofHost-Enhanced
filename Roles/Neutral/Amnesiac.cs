@@ -75,7 +75,7 @@ internal class Amnesiac : RoleBase
         foreach (var playerId in _playerIdList.ToArray())
         {
             var player = playerId.GetPlayer();
-            if (player == null ||  !player.IsAlive()) continue;
+            if (player == null || !player.IsAlive()) continue;
 
             LocateArrow.Add(playerId, target.Data.GetDeadBody().transform.position);
         }
