@@ -34,6 +34,11 @@ namespace TOHE.Modules
             _ = new LateTask(() =>
             {
                 NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+                subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+                subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
+                subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
+                subPlayerInfo.RoleWhenAlive = null;
                 subPlayerInfo.name = "CNO_dummy";
                 subPlayerInfo.Outfits.Clear();
                 subPlayerInfo.FriendCode = "bot#0000";
@@ -72,6 +77,7 @@ namespace TOHE.Modules
                 writer.EndMessage();
                 sender.EndMessage();
                 sender.SendMessage();
+                UnityEngine.Object.Destroy(subPlayerInfo.Role.gameObject);
                 UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
             }, 0f, "CNO_RpcChangeSprite");
         }
@@ -156,10 +162,15 @@ namespace TOHE.Modules
                 {
                     playerControl.NetTransform.RpcSnapTo(Position);
                     NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                    subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+                    subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+                    subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
                     subPlayerInfo.name = "CNO_dummy";
                     subPlayerInfo.Outfits.Clear();
                     subPlayerInfo.FriendCode = "bot#0000";
                     subPlayerInfo.Puid = "";
+                    subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
+                    subPlayerInfo.RoleWhenAlive = null;
                     subPlayerInfo.PlayerLevel = 999;
                     subPlayerInfo.IsDead = false;
                     subPlayerInfo.Tasks.Clear();
@@ -194,6 +205,7 @@ namespace TOHE.Modules
                     writer.EndMessage();
                     sender.EndMessage();
                     sender.SendMessage();
+                    UnityEngine.Object.Destroy(subPlayerInfo.Role.gameObject);
                     UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
 
                 }, 0.2f, "CNO_RespawnPlayerControl_SendData");
@@ -273,10 +285,15 @@ namespace TOHE.Modules
             {
                 playerControl.NetTransform.RpcSnapTo(position);
                 NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+                subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+                subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
                 subPlayerInfo.name = "CNO_dummy";
                 subPlayerInfo.Outfits.Clear();
                 subPlayerInfo.FriendCode = "bot#0000";
                 subPlayerInfo.Puid = "";
+                subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
+                subPlayerInfo.RoleWhenAlive = null;
                 subPlayerInfo.PlayerLevel = 999;
                 subPlayerInfo.IsDead = false;
                 subPlayerInfo.Tasks.Clear();
@@ -311,6 +328,7 @@ namespace TOHE.Modules
                 writer.EndMessage();
                 sender.EndMessage();
                 sender.SendMessage();
+                UnityEngine.Object.Destroy(subPlayerInfo.Role.gameObject);
                 UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
             }, 0.2f, "CNO_CreatePlayerControl_Data");
             Position = position;
