@@ -33,38 +33,37 @@ namespace TOHE.Modules
             Sprite = sprite;
             _ = new LateTask(() =>
             {
+                NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                subPlayerInfo.name = "CNO_dummy";
+                subPlayerInfo.Outfits.Clear();
+                subPlayerInfo.FriendCode = "bot#0000";
+                subPlayerInfo.Puid = "";
+                subPlayerInfo.PlayerLevel = 999;
+                subPlayerInfo.IsDead = false;
+                subPlayerInfo.Tasks.Clear();
+                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerControl.RawSetName(sprite);
-                var name = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
-                var colorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
-                var hatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
-                var skinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
-                var petId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
-                var visorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
                 CustomRpcSender sender = CustomRpcSender.Create("SetFakeData");
                 MessageWriter writer = sender.stream;
                 sender.StartMessage();
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + sprite;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = 255;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = "";
+                playerOutfit.PlayerName = "<size=14><br></size>" + sprite;
+                playerOutfit.ColorId = 255;
+                playerOutfit.HatId = "";
+                playerOutfit.SkinId = "";
+                playerOutfit.PetId = "";
+                playerOutfit.VisorId = "";
+                playerOutfit.NamePlateId = "";
+                subPlayerInfo.Outfits.Add(PlayerOutfitType.Default, playerOutfit);
                 writer.StartMessage(1);
                 {
-                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    writer.WritePacked(subPlayerInfo.NetId);
+                    subPlayerInfo.Serialize(writer, false);
                 }
                 writer.EndMessage();
                 sender.StartRpc(playerControl.NetId, (byte)RpcCalls.Shapeshift)
                     .WriteNetObject(PlayerControl.LocalPlayer)
                     .Write(false)
                     .EndRpc();
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = name;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = colorId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = hatId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = skinId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = petId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = visorId;
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -73,7 +72,8 @@ namespace TOHE.Modules
                 writer.EndMessage();
                 sender.EndMessage();
                 sender.SendMessage();
-            }, 0f);
+                UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
+            }, 0f, "CNO_RpcChangeSprite");
         }
 
         public void TP(Vector2 position)
@@ -155,38 +155,37 @@ namespace TOHE.Modules
                 _ = new LateTask(() =>
                 {
                     playerControl.NetTransform.RpcSnapTo(Position);
+                    NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                    subPlayerInfo.name = "CNO_dummy";
+                    subPlayerInfo.Outfits.Clear();
+                    subPlayerInfo.FriendCode = "bot#0000";
+                    subPlayerInfo.Puid = "";
+                    subPlayerInfo.PlayerLevel = 999;
+                    subPlayerInfo.IsDead = false;
+                    subPlayerInfo.Tasks.Clear();
+                    NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                     playerControl.RawSetName(Sprite);
-                    var name = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
-                    var colorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
-                    var hatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
-                    var skinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
-                    var petId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
-                    var visorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
                     CustomRpcSender sender = CustomRpcSender.Create("SetFakeData");
                     MessageWriter writer = sender.stream;
                     sender.StartMessage();
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + Sprite;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = 255;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = "";
+                    playerOutfit.PlayerName = "<size=14><br></size>" + Sprite;
+                    playerOutfit.ColorId = 255;
+                    playerOutfit.HatId = "";
+                    playerOutfit.SkinId = "";
+                    playerOutfit.PetId = "";
+                    playerOutfit.VisorId = "";
+                    playerOutfit.NamePlateId = "";
+                    subPlayerInfo.Outfits.Add(PlayerOutfitType.Default, playerOutfit);
                     writer.StartMessage(1);
                     {
                         writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                        PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                        subPlayerInfo.Serialize(writer, false);
                     }
                     writer.EndMessage();
                     sender.StartRpc(playerControl.NetId, (byte)RpcCalls.Shapeshift)
                         .WriteNetObject(PlayerControl.LocalPlayer)
                         .Write(false)
                         .EndRpc();
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = name;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = colorId;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = hatId;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = skinId;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = petId;
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = visorId;
                     writer.StartMessage(1);
                     {
                         writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -195,7 +194,9 @@ namespace TOHE.Modules
                     writer.EndMessage();
                     sender.EndMessage();
                     sender.SendMessage();
-                }, 0.2f);
+                    UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
+
+                }, 0.2f, "CNO_RespawnPlayerControl_SendData");
                 _ = new LateTask(() => oldPlayerControl.Despawn(), 0.3f);
                 foreach (var pc in Main.AllPlayerControls)
                 {
@@ -223,7 +224,7 @@ namespace TOHE.Modules
                         writer.EndMessage();
                         sender.EndMessage();
                         sender.SendMessage();
-                    }, 0.1f);
+                    }, 0.1f, "CNO_RespawnPlayerControl_MurderPlayer");
                 }
 
                 foreach (var pc in Main.AllPlayerControls.Where(x => HiddenList.Contains(x.PlayerId)))
@@ -246,7 +247,7 @@ namespace TOHE.Modules
                             .EndRpc();
                         sender.SendMessage();
                     }
-                }, 0.4f);
+                }, 0.4f, "CNO_RespawnPlayerControl_FixModdedCNO");
                 PlayerControlTimer = 0f;
             }
         }
@@ -271,38 +272,37 @@ namespace TOHE.Modules
             _ = new LateTask(() =>
             {
                 playerControl.NetTransform.RpcSnapTo(position);
+                NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                subPlayerInfo.name = "CNO_dummy";
+                subPlayerInfo.Outfits.Clear();
+                subPlayerInfo.FriendCode = "bot#0000";
+                subPlayerInfo.Puid = "";
+                subPlayerInfo.PlayerLevel = 999;
+                subPlayerInfo.IsDead = false;
+                subPlayerInfo.Tasks.Clear();
+                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerControl.RawSetName(sprite);
-                var name = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
-                var colorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
-                var hatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
-                var skinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
-                var petId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
-                var visorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
                 CustomRpcSender sender = CustomRpcSender.Create("SetFakeData");
                 MessageWriter writer = sender.stream;
                 sender.StartMessage();
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = "<size=14><br></size>" + sprite;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = 255;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = "";
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = "";
+                playerOutfit.PlayerName = "<size=14><br></size>" + sprite;
+                playerOutfit.ColorId = 255;
+                playerOutfit.HatId = "";
+                playerOutfit.SkinId = "";
+                playerOutfit.PetId = "";
+                playerOutfit.VisorId = "";
+                playerOutfit.NamePlateId = "";
+                subPlayerInfo.Outfits.Add(PlayerOutfitType.Default, playerOutfit);
                 writer.StartMessage(1);
                 {
-                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    writer.WritePacked(subPlayerInfo.NetId);
+                    subPlayerInfo.Serialize(writer, false);
                 }
                 writer.EndMessage();
                 sender.StartRpc(playerControl.NetId, (byte)RpcCalls.Shapeshift)
                     .WriteNetObject(PlayerControl.LocalPlayer)
                     .Write(false)
                     .EndRpc();
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName = name;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId = colorId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId = hatId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId = skinId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId = petId;
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId = visorId;
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -311,7 +311,8 @@ namespace TOHE.Modules
                 writer.EndMessage();
                 sender.EndMessage();
                 sender.SendMessage();
-            }, 0.2f);
+                UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
+            }, 0.2f, "CNO_CreatePlayerControl_Data");
             Position = position;
             PlayerControlTimer = 0f;
             Sprite = sprite;
@@ -345,7 +346,7 @@ namespace TOHE.Modules
                     writer.EndMessage();
                     sender.EndMessage();
                     sender.SendMessage();
-                }, 0.1f);
+                }, 0.1f, "CNO_CreatePlayerControl_MurderPlayer");
             }
             _ = new LateTask(() =>
             { // Fix for host
@@ -359,7 +360,7 @@ namespace TOHE.Modules
                     .Write(true)
                     .EndRpc();
                 sender.SendMessage();
-            }, 0.4f);
+            }, 0.4f, "CNO_CreatePlayerControl_FixModdedCNO");
         }
         public static void FixedUpdate() => AllObjects.ToArray().Do(x => x.OnFixedUpdate());
         public static CustomNetObject Get(int id) => AllObjects.FirstOrDefault(x => x.Id == id);
