@@ -1181,12 +1181,13 @@ class FixedUpdateInNormalGamePatch
                                 }
                                 if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
 
-                                var sstarget = PlayerControl.LocalPlayer;
-                                UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
-                                UnShapeshifter.RejectShapeshift();
 
                                 if (!UnShapeshifter.AmOwner)
                                 {
+                                    var sstarget = PlayerControl.LocalPlayer;
+                                    UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
+                                    UnShapeshifter.RejectShapeshift();
+
                                     var writer = MessageWriter.Get(SendOption.Reliable);
                                     writer.StartMessage(6);
                                     writer.Write(AmongUsClient.Instance.GameId);
@@ -1207,9 +1208,19 @@ class FixedUpdateInNormalGamePatch
                                     writer.EndMessage();
                                     AmongUsClient.Instance.SendOrDisconnect(writer);
                                     writer.Recycle();
+
+                                    UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
+                                }
+                                else
+                                {
+                                    // Host is Unshapeshifter, make button into unshapeshift state
+                                    PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+                                    var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+                                    PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+                                    PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+                                    DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
                                 }
 
-                                UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }

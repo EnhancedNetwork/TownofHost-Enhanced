@@ -38,7 +38,6 @@ namespace TOHE.Modules
                 subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
                 subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
                 subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
-                subPlayerInfo.RoleWhenAlive = null;
                 subPlayerInfo.name = "CNO_dummy";
                 subPlayerInfo.Outfits.Clear();
                 subPlayerInfo.FriendCode = "bot#0000";
@@ -170,7 +169,6 @@ namespace TOHE.Modules
                     subPlayerInfo.FriendCode = "bot#0000";
                     subPlayerInfo.Puid = "";
                     subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
-                    subPlayerInfo.RoleWhenAlive = null;
                     subPlayerInfo.PlayerLevel = 999;
                     subPlayerInfo.IsDead = false;
                     subPlayerInfo.Tasks.Clear();
@@ -293,7 +291,6 @@ namespace TOHE.Modules
                 subPlayerInfo.FriendCode = "bot#0000";
                 subPlayerInfo.Puid = "";
                 subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
-                subPlayerInfo.RoleWhenAlive = null;
                 subPlayerInfo.PlayerLevel = 999;
                 subPlayerInfo.IsDead = false;
                 subPlayerInfo.Tasks.Clear();
