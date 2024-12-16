@@ -45,7 +45,7 @@ internal class ChatCommands
         var text = __instance.freeChatField.textArea.text;
         if (ChatHistory.Count == 0 || ChatHistory[^1] != text) ChatHistory.Add(text);
         ChatControllerUpdatePatch.CurrentHistorySelection = ChatHistory.Count;
-        string[] args = text.Split(' ');
+        string[] args = text.Trim().Split(' ');
         string subArgs = "";
         string subArgs2 = "";
         var canceled = false;
