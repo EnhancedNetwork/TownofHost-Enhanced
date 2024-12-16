@@ -43,14 +43,11 @@ static class VentSystemDeterioratePatch
         if (ForceUpadate || (nowTime != LastUpadate))
         {
             LastUpadate = nowTime;
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (pc.BlockVentInteraction())
-                {
-                    LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
-                    pc.RpcCloseVent(__instance);
-                }
+                 LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
             }
+            ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>
