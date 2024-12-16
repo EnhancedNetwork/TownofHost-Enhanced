@@ -47,6 +47,7 @@ static class VentSystemDeterioratePatch
             {
                  LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
             }
+
             ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
         }
     }
@@ -64,7 +65,7 @@ static class VentSystemDeterioratePatch
 
     public static void SerializeV2(VentilationSystem __instance, PlayerControl player = null)
     {
-        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.AmOwner || (player != null && pc != player)) continue;
 
