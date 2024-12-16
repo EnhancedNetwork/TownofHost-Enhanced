@@ -464,13 +464,13 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee))
+                if (player.GetCustomRole().IsImpostor() || player.GetCustomRole().IsMadmate() || player.Is(CustomRoles.Madmate))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
-                else if (player.GetCustomRole().IsCrewmate())
+                else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Admired)) && !player.Is(CustomRoles.Rebel))
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor))
+                else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Soulless)) && !player.GetCustomRole().IsMadmate())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 break;
@@ -479,11 +479,11 @@ class CheckForEndVotingPatch
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Madmate))
+                    if (player.GetCustomRole().IsImpostor() || player.GetCustomRole().IsMadmate() || player.Is(CustomRoles.Madmate))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Charmed))
+                    else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Soulless)) && !player.GetCustomRole().IsMadmate())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                    else if (player.GetCustomRole().IsCrewmate())
+                    else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Admired)) && !player.Is(CustomRoles.Rebel))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
                     name += ")";
                 }
@@ -500,6 +500,8 @@ class CheckForEndVotingPatch
         {
             name += "\n";
             string comma = neutralnum > 0 ? "" : "";
+            if (!Options.ShowNKRemainOnEject.GetBool()) neutralnum = 0;
+            if (!Options.ShowNARemainOnEject.GetBool()) apocnum = 0;
             if (impnum == 0) name += GetString("NoImpRemain") + comma;
             if (impnum == 1) name += GetString("OneImpRemain") + comma;
             if (impnum == 2) name += GetString("TwoImpRemain") + comma;
@@ -931,8 +933,8 @@ class MeetingHudStartPatch
             foreach (var csId in Cyber.CyberDead)
             {
                 if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
+                if (!Cyber.NeutralKnowCyberDead.GetBool() && (pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Rebel))) continue;
+                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel)) continue;
 
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }

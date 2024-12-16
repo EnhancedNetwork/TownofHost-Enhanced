@@ -176,7 +176,7 @@ internal class Jailer : RoleBase
 
     private static bool CanBeExecuted(CustomRoles role)
     {
-        return (role.IsNB() && NBCanBeExe.GetBool()) ||
+        return ((role.IsNB() || role == CustomRoles.Rebel) && NBCanBeExe.GetBool()) ||
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
                 (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||

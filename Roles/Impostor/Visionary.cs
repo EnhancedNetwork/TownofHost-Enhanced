@@ -27,18 +27,16 @@ internal class Visionary : RoleBase
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
-                or CustomRoles.Soulless
-                or CustomRoles.Refugee
-                or CustomRoles.Admired)
+                or CustomRoles.Soulless)
                 return Main.roleColors[CustomRoles.Knight];
         }
 
-        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
+        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))
         {
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if (customRole.IsCrewmate())
+        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel))
         {
             return Main.roleColors[CustomRoles.Bait];
         }

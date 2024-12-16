@@ -39,7 +39,7 @@ internal class Celebrity : RoleBase
 
         // Hide kill flash for some team
         if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) return false;
-        if (!NeutralKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsNeutral()) return false;
+        if (!NeutralKnowCelebrityDead.GetBool() && (seer.GetCustomRole().IsNeutral() || seer.Is(CustomRoles.Rebel))) return false;
 
         seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
         return true;
@@ -54,7 +54,7 @@ internal class Celebrity : RoleBase
             foreach (var pc in Main.AllPlayerControls)
             {
                 if (!ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
+                if (!NeutralKnowCelebrityDead.GetBool() && (pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Rebel))) continue;
 
                 SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
             }
@@ -70,7 +70,7 @@ internal class Celebrity : RoleBase
         foreach (var csId in CelebrityDead)
         {
             if (!ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
-            if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && (targets.GetCustomRole().IsNeutral() || targets.Is(CustomRoles.Rebel))) continue;
             AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
         }
     }

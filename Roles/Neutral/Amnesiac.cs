@@ -28,7 +28,7 @@ internal class Amnesiac : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
-        ImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        ImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         VentCoolDown = FloatOptionItem.Create(Id + 14, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
@@ -37,12 +37,10 @@ internal class Amnesiac : RoleBase
     }
     public override void Init()
     {
-
         CanUseVent.Clear();
     }
     public override void Add(byte playerId)
     {
-
         CanUseVent[playerId] = AmnesiacCanUseVent.GetBool();
 
         if (ShowArrows.GetBool())
@@ -52,7 +50,6 @@ internal class Amnesiac : RoleBase
     }
     public override void Remove(byte playerId)
     {
-
         CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -109,6 +106,11 @@ internal class Amnesiac : RoleBase
             if (targetPlayerStates.MainRole == CustomRoles.Amnesiac)
             {
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
+            }
+
+            if (targetPlayerStates.MainRole == CustomRoles.Rebel)
+            {
+                __instance.GetCustomSubRoles()?.Add(CustomRoles.Rebel);
             }
 
             if (targetPlayerStates.MainRole.IsGhostRole())

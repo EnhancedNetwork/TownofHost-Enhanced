@@ -437,7 +437,7 @@ public static class Utils
     public static Color GetTeamColor(PlayerControl player)
     {
         string hexColor = string.Empty;
-        var Team = player.GetCustomRole().GetCustomRoleTeam();
+        var Team = player.GetCustomRoleTeam();
 
         switch (Team)
         {
@@ -543,6 +543,7 @@ public static class Utils
                             case CustomRoles.Infected:
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
+                            case CustomRoles.Rebel:
                                 RoleColor = GetRoleColor(subRole);
                                 RoleText = GetRoleString($"{subRole}-") + RoleText;
                                 break;
@@ -637,6 +638,7 @@ public static class Utils
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
                 case CustomRoles.Rascal:
+                case CustomRoles.Rebel:
                     hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
@@ -1001,7 +1003,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Rebel) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
@@ -1827,7 +1829,7 @@ public static class Utils
 
         string IconText = "<color=#ffffff>|</color>";
         string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
-        string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(player), $"{player.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+        string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(player), $"{player.GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
         string SelfRoleName = $"<size=185%>{Font}{ColorString(player.GetRoleColor(), GetRoleName(player.GetCustomRole()))}</font></size>";
         string SelfSubRolesName = string.Empty;
         string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
@@ -2153,7 +2155,7 @@ public static class Utils
                                     var GetTragetId = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
 
                                     //Crewmates
-                                    if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
+                                    if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Rebel) && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.NiceGuesser) && !Options.CrewmatesCanGuess.GetBool())
@@ -2177,7 +2179,7 @@ public static class Utils
                                     if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
                                         TargetPlayerName = GetTragetId;
 
-                                    if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
+                                    if (Options.PassiveNeutralsCanGuess.GetBool() && (seer.GetCustomRole().IsNonNK() || seer.Is(CustomRoles.Rebel)) && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
                                 }
                             }
@@ -2307,44 +2309,44 @@ public static class Utils
 
         return checkbanned ? !BannedReason(reason) : reason switch
         {
-            PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
-            PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
-            PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
-            PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
-            PlayerState.DeathReason.Jinx => (CustomRoles.Jinx.IsEnable()),
-            PlayerState.DeathReason.Shattered => (CustomRoles.Fragile.IsEnable()),
-            PlayerState.DeathReason.Bite => (CustomRoles.Vampire.IsEnable()),
-            PlayerState.DeathReason.Poison => (CustomRoles.Poisoner.IsEnable()),
-            PlayerState.DeathReason.Bombed => (CustomRoles.Bomber.IsEnable() || CustomRoles.Burst.IsEnable()
-                                || CustomRoles.Trapster.IsEnable() || CustomRoles.Fireworker.IsEnable() || CustomRoles.Bastion.IsEnable()),
-            PlayerState.DeathReason.Misfire => (CustomRoles.ChiefOfPolice.IsEnable() || CustomRoles.Sheriff.IsEnable()
+            PlayerState.DeathReason.Eaten => CustomRoles.Pelican.IsEnable(),
+            PlayerState.DeathReason.Spell => CustomRoles.Witch.IsEnable(),
+            PlayerState.DeathReason.Hex => CustomRoles.HexMaster.IsEnable(),
+            PlayerState.DeathReason.Curse => CustomRoles.CursedWolf.IsEnable(),
+            PlayerState.DeathReason.Jinx => CustomRoles.Jinx.IsEnable(),
+            PlayerState.DeathReason.Shattered => CustomRoles.Fragile.IsEnable(),
+            PlayerState.DeathReason.Bite => CustomRoles.Vampire.IsEnable(),
+            PlayerState.DeathReason.Poison => CustomRoles.Poisoner.IsEnable(),
+            PlayerState.DeathReason.Bombed => CustomRoles.Bomber.IsEnable() || CustomRoles.Burst.IsEnable()
+                                || CustomRoles.Fireworker.IsEnable() || CustomRoles.Bastion.IsEnable(),
+            PlayerState.DeathReason.Misfire => CustomRoles.ChiefOfPolice.IsEnable() || CustomRoles.Sheriff.IsEnable()
                                 || CustomRoles.Reverie.IsEnable() || CustomRoles.Sheriff.IsEnable() || CustomRoles.Fireworker.IsEnable()
-                                || CustomRoles.Hater.IsEnable() || CustomRoles.Pursuer.IsEnable() || CustomRoles.Romantic.IsEnable()),
-            PlayerState.DeathReason.Torched => (CustomRoles.Arsonist.IsEnable()),
-            PlayerState.DeathReason.Sniped => (CustomRoles.Sniper.IsEnable()),
-            PlayerState.DeathReason.Revenge => (CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable()
-                                || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable()),
-            PlayerState.DeathReason.Quantization => (CustomRoles.Lightning.IsEnable()),
-            //PlayerState.DeathReason.Overtired => (CustomRoles.Workaholic.IsEnable()),
-            PlayerState.DeathReason.Ashamed => (CustomRoles.Workaholic.IsEnable()),
-            PlayerState.DeathReason.PissedOff => (CustomRoles.Pestilence.IsEnable() || CustomRoles.Provocateur.IsEnable()),
-            PlayerState.DeathReason.Dismembered => (CustomRoles.Butcher.IsEnable()),
-            PlayerState.DeathReason.LossOfHead => (CustomRoles.Hangman.IsEnable()),
-            PlayerState.DeathReason.Trialed => (CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable()),
-            PlayerState.DeathReason.Infected => (CustomRoles.Infectious.IsEnable()),
-            PlayerState.DeathReason.Hack => (CustomRoles.Glitch.IsEnable()),
-            PlayerState.DeathReason.Pirate => (CustomRoles.Pirate.IsEnable()),
-            PlayerState.DeathReason.Shrouded => (CustomRoles.Shroud.IsEnable()),
-            PlayerState.DeathReason.Mauled => (CustomRoles.Werewolf.IsEnable()),
-            PlayerState.DeathReason.Suicide => (CustomRoles.Unlucky.IsEnable() || CustomRoles.Ghoul.IsEnable()
+                                || CustomRoles.Hater.IsEnable() || CustomRoles.Pursuer.IsEnable() || CustomRoles.Romantic.IsEnable(),
+            PlayerState.DeathReason.Torched => CustomRoles.Arsonist.IsEnable(),
+            PlayerState.DeathReason.Sniped => CustomRoles.Sniper.IsEnable(),
+            PlayerState.DeathReason.Revenge => CustomRoles.Avanger.IsEnable() || CustomRoles.Retributionist.IsEnable()
+                                || CustomRoles.Nemesis.IsEnable() || CustomRoles.Randomizer.IsEnable(),
+            PlayerState.DeathReason.Quantization => CustomRoles.Lightning.IsEnable(),
+            //PlayerState.DeathReason.Overtired => CustomRoles.Workaholic.IsEnable(),
+            PlayerState.DeathReason.Ashamed => CustomRoles.Workaholic.IsEnable(),
+            PlayerState.DeathReason.PissedOff => CustomRoles.Pestilence.IsEnable() || CustomRoles.Provocateur.IsEnable(),
+            PlayerState.DeathReason.Dismembered => CustomRoles.Butcher.IsEnable(),
+            PlayerState.DeathReason.LossOfHead => CustomRoles.Hangman.IsEnable(),
+            PlayerState.DeathReason.Trialed => CustomRoles.Judge.IsEnable() || CustomRoles.Councillor.IsEnable(),
+            PlayerState.DeathReason.Infected => CustomRoles.Infectious.IsEnable(),
+            PlayerState.DeathReason.Hack => CustomRoles.Glitch.IsEnable(),
+            PlayerState.DeathReason.Pirate => CustomRoles.Pirate.IsEnable(),
+            PlayerState.DeathReason.Shrouded => CustomRoles.Shroud.IsEnable(),
+            PlayerState.DeathReason.Mauled => CustomRoles.Werewolf.IsEnable(),
+            PlayerState.DeathReason.Suicide => CustomRoles.Unlucky.IsEnable() || CustomRoles.Ghoul.IsEnable()
                                 || CustomRoles.Terrorist.IsEnable() || CustomRoles.Dictator.IsEnable()
                                 || CustomRoles.Addict.IsEnable() || CustomRoles.Mercenary.IsEnable()
-                                || CustomRoles.Mastermind.IsEnable() || CustomRoles.Deathpact.IsEnable()),
-            PlayerState.DeathReason.FollowingSuicide => (CustomRoles.Lovers.IsEnable()),
-            PlayerState.DeathReason.Execution => (CustomRoles.Jailer.IsEnable()),
+                                || CustomRoles.Mastermind.IsEnable() || CustomRoles.Deathpact.IsEnable(),
+            PlayerState.DeathReason.FollowingSuicide => CustomRoles.Lovers.IsEnable(),
+            PlayerState.DeathReason.Execution => CustomRoles.Jailer.IsEnable(),
             PlayerState.DeathReason.Fall => Options.LadderDeath.GetBool(),
-            PlayerState.DeathReason.Sacrifice => (CustomRoles.Bodyguard.IsEnable() || CustomRoles.Revolutionist.IsEnable()
-                                || CustomRoles.Hater.IsEnable()),
+            PlayerState.DeathReason.Sacrifice => CustomRoles.Bodyguard.IsEnable() || CustomRoles.Revolutionist.IsEnable()
+                                || CustomRoles.Hater.IsEnable(),
             PlayerState.DeathReason.Drained => CustomRoles.Puppeteer.IsEnable(),
             PlayerState.DeathReason.Trap => CustomRoles.Trapster.IsEnable(),
             PlayerState.DeathReason.Targeted => CustomRoles.Kamikaze.IsEnable(),
