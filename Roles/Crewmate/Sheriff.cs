@@ -136,32 +136,26 @@ internal class Sheriff : RoleBase
         bool CanKill = false;
         foreach (var SubRoleTarget in subRole)
         {
-            if (SubRoleTarget == CustomRoles.Madmate)
-                CanKill = CanKillMadmate.GetBool();
-            if (SubRoleTarget == CustomRoles.Charmed)
-                CanKill = CanKillCharmed.GetBool();
-            if (SubRoleTarget == CustomRoles.Lovers)
-                CanKill = CanKillLovers.GetBool();
-            if (SubRoleTarget == CustomRoles.Recruit)
-                CanKill = CanKillSidekicks.GetBool();
-            if (SubRoleTarget == CustomRoles.Egoist)
-                CanKill = CanKillEgoists.GetBool();
-            if (SubRoleTarget == CustomRoles.Infected)
-                CanKill = CanKillInfected.GetBool();
-            if (SubRoleTarget == CustomRoles.Contagious)
-                CanKill = CanKillContagious.GetBool();
-            if (SubRoleTarget == CustomRoles.Rascal)
-                CanKill = true;
-            if (SubRoleTarget == CustomRoles.Admired)
-                CanKill = false;
+            CanKill = SubRoleTarget switch
+            {
+                CustomRoles.Madmate => CanKillMadmate.GetBool(),
+                CustomRoles.Charmed => CanKillCharmed.GetBool(),
+                CustomRoles.Lovers => CanKillLovers.GetBool(),
+                CustomRoles.Recruit => CanKillSidekicks.GetBool(),
+                CustomRoles.Egoist => CanKillEgoists.GetBool(),
+                CustomRoles.Infected => CanKillInfected.GetBool(),
+                CustomRoles.Contagious => CanKillContagious.GetBool(),
+                CustomRoles.Rascal => true,
+                CustomRoles.Admired => false,
+                _ => false,
+            };
         }
-
 
         return cRole switch
         {
             CustomRoles.Trickster => false,
             var r when cRole.IsTNA() => false,
-            _ => cRole.GetCustomRoleTeam() switch
+            _ => player.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => true,
                 Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),

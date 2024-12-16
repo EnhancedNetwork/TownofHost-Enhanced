@@ -91,7 +91,7 @@ internal class Executioner : RoleBase
                 else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor)) continue;
                 else if (!CanTargetNeutralApocalypse.GetBool() && target.GetCustomRole().IsNA()) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.GetCustomRole().IsNK()) continue;
-                else if (!CanTargetNeutralBenign.GetBool() && target.GetCustomRole().IsNB()) continue;
+                else if (!CanTargetNeutralBenign.GetBool() && (target.GetCustomRole().IsNB() || target.Is(CustomRoles.Rebel))) continue;
                 else if (!CanTargetNeutralEvil.GetBool() && target.GetCustomRole().IsNE()) continue;
                 else if (!CanTargetNeutralChaos.GetBool() && target.GetCustomRole().IsNC()) continue;
                 if (target.GetCustomRole() is CustomRoles.GM or CustomRoles.SuperStar or CustomRoles.NiceMini or CustomRoles.EvilMini) continue;

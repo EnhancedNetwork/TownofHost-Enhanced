@@ -114,7 +114,7 @@ internal class Oracle : RoleBase
                 else
                 {
                     if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
-                    else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
+                    else if (target.GetCustomRole().IsNeutral() || target.Is(CustomRoles.Rebel)) text = "Neutral";
                     else text = "Crewmate";
                 }
 
@@ -124,21 +124,28 @@ internal class Oracle : RoleBase
                     if (random_number_1 <= FailChance.GetInt())
                     {
                         int random_number_2 = IRandom.Instance.Next(1, 3);
-                        if (text == "Crewmate")
+                        text = text switch
                         {
-                            if (random_number_2 == 1) text = "Neutral";
-                            if (random_number_2 == 2) text = "Impostor";
-                        }
-                        if (text == "Neutral")
-                        {
-                            if (random_number_2 == 1) text = "Crewmate";
-                            if (random_number_2 == 2) text = "Impostor";
-                        }
-                        if (text == "Impostor")
-                        {
-                            if (random_number_2 == 1) text = "Neutral";
-                            if (random_number_2 == 2) text = "Crewmate";
-                        }
+                            "Crewmate" => random_number_2 switch
+                            {
+                                1 => "Neutral",
+                                2 => "Impostor",
+                                _ => text,
+                            },
+                            "Neutral" => random_number_2 switch
+                            {
+                                1 => "Crewmate",
+                                2 => "Impostor",
+                                _ => text,
+                            },
+                            "Impostor" => random_number_2 switch
+                            {
+                                1 => "Neutral",
+                                2 => "Crewmate",
+                                _ => text,
+                            },
+                            _ => text,
+                        };
                     }
                 }
                 msg = string.Format(GetString("OracleCheck." + text), target.GetRealName());

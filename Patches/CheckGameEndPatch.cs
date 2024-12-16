@@ -299,7 +299,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
                             break;
-                        case CustomRoles.Pursuer when pc.IsAlive() && WinnerTeam is not CustomWinner.Jester and not CustomWinner.Lovers and not CustomWinner.Terrorist and not CustomWinner.Executioner and not CustomWinner.Collector and not CustomWinner.Innocent and not CustomWinner.Youtuber:
+                        case CustomRoles.Pursuer when pc.IsAlive():
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Pursuer);
                             break;
@@ -388,6 +388,32 @@ class GameEndCheckerForNormal
                         if (realKiller != null && !WinnerIds.Contains(realKiller.PlayerId))
                             WinnerIds.Add(realKiller.PlayerId);
                     }
+                }
+
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rebel)).ToArray())
+                {
+                    if (WinnerTeam == CustomWinner.Crewmate && WinnerIds.Contains(pc.PlayerId))
+                        WinnerIds.Remove(pc.PlayerId);
+                    if (WinnerTeam != CustomWinner.Crewmate)
+                    {
+                        switch (Rebel.CanWinAfterDeath.GetBool())
+                        {
+                            case true:
+                                WinnerIds.Add(pc.PlayerId);
+                                break;
+                            case false:
+                                if (pc.IsAlive()) WinnerIds.Add(pc.PlayerId);
+                                break;
+                        }
+                        AdditionalWinnerTeams.Add(AdditionalWinners.Rebel);
+                    }
+                }
+
+                if (AdditionalWinnerTeams.Contains(AdditionalWinners.Rebel))
+                {
+                    Main.AllPlayerControls
+                        .Where(p => p.Is(CustomRoles.Rebel) && !WinnerIds.Contains(p.PlayerId))
+                        .Do(p => WinnerIds.Add(p.PlayerId));
                 }
 
                 //Lovers follow winner

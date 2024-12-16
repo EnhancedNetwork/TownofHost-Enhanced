@@ -449,12 +449,12 @@ internal class Enigma : RoleBase
             {
                 case 1:
                     if (role.IsImpostor()) return GetString("EnigmaClueRole1");
-                    if (role.IsNeutral()) return GetString("EnigmaClueRole2");
+                    if (role.IsNeutral() || killer.Is(CustomRoles.Rebel)) return GetString("EnigmaClueRole2");
                     return GetString("EnigmaClueRole3");
                 case 2:
                     if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleAndSubName(killer, false));
                     if (role.IsImpostor()) return GetString("EnigmaClueRole1");
-                    if (role.IsNeutral()) return GetString("EnigmaClueRole2");
+                    if (role.IsNeutral() || killer.Is(CustomRoles.Rebel)) return GetString("EnigmaClueRole2");
                     return GetString("EnigmaClueRole3");
             }
 

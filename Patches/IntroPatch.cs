@@ -328,6 +328,14 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
             return true;
         }
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
+        {
+            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            teamToDisplay.Add(PlayerControl.LocalPlayer);
+
+            __instance.overlayHandle.color = new Color32(255, 171, 26, byte.MaxValue);
+            return true;
+        }
         else if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -549,6 +557,14 @@ class BeginCrewmatePatch
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Egoist");
         }
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
+        {
+            __instance.TeamTitle.text = GetString("TeamRebel");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 171, 26, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Rebel");
+        }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
         {
             __instance.TeamTitle.text = GetString("TeamMadmate");
@@ -622,7 +638,8 @@ class BeginImpostorPatch
         var role = PlayerControl.LocalPlayer.GetCustomRole();
 
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers)
-            || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+            || PlayerControl.LocalPlayer.Is(CustomRoles.Egoist)
+            || PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
