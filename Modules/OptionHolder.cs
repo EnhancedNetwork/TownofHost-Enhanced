@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Impostor;
@@ -8,6 +7,7 @@ using UnityEngine;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true)]
 [Flags]
 public enum CustomGameMode
 {
@@ -21,7 +21,6 @@ public enum CustomGameMode
 [HarmonyPatch]
 public static class Options
 {
-
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
     public static void OptionsLoadStart_Postfix()
     {
@@ -37,6 +36,7 @@ public static class Options
     }
 
     // Presets
+    [Obfuscation(Exclude = true)]
     private static readonly string[] presets =
     [
         Main.Preset1.Value, Main.Preset2.Value, Main.Preset3.Value,
@@ -52,7 +52,6 @@ public static class Options
             2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
-
     public static readonly string[] gameModes =
     [
         "Standard",
@@ -73,6 +72,7 @@ public static class Options
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
 
     public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew)> AddonCanBeSettings = [];
+    [Obfuscation(Exclude = true)]
     public enum SpawnChance
     {
         Chance0,
@@ -97,6 +97,7 @@ public static class Options
         Chance95,
         Chance100,
     }
+    [Obfuscation(Exclude = true)]
     private enum RatesZeroOne
     {
         RoleOff,
@@ -322,7 +323,7 @@ public static class Options
     public static OptionItem DisableMeeting;
     public static OptionItem DisableSabotage;
     public static OptionItem DisableCloseDoor;
-        
+
     public static OptionItem DisableDevices;
     public static OptionItem DisableSkeldDevices;
     public static OptionItem DisableSkeldAdmin;
@@ -593,7 +594,7 @@ public static class Options
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
             .GroupBy(x => x.Type)
-            .ToDictionary(x => x.Key, x => x.Select(y => Enum.Parse<CustomRoles>(y.GetType().Name, true)).ToList());
+            .ToDictionary(x => x.Key, x => x.Select(y => y.Role).ToList());
     }
 
 
@@ -1453,7 +1454,7 @@ public static class Options
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableCloseDoor = BooleanOptionItem.Create(60566, "DisableCloseDoor", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(255, 153, 153, byte.MaxValue));        
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         // Disable Devices
         DisableDevices = BooleanOptionItem.Create(60570, "DisableDevices", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue))
