@@ -12,6 +12,7 @@ namespace TOHE.Roles.Crewmate;
 internal class TimeMaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.TimeMaster;
     private const int Id = 9900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.TimeMaster);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;

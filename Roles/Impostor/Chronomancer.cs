@@ -12,6 +12,7 @@ namespace TOHE.Roles.Impostor;
 internal class Chronomancer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Chronomancer;
     private const int Id = 900;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;

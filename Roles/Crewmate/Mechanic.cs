@@ -10,6 +10,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Mechanic : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mechanic;
     private const int Id = 8500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Mechanic);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;

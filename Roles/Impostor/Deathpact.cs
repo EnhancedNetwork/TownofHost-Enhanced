@@ -13,9 +13,8 @@ namespace TOHE.Roles.Impostor;
 internal class Deathpact : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Deathpact;
     private const int Id = 1200;
-    private static readonly HashSet<byte> Playerids = [];
-    public static bool HasEnabled => Playerids.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -64,19 +63,16 @@ internal class Deathpact : RoleBase
         PlayersInDeathpact.Clear();
         DeathpactTime.Clear();
         ActiveDeathpacts.Clear();
-        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayersInDeathpact[playerId] = [];
         DeathpactTime[playerId] = 0;
-        Playerids.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
         PlayersInDeathpact.Remove(playerId);
         DeathpactTime.Remove(playerId);
-        Playerids.Remove(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

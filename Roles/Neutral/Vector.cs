@@ -11,10 +11,8 @@ namespace TOHE.Roles.Neutral;
 internal class Vector : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vector;
     private const int Id = 15500;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     public override bool BlockMoveInVent(PlayerControl pc) => VectorInVentMaxTime.GetFloat() <= 1f;
@@ -42,12 +40,12 @@ internal class Vector : RoleBase
     public override void Init()
     {
         VectorVentCount.Clear();
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
         VectorVentCount[playerId] = 0;
-        PlayerIds.Add(playerId);
+
     }
     private void SendRPC()
     {

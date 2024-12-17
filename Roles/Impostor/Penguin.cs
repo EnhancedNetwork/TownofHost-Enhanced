@@ -12,6 +12,7 @@ namespace TOHE.Roles.Impostor;
 internal class Penguin : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Penguin;
     private const int Id = 27500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Penguin);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

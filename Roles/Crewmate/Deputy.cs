@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Deputy : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Deputy;
     private const int Id = 7800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -50,9 +51,12 @@ internal class Deputy : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
 
-            target.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat());
-            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
-            if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill(target);
+            if (target.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner)
+            {
+                target.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat());
+                if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+                if (!DisableShieldAnimations.GetBool()) target.RpcGuardAndKill(target);
+            }
 
             return false;
         }

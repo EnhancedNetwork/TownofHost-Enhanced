@@ -154,6 +154,7 @@ class DisconnectInternalPatch
 {
     public static void Prefix(InnerNetClient __instance, DisconnectReasons reason, string stringReason)
     {
+        GameStates.InGame = false;
         Logger.Info($"Disconnect (Reason:{reason}:{stringReason}, ping:{__instance.Ping})", "Reason Disconnect");
         RehostManager.OnDisconnectInternal(reason);
     }
@@ -246,7 +247,7 @@ public static class OnPlayerJoinedPatch
             }
         }
 
-        if (Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+        if (AmongUsClient.Instance.AmHost && Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, false);
             Logger.SendInGame(string.Format(GetString("Message.KickedByWhiteList"), client.PlayerName));
@@ -327,7 +328,10 @@ class OnPlayerLeftPatch
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
+        {
+            if (data.Character != null) CustomNetObject.DespawnOnQuit(data.Character.PlayerId);
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+        }
 
         if (AmongUsClient.Instance.AmHost && data.Character != null)
         {
@@ -372,7 +376,7 @@ class OnPlayerLeftPatch
                     }
                 }
 
-                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
+                Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 var state = Main.PlayerStates[data.Character.PlayerId];
                 state.Disconnected = true;

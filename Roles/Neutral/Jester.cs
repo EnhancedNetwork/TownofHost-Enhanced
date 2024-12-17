@@ -7,6 +7,7 @@ namespace TOHE.Roles.Neutral;
 internal class Jester : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jester;
     private const int Id = 14400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jester);
 

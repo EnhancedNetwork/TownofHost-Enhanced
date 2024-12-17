@@ -7,10 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class Undertaker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Undertaker;
     private const int Id = 4900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -36,14 +34,12 @@ internal class Undertaker : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         MarkedLocation.Clear();
         DefaultSpeed = new();
     }
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         MarkedLocation.TryAdd(playerId, ExtendedPlayerControl.GetBlackRoomPosition());
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }

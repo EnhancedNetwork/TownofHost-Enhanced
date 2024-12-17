@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Troller : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Troller;
     private const int Id = 28700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Troller);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
@@ -25,6 +26,7 @@ internal class Troller : RoleBase
     private SystemTypes CurrentActiveSabotage = SystemTypes.Hallway;
     private List<Events> AllEvents = [];
 
+    [Obfuscation(Exclude = true)]
     enum Events
     {
         LowSpeed,

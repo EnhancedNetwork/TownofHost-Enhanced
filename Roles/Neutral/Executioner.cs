@@ -8,10 +8,9 @@ namespace TOHE.Roles.Neutral;
 internal class Executioner : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Executioner;
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -22,13 +21,15 @@ internal class Executioner : RoleBase
     private static OptionItem CanTargetNeutralEvil;
     private static OptionItem CanTargetNeutralChaos;
     private static OptionItem CanTargetNeutralApocalypse;
-    private static OptionItem KnowTargetRole;
+    private static OptionItem CanTargetCoven;
+    public static OptionItem KnowTargetRole;
     private static OptionItem ChangeRolesAfterTargetKilled;
     private static OptionItem RevealExeTargetUponEjection;
 
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,
@@ -61,6 +62,7 @@ internal class Executioner : RoleBase
         CanTargetNeutralEvil = BooleanOptionItem.Create(Id + 15, "ExecutionerCanTargetNeutralEvil", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralChaos = BooleanOptionItem.Create(Id + 16, "ExecutionerCanTargetNeutralChaos", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetNeutralApocalypse = BooleanOptionItem.Create(Id + 17, "ExecutionerCanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CanTargetCoven = BooleanOptionItem.Create(Id + 19, "ExecutionerCanTargetCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 18, "Executioner_RevealTargetUponEject", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
@@ -73,7 +75,10 @@ internal class Executioner : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+        {
+            playerIdList.Add(playerId);
+        }
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
 
@@ -91,6 +96,7 @@ internal class Executioner : RoleBase
                 else if (!CanTargetNeutralBenign.GetBool() && target.GetCustomRole().IsNB()) continue;
                 else if (!CanTargetNeutralEvil.GetBool() && target.GetCustomRole().IsNE()) continue;
                 else if (!CanTargetNeutralChaos.GetBool() && target.GetCustomRole().IsNC()) continue;
+                else if (!CanTargetCoven.GetBool() && target.Is(Custom_Team.Coven)) continue;
                 if (target.GetCustomRole() is CustomRoles.GM or CustomRoles.SuperStar or CustomRoles.NiceMini or CustomRoles.EvilMini) continue;
                 if (executioner.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
 
@@ -118,7 +124,7 @@ internal class Executioner : RoleBase
         {
             SendRPC(SetTarget: false);
         }
-        playerIdList.Remove(playerId);
+
         TargetList.Remove(TargetId);
         TargetId = byte.MaxValue;
     }

@@ -104,6 +104,7 @@
 > - Host icon during the meeting
 ### :star: [MoreGamemodes](https://github.com/Rabek009/MoreGamemodes)
 >
+> - CustomNetObjects (CustomNetObjects.cs)
 > - Changer Role Basis (RoleBasisChanger.cs)
 > - Disable use vent for vanilla players (VentSystemPatch.cs)
 ### :star: [Reactor](https://github.com/NuclearPowered/Reactor)

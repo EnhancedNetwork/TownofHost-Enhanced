@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Nimble : IAddon
 {
+    public CustomRoles Role => CustomRoles.Nimble;
     private const int Id = 19700;
     public AddonTypes Type => AddonTypes.Helpful;
 

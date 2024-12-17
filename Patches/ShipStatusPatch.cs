@@ -359,11 +359,12 @@ class ShipStatusSerializePatch
 
             if (GameStates.IsInGame)
             {
-                foreach (var pc in PlayerControl.AllPlayerControls)
+                foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (pc.BlockVentInteraction())
                     {
                         customVentilation = true;
+                        break;
                     }
                 }
             }

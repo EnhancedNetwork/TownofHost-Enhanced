@@ -16,7 +16,7 @@ class RandomSpawn
         public static void Prefix(CustomNetworkTransform __instance, [HarmonyArgument(1)] ushort minSid)
         {
             if (AmongUsClient.Instance.AmHost) return;
-
+            if (__instance.myPlayer.PlayerId == 255) return;
             Logger.Info($"Player Id {__instance.myPlayer.PlayerId} - old sequence {__instance.lastSequenceId} - new sequence {minSid}", "SnapToPatch");
         }
     }
@@ -159,6 +159,7 @@ class RandomSpawn
     public static bool IsRandomSpawn() => RandomSpawnMode.GetBool();
     public static bool CanSpawnInFirstRound() => SpawnInFirstRound.GetBool();
 
+    [Obfuscation(Exclude = true)]
     private enum RandomSpawnOpt
     {
         RandomSpawnMode,

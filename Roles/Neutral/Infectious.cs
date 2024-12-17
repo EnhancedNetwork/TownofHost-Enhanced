@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Infectious : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Infectious;
     private const int Id = 16600;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
@@ -49,7 +50,9 @@ internal class Infectious : RoleBase
     public override void Add(byte playerId)
     {
         BiteLimit = BiteMax.GetInt();
-        PlayerIds.Add(playerId);
+        if (!PlayerIds.Contains(playerId))
+            PlayerIds.Add(playerId);
+
         var pc = Utils.GetPlayerById(playerId);
         pc?.AddDoubleTrigger();
     }
@@ -170,10 +173,12 @@ internal class Infectious : RoleBase
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate()
             || pc.GetCustomRole().IsImpostor()
-            || pc.GetCustomRole().IsNK()) && !pc.Is(CustomRoles.Infected)
+            || pc.GetCustomRole().IsNK()
+            || pc.GetCustomRole().IsCoven()) && !pc.Is(CustomRoles.Infected)
             && !pc.Is(CustomRoles.Admired)
             && !pc.Is(CustomRoles.Loyal)
             && !pc.Is(CustomRoles.Cultist)
+            && !pc.Is(CustomRoles.Enchanted)
             && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

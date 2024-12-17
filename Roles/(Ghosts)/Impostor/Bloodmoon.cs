@@ -13,6 +13,7 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 internal class Bloodmoon : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bloodmoon;
     private const int Id = 28100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bloodmoon);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;

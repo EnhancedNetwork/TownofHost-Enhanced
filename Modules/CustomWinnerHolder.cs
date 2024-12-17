@@ -74,6 +74,9 @@ public static class CustomWinnerHolder
                 case CustomRoles.Contagious:
                     ResetAndSetWinner(CustomWinner.Virus);
                     return true;
+                case CustomRoles.Enchanted:
+                    ResetAndSetWinner(CustomWinner.Coven);
+                    return true;
             }
         }
         return false;

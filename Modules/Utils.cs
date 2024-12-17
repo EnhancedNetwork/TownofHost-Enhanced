@@ -1,12 +1,12 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Generator.Extensions;
 using InnerNet;
 using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -18,15 +18,16 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
-
 namespace TOHE;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -314,6 +315,59 @@ public static class Utils
 
         return parentheses ? $"({mode})" : mode;
     }
+    public static void SendRPC(CustomRPC rpc, params object[] data)
+    {
+        var w = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)rpc, SendOption.Reliable);
+        foreach (var o in data)
+        {
+            switch (o)
+            {
+                case byte b:
+                    w.Write(b);
+                    break;
+                case int i:
+                    w.WritePacked(i);
+                    break;
+                case float f:
+                    w.Write(f);
+                    break;
+                case string s:
+                    w.Write(s);
+                    break;
+                case bool b:
+                    w.Write(b);
+                    break;
+                case long l:
+                    w.Write(l.ToString());
+                    break;
+                case char c:
+                    w.Write(c.ToString());
+                    break;
+                case Vector2 v:
+                    w.Write(v);
+                    break;
+                case Vector3 v:
+                    w.Write(v);
+                    break;
+                case PlayerControl pc:
+                    w.WriteNetObject(pc);
+                    break;
+                default:
+                    try
+                    {
+                        if (o != null && Enum.TryParse(o.GetType(), o.ToString(), out var e) && e != null)
+                            w.WritePacked((int)e);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        ThrowException(e);
+                    }
+                    break;
+            }
+        }
+
+        AmongUsClient.Instance.FinishRpcImmediately(w);
+    }
     public static string GetChance(float percent)
     {
         return percent switch
@@ -395,6 +449,9 @@ public static class Utils
                 break;
             case Custom_Team.Neutral:
                 hexColor = "#7f8c8d";
+                break;
+            case Custom_Team.Coven:
+                hexColor = "#ac42f2";
                 break;
         }
 
@@ -489,6 +546,7 @@ public static class Utils
                             case CustomRoles.Infected:
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
+                            case CustomRoles.Enchanted:
                                 RoleColor = GetRoleColor(subRole);
                                 RoleText = GetRoleString($"{subRole}-") + RoleText;
                                 break;
@@ -582,6 +640,7 @@ public static class Utils
                 case CustomRoles.EvilSpirit:
                 case CustomRoles.Contagious:
                 case CustomRoles.Soulless:
+                case CustomRoles.Enchanted:
                 case CustomRoles.Rascal:
                     hasTasks &= !ForRecompute;
                     break;
@@ -790,6 +849,7 @@ public static class Utils
 
         List<string> impsb = [];
         List<string> neutralsb = [];
+        List<string> covenb = [];
         List<string> crewsb = [];
         List<string> addonsb = [];
 
@@ -809,17 +869,20 @@ public static class Utils
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
                 else if (role.IsImpostor() || role.IsMadmate()) impsb.Add(roleDisplay);
                 else if (role.IsNeutral()) neutralsb.Add(roleDisplay);
+                else if (role.IsCoven()) covenb.Add(roleDisplay);
             }
         }
 
         impsb.Sort();
         crewsb.Sort();
         neutralsb.Sort();
+        covenb.Sort();
         addonsb.Sort();
 
         SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", covenb), PlayerId, GetString("CovenRoles"), ShouldSplit: true);
         SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
@@ -947,7 +1010,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Enchanted) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
@@ -1707,7 +1770,8 @@ public static class Utils
         {
             var Compare = player.GetCustomSubRoles().First(x => x.IsConverted());
 
-            team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
+            if (player.Is(CustomRoles.Enchanted)) team = Custom_Team.Coven;
+            else team = player.Is(CustomRoles.Madmate) ? Custom_Team.Impostor : Custom_Team.Neutral;
             return target.Is(Compare);
         }
         else if (!target.IsAnySubRole(x => x.IsConverted()))
@@ -1889,7 +1953,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -1960,6 +2024,7 @@ public static class Utils
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
+                    else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
                     SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
                 }
@@ -2038,7 +2103,7 @@ public static class Utils
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
@@ -2053,6 +2118,11 @@ public static class Utils
 
                         if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
+
+                        if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
+                        {
+                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
+                        }
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
@@ -2077,6 +2147,21 @@ public static class Utils
                         {
                             TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
                             TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
+                        }
+                        // Same thing as Trickster but for Illusioned Coven
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
+                        {
+                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId);
+                            TargetRoleText += TaskState.GetTaskState();
+                        }
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
+                        {
+                            var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                            TargetRoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                            if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
+                            {
+                                TargetRoleText += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
+                            }
                         }
 
                         // ====== Target player name ======
@@ -2124,6 +2209,9 @@ public static class Utils
                                         TargetPlayerName = GetTragetId;
 
                                     if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
+                                        TargetPlayerName = GetTragetId;
+
+                                    if (Options.CovenCanGuess.GetBool() && seer.GetCustomRole().IsCoven())
                                         TargetPlayerName = GetTragetId;
                                 }
                             }
@@ -2303,6 +2391,7 @@ public static class Utils
             PlayerState.DeathReason.Sacrificed => CustomRoles.Altruist.IsEnable(),
             PlayerState.DeathReason.Electrocuted => CustomRoles.Shocker.IsEnable(),
             PlayerState.DeathReason.Scavenged => CustomRoles.Scavenger.IsEnable(),
+            PlayerState.DeathReason.BlastedOff => CustomRoles.MoonDancer.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2319,6 +2408,7 @@ public static class Utils
             if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
             AntiBlackout.AfterMeetingTasks();
+            CovenManager.CheckNecroVotes();
 
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
@@ -2343,6 +2433,7 @@ public static class Utils
             if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+            if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks(); 
         }
         catch (Exception error)
         {
@@ -2352,6 +2443,7 @@ public static class Utils
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
 
+        RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
 
         // Empty Deden bug support Empty vent after meeting

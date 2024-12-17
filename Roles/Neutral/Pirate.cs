@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pirate : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pirate;
     private const int Id = 15000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
     public override bool IsDesyncRole => true;

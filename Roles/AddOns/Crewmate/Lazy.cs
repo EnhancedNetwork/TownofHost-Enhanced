@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Lazy : IAddon
 {
+    public CustomRoles Role => CustomRoles.Lazy;
     private const int Id = 19300;
     public AddonTypes Type => AddonTypes.Helpful;
 

@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,9 +9,10 @@ namespace TOHE.Roles.Crewmate;
 internal class CopyCat : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.CopyCat;
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -39,12 +41,14 @@ internal class CopyCat : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
-        //playerIdList.Remove(playerId);
+        // Copy cat role wont be removed for now i guess
+        // playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
@@ -69,16 +73,17 @@ internal class CopyCat : RoleBase
             ////////////           /*remove the settings for current role*/             /////////////////////
 
             var pcRole = pc.GetCustomRole();
-            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Retributionist)
+            if (pcRole is not CustomRoles.Sidekick && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
+                    pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
                 }
-                pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
-                pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
             pc.ResetKillCooldown();
+            pc.SetKillCooldown();
         }
     }
 
@@ -98,6 +103,7 @@ internal class CopyCat : RoleBase
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
             killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return false;
         }
         if (CopyCrewVar.GetBool())
@@ -109,7 +115,6 @@ internal class CopyCat : RoleBase
                 CustomRoles.Consigliere => CustomRoles.Overseer,
                 CustomRoles.Mercenary => CustomRoles.Addict,
                 CustomRoles.Miner => CustomRoles.Mole,
-                CustomRoles.PotionMaster => CustomRoles.Overseer,
                 CustomRoles.Twister => CustomRoles.TimeMaster,
                 CustomRoles.Disperser => CustomRoles.Transporter,
                 CustomRoles.Eraser => CustomRoles.Cleanser,
@@ -128,6 +133,12 @@ internal class CopyCat : RoleBase
                 CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
                 CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,
                 CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
+                CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 0 => CustomRoles.Overseer,
+                CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 1 => CustomRoles.Medic,
+                CustomRoles.Sacrifist => CustomRoles.Alchemist,
+                CustomRoles.MoonDancer => CustomRoles.Merchant,
+                CustomRoles.Ritualist => CustomRoles.Admirer,
+                CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 _ => role
             };
         }
@@ -148,6 +159,7 @@ internal class CopyCat : RoleBase
                 if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit);
                 if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
                 if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
+                if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted);
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
@@ -156,6 +168,7 @@ internal class CopyCat : RoleBase
         }
         killer.Notify(GetString("CopyCatCanNotCopy"));
         killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return false;
     }
 

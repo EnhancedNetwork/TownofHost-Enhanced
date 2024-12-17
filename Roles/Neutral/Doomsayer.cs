@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class Doomsayer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Doomsayer;
     private const int Id = 14100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doomsayer);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -28,6 +29,7 @@ internal class Doomsayer : RoleBase
     private static OptionItem DCanGuessImpostors;
     private static OptionItem DCanGuessCrewmates;
     private static OptionItem DCanGuessNeutrals;
+    private static OptionItem DCanGuessCoven;
     private static OptionItem DCanGuessAdt;
     private static OptionItem AdvancedSettings;
     private static OptionItem MaxNumberOfGuessesPerMeeting;
@@ -48,6 +50,8 @@ internal class Doomsayer : RoleBase
         DCanGuessCrewmates = BooleanOptionItem.Create(Id + 13, "DCanGuessCrewmates", true, TabGroup.NeutralRoles, true)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         DCanGuessNeutrals = BooleanOptionItem.Create(Id + 14, "DCanGuessNeutrals", true, TabGroup.NeutralRoles, true)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
+        DCanGuessCoven = BooleanOptionItem.Create(Id + 26, "DCanGuessCoven", true, TabGroup.NeutralRoles, true)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         DCanGuessAdt = BooleanOptionItem.Create(Id + 15, "DCanGuessAdt", false, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
@@ -139,7 +143,8 @@ internal class Doomsayer : RoleBase
         if (!DCanGuessCrewmates.GetBool() && TabId == 0) return true;
         if (!DCanGuessImpostors.GetBool() && TabId == 1) return true;
         if (!DCanGuessNeutrals.GetBool() && TabId == 2) return true;
-        if (!DCanGuessAdt.GetBool() && TabId == 3) return true;
+        if (!DCanGuessCoven.GetBool() && TabId == 3) return true;
+        if (!DCanGuessAdt.GetBool() && TabId == 4) return true;
 
         return false;
     }
@@ -163,6 +168,11 @@ internal class Doomsayer : RoleBase
             return true;
         }
         if (role.IsNeutral() && !DCanGuessNeutrals.GetBool())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
+            return true;
+        }
+        if (role.IsCoven() && !DCanGuessCoven.GetBool())
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;

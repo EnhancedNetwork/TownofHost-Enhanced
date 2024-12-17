@@ -297,17 +297,18 @@ public abstract class OptionItem
     public const int NumPresets = 5;
     public const int PresetId = 0;
 }
-
+[Obfuscation(Exclude = true)]
 public enum TabGroup
 {
     SystemSettings,
     ModSettings,
-    ModifierSettings,
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
+    CovenRoles,
     Addons
 }
+[Obfuscation(Exclude = true)]
 public enum OptionFormat
 {
     None,

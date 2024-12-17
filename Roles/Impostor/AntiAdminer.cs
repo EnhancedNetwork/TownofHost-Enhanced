@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class AntiAdminer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.AntiAdminer;
     private const int Id = 2800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
@@ -33,19 +34,10 @@ internal class AntiAdminer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
     }
 
     private static int Count = 0;
@@ -136,11 +128,8 @@ internal class AntiAdminer : RoleBase
 
         if (isChange)
         {
-            foreach (var pc in playerIdList.ToArray())
-            {
-                var antiAdminer = pc.GetPlayer();
-                NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
-            }
+            if (_Player)
+                NotifyRoles(SpecifySeer: _Player, ForceLoop: false);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)

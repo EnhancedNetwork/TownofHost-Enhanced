@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class Stealer : IAddon
 {
+    public CustomRoles Role => CustomRoles.Stealer;
     private const int Id = 23200;
     public AddonTypes Type => AddonTypes.Impostor;
 

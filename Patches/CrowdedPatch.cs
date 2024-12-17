@@ -139,6 +139,24 @@ internal static class Crowded
         }
     }
 
+    [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Refresh))]
+    public static class CreateOptionsPicker_Refresh
+    {
+        public static bool Prefix(CreateOptionsPicker __instance)
+        {
+            IGameOptions targetOptions = __instance.GetTargetOptions();
+            __instance.UpdateImpostorsButtons(targetOptions.NumImpostors);
+            __instance.UpdateMaxPlayersButtons(targetOptions);
+            __instance.UpdateLanguageButton((uint)targetOptions.Keywords);
+            __instance.MapMenu.UpdateMapButtons((int)targetOptions.MapId);
+            __instance.GameModeText.text = DestroyableSingleton<TranslationController>.Instance.GetString(GameModesHelpers.ModeToName[GameOptionsManager.Instance.CurrentGameOptions.GameMode]);
+            return false;
+
+            // Skip maxplayers => max impostors array check here
+            // Overwrite to 3 bug
+        }
+    }
+
     [HarmonyPatch(typeof(ServerManager), nameof(ServerManager.SetRegion))]
     public static class ServerManager_SetRegion
     {
@@ -187,6 +205,25 @@ internal static class Crowded
             for (var i = 1; i < __instance.MaxPlayerButtons.Count - 1; i++)
             {
                 __instance.MaxPlayerButtons[i].enabled = __instance.MaxPlayerButtons[i].GetComponentInChildren<TextMeshPro>().text == selectedAsString;
+            }
+
+            return false;
+        }
+    }
+
+    [HarmonyPatch(typeof(NormalGameOptionsV08), nameof(NormalGameOptionsV08.AreInvalid))]
+    public static class NormalGameOptionsV08_AreInvalid
+    {
+        public static bool Prefix(NormalGameOptionsV08 __instance, ref bool __result)
+        {
+            __result = __instance.NumImpostors < 0 || __instance.KillDistance < 0 || __instance.KillCooldown < 0 || __instance.PlayerSpeedMod <= 0;
+
+            if (GameStates.IsVanillaServer)
+            {
+                if (__instance.MaxPlayers > 15)
+                {
+                    __result = true;
+                }
             }
 
             return false;
@@ -280,8 +317,36 @@ internal static class Crowded
             return false;
         }
     }
+
+    [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
+    public static class MeetingHudStartPatch
+    {
+        public static void Postfix(MeetingHud __instance)
+        {
+            __instance.gameObject.AddComponent<MeetingHudPagingBehaviour>().meetingHud = __instance;
+        }
+    }
+
+    [HarmonyPatch(typeof(ShapeshifterMinigame), nameof(ShapeshifterMinigame.Begin))]
+    public static class ShapeshifterMinigameBeginPatch
+    {
+        public static void Postfix(ShapeshifterMinigame __instance)
+        {
+            __instance.gameObject.AddComponent<ShapeShifterPagingBehaviour>().shapeshifterMinigame = __instance;
+        }
+    }
+
+    [HarmonyPatch(typeof(VitalsMinigame), nameof(VitalsMinigame.Begin))]
+    public static class VitalsMinigameBeginPatch
+    {
+        public static void Postfix(VitalsMinigame __instance)
+        {
+            __instance.gameObject.AddComponent<VitalsPagingBehaviour>().vitalsMinigame = __instance;
+        }
+    }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class AbstractPagingBehaviour : MonoBehaviour
 {
     public AbstractPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -331,6 +396,7 @@ public class AbstractPagingBehaviour : MonoBehaviour
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 {
     public MeetingHudPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -385,6 +451,7 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
     }
 }
 
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
 {
     public ShapeShifterPagingBehaviour(IntPtr ptr) : base(ptr)
@@ -439,6 +506,8 @@ public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
         }
     }
 }
+
+[Obfuscation(Exclude = true, ApplyToMembers = true)]
 
 public class VitalsPagingBehaviour : AbstractPagingBehaviour
 {

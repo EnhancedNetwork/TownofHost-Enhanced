@@ -12,12 +12,14 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -874,6 +876,14 @@ class ReportDeadBodyPatch
                         }
                         player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
                     }
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -927,6 +937,7 @@ class ReportDeadBodyPatch
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
+        RPC.SyncDeadPassedMeetingList();
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 
@@ -952,7 +963,7 @@ class FixedUpdateInNormalGamePatch
     {
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null) return;
+        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
@@ -988,6 +999,7 @@ class FixedUpdateInNormalGamePatch
         // For example: 15 players will called 450 times every 1 second
 
         var player = __instance;
+        bool localplayer = __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId;
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
@@ -1106,9 +1118,15 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
+            else // We are not in lobby
+            {
+                if (localplayer)
+                    CustomNetObject.FixedUpdate();
+            }
 
             DoubleTrigger.OnFixedUpdate(player);
             KillTimerManager.FixedUpdate(player);
+            CovenManager.NecronomiconCheck();
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
@@ -1166,10 +1184,46 @@ class FixedUpdateInNormalGamePatch
                                 }
                                 if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
 
-                                var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
-                                UnShapeshifter.RpcShapeshift(randomPlayer, false);
-                                UnShapeshifter.RpcRejectShapeshift();
-                                UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
+
+                                if (!UnShapeshifter.AmOwner)
+                                {
+                                    var sstarget = PlayerControl.LocalPlayer;
+                                    UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
+                                    UnShapeshifter.RejectShapeshift();
+
+                                    var writer = MessageWriter.Get(SendOption.Reliable);
+                                    writer.StartMessage(6);
+                                    writer.Write(AmongUsClient.Instance.GameId);
+                                    writer.WritePacked(UnShapeshifter.OwnerId);
+
+                                    writer.StartMessage(2);
+                                    writer.WritePacked(UnShapeshifter.NetId);
+                                    writer.Write((byte)RpcCalls.Shapeshift);
+                                    writer.WriteNetObject(sstarget);
+                                    writer.Write(false);
+                                    writer.EndMessage();
+
+                                    writer.StartMessage(2);
+                                    writer.WritePacked(UnShapeshifter.NetId);
+                                    writer.Write((byte)RpcCalls.RejectShapeshift);
+                                    writer.EndMessage();
+
+                                    writer.EndMessage();
+                                    AmongUsClient.Instance.SendOrDisconnect(writer);
+                                    writer.Recycle();
+
+                                    UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
+                                }
+                                else
+                                {
+                                    // Host is Unshapeshifter, make button into unshapeshift state
+                                    PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+                                    var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+                                    PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+                                    PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+                                    DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+                                }
+
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }
@@ -1249,6 +1303,21 @@ class FixedUpdateInNormalGamePatch
                     RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                     RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
                 }
+                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
+                {
+                    RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
+                    RoleText.text += TaskState.GetTaskState();
+                }
+                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsNonCovIllusioned(__instance.PlayerId))
+                {
+                    var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                    RoleText.text = Utils.ColorString(Utils.GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                    if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
+                    {
+                        RoleText.text += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                    }
+                }
+
 
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {
@@ -1306,6 +1375,7 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
 
+
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
@@ -1320,6 +1390,10 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                         Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
+                }
+                if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
+                {
+                    Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
                 }
 
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
@@ -1639,7 +1713,7 @@ class PlayerControlCompleteTaskPatch
                             break;
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor)).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1767,7 +1841,9 @@ public static class PlayerControlMixupOutfitPatch
         }
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
-        if (!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
+        if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
+            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer // Necromancer
+            ) &&  
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names

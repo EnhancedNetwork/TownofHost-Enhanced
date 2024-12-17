@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -10,6 +9,7 @@ namespace TOHE.Roles.Neutral;
 internal class Jackal : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jackal;
     private const int Id = 16700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
     public static readonly HashSet<byte> Playerids = [];
@@ -39,12 +39,14 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
+    [Obfuscation(Exclude = true)]
     private enum SidekickAssignModeSelectList
     {
         Jackal_SidekickAssignMode_SidekickAndRecruit,
         Jackal_SidekickAssignMode_Sidekick,
         Jackal_SidekickAssignMode_Recruit,
     }
+    [Obfuscation(Exclude = true)]
     private enum SidekickCountModeSelectList
     {
         Jackal_SidekickCountMode_Jackal,
@@ -101,7 +103,8 @@ internal class Jackal : RoleBase
             AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
         }
 
-        Playerids.Add(playerId);
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -356,8 +359,7 @@ internal class Jackal : RoleBase
         return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit)
             && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate)
             && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Paranoia)
-            && !pc.Is(CustomRoles.Contagious) && pc.GetCustomRole().IsAbleToBeSidekicked()
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Enchanted) && pc.GetCustomRole().IsAbleToBeSidekicked();
     }
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
@@ -464,19 +466,19 @@ internal class Jackal : RoleBase
 
 internal class Sidekick : RoleBase
 {
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    public override CustomRoles Role => CustomRoles.Sidekick;
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
 
     public override void Init()
     {
-        playerIdList.Clear();
+
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         Main.PlayerStates[playerId].taskState.hasTasks = false;
         AbilityLimit = 0;
 

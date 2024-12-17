@@ -8,6 +8,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Avanger : IAddon
 {
+    public CustomRoles Role => CustomRoles.Avanger;
     private const int Id = 21500;
     public AddonTypes Type => AddonTypes.Mixed;
 

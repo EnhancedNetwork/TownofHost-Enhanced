@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 using static TOHE.Translator;

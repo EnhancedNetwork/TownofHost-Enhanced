@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class Glitch : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Glitch;
     private const int Id = 16300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Glitch);
     public override bool IsDesyncRole => true;

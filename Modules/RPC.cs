@@ -7,6 +7,7 @@ using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -14,10 +15,14 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-enum CustomRPC : byte // 185/255 USED
+[Obfuscation(Exclude = true)]
+public enum CustomRPC : byte // 185/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
+
+    // Adding Role rpcs that overrides TOHE section and changing BetterCheck will be rejected
+    // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -40,6 +45,7 @@ enum CustomRPC : byte // 185/255 USED
     SetNameColorData,
     GuessKill,
     Judge,
+    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     Guess,
     CouncillorJudge,
     NemesisRevenge,
@@ -50,10 +56,12 @@ enum CustomRPC : byte // 185/255 USED
     ShowChat,
     SyncShieldPersonDiedFirst,
     RemoveSubRole,
+    FixModdedClientCNO,
     SyncGeneralOptions,
     SyncSpeedPlayer,
     Arrow,
     NotificationPopper,
+    SyncDeadPassedMeetingList,
 
     //Roles 
     SetBountyTarget,
@@ -70,13 +78,13 @@ enum CustomRPC : byte // 185/255 USED
     SetLoversPlayers,
     SendFireworkerState,
     SetCurrentDousingTarget,
-    SetEvilTrackerTarget,
-    SetDrawPlayer,
-    SetCrewpostorTasksDone,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetEvilTrackerTarget,
+    SetDrawPlayer,
+    SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
@@ -87,7 +95,6 @@ enum CustomRPC : byte // 185/255 USED
     KeeperRPC,
     SetAlchemistTimer,
     UndertakerLocationSync,
-    RiftMakerSyncData,
     LightningSetGhostPlayer,
     SetDarkHiderKillCount,
     SetConsigliere,
@@ -109,10 +116,12 @@ enum CustomRPC : byte // 185/255 USED
     SyncAdmiredAbility,
     SetImitateLimit,
     DictatorRPC,
+    Necronomicon,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
 }
+[Obfuscation(Exclude = true)]
 public enum Sounds
 {
     KillSound,
@@ -415,9 +424,6 @@ internal class RPCHandlerPatch
             case CustomRPC.UndertakerLocationSync:
                 Undertaker.ReceiveRPC(reader);
                 break;
-            case CustomRPC.RiftMakerSyncData:
-                RiftMaker.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetLoversPlayers:
                 Main.LoversPlayers.Clear();
                 int count = reader.ReadInt32();
@@ -612,12 +618,14 @@ internal class RPCHandlerPatch
                     Logger.Info($"Player {target.GetNameWithRole()} used /dump", "RPC_DumpLogger");
                 }
                 break;
+            case CustomRPC.FixModdedClientCNO:
+                var CNO = reader.ReadNetObject<PlayerControl>();
+                bool active = reader.ReadBoolean();
+                CNO?.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                break;
             case CustomRPC.SyncVultureBodyAmount:
                 Vulture.ReceiveBodyRPC(reader);
                 break;
-            //case CustomRPC.SetCleanserCleanLimit:
-            //    Cleanser.ReceiveRPC(reader);
-            //    break;
             case CustomRPC.SetInspectorLimit:
                 Inspector.ReceiveRPC(reader);
                 break;
@@ -633,6 +641,15 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncShieldPersonDiedFirst:
                 Main.FirstDied = reader.ReadString();
                 Main.FirstDiedPrevious = reader.ReadString();
+                break;
+            case CustomRPC.SyncDeadPassedMeetingList:
+                Main.DeadPassedMeetingPlayers.Clear();
+                var pnum = reader.ReadPackedInt32();
+                for (int i = 0; i < pnum; i++)
+                    Main.DeadPassedMeetingPlayers.Add(reader.ReadByte());
+                break;
+            case CustomRPC.Necronomicon:
+                CovenManager.ReceiveNecroRPC(reader);
                 break;
         }
     }
@@ -967,6 +984,17 @@ internal static class RPC
         foreach (var lp in Main.LoversPlayers)
         {
             writer.Write(lp.PlayerId);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SyncDeadPassedMeetingList()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncDeadPassedMeetingList, SendOption.Reliable, -1);
+        writer.WritePacked(Main.DeadPassedMeetingPlayers.Count);
+        foreach (var dead in Main.DeadPassedMeetingPlayers)
+        {
+            writer.Write(dead);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

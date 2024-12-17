@@ -10,10 +10,8 @@ namespace TOHE.Roles.Impostor;
 internal class Warlock : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Warlock;
     private const int Id = 5100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -41,7 +39,7 @@ internal class Warlock : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         CursedPlayers.Clear();
         IsCurseAndKill.Clear();
         WarlockTimer.Clear();
@@ -49,7 +47,7 @@ internal class Warlock : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         CursedPlayers.Add(playerId, null);
         IsCurseAndKill.Add(playerId, false);
     }
@@ -172,7 +170,7 @@ internal class Warlock : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        foreach (var warlockId in playerIdList)
+        foreach (var warlockId in _playerIdList)
         {
             CursedPlayers[warlockId] = null;
             IsCurseAndKill[warlockId] = false;

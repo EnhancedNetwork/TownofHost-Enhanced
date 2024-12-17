@@ -14,6 +14,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pelican;
     private const int Id = 17300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
     public override bool IsDesyncRole => true;

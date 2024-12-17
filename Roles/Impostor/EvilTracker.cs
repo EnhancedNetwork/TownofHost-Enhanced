@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class EvilTracker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.EvilTracker;
     private const int Id = 1400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
@@ -31,6 +32,7 @@ internal class EvilTracker : RoleBase
     private static readonly Dictionary<byte, bool> CanSetTarget = [];
     private static readonly Dictionary<byte, HashSet<byte>> ImpostorsId = [];
 
+    [Obfuscation(Exclude = true)]
     private enum TargetMode
     {
         Never,
@@ -69,7 +71,8 @@ internal class EvilTracker : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         Target.Add(playerId, byte.MaxValue);
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
 

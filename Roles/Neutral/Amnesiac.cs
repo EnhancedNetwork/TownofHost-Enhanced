@@ -10,9 +10,8 @@ namespace TOHE.Roles.Neutral;
 internal class Amnesiac : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Amnesiac;
     private const int Id = 12700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled = playerIdList.Any();
     public override CustomRoles ThisRoleBase => AmnesiacCanUseVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -38,12 +37,12 @@ internal class Amnesiac : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         CanUseVent.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         CanUseVent[playerId] = AmnesiacCanUseVent.GetBool();
 
         if (ShowArrows.GetBool())
@@ -53,7 +52,7 @@ internal class Amnesiac : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
+
         CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -72,10 +71,11 @@ internal class Amnesiac : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || Main.MeetingIsStarted) return;
-        foreach (var playerId in playerIdList.ToArray())
+        if (target == null || target.Data.GetDeadBody() == null) return;
+        foreach (var playerId in _playerIdList.ToArray())
         {
             var player = playerId.GetPlayer();
-            if (!player.IsAlive()) continue;
+            if (player == null || !player.IsAlive()) continue;
 
             LocateArrow.Add(playerId, target.Data.GetDeadBody().transform.position);
         }
@@ -94,7 +94,7 @@ internal class Amnesiac : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (ShowArrows.GetBool())
-            foreach (var apc in playerIdList.ToArray())
+            foreach (var apc in _playerIdList.ToArray())
             {
                 LocateArrow.RemoveAllTarget(apc);
             }

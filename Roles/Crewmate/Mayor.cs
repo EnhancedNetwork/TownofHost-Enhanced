@@ -8,10 +8,8 @@ namespace TOHE.Roles.Crewmate;
 internal partial class Mayor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mayor;
     private const int Id = 12000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
@@ -23,7 +21,7 @@ internal partial class Mayor : RoleBase
     private static OptionItem MayorHasPortableButton;
     private static OptionItem MayorNumOfUseButton;
     private static OptionItem MayorHideVote;
-    private static OptionItem MayorRevealWhenDoneTasks;
+    public static OptionItem MayorRevealWhenDoneTasks;
 
     private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
 
@@ -47,17 +45,14 @@ internal partial class Mayor : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         MayorUsedButtonCount.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         MayorUsedButtonCount[playerId] = 0;
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         MayorUsedButtonCount[playerId] = 0;
     }
 

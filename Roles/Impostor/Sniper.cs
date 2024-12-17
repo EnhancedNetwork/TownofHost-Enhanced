@@ -9,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 internal class Sniper : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Sniper;
     private const int Id = 2400;
     private static readonly HashSet<byte> PlayerIdList = [];
     public static bool HasEnabled => PlayerIdList.Any();
@@ -67,7 +68,8 @@ internal class Sniper : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIdList.Add(playerId);
+        if (!PlayerIdList.Contains(playerId))
+            PlayerIdList.Add(playerId);
 
         maxBulletCount = SniperBulletCount.GetInt();
         precisionShooting = SniperPrecisionShooting.GetBool();

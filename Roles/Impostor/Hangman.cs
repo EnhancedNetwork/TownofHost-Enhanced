@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Hangman : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Hangman;
     private const int Id = 24500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Hangman);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

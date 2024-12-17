@@ -9,6 +9,7 @@ namespace TOHE.Roles.Double;
 internal class Mini : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mini;
     private const int Id = 7000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.EvilMini) || CustomRoleManager.HasEnabled(CustomRoles.NiceMini);
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;

@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Lucky : IAddon
 {
+    public CustomRoles Role => CustomRoles.Lucky;
     private const int Id = 19500;
     public AddonTypes Type => AddonTypes.Helpful;
 

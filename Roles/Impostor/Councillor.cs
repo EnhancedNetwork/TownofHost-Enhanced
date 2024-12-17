@@ -3,6 +3,7 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace TOHE.Roles.Impostor;
 internal class Councillor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Councillor;
     private const int Id = 1000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Councillor);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -119,6 +121,11 @@ internal class Councillor : RoleBase
                 {
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxGame"));
                     return true;
+                }
+                if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+                {
+                    target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                    Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
                 }
 
                 if (Jailer.IsTarget(target.PlayerId))
@@ -227,6 +234,7 @@ internal class Councillor : RoleBase
                 }
                 else if (target.GetCustomRole().IsCrewmate()) CouncillorSuicide = false;
                 else if (target.GetCustomRole().IsNeutral()) CouncillorSuicide = false;
+                else if (target.GetCustomRole().IsCoven()) CouncillorSuicide = false;
                 else
                 {
                     Logger.Warn("Impossibe to reach here!", "CouncillorTrial");

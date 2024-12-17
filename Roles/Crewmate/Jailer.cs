@@ -9,9 +9,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Jailer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jailer;
     private const int Id = 10600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -24,6 +23,7 @@ internal class Jailer : RoleBase
     private static OptionItem NECanBeExe;
     private static OptionItem NKCanBeExe;
     private static OptionItem NACanBeExe;
+    private static OptionItem CovenCanBeExe;
     private static OptionItem CKCanBeExe;
     private static OptionItem NotifyJailedOnMeetingOpt;
 
@@ -44,13 +44,13 @@ internal class Jailer : RoleBase
         NECanBeExe = BooleanOptionItem.Create(Id + 14, "JailerNECanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NKCanBeExe = BooleanOptionItem.Create(Id + 15, "JailerNKCanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NACanBeExe = BooleanOptionItem.Create(Id + 17, "JailerNACanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
+        CovenCanBeExe = BooleanOptionItem.Create(Id + 19, "JailerCovenCanBeExe", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         CKCanBeExe = BooleanOptionItem.Create(Id + 16, "JailerCKCanBeExe", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
         NotifyJailedOnMeetingOpt = BooleanOptionItem.Create(Id + 18, "notifyJailedOnMeeting", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Jailer]);
     }
 
     public override void Init()
     {
-        playerIdList.Clear();
         JailerExeLimit.Clear();
         JailerTarget.Clear();
         JailerHasExe.Clear();
@@ -58,7 +58,6 @@ internal class Jailer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         JailerExeLimit.Add(playerId, MaxExecution.GetInt());
         JailerTarget[playerId] = byte.MaxValue;
         JailerHasExe.Add(playerId, false);
@@ -66,7 +65,6 @@ internal class Jailer : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         JailerExeLimit.Remove(playerId);
         JailerHasExe.Remove(playerId);
         JailerDidVote.Remove(playerId);
@@ -185,6 +183,7 @@ internal class Jailer : RoleBase
                 (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
                 (role.IsNA() && NACanBeExe.GetBool()) ||
+                (role.IsCoven() && CovenCanBeExe.GetBool()) ||
                 (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
                 role.IsImpostorTeamV3();
     }

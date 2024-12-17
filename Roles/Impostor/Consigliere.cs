@@ -7,10 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class Consigliere : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Consigliere;
     private const int Id = 3100;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -33,13 +31,13 @@ internal class Consigliere : RoleBase
     {
         DivinationCount.Clear();
         DivinationTarget.Clear();
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
         DivinationCount.TryAdd(playerId, DivinationMaxCount.GetInt());
         DivinationTarget.TryAdd(playerId, []);
-        PlayerIds.Add(playerId);
+
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -94,7 +92,7 @@ internal class Consigliere : RoleBase
         {
             DivinationCount[killer.PlayerId]--;
             DivinationTarget[killer.PlayerId].Add(target.PlayerId);
-            Logger.Info($"{killer.GetNameWithRole()}：占った 占い先→{target.GetNameWithRole()} || 残り{DivinationCount[killer.PlayerId]}回", "Consigliere");
+            Logger.Info($"{killer.GetNameWithRole()}：Checked→{target.GetNameWithRole()} || Remaining Ability: {DivinationCount[killer.PlayerId]}", "Consigliere");
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             SendRPC(killer.PlayerId, target.PlayerId);

@@ -9,9 +9,8 @@ namespace TOHE.Roles.Neutral;
 internal class CursedSoul : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.CursedSoul;
     private const int Id = 14000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
@@ -22,6 +21,7 @@ internal class CursedSoul : RoleBase
     private static OptionItem CurseMax;
     private static OptionItem KnowTargetRole;
     private static OptionItem CanCurseNeutral;
+    private static OptionItem CanCurseCoven;
 
     private int CurseLimit;
 
@@ -36,15 +36,14 @@ internal class CursedSoul : RoleBase
             .SetValueFormat(OptionFormat.Times);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "CursedSoulKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
         CanCurseNeutral = BooleanOptionItem.Create(Id + 16, "CursedSoulCanCurseNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
+        CanCurseCoven = BooleanOptionItem.Create(Id + 17, "CursedSoulCanCurseCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
     }
     public override void Init()
     {
-        playerIdList.Clear();
         CurseLimit = CurseMax.GetInt();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         CurseLimit = CurseMax.GetInt();
     }
 
@@ -109,7 +108,8 @@ internal class CursedSoul : RoleBase
     private static bool CanBeSoulless(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
-            (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal);
+            (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
+            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
