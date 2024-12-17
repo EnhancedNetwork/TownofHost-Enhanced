@@ -270,7 +270,11 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt.GetBool();
+    public static bool CanIgniteAnytime()
+    {
+        if (ArsonistCanIgniteAnytimeOpt == null) return true;
+        return ArsonistCanIgniteAnytimeOpt.GetBool();
+    }
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 
