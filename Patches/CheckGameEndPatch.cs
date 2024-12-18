@@ -115,7 +115,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Apocalypse:
-                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                        if (pc.IsNeutralApocalypse() && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
                             && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -439,7 +439,7 @@ class GameEndCheckerForNormal
                 }
 
                 //Neutral Win Together
-                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())))
+                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && ((Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() && !Utils.GetPlayerById(x).Is(CustomRoles.Rebel)) || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())))
                 {
                     foreach (var pc in Main.AllPlayerControls)
                         if (pc.GetCustomRole().IsNeutral() && !WinnerIds.Contains(pc.PlayerId) && !WinnerRoles.Contains(pc.GetCustomRole()))
