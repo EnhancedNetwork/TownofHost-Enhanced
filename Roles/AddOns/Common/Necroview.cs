@@ -47,4 +47,3 @@ public class Necroview : IAddon
         return Main.roleColors[CustomRoles.Knight];
     }
 }
-

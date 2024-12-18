@@ -217,9 +217,9 @@ internal class Inspector : RoleBase
                     if
                     (
                         (
-                        (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired)
+                        (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired) && !target1.Is(CustomRoles.Rebel)
                         &&
-                        (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target2.Is(CustomRoles.Admired)
+                        (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target2.Is(CustomRoles.Admired) && !target2.Is(CustomRoles.Rebel)
                         )
                         ||
                         (
@@ -273,13 +273,13 @@ internal class Inspector : RoleBase
                         {
                             string roleT1 = "", roleT2 = "";
                             if (target1.Is(CustomRoles.Admired)) roleT1 = "Crewmate";
-                            if (target1.Is(CustomRoles.Rebel)) roleT1 = "Neutral";
+                            else if (target1.Is(CustomRoles.Rebel)) roleT1 = "Neutral";
                             else if (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT1 = "Impostor";
                             else if (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT1 = "Neutral";
                             else if (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target1.GetCustomSubRoles().Count == 0))) roleT1 = "Crewmate";
 
                             if (target2.Is(CustomRoles.Admired)) roleT2 = "Crewmate";
-                            if (target2.Is(CustomRoles.Rebel)) roleT2 = "Neutral";
+                            else if (target2.Is(CustomRoles.Rebel)) roleT2 = "Neutral";
                             else if (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT2 = "Impostor";
                             else if (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT2 = "Neutral";
                             else if (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) roleT2 = "Crewmate";

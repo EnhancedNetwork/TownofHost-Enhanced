@@ -500,16 +500,12 @@ class CheckForEndVotingPatch
         {
             name += "\n";
             string comma = neutralnum > 0 ? "" : "";
-            if (!Options.ShowNKRemainOnEject.GetBool()) neutralnum = 0;
-            if (!Options.ShowNARemainOnEject.GetBool()) apocnum = 0;
             if (impnum == 0) name += GetString("NoImpRemain") + comma;
-            if (impnum == 1) name += GetString("OneImpRemain") + comma;
-            if (impnum == 2) name += GetString("TwoImpRemain") + comma;
-            if (impnum == 3) name += GetString("ThreeImpRemain") + comma;
-            //    else name += string.Format(GetString("ImpRemain"), impnum) + comma;
+            else if (impnum == 1) name += GetString("OneImpRemain") + comma;
+            else name += string.Format(GetString("ImpRemain"), impnum) + comma;
             if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
                 if (neutralnum == 1)
-                    name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
+                    name += GetString("OneNeutralRemain") + comma;
                 else
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)

@@ -1,4 +1,6 @@
-﻿namespace TOHE.Roles.Impostor;
+﻿using static TOHE.Options;
+
+namespace TOHE.Roles.Impostor;
 
 internal class Visionary : RoleBase
 {
@@ -11,7 +13,7 @@ internal class Visionary : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
