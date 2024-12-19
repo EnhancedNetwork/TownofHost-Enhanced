@@ -215,6 +215,7 @@ public class PlayerState(byte playerId)
                 SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
+                SubRoles.Remove(CustomRoles.Rebel);
                 break;
 
             case CustomRoles.Soulless:

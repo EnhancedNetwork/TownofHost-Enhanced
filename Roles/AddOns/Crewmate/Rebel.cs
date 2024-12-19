@@ -1,6 +1,6 @@
 ﻿using static TOHE.Options;
 
-namespace TOHE.Roles.AddOns.Common;
+namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Rebel : IAddon
 {

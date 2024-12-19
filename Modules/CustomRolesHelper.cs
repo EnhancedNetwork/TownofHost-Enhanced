@@ -499,9 +499,9 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Guesser) || pc.Is(CustomRoles.NiceGuesser)) return true;
                 if (Options.GuesserMode.GetBool())
                 {
-                    if (pc.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
+                    if ((pc.GetCustomRole().IsNonNK() || pc.Is(CustomRoles.Rebel)) && Options.PassiveNeutralsCanGuess.GetBool())
                         return true;
-                    if (pc.GetCustomRole().IsCrewmate() && Options.CrewmatesCanGuess.GetBool())
+                    if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel) && Options.CrewmatesCanGuess.GetBool())
                         return true;
                     else return false;
                 }
@@ -561,7 +561,7 @@ public static class CustomRolesHelper
                         return false;
                     if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool())
                         return false;
-                    if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && ((pc.GetCustomRole().IsNonNK() && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
+                    if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && (((pc.GetCustomRole().IsNonNK() || pc.Is(CustomRoles.Rebel)) && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
                         return false;
                 }
                 if ((pc.Is(Custom_Team.Impostor) && !DoubleShot.ImpCanBeDoubleShot.GetBool()) || (pc.Is(Custom_Team.Crewmate) && !DoubleShot.CrewCanBeDoubleShot.GetBool()) || (pc.Is(Custom_Team.Neutral) && !DoubleShot.NeutralCanBeDoubleShot.GetBool()))
