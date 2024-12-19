@@ -40,8 +40,8 @@ namespace TOHE.Modules
                 subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
                 subPlayerInfo.name = "CNO_dummy";
                 subPlayerInfo.Outfits.Clear();
-                subPlayerInfo.FriendCode = "";
-                subPlayerInfo.Puid = PlayerControl.LocalPlayer.Puid;
+                subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                subPlayerInfo.Puid = PlayerControl.LocalPlayer.Data.Puid;
                 subPlayerInfo.PlayerLevel = 999;
                 subPlayerInfo.IsDead = false;
                 subPlayerInfo.Tasks.Clear();
@@ -166,8 +166,8 @@ namespace TOHE.Modules
                     subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
                     subPlayerInfo.name = "CNO_dummy";
                     subPlayerInfo.Outfits.Clear();
-                    subPlayerInfo.FriendCode = "";
-                    subPlayerInfo.Puid = PlayerControl.LocalPlayer.Puid;
+                    subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                    subPlayerInfo.Puid = PlayerControl.LocalPlayer.Data.Puid;
                     subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
                     subPlayerInfo.PlayerLevel = 999;
                     subPlayerInfo.IsDead = false;
@@ -288,8 +288,8 @@ namespace TOHE.Modules
                 subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
                 subPlayerInfo.name = "CNO_dummy";
                 subPlayerInfo.Outfits.Clear();
-                subPlayerInfo.FriendCode = "";
-                subPlayerInfo.Puid = PlayerControl.LocalPlayer.Puid;
+                subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                subPlayerInfo.Puid = PlayerControl.LocalPlayer.Data.Puid;
                 subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
                 subPlayerInfo.PlayerLevel = 999;
                 subPlayerInfo.IsDead = false;
