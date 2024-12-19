@@ -3727,6 +3727,7 @@
   "ShockerRoomMarked": "標記房間",
   "EavesdropperMsgTitle": "你竊聽到了一個秘密",
   "EavesdropPercentChance": "成功竊聽的機率",
+  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
   "ChiefOfPoliceSkillCooldown": "招募警長的冷卻時間",
   "PolicCanImpostorAndNeutarl": "可以招募 <color=#ff1919>偽裝者</color> 或 <color=#7f8c8d>中立</color>",
   "SheriffSuccessfullyRecruited": "你已招募了一名警長",
@@ -3734,6 +3735,6 @@
   "PoliceFailedRecruit": "招募目標失敗",
   "ChiefOfPoliceKillButtonText": "招募",
   "PolicPreventRecruitNonKiller": "防止招募沒有擊殺按鈕的玩家",
-  "PolicSuidiceWhenTargetNotKiller": "當招募到非船員或非帶刀玩家時自殺",
+  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
   "PolicPassConverted": "可以傳遞被招募的附加職業給警長"
 }
