@@ -33,7 +33,7 @@ internal class Imitator : RoleBase
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Imitator);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator])
-                .SetValueFormat(OptionFormat.Seconds);
+            .SetValueFormat(OptionFormat.Seconds);
         IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
     public override void Add(byte playerId)
@@ -60,7 +60,7 @@ internal class Imitator : RoleBase
             killer.RpcSetCustomRole(role);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
 
-            if (role.IsCrewmate())
+            if (role.IsCrewmate() && !target.Is(CustomRoles.Rebel))
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
             else
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedNeutralKiller")));
@@ -68,7 +68,7 @@ internal class Imitator : RoleBase
             // Notify target
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
-        else if (role.IsAmneMaverick())
+        else if (role.IsAmneMaverick() || target.Is(CustomRoles.Rebel))
         {
             AbilityLimit--;
             SendSkillRPC();
@@ -100,7 +100,7 @@ internal class Imitator : RoleBase
             }
 
         }
-        else if (role.IsCrewmate())
+        else if (role.IsCrewmate() && !target.Is(CustomRoles.Rebel))
         {
             AbilityLimit--;
             SendSkillRPC();
