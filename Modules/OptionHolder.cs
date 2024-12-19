@@ -349,6 +349,8 @@ public static class Options
     public static OptionItem DisableDevicesIgnoreCrewmates;
     public static OptionItem DisableDevicesIgnoreAfterAnyoneDied;
 
+    public static OptionItem DisableSpectateCommand;
+
     // Meeting Settings
     public static OptionItem SyncButtonMode;
     public static OptionItem SyncedButtonCount;
@@ -1527,6 +1529,11 @@ public static class Options
         DisableDevicesIgnoreAfterAnyoneDied = BooleanOptionItem.Create(60593, "IgnoreAfterAnyoneDied", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevicesIgnoreConditions);
         //.SetGameMode(CustomGameMode.Standard);
+
+        //Disable Spectate
+        DisableSpectateCommand = BooleanOptionItem.Create(60567, "DisableSpectate", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
 
         //Disable Short Tasks
         DisableShortTasks = BooleanOptionItem.Create(60594, "DisableShortTasks", false, TabGroup.ModifierSettings, false)

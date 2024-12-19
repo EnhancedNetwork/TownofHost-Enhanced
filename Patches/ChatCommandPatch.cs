@@ -36,6 +36,10 @@ internal class ChatCommands
 
     public static List<string> ChatHistory = [];
 
+    public static readonly HashSet<byte> Spectators = [];
+    public static readonly HashSet<byte> LastSpectators = [];
+
+
     public static bool Prefix(ChatController __instance)
     {
         if (__instance.quickChatField.visible == false && __instance.freeChatField.textArea.text == "") return false;
@@ -1582,6 +1586,37 @@ internal class ChatCommands
 
                 default:
                     Main.isChatCommand = false;
+                    break;
+
+                case "/spectate":
+                case "/спектейт":
+                case "/观战":
+                case "/espectar":
+                    if (!GameStates.IsLobby)
+                    {
+                        Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    if (Options.DisableSpectateCommand.GetBool())
+                    {
+                        Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateDisabled"));
+                        break;
+                    }
+
+                    if (LastSpectators.Contains(PlayerControl.LocalPlayer.PlayerId))
+                    {
+                        Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.WasSpectatingLastRound"));
+                        break;
+                    }
+
+                    if (!Spectators.Add(PlayerControl.LocalPlayer.PlayerId))
+                    {
+                        Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.AlreadySpectating"));
+                        break;
+                    }
+
+                    Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.Success"));
                     break;
             }
         }
@@ -3323,6 +3358,37 @@ internal class ChatCommands
                 }
                 break;
 
+            case "/spectate":
+            case "/спектейт":
+            case "/观战":
+            case "/espectar":
+                if (!GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
+                    break;
+                }
+
+                if (Options.DisableSpectateCommand.GetBool())
+                {
+                    Utils.SendMessage("\n", player.PlayerId, GetString("SpectateDisabled"));
+                    return;
+                }
+
+                if (LastSpectators.Contains(player.PlayerId))
+                {
+                    Utils.SendMessage("\n", player.PlayerId, GetString("SpectateCommand.WasSpectatingLastRound"));
+                    return;
+                }
+
+                if (!Spectators.Add(player.PlayerId))
+                {
+                    Utils.SendMessage("\n", player.PlayerId, GetString("SpectateCommand.AlreadySpectating"));
+                    return;
+                }
+
+                Utils.SendMessage("\n", player.PlayerId, GetString("SpectateCommand.Success"));
+                return;
+        
             case "/start":
             case "/开始":
             case "/старт":

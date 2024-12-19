@@ -861,7 +861,15 @@ class IntroCutsceneDestroyPatch
                     });
                 }, 3f, "Set Dev Ghost-Roles");
             }
-
+            foreach (byte spectator in ChatCommands.Spectators)
+            {
+                _ = new LateTask(() =>
+                {
+                    spectator.GetPlayer().RpcExileV2();
+                    Main.PlayerStates[spectator].SetDead();
+                }, spectator, $"Set Spectator Dead)");
+            }
+            
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => true,
