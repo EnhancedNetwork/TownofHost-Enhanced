@@ -13,7 +13,7 @@ public class Rebel : IAddon
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rebel, canSetNum: true, tab: TabGroup.Addons);
-        CanWinAfterDeath = BooleanOptionItem.Create(Id + 10, "Rebel_CanWinAfterDeath", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        CanWinAfterDeath = BooleanOptionItem.Create(Id + 10, "CanWinAfterDeath", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
     }
 
     public void Init()
