@@ -33,26 +33,14 @@ namespace TOHE.Modules
             Sprite = sprite;
             _ = new LateTask(() =>
             {
-                NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
-                subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
-                subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
-                subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
-                subPlayerInfo.Role = UnityEngine.Object.Instantiate<RoleBehaviour>(GameData.Instance.DefaultRole);
-                subPlayerInfo.name = "CNO_dummy";
-                subPlayerInfo.Outfits.Clear();
-                subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
-                subPlayerInfo.Puid = PlayerControl.LocalPlayer.Data.Puid;
-                subPlayerInfo.PlayerLevel = 250;
-                subPlayerInfo.IsDead = false;
-                subPlayerInfo.Tasks.Clear();
-                subPlayerInfo.DespawnOnDestroy = false;
-                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerControl.RawSetName(sprite);
 
                 MessageWriter writer = MessageWriter.Get();
-                writer.StartMessage(5);
+                writer.StartMessage(6);
                 writer.Write(AmongUsClient.Instance.GameId);
+                writer.WritePacked(-1);
 
+                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerOutfit.PlayerName = "<size=14><br></size>" + sprite;
                 playerOutfit.ColorId = 0;
                 playerOutfit.HatId = "";
@@ -60,19 +48,57 @@ namespace TOHE.Modules
                 playerOutfit.PetId = "";
                 playerOutfit.VisorId = "";
                 playerOutfit.NamePlateId = "";
-                subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
+
+                NetworkedPlayerInfo.PlayerOutfit original = new();
+                original.PlayerName = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
+                original.ColorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
+                original.HatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
+                original.SkinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
+                original.PetId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
+                original.VisorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
+                original.NamePlateId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].NamePlateId;
+
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
                 writer.StartMessage(1);
                 {
-                    writer.WritePacked(subPlayerInfo.NetId);
-                    subPlayerInfo.Serialize(writer, false);
+                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
+                    bool temp = PlayerControl.LocalPlayer.Data.IsDead;
+                    PlayerControl.LocalPlayer.Data.IsDead = false;
+                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    PlayerControl.LocalPlayer.Data.IsDead = temp;
                 }
                 writer.EndMessage();
 
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+
+                writer.StartMessage(1);
+                {
+                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
+                    bool temp = PlayerControl.LocalPlayer.Data.IsDead;
+                    PlayerControl.LocalPlayer.Data.IsDead = false;
+                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    PlayerControl.LocalPlayer.Data.IsDead = temp;
+                }
+                writer.EndMessage();
+
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+
+                /*
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(playerControl.NetId);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                }
+                writer.EndMessage();
+                */
+
+                writer.StartMessage(2);
+                {
+                    writer.WritePacked(playerControl.NetId);
+                    writer.Write((byte)RpcCalls.MurderPlayer);
+                    writer.WriteNetObject(playerControl);
+                    writer.Write((int)MurderResultFlags.FailedError);
                 }
                 writer.EndMessage();
 
@@ -85,13 +111,14 @@ namespace TOHE.Modules
                 }
                 writer.EndMessage();
 
-
+                /*
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(playerControl.NetId);
                     writer.Write((byte)255);
                 }
                 writer.EndMessage();
+                */
 
                 writer.StartMessage(1);
                 {
@@ -100,26 +127,9 @@ namespace TOHE.Modules
                 }
                 writer.EndMessage();
 
-                _ = new LateTask(() =>
-                {
-                    MessageWriter writer = MessageWriter.Get();
-                    writer.StartMessage(5);
-                    writer.Write(AmongUsClient.Instance.GameId);
-                    writer.StartMessage(1);
-                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
-                    writer.EndMessage();
-                    writer.EndMessage();
-                    AmongUsClient.Instance.SendOrDisconnect(writer);
-                    writer.Recycle();
-                }, 0.02f, "CNO_RpcChangeSprite_RevertData");
-
                 writer.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(writer);
                 writer.Recycle();
-
-                UnityEngine.Object.Destroy(subPlayerInfo.Role.gameObject);
-                UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
             }, 0f, "CNO_RpcChangeSprite");
         }
 
@@ -196,6 +206,24 @@ namespace TOHE.Modules
                 msg.Write(AmongUsClient.Instance.GameId);
                 AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
                 msg.EndMessage();
+
+                if (GameStates.IsVanillaServer)
+                {
+                    msg.StartMessage(6);
+                    msg.Write(AmongUsClient.Instance.GameId);
+                    msg.WritePacked(int.MaxValue);
+                    msg.StartMessage(4);
+                    msg.WritePacked(2U);
+                    msg.WritePacked(-2);
+                    msg.Write((byte)SpawnFlags.None);
+                    msg.WritePacked(1);
+                    msg.WritePacked(AmongUsClient.Instance.NetIdCnt++);
+                    msg.StartMessage(1);
+                    msg.EndMessage();
+                    msg.EndMessage();
+                    msg.EndMessage();
+                }
+
                 AmongUsClient.Instance.SendOrDisconnect(msg);
                 msg.Recycle();
 
@@ -204,19 +232,6 @@ namespace TOHE.Modules
                 _ = new LateTask(() =>
                 {
                     playerControl.NetTransform.RpcSnapTo(Position);
-                    NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
-                    subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
-                    subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
-                    subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
-                    subPlayerInfo.name = "CNO_dummy";
-                    subPlayerInfo.Outfits.Clear();
-                    subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
-                    subPlayerInfo.Puid = PlayerControl.LocalPlayer.Data.Puid;
-                    subPlayerInfo.PlayerLevel = 250;
-                    subPlayerInfo.IsDead = false;
-                    subPlayerInfo.Tasks.Clear();
-                    subPlayerInfo.DespawnOnDestroy = false;
-                    NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                     playerControl.RawSetName(Sprite);
 
                     MessageWriter writer = MessageWriter.Get(SendOption.None);
@@ -224,6 +239,7 @@ namespace TOHE.Modules
                     writer.StartMessage(5);
                     writer.Write(AmongUsClient.Instance.GameId);
 
+                    NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                     playerOutfit.PlayerName = "<size=14><br></size>" + Sprite;
                     playerOutfit.ColorId = 0;
                     playerOutfit.HatId = "";
@@ -231,19 +247,48 @@ namespace TOHE.Modules
                     playerOutfit.PetId = "";
                     playerOutfit.VisorId = "";
                     playerOutfit.NamePlateId = "";
-                    subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
+
+                    NetworkedPlayerInfo.PlayerOutfit original = new();
+                    original.PlayerName = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
+                    original.ColorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
+                    original.HatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
+                    original.SkinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
+                    original.PetId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
+                    original.VisorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
+                    original.NamePlateId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].NamePlateId;
+
+                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
                     writer.StartMessage(1);
                     {
-                        writer.WritePacked(subPlayerInfo.NetId);
-                        subPlayerInfo.Serialize(writer, false);
+                        writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
+                        bool temp = PlayerControl.LocalPlayer.Data.IsDead;
+                        PlayerControl.LocalPlayer.Data.IsDead = false;
+                        PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                        PlayerControl.LocalPlayer.Data.IsDead = temp;
                     }
                     writer.EndMessage();
 
+                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+                    writer.EndMessage();
+
+                    writer.StartMessage(5);
+                    writer.Write(AmongUsClient.Instance.GameId);
+                    /*
                     writer.StartMessage(1);
                     {
                         writer.WritePacked(playerControl.NetId);
                         writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                    }
+                    writer.EndMessage();
+                    */
+
+                    writer.StartMessage(2);
+                    {
+                        writer.WritePacked(playerControl.NetId);
+                        writer.Write((byte)RpcCalls.MurderPlayer);
+                        writer.WriteNetObject(playerControl);
+                        writer.Write((int)MurderResultFlags.FailedError);
                     }
                     writer.EndMessage();
 
@@ -256,13 +301,18 @@ namespace TOHE.Modules
                     }
                     writer.EndMessage();
 
-
+                    /*
                     writer.StartMessage(1);
                     {
                         writer.WritePacked(playerControl.NetId);
                         writer.Write((byte)255);
                     }
                     writer.EndMessage();
+                    */
+                    writer.EndMessage();
+
+                    writer.StartMessage(5);
+                    writer.Write(AmongUsClient.Instance.GameId);
 
                     writer.StartMessage(1);
                     {
@@ -274,9 +324,6 @@ namespace TOHE.Modules
                     writer.EndMessage();
                     AmongUsClient.Instance.SendOrDisconnect(writer);
                     writer.Recycle();
-
-                    UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
-
                 }, 0.2f, "CNO_RespawnPlayerControl_SendData");
                 _ = new LateTask(() => oldPlayerControl.Despawn(), 0.3f);
 
@@ -318,32 +365,41 @@ namespace TOHE.Modules
             msg.Write(AmongUsClient.Instance.GameId);
             AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
             msg.EndMessage();
+
+            if (GameStates.IsVanillaServer)
+            {
+                msg.StartMessage(6);
+                msg.Write(AmongUsClient.Instance.GameId);
+                msg.WritePacked(int.MaxValue);
+                msg.StartMessage(4);
+                msg.WritePacked(2U);
+                msg.WritePacked(-2);
+                msg.Write((byte)SpawnFlags.None);
+                msg.WritePacked(1);
+                msg.WritePacked(AmongUsClient.Instance.NetIdCnt++);
+                msg.StartMessage(1);
+                msg.EndMessage();
+                msg.EndMessage();
+                msg.EndMessage();
+            }
+
             AmongUsClient.Instance.SendOrDisconnect(msg);
             msg.Recycle();
+
             if (PlayerControl.AllPlayerControls.Contains(playerControl))
                 PlayerControl.AllPlayerControls.Remove(playerControl);
             _ = new LateTask(() =>
             {
                 playerControl.NetTransform.RpcSnapTo(position);
-                NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
-                subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
-                subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
-                subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
-                subPlayerInfo.name = "CNO_dummy";
-                subPlayerInfo.Outfits.Clear();
-                subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
-                subPlayerInfo.Puid = PlayerControl.LocalPlayer.Data.Puid;
-                subPlayerInfo.PlayerLevel = 250;
-                subPlayerInfo.IsDead = false;
-                subPlayerInfo.Tasks.Clear();
-                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
+
                 playerControl.RawSetName(sprite);
-                subPlayerInfo.DespawnOnDestroy = false;
 
                 MessageWriter writer = MessageWriter.Get();
-                writer.StartMessage(5);
+                writer.StartMessage(6);
                 writer.Write(AmongUsClient.Instance.GameId);
+                writer.WritePacked(-1);
 
+                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerOutfit.PlayerName = "<size=14><br></size>" + sprite;
                 playerOutfit.ColorId = 0;
                 playerOutfit.HatId = "";
@@ -351,19 +407,44 @@ namespace TOHE.Modules
                 playerOutfit.PetId = "";
                 playerOutfit.VisorId = "";
                 playerOutfit.NamePlateId = "";
-                subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
+
+                NetworkedPlayerInfo.PlayerOutfit original = new();
+                original.PlayerName = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
+                original.ColorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
+                original.HatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
+                original.SkinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
+                original.PetId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
+                original.VisorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
+                original.NamePlateId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].NamePlateId;
+
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
                 writer.StartMessage(1);
                 {
-                    writer.WritePacked(subPlayerInfo.NetId);
-                    subPlayerInfo.Serialize(writer, false);
+                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
+                    bool temp = PlayerControl.LocalPlayer.Data.IsDead;
+                    PlayerControl.LocalPlayer.Data.IsDead = false;
+                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    PlayerControl.LocalPlayer.Data.IsDead = temp;
                 }
                 writer.EndMessage();
 
+                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+                /*
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(playerControl.NetId);
                     writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                }
+                writer.EndMessage();
+                */
+
+                writer.StartMessage(2);
+                {
+                    writer.WritePacked(playerControl.NetId);
+                    writer.Write((byte)RpcCalls.MurderPlayer);
+                    writer.WriteNetObject(playerControl);
+                    writer.Write((int)MurderResultFlags.FailedError);
                 }
                 writer.EndMessage();
 
@@ -376,13 +457,14 @@ namespace TOHE.Modules
                 }
                 writer.EndMessage();
 
-
+                /*
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(playerControl.NetId);
                     writer.Write((byte)255);
                 }
                 writer.EndMessage();
+                */
 
                 writer.StartMessage(1);
                 {
@@ -395,7 +477,6 @@ namespace TOHE.Modules
                 AmongUsClient.Instance.SendOrDisconnect(writer);
                 writer.Recycle();
 
-                UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
             }, 0.2f, "CNO_CreatePlayerControl_Data");
             Position = position;
             PlayerControlTimer = 0f;
