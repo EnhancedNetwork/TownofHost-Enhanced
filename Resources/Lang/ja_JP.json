@@ -3727,6 +3727,7 @@
   "ShockerRoomMarked": "マークされた部屋",
   "EavesdropperMsgTitle": "秘密を見つけた",
   "EavesdropPercentChance": "盗み聞きするチャンス",
+  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
   "ChiefOfPoliceSkillCooldown": "保安官をリクルートするためのクールダウン",
   "PolicCanImpostorAndNeutarl": "<color=#ff1919>インポスター</color> または <color=#7f8c8d>中立</color> をリクルート可能",
   "SheriffSuccessfullyRecruited": "保安官をリクルートしました。",
@@ -3734,6 +3735,6 @@
   "PoliceFailedRecruit": "ターゲットのリクルートに失敗しました。",
   "ChiefOfPoliceKillButtonText": "リクルート",
   "PolicPreventRecruitNonKiller": "キルボタンを持たないプレイヤーをリクルートすることを防止する",
-  "PolicSuidiceWhenTargetNotKiller": "非キラーまたは非クルーメイトをリクルートすると自殺します",
+  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
   "PolicPassConverted": "変換されたアドオンを保安官に渡すことができる"
 }
