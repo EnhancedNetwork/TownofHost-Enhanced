@@ -3735,6 +3735,6 @@
   "PoliceFailedRecruit": "招募目標失敗",
   "ChiefOfPoliceKillButtonText": "招募",
   "PolicPreventRecruitNonKiller": "防止招募沒有擊殺按鈕的玩家",
-  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
+  "PolicSuidiceWhenTargetNotKiller": "當招募到非船員或非帶刀玩家時自殺",
   "PolicPassConverted": "可以傳遞被招募的附加職業給警長"
 }
