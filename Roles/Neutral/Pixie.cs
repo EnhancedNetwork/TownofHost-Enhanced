@@ -8,6 +8,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pixie : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pixie;
     private const int Id = 25900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
     public override bool IsDesyncRole => true;
@@ -57,7 +58,7 @@ internal class Pixie : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => false;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));

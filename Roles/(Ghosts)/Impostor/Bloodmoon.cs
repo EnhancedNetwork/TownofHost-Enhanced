@@ -13,6 +13,7 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 internal class Bloodmoon : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bloodmoon;
     private const int Id = 28100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bloodmoon);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -101,8 +102,8 @@ internal class Bloodmoon : RoleBase
         return false;
     }
     public override string GetProgressText(byte playerId, bool cooms)
-        => ColorString(AbilityLimit > 0  ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
+        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+
     private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || _Player == null) return;

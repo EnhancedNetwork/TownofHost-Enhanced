@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Loyal : IAddon
 {
+    public CustomRoles Role => CustomRoles.Loyal;
     private const int Id = 19400;
     public AddonTypes Type => AddonTypes.Helpful;
 

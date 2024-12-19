@@ -6,6 +6,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Bodyguard : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bodyguard;
     private const int Id = 10300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bodyguard);
 

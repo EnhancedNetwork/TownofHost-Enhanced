@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Watcher : IAddon
 {
+    public CustomRoles Role => CustomRoles.Watcher;
     private const int Id = 20400;
     public AddonTypes Type => AddonTypes.Helpful;
 

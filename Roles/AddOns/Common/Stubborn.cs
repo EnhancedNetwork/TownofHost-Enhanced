@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Stubborn : IAddon
 {
+    public CustomRoles Role => CustomRoles.Stubborn;
     private const int Id = 22500;
     public AddonTypes Type => AddonTypes.Mixed;
 

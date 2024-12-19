@@ -7,10 +7,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Merchant : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Merchant;
     private const int Id = 8800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -53,14 +51,12 @@ internal class Merchant : RoleBase
         OptionCanSellNeutral = BooleanOptionItem.Create(Id + 11, "MerchantSellMixed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionSellOnlyHarmfulToEvil = BooleanOptionItem.Create(Id + 13, "MerchantSellHarmfulToEvil", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionSellOnlyHelpfulToCrew = BooleanOptionItem.Create(Id + 14, "MerchantSellHelpfulToCrew", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
-        OptionSellOnlyEnabledAddons = BooleanOptionItem.Create(Id + 15, "MerchantSellOnlyEnabledAddons",false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
+        OptionSellOnlyEnabledAddons = BooleanOptionItem.Create(Id + 15, "MerchantSellOnlyEnabledAddons", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
 
         OverrideTasksData.Create(Id + 16, TabGroup.CrewmateRoles, CustomRoles.Merchant);
     }
     public override void Init()
     {
-        playerIdList.Clear();
-
         addons.Clear();
         addonsSold.Clear();
         bribedKiller.Clear();
@@ -80,20 +76,18 @@ internal class Merchant : RoleBase
             addons.AddRange(GroupedAddons[AddonTypes.Mixed]);
         }
         if (OptionSellOnlyEnabledAddons.GetBool())
-        { 
+        {
             addons = addons.Where(role => role.GetMode() != 0).ToList();
         }
     }
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         addonsSold[playerId] = 0;
         bribedKiller.TryAdd(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         addonsSold.Remove(playerId);
         bribedKiller.Remove(playerId);
     }
@@ -133,7 +127,7 @@ internal class Merchant : RoleBase
                 (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))
                 &&
                 (
-                    (OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate()) 
+                    (OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate())
                     ||
                     (OptionCanTargetImpostor.GetBool() && x.GetCustomRole().IsImpostor())
                     ||
@@ -157,7 +151,7 @@ internal class Merchant : RoleBase
                     a.GetCustomRole().IsImpostor()
                     ||
                     a.GetCustomRole().IsNeutral()
-                    
+
                 ).ToList();
             }
 
@@ -168,7 +162,7 @@ internal class Merchant : RoleBase
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
 
             target.AddInSwitchAddons(target, addon);
-            
+
             addonsSold[player.PlayerId] += 1;
         }
         else
@@ -182,6 +176,7 @@ internal class Merchant : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Merchant) return false;
         if (IsBribedKiller(pc, target))
         {
             pc.ShowInfoMessage(isUI, GetString("BribedByMerchant2"));

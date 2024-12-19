@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class DollMaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.DollMaster;
     private const int Id = 28500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DollMaster);
     public override bool IsExperimental => true;
@@ -366,10 +367,10 @@ internal class DollMaster : RoleBase
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(target, false);
-        
+
         pc?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
         target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
-        
+
         pc?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
     }
 
@@ -378,7 +379,7 @@ internal class DollMaster : RoleBase
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);
-        
+
         pc?.ResetPlayerOutfit();
         target?.ResetPlayerOutfit();
 

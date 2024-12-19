@@ -4,9 +4,11 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Antidote : IAddon
 {
+    public CustomRoles Role => CustomRoles.Antidote;
     private const int Id = 21400;
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Mixed;
+
 
     private static OptionItem AntidoteCDOpt;
     private static OptionItem AntidoteCDReset;
