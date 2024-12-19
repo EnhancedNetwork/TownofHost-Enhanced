@@ -3727,6 +3727,7 @@
   "ShockerRoomMarked": "Marked Room",
   "EavesdropperMsgTitle": "Você encontrou um segredo",
   "EavesdropPercentChance": "Chance de Interceptar",
+  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting sheriffs",
   "PolicCanImpostorAndNeutarl": "Can recruit <color=#ff1919>Impostor</color> or <color=#7f8c8d>Neutral</color>",
   "SheriffSuccessfullyRecruited": "You recruited a sheriff.",
@@ -3734,6 +3735,6 @@
   "PoliceFailedRecruit": "Failed to recruit target.",
   "ChiefOfPoliceKillButtonText": "Recruitment",
   "PolicPreventRecruitNonKiller": "Prevent recruit players without kill button",
-  "PolicSuidiceWhenTargetNotKiller": "Suidices when recruit a non killer or non crewmate",
+  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
   "PolicPassConverted": "Can pass Converted Addon to Sheriff"
 }
