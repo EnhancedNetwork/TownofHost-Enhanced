@@ -1213,6 +1213,8 @@ class MeetingHudStartPatch
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);
         }
+
+        __instance.SortButtons();
     }
 }
 [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Update))]
