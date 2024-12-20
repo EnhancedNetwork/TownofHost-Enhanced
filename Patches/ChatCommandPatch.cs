@@ -1993,6 +1993,7 @@ internal class ChatCommands
         if (role.EndsWith("\r\n")) _ = role.Replace("\r\n", string.Empty);
         if (role.EndsWith("\n")) _ = role.Replace("\n", string.Empty);
         if (role.StartsWith("/bt")) _ = role.Replace("/bt", string.Empty);
+        if (role.StartsWith("/rt")) _ = role.Replace("/bt", string.Empty);
 
         if (role == "" || role == string.Empty)
         {
