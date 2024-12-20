@@ -648,7 +648,7 @@ class GameEndCheckerForNormal
             }
             else
             {
-                if (impCount >= 1) return false; // Both Imp and NK are alive, the game must continue
+                if (impCount >= 1) return false; // Both Imp and NK or Coven are alive, the game must continue
                 if (crewCount <= covenCount && totalNKAlive == 0) // Imps dead, NK dead, Crew <= Coven, Coven wins
                 {
                     reason = GameOverReason.ImpostorByKill;
