@@ -4103,6 +4103,6 @@
   "PoliceFailedRecruit": "Failed to recruit target.",
   "ChiefOfPoliceKillButtonText": "Recruitment",
   "PolicPreventRecruitNonKiller": "Prevent recruit players without kill button",
-  "PolicSuidiceWhenTargetNotKiller": "Suidices when recruit a non killer or non crewmate",
+  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
   "PolicPassConverted": "Can pass Converted Addon to Sheriff"
 }
