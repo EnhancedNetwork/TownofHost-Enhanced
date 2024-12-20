@@ -96,6 +96,9 @@ internal class ChangeRoleSettings
             ReportDeadBodyPatch.CanReport.Clear();
             Options.UsedButtonCount = 0;
 
+            ChatCommands.LastSpectators.Clear();
+            ChatCommands.LastSpectators.UnionWith(ChatCommands.Spectators);
+            
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
 
             if (GameStates.IsNormalGame)
