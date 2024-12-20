@@ -311,15 +311,17 @@ internal class Baker : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || (!AllHasBread(player) && !TransformNoMoreBread.GetBool()) || player.Is(CustomRoles.Famine)) return;
-        if (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 < Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()) return;
+        if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        player.RpcChangeRoleBasis(CustomRoles.Famine);
-        player.RpcSetCustomRole(CustomRoles.Famine);
-        player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()))
+        {
+            player.RpcChangeRoleBasis(CustomRoles.Famine);
+            player.RpcSetCustomRole(CustomRoles.Famine);
+            player.GetRoleClass()?.OnAdd(_Player.PlayerId);
 
-        player.Notify(GetString("BakerToFamine"));
-        player.RpcGuardAndKill(player);
+            player.Notify(GetString("BakerToFamine"));
+            player.RpcGuardAndKill(player);
+        }
     }
 
 }
