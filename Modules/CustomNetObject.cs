@@ -61,6 +61,13 @@ namespace TOHE.Modules
 
                 writer.StartMessage(1);
                 {
+                    writer.WritePacked(playerControl.NetId);
+                    writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                }
+                writer.EndMessage();
+
+                writer.StartMessage(1);
+                {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
                     PlayerControl.LocalPlayer.Data.Serialize(writer, false);
                 }
@@ -72,6 +79,14 @@ namespace TOHE.Modules
                     .EndRpc();
 
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+
+                writer.StartMessage(1);
+                {
+                    writer.WritePacked(playerControl.NetId);
+                    writer.Write((byte)255);
+                }
+                writer.EndMessage();
+
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -166,7 +181,8 @@ namespace TOHE.Modules
                 AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
                 msg.EndMessage();
 
-                // This makes innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir, so disable checks regarding it
+                // This makes innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
+                // so disable checks regarding it
                 if (GameStates.IsVanillaServer)
                 {
                     msg.StartMessage(6);
@@ -223,6 +239,13 @@ namespace TOHE.Modules
 
                     writer.StartMessage(1);
                     {
+                        writer.WritePacked(playerControl.NetId);
+                        writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                    }
+                    writer.EndMessage();
+
+                    writer.StartMessage(1);
+                    {
                         writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
                         PlayerControl.LocalPlayer.Data.Serialize(writer, false);
                     }
@@ -234,6 +257,14 @@ namespace TOHE.Modules
                         .EndRpc();
 
                     PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+
+                    writer.StartMessage(1);
+                    {
+                        writer.WritePacked(playerControl.NetId);
+                        writer.Write((byte)255);
+                    }
+                    writer.EndMessage();
+
                     writer.StartMessage(1);
                     {
                         writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -244,42 +275,6 @@ namespace TOHE.Modules
                     sender.EndMessage();
                     sender.SendMessage();
                 }, 0.2f, "CNO_RespawnPlayerControl_SendData");
-
-                foreach (PlayerControl pc in Main.AllPlayerControls)
-                {
-                    if (pc.AmOwner) continue;
-
-                    _ = new LateTask(() =>
-                    {
-                        var sender = CustomRpcSender.Create("SetFakeData");
-                        MessageWriter writer = sender.stream;
-                        sender.StartMessage(pc.GetClientId());
-                        writer.StartMessage(1);
-
-                        {
-                            writer.WritePacked(playerControl.NetId);
-                            writer.Write(pc.PlayerId);
-                        }
-
-                        writer.EndMessage();
-
-                        sender.StartRpc(playerControl.NetId, (byte)RpcCalls.MurderPlayer)
-                            .WriteNetObject(playerControl)
-                            .Write((int)MurderResultFlags.FailedError)
-                            .EndRpc();
-
-                        writer.StartMessage(1);
-
-                        {
-                            writer.WritePacked(playerControl.NetId);
-                            writer.Write((byte)255);
-                        }
-
-                        writer.EndMessage();
-                        sender.EndMessage();
-                        sender.SendMessage();
-                    }, 0.1f, "CNO_RespawnPlayerControl_IdSerialize");
-                }
 
                 _ = new LateTask(() => oldPlayerControl.Despawn(), 0.3f);
 
@@ -324,7 +319,8 @@ namespace TOHE.Modules
             msg.EndMessage();
 
 
-            // This makes innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir, so disable checks regarding it
+            // This makes innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
+            // so disable checks regarding it
             if (GameStates.IsVanillaServer)
             {
                 msg.StartMessage(6);
@@ -381,6 +377,13 @@ namespace TOHE.Modules
 
                 writer.StartMessage(1);
                 {
+                    writer.WritePacked(playerControl.NetId);
+                    writer.Write(PlayerControl.LocalPlayer.PlayerId);
+                }
+                writer.EndMessage();
+
+                writer.StartMessage(1);
+                {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
                     PlayerControl.LocalPlayer.Data.Serialize(writer, false);
                 }
@@ -392,6 +395,14 @@ namespace TOHE.Modules
                     .EndRpc();
 
                 PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
+
+                writer.StartMessage(1);
+                {
+                    writer.WritePacked(playerControl.NetId);
+                    writer.Write((byte)255);
+                }
+                writer.EndMessage();
+
                 writer.StartMessage(1);
                 {
                     writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
@@ -410,42 +421,6 @@ namespace TOHE.Modules
             Id = MaxId;
             if (MaxId == int.MaxValue) MaxId = int.MinValue;
             AllObjects.Add(this);
-
-            foreach (PlayerControl pc in Main.AllPlayerControls)
-            {
-                if (pc.AmOwner) continue;
-
-                _ = new LateTask(() =>
-                {
-                    var sender = CustomRpcSender.Create("SetFakeData");
-                    MessageWriter writer = sender.stream;
-                    sender.StartMessage(pc.GetClientId());
-                    writer.StartMessage(1);
-
-                    {
-                        writer.WritePacked(playerControl.NetId);
-                        writer.Write(pc.PlayerId);
-                    }
-
-                    writer.EndMessage();
-
-                    sender.StartRpc(playerControl.NetId, (byte)RpcCalls.MurderPlayer)
-                        .WriteNetObject(playerControl)
-                        .Write((int)MurderResultFlags.FailedError)
-                        .EndRpc();
-
-                    writer.StartMessage(1);
-
-                    {
-                        writer.WritePacked(playerControl.NetId);
-                        writer.Write((byte)255);
-                    }
-
-                    writer.EndMessage();
-                    sender.EndMessage();
-                    sender.SendMessage();
-                }, 0.1f, "CNO_RespawnPlayerControl_IdSerialize");
-            }
 
             _ = new LateTask(() =>
             { // Fix for host
