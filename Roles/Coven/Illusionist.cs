@@ -72,7 +72,7 @@ internal class Illusionist : CovenManager
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.CheckDoubleTrigger(target, () => { IllusionedPlayers[killer.PlayerId].Add(target.PlayerId); }))
+        if (killer.CheckDoubleTrigger(target, () => { SetIllusioned(killer, target); }))
         {
             if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
             {
@@ -82,16 +82,16 @@ internal class Illusionist : CovenManager
                 return true;
             }
             killer.Notify(GetString("CovenDontKillOtherCoven"));
-            return false;
         }
-        else
-        {
-            AbilityLimit--;
-            SendRPC(killer, target);
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            return false;
-        }
+        return false;
+    }
+    private void SetIllusioned(PlayerControl killer, PlayerControl target)
+    {
+        IllusionedPlayers[killer.PlayerId].Add(target.PlayerId);
+        AbilityLimit--;
+        SendRPC(killer, target);
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IllusionCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;

@@ -64,7 +64,7 @@ internal class Poisoner : CovenManager
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.CheckDoubleTrigger(target, () => { RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId); }))
+        if (killer.CheckDoubleTrigger(target, () => { SetPoisoned(killer, target); }))
         {
             if (HasNecronomicon(killer))
             {
@@ -82,14 +82,15 @@ internal class Poisoner : CovenManager
                     PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
                 }
             }
-            return false;
-        }
-        else
-        {
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            return false;
-        }
+        } 
+        return false;
+    }
+    private static void SetPoisoned(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null || target == null) return;
+        RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId);
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
     }
 
     public override void OnFixedUpdate(PlayerControl poisoner, bool lowLoad, long nowTime)
