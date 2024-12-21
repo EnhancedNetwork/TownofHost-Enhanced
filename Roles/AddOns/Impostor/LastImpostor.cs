@@ -30,12 +30,13 @@ public class LastImpostor : IAddon
         Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
-        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor);
+        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && CustomRolesHelper.IsNarcImpV3(pc);
 
     public static void SetSubRole()
     {
+        int impnum = Main.AllAlivePlayerControls.Count(pc => CustomRolesHelper.IsNarcImpV3(pc));
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;
-        if (Options.CurrentGameMode == CustomGameMode.FFA || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1) return;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || !CustomRoles.LastImpostor.IsEnable() || impnum != 1) return;
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
