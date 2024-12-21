@@ -58,7 +58,6 @@ public class Narc : IAddon
         int impnum = Main.AllAlivePlayerControls.Count(x => !IsCrewAlignedAddon(x) && 
                                                       (x.GetCustomRole().IsImpostor() 
                                                       || (x.Is(CustomRoles.Crewpostor) && Crewpostor.KnowsAllies.GetBool())
-                                                      || x.Is(CustomRoles.Renegade) || x.Is(CustomRoles.Convict)
                                                       ));
         return pc.CanUseKillButton() && (impnum == 0) && BecomeSheriffOnAllImpDead.GetBool();
     }
