@@ -1038,7 +1038,7 @@
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
-  "NarcInfoLong": "(Betrayal Add-ons):\nOnly Impostors(including Parasite and Crewpostor) other than Visionary and Double Agent can be Narc.\nThe Narc works for the Crewmates instead of Impostors\n\nNarc appears as a Crewmate to Crewmate roles.\n\nSheriff and Narc can see each other.\nNarc can see Madmates,but don't know what type of Madmate(Crewpostor,Madmate Addon,Refugee) they are\nNarc can't see other Impostors' specific roles and Addons(Narc Parasite still can't see Madmates and other Impostors).\nNarc can't be Admired.",  
+  "NarcInfoLong": "(Betrayal Add-ons):\nAs the Narc,although you have an Impostor role,you are aligned with Crewmates\nDepending on the settings,Narc may become a Sheriff when all Impostors are dead.(Note from dev:If Sheriff is disabled in your lobby,turn the option off)\nNarc and Sheriff can see each other.\nNarc can't be Admired.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
