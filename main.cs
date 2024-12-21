@@ -1059,6 +1059,7 @@ public enum CustomWinner
     Solsticer = CustomRoles.Solsticer,
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
+    Narc = CustomRoles.Narc,
 }
 public enum AdditionalWinners
 {

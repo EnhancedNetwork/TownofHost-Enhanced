@@ -722,7 +722,7 @@
   "EavesdropperInfo": "Listen in on other roles",
   "ShockerInfo": "Shock unsuspecting players",
   "RevenantInfo": "Take your killer's role",
-  "NarcInfo": "Help the <color=#8cffff>Crewmates</color>",
+  "NarcInfo": "Ruin the <color=#ff1919>Impostors'</color> plans",
   "EngineerTOHEInfoLong": "(Crewmates):\nAs the Engineer, you may access the vents while Comms Sabotaged is inactive.",
   "ScientistTOHEInfoLong": "(Crewmates):\nAs the Scientist, you can see vitals at any time, showing you who is alive and dead.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die, you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not Red).",
@@ -1038,7 +1038,7 @@
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
-  "NarcInfoLong": "(Betrayal Add-ons):\nOnly Impostors(including Parasite and Crewpostor) other than Visionary and Double Agent can be Narc.\nThe Narc works for the Crewmates instead of Impostors\n\nNarc appears as a Crewmate to Crewmate roles.\n\nSheriff and Narc can see each other.\nNarc can see Madmates,but don't know what type of Madmate(Crewpostor,Madmate Addon,Refugee) they are\nNarc can't see other Impostors' specific roles and Addons(Narc Parasite still can't see Madmates and other Impostors).\nNarc can't be Admired.",  
+  "NarcInfoLong": "(Betrayal Add-ons):\nAs the Narc,although you have an Impostor role,you are aligned with Crewmates\nDepending on the settings,Narc may become a Sheriff when all Impostors are dead.(Note from dev:If Sheriff is disabled in your lobby,turn the option off)\nNarc and Sheriff can see each other.\nNarc can't be Admired.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -1533,9 +1533,11 @@
   "MechanicFixesCommunications": "Can Fix Both Comms Alone In MIRA HQ",
   "MechanicFixesElectrical": "Can Fix Lights With One Switch",
 
-  "NarcCanSeeTeammates": "Narc Impostor(Or Crewpostor) Can See Madmates(Or Impostors)",
-  "NarcCanKillMadmates": "Narc Impostor Can Kill Madmates",
+  "NarcCanSeeTeammates": "Narc <color=#ff1919>Impostor</color>(Or <color=#ff1919>Crewpostor</color>) Can See <color=#ff1919>Madmates</color>(Or <color=#ff1919>Impostors</color>)",
+  "BecomeSheriffOnAllImpDead": "Narc Becomes <color=#ffb347>Sheriff</color> When All <color=#ff1919>Impostors</color> Are Dead",
   "NarcCanUseSabotage": "Narc Can Sabotage",
+  "CantArrestNarc": "You can't shoot the Narc.",
+  "CantRecruitNarc": "Target is already a member of the Crew.",
   
   "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
   "SheriffCanKill%role%": "Can Kill %role%",
@@ -3525,9 +3527,6 @@
   "MiniGuessMax": "You have misguessed, so you are no longer allowed to guess!", 
   "CountMeetingTime": "Meeting time can continue to grow",
 
-  "CantArrestNarc": "You can't shoot the Narc.",
-  "CantRecruitNarc": "Target is already a member of the Crew.",   
-  
   "YouKillRandomizer1": "You kill Randomizer, Self-report!",
   "YouKillRandomizer2": "You kill Randomizer, Cannot move!",
   "YouKillRandomizer3": "You kill Randomizer, Kill CD change to 600s!",
