@@ -722,7 +722,7 @@
   "EavesdropperInfo": "Listen in on other roles",
   "ShockerInfo": "Shock unsuspecting players",
   "RevenantInfo": "Take your killer's role",
-  "NarcInfo": "Help the <color=#8cffff>Crewmates</color>",
+  "NarcInfo": "Ruin the <color=#ff1919>Impostors'</color> plans",
   "EngineerTOHEInfoLong": "(Crewmates):\nAs the Engineer, you may access the vents while Comms Sabotaged is inactive.",
   "ScientistTOHEInfoLong": "(Crewmates):\nAs the Scientist, you can see vitals at any time, showing you who is alive and dead.",
   "NoisemakerTOHEInfoLong": "(Crewmates):\nAs the Noisemaker, whenever you die, you will make a noise, and a visual indicator of your death appears on the screen so the Crewmates can run to catch the person who killed you red-handed (even if it’s not Red).",
