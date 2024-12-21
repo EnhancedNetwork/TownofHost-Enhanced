@@ -3727,7 +3727,7 @@
   "ShockerRoomMarked": "Stanza Contrassegnata",
   "EavesdropperMsgTitle": "Hai trovato un segreto",
   "EavesdropPercentChance": "Possibilità di origliare",
-  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
+  "PreventSeeRolesBeforeSkillUsedUp": "Impedisci di vedere i ruoli degli altri prima che l'abilità sia esaurita",
   "ChiefOfPoliceSkillCooldown": "Ricarica per reclutare sceriffi",
   "PolicCanImpostorAndNeutarl": "Puoi reclutare <color=#ff1919>Impostori</color> o <color=#7f8c8d>Neutrali</color>",
   "SheriffSuccessfullyRecruited": "Hai reclutato uno Sceriffo.",
@@ -3735,6 +3735,6 @@
   "PoliceFailedRecruit": "Impossibile reclutare il bersaglio.",
   "ChiefOfPoliceKillButtonText": "Reclutamento",
   "PolicPreventRecruitNonKiller": "Impedisci di reclutare giocatori senza pulsante uccidi",
-  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
+  "PolicSuidiceWhenTargetNotKiller": "Si suicida quando reclutano un non assassino o non astronauta",
   "PolicPassConverted": "Puo passare Modificatore Convertito a Sceriffo"
 }
