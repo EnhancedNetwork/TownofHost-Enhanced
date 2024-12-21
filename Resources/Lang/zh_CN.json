@@ -2524,8 +2524,8 @@
   "BountyHunterChangeButtonText": "变更",
   "EvilTrackerChangeButtonText": "追踪",
   "RiftMakerButtonText": "Create Rift",
-  "AbyssbringerButtonText": "Black Hole",
-  "PitfallButtonText": "Set Trap",
+  "AbyssbringerButtonText": "黑洞",
+  "PitfallButtonText": "设置陷阱",
   "InnocentButtonText": "栽赃",
   "PelicanButtonText": "吞下",
   "DeceiverButtonText": "贩卖",
@@ -3735,6 +3735,6 @@
   "PoliceFailedRecruit": "招募目标失败",
   "ChiefOfPoliceKillButtonText": "招募",
   "PolicPreventRecruitNonKiller": "防止招募没有击杀按钮的玩家",
-  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
+  "PolicSuidiceWhenTargetNotKiller": "招募非带刀玩家或非船员时自杀",
   "PolicPassConverted": "可以将已转换的附加职业转移给警长"
 }
