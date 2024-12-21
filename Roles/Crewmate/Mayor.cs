@@ -21,7 +21,7 @@ internal partial class Mayor : RoleBase
     private static OptionItem MayorHasPortableButton;
     private static OptionItem MayorNumOfUseButton;
     private static OptionItem MayorHideVote;
-    private static OptionItem MayorRevealWhenDoneTasks;
+    public static OptionItem MayorRevealWhenDoneTasks;
 
     private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
 

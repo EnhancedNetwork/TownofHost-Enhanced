@@ -337,6 +337,17 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
             return false;
         }
+        else if (PlayerControl.LocalPlayer.IsPlayerCoven())
+        {
+            var covTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            covTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.IsPlayerCoven() && pc != PlayerControl.LocalPlayer)
+                    covTeam.Add(pc);
+            }
+            teamToDisplay = covTeam;
+        }
         else if (PlayerControl.LocalPlayer.IsNeutralApocalypse())
         {
             var apocTeam = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -438,6 +449,13 @@ class BeginCrewmatePatch
                     __instance.ImpostorText.text = GetString("SubText.Apocalypse");
                 }
                 break;
+            case Custom_Team.Coven:
+                __instance.TeamTitle.text = GetString("TeamCoven");
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(172, 66, 242, byte.MaxValue);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = GetString("SubText.Coven");
+                break;
         }
 
         switch (role)
@@ -450,6 +468,7 @@ class BeginCrewmatePatch
             case CustomRoles.SoulCatcher:
             case CustomRoles.Specter:
             case CustomRoles.Stalker:
+            case CustomRoles.CovenLeader:
             case CustomRoles.PhantomTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
                 break;
@@ -458,6 +477,8 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
                 break;
             case CustomRoles.Celebrity:
+            case CustomRoles.Sacrifist:
+            case CustomRoles.Poisoner:
             case CustomRoles.NoisemakerTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Noisemaker);
                 break;
@@ -476,6 +497,7 @@ class BeginCrewmatePatch
 
             case CustomRoles.Terrorist:
             case CustomRoles.Bomber:
+            case CustomRoles.Conjurer:
                 var sound = ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring)
                 .MinigamePrefab.OpenSound;
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = sound;
@@ -533,6 +555,12 @@ class BeginCrewmatePatch
             case CustomRoles.Wraith:
             case CustomRoles.Chameleon:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
+                break;
+            case CustomRoles.Jinx:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
+                break;
+            case CustomRoles.Illusionist:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Phantom)?.UseSound;
                 break;
         }
 
@@ -705,6 +733,16 @@ class BeginImpostorPatch
             __instance.overlayHandle.color = Palette.ImpostorRed;
         }
 
+        if (role.IsCoven())
+        {
+            yourTeam = new();
+            yourTeam.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
+            __instance.BeginCrewmate(yourTeam);
+            __instance.overlayHandle.color = new Color32(172, 66, 242, byte.MaxValue);
+            return false;
+        }
+
         BeginCrewmatePatch.Prefix(__instance, ref yourTeam);
         return true;
     }
@@ -727,6 +765,20 @@ class IntroCutsceneDestroyPatch
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
 
                 foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                {
+                    // Set all players as killable players
+                    target.Data.Role.CanBeKilled = true;
+
+                    // When target is impostor, set name color as white
+                    target.cosmetics.SetNameColor(Color.white);
+                    target.Data.Role.NameColor = Color.white;
+                }
+            }
+            if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer)
+            {
+                PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+
+                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator().Where(x => !x.IsPlayerCoven()))
                 {
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;

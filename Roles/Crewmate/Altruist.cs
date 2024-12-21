@@ -21,6 +21,8 @@ internal class Altruist : RoleBase
     private static OptionItem ImpostorsCanGetsArrow;
     private static OptionItem NeutralKillersCanGetsAlert;
     private static OptionItem NeutralKillersCanGetsArrow;
+    private static OptionItem CovenCanGetsAlert;
+    private static OptionItem CovenCanGetsArrow;
 
     private bool IsRevivingMode = true;
     private byte RevivedPlayerId = byte.MaxValue;
@@ -39,6 +41,10 @@ internal class Altruist : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Altruist]);
         NeutralKillersCanGetsArrow = BooleanOptionItem.Create(Id + 14, "Altruist_NeutralKillersCanGetsArrow", true, TabGroup.CrewmateRoles, false)
             .SetParent(NeutralKillersCanGetsAlert);
+        CovenCanGetsAlert = BooleanOptionItem.Create(Id + 15, "Altruist_CovenCanGetsAlert", true, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Altruist]);
+        CovenCanGetsArrow = BooleanOptionItem.Create(Id + 16, "Altruist_CovenCanGetsArrow", true, TabGroup.CrewmateRoles, false)
+            .SetParent(CovenCanGetsAlert);
     }
 
     public override void Init()
@@ -121,6 +127,13 @@ internal class Altruist : RoleBase
                         if (NeutralKillersCanGetsArrow.GetBool())
                             getArrow = true;
                     }
+                    if (CovenCanGetsAlert.GetBool() && pc.Is(Custom_Team.Coven) && pc.PlayerId != RevivedPlayerId)
+                    {
+                        getAlert = true;
+
+                        if (CovenCanGetsArrow.GetBool())
+                            getArrow = true;
+                    }
 
                     if (getAlert)
                     {
@@ -163,7 +176,7 @@ internal class Altruist : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        if (!(ImpostorsCanGetsArrow.GetBool() || NeutralKillersCanGetsArrow.GetBool()) || RevivedPlayerId == byte.MaxValue) return;
+        if (!(ImpostorsCanGetsArrow.GetBool() || NeutralKillersCanGetsArrow.GetBool() || CovenCanGetsArrow.GetBool()) || RevivedPlayerId == byte.MaxValue) return;
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
@@ -173,6 +186,11 @@ internal class Altruist : RoleBase
                 continue;
             }
             if (NeutralKillersCanGetsArrow.GetBool() && (pc.IsNeutralKiller() || pc.IsNeutralApocalypse()))
+            {
+                TargetArrow.Remove(pc.PlayerId, RevivedPlayerId);
+                continue;
+            }
+            if (CovenCanGetsArrow.GetBool() && pc.Is(Custom_Team.Coven))
             {
                 TargetArrow.Remove(pc.PlayerId, RevivedPlayerId);
                 continue;

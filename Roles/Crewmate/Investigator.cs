@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
 
@@ -138,7 +139,8 @@ internal class Investigator : RoleBase
         if (!InvestigatedList.TryGetValue(seer.PlayerId, out var targetList)) return string.Empty;
         if (!targetList.Contains(target.PlayerId)) return string.Empty;
 
-        if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
+        if (Illusionist.IsCovIllusioned(target.PlayerId)) return "#8CFFFF";
+        if (Illusionist.IsNonCovIllusioned(target.PlayerId) || target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
         else return "#8CFFFF";
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
