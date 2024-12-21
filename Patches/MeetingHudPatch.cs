@@ -1199,7 +1199,8 @@ class MeetingHudStartPatch
             if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
                 sb.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
 
-            if (seer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Narc))
+            if (seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice
+                && target.Is(CustomRoles.Narc))
                 sb.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
 
             /*
