@@ -2063,7 +2063,8 @@ public static class Utils
                         if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
 
-                        if (target.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Sheriff))
+                        if (target.Is(CustomRoles.Narc) 
+                            && seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
                         
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
