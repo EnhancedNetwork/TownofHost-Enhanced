@@ -97,9 +97,8 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) 
-                            || pc.Is(CustomRoles.Admired) 
-                            || (pc.Is(CustomRoles.Narc) && (Main.MeetingsPassed >= Narc.MeetingsNeededForWin.GetInt())) && !WinnerIds.Contains(pc.PlayerId))
+                        if (((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) 
+                            || pc.Is(CustomRoles.Admired)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
@@ -243,6 +242,24 @@ class GameEndCheckerForNormal
                     }
                 }
 
+                //Narc(Custom Winner screen)
+                if (WinnerTeam == CustomWinner.Crewmate && CustomRoles.Narc.RoleExist(countDead: true))
+                {
+                    var CrewTeamArray = Main.AllPlayerControls.Where(x => x != null && (x.Is(CustomRoles.Narc)
+                                                                || (x.Is(Custom_Team.Crewmate) 
+                                                                 && (Main.PlayerStates[x.PlayerId].countTypes == CountTypes.Crew || x.Is(CustomRoles.Soulless)))
+                                                                || x.Is(CustomRoles.Admired))).ToArray();
+                    if (Main.MeetingsPassed >= Narc.MeetingsNeededForWin.GetInt()
+                       || reason == GameOverReason.HumansByTask)
+                    {
+                        ResetAndSetWinner(CustomWinner.Narc);
+                        foreach (var Crew in CrewTeamArray)
+                        {
+                            WinnerIds.Add(Crew.PlayerId);
+                        }
+                    }
+                }       
+                
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
