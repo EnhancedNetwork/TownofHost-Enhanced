@@ -1327,7 +1327,8 @@ class FixedUpdateInNormalGamePatch
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
-                if (target.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Sheriff))
+                if (target.Is(CustomRoles.Narc) 
+                    && seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice)
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), "★"));
 
                 if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
