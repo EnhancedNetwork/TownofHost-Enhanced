@@ -245,6 +245,10 @@ class SetEverythingUpPatch
                 //    WinnerText.text = GetString("NiceMiniDied");
                 WinnerText.color = Utils.GetRoleColor(CustomRoles.NiceMini);
                 break;
+            case CustomWinner.Narc:
+                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Sheriff);
+                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Narc);
+                break;
             case CustomWinner.Neutrals:
                 __instance.WinText.text = GetString("DefeatText");
                 __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Impostor);
