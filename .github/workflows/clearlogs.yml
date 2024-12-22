@@ -20,6 +20,7 @@ jobs:
           retain_days: 7
           keep_minimum_runs: 6
           delete_run_by_conclusion_pattern: 'success'
+          check_pullrequest_exist: true
       - name: Delete Cancelled workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
@@ -28,4 +29,3 @@ jobs:
           retain_days: 0
           keep_minimum_runs: 0
           delete_run_by_conclusion_pattern: 'cancelled,skipped'
-
