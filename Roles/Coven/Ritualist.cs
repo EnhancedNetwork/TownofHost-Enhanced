@@ -3,7 +3,6 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -184,7 +183,7 @@ internal class Ritualist : CovenManager
     public override void AfterMeetingTasks()
     {
         foreach (var rit in EnchantedPlayers.Keys)
-        {    
+        {
             foreach (var pc in EnchantedPlayers[rit])
             {
                 GetPlayerById(pc).RpcSetCustomRole(CustomRoles.Enchanted);
