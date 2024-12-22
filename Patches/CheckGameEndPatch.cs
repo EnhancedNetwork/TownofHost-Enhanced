@@ -647,21 +647,25 @@ class GameEndCheckerForNormal
             else
             {
                 if (impCount >= 1) return false; // Both Imp and NK or Coven are alive, the game must continue
+
+                if (totalNKAlive >= 1 && covenCount >= 1) return false; // Both Coven and NK are alive, the game must continue
+
+                // One of NK or Coven all dead here, check nk and coven count > crew
+
                 if (crewCount <= covenCount && totalNKAlive == 0) // Imps dead, NK dead, Crew <= Coven, Coven wins
                 {
                     reason = GameOverReason.ImpostorByKill;
                     ResetAndSetWinner(CustomWinner.Coven);
                     return true;
                 }
-                if (covenCount >= 1) return false; // Both Coven and NK are alive, the game must continue
-                if (crewCount > totalNKAlive) return false; // Imps are dead, but Crew still outnumbers NK (the game must continue)
-                if (crewCount > covenCount) return false; // Imps are dead, but Crew still outnumbers Coven (the game must continue)
-                else // Imps dead, Crew <= NK, Checking if All nk alive are in 1 team 
+
+                else if (crewCount <= totalNKAlive && covenCount == 0) // Imps dead, Coven dead, Crew <= NK, Check NK win
                 {
                     var winners = neutralRoleCounts.Where(kvp => kvp.Value == totalNKAlive).ToArray();
                     var winnnerLength = winners.Length;
                     if (winnnerLength == 1)
                     {
+                        // Only 1 NK team alive, NK wins
                         try
                         {
                             var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
@@ -671,15 +675,19 @@ class GameEndCheckerForNormal
                         }
                         catch
                         {
+                            Logger.Warn("Error while trying to end game as single NK", "CheckGameEndByLivingPlayers");
                             return false;
                         }
+
+                        return true;
                     }
-                    else if (winnnerLength == 0)
+                    else
                     {
                         return false; // Not all alive neutrals were in one team
                     }
-                    return true;
                 }
+
+                else return false; // Crew > Coven or NK, the game must continue
             }
         }
     }
