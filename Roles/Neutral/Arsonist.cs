@@ -30,7 +30,6 @@ internal class Arsonist : RoleBase
     private static readonly Dictionary<(byte, byte), bool> IsDoused = [];
 
     private static byte CurrentDousingTarget = byte.MaxValue;
-    private static bool ArsonistCanIgniteAnytime = true;
 
     public override void SetupCustomOption()
     {
@@ -45,16 +44,12 @@ internal class Arsonist : RoleBase
     }
     public override void Init()
     {
-
         ArsonistTimer.Clear();
         IsDoused.Clear();
         CurrentDousingTarget = byte.MaxValue;
-        ArsonistCanIgniteAnytime = ArsonistCanIgniteAnytimeOpt.GetBool();
     }
     public override void Add(byte playerId)
     {
-
-
         foreach (var ar in Main.AllPlayerControls)
             IsDoused.Add((playerId, ar.PlayerId), false);
 
@@ -275,7 +270,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytime;
+    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt == null ? false : ArsonistCanIgniteAnytimeOpt.GetBool();
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 
