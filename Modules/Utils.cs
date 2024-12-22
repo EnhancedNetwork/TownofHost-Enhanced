@@ -2433,7 +2433,7 @@ public static class Utils
             if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
-            if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks(); 
+            if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {

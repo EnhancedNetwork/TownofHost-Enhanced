@@ -9,8 +9,6 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.CustomWinnerHolder;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 

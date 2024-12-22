@@ -44,7 +44,8 @@ public class PlayerState(byte playerId)
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
 
-        if (pc.Is(CustomRoles.Necromancer)) {
+        if (pc.Is(CustomRoles.Necromancer))
+        {
             IsNecromancer = true;
         }
 
