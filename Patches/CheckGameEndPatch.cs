@@ -314,7 +314,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Shaman);
                             break;
-                        case CustomRoles.Taskinator when pc.IsAlive() && WinnerTeam != CustomWinner.Crewmate:
+                        case CustomRoles.Taskinator when pc.IsAlive() && WinnerTeam is not CustomWinner.Crewmate and not CustomWinner.Narc:
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
                             break;
