@@ -2,7 +2,6 @@ using Hazel;
 using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
-using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -206,7 +205,8 @@ internal class MoonDancer : CovenManager
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         KillBlastedOff();
-        foreach (var md in BatonPassList.Keys) {        
+        foreach (var md in BatonPassList.Keys)
+        {
             DistributeAddOns(GetPlayerById(md));
         }
     }

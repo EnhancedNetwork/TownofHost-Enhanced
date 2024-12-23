@@ -19,7 +19,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -1843,7 +1842,7 @@ public static class PlayerControlMixupOutfitPatch
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
         if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
             || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer // Necromancer
-            ) &&  
+            ) &&
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names

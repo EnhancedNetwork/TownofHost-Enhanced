@@ -82,7 +82,7 @@ internal class Poisoner : CovenManager
                     PoisonedPlayers.Add(target.PlayerId, new(killer.PlayerId, 0f));
                 }
             }
-        } 
+        }
         return false;
     }
     private static void SetPoisoned(PlayerControl killer, PlayerControl target)
