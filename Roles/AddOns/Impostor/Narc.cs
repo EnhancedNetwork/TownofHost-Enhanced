@@ -9,7 +9,7 @@ public class Narc : IAddon
 {
     public CustomRoles Role => CustomRoles.Narc;
     private const int Id = 31200;
-    public AddonTypes Type => AddonTypes.Misc;
+    public AddonTypes Type => AddonTypes.Experimental;
     private static readonly HashSet<byte> playerIdList = [];
     private static readonly HashSet<byte> ReporterList = [];
 
