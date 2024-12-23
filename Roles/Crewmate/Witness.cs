@@ -9,9 +9,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Witness : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Witness;
     private const int Id = 10100;
-
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -28,14 +27,8 @@ internal class Witness : RoleBase
         WitnessTime = IntegerOptionItem.Create(Id + 11, "WitnessTime", new(1, 30, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Witness])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-
-    }
     public override void Add(byte playerId)
     {
-
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateLowLoadOthers);

@@ -1,12 +1,12 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Generator.Extensions;
 using InnerNet;
 using System;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -27,6 +27,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
@@ -313,6 +314,59 @@ public static class Utils
         }
 
         return parentheses ? $"({mode})" : mode;
+    }
+    public static void SendRPC(CustomRPC rpc, params object[] data)
+    {
+        var w = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)rpc, SendOption.Reliable);
+        foreach (var o in data)
+        {
+            switch (o)
+            {
+                case byte b:
+                    w.Write(b);
+                    break;
+                case int i:
+                    w.WritePacked(i);
+                    break;
+                case float f:
+                    w.Write(f);
+                    break;
+                case string s:
+                    w.Write(s);
+                    break;
+                case bool b:
+                    w.Write(b);
+                    break;
+                case long l:
+                    w.Write(l.ToString());
+                    break;
+                case char c:
+                    w.Write(c.ToString());
+                    break;
+                case Vector2 v:
+                    w.Write(v);
+                    break;
+                case Vector3 v:
+                    w.Write(v);
+                    break;
+                case PlayerControl pc:
+                    w.WriteNetObject(pc);
+                    break;
+                default:
+                    try
+                    {
+                        if (o != null && Enum.TryParse(o.GetType(), o.ToString(), out var e) && e != null)
+                            w.WritePacked((int)e);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        ThrowException(e);
+                    }
+                    break;
+            }
+        }
+
+        AmongUsClient.Instance.FinishRpcImmediately(w);
     }
     public static string GetChance(float percent)
     {
@@ -2360,6 +2414,7 @@ public static class Utils
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
 
+        RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
 
         // Empty Deden bug support Empty vent after meeting

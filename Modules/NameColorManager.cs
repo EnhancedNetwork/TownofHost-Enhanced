@@ -103,7 +103,6 @@ public static class NameColorManager
             || (Main.GodMode.Value && seer.IsHost())
             || (Options.CurrentGameMode == CustomGameMode.FFA)
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
-            || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)
             || (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor))
@@ -112,7 +111,24 @@ public static class NameColorManager
             || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool())
             || Workaholic.OthersKnowWorka(target)
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
-            || Mare.KnowTargetRoleColor(target, isMeeting);
+            || Mare.KnowTargetRoleColor(target, isMeeting)
+            || DeadKnowRole(seer, target);
+
+        static bool DeadKnowRole(PlayerControl seer, PlayerControl target)
+        {
+            if (Main.VisibleTasksCount && !seer.IsAlive())
+            {
+                if (Nemesis.PreventKnowRole(seer)) return false;
+                if (Retributionist.PreventKnowRole(seer)) return false;
+
+                if (!Options.GhostCanSeeOtherRoles.GetBool())
+                    return false;
+                else if (Options.PreventSeeRolesImmediatelyAfterDeath.GetBool() && !Main.DeadPassedMeetingPlayers.Contains(seer.PlayerId))
+                    return false;
+                return true;
+            }
+            return false;
+        }
     }
     public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {

@@ -336,7 +336,7 @@ public static class CustomRolesHelper
     /// <summary>
     /// Role Changes the Crewmates Team, Including changing to Impostor.
     /// </summary>
-    
+
     public static bool IsConverted(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
         || role is
             CustomRoles.Charmed or
@@ -1446,6 +1446,7 @@ public static class CustomRolesHelper
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
 }
+[Obfuscation(Exclude = true)]
 public enum Custom_Team
 {
     Crewmate,
@@ -1453,6 +1454,7 @@ public enum Custom_Team
     Neutral,
     Addon,
 }
+[Obfuscation(Exclude = true)]
 public enum Custom_RoleType
 {
     // Impostors
@@ -1463,7 +1465,7 @@ public enum Custom_RoleType
     ImpostorHindering,
     ImpostorGhosts,
     Madmate,
-    
+
     // Crewmate
     CrewmateVanilla,
     CrewmateVanillaGhosts,
@@ -1482,6 +1484,7 @@ public enum Custom_RoleType
 
     None
 }
+[Obfuscation(Exclude = true)]
 public enum CountTypes
 {
     OutOfGame,

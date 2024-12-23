@@ -13,9 +13,8 @@ namespace TOHE.Roles.Neutral;
 internal class Arsonist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Arsonist;
     private const int id = 15900;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled = PlayerIds.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => CanIgniteAnytime() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralBenign;
@@ -31,7 +30,6 @@ internal class Arsonist : RoleBase
     private static readonly Dictionary<(byte, byte), bool> IsDoused = [];
 
     private static byte CurrentDousingTarget = byte.MaxValue;
-    private static bool ArsonistCanIgniteAnytime = true;
 
     public override void SetupCustomOption()
     {
@@ -46,16 +44,12 @@ internal class Arsonist : RoleBase
     }
     public override void Init()
     {
-        PlayerIds.Clear();
         ArsonistTimer.Clear();
         IsDoused.Clear();
         CurrentDousingTarget = byte.MaxValue;
-        ArsonistCanIgniteAnytime = ArsonistCanIgniteAnytimeOpt.GetBool();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-
         foreach (var ar in Main.AllPlayerControls)
             IsDoused.Add((playerId, ar.PlayerId), false);
 
@@ -276,7 +270,7 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytime;
+    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt == null ? false : ArsonistCanIgniteAnytimeOpt.GetBool();
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 

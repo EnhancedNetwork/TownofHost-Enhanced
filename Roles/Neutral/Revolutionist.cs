@@ -12,10 +12,8 @@ namespace TOHE.Roles.Neutral;
 internal class Revolutionist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Revolutionist;
     private const int Id = 15200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -63,18 +61,19 @@ internal class Revolutionist : RoleBase
         RevolutionistLastTime.Clear();
         RevolutionistCountdown.Clear();
         CurrentDrawTarget = byte.MaxValue;
-
-        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
 
         foreach (var ar in Main.AllPlayerControls)
             IsDraw.Add((playerId, ar.PlayerId), false);
+    }
+    public override void Remove(byte playerId)
+    {
+        CustomRoleManager.OnFixedUpdateOthers.Remove(OnFixUpdateOthers);
+        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RevolutionistCooldown.GetFloat();
 

@@ -5,11 +5,8 @@ namespace TOHE.Roles.Impostor;
 internal class Lurker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Lurker;
     private const int Id = 1900;
-
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -26,15 +23,6 @@ internal class Lurker : RoleBase
         ReduceKillCooldown = FloatOptionItem.Create(Id + 11, GeneralOption.ReduceKillCooldown, new(0f, 10f, 1f), 2f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lurker])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-
-    }
-    public override void Add(byte playerId)
-    {
-
-    }
-
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DefaultKillCooldown.GetFloat();
 
     public override void OnEnterVent(PlayerControl pc, Vent vent)

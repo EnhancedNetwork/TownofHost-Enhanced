@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Romantic : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Romantic;
     private const int Id = 13500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Romantic);
     public override bool IsDesyncRole => true;
@@ -313,7 +314,7 @@ internal class VengefulRomantic : RoleBase
 {
 
     //===========================SETUP================================\\
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Romantic);
+    public override CustomRoles Role => CustomRoles.VengefulRomantic;
     public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
@@ -380,9 +381,7 @@ internal class VengefulRomantic : RoleBase
 internal class RuthlessRomantic : RoleBase
 {
     //===========================SETUP================================\\
-
-
-
+    public override CustomRoles Role => CustomRoles.RuthlessRomantic;
     public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;

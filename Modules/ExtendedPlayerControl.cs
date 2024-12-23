@@ -1274,7 +1274,6 @@ static class ExtendedPlayerControl
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || (PlayerControl.LocalPlayer.PlayerId == seer.PlayerId && Main.GodMode.Value)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote) return true;
         else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;
-        else if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Options.LoverKnowRoles.GetBool() && seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return true;
         else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc)) && target.Is(Custom_Team.Impostor)) return true;
@@ -1292,7 +1291,17 @@ static class ExtendedPlayerControl
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (Main.VisibleTasksCount && !seer.IsAlive())
+        {
+            if (Nemesis.PreventKnowRole(seer)) return false;
+            if (Retributionist.PreventKnowRole(seer)) return false;
 
+            if (!Options.GhostCanSeeOtherRoles.GetBool())
+                return false;
+            else if (Options.PreventSeeRolesImmediatelyAfterDeath.GetBool() && !Main.DeadPassedMeetingPlayers.Contains(seer.PlayerId))
+                return false;
+            return true;
+        }
 
         else return false;
     }
@@ -1319,7 +1328,17 @@ static class ExtendedPlayerControl
                 or CustomRoles.Narc)
             && KnowSubRoleTarget(seer, target))
             return true;
+        else if (Main.VisibleTasksCount && !seer.IsAlive())
+        {
+            if (Nemesis.PreventKnowRole(seer)) return false;
+            if (Retributionist.PreventKnowRole(seer)) return false;
 
+            if (!Options.GhostCanSeeOtherRoles.GetBool())
+                return false;
+            else if (Options.PreventSeeRolesImmediatelyAfterDeath.GetBool() && !Main.DeadPassedMeetingPlayers.Contains(seer.PlayerId))
+                return false;
+            return true;
+        }
 
         return false;
     }

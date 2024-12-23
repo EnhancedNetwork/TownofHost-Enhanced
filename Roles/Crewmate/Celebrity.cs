@@ -8,10 +8,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Celebrity : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Celebrity;
     private const int Id = 6500;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -32,12 +30,7 @@ internal class Celebrity : RoleBase
     }
     public override void Init()
     {
-
         CelebrityDead.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-
     }
     public override bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {

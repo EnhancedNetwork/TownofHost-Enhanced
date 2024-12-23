@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Impostor;
@@ -8,6 +7,7 @@ using UnityEngine;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true)]
 [Flags]
 public enum CustomGameMode
 {
@@ -36,6 +36,7 @@ public static class Options
     }
 
     // Presets
+    [Obfuscation(Exclude = true)]
     private static readonly string[] presets =
     [
         Main.Preset1.Value, Main.Preset2.Value, Main.Preset3.Value,
@@ -51,7 +52,6 @@ public static class Options
             2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
-
     public static readonly string[] gameModes =
     [
         "Standard",
@@ -72,6 +72,7 @@ public static class Options
     public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
 
     public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew)> AddonCanBeSettings = [];
+    [Obfuscation(Exclude = true)]
     public enum SpawnChance
     {
         Chance0,
@@ -96,6 +97,7 @@ public static class Options
         Chance95,
         Chance100,
     }
+    [Obfuscation(Exclude = true)]
     private enum RatesZeroOne
     {
         RoleOff,
@@ -384,6 +386,7 @@ public static class Options
     // Ghost
     public static OptionItem GhostIgnoreTasks;
     public static OptionItem GhostCanSeeOtherRoles;
+    public static OptionItem PreventSeeRolesImmediatelyAfterDeath;
     public static OptionItem GhostCanSeeOtherVotes;
     public static OptionItem GhostCanSeeDeathReason;
     public static OptionItem ConvertedCanBecomeGhost;
@@ -589,7 +592,7 @@ public static class Options
             .Select(x => (IAddon)Activator.CreateInstance(x))
             .Where(x => x != null)
             .GroupBy(x => x.Type)
-            .ToDictionary(x => x.Key, x => x.Select(y => Enum.Parse<CustomRoles>(y.GetType().Name, true)).ToList());
+            .ToDictionary(x => x.Key, x => x.Select(y => y.Role).ToList());
     }
 
 
@@ -1847,6 +1850,10 @@ public static class Options
             .SetHeader(true)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeOtherRoles = BooleanOptionItem.Create(60810, "GhostCanSeeOtherRoles", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        PreventSeeRolesImmediatelyAfterDeath = BooleanOptionItem.Create(60821, "PreventSeeRolesImmediatelyAfterDeath", true, TabGroup.ModSettings, false)
+            .SetParent(GhostCanSeeOtherRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
         GhostCanSeeOtherVotes = BooleanOptionItem.Create(60820, "GhostCanSeeOtherVotes", true, TabGroup.ModSettings, false)

@@ -875,6 +875,14 @@ class ReportDeadBodyPatch
                         }
                         player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
                     }
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -929,6 +937,7 @@ class ReportDeadBodyPatch
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
+        RPC.SyncDeadPassedMeetingList();
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 
@@ -954,7 +963,7 @@ class FixedUpdateInNormalGamePatch
     {
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null) return;
+        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
@@ -990,6 +999,7 @@ class FixedUpdateInNormalGamePatch
         // For example: 15 players will called 450 times every 1 second
 
         var player = __instance;
+        bool localplayer = __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId;
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
@@ -1108,6 +1118,11 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
+            else // We are not in lobby
+            {
+                if (localplayer)
+                    CustomNetObject.FixedUpdate();
+            }
 
             DoubleTrigger.OnFixedUpdate(player);
             KillTimerManager.FixedUpdate(player);
@@ -1168,10 +1183,46 @@ class FixedUpdateInNormalGamePatch
                                 }
                                 if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
 
-                                var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
-                                UnShapeshifter.RpcShapeshift(randomPlayer, false);
-                                UnShapeshifter.RpcRejectShapeshift();
-                                UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
+
+                                if (!UnShapeshifter.AmOwner)
+                                {
+                                    var sstarget = PlayerControl.LocalPlayer;
+                                    UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
+                                    UnShapeshifter.RejectShapeshift();
+
+                                    var writer = MessageWriter.Get(SendOption.Reliable);
+                                    writer.StartMessage(6);
+                                    writer.Write(AmongUsClient.Instance.GameId);
+                                    writer.WritePacked(UnShapeshifter.OwnerId);
+
+                                    writer.StartMessage(2);
+                                    writer.WritePacked(UnShapeshifter.NetId);
+                                    writer.Write((byte)RpcCalls.Shapeshift);
+                                    writer.WriteNetObject(sstarget);
+                                    writer.Write(false);
+                                    writer.EndMessage();
+
+                                    writer.StartMessage(2);
+                                    writer.WritePacked(UnShapeshifter.NetId);
+                                    writer.Write((byte)RpcCalls.RejectShapeshift);
+                                    writer.EndMessage();
+
+                                    writer.EndMessage();
+                                    AmongUsClient.Instance.SendOrDisconnect(writer);
+                                    writer.Recycle();
+
+                                    UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
+                                }
+                                else
+                                {
+                                    // Host is Unshapeshifter, make button into unshapeshift state
+                                    PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+                                    var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+                                    PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+                                    PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+                                    DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+                                }
+
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }

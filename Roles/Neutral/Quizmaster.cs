@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Quizmaster;
     private const int Id = 27000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Quizmaster);
     public override bool IsExperimental => true;
@@ -431,17 +432,17 @@ internal class Quizmaster : RoleBase
                 }
                 else
                 {
-                    Utils.SendMessage(GetString("QuizmasterAnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                    Utils.SendMessage(GetString("QuizmasterChat.AnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
                 }
             }
             else
             {
-                Utils.SendMessage(GetString("QuizmasterSyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                Utils.SendMessage(GetString("QuizmasterChat.SyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
             }
         }
         else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
         {
-            Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+            Utils.SendMessage(GetString("QuizmasterChat.CantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
         }
     }
 
@@ -741,6 +742,7 @@ class SabotageQuestion : QuizQuestionBase
     }
 }
 
+[Obfuscation(Exclude = true)]
 public enum QuizmasterQuestionType
 {
     FirstRoundSabotageQuestion,
@@ -762,6 +764,7 @@ public enum QuizmasterQuestionType
     PlrDeathKillerFactionQuestion,
 }
 
+[Obfuscation(Exclude = true)]
 public enum Sabotages
 {
     None = -1,

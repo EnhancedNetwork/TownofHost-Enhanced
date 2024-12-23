@@ -13,6 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class Councillor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Councillor;
     private const int Id = 1000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Councillor);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

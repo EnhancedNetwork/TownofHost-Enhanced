@@ -9,6 +9,7 @@ namespace TOHE.Roles.Neutral;
 internal class Agitater : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Agitater;
     private const int Id = 15800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

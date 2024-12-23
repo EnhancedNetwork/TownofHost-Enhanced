@@ -7,10 +7,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Enigma : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Enigma;
     private const int Id = 8100;
-
-
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -73,19 +71,16 @@ internal class Enigma : RoleBase
     }
     public override void Init()
     {
-
         ShownClues.Clear();
         MsgToSend.Clear();
         MsgToSendTitle.Clear();
     }
     public override void Add(byte playerId)
     {
-
         ShownClues.Add(playerId, []);
     }
     public override void Remove(byte playerId)
     {
-
         ShownClues.Remove(playerId);
     }
 
@@ -521,6 +516,7 @@ internal class Enigma : RoleBase
         }
     }
 
+    [Obfuscation(Exclude = true)]
     private enum EnigmaClueType
     {
         HatClue,

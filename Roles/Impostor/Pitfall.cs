@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Pitfall : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pitfall;
     private const int Id = 5600;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
@@ -76,6 +77,9 @@ internal class Pitfall : RoleBase
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("PitfallButtonText"));
+    // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Set Trap");
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {

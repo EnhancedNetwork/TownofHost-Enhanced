@@ -16,7 +16,20 @@ public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
     public static readonly Dictionary<CustomRoles, IAddon> AddonClasses = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
+    public static RoleBase GetStaticRoleClass(this CustomRoles role)
+    {
+        var roleClass = RoleClass.FirstOrDefault(x => x.Key == role).Value;
+
+        if (!role.IsVanilla() && !role.IsAdditionRole()
+            && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
+        {
+            if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
+                Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
+            if (roleClass == null)
+                Logger.Error($"RoleClass for {role} is null.", "GetStaticRoleClass");
+        }
+        return roleClass ?? new DefaultSetup();
+    }
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
 
@@ -106,8 +119,8 @@ public static class CustomRoleManager
         }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
-        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
+        if (CustomRoles.Dazzler.RoleExist()) Dazzler.SetDazzled(player, opt);
+        if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
 

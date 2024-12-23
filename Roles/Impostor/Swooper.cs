@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class Swooper : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Swooper;
     private const int Id = 4700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swooper);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;

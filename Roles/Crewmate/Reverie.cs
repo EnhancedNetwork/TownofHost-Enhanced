@@ -7,8 +7,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Reverie : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Reverie;
     private const int Id = 11100;
-
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -45,17 +45,14 @@ internal class Reverie : RoleBase
     }
     public override void Init()
     {
-
         NowCooldown.Clear();
     }
     public override void Add(byte playerId)
     {
-
         NowCooldown.TryAdd(playerId, DefaultKillCooldown.GetFloat());
     }
     public override void Remove(byte playerId)
     {
-
         NowCooldown.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl HES, NetworkedPlayerInfo HIM)
