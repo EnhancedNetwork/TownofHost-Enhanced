@@ -179,7 +179,7 @@ class GameEndCheckerForNormal
                     switch (pc.GetCustomRole())
                     {
                         case CustomRoles.Stalker when pc.IsAlive() && ((WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || WinnerTeam == CustomWinner.Stalker
-                            || (WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && Stalker.IsWinKill[pc.PlayerId] && Stalker.SnatchesWins)):
+                            || (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Narc && !reason.Equals(GameOverReason.HumansByTask) && Stalker.IsWinKill[pc.PlayerId] && Stalker.SnatchesWins)):
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
                                 reason = GameOverReason.ImpostorByKill;
@@ -209,7 +209,7 @@ class GameEndCheckerForNormal
                 }
 
                 // Egoist (Crewmate)
-                if (WinnerTeam == CustomWinner.Crewmate)
+                if (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Narc)
                 {
                     var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
 
