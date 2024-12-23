@@ -1402,6 +1402,7 @@ public static class CustomRolesHelper
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
             CustomRoles.Shocker => CustomWinner.Shocker,
+            CustomRoles.Narc => CustomWinner.Narc,
             _ => throw new NotImplementedException()
 
         };
