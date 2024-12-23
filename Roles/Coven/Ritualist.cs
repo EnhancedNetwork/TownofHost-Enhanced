@@ -75,9 +75,12 @@ internal class Ritualist : CovenManager
         => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Ritualist), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
     public static bool RitualistMsgCheck(PlayerControl pc, string msg, bool isUI = false)
     {
+        var originMsg = msg;
+
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Ritualist)) return false;
+
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
@@ -103,7 +106,7 @@ internal class Ritualist : CovenManager
                 TryHideMsgForRitual();
                 ChatManager.SendPreviousMessagesToAll();
             }
-            else if (pc.AmOwner) SendMessage(msg, 255, pc.GetRealName());
+            else if (pc.AmOwner) SendMessage(originMsg, 255, pc.GetRealName());
             if (RitualLimit[pc.PlayerId] <= 0)
             {
                 pc.ShowInfoMessage(isUI, GetString("RitualistRitualMax"));

@@ -2095,7 +2095,7 @@ internal class ChatCommands
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
-        if (Ritualist.RitualistMsgCheck(player, text)) { Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
+        if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true;  Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
