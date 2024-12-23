@@ -7,6 +7,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class Narc : IAddon
 {
+    public CustomRoles Role => CustomRoles.Narc;
     private const int Id = 31200;
     public AddonTypes Type => AddonTypes.Misc;
     private static readonly HashSet<byte> playerIdList = [];
