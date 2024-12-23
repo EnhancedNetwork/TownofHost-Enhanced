@@ -1038,7 +1038,7 @@
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other role/addon information-based messages like Mortician or Sleuth.",
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
-  "NarcInfoLong": "(Betrayal Add-ons):\nAs the Narc,although you have an Impostor role,you are aligned with Crewmates\nDepending on the settings,Narc may get the Sheriff's gun when all Impostors are dead.(Note from dev:If Sheriff is disabled in your lobby,turn the option off)\nNarc and Sheriff can see each other.\nNarc can't be Admired.",
+  "NarcInfoLong": "(Betrayal Add-ons):\nAs the Narc,although you have an Impostor role,you are aligned with Crewmates\nNarc and Sheriff can see each other.\nNarc can't be Admired.",
   "ShowTextOverlay": "Text Overlay",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
@@ -1534,7 +1534,7 @@
   "MechanicFixesElectrical": "Can Fix Lights With One Switch",
 
   "NarcCanSeeTeammates": "Narc <color=#ff1919>Impostor</color>(Or <color=#ff1919>Crewpostor</color>) Can See <color=#ff1919>Madmates</color>(Or <color=#ff1919>Impostors</color>)",
-  "BecomeSheriffOnAllImpDead": "Narc Gets <color=#ffb347>Sheriff</color>'s Gun When All <color=#ff1919>Impostors</color> Are Dead",
+  "NarcCanKillMadmate": "Narc Can Kill <color=#ff1919>Madmates</color>",
   "NarcCanUseSabotage": "Narc Can Sabotage",
   "CantArrestNarc": "You can't shoot the Narc.",
   "CantRecruitNarc": "Target is already a member of the Crew.",

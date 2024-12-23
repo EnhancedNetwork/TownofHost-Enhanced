@@ -9,10 +9,12 @@ public class Narc : IAddon
 {
     private const int Id = 31200;
     public AddonTypes Type => AddonTypes.Misc;
+    private static readonly HashSet<byte> playerIdList = [];
+    private static readonly HashSet<byte> ReporterList = [];
 
     public static OptionItem MeetingsNeededForWin;
     public static OptionItem NarcCanSeeTeammates;
-    public static OptionItem BecomeSheriffOnAllImpDead;
+    public static OptionItem NarcCanKillMadmate;
     public static OptionItem NarcCanUseSabotage;
 
     public void SetupCustomOption()
@@ -23,17 +25,27 @@ public class Narc : IAddon
             .SetValueFormat(OptionFormat.Times);
         NarcCanSeeTeammates = BooleanOptionItem.Create(Id + 11, "NarcCanSeeTeammates", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        BecomeSheriffOnAllImpDead = BooleanOptionItem.Create(Id + 12, "BecomeSheriffOnAllImpDead", false, TabGroup.Addons, false)
+        NarcCanKillMadmate = BooleanOptionItem.Create(Id + 12, "NarcCanKillMadmate", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
         NarcCanUseSabotage = BooleanOptionItem.Create(Id + 13, "NarcCanUseSabotage", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
-    { }
+    {
+        playerIdList.Clear();
+        ReporterList.Clear();
+    }
     public void Add(byte playerId, bool gameIsLoading = true)
-    { }
+    {
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+    }
     public void Remove(byte playerId)
-    { }
+    {
+        playerIdList.Remove(playerId);
+    }
+
+    //Narc Checkmurder
     public static bool CancelMurder(PlayerControl killer, PlayerControl target)
     {
         var ShouldCancel = false;
@@ -42,27 +54,46 @@ public class Narc : IAddon
         {
             ShouldCancel = true;
         }
-        else if ((!FirstTrigger || killer.Is(CustomRoles.Witch)) && BecomeSheriff(killer))
+        else if ((!FirstTrigger || killer.Is(CustomRoles.Witch)) 
+        && target.Is(CustomRoles.ChiefOfPolice) && !target.GetCustomRole().IsConverted())
         {
-            if (!Sheriff.CanBeKilledBySheriff(target))
-            {
-                killer.SetDeathReason(PlayerState.DeathReason.Misfire);
-                killer.RpcMurderPlayer(killer);
-                ShouldCancel = true;
-            }
+            killer.SetDeathReason(PlayerState.DeathReason.Misfire);
+            killer.RpcMurderPlayer(killer);
+            ShouldCancel = true;
         }
         return ShouldCancel;
     }
-    public static bool BecomeSheriff(PlayerControl pc)//Narc doesn't actually become a Sheriff.They just act like a Sheriff(like misfiring on Crewmates)
+
+//If Narc starts a meeting and gets an impostor/madmate ejected,set Narc as real killer
+//It's the base code of a feature I'm planning to add to Narc
+    public static void OnReportDeadBody(PlayerControl reporter)
     {
-        int impnum = Main.AllAlivePlayerControls.Count(x => !IsCrewAlignedAddon(x) && 
-                                                      (x.GetCustomRole().IsImpostor() 
-                                                      || (x.Is(CustomRoles.Crewpostor) && Crewpostor.KnowsAllies.GetBool())
-                                                      ));
-        return pc.CanUseKillButton() && (impnum == 0) && BecomeSheriffOnAllImpDead.GetBool();
+        foreach (var playerId in playerIdList.ToArray())
+        {
+            if (reporter.PlayerId == playerId)
+                ReporterList.Add(reporter.PlayerId);
+            else ReporterList.Remove(playerId);
+        }
     }
-    private static bool IsCrewAlignedAddon(PlayerControl pc)
-        => pc.Is(CustomRoles.Narc) || pc.Is(CustomRoles.Admired);
-    public static bool CantUseSabotage(PlayerControl pc) => (pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool()) || BecomeSheriff(pc);
+    public static void OnPlayerExiled(NetworkedPlayerInfo exiled)
+    {
+        var ejected = exiled.Object;
+        foreach (var playerId in ReporterList.ToArray())
+        {
+            var narc = playerId.GetPlayer();
+            if (IsImpostorAligned(ejected) && ejected.GetRealKiller() == null)
+            {
+                ejected.SetRealKiller(narc);//I used SetRealKiller as a sign for whether the code works well 
+                ReporterList.Clear();
+            }
+        }
+    } 
+//end of OnPlayerExiled
+
+    private static bool IsImpostorAligned(PlayerControl pc)
+        => (CustomRolesHelper.IsNarcImpV3(pc) && !pc.Is(CustomRoles.Admired))
+        || pc.Is(CustomRoles.Madmate);
+
+    public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 // Note:Narc Parasite and Narc Crewpostor are still shown as neutral to some roles
 }
