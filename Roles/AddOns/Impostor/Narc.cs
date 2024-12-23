@@ -86,6 +86,7 @@ public class Narc : IAddon
             {
                 ejected.SetRealKiller(narc);//I used SetRealKiller as a sign for whether the code works well 
                 ReporterList.Clear();
+                Logger.Msg($"{playerId} started a meeting and {ejected.PlayerId} got ejected.Set {playerId} as Real Killer as the original real killer was Null", "Narc");
             }
         }
     } 
