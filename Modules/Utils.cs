@@ -489,14 +489,9 @@ public static class Utils
                             case CustomRoles.Infected:
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
+                            case CustomRoles.Narc:
                                 RoleColor = GetRoleColor(subRole);
                                 RoleText = GetRoleString($"{subRole}-") + RoleText;
-                                break;
-                            case CustomRoles.Narc:
-                                var NorsCOR = Narc.BecomeSheriff(target) ? CustomRoles.Sheriff : subRole;
-                                string NorSText = Narc.BecomeSheriff(target) ? $"({GetRoleName(CustomRoles.Sheriff)}) " : string.Empty;
-                                RoleColor = GetRoleColor(NorsCOR);
-                                RoleText = NorSText + GetRoleString($"{subRole}-") + RoleText;
                                 break;
 
                         }
