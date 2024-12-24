@@ -72,8 +72,15 @@ public class Narc : IAddon
         foreach (var playerId in playerIdList.ToArray())
         {
             if (reporter.PlayerId == playerId)
+            {
                 ReporterList.Add(reporter.PlayerId);
-            else ReporterList.Remove(playerId);
+                Logger.Msg($"Meeting started.Remember reporter:{reporter.GetRealName()}({reporter.PlayerId}).", "Narc:MeetingAction");
+            }
+            else 
+            {
+                ReporterList.Remove(playerId);
+                Logger.Msg($"Meeting started.{playerId.GetPlayer().GetRealName()}({playerId}) is not the reporter.Remove {playerId} from ReporterList.", "Narc:MeetingAction");
+            }
         }
     }
     public static void OnPlayerExiled(NetworkedPlayerInfo exiled)
@@ -86,7 +93,7 @@ public class Narc : IAddon
             {
                 ejected.SetRealKiller(narc);//I used SetRealKiller as a sign for whether the code works well 
                 ReporterList.Clear();
-                Logger.Msg($"{playerId} started a meeting and {ejected.PlayerId} got ejected.Set {playerId} as Real Killer as the original real killer was Null", "Narc");
+                Logger.Msg($"{narc.GetRealName()}({playerId}) started a meeting.{ejected.GetRealName()}({ejected.PlayerId}) was ejected.Set {playerId} as real killer.", "Narc:EjectionAction");
             }
         }
     } 
