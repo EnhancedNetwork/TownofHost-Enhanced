@@ -1140,11 +1140,17 @@ public static class CustomRolesHelper
             case CustomRoles.Narc:
                 if (!pc.GetCustomRole().IsImpostorTeamV3())
                     return false;
-                if (pc.Is(CustomRoles.Visionary)
-                    || pc.Is(CustomRoles.DoubleAgent)
-                    || pc.Is(CustomRoles.Egoist)
+                if (pc.Is(CustomRoles.Egoist)
                     || pc.Is(CustomRoles.Mare)
-                    || pc.Is(CustomRoles.Mimic))
+                    || pc.Is(CustomRoles.Mimic)
+                    || pc.Is(CustomRoles.Tricky)
+                    || pc.Is(CustomRoles.Swift))
+                    return false;
+                if (
+                    (pc.Is(CustomRoles.Visionary) && !Narc.VisionaryCanBeNarc.GetBool())
+                    || (pc.Is(CustomRoles.DoubleAgent) && !Narc.DoubleAgentCanBeNarc.GetBool())
+                    || ((pc.Is(CustomRoles.Zombie) || pc.Is(CustomRoles.KillingMachine)) && ! Narc.ZombieAndKMCanBeNarc.GetBool())
+                    )
                     return false;
                 break;
         }
