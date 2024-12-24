@@ -1545,6 +1545,9 @@
   "NarcCanUseSabotage": "Narc Can Sabotage",
   "CantArrestNarc": "You can't shoot the Narc.",
   "CantRecruitNarc": "Target is already a member of the Crew.",
+  "VisionaryCanBeNarc": "<color=#ff1919>Visionary</color> Can Be Narc",
+  "DoubleAgentCanBeNarc": "<color=#ff1919>Double Agent</color> Can Be Narc",
+  "ZombieAndKMCanBeNarc": "<color=#ff1919>Zombie</color> And <color=#ff1919>Killing Machine</color> Can Be Narc",
   
   "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
   "SheriffCanKill%role%": "Can Kill %role%",

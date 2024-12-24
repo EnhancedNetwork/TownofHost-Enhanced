@@ -27,22 +27,22 @@ internal class Visionary : RoleBase
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
-                or CustomRoles.Soulless
-                or CustomRoles.Refugee
-                or CustomRoles.Admired)
-                return Main.roleColors[CustomRoles.Knight];
+                or CustomRoles.Soulless)
+                return "7f8c8d";
+            if (SubRole is CustomRoles.Admired)
+                return seer.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Admired) ? "00ffff" : "7f8c8d";
         }
 
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
         {
-            return Main.roleColors[CustomRoles.Impostor];
+            return "ff1919";
         }
 
         if (customRole.IsCrewmate())
         {
-            return Main.roleColors[CustomRoles.Bait];
+            return "00ffff";
         }
 
-        return Main.roleColors[CustomRoles.Knight];
+        return "7f8c8d";
     }
 }

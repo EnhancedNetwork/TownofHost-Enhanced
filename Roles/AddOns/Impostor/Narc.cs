@@ -17,6 +17,9 @@ public class Narc : IAddon
     public static OptionItem NarcCanSeeTeammates;
     public static OptionItem NarcCanKillMadmate;
     public static OptionItem NarcCanUseSabotage;
+    public static OptionItem VisionaryCanBeNarc;
+    public static OptionItem DoubleAgentCanBeNarc;
+    public static OptionItem ZombieAndKMCanBeNarc;
 
     public void SetupCustomOption()
     {
@@ -29,6 +32,12 @@ public class Narc : IAddon
         NarcCanKillMadmate = BooleanOptionItem.Create(Id + 12, "NarcCanKillMadmate", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
         NarcCanUseSabotage = BooleanOptionItem.Create(Id + 13, "NarcCanUseSabotage", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        VisionaryCanBeNarc = BooleanOptionItem.Create(Id + 14, "VisionaryCanBeNarc", false, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        DoubleAgentCanBeNarc = BooleanOptionItem.Create(Id + 15, "DoubleAgentCanBeNarc", false, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        ZombieAndKMCanBeNarc = BooleanOptionItem.Create(Id + 16, "ZombieAndKMCanBeNarc", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
