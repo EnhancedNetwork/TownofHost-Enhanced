@@ -222,8 +222,10 @@ internal class DoubleAgent : RoleBase
                     }
                 }
                 // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired) && !player.GetCustomSubRoles().Contains(CustomRoles.Narc))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+                if (Role == CustomRoles.Traitor && player.GetCustomSubRoles().Contains(CustomRoles.Narc))
+                    Role = Traitor.LegacyTraitor.GetBool()? CustomRoles.ShapeshifterTOHE : CustomRoles.ImpostorTOHE;
 
                 Init();
                 player.GetRoleClass().OnRemove(player.PlayerId);
