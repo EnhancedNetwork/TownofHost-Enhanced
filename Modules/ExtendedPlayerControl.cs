@@ -1045,6 +1045,16 @@ static class ExtendedPlayerControl
                 return player.GetClient().PlayerName;
             }
         }
+
+        if (player.shapeshifting)
+        {
+            if (Main.AllClientRealNames.TryGetValue(player.OwnerId, out var realname))
+            {
+                return realname;
+            }
+
+            return player.Data.DefaultOutfit.PlayerName;
+        }    
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
