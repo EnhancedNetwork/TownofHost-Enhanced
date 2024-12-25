@@ -9,6 +9,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Deceiver : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Deceiver;
     private const int Id = 10500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Deceiver);
     public override bool IsDesyncRole => true;
@@ -84,7 +85,7 @@ internal class Deceiver : RoleBase
 
         var killer = _Player;
         var target = pc;
-        if (killer == null) return true;
+        if (killer == null) return false;
 
         target.SetDeathReason(PlayerState.DeathReason.Misfire);
         target.RpcMurderPlayer(target);

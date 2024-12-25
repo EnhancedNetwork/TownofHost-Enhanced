@@ -1,105 +1,38 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Generator.Extensions;
 using InnerNet;
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Text;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Patches;
 
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public static class Utils
 {
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public static long TimeStamp => (long)(DateTime.Now.ToUniversalTime() - timeStampStartTime).TotalSeconds;
     public static long GetTimeStamp(DateTime? dateTime = null) => (long)((dateTime ?? DateTime.Now).ToUniversalTime() - timeStampStartTime).TotalSeconds;
-    
-    public static void ErrorEnd(string text)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            Logger.Fatal($"Error: {text} - triggering critical error", "Anti-black");
-            ChatUpdatePatch.DoBlockChat = true;
-            Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
-            
-            _ = new LateTask(() =>
-            {
-                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }, 8f, "Anti-Black Msg SendInGame Error During Loading");
-
-            if (GameStates.IsShip || !GameStates.IsLobby || GameStates.IsCoStartGame)
-            {
-                _ = new LateTask(() =>
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                    GameManager.Instance.LogicFlow.CheckEndCriteria();
-                    RPC.ForceEndGame(CustomWinner.Error);
-                }, 11f, "Anti-Black End Game As Critical Error");
-            }
-            else if (GameStartManager.Instance != null)
-            {
-                GameStartManager.Instance.ResetStartState();
-                AmongUsClient.Instance.RemoveUnownedObjects();
-                Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
-            }
-            else
-            {
-                Logger.SendInGame("Host in a unknow antiblack bugged state.");
-                Logger.Fatal($"Host in a unknow antiblack bugged state.", "Anti-black");
-            }
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
-            writer.Write(text);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
-            Logger.Fatal($"Error: {text} - I'm triggering critical error", "Anti-black");
-
-            if (Options.EndWhenPlayerBug.GetBool())
-            {
-                _ = new LateTask(() =>
-                {
-                    Logger.SendInGame(GetString("AntiBlackOutRequestHostToForceEnd"));
-                }, 8f, "Anti-Black Msg SendInGame Non-Host Modded Has Error During Loading");
-            }
-            else
-            {
-                _ = new LateTask(() =>
-                {
-                    Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
-                }, 8f, "Anti-Black Msg SendInGame Host Reject Force End");
-                
-                _ = new LateTask(() =>
-                {
-                    if (AmongUsClient.Instance.AmConnected)
-                    {
-                        AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                        Logger.Fatal($"Error: {text} - Disconnected from the game due critical error", "Anti-black");
-                    }
-                }, 13f, "Anti-Black Exit Game Due Critical Error");
-            }
-        }
-    }
 
     // Should happen before EndGame messages is sent
     public static void NotifyGameEnding()
@@ -264,7 +197,7 @@ public static class Utils
         }
         return;
     }
-    
+
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -342,18 +275,18 @@ public static class Utils
     public static string GetRoleTitle(this CustomRoles role)
     {
         string ColorName = ColorString(GetRoleColor(role), GetString($"{role}"));
-        
+
         string chance = GetRoleMode(role);
         if (role.IsAdditionRole() && !role.IsEnable()) chance = ColorString(Color.red, "(OFF)");
-        
+
         return $"{ColorName} {chance}";
     }
-    public static string GetInfoLong(this CustomRoles role) 
+    public static string GetInfoLong(this CustomRoles role)
     {
         var InfoLong = GetString($"{role}" + "InfoLong");
         var CustomName = GetString($"{role}");
         var ColorName = ColorString(GetRoleColor(role).ShadeColor(0.25f), CustomName);
-        
+
         Translator.GetActualRoleName(role, out var RealRole);
 
         return InfoLong.Replace(RealRole, $"{ColorName}");
@@ -377,14 +310,67 @@ public static class Utils
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
             mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
-            
+
         }
-        
+
         return parentheses ? $"({mode})" : mode;
+    }
+    public static void SendRPC(CustomRPC rpc, params object[] data)
+    {
+        var w = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)rpc, SendOption.Reliable);
+        foreach (var o in data)
+        {
+            switch (o)
+            {
+                case byte b:
+                    w.Write(b);
+                    break;
+                case int i:
+                    w.WritePacked(i);
+                    break;
+                case float f:
+                    w.Write(f);
+                    break;
+                case string s:
+                    w.Write(s);
+                    break;
+                case bool b:
+                    w.Write(b);
+                    break;
+                case long l:
+                    w.Write(l.ToString());
+                    break;
+                case char c:
+                    w.Write(c.ToString());
+                    break;
+                case Vector2 v:
+                    w.Write(v);
+                    break;
+                case Vector3 v:
+                    w.Write(v);
+                    break;
+                case PlayerControl pc:
+                    w.WriteNetObject(pc);
+                    break;
+                default:
+                    try
+                    {
+                        if (o != null && Enum.TryParse(o.GetType(), o.ToString(), out var e) && e != null)
+                            w.WritePacked((int)e);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        ThrowException(e);
+                    }
+                    break;
+            }
+        }
+
+        AmongUsClient.Instance.FinishRpcImmediately(w);
     }
     public static string GetChance(float percent)
     {
-        return percent switch 
+        return percent switch
         {
             0 => "<color=#444444>0%</color>",
             5 => "<color=#EE5015>5%</color>",
@@ -481,7 +467,7 @@ public static class Utils
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
         var targetSubRoles = Main.PlayerStates[targetId].SubRoles;
-        
+
         // If a player is possessed by the Dollmaster swap each other's role and add-ons for display for every other client other than Dollmaster and target.
         if (DollMaster.IsControllingPlayer)
         {
@@ -515,10 +501,11 @@ public static class Utils
                     var seerPlatform = seer.GetClient()?.PlatformData.Platform;
                     var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
-                    static bool Checkif(string str) {
+                    static bool Checkif(string str)
+                    {
 
                         string[] strings = ["*Prefix", "INVALID"];
-                        return strings.Any(str.Contains); 
+                        return strings.Any(str.Contains);
                     }
                     static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
 
@@ -762,7 +749,7 @@ public static class Utils
         if (Options.SabotageTimeControl.GetBool()) { SendMessage(GetString("SabotageTimeControlInfo"), PlayerId); }
         if (Options.RandomMapsMode.GetBool()) { SendMessage(GetString("RandomMapsModeInfo"), PlayerId); }
         if (Main.EnableGM.Value) { SendMessage(GetRoleName(CustomRoles.GM) + GetString("GMInfoLong"), PlayerId); }
-        
+
         foreach (var role in CustomRolesHelper.AllRoles)
         {
             if (role.IsEnable() && !role.IsVanilla()) SendMessage(GetRoleName(role) + GetRoleMode(role) + GetString(Enum.GetName(typeof(CustomRoles), role) + "InfoLong"), PlayerId);
@@ -798,7 +785,7 @@ public static class Utils
 
         SendMessage(sb.ToString(), PlayerId);
     }
-    
+
     public static void ShowAllActiveSettings(byte PlayerId = byte.MaxValue)
     {
         if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
@@ -899,7 +886,7 @@ public static class Utils
         crewsb.Sort();
         neutralsb.Sort();
         addonsb.Sort();
-        
+
         SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
@@ -972,7 +959,7 @@ public static class Utils
                     if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>"))
                         continue;
                     sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
-                    
+
                 }
                 break;
         }
@@ -997,11 +984,11 @@ public static class Utils
             SendMessage(GetString("CantUse.killlog"), PlayerId);
             return;
         }
-        if (EndGamePatch.KillLog != "") 
+        if (EndGamePatch.KillLog != "")
         {
             string kl = EndGamePatch.KillLog;
             kl = Options.OldKillLog.GetBool() ? kl.RemoveHtmlTags() : kl.Replace("<color=", "<");
-            var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255),  "《 " + GetString("KillLog") + " 》") : "";
+            var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255), "《 " + GetString("KillLog") + " 》") : "";
             SendSpesificMessage(kl, PlayerId, tytul);
         }
     }
@@ -1034,7 +1021,7 @@ public static class Utils
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
-            
+
             if (summary)
                 sb.Append($"{ColorString(RoleColor, "(")}{RoleText}{ColorString(RoleColor, ")")}");
             else
@@ -1087,24 +1074,17 @@ public static class Utils
         return name;
     }
     // From EHR by Gurge44
-    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerMemberName] string callerMemberName = "")
+    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string callerMemberName = "")
     {
         try
         {
-            // Get stack trace for the exception with source file information
-            var stEx = new StackTrace(ex, true);
-            // Get the top stack frame
-            var frame = stEx.GetFrame(0);
-            // Get the line number from the stack frame
-            var lineEx = frame.GetFileLineNumber();
-
-            StackTrace st = new(0, true);
+            StackTrace st = new(1, true);
             StackFrame[] stFrames = st.GetFrames();
 
             StackFrame firstFrame = stFrames.FirstOrDefault();
 
             var sb = new StringBuilder();
-            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineEx}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
+            sb.Append($" {ex.GetType().Name}: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName.Split('\\')[^1]}\n      at line {lineNumber}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
 
             bool skip = true;
             foreach (StackFrame sf in stFrames)
@@ -1120,15 +1100,29 @@ public static class Utils
                 string callerMethodName = callerMethod?.Name;
                 string callerClassName = callerMethod?.DeclaringType?.FullName;
 
-                var line = $"line {sf.GetFileLineNumber()} ({sf.GetFileColumnNumber()}) in {sf.GetFileName()}";
-
-                sb.Append($"\n      at {callerClassName}.{callerMethodName} ({line})");
+                sb.Append($"\n      at {callerClassName}.{callerMethodName}");
             }
 
             sb.Append("\n------ End of Method Stack Trace ------");
-            sb.Append("\n------ Exception Stack Trace ------");
+            sb.Append("\n------ Exception ------\n   ");
 
-            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n      "));
+            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n   "));
+
+            sb.Append("\n------ End of Exception ------");
+            sb.Append("\n------ Exception Stack Trace ------\n");
+
+            var stEx = new StackTrace(ex, true);
+            var stFramesEx = stEx.GetFrames();
+
+            foreach (StackFrame sf in stFramesEx)
+            {
+                var callerMethod = sf.GetMethod();
+
+                string callerMethodName = callerMethod?.Name;
+                string callerClassName = callerMethod?.DeclaringType?.FullName;
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName} in {sf.GetFileName()}, line {sf.GetFileLineNumber()}");
+            }
 
             sb.Append("\n------ End of Exception Stack Trace ------");
 
@@ -1374,7 +1368,7 @@ public static class Utils
             case "Коралловый":
             case "коралловый":
                 color = 17; break;
-                
+
             case "18": case "隐藏": case "?": color = 18; break;
         }
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
@@ -1424,6 +1418,7 @@ public static class Utils
             + $"\n  ○ /id {GetString("Command.idlist")}"
             + $"\n  ○ /qq {GetString("Command.qq")}"
             + $"\n  ○ /dump {GetString("Command.dump")}"
+            + $"\n  ○ /start {GetString("Command.start")}"
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
@@ -1459,25 +1454,25 @@ public static class Utils
         return [.. result];
     }
     private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
-    
-    
-    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "") 
+
+
+    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "")
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
         bool isfirst = true;
         if (text.Length > 1200 && !GetPlayerById(sendTo).IsModded())
         {
-            foreach(var txt in text.SplitMessage())
+            foreach (var txt in text.SplitMessage())
             {
                 var titleW = isfirst ? title : "<alpha=#00>.";
                 var m = Regex.Replace(txt, "^<voffset=[-]?\\d+em>", ""); // replaces the first instance of voffset, if any.
                 m += $"<voffset=-1.3em><alpha=#00>.</voffset>"; // fix text clipping OOB
-                if (m.IndexOf("\n") <= 4) m = m[(m.IndexOf("\n")+1)..m.Length];
+                if (m.IndexOf("\n") <= 4) m = m[(m.IndexOf("\n") + 1)..m.Length];
                 SendMessage(m, sendTo, titleW);
                 isfirst = false;
             }
         }
-        else 
+        else
         {
             text += $"<voffset=-1.3em><alpha=#00>.</voffset>";
             if (text.IndexOf("\n") <= 4) text = text[(text.IndexOf("\n") + 1)..text.Length];
@@ -1503,7 +1498,7 @@ public static class Utils
         {
             if (ShouldSplit && text.Length > 1200)
             {
-                text.SplitMessage().Do(x => SendMessage(x, sendTo, title));
+                text.SplitMessage().Do(x => SendMessage(x, sendTo, title, logforChatManager, noReplay, false));
                 return;
             }
             //else if (text.Length > 1200 && (!GetPlayerById(sendTo).IsModClient()))
@@ -1762,7 +1757,7 @@ public static class Utils
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
             player.RpcSetName(name);
     }
-    public static bool CheckCamoflague(this PlayerControl PC) => Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage) 
+    public static bool CheckCamoflague(this PlayerControl PC) => Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)
         || (Main.CheckShapeshift.TryGetValue(PC.PlayerId, out bool isShapeshifitng) && isShapeshifitng);
     public static PlayerControl GetPlayerById(int PlayerId)
     {
@@ -1796,7 +1791,7 @@ public static class Utils
 
         return false;
     }
-    public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
+    public static IEnumerable<t> GetRoleBasesByType<t>() where t : RoleBase
     {
         try
         {
@@ -1891,12 +1886,17 @@ public static class Utils
     private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return;
-        if (Main.MeetingIsStarted && !isForMeeting) return;
-        if (Main.AllPlayerControls == null) return;
-
-        //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
+        if (GameStates.IsMeeting)
+        {
+            // When the meeting window is active and game is not ended
+            if (!GameEndCheckerForNormal.GameIsEnded) return;
+        }
+        else
+        {
+            // When some one press report button but NotifyRoles is not for meeting
+            if (Main.MeetingIsStarted && !isForMeeting) return;
+        }
 
         //var caller = new System.Diagnostics.StackFrame(1, false);
         //var callerMethod = caller.GetMethod();
@@ -1908,20 +1908,25 @@ public static class Utils
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
-        if (Main.AllPlayerControls == null) return Task.CompletedTask;
-
-        //Do not update NotifyRoles during meetings
-        if (GameStates.IsMeeting && !GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
+        if (GameStates.IsMeeting)
+        {
+            // When the meeting window is active and game is not ended
+            if (!GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
+        }
+        else
+        {
+            // When some one press report button but NotifyRoles is not for meeting
+            if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
+        }
 
         //var logger = Logger.Handler("DoNotifyRoles");
 
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
-        PlayerControl[] seerList = SpecifySeer != null 
-            ? ([SpecifySeer]) 
+        PlayerControl[] seerList = SpecifySeer != null
+            ? ([SpecifySeer])
             : Main.AllPlayerControls;
 
         PlayerControl[] targetList = SpecifyTarget != null
@@ -1941,10 +1946,10 @@ public static class Utils
         {
             // Do nothing when the seer is not present in the game
             if (seer == null) continue;
-            
+
             // Only non-modded players or player left
             if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
-            
+
             // Size of player roles
             string fontSize = isForMeeting ? "1.6" : "1.8";
             string fontSizeDeathReason = "1.6";
@@ -2139,7 +2144,7 @@ public static class Utils
                         // ====== Seer know target role ======
 
                         bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
-                        
+
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
@@ -2314,9 +2319,9 @@ public static class Utils
     {
         static bool BannedReason(PlayerState.DeathReason rso)
         {
-            return rso is PlayerState.DeathReason.Overtired 
+            return rso is PlayerState.DeathReason.Overtired
                 or PlayerState.DeathReason.etc
-                or PlayerState.DeathReason.Vote 
+                or PlayerState.DeathReason.Vote
                 or PlayerState.DeathReason.Gambled
                 or PlayerState.DeathReason.Armageddon;
         }
@@ -2371,6 +2376,8 @@ public static class Utils
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Sacrificed => CustomRoles.Altruist.IsEnable(),
+            PlayerState.DeathReason.Electrocuted => CustomRoles.Shocker.IsEnable(),
+            PlayerState.DeathReason.Scavenged => CustomRoles.Scavenger.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2379,6 +2386,7 @@ public static class Utils
     {
         try
         {
+            PhantomRolePatch.AfterMeeting();
             ChatManager.ClearLastSysMsg();
             FallFromLadder.Reset();
 
@@ -2415,10 +2423,11 @@ public static class Utils
         {
             Logger.Error($"Error after meeting: {error}", "AfterMeetingTasks");
         }
-    
+
         if (Options.AirshipVariableElectrical.GetBool())
             AirshipElectricalDoors.Initialize();
 
+        RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
 
         // Empty Deden bug support Empty vent after meeting
@@ -2427,6 +2436,7 @@ public static class Utils
         {
             ventilationSystem.PlayersInsideVents.Clear();
             ventilationSystem.IsDirty = true;
+            // Will be synced by ShipStatus patch, SetAllVentInteractions
         }
     }
     public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
@@ -2450,7 +2460,7 @@ public static class Utils
         {
             var sb = new StringBuilder(100);
             if (Options.CurrentGameMode != CustomGameMode.FFA)
-            { 
+            {
                 foreach (var countTypes in EnumHelper.GetAllValues<CountTypes>())
                 {
                     var playersCount = PlayersCount(countTypes);
@@ -2506,18 +2516,32 @@ public static class Utils
         ProcessStartInfo psi = new("Explorer.exe") { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
         Process.Start(psi);
     }
-    
-    
+
+
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
         if (Options.CurrentGameMode is CustomGameMode.CandR) return CopsAndRobbersManager.SummaryTexts(id, disableColor, check);
-        var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
-        if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
-        else name = GetPlayerById(id)?.Data.PlayerName ?? name;
+      
+        string name;
+        try
+        {
+            if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
+            else name = Main.AllClientRealNames[GameData.Instance.GetPlayerById(id).ClientId];
+        }
+        catch
+        {
+            Logger.Error("Failed to get name for {id} by real client names, try assign with AllPlayerNames", "Utils.SummaryTexts");
+            name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty) ?? "<color=#ff0000>ERROR</color>";
+        }
 
         var taskState = Main.PlayerStates?[id].TaskState;
 
-        Main.PlayerStates.TryGetValue(id, out var playerState);
+        // Impossible to output summarytexts for a player without playerState
+        if (!Main.PlayerStates.TryGetValue(id, out var playerState))
+        {
+            Logger.Error("playerState for {id} not found", "Utils.SummaryTexts");
+            return $"[{id}]" + name + " : <b>ERROR</b>";
+        }
 
         string TaskCount;
 
@@ -2628,7 +2652,7 @@ public static class Utils
     public static void SetChatVisibleForEveryone()
     {
         if (!GameStates.IsInGame || !AmongUsClient.Instance.AmHost) return;
-        
+
         MeetingHud.Instance = UnityEngine.Object.Instantiate(HudManager.Instance.MeetingPrefab);
         MeetingHud.Instance.ServerStart(PlayerControl.LocalPlayer.PlayerId);
         AmongUsClient.Instance.Spawn(MeetingHud.Instance, -2, SpawnFlags.None);

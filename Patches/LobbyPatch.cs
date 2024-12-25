@@ -91,6 +91,10 @@ public class LobbyBehaviourPatch
 public static class HostInfoPanelUpdatePatch
 {
     private static TextMeshPro HostText;
+    public static bool Prefix()
+    {
+        return GameStates.IsLobby;
+    }
     public static void Postfix(HostInfoPanel __instance)
     {
         try

@@ -1,10 +1,10 @@
-using System.Text;
 using System;
+using System.Text;
 using TMPro;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -245,7 +245,7 @@ class SetHudActivePatch
 
         if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
             __instance.ReportButton.ToggleVisible(false);
-        
+
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
             __instance.KillButton.ToggleVisible(false);
 
@@ -329,7 +329,7 @@ class TaskPanelBehaviourPatch
                         if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb.Length < 1 && !line.Contains('(')) continue;
                         sb.Append(line + "\r\n");
                     }
-                    
+
                     if (sb.Length > 1)
                     {
                         var text = sb.ToString().TrimEnd('\n').TrimEnd('\r');

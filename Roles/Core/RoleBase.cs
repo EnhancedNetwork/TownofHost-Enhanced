@@ -8,9 +8,10 @@ namespace TOHE;
 
 public abstract class RoleBase
 {
+    public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => Utils.GetPlayerById(_state.PlayerId) ?? null;
+    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
@@ -30,10 +31,12 @@ public abstract class RoleBase
     public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
-        try {
+        try
+        {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
             this.IsEnable = true; // Not supposed to be used, but some methods may have still implemented that check.
-        } catch { } // temporary try catch
+        }
+        catch { } // temporary try catch
 
 
         Add(playerid);
@@ -52,6 +55,8 @@ public abstract class RoleBase
     {
         Remove(playerId);
         IsEnable = false;
+
+        Main.UnShapeShifter.Remove(playerId);
     }
 
     /// <summary>
@@ -84,7 +89,7 @@ public abstract class RoleBase
     /// <summary>
     /// Defines the custom role
     /// </summary>
-    public CustomRoles ThisCustomRole => System.Enum.Parse<CustomRoles>(GetType().Name, true);
+    public CustomRoles ThisCustomRole => Role;
 
 
     //this is a draft, it is not usable yet, Imma fix it in another PR
@@ -114,6 +119,12 @@ public abstract class RoleBase
     /// When the player presses the sabotage button
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
+    /// <summary>
+    /// When player is enginner role base but should not move in vents
+    /// </summary>
+    public virtual bool BlockMoveInVent(PlayerControl pc) => false;
+
+    public HashSet<int> LastBlockedMoveInVentVents = [];
 
     public virtual void SetupCustomOption()
     { }
@@ -256,10 +267,11 @@ public abstract class RoleBase
     // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
     // So OnCheckShapeShift and OnShapeshift are pointless when using it.
     // Last thing, while the button may say "shift" after resetability, the game still thinks you're shapeshifted and will work instantly as intended.
-    
+
     /// <summary>
     /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
+    [Obfuscation(Exclude = true)]
     public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
 
     /// <summary>
@@ -287,6 +299,7 @@ public abstract class RoleBase
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
     /// When guesser trying guess target a role
+    /// Target need to check whether misguessed so it wont cancel mis guesses.
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
 
@@ -365,6 +378,7 @@ public abstract class RoleBase
     /// <summary>
     /// If role wants to return the vote to the player during meeting. Can also work to check any abilities during meeting.
     /// </summary>
+    [Obfuscation(Exclude = true)]
     public virtual bool CheckVote(PlayerControl voter, PlayerControl target) => voter != null && target != null;
 
     /// <summary>
@@ -433,7 +447,7 @@ public abstract class RoleBase
     public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    
+
 
 
     // Player know role target, color role target
@@ -442,7 +456,7 @@ public abstract class RoleBase
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
 
-    public void OnReceiveRPC(MessageReader reader) 
+    public void OnReceiveRPC(MessageReader reader)
     {
         float Limit = reader.ReadSingle();
         AbilityLimit = Limit;
@@ -459,6 +473,7 @@ public abstract class RoleBase
         OnReceiveRPC(reader); // Default implementation
     }
 
+    [Obfuscation(Exclude = true)]
     public enum GeneralOption
     {
         // Ability

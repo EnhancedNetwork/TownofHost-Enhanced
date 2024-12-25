@@ -65,7 +65,7 @@ public class InnerNetClientPatch
 
             foreach (var player in batch)
             {
-                if (messageWriter.Length > 1600) break;
+                if (messageWriter.Length > 500) break;
                 if (player != null && player.ClientId != clientId && !player.Disconnected)
                 {
                     __instance.WriteSpawnMessage(player, player.OwnerId, player.SpawnFlags, messageWriter);
@@ -183,7 +183,7 @@ public class InnerNetClientPatch
             }
         }
 
-        if (__instance.AmClient)
+        if (!__instance.AmHost)
         {
             Debug.LogError("Tried to spawn while not host:" + (netObjParent?.ToString()));
         }
@@ -239,8 +239,20 @@ public class InnerNetClientPatch
             }
         }
     }
+    [Obfuscation(Exclude = true)]
+    [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendOrDisconnect)), HarmonyPrefix]
+    public static void SendOrDisconnectPatch(InnerNetClient __instance, MessageWriter msg)
+    {
+        if (DebugModeManager.IsDebugMode)
+        {
+            Logger.Info($"Packet({msg.Length}), SendOption:{msg.SendOption}", "SendOrDisconnectPatch");
+        }
+        else if (msg.Length > 1000)
+        {
+            Logger.Info($"Large Packet({msg.Length})", "SendOrDisconnectPatch");
+        }
+    }
 }
-
 [HarmonyPatch(typeof(GameData), nameof(GameData.DirtyAllData))]
 internal class DirtyAllDataPatch
 {

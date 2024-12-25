@@ -104,11 +104,15 @@
 > - Host icon during the meeting
 ### :star: [MoreGamemodes](https://github.com/Rabek009/MoreGamemodes)
 >
+> - CustomNetObjects (CustomNetObjects.cs)
 > - Changer Role Basis (RoleBasisChanger.cs)
 > - Disable use vent for vanilla players (VentSystemPatch.cs)
 ### :star: [Reactor](https://github.com/NuclearPowered/Reactor)
 >
 > - Reference: Disable the 5s timeout on custom servers
+### :star: [CrowdedMod](https://github.com/CrowdedMods/CrowdedMod)
+>
+> - We included CrowdedMod in our Mod
 ---
 
 # Legal License Notice
@@ -124,7 +128,7 @@ This project is licensed under the GNU General Public License version 3.0. For m
 To obtain an API token for this project, you must join our Discord server and open a ticket. Follow the steps below:
 
 1. **Join our Discord Server:**
-   https://discord.gg/tohe
+   https://discord.gg/ten
 
 2. **Open a Ticket:**
    Once you've joined the server, open a ticket and request an API token for TOHE API. Provide any necessary information as instructed in the ticket system.
@@ -132,6 +136,6 @@ To obtain an API token for this project, you must join our Discord server and op
 3. **Token Usage:**
    Upon receiving the API token, follow the instructions in the documentation to configure and use the token with the project.
 
-**Note:** Access to the API is subject to our terms and conditions. Failure to comply with these terms may result in revocation of API access.
+**Note:** Access to the API is subject to our terms and conditions. Failure to comply with these terms may result in revocation of API access. Additionally, you only need a token if you are a developer. You do not need it to play the mod.
 
 ---

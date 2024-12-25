@@ -19,14 +19,14 @@ public static class GhostRoleAssign
     private static readonly List<CustomRoles> ImpHauntedList = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
-        if (GameStates.IsHideNSeek  
-            || Options.CurrentGameMode == CustomGameMode.FFA 
-            || player == null 
+        if (GameStates.IsHideNSeek
+            || Options.CurrentGameMode == CustomGameMode.FFA
+            || player == null
             || player.Data == null
-            || player.Data.Disconnected 
+            || player.Data.Disconnected
             || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
 
-        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) 
+        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole))
         {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             player.GetRoleClass()?.OnRemove(player.PlayerId);
@@ -38,7 +38,26 @@ public static class GhostRoleAssign
         }
 
         var getplrRole = player.GetCustomRole();
-        if (getplrRole is CustomRoles.GM or CustomRoles.Nemesis or CustomRoles.Retributionist or CustomRoles.NiceMini) return;
+
+        // Neutral Apocalypse can't get ghost roles
+        if (getplrRole.IsNA() || getplrRole.IsTNA()) return;
+
+        // Roles can win after death, should not get ghost roles
+        if (getplrRole is CustomRoles.GM
+            or CustomRoles.Nemesis
+            or CustomRoles.Retributionist
+            or CustomRoles.NiceMini
+            or CustomRoles.Romantic
+            or CustomRoles.Follower
+            or CustomRoles.Specter
+            or CustomRoles.Sunnyboy
+            or CustomRoles.Innocent
+            or CustomRoles.Workaholic
+            or CustomRoles.Cultist
+            or CustomRoles.Lawyer
+            or CustomRoles.Provocateur
+            or CustomRoles.Virus
+            or CustomRoles.PlagueDoctor) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();
         var CheckNeutral = player.GetCustomRole().IsNeutral() && Options.NeutralCanBecomeGhost.GetBool();
@@ -57,7 +76,7 @@ public static class GhostRoleAssign
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
         foreach (var ghostRole in getCount.Keys.Where(x => x.GetMode() > 0))
-        { 
+        {
             if (ghostRole.IsCrewmate())
             {
                 if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
@@ -65,18 +84,18 @@ public static class GhostRoleAssign
 
                 if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                     continue;
-                    
-                if (ghostRole.GetChance()) HauntedList.Add(ghostRole); 
+
+                if (ghostRole.GetChance()) HauntedList.Add(ghostRole);
             }
             if (ghostRole.IsImpostor())
             {
                 if (ImpHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
-                        ImpHauntedList.Remove(ghostRole);
+                    ImpHauntedList.Remove(ghostRole);
 
                 if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
-                        continue;
+                    continue;
 
-                if (ghostRole.GetChance()) ImpHauntedList.Add(ghostRole); 
+                if (ghostRole.GetChance()) ImpHauntedList.Add(ghostRole);
             }
         }
 
@@ -121,11 +140,11 @@ public static class GhostRoleAssign
         }
 
     }
-    public static void Init() 
+    public static void Init()
     {
         CrewCount = 0;
         ImpCount = 0;
-        getCount.Clear(); 
+        getCount.Clear();
         GhostGetPreviousRole.Clear();
     }
     public static void Add()
@@ -142,7 +161,8 @@ public static class GhostRoleAssign
     public static void CreateGAMessage(PlayerControl __instance)
     {
         Utils.NotifyRoles(SpecifyTarget: __instance);
-        _ = new LateTask(() => {
+        _ = new LateTask(() =>
+        {
 
             __instance.RpcResetAbilityCooldown();
 
@@ -163,27 +183,24 @@ public static class GhostRoleAssign
 
                 var writer = CustomRpcSender.Create("SendGhostRoleInfo", SendOption.None);
                 writer.StartMessage(__instance.GetClientId());
-                writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                    .Write(host.Data.NetId)
-                    .Write(Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString("GhostTransformTitle")))
-                    .EndRpc();
-                writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                    .Write(sb.ToString())
-                    .EndRpc();
+                {
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(host.Data.NetId)
+                        .Write(Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString("GhostTransformTitle")))
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                        .Write(sb.ToString())
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
+                        .Write(conf.ToString())
+                        .EndRpc();
+                    writer.StartRpc(host.NetId, (byte)RpcCalls.SetName)
+                        .Write(host.Data.NetId)
+                        .Write(name)
+                        .EndRpc();
+                }
                 writer.EndMessage();
                 writer.SendMessage();
-
-                var writer2 = CustomRpcSender.Create("SendGhostRoleConfig", SendOption.None);
-                writer2.StartMessage(__instance.GetClientId());
-                writer2.StartRpc(host.NetId, (byte)RpcCalls.SendChat)
-                    .Write(conf.ToString())
-                    .EndRpc();
-                writer2.StartRpc(host.NetId, (byte)RpcCalls.SetName)
-                    .Write(host.Data.NetId)
-                    .Write(name)
-                    .EndRpc();
-                writer2.EndMessage();
-                writer2.SendMessage();
 
                 // Utils.SendMessage(sb.ToString(), __instance.PlayerId, Utils.ColorString(Utils.GetRoleColor(role), GetString("GhostTransformTitle")));
 

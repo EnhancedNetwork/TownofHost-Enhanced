@@ -1,6 +1,7 @@
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
 using TMPro;
+using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
@@ -45,7 +46,28 @@ public static class GameOptionsMenuPatch
     [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPostfix]
     private static void InitializePostfix()
     {
-        GameObject.Find("PlayerOptionsMenu(Clone)")?.transform.FindChild("Background")?.gameObject.SetActive(false);
+        var optionMenu = GameObject.Find("PlayerOptionsMenu(Clone)");
+        optionMenu?.transform.FindChild("Background")?.gameObject.SetActive(false);
+
+        _ = new LateTask(() =>
+        {
+            var menuDescription = optionMenu?.transform.FindChild("What Is This?");
+
+            var infoImage = menuDescription.transform.FindChild("InfoImage");
+            infoImage.transform.localPosition = new(-4.65f, 0.16f, -1f);
+            infoImage.transform.localScale = new(0.2202f, 0.2202f, 0.3202f);
+
+            var infoText = menuDescription.transform.FindChild("InfoText");
+            infoText.transform.localPosition = new(-3.5f, 0.83f, -2f);
+            infoText.transform.localScale = new(1f, 1f, 1f);
+
+            var cubeObject = menuDescription.transform.FindChild("Cube");
+            cubeObject.transform.localPosition = new(-3.2f, 0.55f, -0.1f);
+            cubeObject.transform.localScale = new(0.61f, 0.64f, 1f);
+
+            var menuDescriptionText = GameSettingMenu.Instance.MenuDescriptionText;
+            menuDescriptionText.m_marginWidth = 2.5f;
+        }, 0.2f, "Set Menu", shoudLog: false);
     }
 
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
@@ -54,7 +76,7 @@ public static class GameOptionsMenuPatch
         Instance ??= __instance;
         // When is vanilla tab, run vanilla code
         if (ModGameOptionsMenu.TabIndex < 3) return true;
-        
+
         __instance.scrollBar.SetYBoundsMax(CalculateScrollBarYBoundsMax());
         __instance.StartCoroutine(CoRoutine().WrapToIl2Cpp());
         return false;
@@ -276,7 +298,7 @@ public static class GameOptionsMenuPatch
             hostButtons.transform.FindChild("Edit").GetComponent<PassiveButton>().ReceiveClickDown();
         }, 0.1f, "Click Edit Button");
 
-       
+
         if (index < 3)
             return;
 
@@ -346,13 +368,15 @@ public static class GameOptionsMenuPatch
 
         BaseGameSetting baseGameSetting = item switch
         {
-            BooleanOptionItem => CreateAndInvoke(() => {
+            BooleanOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<CheckboxGameSetting>();
                 x.Type = OptionTypes.Checkbox;
 
                 return x;
             }),
-            IntegerOptionItem integerOptionItem => CreateAndInvoke(() => {
+            IntegerOptionItem integerOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<IntGameSetting>();
                 x.Type = OptionTypes.Int;
                 x.Value = integerOptionItem.GetInt();
@@ -364,7 +388,8 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            FloatOptionItem floatOptionItem => CreateAndInvoke(() => {
+            FloatOptionItem floatOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<FloatGameSetting>();
                 x.Type = OptionTypes.Float;
                 x.Value = floatOptionItem.GetFloat();
@@ -376,15 +401,17 @@ public static class GameOptionsMenuPatch
 
                 return x;
             }),
-            StringOptionItem stringOptionItem => CreateAndInvoke(() => {
+            StringOptionItem stringOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<StringGameSetting>();
-                x.Type = OptionTypes.String; 
-                x.Values = new StringNames[stringOptionItem.Selections.Length]; 
+                x.Type = OptionTypes.String;
+                x.Values = new StringNames[stringOptionItem.Selections.Length];
                 x.Index = stringOptionItem.GetInt();
 
                 return x;
             }),
-            PresetOptionItem presetOptionItem => CreateAndInvoke(() => {
+            PresetOptionItem presetOptionItem => CreateAndInvoke(() =>
+            {
                 var x = ScriptableObject.CreateInstance<StringGameSetting>();
                 x.Type = OptionTypes.String;
                 x.Values = new StringNames[presetOptionItem.ValuePresets];
@@ -428,6 +455,7 @@ public static class ToggleOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
             item.SetValue(__instance.GetBool() ? 1 : 0);
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
         return true;
@@ -471,8 +499,8 @@ public static class NumberOptionPatch
                 __instance.Increment = 0.05f;
                 __instance.Value = (float)Math.Round(__instance.Value, 2);
                 break;
-            case StringNames.GameNumImpostors when DebugModeManager.IsDebugMode:
-                __instance.ValidRange.min = 0;
+            case StringNames.GameNumImpostors:
+                __instance.ValidRange = new(0f, GameOptionsManager.Instance.CurrentGameOptions.MaxPlayers / 2);
                 break;
         }
 
@@ -501,7 +529,7 @@ public static class NumberOptionPatch
             {
                 floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
             }
-
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
         return true;
@@ -531,11 +559,13 @@ public static class NumberOptionPatch
     [HarmonyPatch(nameof(NumberOption.Increase)), HarmonyPrefix]
     public static bool IncreasePrefix(NumberOption __instance)
     {
-        if (__instance.Value == __instance.ValidRange.max)
+        // This is for mod options. Vanilla options's button should be disabled at this moment
+        if (__instance.Value >= __instance.ValidRange.max)
         {
             __instance.Value = __instance.ValidRange.min;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -545,6 +575,7 @@ public static class NumberOptionPatch
             __instance.Value += increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -553,11 +584,13 @@ public static class NumberOptionPatch
     [HarmonyPatch(nameof(NumberOption.Decrease)), HarmonyPrefix]
     public static bool DecreasePrefix(NumberOption __instance)
     {
-        if (__instance.Value == __instance.ValidRange.min)
+        // This is for mod options. Vanilla options's button should be disabled at this moment
+        if (__instance.Value <= __instance.ValidRange.min)
         {
             __instance.Value = __instance.ValidRange.max;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -567,6 +600,7 @@ public static class NumberOptionPatch
             __instance.Value -= increment;
             __instance.UpdateValue();
             __instance.OnValueChanged.Invoke(__instance);
+            __instance.AdjustButtonsActiveState();
             return false;
         }
 
@@ -597,7 +631,7 @@ public static class StringOptionPatch
                     _ => 0.35f,
                 };
 
-               SetupHelpIcon(role, __instance);
+                SetupHelpIcon(role, __instance);
             }
             __instance.TitleText.text = name;
             return false;
@@ -609,7 +643,7 @@ public static class StringOptionPatch
     private static void SetupHelpIcon(CustomRoles role, StringOption __instance)
     {
         var template = __instance.transform.FindChild("MinusButton");
-        var icon = GameObject.Instantiate(template, template.parent, true);
+        var icon = Object.Instantiate(template, template.parent, true);
         icon.gameObject.SetActive(true);
         icon.name = $"{role}HelpIcon";
         var text = icon.GetComponentInChildren<TextMeshPro>();
@@ -620,7 +654,8 @@ public static class StringOptionPatch
         icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
         var GameOptionsButton = icon.GetComponent<GameOptionButton>();
         GameOptionsButton.OnClick = new();
-        GameOptionsButton.OnClick.AddListener((Action)(() => {
+        GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+        {
 
             if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
             {
@@ -630,10 +665,10 @@ public static class StringOptionPatch
                 {
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
                     var str = GetString($"{roleName}InfoLong");
-                    int Lenght = str.Length > 360 ? 360 : str.Length;
-                    var infoLong = str[(str.IndexOf('\n') + 1)..Lenght];
+                    int size = str.Length > 500 ? str.Length > 550 ? 65 : 70 : 100;
+                    var infoLong = str[(str.IndexOf('\n') + 1)..str.Length];
                     var ColorRole = Utils.ColorString(Utils.GetRoleColor(role), GetString(role.ToString()));
-                    var info = $"<size=70%>{ColorRole}: {infoLong}</size>";
+                    var info = $"<size={size}%>{ColorRole}: {infoLong}</size>";
                     GameSettingMenu.Instance.MenuDescriptionText.text = info;
                 }
             }
@@ -654,6 +689,7 @@ public static class StringOptionPatch
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
             item.SetValue(__instance.GetInt());
+
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
                 if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE && !GameStates.IsHideNSeek) //Hide And Seek
@@ -666,6 +702,8 @@ public static class StringOptionPatch
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }
+
+            NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
         return true;
