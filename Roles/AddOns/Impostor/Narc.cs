@@ -113,5 +113,10 @@ public class Narc : IAddon
         || pc.Is(CustomRoles.Madmate);
 
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
-// Note:Narc Parasite and Narc Crewpostor are still shown as neutral to some roles
+/*I originally planned to make it so Overseer sees Narc Impostor as Sheriff.
+But in the testing stage,it didn't work for modded Overseer.
+So I made Overseer able to see the Narc Add-On.
+When Overseer sees an Impostor having Narc Add-On,they should know that Narc is crew-aligned.
+And that made it pointless that Overseer gets random crewmate role for revealing Narc Trickster.
+So I made it that Overseer won't get random Crewmate role result for Narc Trickster.*/
 }
