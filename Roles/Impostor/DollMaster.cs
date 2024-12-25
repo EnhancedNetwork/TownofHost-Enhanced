@@ -380,8 +380,8 @@ internal class DollMaster : RoleBase
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
         pc?.RpcShapeshift(pc, false);
 
-        pc?.ResetPlayerOutfit();
-        target?.ResetPlayerOutfit();
+        pc?.ResetPlayerOutfit(force: true);
+        target?.ResetPlayerOutfit(force: true);
 
         IsControllingPlayer = false;
         ResetPlayerSpeed = true;
