@@ -59,6 +59,10 @@ public class RoleAssign
                     RoleResult[pc.PlayerId] = CustomRoles.Killer;
                 }
                 return;
+            case CustomGameMode.CandR:
+                RoleResult = [];
+                RoleResult = CopsAndRobbersManager.SetRoles();
+                return;
         }
 
         var rd = IRandom.Instance;

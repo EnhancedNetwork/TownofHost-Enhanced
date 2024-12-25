@@ -71,6 +71,27 @@ class HudManagerPatch
                 }
                 LowerInfoText.text = FFAManager.GetHudText();
             }
+            else if (Options.CurrentGameMode == CustomGameMode.CandR)
+            {
+                if (LowerInfoText == null)
+                {
+                    TempLowerInfoText = new GameObject("CountdownText");
+                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
+                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
+                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
+                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
+                    LowerInfoText.transform.parent = __instance.transform;
+                    LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.overflowMode = TextOverflowModes.Overflow;
+                    LowerInfoText.enableWordWrapping = false;
+                    LowerInfoText.color = Color.white;
+                    LowerInfoText.outlineColor = Color.black;
+                    LowerInfoText.outlineWidth = 20000000f;
+                    LowerInfoText.fontSize = 2f;
+                }
+                LowerInfoText.text = CopsAndRobbersManager.GetHudText();
+            }
             if (player.IsAlive())
             {
                 // Set default
@@ -80,6 +101,9 @@ class HudManagerPatch
 
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
 
+                if (Options.CurrentGameMode is CustomGameMode.CandR) 
+                        CopsAndRobbersManager.SetAbilityButtonText(__instance, player.PlayerId);
+                
                 // Set lower info text for modded players
                 if (LowerInfoText == null)
                 {
@@ -342,6 +366,24 @@ class TaskPanelBehaviourPatch
 
                     AllText = $"<size=70%>{AllText}</size>";
 
+                    break;
+                case CustomGameMode.CandR: //C&R
+                    var lines1 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
+                    StringBuilder sb1 = new();
+                    foreach (var eachLine in lines1)
+                    {
+                        var line = eachLine.Trim();
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb1.Length < 1 && !line.Contains('(')) continue;
+                        sb1.Append(line + "\r\n");
+                    }
+
+                    if (sb1.Length > 1)
+                    {
+                        var text = sb1.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sb1.ToString().Count(s => (s == '\n')) >= 2)
+                            text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
+                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                    }
                     break;
             }
 

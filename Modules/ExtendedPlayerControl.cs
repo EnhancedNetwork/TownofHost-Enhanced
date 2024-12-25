@@ -1050,6 +1050,11 @@ static class ExtendedPlayerControl
     public static bool CanUseKillButton(this PlayerControl pc)
     {
         if (GameStates.IsLobby) return false;
+        if (Options.CurrentGameMode is CustomGameMode.CandR) //C&R
+        {
+
+            return (pc.Is(CustomRoles.Cop));
+        }
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
         if (pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && !Options.ShieldedCanUseKillButton.GetBool() && MeetingStates.FirstMeeting) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
@@ -1077,13 +1082,19 @@ static class ExtendedPlayerControl
             _ => false
         };
     }
-    public static bool CanUseVents(this PlayerControl player) => player != null && (player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer);
+    public static bool CanUseVents(this PlayerControl player) => Options.CurrentGameMode switch
+    {
+        CustomGameMode.CandR => player.Is(CustomRoles.Robber) && !CopsAndRobbersManager.captured.ContainsKey(player.PlayerId),
+        _ => player != null && (player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer)
+    };
+
     public static bool CantUseVent(this PlayerControl player, int ventId) => player == null || !player.CanUseVents() || (CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId));
     public static bool HasAnyBlockedVent(this PlayerControl player) => player != null && CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Any();
     public static bool NotUnlockVent(this PlayerControl player, int ventId) => player != null && CustomRoleManager.DoNotUnlockVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId);
 
     public static bool CanUseImpostorVentButton(this PlayerControl pc)
     {
+        if (Options.CurrentGameMode is CustomGameMode.CandR) return false;
         if (!pc.IsAlive()) return false;
         if (GameStates.IsHideNSeek) return true;
         if (pc.Is(CustomRoles.Killer) || pc.Is(CustomRoles.Nimble)) return true;
@@ -1098,6 +1109,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseSabotage(this PlayerControl pc)
     {
+        if (Options.CurrentGameMode is CustomGameMode.CandR) return false;
         if (pc.Is(Custom_Team.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -1110,44 +1122,53 @@ static class ExtendedPlayerControl
         Main.AllPlayerKillCooldown[player.PlayerId] = Options.DefaultKillCooldown;
 
         // FFA
-        if (player.Is(CustomRoles.Killer))
+        switch (Options.CurrentGameMode)
         {
-            Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
-        }
-        else
-        {
-            player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
-        }
-
-        var playerSubRoles = player.GetCustomSubRoles();
-
-        if (playerSubRoles.Any())
-            foreach (var subRole in playerSubRoles)
-            {
-                switch (subRole)
+            case CustomGameMode.FFA:
+                if (player.Is(CustomRoles.Killer))
                 {
-                    case CustomRoles.LastImpostor when player.PlayerId == LastImpostor.currentId:
-                        LastImpostor.SetKillCooldown();
-                        break;
-
-                    case CustomRoles.Mare:
-                        Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
-                        break;
-
-                    case CustomRoles.Overclocked:
-                        Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
-                        break;
-
-                    case CustomRoles.Diseased:
-                        Diseased.IncreaseKCD(player);
-                        break;
-
-                    case CustomRoles.Antidote:
-                        Antidote.ReduceKCD(player);
-                        break;
+                    Main.AllPlayerKillCooldown[player.PlayerId] = FFAManager.FFA_KCD.GetFloat();
                 }
-            }
+                break;
+            case CustomGameMode.CandR:
+                if (player.Is(CustomRoles.Cop))
+                    CopsAndRobbersManager.CaptureCooldown(player);
+                break;
 
+            default:
+                player.GetRoleClass()?.SetKillCooldown(player.PlayerId);
+
+
+                var playerSubRoles = player.GetCustomSubRoles();
+
+                if (playerSubRoles.Any())
+                    foreach (var subRole in playerSubRoles)
+                    {
+                        switch (subRole)
+                        {
+                            case CustomRoles.LastImpostor when player.PlayerId == LastImpostor.currentId:
+                                LastImpostor.SetKillCooldown();
+                                break;
+
+                            case CustomRoles.Mare:
+                                Main.AllPlayerKillCooldown[player.PlayerId] = Mare.KillCooldownInLightsOut.GetFloat();
+                                break;
+
+                            case CustomRoles.Overclocked:
+                                Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
+                                break;
+
+                            case CustomRoles.Diseased:
+                                Diseased.IncreaseKCD(player);
+                                break;
+
+                            case CustomRoles.Antidote:
+                                Antidote.ReduceKCD(player);
+                                break;
+                        }
+                    }
+                break;
+        }
         if (!player.HasImpKillButton(considerVanillaShift: false))
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
 

@@ -73,6 +73,7 @@ class CoBeginPatch
         RPC.RpcVersionCheck();
 
         FFAManager.SetData();
+        CopsAndRobbersManager.SetData();
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
@@ -122,30 +123,38 @@ class SetUpRoleTextPatch
         {
             PlayerControl localPlayer = PlayerControl.LocalPlayer;
             CustomRoles role = localPlayer.GetCustomRole();
-            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            switch (Options.CurrentGameMode)
             {
-                var color = ColorUtility.TryParseHtmlString("#00ffff", out var c) ? c : new(255, 255, 255, 255);
-                __instance.YouAreText.transform.gameObject.SetActive(false);
-                __instance.RoleText.text = "FREE FOR ALL";
-                __instance.RoleText.color = color;
-                __instance.RoleBlurbText.color = color;
-                __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
-            }
-            else
-            {
-                if (!role.IsVanilla())
-                {
+                case CustomGameMode.FFA:
+                    var color = ColorUtility.TryParseHtmlString("#00ffff", out var c) ? c : new(255, 255, 255, 255);
+                    __instance.YouAreText.transform.gameObject.SetActive(false);
+                    __instance.RoleText.text = GetString("FFA");
+                    __instance.RoleText.color = color;
+                    __instance.RoleBlurbText.color = color;
+                    __instance.RoleBlurbText.text = GetString("KillerInfo");
+                    break;
+                case CustomGameMode.CandR: //C&R
                     __instance.YouAreText.color = Utils.GetRoleColor(role);
                     __instance.RoleText.text = Utils.GetRoleName(role);
                     __instance.RoleText.color = Utils.GetRoleColor(role);
                     __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
                     __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
-                }
+                    break;
+                default:
+                    if (!role.IsVanilla())
+                    {
+                        __instance.YouAreText.color = Utils.GetRoleColor(role);
+                        __instance.RoleText.text = Utils.GetRoleName(role);
+                        __instance.RoleText.color = Utils.GetRoleColor(role);
+                        __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
+                        __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
+                    }
 
-                foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
-                    __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
+                    foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
+                        __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
 
-                __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
+                    __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
+                    break;
             }
         }, 0.0001f, "Override Role Text");
 
@@ -404,169 +413,196 @@ class BeginCrewmatePatch
 
         __instance.ImpostorText.gameObject.SetActive(false);
 
-        switch (role.GetCustomRoleTeam())
+        if (role is CustomRoles.GM)
         {
-            case Custom_Team.Impostor:
-                __instance.TeamTitle.text = GetString("TeamImpostor");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+            __instance.TeamTitle.text = Utils.GetRoleName(role);
+            __instance.TeamTitle.color = Utils.GetRoleColor(role);
+            __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
+            __instance.ImpostorText.gameObject.SetActive(false);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+        }
+        switch (Options.CurrentGameMode)
+        {
+            case CustomGameMode.FFA:
+                __instance.TeamTitle.text = GetString("FFA"); ;
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                 __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("SubText.Impostor");
+                __instance.ImpostorText.text = GetString("KillerInfo");
                 break;
-            case Custom_Team.Crewmate:
-                __instance.TeamTitle.text = GetString("TeamCrewmate");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(140, 255, 255, byte.MaxValue);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+            case CustomGameMode.CandR: //C&R
+                __instance.TeamTitle.text = $"<size=75%>{GetString("C&R")}</size>";
                 __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("SubText.Crewmate");
-                break;
-            case Custom_Team.Neutral:
-                if (!role.IsNA())
+                __instance.ImpostorText.text = GetString("C&RShortInfo");
+                __instance.TeamTitle.color = Color.blue;
+                __instance.BackgroundBar.material.color = Color.blue;
+                StartFadeIntro(__instance, Color.blue, Color.red, changeInterval: 400);
+                switch (role)
                 {
-                    __instance.TeamTitle.text = GetString("TeamNeutral");
-                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(127, 140, 141, byte.MaxValue);
+                    case CustomRoles.Cop:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
+                        break;
+                    case CustomRoles.Robber:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+                        break;
+                }
+                break;
+            default:
+                switch (role.GetCustomRoleTeam())
+                {
+                    case Custom_Team.Impostor:
+                        __instance.TeamTitle.text = GetString("TeamImpostor");
+                        __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                        __instance.ImpostorText.gameObject.SetActive(true);
+                        __instance.ImpostorText.text = GetString("SubText.Impostor");
+                        break;
+                    case Custom_Team.Crewmate:
+                        __instance.TeamTitle.text = GetString("TeamCrewmate");
+                        __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(140, 255, 255, byte.MaxValue);
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+                        __instance.ImpostorText.gameObject.SetActive(true);
+                        __instance.ImpostorText.text = GetString("SubText.Crewmate");
+                        break;
+                    case Custom_Team.Neutral:
+                        if (!role.IsNA())
+                        {
+                            __instance.TeamTitle.text = GetString("TeamNeutral");
+                            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(127, 140, 141, byte.MaxValue);
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                            __instance.ImpostorText.gameObject.SetActive(true);
+                            __instance.ImpostorText.text = GetString("SubText.Neutral");
+                        }
+                        else
+                        {
+                            __instance.TeamTitle.text = GetString("TeamApocalypse");
+                            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 23, 79, byte.MaxValue);
+                            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                            __instance.ImpostorText.gameObject.SetActive(true);
+                            __instance.ImpostorText.text = GetString("SubText.Apocalypse");
+                        }
+                        break;
+                }
+
+                switch (role)
+                {
+                    case CustomRoles.ShapeMaster:
+                    case CustomRoles.ShapeshifterTOHE:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                        break;
+                    case CustomRoles.CursedSoul:
+                    case CustomRoles.SoulCatcher:
+                    case CustomRoles.Specter:
+                    case CustomRoles.Stalker:
+                    case CustomRoles.PhantomTOHE:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                        break;
+                    case CustomRoles.Coroner:
+                    case CustomRoles.TrackerTOHE:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
+                        break;
+                    case CustomRoles.Celebrity:
+                    case CustomRoles.NoisemakerTOHE:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Noisemaker);
+                        break;
+                    case CustomRoles.EngineerTOHE:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Engineer);
+                        break;
+                    case CustomRoles.Doctor:
+                    case CustomRoles.Medic:
+                    case CustomRoles.ScientistTOHE:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Scientist);
+                        break;
+                    case CustomRoles.Observer:
+                    case CustomRoles.Spiritualist:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.GuardianAngel);
+                        break;
+
+                    case CustomRoles.Terrorist:
+                    case CustomRoles.Bomber:
+                        var sound = ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring)
+                        .MinigamePrefab.OpenSound;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = sound;
+                        break;
+
+                    case CustomRoles.Workaholic:
+                    case CustomRoles.Snitch:
+                    case CustomRoles.TaskManager:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+                        break;
+
+                    case CustomRoles.Opportunist:
+                    case CustomRoles.Hater:
+                    case CustomRoles.Revolutionist:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+                        break;
+
+                    case CustomRoles.Addict:
+                    case CustomRoles.Ventguard:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
+                        break;
+
+                    case CustomRoles.Saboteur:
+                    case CustomRoles.Inhibitor:
+                    case CustomRoles.Mechanic:
+                    case CustomRoles.Provocateur:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
+                        break;
+
+                    case CustomRoles.Pixie:
+                    case CustomRoles.Seeker:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
+                        break;
+
+                    case CustomRoles.GM:
+                        __instance.TeamTitle.text = Utils.GetRoleName(role);
+                        __instance.TeamTitle.color = Utils.GetRoleColor(role);
+                        __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
+                        __instance.ImpostorText.gameObject.SetActive(true);
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+                        __instance.ImpostorText.text = GetString("SubText.GM");
+                        break;
+
+                    case CustomRoles.ChiefOfPolice:
+                    case CustomRoles.Sheriff:
+                    case CustomRoles.Veteran:
+                    case CustomRoles.Knight:
+                    case CustomRoles.KillingMachine:
+                    case CustomRoles.Reverie:
+                    case CustomRoles.NiceGuesser:
+                    case CustomRoles.Vigilante:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.KillSfx;
+                        break;
+                    case CustomRoles.Swooper:
+                    case CustomRoles.Wraith:
+                    case CustomRoles.Chameleon:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
+                        break;
+                }
+                if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
+                {
+                    __instance.TeamTitle.text = GetString("TeamLovers");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
+                    __instance.ImpostorText.gameObject.SetActive(true);
+                    __instance.ImpostorText.text = GetString("SubText.Lovers");
+                }
+                else if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
+                {
+                    __instance.TeamTitle.text = GetString("TeamEgoist");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(86, 0, 255, byte.MaxValue);
                     PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
                     __instance.ImpostorText.gameObject.SetActive(true);
-                    __instance.ImpostorText.text = GetString("SubText.Neutral");
+                    __instance.ImpostorText.text = GetString("SubText.Egoist");
                 }
-                else
+                else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
                 {
-                    __instance.TeamTitle.text = GetString("TeamApocalypse");
-                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 23, 79, byte.MaxValue);
-                    PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
+                    __instance.TeamTitle.text = GetString("TeamMadmate");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
+                    PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
                     __instance.ImpostorText.gameObject.SetActive(true);
-                    __instance.ImpostorText.text = GetString("SubText.Apocalypse");
+                    __instance.ImpostorText.text = GetString("SubText.Madmate");
                 }
                 break;
-        }
-
-        switch (role)
-        {
-            case CustomRoles.ShapeMaster:
-            case CustomRoles.ShapeshifterTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
-                break;
-            case CustomRoles.CursedSoul:
-            case CustomRoles.SoulCatcher:
-            case CustomRoles.Specter:
-            case CustomRoles.Stalker:
-            case CustomRoles.PhantomTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
-                break;
-            case CustomRoles.Coroner:
-            case CustomRoles.TrackerTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Tracker);
-                break;
-            case CustomRoles.Celebrity:
-            case CustomRoles.NoisemakerTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Noisemaker);
-                break;
-            case CustomRoles.EngineerTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Engineer);
-                break;
-            case CustomRoles.Doctor:
-            case CustomRoles.Medic:
-            case CustomRoles.ScientistTOHE:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Scientist);
-                break;
-            case CustomRoles.Observer:
-            case CustomRoles.Spiritualist:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.GuardianAngel);
-                break;
-
-            case CustomRoles.Terrorist:
-            case CustomRoles.Bomber:
-                var sound = ShipStatus.Instance.CommonTasks.FirstOrDefault(task => task.TaskType == TaskTypes.FixWiring)
-                .MinigamePrefab.OpenSound;
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = sound;
-                break;
-
-            case CustomRoles.Workaholic:
-            case CustomRoles.Snitch:
-            case CustomRoles.TaskManager:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
-                break;
-
-            case CustomRoles.Opportunist:
-            case CustomRoles.Hater:
-            case CustomRoles.Revolutionist:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
-                break;
-
-            case CustomRoles.Addict:
-            case CustomRoles.Ventguard:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
-                break;
-
-            case CustomRoles.Saboteur:
-            case CustomRoles.Inhibitor:
-            case CustomRoles.Mechanic:
-            case CustomRoles.Provocateur:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
-                break;
-
-            case CustomRoles.Pixie:
-            case CustomRoles.Seeker:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
-                break;
-
-            case CustomRoles.GM:
-                __instance.TeamTitle.text = Utils.GetRoleName(role);
-                __instance.TeamTitle.color = Utils.GetRoleColor(role);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
-                __instance.ImpostorText.gameObject.SetActive(true);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
-                __instance.ImpostorText.text = GetString("SubText.GM");
-                break;
-
-            case CustomRoles.ChiefOfPolice:
-            case CustomRoles.Sheriff:
-            case CustomRoles.Veteran:
-            case CustomRoles.Knight:
-            case CustomRoles.KillingMachine:
-            case CustomRoles.Reverie:
-            case CustomRoles.NiceGuesser:
-            case CustomRoles.Vigilante:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.KillSfx;
-                break;
-            case CustomRoles.Swooper:
-            case CustomRoles.Wraith:
-            case CustomRoles.Chameleon:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
-                break;
-        }
-
-        if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
-        {
-            __instance.TeamTitle.text = GetString("TeamLovers");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = GetString("SubText.Lovers");
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
-        {
-            __instance.TeamTitle.text = GetString("TeamEgoist");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(86, 0, 255, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = GetString("SubText.Egoist");
-        }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
-        {
-            __instance.TeamTitle.text = GetString("TeamMadmate");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = GetString("SubText.Madmate");
-        }
-
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
-        {
-            __instance.TeamTitle.text = "FREE FOR ALL";
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
         }
 
         // I hope no one notices this in code
@@ -592,14 +628,14 @@ class BeginCrewmatePatch
     {
         return RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == roleType)?.IntroSound;
     }
-    private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end)
+    private static async void StartFadeIntro(IntroCutscene __instance, Color start, Color end, int changeInterval = 20)
     {
         await Task.Delay(1000);
         int milliseconds = 0;
         while (true)
         {
-            await Task.Delay(20);
-            milliseconds += 20;
+            await Task.Delay(changeInterval);
+            milliseconds += changeInterval;
             float time = milliseconds / (float)500;
             Color LerpingColor = Color.Lerp(start, end, time);
             if (__instance == null || milliseconds > 500)
@@ -777,7 +813,8 @@ class IntroCutsceneDestroyPatch
                             AmongUsClient.Instance.SendOrDisconnect(writer);
                             writer.Recycle();
 
-                            UnShapeshifter.ResetPlayerOutfit(force: true);
+                            if (Options.CurrentGameMode is CustomGameMode.CandR) CopsAndRobbersManager.SetCostume(CopsAndRobbersManager.RoleType.Cop, UnShapeshifter.PlayerId);
+                            else UnShapeshifter.ResetPlayerOutfit(force: true);
                         }
                         else
                         {
@@ -865,11 +902,24 @@ class IntroCutsceneDestroyPatch
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => true,
+                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
+                _ => false
+            };
+            bool shouldAntiBlackOut = Options.CurrentGameMode switch
+            {
+                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
                 _ => false
             };
             try
             {
                 if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (shouldAntiBlackOut)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        AntiBlackout.SetIsDead();
+                    }, 4f, "anti blackout");
+                }
             }
             catch (Exception error)
             {
