@@ -378,6 +378,7 @@ internal class DollMaster : RoleBase
     private static void UnPossess(PlayerControl pc, PlayerControl target)
     {
         (target.MyPhysics.FlipX, pc.MyPhysics.FlipX) = (pc.MyPhysics.FlipX, target.MyPhysics.FlipX); // Copy the players directions that they are facing, Note this only works for modded clients!
+        pc?.ResetPlayerOutfit(force: true);
         pc?.RpcShapeshift(pc, false);
 
         pc?.ResetPlayerOutfit(force: true);
