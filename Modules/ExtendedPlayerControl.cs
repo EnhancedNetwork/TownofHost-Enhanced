@@ -1032,7 +1032,7 @@ static class ExtendedPlayerControl
 
     public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
-        if (clientData)
+        if (clientData || player == null)
         {
             var client = player.GetClient();
 
