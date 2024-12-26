@@ -10,8 +10,6 @@ public class Narc : IAddon
     public CustomRoles Role => CustomRoles.Narc;
     private const int Id = 31200;
     public AddonTypes Type => AddonTypes.Experimental;
-    private static readonly HashSet<byte> playerIdList = [];
-    private static readonly HashSet<byte> ReporterList = [];
 
     public static OptionItem MeetingsNeededForWin;
     public static OptionItem NarcCanSeeTeammates;
@@ -41,19 +39,11 @@ public class Narc : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
-    {
-        playerIdList.Clear();
-        ReporterList.Clear();
-    }
+    { }
     public void Add(byte playerId, bool gameIsLoading = true)
-    {
-        if (!playerIdList.Contains(playerId))
-            playerIdList.Add(playerId);
-    }
+    { }
     public void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
-    }
+    { }
 
     //Narc Checkmurder
     public static bool CancelMurder(PlayerControl killer, PlayerControl target)
@@ -73,40 +63,6 @@ public class Narc : IAddon
         }
         return ShouldCancel;
     }
-
-//If Narc starts a meeting and gets an impostor/madmate ejected,set Narc as real killer
-//It's the base code of a feature I'm planning to add to Narc
-    public static void OnReportDeadBody(PlayerControl reporter)
-    {
-        foreach (var playerId in playerIdList.ToArray())
-        {
-            if (reporter.PlayerId == playerId)
-            {
-                ReporterList.Add(reporter.PlayerId);
-                Logger.Msg($"Meeting started.Remember reporter:{reporter.GetRealName()}({reporter.PlayerId}).", "Narc:MeetingAction");
-            }
-            else 
-            {
-                ReporterList.Remove(playerId);
-                Logger.Msg($"Meeting started.{playerId.GetPlayer().GetRealName()}({playerId}) is not the reporter.Remove {playerId} from ReporterList.", "Narc:MeetingAction");
-            }
-        }
-    }
-    public static void OnPlayerExiled(NetworkedPlayerInfo exiled)
-    {
-        var ejected = exiled.Object;
-        foreach (var playerId in ReporterList.ToArray())
-        {
-            var narc = playerId.GetPlayer();
-            if (IsImpostorAligned(ejected) && ejected.GetRealKiller() == null)
-            {
-                ejected.SetRealKiller(narc);//I used SetRealKiller as a sign for whether the code works well 
-                ReporterList.Clear();
-                Logger.Msg($"{narc.GetRealName()}({playerId}) started a meeting.{ejected.GetRealName()}({ejected.PlayerId}) was ejected.Set {playerId} as real killer.", "Narc:EjectionAction");
-            }
-        }
-    } 
-//end of OnPlayerExiled
 
     private static bool IsImpostorAligned(PlayerControl pc)
         => (CustomRolesHelper.IsNarcImpV3(pc) && !pc.Is(CustomRoles.Admired))
