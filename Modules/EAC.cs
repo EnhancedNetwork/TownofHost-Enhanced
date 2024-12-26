@@ -252,6 +252,15 @@ internal class EAC
                         // Do nothing
                     }
                     break;
+                case 250: // KillNetwork
+                    if (sr.BytesRemaining == 0)
+                    {
+                        Report(pc, "KillNetwork RPC");
+                        HandleCheat(pc, "KKillNetworkN RPC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork RPC，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
                 case unchecked((byte)420): // 164 Sicko
                     if (sr.BytesRemaining == 0)
                     {
