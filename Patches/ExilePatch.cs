@@ -2,7 +2,6 @@
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE;
 
@@ -119,7 +118,6 @@ class ExileControllerWrapUpPatch
         foreach (var player in Main.AllPlayerControls)
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
-            Narc.OnPlayerExiled(exiled);
 
             // Check for remove pet
             player.RpcRemovePet();
