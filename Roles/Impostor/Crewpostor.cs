@@ -16,7 +16,7 @@ internal class Crewpostor : RoleBase
     private static OptionItem CanKillAllies;
     private static OptionItem KnowsAllies;
     private static OptionItem AlliesKnowCrewpostor;
-    private static OptionItem LungeKill;
+    public static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
     private static Dictionary<byte, int> TasksDone = [];
