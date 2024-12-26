@@ -595,6 +595,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.LazyGuy)
                     || pc.Is(CustomRoles.Mundane)
                     || pc.Is(CustomRoles.Burst)
+                    || pc.Is(CustomRoles.Rebel)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsTasklessCrewmate() || pc.GetCustomRole().IsTaskBasedCrewmate())
