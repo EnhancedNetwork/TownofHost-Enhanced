@@ -1033,7 +1033,7 @@ static class ExtendedPlayerControl
 
     public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
-        if (clientData)
+        if (clientData || player == null)
         {
             var client = player.GetClient();
 
@@ -1046,6 +1046,16 @@ static class ExtendedPlayerControl
                 return player.GetClient().PlayerName;
             }
         }
+
+        if (player.shapeshifting)
+        {
+            if (Main.AllClientRealNames.TryGetValue(player.OwnerId, out var realname))
+            {
+                return realname;
+            }
+
+            return player.Data.DefaultOutfit.PlayerName;
+        }    
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
