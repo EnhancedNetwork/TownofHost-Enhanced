@@ -899,7 +899,6 @@ class ReportDeadBodyPatch
             if (Aware.IsEnable) Aware.OnReportDeadBody();
 
             Sleuth.OnReportDeadBody(player, target);
-            Narc.OnReportDeadBody(player);
             Evader.ReportDeadBody();
         }
         catch (Exception error)
