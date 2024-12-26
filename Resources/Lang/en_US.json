@@ -3992,7 +3992,8 @@
   "QuizmasterChat.AnswerNotValid": "Your answer must be A, B, or C",
   "QuizmasterChat.SyntaxNotValid": "<b>Usage:</b>\n/answer [A/B/C]",
 
-  "QuizmasterSettings.QuestionDifficulty": "Question Difficulty",
+  "QuizmasterSettings.MinQuestionDifficulty": "Min Question Difficulty",
+  "QuizmasterSettings.MaxQuestionDifficulty": "Max Question Difficulty",
   "QuizmasterSettings.CanVentAfterMark": "Can Vent After Marked Somebody For Quiz",
   "QuizmasterSettings.CanKillAfterMark": "Can Kill After Marked Somebody For Quiz",
   "QuizmasterSettings.NumOfKillAfterMark": "How Many Kills Per Round",
@@ -4025,6 +4026,14 @@
   "QuizmasterAnswers.Experimental": "Experimental",
   "QuizmasterAnswers.Enhanced": "Enhanced",
   "QuizmasterAnswers.Edited": "Edited",
+  "QuizmasterAnswers.Impostor": "Impostor",
+  "QuizmasterAnswers.Neutral": "Neutral",
+  "QuizmasterAnswers.Crewmate": "Crewmate",
+  "QuizmasterAnswers.Addon": "Addon",
+  "QuizmasterAnswers.Shapeshifter": "Shapeshifter",
+  "QuizmasterAnswers.Scientist": "Scientist",
+  "QuizmasterAnswers.Engineer": "Engineer",
+  "QuizmasterAnswers.GuardianAngel": "GuardianAngel",
 
   "QuizmasterQuestions.LastSabotage": "What was the sabotage was called last?",
   "QuizmasterQuestions.FirstRoundSabotage": "What was the first sabotage called this round?",
@@ -4041,8 +4050,11 @@
   "QuizmasterQuestions.WhatDoesEOgMeansInName": "What did the E in TOHE originally stand for?",
   "QuizmasterQuestions.PlrDieReason": "What was {PLR}'s cause of death?",
   "QuizmasterQuestions.PlrDieMethod": "How did {PLR} die?",
-  "LastAddedRoleForKarped": "What was the last role added to TOHE before KARPED1EM stepped down?",
+  "QuizmasterQuestions.LastAddedRoleForKarped": "What was the last role added to TOHE before KARPED1EM stepped down?",
   "QuizmasterQuestions.PlrDieFaction": "What kind of faction killed {PLR}?",
+  "QuizmasterQuestions.QuizmasterCooldown": "What will Quizmaster's cooldown always be? (excluding first kill override and changes from other roles/addons)",
+  "QuizmasterQuestions.WhoCoded": "Who coded Quizmaster?",
+  "QuizmasterQuestions.WhoOwns": "Who owns The Enhanced Network?",
 
   "DeathReason.WrongAnswer": "Wrong Quiz Answer",
 
