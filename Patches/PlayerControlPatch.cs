@@ -1622,7 +1622,7 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
-        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? false)
+        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? true)
         {
             foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
             {
