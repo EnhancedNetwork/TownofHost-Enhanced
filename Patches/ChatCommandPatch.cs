@@ -449,8 +449,13 @@ internal class ChatCommands
                 case "/阵营":
                 case "/存货阵营信息":
                 case "/阵营信息":
-                    if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
+                    if (GameStates.IsLobby) break;
 
+                    if (!Options.EnableKillerLeftCommand.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     var allAlivePlayers = Main.AllAlivePlayerControls;
                     int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                     int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
@@ -2396,7 +2401,13 @@ internal class ChatCommands
             case "/阵营":
             case "/存货阵营信息":
             case "/阵营信息":
-                if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
+                if (GameStates.IsLobby) break;
+
+                if (!Options.EnableKillerLeftCommand.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
 
                 var allAlivePlayers = Main.AllAlivePlayerControls;
                 int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
