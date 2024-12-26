@@ -105,17 +105,6 @@ internal class CopyCat : RoleBase
             killer.SetKillCooldown();
             return false;
         }
-        if (target.Is(CustomRoles.Narc))
-        {
-            killer.RpcChangeRoleBasis(CustomRoles.Sheriff);
-            killer.RpcSetCustomRole(CustomRoles.Sheriff);
-            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-            killer.SyncSettings();
-            Main.PlayerStates[killer.PlayerId].InitTask(killer);
-            killer.RpcGuardAndKill(killer);
-            killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(CustomRoles.Sheriff)));
-            return false;
-        }
         if (CopyCrewVar.GetBool() && !target.Is(CustomRoles.Narc))
         {
             role = role switch
@@ -144,8 +133,10 @@ internal class CopyCat : RoleBase
                 _ => role
             };
         }
-        if (role.IsCrewmate())
+        if (CustomRolesHelper.IsNarcCrew(target))
         {
+            if (target.Is(CustomRoles.Narc))
+                role = CustomRoles.Sheriff;
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);
