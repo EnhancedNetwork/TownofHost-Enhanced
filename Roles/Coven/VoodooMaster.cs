@@ -65,16 +65,17 @@ internal class VoodooMaster : CovenManager
     public override void SetAbilityButtonText(HudManager hud, byte playerId) =>
         hud.KillButton.OverrideText(GetString("ShamanButtonText"));
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    => Dolls[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.VoodooMaster), "✂") : string.Empty;
+    => IsDoll(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.VoodooMaster), "✂") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (Dolls[_Player.PlayerId].Contains(target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
+        if (IsDoll(_Player.PlayerId, target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
             return ColorString(GetRoleColor(CustomRoles.VoodooMaster), "✂");
         }
         return string.Empty;
     }
+    public static bool IsDoll(byte pc, byte target) => Dolls.TryGetValue(pc, out var dollList) && dollList.Contains(target);
     public override string GetProgressText(byte playerId, bool comms)
         => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.VoodooMaster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -100,6 +101,7 @@ internal class VoodooMaster : CovenManager
     }
     private void SetDoll(PlayerControl killer, PlayerControl target)
     {
+        if (IsDoll(killer.PlayerId, target.PlayerId)) return;
         if (AbilityLimit > 0 && (!target.GetCustomRole().IsCovenTeam() || (target.GetCustomRole().IsCovenTeam() && CanDollCoven.GetBool())))
         {
             Dolls[killer.PlayerId].Add(target.PlayerId);
@@ -140,7 +142,7 @@ internal class VoodooMaster : CovenManager
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (!Dolls[_Player.PlayerId].Contains(target.PlayerId)) return false;
+        if (!IsDoll(_Player.PlayerId, target.PlayerId)) return false;
         if (!HasNecronomicon(_Player)) return false;
         if (!killer.GetCustomRole().IsCovenTeam() || (killer.GetCustomRole().IsCovenTeam() && NecroAbilityCanKillCov.GetBool()))
         {

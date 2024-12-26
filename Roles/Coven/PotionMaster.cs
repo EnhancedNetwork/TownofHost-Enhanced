@@ -1,10 +1,12 @@
 ﻿using Hazel;
 using InnerNet;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Coven;
 
@@ -148,7 +150,7 @@ internal class PotionMaster : CovenManager
                 }
                 break;
             case 1:
-                if (!BarrierList[killer.PlayerId].Contains(target.PlayerId) && BarrierLimit[killer.PlayerId] > 0)
+                if (!IsBarriered(killer.PlayerId, target.PlayerId) && BarrierLimit[killer.PlayerId] > 0)
                 {
                     BarrierLimit[killer.PlayerId]--;
                     BarrierList[killer.PlayerId].Add(target.PlayerId);
@@ -212,7 +214,7 @@ internal class PotionMaster : CovenManager
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (_Player == null || !_Player.IsAlive()) return false;
-        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId)) return false;
+        if (!IsBarriered(killer.PlayerId, target.PlayerId)) return false;
 
         killer.RpcGuardAndKill(target);
         killer.ResetKillCooldown();
@@ -243,12 +245,14 @@ internal class PotionMaster : CovenManager
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (BarrierList[_Player.PlayerId].Contains(target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
+        if (IsBarriered(seer.PlayerId, target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
             return ColorString(GetRoleColor(CustomRoles.PotionMaster), "✚");
         }
         return string.Empty;
     }
+    public static bool IsBarriered(byte pc, byte target) => BarrierList.TryGetValue(pc, out var protectList) && protectList.Contains(target);
+
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target);
 
