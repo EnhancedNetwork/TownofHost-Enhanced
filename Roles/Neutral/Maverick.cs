@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -21,7 +23,7 @@ internal class Maverick : RoleBase
     private static OptionItem HasImpostorVision;
     public static OptionItem MinKillsForWin;
 
-    public int NumKills = new();
+    public int NumKills;
 
     public override void SetupCustomOption()
     {
@@ -56,5 +58,20 @@ internal class Maverick : RoleBase
         if (isSuicide) return;
 
         NumKills++;
+        SendRPC();
+    }
+
+    public void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write((byte)NumKills);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        NumKills = reader.ReadByte();
     }
 }
