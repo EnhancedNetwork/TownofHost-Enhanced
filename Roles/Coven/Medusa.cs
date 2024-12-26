@@ -149,6 +149,15 @@ internal class Medusa : CovenManager
         }
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => StonedPlayers[seer.PlayerId].Contains(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Medusa), "♻") : string.Empty;
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (_Player == null) return string.Empty;
+        if (StonedPlayers[_Player.PlayerId].Contains(target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
+        {
+            return ColorString(GetRoleColor(CustomRoles.Medusa), "♻");
+        }
+        return string.Empty;
+    }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("MedusaReportButtonText"));

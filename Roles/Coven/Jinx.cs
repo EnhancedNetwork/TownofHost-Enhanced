@@ -172,6 +172,15 @@ internal class Jinx : CovenManager
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     => IsJinxed(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Jinx), "⌘") : string.Empty;
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
+    {
+        if (_Player == null) return string.Empty;
+        if (IsJinxed(target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
+        {
+            return ColorString(GetRoleColor(CustomRoles.Jinx), "⌘");
+        }
+        return string.Empty;
+    }
 
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
