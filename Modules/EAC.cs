@@ -256,7 +256,7 @@ internal class EAC
                     if (sr.BytesRemaining == 0)
                     {
                         Report(pc, "KillNetwork RPC");
-                        HandleCheat(pc, "KKillNetworkN RPC");
+                        HandleCheat(pc, "KillNetwork RPC");
                         Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork RPC，已驳回", "EAC");
                         return true;
                     }
