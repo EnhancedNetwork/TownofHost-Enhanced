@@ -335,17 +335,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Romantic when Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
-                            && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && (WinnerRoles.Contains(betTargetPS.MainRole)
-                            || (betTargetPS.MainRole is CustomRoles.Opportunist && AdditionalWinnerTeams.Contains(AdditionalWinners.Opportunist))
-                            || (betTargetPS.MainRole is CustomRoles.Pixie && AdditionalWinnerTeams.Contains(AdditionalWinners.Pixie))
-                            || (betTargetPS.MainRole is CustomRoles.Shaman && AdditionalWinnerTeams.Contains(AdditionalWinners.Shaman))
-                            || (betTargetPS.MainRole is CustomRoles.Taskinator && AdditionalWinnerTeams.Contains(AdditionalWinners.Taskinator))
-                            || (betTargetPS.MainRole is CustomRoles.Pursuer && AdditionalWinnerTeams.Contains(AdditionalWinners.Pursuer))
-                            || (betTargetPS.MainRole is CustomRoles.Maverick && AdditionalWinnerTeams.Contains(AdditionalWinners.Maverick))
-                            || (betTargetPS.MainRole is CustomRoles.Hater && AdditionalWinnerTeams.Contains(AdditionalWinners.Hater))
-                            || (betTargetPS.MainRole is CustomRoles.Troller && AdditionalWinnerTeams.Contains(AdditionalWinners.Troller))
-                            || (betTargetPS.MainRole is CustomRoles.Lawyer && AdditionalWinnerTeams.Contains(AdditionalWinners.Lawyer))
-                            || (betTargetPS.MainRole is CustomRoles.Follower && AdditionalWinnerTeams.Contains(AdditionalWinners.Follower))))):
+                            && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))):
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                             break;
@@ -367,22 +357,7 @@ class GameEndCheckerForNormal
                             }
                             break;
                         case CustomRoles.Follower when Follower.BetPlayer.TryGetValue(pc.PlayerId, out var followerTarget)
-                            && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && (WinnerRoles.Contains(followerTargetPS.MainRole)
-                            || (followerTargetPS.MainRole is CustomRoles.Opportunist && AdditionalWinnerTeams.Contains(AdditionalWinners.Opportunist))
-                            || (followerTargetPS.MainRole is CustomRoles.Pixie && AdditionalWinnerTeams.Contains(AdditionalWinners.Pixie))
-                            || (followerTargetPS.MainRole is CustomRoles.Shaman && AdditionalWinnerTeams.Contains(AdditionalWinners.Shaman))
-                            || (followerTargetPS.MainRole is CustomRoles.Taskinator && AdditionalWinnerTeams.Contains(AdditionalWinners.Taskinator))
-                            || (followerTargetPS.MainRole is CustomRoles.Pursuer && AdditionalWinnerTeams.Contains(AdditionalWinners.Pursuer))
-                            || (followerTargetPS.MainRole is CustomRoles.Hater && AdditionalWinnerTeams.Contains(AdditionalWinners.Hater))
-                            || (followerTargetPS.MainRole is CustomRoles.Provocateur && AdditionalWinnerTeams.Contains(AdditionalWinners.Provocateur))
-                            || (followerTargetPS.MainRole is CustomRoles.Sunnyboy && AdditionalWinnerTeams.Contains(AdditionalWinners.Sunnyboy))
-                            || (followerTargetPS.MainRole is CustomRoles.Maverick && AdditionalWinnerTeams.Contains(AdditionalWinners.Maverick))
-                            || (followerTargetPS.MainRole is CustomRoles.Specter && AdditionalWinnerTeams.Contains(AdditionalWinners.Specter))
-                            || (followerTargetPS.MainRole is CustomRoles.Troller && AdditionalWinnerTeams.Contains(AdditionalWinners.Troller))
-                            || (followerTargetPS.MainRole is CustomRoles.Romantic && AdditionalWinnerTeams.Contains(AdditionalWinners.Romantic))
-                            || (followerTargetPS.MainRole is CustomRoles.VengefulRomantic && AdditionalWinnerTeams.Contains(AdditionalWinners.VengefulRomantic))
-                            || (followerTargetPS.MainRole is CustomRoles.Lawyer && AdditionalWinnerTeams.Contains(AdditionalWinners.Lawyer))
-                            || (followerTargetPS.SubRoles.Contains(CustomRoles.Rebel) && AdditionalWinnerTeams.Contains(AdditionalWinners.Rebel))))):
+                            && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                             break;
