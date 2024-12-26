@@ -70,8 +70,11 @@ class CheckMurderPatch
     public static Dictionary<byte, float> TimeSinceLastKill = [];
     public static void Update()
     {
-        for (byte i = 0; i < 15; i++)
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
+            if (pc == null) continue;
+            var i = pc.PlayerId;
+
             if (TimeSinceLastKill.ContainsKey(i))
             {
                 TimeSinceLastKill[i] += Time.deltaTime;
@@ -176,7 +179,7 @@ class CheckMurderPatch
         }
 
         var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        float minTime = Mathf.Max(0.04f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
