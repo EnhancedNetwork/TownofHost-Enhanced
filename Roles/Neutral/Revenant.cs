@@ -25,6 +25,11 @@ internal class Revenant : RoleBase
     {
         CustomRoles role = killer.GetCustomRole();
 
+        if (killer.Is(CustomRoles.Rebel))
+        {
+            target.GetCustomSubRoles()?.Add(CustomRoles.Rebel);
+        }
+
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
 

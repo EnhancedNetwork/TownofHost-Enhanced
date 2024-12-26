@@ -1,4 +1,6 @@
-﻿namespace TOHE.Roles.Impostor;
+﻿using static TOHE.Options;
+
+namespace TOHE.Roles.Impostor;
 
 internal class Visionary : RoleBase
 {
@@ -11,7 +13,7 @@ internal class Visionary : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
@@ -27,17 +29,16 @@ internal class Visionary : RoleBase
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
-                or CustomRoles.Soulless
-                or CustomRoles.Admired)
+                or CustomRoles.Soulless)
                 return Main.roleColors[CustomRoles.Knight];
         }
 
-        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
+        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))
         {
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if (customRole.IsCrewmate())
+        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel))
         {
             return Main.roleColors[CustomRoles.Bait];
         }

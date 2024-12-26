@@ -34,12 +34,12 @@ public class Necroview : IAddon
                 return Main.roleColors[CustomRoles.Knight];
         }
 
-        if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired))
+        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))
         {
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if (customRole.IsCrewmate())
+        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel))
         {
             return Main.roleColors[CustomRoles.Bait];
         }
@@ -47,4 +47,3 @@ public class Necroview : IAddon
         return Main.roleColors[CustomRoles.Knight];
     }
 }
-

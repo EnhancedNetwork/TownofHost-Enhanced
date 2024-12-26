@@ -132,6 +132,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
+                if (subRole != CustomRoles.Rebel)
                 RemoveSubRole(subRole);
             }
         }
@@ -217,6 +218,7 @@ public class PlayerState(byte playerId)
                 SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
+                SubRoles.Remove(CustomRoles.Rebel);
                 break;
 
             case CustomRoles.Soulless:

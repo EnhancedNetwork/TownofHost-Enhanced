@@ -115,7 +115,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Apocalypse:
-                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                        if (pc.IsNeutralApocalypse() && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
                             && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -315,12 +315,9 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Specter);
                             break;
-                        case CustomRoles.Provocateur:
-                            if (Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId))
-                            {
-                                WinnerIds.Add(pc.PlayerId);
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
-                            }
+                        case CustomRoles.Provocateur when Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId):
+                            WinnerIds.Add(pc.PlayerId);
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
                             break;
                         case CustomRoles.Hater when Hater.isWon:
                             AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
@@ -337,13 +334,10 @@ class GameEndCheckerForNormal
                             AdditionalWinnerTeams.Add(AdditionalWinners.Troller);
                             WinnerIds.Add(pc.PlayerId);
                             break;
-                        case CustomRoles.Romantic:
-                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
-                                && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
-                            {
-                                WinnerIds.Add(pc.PlayerId);
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
-                            }
+                        case CustomRoles.Romantic when Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
+                            && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))):
+                            WinnerIds.Add(pc.PlayerId);
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                             break;
                         case CustomRoles.VengefulRomantic when VengefulRomantic.hasKilledKiller:
                             WinnerIds.Add(pc.PlayerId);
@@ -390,6 +384,32 @@ class GameEndCheckerForNormal
                     }
                 }
 
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rebel)).ToArray())
+                {
+                    if (WinnerTeam == CustomWinner.Crewmate && WinnerIds.Contains(pc.PlayerId))
+                        WinnerIds.Remove(pc.PlayerId);
+                    if (WinnerTeam != CustomWinner.Crewmate)
+                    {
+                        switch (Rebel.CanWinAfterDeath.GetBool())
+                        {
+                            case true:
+                                WinnerIds.Add(pc.PlayerId);
+                                break;
+                            case false:
+                                if (pc.IsAlive()) WinnerIds.Add(pc.PlayerId);
+                                break;
+                        }
+                        AdditionalWinnerTeams.Add(AdditionalWinners.Rebel);
+                    }
+                }
+
+                if (AdditionalWinnerTeams.Contains(AdditionalWinners.Rebel))
+                {
+                    Main.AllPlayerControls
+                        .Where(p => p.Is(CustomRoles.Rebel) && !WinnerIds.Contains(p.PlayerId))
+                        .Do(p => WinnerIds.Add(p.PlayerId));
+                }
+
                 //Lovers follow winner
                 if (WinnerTeam is not CustomWinner.Lovers)
                 {
@@ -413,7 +433,7 @@ class GameEndCheckerForNormal
                 }
 
                 //Neutral Win Together
-                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())))
+                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && ((Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() && !Utils.GetPlayerById(x).Is(CustomRoles.Rebel)) || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())))
                 {
                     foreach (var pc in Main.AllPlayerControls)
                         if (pc.GetCustomRole().IsNeutral() && !WinnerIds.Contains(pc.PlayerId) && !WinnerRoles.Contains(pc.GetCustomRole()))
