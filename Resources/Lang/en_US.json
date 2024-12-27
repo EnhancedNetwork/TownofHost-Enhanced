@@ -68,6 +68,7 @@
   "Role_AdmiredImpostor": "<color=#ee43c3>Admired Impostor</color>",
   "Role_Trickster": "<color=#ff1919>Trickster</color>",
   "Role_Traitor": "<color=#BA2E05>Traitor</color>",
+  "Role_Taskinator": "<color=4737ae>Taskinator</color>",
   "Role_NoChange": "Don't change the role",
   "Role_Random": "Random role from list",
 
@@ -3160,7 +3161,8 @@
   "CrewCanBeOiiai": "<color=#8cffff>Crewmates</color> can be OIIAI",
   "NeutralCanBeOiiai": "<color=#7f8c8d>Neutrals</color> can be OIIAI",
   "OiiaiCanPassOn": "OIIAI can pass on to the killer",
-  "NeutralChangeRolesForOiiai": "Neutrals turns to ",
+  "NeutralChangeRolesForOiiai": "Neutrals turn to ",
+  "RebelChangeRolesForOiiai": "Rebel Crewmates turn to ",
   "LostRoleByOiiai": "You got erased by OIIAI!",
   "ImpCanBeLoyal": "<color=#ff1919>Impostors</color> can become <color=#B71556>Loyal</color>",
   "CrewCanBeLoyal": "<color=#8cffff>Crewmates</color> can become <color=#B71556>Loyal</color>",
@@ -3182,6 +3184,14 @@
   "GanMarshallCanBeMadmate": "<color=#5573AA>Marshall</color> can be converted",
   "GanOverseerCanBeMadmate": "<color=#BA55D3>Overseer</color> can be converted",
   "RascalAppearAsMadmate": "Appear As <color=#ff1919>Madmate</color> On Ejection",
+
+  "SheriffCanBeRebel": "<color=#ffb347>Sheriff</color> can become <color=#ffab1b>Rebel</color>",
+  "DictatorCanBeRebel": "<color=#df9b00>Dictator</color> can become <color=#ffab1b>Rebel</color>",
+  "MarshallCanBeRebel": "<color=#5573AA>Marshall</color> can become <color=#ffab1b>Rebel</color>",
+  "RetributionistCanBeRebel": "<color=#228B22>Retributionist</color> can become <color=#ff1919>Rebel</color>",
+  "OverseerCanBeRebel": "<color=#BA55D3>Overseer</color> can become <color=#ffab1b>Rebel</color>",
+  "SwapperCanBeRebel": "<color=#66e666>Swapper</color> can become <color=#ffab1b>Rebel</color>",
+  "CleanserCanBeRebel": "<color=#98ff98>Cleanser</color> can become <color=#ffab1b>Rebel</color>",
 
   "CouncillorDead": "Sorry, you can't murder from the dead.",
   "CouncillorMurderMaxMeeting": "Sorry, you've reached the maximum amount of murders for the meeting.",

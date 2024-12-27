@@ -807,7 +807,15 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Youtuber)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if (pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if ((pc.Is(CustomRoles.Sheriff) && !Rebel.SheriffCanBeRebel.GetBool())
+                    || (pc.Is(CustomRoles.Marshall) && !Rebel.MarshallCanBeRebel.GetBool())
+                    || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
+                    || (pc.Is(CustomRoles.Swapper) && !Rebel.SwapperCanBeRebel.GetBool())
+                    || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
+                    || (pc.Is(CustomRoles.Dictator) && (!Rebel.DictatorCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
+                    || (pc.Is(CustomRoles.Retributionist) && (!Rebel.RetributionistCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool())))
+                    return false;
+                if (!pc.GetCustomRole().IsCrewmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
                     return false;
                 break;
 
