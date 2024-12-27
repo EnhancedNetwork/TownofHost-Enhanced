@@ -59,6 +59,16 @@ internal class Conjurer : CovenManager
     {
         AURoleOptions.ShapeshifterCooldown = ConjureCooldown.GetFloat();
     }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (!CanUseKillButton(killer)) return false;
+        if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+        {
+            return true;
+        }
+        killer.Notify(GetString("CovenDontKillOtherCoven"));
+        return false;
+    }
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         resetCooldown = true;

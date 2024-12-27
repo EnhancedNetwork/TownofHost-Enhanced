@@ -88,7 +88,16 @@ internal class Sacrifist : CovenManager
 
     // Sacrifist shouldn't be able to kill at all but if there's solo Sacrifist the game is unwinnable so they can kill when solo
     public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Coven)).Count() == 1;
-
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (!CanUseKillButton(killer)) return false;
+        if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+        {
+            return true;
+        }
+        killer.Notify(GetString("CovenDontKillOtherCoven"));
+        return false;
+    }
     public override void UnShapeShiftButton(PlayerControl pc)
     {
         var rand = IRandom.Instance;
