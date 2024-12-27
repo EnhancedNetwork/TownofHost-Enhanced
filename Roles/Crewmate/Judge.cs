@@ -36,6 +36,7 @@ internal class Judge : RoleBase
     private static OptionItem CanTrialNeutralA;
 
     private static readonly Dictionary<byte, int> TrialLimitMeeting = [];
+    private static readonly Dictionary<byte, int> TrialLimitGame = [];
 
     public override void SetupCustomOption()
     {
@@ -61,22 +62,41 @@ internal class Judge : RoleBase
     public override void Init()
     {
         TrialLimitMeeting.Clear();
+        TrialLimitGame.Clear();
     }
     public override void Add(byte playerId)
     {
         TrialLimitMeeting[playerId] = TrialLimitPerMeeting.GetInt();
+        TrialLimitGame[playerId] = TrialLimitPerGame.GetInt();
         AbilityLimit = TrialLimitPerGame.GetInt();
     }
     public override void Remove(byte playerId)
     {
         TrialLimitMeeting.Remove(playerId);
+        TrialLimitGame.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)
     {
-        foreach (var pid in TrialLimitMeeting.Keys)
+        if (!_Player) return;
+
+        TrialLimitMeeting[_Player.PlayerId] = TrialLimitPerMeeting.GetInt();
+
+        if (TrialLimitGame[_Player.PlayerId] <= TrialLimitPerMeeting.GetInt())
         {
-            TrialLimitMeeting[pid] = TrialLimitPerMeeting.GetInt();
+            AbilityLimit = TrialLimitGame[_Player.PlayerId];
         }
+        else
+        {
+            AbilityLimit = TrialLimitPerMeeting.GetInt();
+        }
+
+        SendSkillRPC();
+    }
+    public override void AfterMeetingTasks()
+    {
+        if (!_Player) return;
+        AbilityLimit = TrialLimitGame[_Player.PlayerId];
+        SendSkillRPC();
     }
     public bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -130,7 +150,7 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxMeetingMsg"));
                     return true;
                 }
-                if (AbilityLimit < 1)
+                if (TrialLimitGame[pc.PlayerId] < 1)
                 {
                     pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxGameMsg"));
                 }
@@ -204,6 +224,7 @@ internal class Judge : RoleBase
                 string Name = dp.GetRealName();
 
                 TrialLimitMeeting[pc.PlayerId]--;
+                TrialLimitGame[pc.PlayerId]--;
                 AbilityLimit--;
                 SendSkillRPC();
 
