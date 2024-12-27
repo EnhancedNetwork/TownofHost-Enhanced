@@ -95,12 +95,6 @@ internal class Admirer : RoleBase
             return false;
         }
 
-        if (target.Is(CustomRoles.Narc))
-        {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantRecruitNarc")));
-            return false;
-        }
-
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
@@ -216,7 +210,7 @@ internal class Admirer : RoleBase
         else AdmiredList.Add(admirer.PlayerId, []);
 
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
-            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
+            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Narc) 
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
