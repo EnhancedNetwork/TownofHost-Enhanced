@@ -1675,6 +1675,7 @@
   "TimeThiefDecreaseMeetingTime": "Lower Meeting Time by",
   "TimeThiefLowerLimitVotingTime": "Minimum Voting Time",
   "TimeThiefReturnStolenTimeUponDeath": "Return Stolen Time Upon Death",
+  "TimeThiefMaxTimeOnAdmired": "Maximum Meeting Time if Time Thief Is <color=#ee43c3>Admired</color>",
   "EvilTrackerCanSeeKillFlash": "Can See Kill-Flash",
   "EvilTrackerCanSeeLastRoomInMeeting": "Can See Target's Last Room In Meeting",
   "EvilTrackerTargetMode": "Can Set Target",
