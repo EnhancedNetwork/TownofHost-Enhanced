@@ -27,13 +27,9 @@ internal class Visionary : RoleBase
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
-                or CustomRoles.Soulless)
+                or CustomRoles.Soulless
+                or CustomRoles.Admired)
                 return "7f8c8d";
-        }
-
-        if (target.Is(CustomRoles.Admired))
-        {
-            return seer.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Admired) ? "00ffff" : "7f8c8d";
         }
         
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
