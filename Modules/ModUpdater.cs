@@ -1,13 +1,15 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
 using UnityEngine;
-using static TOHE.Translator;
 using UnityEngine.Networking;
+using static TOHE.Translator;
 using IEnumerator = System.Collections.IEnumerator;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
+using TOHE.Modules;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace TOHE;
 
@@ -30,6 +32,7 @@ public class ModUpdater
     public static string notice = null;
     public static GenericPopup InfoPopup;
     public static PassiveButton updateButton;
+    private static CancellationTokenSource downloadCancellationTokenSource = new();
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
     public static void Start_Postfix(/*MainMenuManager __instance*/)
@@ -69,7 +72,7 @@ public class ModUpdater
                 new(3.68f, -2.68f, 1f),
                 new(255, 165, 0, byte.MaxValue),
                 new(255, 200, 0, byte.MaxValue),
-                () => StartUpdate(downloadUrl),
+                (UnityEngine.Events.UnityAction)(() => StartUpdate(downloadUrl)),
                 GetString("update"));
             updateButton.transform.localScale = Vector3.one;
         }
@@ -172,7 +175,7 @@ public class ModUpdater
     public static void StartUpdate(string url)
     {
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
-        Main.Instance.StartCoroutine(DownloadDLL(url));
+        Task.Run(() => DownloadDLLAsync(url));
         return;
     }
     public static bool NewVersionCheck()
@@ -196,18 +199,21 @@ public class ModUpdater
     }
     public static void StopDownload()
     {
-        cachedfileStream.Dispose();
-        Main.Instance.StopAllCoroutines();
-        Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
+        lock (downloadLock)
+        {
+            downloadCancellationTokenSource?.Cancel();
+
+            cachedfileStream?.Dispose();
+            cachedfileStream = null;
+        }
     }
     public static IEnumerator DeleteFilesAfterCancel()
     {
-        ShowPopup(GetString("deletingFiles"), StringNames.None, false);
+        ShowPopupAsync(GetString("deletingFiles"), StringNames.None, false);
         yield return new WaitForSeconds(2f);
         InfoPopup.Close();
         yield return new WaitForSeconds(0.3f);
         DeleteOldFiles();
-        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
         yield break;
     }
     public static void DeleteOldFiles()
@@ -234,64 +240,92 @@ public class ModUpdater
     private static readonly object downloadLock = new();
     private static FileStream cachedfileStream;
 
-    private static IEnumerator DownloadDLL(string url)
+    private static async Task DownloadDLLAsync(string url)
     {
         var savePath = "BepInEx/plugins/TOHE.dll.temp";
-        Application.targetFrameRate = -1;
 
         // Delete the temporary file if it exists
         DeleteOldFiles();
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.timeout = 10;
-        request.SetRequestHeader("Connection", "Keep-Alive");
-        request.SetRequestHeader("User-Agent", "Mozilla/5.0");
-        request.chunkedTransfer = false;
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+        try
         {
-            Logger.Error($"File retrieval failed with status code: {request.responseCode}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
-            Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
-            yield break;
-        }
+            downloadCancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = downloadCancellationTokenSource.Token;
 
-        var total = request.downloadedBytes;
-        using (var stream = new MemoryStream(request.downloadHandler.data))
-        {
-            using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+            using (HttpClient client = new())
             {
+                client.Timeout = TimeSpan.FromSeconds(10);
+                client.DefaultRequestHeaders.Connection.Add("Keep-Alive");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Logger.Error($"File retrieval failed with status code: {response.StatusCode}", "DownloadDLL", false);
+                    ShowPopupAsync(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+                    return;
+                }
+
+                var total = response.Content.Headers.ContentLength ?? -1L;
+                using var stream = await response.Content.ReadAsStreamAsync(token);
+                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+
                 cachedfileStream = fileStream;
                 byte[] buffer = new byte[1024];
                 long readLength = 0;
                 int length;
 
-                while ((length = stream.Read(buffer, 0, buffer.Length)) > 0)
+                while ((length = await stream.ReadAsync(buffer, token)) > 0)
                 {
-                    yield return null;
-
-                    fileStream.Write(buffer, 0, length);
+                    await fileStream.WriteAsync(buffer.AsMemory(0, length), token);
 
                     readLength += length;
-                    double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
+                    double progress = total > 0 ? Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero) : 0;
 
                     lock (downloadLock)
                     {
-                        DownloadCallBack(total, readLength, progress ?? 0); // Call back with progress info
+                        DownloadCallBack(total, readLength, progress);
                     }
                 }
-            }
-        }
 
-        var fileName = Assembly.GetExecutingAssembly().Location;
-        File.Move(fileName, fileName + ".bak");
-        File.Move(savePath, fileName);
-        ShowPopup(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
+                await fileStream.DisposeAsync();
+            }
+
+            var fileName = Assembly.GetExecutingAssembly().Location;
+            File.Move(fileName, fileName + ".bak");
+            File.Move(savePath, fileName);
+            ShowPopupAsync(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
+        }
+        catch (OperationCanceledException)
+        {
+            Logger.Warn("Download operation was canceled.", "DownloadDLL");
+            Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"An error occurred during the download: {ex.Message}", "DownloadDLL", false);
+            ShowPopupAsync(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+        }
+        finally
+        {
+            cachedfileStream?.Dispose();
+            cachedfileStream = null;
+
+            downloadCancellationTokenSource?.Dispose();
+            downloadCancellationTokenSource = null;
+        }
     }
-    private static void DownloadCallBack(ulong total, long downloaded, double progress)
+    private static void DownloadCallBack(long total, long downloaded, double progress)
     {
-        ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
+        ShowPopupAsync($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
+    }
+    private static void ShowPopupAsync(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
+    {
+        Dispatcher.Dispatch(() =>
+        {
+            ShowPopup(message, buttonText, showButton, onClick);
+        });
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {
@@ -306,7 +340,7 @@ public class ModUpdater
                 button.GetChild(0).GetComponent<TextTranslatorTMP>().ResetText();
                 button.GetComponent<PassiveButton>().OnClick = new();
                 if (onClick != null) button.GetComponent<PassiveButton>().OnClick.AddListener(onClick);
-                else button.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() => InfoPopup.Close()));
+                else button.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopup.Close()));
             }
         }
     }

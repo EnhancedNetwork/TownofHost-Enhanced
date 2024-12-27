@@ -51,6 +51,7 @@ internal static class CopsAndRobbersManager
 
     public static OptionItem CandR_NumCops;
     private static OptionItem CandR_CaptureCooldown;
+    private static OptionItem CandR_TeleportCaptureToRandomLoc;
     private static OptionItem CandR_CopAbilityTriggerChance;
     private static OptionItem CandR_CopAbilityCooldown;
     private static OptionItem CandR_CopAbilityDuration;
@@ -108,80 +109,83 @@ internal static class CopsAndRobbersManager
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
+        CandR_TeleportCaptureToRandomLoc = BooleanOptionItem.Create(Id + 5, "C&R_TeleportCaptureToRandomLoc", true, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.CandR)
+            .SetColor(new Color32(0, 123, 255, byte.MaxValue));
 
-        CandR_CopAbilityTriggerChance = IntegerOptionItem.Create(Id + 5, "C&R_CopAbilityTriggerChance", new(0, 100, 5), 50, TabGroup.ModSettings, false)
+        CandR_CopAbilityTriggerChance = IntegerOptionItem.Create(Id + 6, "C&R_CopAbilityTriggerChance", new(0, 100, 5), 50, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent);
 
-        CandR_CopAbilityDuration = IntegerOptionItem.Create(Id + 6, "C&R_CopAbilityDuration", new(1, 10, 1), 10, TabGroup.ModSettings, false)
+        CandR_CopAbilityDuration = IntegerOptionItem.Create(Id + 7, "C&R_CopAbilityDuration", new(1, 10, 1), 10, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_CopAbilityCooldown = FloatOptionItem.Create(Id + 7, "C&R_CopAbilityCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
+        CandR_CopAbilityCooldown = FloatOptionItem.Create(Id + 8, "C&R_CopAbilityCooldown", new(10f, 60f, 2.5f), 20f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_CopAbilityTriggerChance);
 
 
-        CandR_HotPursuitChance = IntegerOptionItem.Create(Id + 8, "C&R_HotPursuitChance", new(0, 100, 5), 35, TabGroup.ModSettings, false)
+        CandR_HotPursuitChance = IntegerOptionItem.Create(Id + 9, "C&R_HotPursuitChance", new(0, 100, 5), 35, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_HotPursuitSpeed = FloatOptionItem.Create(Id + 9, "C&R_HotPursuitSpeed", new(0f, 2f, 0.25f), 1f, TabGroup.ModSettings, false)
+        CandR_HotPursuitSpeed = FloatOptionItem.Create(Id + 10, "C&R_HotPursuitSpeed", new(0f, 2f, 0.25f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_HotPursuitChance);
 
 
-        CandR_SpikeStripChance = IntegerOptionItem.Create(Id + 10, "C&R_SpikeStripChance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+        CandR_SpikeStripChance = IntegerOptionItem.Create(Id + 11, "C&R_SpikeStripChance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_SpikeStripRadius = FloatOptionItem.Create(Id + 11, "C&R_SpikeStripRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
+        CandR_SpikeStripRadius = FloatOptionItem.Create(Id + 12, "C&R_SpikeStripRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_SpikeStripChance);
-        CandR_SpikeStripDuration = IntegerOptionItem.Create(Id + 12, "C&R_SpikeStripDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
+        CandR_SpikeStripDuration = IntegerOptionItem.Create(Id + 13, "C&R_SpikeStripDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_SpikeStripChance);
 
-        CandR_FlashBangChance = IntegerOptionItem.Create(Id + 13, "C&R_FlashBangChance", new(0, 100, 5), 15, TabGroup.ModSettings, false)
+        CandR_FlashBangChance = IntegerOptionItem.Create(Id + 14, "C&R_FlashBangChance", new(0, 100, 5), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_FlashBangRadius = FloatOptionItem.Create(Id + 14, "C&R_FlashBangRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
+        CandR_FlashBangRadius = FloatOptionItem.Create(Id + 15, "C&R_FlashBangRadius", new(0.5f, 2f, 0.5f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_FlashBangChance);
-        CandR_FlashBangDuration = IntegerOptionItem.Create(Id + 15, "C&R_FlashBangDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
+        CandR_FlashBangDuration = IntegerOptionItem.Create(Id + 16, "C&R_FlashBangDuration", new(1, 10, 1), 5, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetParent(CandR_FlashBangChance);
 
-        CandR_ScopeChance = IntegerOptionItem.Create(Id + 16, "C&R_ScopeChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
+        CandR_ScopeChance = IntegerOptionItem.Create(Id + 17, "C&R_ScopeChance", new(0, 100, 5), 10, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
             .SetParent(CandR_CopAbilityTriggerChance);
-        CandR_ScopeIncrease = IntegerOptionItem.Create(Id + 17, "C&R_ScopeIncrease", new(1, 5, 1), 1, TabGroup.ModSettings, false)
+        CandR_ScopeIncrease = IntegerOptionItem.Create(Id + 18, "C&R_ScopeIncrease", new(1, 5, 1), 1, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier)
             .SetParent(CandR_ScopeChance);
 
-        CandR_K9Chance = IntegerOptionItem.Create(Id + 18, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
+        CandR_K9Chance = IntegerOptionItem.Create(Id + 19, "C&R_K9Chance", new(0, 100, 5), 20, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(0, 123, 255, byte.MaxValue))
             .SetValueFormat(OptionFormat.Percent)
@@ -438,8 +442,37 @@ internal static class CopsAndRobbersManager
     }
     private static void AddCaptured(this PlayerControl robber, Vector2 capturedLocation)
     {
-        captured[robber.PlayerId] = capturedLocation;
         RoleType.Captured.SetCostume(playerId: robber.PlayerId);
+        if (CandR_TeleportCaptureToRandomLoc.GetBool())
+        {
+            var rand = IRandom.Instance;
+            if (rand.Next(100) > 50)
+            {
+                RandomSpawn.SpawnMap spawnMap = Utils.GetActiveMapName() switch
+                {
+                    MapNames.Skeld => new RandomSpawn.SkeldSpawnMap(),
+                    MapNames.Mira => new RandomSpawn.MiraHQSpawnMap(),
+                    MapNames.Polus => new RandomSpawn.PolusSpawnMap(),
+                    MapNames.Dleks => new RandomSpawn.DleksSpawnMap(),
+                    MapNames.Fungle => new RandomSpawn.FungleSpawnMap(),
+                    MapNames.Airship => new RandomSpawn.AirshipSpawnMap(),
+                    _ => null,
+                };
+                if (spawnMap != null)
+                {
+                    capturedLocation = spawnMap.GetLocation();
+                    
+                }
+            }
+            else
+            {
+                var vent = ShipStatus.Instance.AllVents.RandomElement();
+                capturedLocation = new Vector2(vent.transform.position.x, vent.transform.position.y + 0.3636f);
+            }
+            robber.RpcTeleport(capturedLocation);
+
+        }
+        captured[robber.PlayerId] = capturedLocation;
         Main.AllPlayerSpeed[robber.PlayerId] = Main.MinSpeed;
         robber.RpcSetVentInteraction();
         robber?.MarkDirtySettings();
@@ -809,12 +842,12 @@ internal static class CopsAndRobbersManager
                 smokeBombActive.Remove(robber.PlayerId);
                 break;
             case RobberAbility.Disguise:
+                disguise.Remove(robber.PlayerId);
                 if (captured.ContainsKey(robber.PlayerId))
                 {
                     Logger.Info($"disguise finished for captured player {robber.PlayerId}", "disguise finish");
                     break;
                 }
-                disguise.Remove(robber.PlayerId);
                 RoleType.Robber.SetCostume(robber.PlayerId);
                 Logger.Info($"reverting costume because disguise finished for player: {robber.PlayerId}", "disguise finish");
                 break;
@@ -867,7 +900,7 @@ internal static class CopsAndRobbersManager
         {
             if (!GameStates.IsInGame || !RemoveRobberAbility.ContainsKey(robber.PlayerId)) return;
             robber.DeactivateRobberAbility(ability: ability);
-        }, CandR_RobberAbilityDuration.GetInt(), "Remove cop ability");
+        }, CandR_RobberAbilityDuration.GetInt(), "Remove robber ability");
     }
     public static void OnRobberExitVent(PlayerControl pc)
     {
@@ -980,9 +1013,24 @@ internal static class CopsAndRobbersManager
     }
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
-        var name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty);
-        if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
-        else name = Utils.GetPlayerById(id)?.Data.PlayerName ?? name;
+        string name;
+        try
+        {
+            if (id == PlayerControl.LocalPlayer.PlayerId) name = DataManager.player.Customization.Name;
+            else name = Main.AllClientRealNames[GameData.Instance.GetPlayerById(id).ClientId];
+        }
+        catch
+        {
+            Logger.Error("Failed to get name for {id} by real client names, try assign with AllPlayerNames", "Utils.SummaryTexts");
+            name = Main.AllPlayerNames[id].RemoveHtmlTags().Replace("\r\n", string.Empty) ?? "<color=#ff0000>ERROR</color>";
+        }
+
+        // Impossible to output summarytexts for a player without playerState
+        if (!Main.PlayerStates.TryGetValue(id, out var ps))
+        {
+            Logger.Error("playerState for {id} not found", "CopsAndRobbersManager.SummaryTexts");
+            return $"[{id}]" + name + " : <b>ERROR</b>";
+        }
 
         string TaskCount = string.Empty;
         Color nameColor = Color.white;
@@ -1130,10 +1178,13 @@ internal static class CopsAndRobbersManager
                     // If Spike duration finished, reset the speed of trapped player
                     if (spikeTrigger.ContainsKey(robberId) && now - spikeTrigger[robberId] > CandR_SpikeStripDuration.GetFloat())
                     {
-                        Main.AllPlayerSpeed[robberId] = defaultSpeed[robberId];
-                        if (adrenalineRushActive.Contains(robberId))
-                            Main.AllPlayerSpeed[robberId] += CandR_AdrenalineRushSpeed.GetFloat();
-                        robber?.MarkDirtySettings();
+                        if (!captured.ContainsKey(robberId))
+                        {
+                            Main.AllPlayerSpeed[robberId] = defaultSpeed[robberId];
+                            if (adrenalineRushActive.Contains(robberId))
+                                Main.AllPlayerSpeed[robberId] += CandR_AdrenalineRushSpeed.GetFloat();
+                            robber?.MarkDirtySettings();
+                        }
                         spikeTrigger.Remove(robberId);
                     }
                     // If flash duration finished, reset the vision of trapped player

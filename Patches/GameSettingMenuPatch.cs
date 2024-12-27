@@ -72,7 +72,7 @@ public class GameSettingMenuPatch
             var buttonComponent = button.GetComponent<PassiveButton>();
             buttonComponent.OnClick = new();
             buttonComponent.OnClick.AddListener(
-                (Action)(() => __instance.ChangeTab((int)tab + 3, false)));
+                (UnityEngine.Events.UnityAction)(() => __instance.ChangeTab((int)tab + 3, false)));
 
             ModSettingsButtons.Add(tab, button);
         }
@@ -95,8 +95,8 @@ public class GameSettingMenuPatch
             }
         }
 
-            HiddenBySearch.Do(x => x.SetHidden(false));
-            HiddenBySearch.Clear();
+        HiddenBySearch.Do(x => x.SetHidden(false));
+        HiddenBySearch.Clear();
 
         SetupAdittionalButtons(__instance);
     }
@@ -106,7 +106,7 @@ public class GameSettingMenuPatch
 
         var gameSettingButton = __instance.GameSettingsButton;
         gameSettingButton.transform.localPosition = new(-3f, -0.5f, 0f);
-        
+
         var textLabel = gameSettingButton.GetComponentInChildren<TextMeshPro>();
         textLabel.DestroyTranslator();
         textLabel.fontStyle = FontStyles.UpperCase;
@@ -178,7 +178,8 @@ public class GameSettingMenuPatch
         var Minus = GMinus.GetComponent<PassiveButton>();
         Minus.OnClick.RemoveAllListeners();
         Minus.OnClick.AddListener(
-                (Action)(() => {
+                (UnityEngine.Events.UnityAction)(() =>
+                {
                     if (PresetBehaviour == null) __instance.ChangeTab(3, false);
                     PresetBehaviour.Decrease();
                 }));
@@ -210,7 +211,8 @@ public class GameSettingMenuPatch
         var plus = PlusFab.GetComponent<PassiveButton>();
         plus.OnClick.RemoveAllListeners();
         plus.OnClick.AddListener(
-                (Action)(() => {
+                (UnityEngine.Events.UnityAction)(() =>
+                {
                     if (PresetBehaviour == null) __instance.ChangeTab(3, false);
                     PresetBehaviour.Increase();
                 }));
@@ -228,7 +230,7 @@ public class GameSettingMenuPatch
         var FreeChatField = DestroyableSingleton<ChatController>.Instance.freeChatField;
         var TextField = Object.Instantiate(FreeChatField, ParentLeftPanel.parent);
         TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
-        TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f); 
+        TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f);
         TextField.textArea.outputText.transform.localScale = new Vector3(3.5f, 2f, 1f);
         TextField.textArea.outputText.font = PLuLabel.font;
         TextField.name = "InputField";
@@ -259,11 +261,13 @@ public class GameSettingMenuPatch
 
         passiveButton.OnClick = new();
         passiveButton.OnClick.AddListener(
-                (Action)(() => {
+                (UnityEngine.Events.UnityAction)(() =>
+                {
                     SearchForOptions(TextField);
                 }));
 
-        _SearchForOptions = (() => {
+        _SearchForOptions = (() =>
+        {
             if (TextField.textArea.text == string.Empty)
                 return;
 
@@ -276,7 +280,7 @@ public class GameSettingMenuPatch
 
             HiddenBySearch.Do(x => x.SetHidden(false));
             string text = textField.textArea.text.Trim().ToLower();
-            var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) 
+            var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode)
             && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
             var SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
@@ -302,11 +306,11 @@ public class GameSettingMenuPatch
             HiddenBySearch.Do(x => x.SetHidden(false));
             if (ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var GameSettingsTab) && GameSettingsTab != null)
                 GameOptionsMenuPatch.ReCreateSettings(GameSettingsTab);
-            
+
             HiddenBySearch.Clear();
         }
 
-       if (!previewOnly || tabNum != 1) ModGameOptionsMenu.TabIndex = tabNum;
+        if (!previewOnly || tabNum != 1) ModGameOptionsMenu.TabIndex = tabNum;
 
         GameOptionsMenu settingsTab;
         PassiveButton button;

@@ -13,6 +13,7 @@ namespace TOHE.Roles.Impostor;
 internal class Councillor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Councillor;
     private const int Id = 1000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Councillor);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -28,15 +29,15 @@ internal class Councillor : RoleBase
     private static OptionItem SuicideOnJudgeImpTeam;
     private static OptionItem CanMurderTaskDoneSnitch;
     private static OptionItem KillCooldown;
-    
+
     private int MurderLimitMeeting;
 
 
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Councillor);
-            KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
-                .SetValueFormat(OptionFormat.Seconds);
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
+            .SetValueFormat(OptionFormat.Seconds);
         MurderLimitPerMeeting = IntegerOptionItem.Create(Id + 11, "CouncillorMurderLimitPerMeeting", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
             .SetValueFormat(OptionFormat.Times);
         MurderLimitPerGame = IntegerOptionItem.Create(Id + 12, "CouncillorMurderLimitPerGame", new(1, 15, 1), 4, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Councillor])
@@ -118,7 +119,7 @@ internal class Councillor : RoleBase
                 else if (AbilityLimit <= 0)
                 {
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxGame"));
-                    return true; 
+                    return true;
                 }
 
                 if (Jailer.IsTarget(target.PlayerId))
@@ -244,29 +245,28 @@ internal class Councillor : RoleBase
                 SendSkillRPC();
 
                 if (!GameStates.IsProceeding)
-                _ = new LateTask(() =>
-                {
-                    dp.SetDeathReason(PlayerState.DeathReason.Trialed);
-                    dp.SetRealKiller(pc);
-                    GuessManager.RpcGuesserMurderPlayer(dp);
+                    _ = new LateTask(() =>
+                    {
+                        dp.SetDeathReason(PlayerState.DeathReason.Trialed);
+                        dp.SetRealKiller(pc);
+                        GuessManager.RpcGuesserMurderPlayer(dp);
 
-                    Main.PlayersDiedInMeeting.Add(dp.PlayerId);
-                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
+                        Main.PlayersDiedInMeeting.Add(dp.PlayerId);
+                        MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
-                    Utils.NotifyRoles(isForMeeting: false, NoCache: true);
-
-                    _ = new LateTask(() => {
-                        if (!MakeEvilJudgeClear.GetBool())
+                        _ = new LateTask(() =>
                         {
-                            Utils.SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true);
-                        }
-                        else
-                        {
-                            Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), GetString("Councillor_MurderKillTitle")), true);
-                        }
-                    }, 0.6f, "Guess Msg");
+                            if (!MakeEvilJudgeClear.GetBool())
+                            {
+                                Utils.SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true);
+                            }
+                            else
+                            {
+                                Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), GetString("Councillor_MurderKillTitle")), true);
+                            }
+                        }, 0.6f, "Guess Msg");
 
-                }, 0.2f, "Murder Kill");
+                    }, 0.2f, "Murder Kill");
             }
         }
         return true;
@@ -375,7 +375,7 @@ internal class Councillor : RoleBase
             renderer.sprite = CustomButton.Get("MeetingKillButton");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 

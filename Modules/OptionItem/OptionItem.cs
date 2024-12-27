@@ -198,11 +198,11 @@ public abstract class OptionItem
         {
             if (IsVanillaText == true)
             {
-            opt.TitleText.text = GetNameVanilla();
+                opt.TitleText.text = GetNameVanilla();
             }
             else
             {
-            opt.TitleText.text = GetName();
+                opt.TitleText.text = GetName();
             }
             opt.ValueText.text = GetString();
             opt.oldValue = opt.Value = CurrentValue;
@@ -300,7 +300,7 @@ public abstract class OptionItem
     public const int NumPresets = 5;
     public const int PresetId = 0;
 }
-
+[Obfuscation(Exclude = true)]
 public enum TabGroup
 {
     SystemSettings,
@@ -311,6 +311,7 @@ public enum TabGroup
     NeutralRoles,
     Addons
 }
+[Obfuscation(Exclude = true)]
 public enum OptionFormat
 {
     None,

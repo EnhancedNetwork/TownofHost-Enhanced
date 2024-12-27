@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Youtuber : IAddon
 {
+    public CustomRoles Role => CustomRoles.Youtuber;
     private const int Id = 25500;
     public AddonTypes Type => AddonTypes.Misc;
 

@@ -2,12 +2,14 @@
 using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Seeker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Seeker;
     private const int Id = 14600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Seeker);
     public override bool IsDesyncRole => true;
@@ -47,7 +49,7 @@ internal class Seeker : RoleBase
         if (AmongUsClient.Instance.AmHost)
             _ = new LateTask(() =>
             {
-                ResetTarget(Utils.GetPlayerById(playerId));
+                ResetTarget(GetPlayerById(playerId));
             }, 10f, "Seeker Round 1");
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
@@ -109,7 +111,7 @@ internal class Seeker : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-       Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
+        Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed[_state.PlayerId];
     }
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
@@ -126,7 +128,7 @@ internal class Seeker : RoleBase
         {
             ResetTarget(player);
         }
-        
+
         if (totalPoints >= PointsToWinOpt)
         {
             TotalPoints[seekerId] = PointsToWinOpt;
@@ -143,7 +145,7 @@ internal class Seeker : RoleBase
 
         if (!Targets.TryGetValue(player.PlayerId, out var targetId))
             targetId = ResetTarget(player);
-        
+
         return targetId;
     }
     private static void FreezeSeeker(PlayerControl player)
@@ -185,13 +187,20 @@ internal class Seeker : RoleBase
 
 
         SendRPC(player.PlayerId, targetId: targetId);
-        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
+        NotifyRoles(SpecifySeer: player, ForceLoop: true);
         FreezeSeeker(player);
         return targetId;
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Targets.ContainsValue(target.PlayerId) ? Main.roleColors[CustomRoles.Seeker] : "";
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[PlayerId]}/{PointsToWin.GetInt()})");
+    public override string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+        if (seer.PlayerId == _Player.PlayerId && seen.PlayerId == GetTarget(seer))
+            return ColorString(GetRoleColor(CustomRoles.Seeker), " ★");
+
+        return "";
+    }
+    public override string GetProgressText(byte PlayerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Seeker).ShadeColor(0.25f), $"({TotalPoints[PlayerId]}/{PointsToWin.GetInt()})");
 
     public override void AfterMeetingTasks()
     {
@@ -207,8 +216,8 @@ internal class Seeker : RoleBase
         if (player.IsAlive())
         {
             var targetId = GetTarget(player);
-            player.Notify(string.Format(GetString("SeekerNotify"), Utils.GetPlayerById(targetId).GetRealName()));
-            Utils.GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
+            player.Notify(string.Format(GetString("SeekerNotify"), GetPlayerById(targetId).GetRealName()));
+            GetPlayerById(targetId)?.Notify(GetString("SeekerTargetNotify"));
         }
     }
 }

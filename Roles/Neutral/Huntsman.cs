@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class Huntsman : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Huntsman;
     private const int Id = 16500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Huntsman);
     public override bool IsDesyncRole => true;
@@ -27,6 +28,7 @@ internal class Huntsman : RoleBase
     private static OptionItem MinKCD;
     private static OptionItem MaxKCD;
 
+    private bool IsDead = false;
     private readonly HashSet<byte> Targets = [];
     private float KCD = 25;
 
@@ -52,6 +54,7 @@ internal class Huntsman : RoleBase
     public override void Add(byte playerId)
     {
         KCD = KillCooldown.GetFloat();
+        IsDead = false;
 
         _ = new LateTask(() =>
         {
@@ -99,13 +102,19 @@ internal class Huntsman : RoleBase
         }
         return true;
     }
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        Targets.Clear();
+        SendRPC(isSetTarget: false);
+        IsDead = true;
+    }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KCD;
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
     public override string GetLowerText(PlayerControl player, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (isForMeeting) return string.Empty;
+        if (isForMeeting || IsDead) return string.Empty;
 
         var targetId = player.PlayerId;
         string output = string.Empty;
@@ -120,7 +129,7 @@ internal class Huntsman : RoleBase
     }
     private void ResetTargets(bool isStartedGame = false)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || IsDead) return;
 
         Targets.Clear();
         SendRPC(isSetTarget: false);
@@ -152,5 +161,5 @@ internal class Huntsman : RoleBase
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-        => Targets.Contains(target.PlayerId) ? "6e5524" : string.Empty;
+        => !IsDead && Targets.Contains(target.PlayerId) ? "6e5524" : string.Empty;
 }

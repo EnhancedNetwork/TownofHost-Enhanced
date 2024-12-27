@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -13,6 +12,7 @@ class CreateOptionsPickerPatch
     {
         [HarmonyPatch(nameof(GameOptionsMapPicker.Initialize))]
         [HarmonyPostfix]
+        [Obfuscation(Exclude = true)]
         public static void Postfix_Initialize(GameOptionsMapPicker __instance)
         {
             int DleksPos = 3;
@@ -28,7 +28,7 @@ class CreateOptionsPickerPatch
                 DleksButton = dlekS_ehT_MapButton;
                 dlekS_ehT_MapButton.MapIcon.transform.localScale = new Vector3(-1f, 1f, 1f);
                 dlekS_ehT_MapButton.Button.OnClick.RemoveAllListeners();
-                dlekS_ehT_MapButton.Button.OnClick.AddListener((Action)(() =>
+                dlekS_ehT_MapButton.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
                     __instance.SelectMap(__instance.AllMapIcons[0]);
 
@@ -85,6 +85,7 @@ class CreateOptionsPickerPatch
 
         [HarmonyPatch(nameof(GameOptionsMapPicker.FixedUpdate))]
         [HarmonyPrefix]
+        [Obfuscation(Exclude = true)]
         public static bool Prefix_FixedUpdate(GameOptionsMapPicker __instance)
         {
             if (__instance == null) return true;

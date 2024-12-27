@@ -6,6 +6,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Bodyguard : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bodyguard;
     private const int Id = 10300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bodyguard);
 
@@ -25,7 +26,7 @@ internal class Bodyguard : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         var bodyguard = _Player;
-        if (!bodyguard.IsAlive() || killer?.PlayerId == target.PlayerId || bodyguard.PlayerId == target.PlayerId) return false;
+        if (!bodyguard.IsAlive() || killer.PlayerId == target.PlayerId || bodyguard.PlayerId == target.PlayerId) return false;
 
         var killerRole = killer.GetCustomRole();
         // Not should kill

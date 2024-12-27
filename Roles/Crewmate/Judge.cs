@@ -1,23 +1,21 @@
 ﻿using Hazel;
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
-using static TOHE.Utils;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
-using System.Text;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Judge : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Judge;
     private const int Id = 10700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
@@ -38,6 +36,7 @@ internal class Judge : RoleBase
     private static OptionItem CanTrialNeutralA;
 
     private static readonly Dictionary<byte, int> TrialLimitMeeting = [];
+    private static readonly Dictionary<byte, int> TrialLimitGame = [];
 
     public override void SetupCustomOption()
     {
@@ -62,27 +61,42 @@ internal class Judge : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         TrialLimitMeeting.Clear();
+        TrialLimitGame.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-        TrialLimitMeeting.Add(playerId, TrialLimitPerMeeting.GetInt());
+        TrialLimitMeeting[playerId] = TrialLimitPerMeeting.GetInt();
+        TrialLimitGame[playerId] = TrialLimitPerGame.GetInt();
         AbilityLimit = TrialLimitPerGame.GetInt();
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         TrialLimitMeeting.Remove(playerId);
+        TrialLimitGame.Remove(playerId);
     }
     public override void OnReportDeadBody(PlayerControl party, NetworkedPlayerInfo dinosaur)
     {
-        foreach (var pid in TrialLimitMeeting.Keys)
+        if (!_Player) return;
+
+        TrialLimitMeeting[_Player.PlayerId] = TrialLimitPerMeeting.GetInt();
+
+        if (TrialLimitGame[_Player.PlayerId] <= TrialLimitPerMeeting.GetInt())
         {
-            TrialLimitMeeting[pid] = TrialLimitPerMeeting.GetInt();
-            SendRPC(pid, true);
+            AbilityLimit = TrialLimitGame[_Player.PlayerId];
         }
+        else
+        {
+            AbilityLimit = TrialLimitPerMeeting.GetInt();
+        }
+
+        SendSkillRPC();
+    }
+    public override void AfterMeetingTasks()
+    {
+        if (!_Player) return;
+        AbilityLimit = TrialLimitGame[_Player.PlayerId];
+        SendSkillRPC();
     }
     public bool TrialMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -92,7 +106,7 @@ internal class Judge : RoleBase
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
         if (!pc.Is(CustomRoles.Judge)) return false;
 
-        int operate = 0; // 1:ID 2:猜测
+        int operate = 0;
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
         else if (CheckCommond(ref msg, "sp|jj|tl|trial|审判|判|审|審判|審", false)) operate = 2;
@@ -112,7 +126,7 @@ internal class Judge : RoleBase
         else if (operate == 2)
         {
 
-            if (TryHideMsg.GetBool()) 
+            if (TryHideMsg.GetBool())
             {
                 //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
                 //else GuessManager.TryHideMsg();
@@ -136,7 +150,7 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxMeetingMsg"));
                     return true;
                 }
-                if (AbilityLimit < 1)
+                if (TrialLimitGame[pc.PlayerId] < 1)
                 {
                     pc.ShowInfoMessage(isUI, GetString("JudgeTrialMaxGameMsg"));
                 }
@@ -210,26 +224,23 @@ internal class Judge : RoleBase
                 string Name = dp.GetRealName();
 
                 TrialLimitMeeting[pc.PlayerId]--;
+                TrialLimitGame[pc.PlayerId]--;
                 AbilityLimit--;
                 SendSkillRPC();
-                SendRPC(pc.PlayerId, true);
 
                 if (!GameStates.IsProceeding)
-                
-                _ = new LateTask(() =>
-                {
-                    dp.SetDeathReason(PlayerState.DeathReason.Trialed);
-                    dp.SetRealKiller(pc);
-                    GuessManager.RpcGuesserMurderPlayer(dp);
+                    _ = new LateTask(() =>
+                    {
+                        dp.SetDeathReason(PlayerState.DeathReason.Trialed);
+                        dp.SetRealKiller(pc);
+                        GuessManager.RpcGuesserMurderPlayer(dp);
 
-                    Main.PlayersDiedInMeeting.Add(dp.PlayerId);
-                    MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
+                        Main.PlayersDiedInMeeting.Add(dp.PlayerId);
+                        MurderPlayerPatch.AfterPlayerDeathTasks(pc, dp, true);
 
-                    NotifyRoles(isForMeeting: false, NoCache: true);
+                        _ = new LateTask(() => { SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, ColorString(GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true); }, 0.6f, "Guess Msg");
 
-                    _ = new LateTask(() => { SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, ColorString(GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true); }, 0.6f, "Guess Msg");
-
-                }, 0.2f, "Trial Kill");
+                    }, 0.2f, "Trial Kill");
             }
         }
         return true;
@@ -243,7 +254,7 @@ internal class Judge : RoleBase
         string result = string.Empty;
         for (int i = 0; i < mc.Count; i++)
         {
-            result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
+            result += mc[i];
         }
 
         if (int.TryParse(result, out int num))
@@ -252,15 +263,11 @@ internal class Judge : RoleBase
         }
         else
         {
-            //并不是玩家编号，判断是否颜色
-            //byte color = GetColorFromMsg(msg);
-            //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
             id = byte.MaxValue;
             error = GetString("Judge_TrialHelp");
             return false;
         }
 
-        //判断选择的玩家是否合理
         PlayerControl target = GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
@@ -292,37 +299,29 @@ internal class Judge : RoleBase
         return false;
     }
 
-    private static void SendRPC(byte playerId, bool syncLimit = false)
+    private static void SendRPC(byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Judge, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(syncLimit);
-        writer.WritePacked(TrialLimitMeeting[playerId]);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Judge, SendOption.Reliable);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {
-        byte PlayerId = reader.ReadByte();
-        var syncLimit = reader.ReadBoolean();
+        byte targetId = reader.ReadByte();
 
-        if (syncLimit)
+        if (pc.GetRoleClass() is Judge judge)
         {
-            var trialLimit = reader.ReadPackedInt32();
-            TrialLimitMeeting[PlayerId] = trialLimit;
-        }
-        else if (pc.GetRoleClass() is Judge judge)
-        {
-            judge.TrialMsg(pc, $"/tl {PlayerId}", true);
+            judge.TrialMsg(pc, $"/tl {targetId}", true);
         }
     }
 
-    private static void JudgeOnClick(byte playerId /*, MeetingHud __instance*/)
+    private static void JudgeOnClick(byte targetId /*, MeetingHud __instance*/)
     {
-        Logger.Msg($"Click: ID {playerId}", "Judge UI");
-        var pc = GetPlayerById(playerId);
-        if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.GetRoleClass() is Judge judge) judge.TrialMsg(PlayerControl.LocalPlayer, $"/tl {playerId}", true);
-        else SendRPC(playerId, false);
+        Logger.Msg($"Click: ID {targetId}", "Judge UI");
+        var target = targetId.GetPlayer();
+        if (target == null || !target.IsAlive() || !GameStates.IsVoting) return;
+        if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.GetRoleClass() is Judge judge) judge.TrialMsg(PlayerControl.LocalPlayer, $"/tl {targetId}", true);
+        else SendRPC(targetId);
     }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
@@ -367,7 +366,7 @@ internal class Judge : RoleBase
             renderer.sprite = CustomButton.Get("JudgeIcon");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((Action)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => JudgeOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
 }

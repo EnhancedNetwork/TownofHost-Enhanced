@@ -1,12 +1,12 @@
-﻿namespace TOHE.Roles.Impostor;
+﻿using static TOHE.Utils;
+
+namespace TOHE.Roles.Impostor;
 
 internal class Saboteur : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Saboteur;
     private const int Id = 2300;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -20,16 +20,14 @@ internal class Saboteur : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Saboteur])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
-    }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = SaboteurCD.GetFloat();
 
-    public override bool CanUseKillButton(PlayerControl pc) => Utils.AnySabotageIsActive();
+    public override bool CanUseKillButton(PlayerControl pc) => IsCriticalSabotage();
+
+    public static bool IsCriticalSabotage()
+        => IsActive(SystemTypes.Laboratory)
+           || IsActive(SystemTypes.LifeSupp)
+           || IsActive(SystemTypes.Reactor)
+           || IsActive(SystemTypes.HeliSabotage);
 }

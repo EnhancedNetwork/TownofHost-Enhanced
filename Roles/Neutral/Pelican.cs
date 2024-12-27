@@ -14,6 +14,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pelican;
     private const int Id = 17300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
     public override bool IsDesyncRole => true;
@@ -114,7 +115,7 @@ internal class Pelican : RoleBase
             }
         }
 
-        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id) && !IsEaten(id);
+        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsEaten(pc, id);
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
@@ -231,7 +232,7 @@ internal class Pelican : RoleBase
             Vector2 teleportPosition;
             if (Scavenger.KilledPlayersId.Contains(pelicanId) && PelicanLastPosition.TryGetValue(pelicanId, out var lastPosition))
                 teleportPosition = lastPosition;
-            else 
+            else
                 teleportPosition = pelican.GetCustomPosition();
 
             foreach (var tar in eatenList[pelicanId])
@@ -268,9 +269,9 @@ internal class Pelican : RoleBase
         if (lowLoad) return;
 
         Count--;
-        
-        if (Count > 0) return; 
-        
+
+        if (Count > 0) return;
+
         Count = 4;
 
         if (eatenList.TryGetValue(player.PlayerId, out var playerList))

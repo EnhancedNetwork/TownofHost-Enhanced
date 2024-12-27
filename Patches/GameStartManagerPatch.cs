@@ -3,8 +3,8 @@ using AmongUs.GameOptions;
 using InnerNet;
 using System;
 using TMPro;
-using UnityEngine;
 using TOHE.Patches;
+using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -87,7 +87,7 @@ public class GameStartManagerPatch
             //cancelButton.transform.localPosition = new(2f, 0.13f, 0f);
             GameStartTextlocalPosition = __instance.GameStartText.transform.localPosition;
             cancelButton.OnClick = new();
-            cancelButton.OnClick.AddListener((Action)(() =>
+            cancelButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
             {
                 __instance.ResetStartState();
             }));
@@ -247,7 +247,7 @@ public class GameStartManagerPatch
             int minutes = (int)timer / 60;
             int seconds = (int)timer % 60;
             string countDown = $"{minutes:00}:{seconds:00}";
-            if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
+            if (timer <= 60) countDown = Utils.ColorString((int)timer % 2 == 0 ? Color.yellow : Color.red, countDown);
             timerText.text = countDown;
         }
         private static void BeginGameAutoStart(float countdown)

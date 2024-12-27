@@ -3,20 +3,20 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using UnityEngine;
+using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
+using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -27,7 +27,7 @@ class CheckProtectPatch
     public static bool Prefix(PlayerControl __instance, PlayerControl target)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek) return false;
-        Logger.Info("CheckProtect occurs: " + __instance.GetNameWithRole() + "=>" + target.GetNameWithRole(), "CheckProtect");
+        Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "CheckProtect");
         var angel = __instance;
 
         if (AntiBlackout.SkipTasks)
@@ -70,8 +70,11 @@ class CheckMurderPatch
     public static Dictionary<byte, float> TimeSinceLastKill = [];
     public static void Update()
     {
-        for (byte i = 0; i < 15; i++)
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
+            if (pc == null) continue;
+            var i = pc.PlayerId;
+
             if (TimeSinceLastKill.ContainsKey(i))
             {
                 TimeSinceLastKill[i] += Time.deltaTime;
@@ -145,9 +148,9 @@ class CheckMurderPatch
         }
 
         // Is the target in a killable state?
-        if (target.Data == null // Check if PlayerData is not null
-                                // Check target status
+        if (target.Data == null // Check if PlayerData is null
             || target.inVent
+            || target.onLadder
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || target.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
@@ -176,7 +179,7 @@ class CheckMurderPatch
         }
 
         var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        float minTime = Mathf.Max(0.04f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
@@ -243,6 +246,11 @@ class CheckMurderPatch
         Logger.Info($"check: {check}", "RpcCheckAndMurder");
 
         if (target == null) target = killer;
+        if (killer == null)
+        {
+            Logger.Info($"Killer: {killer == null} or Target: {target == null} is null", "RpcCheckAndMurder");
+            return false;
+        }
 
         var killerRole = killer.GetCustomRole();
 
@@ -284,7 +292,6 @@ class CheckMurderPatch
         // Check murder on others targets
         if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
         {
-            Logger.Info("Cancels because for others target need cancel kill", "OnCheckMurderAsTargetOnOthers");
             return false;
         }
 
@@ -858,7 +865,7 @@ class ReportDeadBodyPatch
         // This is patched in CheckGameEndPatch
         return true;
     }
-    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target)
+    public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
     {
         //=============================================
         // Hereinafter, it is assumed that the button is confirmed to be pressed
@@ -881,6 +888,22 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+                    if (playerStates.RoleClass?.BlockMoveInVent(playerStates.RoleClass._Player) ?? false)
+                    {
+                        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                        {
+                            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                        }
+                        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+                    }
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -929,11 +952,12 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            PhantomRolePatch.OnReportDeadBody(pc);
+            PhantomRolePatch.OnReportDeadBody(pc, force);
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
 
+        RPC.SyncDeadPassedMeetingList();
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 
@@ -959,7 +983,7 @@ class FixedUpdateInNormalGamePatch
     {
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null) return;
+        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
@@ -995,6 +1019,7 @@ class FixedUpdateInNormalGamePatch
         // For example: 15 players will called 450 times every 1 second
 
         var player = __instance;
+        bool localplayer = __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId;
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
@@ -1113,6 +1138,11 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
+            else // We are not in lobby
+            {
+                if (localplayer)
+                    CustomNetObject.FixedUpdate();
+            }
 
             DoubleTrigger.OnFixedUpdate(player);
             KillTimerManager.FixedUpdate(player);
@@ -1173,10 +1203,46 @@ class FixedUpdateInNormalGamePatch
                                 }
                                 if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
 
-                                var randomPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != UnShapeshifter);
-                                UnShapeshifter.RpcShapeshift(randomPlayer, false);
-                                UnShapeshifter.RpcRejectShapeshift();
-                                UnShapeshifter.ResetPlayerOutfit();
+
+                                if (!UnShapeshifter.AmOwner)
+                                {
+                                    var sstarget = PlayerControl.LocalPlayer;
+                                    UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
+                                    UnShapeshifter.RejectShapeshift();
+
+                                    var writer = MessageWriter.Get(SendOption.Reliable);
+                                    writer.StartMessage(6);
+                                    writer.Write(AmongUsClient.Instance.GameId);
+                                    writer.WritePacked(UnShapeshifter.OwnerId);
+
+                                    writer.StartMessage(2);
+                                    writer.WritePacked(UnShapeshifter.NetId);
+                                    writer.Write((byte)RpcCalls.Shapeshift);
+                                    writer.WriteNetObject(sstarget);
+                                    writer.Write(false);
+                                    writer.EndMessage();
+
+                                    writer.StartMessage(2);
+                                    writer.WritePacked(UnShapeshifter.NetId);
+                                    writer.Write((byte)RpcCalls.RejectShapeshift);
+                                    writer.EndMessage();
+
+                                    writer.EndMessage();
+                                    AmongUsClient.Instance.SendOrDisconnect(writer);
+                                    writer.Recycle();
+
+                                    UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
+                                }
+                                else
+                                {
+                                    // Host is Unshapeshifter, make button into unshapeshift state
+                                    PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+                                    var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+                                    PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+                                    PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+                                    DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+                                }
+
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
                             }
@@ -1184,6 +1250,7 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
+
 
             if (!lowLoad)
             {
@@ -1198,6 +1265,7 @@ class FixedUpdateInNormalGamePatch
 
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
+
                     }
             }
         }
@@ -1520,6 +1588,21 @@ class CoEnterVentPatch
         }
 
         playerRoleClass?.OnCoEnterVent(__instance, id);
+
+        if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
+        {
+            playerRoleClass.LastBlockedMoveInVentVents.Clear();
+            var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
+            foreach (var nextvent in vent.NearbyVents.ToList())
+            {
+                if (nextvent == null) continue;
+                // Skip current vent or ventid 5 in Dleks to prevent stuck
+                if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Add(nextvent.Id);
+                playerRoleClass.LastBlockedMoveInVentVents.Add(nextvent.Id);
+            }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
         return true;
     }
     public static void Postfix()
@@ -1571,6 +1654,14 @@ class CoExitVentPatch
         }
 
         player.GetRoleClass()?.OnExitVent(player, id);
+        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? true)
+        {
+            foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+            }
+            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+        }
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }

@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -10,17 +10,19 @@ namespace TOHE.Roles.Crewmate;
 internal class Ventguard : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Ventguard;
     private const int Id = 30000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ventguard);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
-    public static OptionItem MaxGuards;
-    public static OptionItem BlockVentCooldown;
-    public static OptionItem BlockDoesNotAffectCrew;
-    public static OptionItem BlocksResetOnMeeting;
-    public static OptionItem AbilityUseGainWithEachTaskCompleted;
+    private static OptionItem MaxGuards;
+    private static OptionItem BlockVentCooldown;
+    private static OptionItem BlockDoesNotAffectCrew;
+    private static OptionItem BlocksResetOnMeeting;
+    //public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<int> BlockedVents = [];
 
@@ -36,9 +38,9 @@ internal class Ventguard : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
         BlocksResetOnMeeting = BooleanOptionItem.Create(Id + 13, "Ventguard_BlocksResetOnMeeting", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
-        AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
-            .SetValueFormat(OptionFormat.Times);
+        //AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
+        //    .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
+        //    .SetValueFormat(OptionFormat.Times);
     }
 
     public override void Init()
@@ -58,7 +60,7 @@ internal class Ventguard : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.AbilityButton.buttonLabelText.text = GetString("VentguardVentButtonText");
+        hud.AbilityButton.OverrideText(GetString("VentguardVentButtonText"));
     }
 
     public override void OnEnterVent(PlayerControl ventguard, Vent vent)
@@ -103,6 +105,20 @@ internal class Ventguard : RoleBase
                 }
             }
             BlockedVents.Clear();
+        }
+        else if (BlockedVents.Any())
+        {
+            foreach (var ventId in BlockedVents)
+            {
+                foreach (var player in Main.AllPlayerControls)
+                {
+                    if (!player.IsAlive()) continue;
+                    if (player.NotUnlockVent(ventId)) continue;
+                    if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
+
+                    CustomRoleManager.BlockedVentsList[player.PlayerId].Add(ventId);
+                }
+            }
         }
     }
     public override string GetProgressText(byte playerId, bool comms)
