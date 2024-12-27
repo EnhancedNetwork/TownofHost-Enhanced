@@ -2015,13 +2015,19 @@ public static class Utils
                     var SeerRoleInfo = seer.GetRoleInfo();
                     string RoleText = string.Empty;
                     string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                    string RoleInfo = ColorString(seer.GetRoleColor(), seer.GetRoleInfo());
 
-                    if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
-                    else if (seerRole.IsCrewmate() && !seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
-                    else if (seerRole.IsNeutral() || seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
+                    if (seer.Is(CustomRoles.Rebel))
+                    {
+                        RoleText = ColorString(GetRoleColor(CustomRoles.Knight), GetString("TeamNeutral"));
+                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
+                    }
+                    else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                    else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
+                    else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
 
-                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
+                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{RoleInfo}</size></font>\n";
                 }
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
