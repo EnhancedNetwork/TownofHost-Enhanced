@@ -2019,12 +2019,12 @@ public static class Utils
 
                     if (seer.Is(CustomRoles.Rebel))
                     {
-                        RoleText = ColorString(GetRoleColor(CustomRoles.Knight), GetString("TeamNeutral"));
+                        RoleText = ColorString(GetRoleColor(CustomRoles.Rebel), GetString("TeamNeutral"));
                         RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
                     }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
-                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
+                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
 
                     SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{RoleInfo}</size></font>\n";
