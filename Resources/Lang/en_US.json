@@ -3716,6 +3716,7 @@
   "C&R_NumCops": "Number of Cops",
   "C&R_CopAbilityTriggerChance": "Cop ability trigger chance",
   "C&R_CaptureCooldown": "Capture Cooldown",
+  "C&R_TeleportCaptureToRandomLoc": "Teleport captured robber to random location",
   "C&R_CopAbilityDuration": "Cop ability duration",
   "C&R_CopAbilityCooldown": "Cop ability cooldown",
   "C&R_HotPursuitChance": "Hot Pursuit activation chance",

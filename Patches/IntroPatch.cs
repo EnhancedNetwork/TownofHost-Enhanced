@@ -918,7 +918,8 @@ class IntroCutsceneDestroyPatch
                     _ = new LateTask(() =>
                     {
                         AntiBlackout.SetIsDead();
-                    }, 4f, "anti blackout");
+                        Logger.Warn("Set is dead", "IntroPatch");
+                    }, 5f, "anti blackout");
                 }
             }
             catch (Exception error)
