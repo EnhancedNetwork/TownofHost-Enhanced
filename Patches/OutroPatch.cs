@@ -19,6 +19,7 @@ class EndGamePatch
 {
     public static Dictionary<byte, string> SummaryText = [];
     public static string KillLog = "";
+    public static string MainRoleLog = "";
     public static void Postfix(AmongUsClient __instance, [HarmonyArgument(0)] ref EndGameResult endGameResult)
     {
         GameStates.InGame = false;
@@ -106,6 +107,22 @@ class EndGamePatch
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
+
+        var sb2 = new StringBuilder(GetString("MainRoleLog") + ":");
+        foreach (var kvp in Main.PlayerStates.OrderBy(x => x.Key))
+        {
+            if (Options.CurrentGameMode != CustomGameMode.Standard) break;
+            if (kvp.Value.MainRoleLogs.Where(x => !x.Item2.IsVanilla()).ToList().Count <= 1) continue;
+            sb2.Append($"\n[{kvp.Key}] {Main.AllPlayerNames[kvp.Key]} {Utils.GetDisplayRoleAndSubName(kvp.Key, kvp.Key)}");
+            foreach (var item in kvp.Value.MainRoleLogs.OrderBy(x => x.Item1.Ticks))
+            {
+                if (item.Item2.IsVanilla()) continue;
+                item.Item2.GetActualRoleName(out var rolename);
+                sb2.Append($"\n => {Utils.ColorString(Utils.GetRoleColor(item.Item2),rolename)} [{item.Item1:T}]");
+            }
+        }
+        MainRoleLog = sb2.ToString();
+        if (!MainRoleLog.Contains('\n')) MainRoleLog = "";
 
         if (GameStates.IsNormalGame)
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;

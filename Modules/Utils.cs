@@ -991,6 +991,10 @@ public static class Utils
             var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255), "《 " + GetString("KillLog") + " 》") : "";
             SendSpesificMessage(kl, PlayerId, tytul);
         }
+        if (EndGamePatch.MainRoleLog != "")
+        {
+            SendSpesificMessage(EndGamePatch.MainRoleLog, PlayerId);
+        }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
     {
