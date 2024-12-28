@@ -93,10 +93,6 @@ public class PlayerState(byte playerId)
         {
             countTypes = CountTypes.Crew;
         }
-        if (pc.Is(CustomRoles.Rebel))
-        {
-            countTypes = CountTypes.Crew;
-        }
         if (pc.Is(CustomRoles.Soulless))
         {
             countTypes = CountTypes.OutOfGame;
@@ -159,6 +155,7 @@ public class PlayerState(byte playerId)
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
             SubRoles.Remove(CustomRoles.Admired);
+            SubRoles.Remove(CustomRoles.Rebel);
         }
 
         switch (role)
@@ -223,10 +220,6 @@ public class PlayerState(byte playerId)
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
                 SubRoles.Remove(CustomRoles.Rebel);
-                break;
-
-            case CustomRoles.Rebel:
-                countTypes = CountTypes.Crew;
                 break;
 
             case CustomRoles.Soulless:
