@@ -243,6 +243,9 @@ class GameEndCheckerForNormal
                 }
 
                 //Narc(Custom Winner screen)
+                //I coded Narc as a custom Neutral winner for the custom victory screen
+                //If you are going to code a role's win condition and it needs to exclude/include CustomWinner.Crewmate(for example,Taskinator),
+                //don't forget to exclude/include CustomWinner.Narc too
                 if (WinnerTeam == CustomWinner.Crewmate && CustomRoles.Narc.RoleExist(countDead: true))
                 {
                     var CrewTeamArray = Main.AllPlayerControls.Where(x => x != null && (x.Is(CustomRoles.Narc)
