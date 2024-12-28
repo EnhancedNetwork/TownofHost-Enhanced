@@ -2019,7 +2019,7 @@ public static class Utils
 
                     if (seer.Is(CustomRoles.Rebel))
                     {
-                        RoleText = ColorString(GetRoleColor(CustomRoles.Knight), GetString("TeamNeutral"));
+                        RoleText = $"<size=150%><color=#7f8c8d>{GetString("TeamNeutral")}</size></color>";
                         RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
                     }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
