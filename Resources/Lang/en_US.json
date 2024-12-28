@@ -4055,6 +4055,11 @@
   "QuizmasterQuestions.QuizmasterCooldown": "What will Quizmaster's cooldown always be? (excluding first kill override and changes from other roles/addons)",
   "QuizmasterQuestions.WhoCoded": "Who coded Quizmaster?",
   "QuizmasterQuestions.WhoOwns": "Who owns The Enhanced Network?",
+  "QuizmasterQuestions.TOHEPartners": "Who are The Enhanced Network's partners?",
+  "QuizmasterQuestions.TOHEEventCoordinator": "Who is the Event Coordinator for The Enhanced Network?",
+  "QuizmasterQuestions.HowManyCats": "How many cat related roles are in the mod?",
+  "QuizmasterQuestions.GuessingCommand": "What does /bt actually mean?",
+  "QuizmasterQuestions.NotFromTOS2": "Which of these roles are NOT from Town of Salem 2?",
 
   "DeathReason.WrongAnswer": "Wrong Quiz Answer",
 
