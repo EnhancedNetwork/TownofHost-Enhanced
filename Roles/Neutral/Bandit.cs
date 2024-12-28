@@ -78,6 +78,7 @@ internal class Bandit : RoleBase
             if (role == CustomRoles.Cleansed || // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
                 role == CustomRoles.LastImpostor ||
                 role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
+                role == CustomRoles.Narc || //Narc is only for Impostors
                 (role.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool()) ||
                 (role == CustomRoles.Nimble && CanVent.GetBool()) ||
                 ((role.IsBetrayalAddon() || role is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
