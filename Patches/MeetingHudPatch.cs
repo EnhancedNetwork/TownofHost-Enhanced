@@ -1171,14 +1171,12 @@ class MeetingHudStartPatch
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
 
-            /*
+            
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
             if (tempNemeText != string.Empty)
             {
                 pva.NameText.text = tempNemeText;
             }
-            */
-            // Due to the fact that playerid is shown with level to mod clients, this function is disabled.
 
             //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
             //{
