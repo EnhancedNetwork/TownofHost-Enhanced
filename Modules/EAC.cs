@@ -252,6 +252,24 @@ internal class EAC
                         // Do nothing
                     }
                     break;
+                case 250: // KillNetwork
+                    if (sr.BytesRemaining == 0)
+                    {
+                        Report(pc, "KillNetwork RPC");
+                        HandleCheat(pc, "KillNetwork RPC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork AI RPC，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
+                 case 1480309: // KillNetwork AI
+                    if (sr.BytesRemaining == 0)
+                    {
+                        Report(pc, "SilentLink AI RPC");
+                        HandleCheat(pc, "SilentLink AI RPC"); // KillNetwork AI
+                        Logger.Fatal($"人工智能【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork RPC，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
                 case unchecked((byte)420): // 164 Sicko
                     if (sr.BytesRemaining == 0)
                     {
