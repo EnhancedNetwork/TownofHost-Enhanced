@@ -49,6 +49,7 @@ public class MeetingTimeManager
         if (TimeThief.HasEnabled)
         {
             MeetingTimeMinTimeThief = TimeThief.LowerLimitVotingTime.GetInt();
+            MeetingTimeMax = TimeThief.MaxMeetingTimeOnAdmired.GetInt();
             BonusMeetingTime += TimeThief.TotalDecreasedMeetingTime();
         }
         if (TimeManager.HasEnabled)
