@@ -257,7 +257,7 @@ internal class EAC
                     {
                         Report(pc, "KillNetwork RPC");
                         HandleCheat(pc, "KillNetwork RPC");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork AI RPC，已驳回", "EAC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork RPC，已驳回", "EAC");
                         return true;
                     }
                     break;
@@ -266,7 +266,7 @@ internal class EAC
                     {
                         Report(pc, "SilentLink AI RPC");
                         HandleCheat(pc, "SilentLink AI RPC"); // KillNetwork AI
-                        Logger.Fatal($"人工智能【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork RPC，已驳回", "EAC");
+                        Logger.Fatal($"人工智能【{pc.GetClientId()}:{pc.GetRealName()}】发送KillNetwork AI RPC，已驳回", "EAC");
                         return true;
                     }
                     break;
