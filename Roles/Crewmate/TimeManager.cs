@@ -51,7 +51,7 @@ internal class TimeManager : RoleBase
         int sec = 0;
         foreach (var playerId in playerIdList)
         {
-            if (Utils.GetPlayerById(playerId).Is(CustomRoles.Madmate)) sec -= AdditionalTime(playerId);
+            if (playerId.GetPlayer().Is(CustomRoles.Madmate) || playerId.GetPlayer().Is(CustomRoles.Rebel)) sec -= AdditionalTime(playerId);
             else sec += AdditionalTime(playerId);
         }
         Logger.Info($"{sec}second", "TimeManager.TotalIncreasedMeetingTime");

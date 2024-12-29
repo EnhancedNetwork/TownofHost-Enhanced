@@ -180,8 +180,7 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
-                else if ((target.Is(CustomRoles.Madmate) ||
-                        target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
+                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -202,7 +201,7 @@ internal class Councillor : RoleBase
                         CouncillorSuicide = true;
                     }
                 }
-                else if ((target.GetCustomRole().IsImpostor()))
+                else if (target.GetCustomRole().IsImpostor())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -223,8 +222,8 @@ internal class Councillor : RoleBase
                         CouncillorSuicide = true;
                     }
                 }
-                else if (target.GetCustomRole().IsCrewmate()) CouncillorSuicide = false;
-                else if (target.GetCustomRole().IsNeutral()) CouncillorSuicide = false;
+                else if (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Rebel)) CouncillorSuicide = false;
+                else if (target.GetCustomRole().IsNeutral() || target.Is(CustomRoles.Rebel)) CouncillorSuicide = false;
                 else
                 {
                     Logger.Warn("Impossibe to reach here!", "CouncillorTrial");
