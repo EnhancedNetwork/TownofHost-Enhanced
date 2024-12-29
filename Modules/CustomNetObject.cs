@@ -173,7 +173,6 @@ namespace TOHE.Modules
                 playerControl.PlayerId = 255;
                 playerControl.isNew = false;
                 playerControl.notRealPlayer = true;
-                AmongUsClient.Instance.NetIdCnt += 1U;
 
                 MessageWriter msg = MessageWriter.Get();
                 msg.StartMessage(5);
@@ -181,28 +180,47 @@ namespace TOHE.Modules
                 AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
                 msg.EndMessage();
 
-                // This makes innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
-                // so disable checks regarding it
+                // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
+                // so it will disable checks regarding it
                 if (GameStates.IsVanillaServer)
                 {
                     msg.StartMessage(6);
                     msg.Write(AmongUsClient.Instance.GameId);
                     msg.WritePacked(int.MaxValue);
 
-                    for (uint i = 1; i <= 3; ++i)
-                    {
-                        msg.StartMessage(4);
-                        msg.WritePacked(2U);
-                        msg.WritePacked(-2);
-                        msg.Write((byte)SpawnFlags.None);
-                        msg.WritePacked(1);
-                        msg.WritePacked(AmongUsClient.Instance.NetIdCnt - i);
-                        msg.StartMessage(1);
-                        msg.EndMessage();
-                        msg.EndMessage();
-                    }
+                    msg.StartMessage(4);
+                    msg.WritePacked(2U);
+                    msg.WritePacked(-2);
+                    msg.Write((byte)SpawnFlags.None);
+                    msg.WritePacked(1);
+                    msg.WritePacked(playerControl.NetId);
+                    msg.StartMessage(1);
+                    msg.EndMessage();
+                    msg.EndMessage();
+
+                    msg.StartMessage(4);
+                    msg.WritePacked(2U);
+                    msg.WritePacked(-2);
+                    msg.Write((byte)SpawnFlags.None);
+                    msg.WritePacked(1);
+                    msg.WritePacked(playerControl.NetTransform.NetId);
+                    msg.StartMessage(1);
+                    msg.EndMessage();
+                    msg.EndMessage();
+
+                    msg.StartMessage(4);
+                    msg.WritePacked(2U);
+                    msg.WritePacked(-2);
+                    msg.Write((byte)SpawnFlags.None);
+                    msg.WritePacked(1);
+                    msg.WritePacked(playerControl.MyPhysics.NetId);
+                    msg.StartMessage(1);
+                    msg.EndMessage();
+                    msg.EndMessage();
+
                     msg.EndMessage();
                 }
+
                 AmongUsClient.Instance.SendOrDisconnect(msg);
                 msg.Recycle();
 
@@ -310,7 +328,6 @@ namespace TOHE.Modules
             playerControl.PlayerId = 255;
             playerControl.isNew = false;
             playerControl.notRealPlayer = true;
-            AmongUsClient.Instance.NetIdCnt += 1U;
 
             MessageWriter msg = MessageWriter.Get();
             msg.StartMessage(5);
@@ -318,27 +335,44 @@ namespace TOHE.Modules
             AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
             msg.EndMessage();
 
-
-            // This makes innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
-            // so disable checks regarding it
+            // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
+            // so it will disable checks regarding it
             if (GameStates.IsVanillaServer)
             {
                 msg.StartMessage(6);
                 msg.Write(AmongUsClient.Instance.GameId);
                 msg.WritePacked(int.MaxValue);
 
-                for (uint i = 1; i <= 3; ++i)
-                {
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(AmongUsClient.Instance.NetIdCnt - i);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-                }
+                msg.StartMessage(4);
+                msg.WritePacked(2U);
+                msg.WritePacked(-2);
+                msg.Write((byte)SpawnFlags.None);
+                msg.WritePacked(1);
+                msg.WritePacked(playerControl.NetId);
+                msg.StartMessage(1);
+                msg.EndMessage();
+                msg.EndMessage();
+
+                msg.StartMessage(4);
+                msg.WritePacked(2U);
+                msg.WritePacked(-2);
+                msg.Write((byte)SpawnFlags.None);
+                msg.WritePacked(1);
+                msg.WritePacked(playerControl.NetTransform.NetId);
+                msg.StartMessage(1);
+                msg.EndMessage();
+                msg.EndMessage();
+
+                msg.StartMessage(4);
+                msg.WritePacked(2U);
+                msg.WritePacked(-2);
+                msg.Write((byte)SpawnFlags.None);
+                msg.WritePacked(1);
+                msg.WritePacked(playerControl.MyPhysics.NetId);
+                msg.StartMessage(1);
+                msg.EndMessage();
+                msg.EndMessage();
+
                 msg.EndMessage();
             }
 
