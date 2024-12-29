@@ -1190,14 +1190,14 @@ class MeetingHudStartPatch
             sb.Append(seerRoleClass?.GetMark(seer, target, true));
             sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
 
+            if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
+                sb.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
+            
             if (seer.GetCustomRole().IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
             {
                 if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
-
-            if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
-                sb.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));            
 
             
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
