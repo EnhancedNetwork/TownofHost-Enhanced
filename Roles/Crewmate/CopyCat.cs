@@ -153,8 +153,6 @@ internal class CopyCat : RoleBase
                 if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
                 if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
                 if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
-                if (target.Is(CustomRoles.Narc)) killer.RpcSetCustomRole(CustomRoles.Admired);
-                //Don't ask me why I added a separate "if".The PR won't be able to merged if I do "if (target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)"
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
