@@ -261,7 +261,7 @@ internal class EAC
                         return true;
                     }
                     break;
-                 case 1480309: // KillNetwork AI
+                 case unchecked((byte)1480309): // KillNetwork AI
                     if (sr.BytesRemaining == 0)
                     {
                         Report(pc, "SilentLink AI RPC");
