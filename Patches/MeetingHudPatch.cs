@@ -1195,21 +1195,16 @@ class MeetingHudStartPatch
                 if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
-
+            
             if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
                 sb.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
-
-            if (seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice
-                && target.Is(CustomRoles.Narc))
-                sb.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
-
-            /*
+            
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
             if (tempNemeText != string.Empty)
             {
                 pva.NameText.text = tempNemeText;
             }
-            */
+
             // Due to the fact that playerid is shown with level to mod clients, this function is disabled.
 
             //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
@@ -1237,6 +1232,10 @@ class MeetingHudStartPatch
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
                         sb.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                        break;
+
+                    case CustomRoles.Narc when seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice:
+                        sb.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
                         break;
                 }
             }
