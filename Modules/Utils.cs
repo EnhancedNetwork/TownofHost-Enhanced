@@ -2398,6 +2398,12 @@ public static class Utils
 
                 playerState.RoleClass.AfterMeetingTasks();
                 playerState.RoleClass.HasVoted = false;
+
+                foreach (var ventId in playerState.RoleClass.LastBlockedMoveInVentVents)
+                {
+                    CustomRoleManager.BlockedVentsList[playerState.PlayerId].Remove(ventId);
+                }
+                playerState.RoleClass.LastBlockedMoveInVentVents.Clear();
             }
 
             //Set kill timer
