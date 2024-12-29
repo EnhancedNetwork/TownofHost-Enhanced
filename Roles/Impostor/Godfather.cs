@@ -52,7 +52,7 @@ internal class Godfather : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         var godfather = _Player;
-        bool iscrew = godfather.Is(CustomRoles.Admired) || godfather.Is(CustomRoles.Narc)
+        bool iscrew = godfather.Is(CustomRoles.Admired) || godfather.Is(CustomRoles.Narc);
         var ChangeRole = iscrew ? CustomRoles.Sheriff : CustomRoles.Refugee;
         var ChangeAddon = iscrew ? CustomRoles.Admired : CustomRoles.Madmate;
         if (GodfatherTarget.Contains(target.PlayerId))
