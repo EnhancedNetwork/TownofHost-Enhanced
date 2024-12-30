@@ -172,6 +172,8 @@ class EndGamePatch
             GameOptionsSender.AllSenders.Clear();
             GameOptionsSender.AllSenders.Add(new NormalGameOptionsSender());
             /* Send SyncSettings RPC */
+
+            ChatCommands.Spectators.Clear();
         }
     }
 }

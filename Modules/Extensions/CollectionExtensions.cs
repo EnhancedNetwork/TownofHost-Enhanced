@@ -14,18 +14,14 @@ public static class CollectionExtensions
     /// <typeparam name="TKey">The type of the keys in the <paramref name="dictionary"/></typeparam>
     /// <typeparam name="TValue">The type of the values in the <paramref name="dictionary"/></typeparam>
     /// <returns>The key of the <paramref name="dictionary"/> that corresponds to the given <paramref name="value"/>, or the default value of <typeparamref name="TKey"/> if the <paramref name="value"/> is not found in the <paramref name="dictionary"/></returns>
-    public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue value)
-    {
-        foreach (KeyValuePair<TKey, TValue> pair in dictionary)
-        {
-            if (pair.Value.Equals(value))
-            {
-                return pair.Key;
-            }
-        }
+    public static Dictionary<TKey, TValue> AddRange<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Dictionary<TKey, TValue> other, bool overrideExistingKeys = true)
+{
+    foreach ((TKey key, TValue value) in other)
+        if (overrideExistingKeys || !dictionary.ContainsKey(key))
+            dictionary[key] = value;
 
-        return default;
-    }
+    return dictionary;
+}
     /// <summary>
     /// Returns a random element from a collection
     /// </summary>
