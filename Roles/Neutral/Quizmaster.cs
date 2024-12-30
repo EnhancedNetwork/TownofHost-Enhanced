@@ -250,7 +250,7 @@ internal class Quizmaster : RoleBase
                 new SetAnswersQuestion { Stage = 3, Question = "WhatDoesEOgMeansInName", Answer = "Edited", PossibleAnswers = { "Edition", "Experimental", "Enhanced", "Edited" }, QuizmasterQuestionType = QuizmasterQuestionType.NameOriginQuestion },
                 new CountQuestion { Stage = 3, Question = "HowManyDiedFirstRound", QuizmasterQuestionType = QuizmasterQuestionType.DiedFirstRoundCountQuestion },
                 new CountQuestion { Stage = 3, Question = "ButtonPressedBefore", QuizmasterQuestionType = QuizmasterQuestionType.ButtonPressedBeforeThisQuestion },
-                new SetAnswersQuestion { Stage = 4, Question = "WhoOwns", Answer = "Moe", PossibleAnswers = { "Lauryn", "Jackler", "Moe", "Marg", "Sarha", "laikrai", "Niko", "D1GQ", "KARPED1EM", "Matt" }, QuizmasterQuestionType = QuizmasterQuestionType.WhoOwns },
+                new SetAnswersQuestion { Stage = 3, Question = "WhoOwns", Answer = "Moe", PossibleAnswers = { "Lauryn", "Jackler", "Moe", "Marg", "Sarha", "laikrai", "Niko", "D1GQ", "KARPED1EM", "Matt" }, QuizmasterQuestionType = QuizmasterQuestionType.WhoOwns },
 
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieReason", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathReasonQuestion},
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieMethod", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathMethodQuestion},
