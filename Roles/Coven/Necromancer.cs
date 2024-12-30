@@ -229,7 +229,7 @@ internal class Necromancer : CovenManager
     private static void Countdown(int seconds, PlayerControl player)
     {
         var killer = Killer;
-        if (Success || !player.IsAlive())
+        if (Success || !player.IsAlive() || !killer.IsAlive())
         {
             Timer = RevengeTime.GetInt();
             Success = false;
