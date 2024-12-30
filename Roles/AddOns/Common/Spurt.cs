@@ -108,19 +108,16 @@ internal class Spurt : IAddon
             {
                 Utils.NotifyRoles(SpecifySeer: player, SpecifyTarget: player);
                 LastUpdate[player.PlayerId] = now;
-                player.SyncSpeed();
             }
         }
 
         if (!moving)
         {
             Main.AllPlayerSpeed[player.PlayerId] += Mathf.Clamp(ChargeBy, 0f, MaxSpeed.GetFloat() - Main.AllPlayerSpeed[player.PlayerId]);
-            player.SyncSpeed();
             return;
         }
 
         Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
-        player.SyncSpeed();
         player.MarkDirtySettings();
     }
 }
