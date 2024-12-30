@@ -870,14 +870,12 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
-                    if (playerStates.RoleClass?.BlockMoveInVent(playerStates.RoleClass._Player) ?? false)
+
+                    foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
                     {
-                        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
-                        {
-                            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
-                        }
-                        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+                        CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
                     }
+                    player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
 
                     if (playerStates.IsDead)
                     {
@@ -1149,6 +1147,19 @@ class FixedUpdateInNormalGamePatch
                 CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
 
                 player.OnFixedAddonUpdate(lowLoad);
+
+                if (Main.AllPlayerSpeed.ContainsKey(player.PlayerId) && !lowLoad)
+                {
+                    if (!Main.LastAllPlayerSpeed.ContainsKey(player.PlayerId))
+                    {
+                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                    }
+                    else if (!Main.LastAllPlayerSpeed[player.PlayerId].Equals(Main.AllPlayerSpeed[player.PlayerId]))
+                    {
+                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                        player.SyncSpeed();
+                    }
+                }
 
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())
                 {
@@ -1588,7 +1599,12 @@ class CoEnterVentPatch
 
         if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
         {
+            foreach (var ventId in playerRoleClass.LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Remove(ventId);
+            }
             playerRoleClass.LastBlockedMoveInVentVents.Clear();
+
             var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
             foreach (var nextvent in vent.NearbyVents.ToList())
             {
@@ -1647,14 +1663,12 @@ class CoExitVentPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         player.GetRoleClass()?.OnExitVent(player, id);
-        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? true)
+
+        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
         {
-            foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
-            {
-                CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
-            }
-            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
         }
+        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
