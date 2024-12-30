@@ -15,6 +15,7 @@ public class Narc : IAddon
     public static OptionItem NarcCanSeeTeammates;
     public static OptionItem NarcCanKillMadmate;
     public static OptionItem NarcCanUseSabotage;
+    public static OptionItem NarcHasCrewVision;
     public static OptionItem VisionaryCanBeNarc;
     public static OptionItem DoubleAgentCanBeNarc;
     public static OptionItem ZombieAndKMCanBeNarc;
@@ -31,11 +32,13 @@ public class Narc : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
         NarcCanUseSabotage = BooleanOptionItem.Create(Id + 13, "NarcCanUseSabotage", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        VisionaryCanBeNarc = BooleanOptionItem.Create(Id + 14, "VisionaryCanBeNarc", false, TabGroup.Addons, false)
+        NarcHasCrewVision = BooleanOptionItem.Create(Id + 14, "NarcHasCrewVision", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        DoubleAgentCanBeNarc = BooleanOptionItem.Create(Id + 15, "DoubleAgentCanBeNarc", false, TabGroup.Addons, false)
+        VisionaryCanBeNarc = BooleanOptionItem.Create(Id + 15, "VisionaryCanBeNarc", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        ZombieAndKMCanBeNarc = BooleanOptionItem.Create(Id + 16, "ZombieAndKMCanBeNarc", false, TabGroup.Addons, false)
+        DoubleAgentCanBeNarc = BooleanOptionItem.Create(Id + 16, "DoubleAgentCanBeNarc", false, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        ZombieAndKMCanBeNarc = BooleanOptionItem.Create(Id + 17, "ZombieAndKMCanBeNarc", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
@@ -64,9 +67,18 @@ public class Narc : IAddon
         return ShouldCancel;
     }
 
-    private static bool IsImpostorAligned(PlayerControl pc)
-        => (CustomRolesHelper.IsNarcImpV3(pc) && !pc.Is(CustomRoles.Admired))
-        || pc.Is(CustomRoles.Madmate);
+    public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
+    {
+        bool lightsout = Utils.IsActive(SystemTypes.Electrical);
+        float crewvision = lightsout? Main.DefaultCrewmateVision / 5 : Main.DefaultCrewmateVision;
+        if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie) && !player.Is(CustomRoles.Crewpostor)
+           && NarcHasCrewVision.GetBool())
+        {
+            opt.SetVision(true);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, crewvision);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, crewvision);
+        }
+    }
 
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 /*I originally planned to make it so Overseer sees Narc Impostor as Sheriff.

@@ -158,6 +158,9 @@ public static class CustomRoleManager
                     case CustomRoles.Mare:
                         Mare.ApplyGameOptions(player.PlayerId);
                         break;
+                    case CustomRoles.Narc:
+                        Narc.ApplyGameOptions(opt, player);
+                        break;
                 }
             }
 
