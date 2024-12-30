@@ -1543,6 +1543,7 @@
   "NarcCanSeeTeammates": "Narc <color=#ff1919>Impostor</color>(Or <color=#ff1919>Crewpostor</color>) Can See <color=#ff1919>Madmates</color>(Or <color=#ff1919>Impostors</color>)",
   "NarcCanKillMadmate": "Narc Can Kill <color=#ff1919>Madmates</color>",
   "NarcCanUseSabotage": "Narc Can Sabotage",
+  "NarcHasCrewVision": "Narc Has <color=#8cffff>Crewmate</color> Vision",
   "CantArrestNarc": "You can't shoot the Narc.",
   "CantRecruitNarc": "Target is already a member of the Crew.",
   "VisionaryCanBeNarc": "<color=#ff1919>Visionary</color> Can Be Narc",
