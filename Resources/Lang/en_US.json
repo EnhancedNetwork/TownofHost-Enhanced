@@ -1549,6 +1549,7 @@
   "VisionaryCanBeNarc": "<color=#ff1919>Visionary</color> Can Be Narc",
   "DoubleAgentCanBeNarc": "<color=#ff1919>Double Agent</color> Can Be Narc",
   "ZombieAndKMCanBeNarc": "<color=#ff1919>Zombie</color> And <color=#ff1919>Killing Machine</color> Can Be Narc",
+  "TakesCrewSpotOnSpawn": "Takes A <color=#8cffff>Crewmate</color> Spot On Spawn",
   
   "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
   "SheriffCanKill%role%": "Can Kill %role%",
