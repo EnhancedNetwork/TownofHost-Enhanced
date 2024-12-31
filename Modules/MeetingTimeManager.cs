@@ -49,6 +49,7 @@ public class MeetingTimeManager
         if (TimeThief.HasEnabled)
         {
             MeetingTimeMinTimeThief = TimeThief.LowerLimitVotingTime.GetInt();
+            MeetingTimeMax = TimeThief.MaxMeetingTimeOnAdmired.GetInt();
             BonusMeetingTime += TimeThief.TotalDecreasedMeetingTime();
         }
         if (TimeManager.HasEnabled)
@@ -62,7 +63,7 @@ public class MeetingTimeManager
             BonusMeetingTime += SoulCollector.DeathMeetingTimeIncrease.GetInt();
         }
         int TotalMeetingTime = DiscussionTime + VotingTime;
-       
+
         if (TimeManager.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeManager, MeetingTimeMax) - TotalMeetingTime;
         if (TimeThief.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;
         if (!TimeManager.HasEnabled && !TimeThief.HasEnabled) BonusMeetingTime = Math.Clamp(TotalMeetingTime + BonusMeetingTime, MeetingTimeMinTimeThief, MeetingTimeMax) - TotalMeetingTime;

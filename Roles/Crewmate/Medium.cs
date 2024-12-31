@@ -1,18 +1,19 @@
 ﻿using Hazel;
+using InnerNet;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
-using InnerNet;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Medium : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Medium;
     private const int Id = 8700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medium);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

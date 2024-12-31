@@ -1,17 +1,18 @@
 ﻿using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Gangster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Gangster;
     private const int Id = 3300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Gangster);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -72,10 +73,11 @@ internal class Gangster : RoleBase
             return true;
         }
 
-        if (CanBeGansterRecruit(target))
+        if (CanRecruit(killer.PlayerId))
         {
             if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(forGangster: true))
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && target.CanBeMadmate(forGangster: true)
+               && CanBeGansterRecruit(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Madmate);
@@ -144,7 +146,7 @@ internal class Gangster : RoleBase
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
         return true;
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId)? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     private bool CanRecruit(byte id) => AbilityLimit >= 1;
     private static bool CanBeGansterRecruit(PlayerControl pc)
