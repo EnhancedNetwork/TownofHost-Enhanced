@@ -14,11 +14,12 @@ public class Narc : IAddon
     public static OptionItem MeetingsNeededForWin;
     public static OptionItem NarcCanSeeTeammates;
     public static OptionItem NarcCanKillMadmate;
-    public static OptionItem NarcCanUseSabotage;
-    public static OptionItem NarcHasCrewVision;
+    private static OptionItem NarcCanUseSabotage;
+    private static OptionItem NarcHasCrewVision;
     public static OptionItem VisionaryCanBeNarc;
     public static OptionItem DoubleAgentCanBeNarc;
     public static OptionItem ZombieAndKMCanBeNarc;
+    private static OptionItem TakesCrewSpotOnSpawn;
 
     public void SetupCustomOption()
     {
@@ -40,6 +41,8 @@ public class Narc : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
         ZombieAndKMCanBeNarc = BooleanOptionItem.Create(Id + 17, "ZombieAndKMCanBeNarc", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        TakesCrewSpotOnSpawn = BooleanOptionItem.Create(Id + 18, "TakesCrewSpotOnSpawn", true, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
     { }
@@ -47,6 +50,9 @@ public class Narc : IAddon
     { }
     public void Remove(byte playerId)
     { }
+
+    public static int ExtraImpSpotNarc
+        => TakesCrewSpotOnSpawn.GetBool() ? 1 : 0;
 
     //Narc Checkmurder
     public static bool CancelMurder(PlayerControl killer, PlayerControl target)
