@@ -1,11 +1,11 @@
 ﻿using Hazel;
-using System;
 using InnerNet;
+using System;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
 
 
 namespace TOHE.Roles.Neutral;
@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Quizmaster;
     private const int Id = 27000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Quizmaster);
     public override bool IsExperimental => true;
@@ -130,7 +131,7 @@ internal class Quizmaster : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
-       
+
         bool canVent = false;
         if (CanVentAfterMark.GetBool() && MarkedPlayer != byte.MaxValue)
         {
@@ -251,7 +252,7 @@ internal class Quizmaster : RoleBase
                 new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion },
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieFaction", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathKillerFactionQuestion},
             ];
-            
+
             Question = GetRandomQuestion(Questions);
         }
     }
@@ -329,7 +330,7 @@ internal class Quizmaster : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
             => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
-        
+
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
@@ -431,17 +432,17 @@ internal class Quizmaster : RoleBase
                 }
                 else
                 {
-                    Utils.SendMessage(GetString("QuizmasterAnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                    Utils.SendMessage(GetString("QuizmasterChat.AnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
                 }
             }
             else
             {
-                Utils.SendMessage(GetString("QuizmasterSyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                Utils.SendMessage(GetString("QuizmasterChat.SyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
             }
         }
         else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
         {
-            Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+            Utils.SendMessage(GetString("QuizmasterChat.CantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
         }
     }
 
@@ -461,7 +462,7 @@ abstract public class QuizQuestionBase
     public int Stage { get; set; }
     public QuizmasterQuestionType QuizmasterQuestionType { get; set; }
 
-    public string Question { get; set;  }
+    public string Question { get; set; }
     public string Answer { get; set; }
     public string AnswerLetter { get; set; }
     public List<string> Answers { get; set; }
@@ -480,7 +481,7 @@ class PlrColorQuestion : QuizQuestionBase
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
-            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) 
+            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString()))
                 PossibleAnswers.Add(plr.Data.GetPlayerColorString());
         }
 
@@ -741,6 +742,7 @@ class SabotageQuestion : QuizQuestionBase
     }
 }
 
+[Obfuscation(Exclude = true)]
 public enum QuizmasterQuestionType
 {
     FirstRoundSabotageQuestion,
@@ -762,6 +764,7 @@ public enum QuizmasterQuestionType
     PlrDeathKillerFactionQuestion,
 }
 
+[Obfuscation(Exclude = true)]
 public enum Sabotages
 {
     None = -1,

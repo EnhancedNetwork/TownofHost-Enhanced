@@ -3,6 +3,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class LastImpostor : IAddon
 {
+    public CustomRoles Role => CustomRoles.LastImpostor;
     private const int Id = 22800;
     public AddonTypes Type => AddonTypes.Impostor;
     public static byte currentId = byte.MaxValue;
@@ -30,8 +31,8 @@ public class LastImpostor : IAddon
         Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
-        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor)&& !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor);
-    
+        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor);
+
     public static void SetSubRole()
     {
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;

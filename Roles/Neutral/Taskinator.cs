@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Taskinator : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Taskinator;
     private const int Id = 13700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Taskinator);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -21,7 +22,7 @@ internal class Taskinator : RoleBase
 
     private static readonly Dictionary<byte, List<int>> taskIndex = [];
     private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
-    
+
     private static int maxTasksMarkedPerRound = new();
 
     public override void SetupCustomOption()
@@ -34,7 +35,7 @@ internal class Taskinator : RoleBase
 
     public override void Init()
     {
-        taskIndex.Clear(); 
+        taskIndex.Clear();
         TaskMarkPerRound.Clear();
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
@@ -52,8 +53,8 @@ internal class Taskinator : RoleBase
         writer.Write(isKill);
         writer.Write(clearAll);
         if (!isKill)
-        {            
-            writer.Write(TaskMarkPerRound[taskinatorID]);   
+        {
+            writer.Write(TaskMarkPerRound[taskinatorID]);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -67,8 +68,8 @@ internal class Taskinator : RoleBase
         {
             int uses = reader.ReadInt32();
             TaskMarkPerRound[taskinatorID] = uses;
-            if (!clearAll) 
-            { 
+            if (!clearAll)
+            {
                 if (!taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID] = [];
                 taskIndex[taskinatorID].Add(taskInd);
             }
@@ -77,7 +78,7 @@ internal class Taskinator : RoleBase
         {
             if (taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Remove(taskInd);
         }
-        if (clearAll && taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Clear(); 
+        if (clearAll && taskIndex.ContainsKey(taskinatorID)) taskIndex[taskinatorID].Clear();
     }
 
     public override string GetProgressText(byte playerId, bool cooms)
@@ -126,7 +127,7 @@ internal class Taskinator : RoleBase
         else if (_Player.RpcCheckAndMurder(player, true))
         {
             foreach (var taskinatorId in taskIndex.Keys)
-            { 
+            {
                 if (taskIndex[taskinatorId].Contains(task.Index))
                 {
                     var taskinatorPC = Utils.GetPlayerById(taskinatorId);
@@ -137,7 +138,7 @@ internal class Taskinator : RoleBase
                     player.SetRealKiller(taskinatorPC);
 
                     taskIndex[taskinatorId].Remove(task.Index);
-                    SendRPC(taskinatorID : taskinatorId, taskIndex:task.Index, isKill : true);
+                    SendRPC(taskinatorID: taskinatorId, taskIndex: task.Index, isKill: true);
                     Logger.Info($"{player.GetAllRoleName()} died because of {taskinatorPC.GetNameWithRole()}", "Taskinator");
                 }
             }

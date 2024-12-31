@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Cleanser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Cleanser;
     private const int Id = 6600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cleanser);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -19,7 +20,7 @@ internal class Cleanser : RoleBase
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<byte> CleansedPlayers = [];
-    private readonly Dictionary<byte,byte> CleanserTarget = [];
+    private readonly Dictionary<byte, byte> CleanserTarget = [];
     private bool DidVote;
 
     public override void SetupCustomOption()

@@ -8,6 +8,7 @@ internal class Collector : RoleBase
 {
 
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Collector;
     private const int Id = 14700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Collector);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

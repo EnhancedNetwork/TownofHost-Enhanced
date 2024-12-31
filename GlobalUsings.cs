@@ -4,5 +4,6 @@
 // it is recommended to add only those that are used most often
 
 global using HarmonyLib;
-global using System.Linq;
 global using System.Collections.Generic;
+global using System.Linq;
+global using System.Reflection;

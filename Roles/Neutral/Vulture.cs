@@ -11,10 +11,11 @@ namespace TOHE.Roles.Neutral;
 internal class Vulture : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vulture;
     private const int Id = 15600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -25,7 +26,7 @@ internal class Vulture : RoleBase
     private static OptionItem VultureReportCD;
     private static OptionItem MaxEaten;
     private static OptionItem HasImpVision;
-    
+
     private static readonly Dictionary<byte, int> BodyReportCount = [];
     private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
     private static readonly Dictionary<byte, long> LastReport = [];
@@ -50,7 +51,9 @@ internal class Vulture : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         BodyReportCount[playerId] = 0;
         AbilityLeftInRound[playerId] = MaxEaten.GetInt();
         LastReport[playerId] = GetTimeStamp();
@@ -92,7 +95,7 @@ internal class Vulture : RoleBase
 
         if (!BodyReportCount.ContainsKey(playerId))
         {
-            BodyReportCount.Add(playerId , body);
+            BodyReportCount.Add(playerId, body);
         }
         else
             BodyReportCount[playerId] = body;
@@ -153,7 +156,7 @@ internal class Vulture : RoleBase
         }
     }
     private static void OnEatDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
-    {       
+    {
         BodyReportCount[pc.PlayerId]++;
         AbilityLeftInRound[pc.PlayerId]--;
         Logger.Msg($"target is null? {target == null}", "VultureNull");
@@ -218,7 +221,7 @@ internal class Vulture : RoleBase
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
-        
+
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
