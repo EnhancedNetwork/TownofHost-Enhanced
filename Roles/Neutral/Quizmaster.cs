@@ -55,9 +55,9 @@ internal class Quizmaster : RoleBase
         TabGroup tab = TabGroup.NeutralRoles;
 
         SetupSingleRoleOptions(Id, tab, CustomRoles.Quizmaster, 1);
-        MinQuestionDifficulty = IntegerOptionItem.Create(Id + 15, "QuizmasterSettings.MinQuestionDifficulty", new(1, 4, 1), 1, tab, false)
+        MinQuestionDifficulty = IntegerOptionItem.Create(Id + 15, "QuizmasterSettings.MinQuestionDifficulty", new(1, 5, 1), 1, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-        MaxQuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.MaxQuestionDifficulty", new(1, 4, 1), 1, tab, false)
+        MaxQuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.MaxQuestionDifficulty", new(1, 5, 1), 1, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);

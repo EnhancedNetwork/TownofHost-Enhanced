@@ -2053,6 +2053,8 @@
   "ConjurerMark": "Location marked",
   "ConjurerMeteor": "Meteor summoned",
   "ConjurerNecroMark": "Player marked",
+  "ConjurerMarkShapeshift": "Mark",
+  "ConjurerConjureShapeshift": "Conjure",
 
   "IllusionCooldown": "Illusion Cooldown",
   "IllusionistMaxIllusions": "Max Illusions",
@@ -2096,6 +2098,8 @@
   "SacrifistSwapDebuff": "Swapping with target after 3 seconds",
   "SacrifistVisionRevert": "Vision Reverted",
   "SacrifistSpeedRevert": "Speed Reverted",
+  "SacrifistShapeshiftButton": "Debuff",
+  "SacrifistNecroShapeshiftButton": "Ultimate Sacrifice",
 
   "VoodooMasterPerRound": "Voodoo Dolls per Round",
   "VoodooMasterCanDollCoven": "Voodoo Master can Voodoo <color=#ac42f2>Coven</color>",

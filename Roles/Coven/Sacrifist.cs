@@ -352,4 +352,15 @@ internal class Sacrifist : CovenManager
 
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Retribution, [.. killPlayers]);
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (HasNecronomicon(playerId))
+        {
+            hud.AbilityButton.OverrideText(GetString("SacrifistNecroShapeshiftButton"));
+        }
+        else
+        {
+            hud.AbilityButton.OverrideText(GetString("SacrifistShapeshiftButton"));
+        }
+    }
 }
