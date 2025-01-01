@@ -46,8 +46,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1226.220.00090"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 9";
+    public const string PluginVersion = "2024.1230.220.00100"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 10";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -163,6 +163,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<int, int> SayStartTimes = [];
     public static readonly Dictionary<int, int> SayBanwordsTimes = [];
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
+    public static readonly Dictionary<byte, float> LastAllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
