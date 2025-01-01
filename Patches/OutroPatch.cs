@@ -33,20 +33,25 @@ class EndGamePatch
         {
             if (AmongUsClient.Instance.AmHost)
             {
-                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+                if (GhostRoleAssign.GhostGetPreviousRole != null)
                 {
-                    if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
-                    if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
+                    foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+                    {
+                        if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
+                        if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
 
-                    Main.PlayerStates[pvc].MainRole = prevrole;
+                        Main.PlayerStates[pvc].MainRole = prevrole;
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
-                    writer.Write(pvc);
-                    writer.WritePacked((int)prevrole);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                        // PlayerControl is already destoryed here. bruh wtf
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
+                        writer.Write(pvc);
+                        writer.WritePacked((int)prevrole);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    }
+
+                    if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
                 }
-
-                if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
             }
 
         }
