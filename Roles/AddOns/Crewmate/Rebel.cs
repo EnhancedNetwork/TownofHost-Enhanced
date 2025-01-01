@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using AmongUs.GameOptions;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
@@ -16,6 +17,7 @@ public class Rebel : IAddon
     public static OptionItem RetributionistCanBeRebel;
     public static OptionItem SwapperCanBeRebel;
     public static OptionItem CleanserCanBeRebel;
+    private static OptionItem HasImpostorVision;
 
     public void SetupCustomOption()
     {
@@ -28,6 +30,7 @@ public class Rebel : IAddon
         RetributionistCanBeRebel = BooleanOptionItem.Create(Id + 15, "RetributionistCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
         SwapperCanBeRebel = BooleanOptionItem.Create(Id + 16, "SwapperCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
         CleanserCanBeRebel = BooleanOptionItem.Create(Id + 17, "CleanserCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 18, "ImpostorVision", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
     }
 
     public void Init()
@@ -36,4 +39,21 @@ public class Rebel : IAddon
     { }
     public void Remove(byte playerId)
     { }
+
+    public static void ApplyGameOptions(IGameOptions opt)
+    {
+        if (HasImpostorVision.GetBool())
+        {
+            var impVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            if (Utils.IsActive(SystemTypes.Electrical))
+            {
+                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision * 5);
+            }
+            else
+            {
+                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
+            }
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, impVision);
+        }
+    }
 }
