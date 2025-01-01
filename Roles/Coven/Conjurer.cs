@@ -129,4 +129,15 @@ internal class Conjurer : CovenManager
         }
         return false;
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (state[playerId] is ConjState.NormalMark or ConjState.NecroMark)
+        {
+            hud.AbilityButton.OverrideText(GetString("ConjurerMarkShapeshift"));
+        }
+        else if (state[playerId] is ConjState.NormalBomb or ConjState.NecroBomb)
+        {
+            hud.AbilityButton.OverrideText(GetString("ConjurerConjureShapeshift"));
+        }
+    }
 }

@@ -171,4 +171,6 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
         }
     }
     public static bool HasNecronomicon(PlayerControl pc) => necroHolder == pc.PlayerId;
+    public static bool HasNecronomicon(byte playerId) => necroHolder == playerId;
+
 }
