@@ -14,7 +14,6 @@ using System.Threading;
 namespace TOHE;
 
 [HarmonyPatch]
-[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class ModUpdater
 {
     //private static readonly string URL_2018k = "http://api.tohre.dev";
