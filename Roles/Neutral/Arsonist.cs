@@ -17,7 +17,7 @@ internal class Arsonist : RoleBase
     private const int id = 15900;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => CanIgniteAnytime() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralBenign;
+    public override Custom_RoleType ThisRoleType => CanIgniteAnytime() ? Custom_RoleType.NeutralKilling : Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
     private static OptionItem ArsonistDouseTime;

@@ -3,6 +3,7 @@ using InnerNet;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -102,19 +103,33 @@ internal class Oracle : RoleBase
             string msg;
 
             {
-
+                bool targetIsVM = false;
+                if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+                {
+                    target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                    Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+                    targetIsVM = true;
+                }
+                var targetName = target.GetRealName();
+                if (targetIsVM) targetName = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
                 string text = "Crewmate";
                 if (ChangeRecruitTeam.GetBool())
                 {
                     if (target.Is(CustomRoles.Admired)) text = "Crewmate";
+                    else if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
+                    else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
                     else if (target.GetCustomRole().IsImpostorTeamV2() || target.GetCustomSubRoles().Any(role => role.IsImpostorTeamV2())) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutralTeamV2() || target.GetCustomSubRoles().Any(role => role.IsNeutralTeamV2())) text = "Neutral";
+                    else if (target.IsPlayerCoven() || target.Is(CustomRoles.Enchanted)) text = "Coven";
                     else if (target.GetCustomRole().IsCrewmateTeamV2() && (target.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target.GetCustomSubRoles().Count == 0))) text = "Crewmate";
                 }
                 else
                 {
-                    if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
+                    if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
+                    else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
+                    else if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
+                    else if (target.Is(Custom_Team.Coven)) text = "Coven";
                     else text = "Crewmate";
                 }
 
@@ -123,25 +138,34 @@ internal class Oracle : RoleBase
                     int random_number_1 = IRandom.Instance.Next(1, 100);
                     if (random_number_1 <= FailChance.GetInt())
                     {
-                        int random_number_2 = IRandom.Instance.Next(1, 3);
+                        int random_number_2 = IRandom.Instance.Next(1, 4);
                         if (text == "Crewmate")
                         {
                             if (random_number_2 == 1) text = "Neutral";
                             if (random_number_2 == 2) text = "Impostor";
+                            if (random_number_2 == 3) text = "Coven";
                         }
                         if (text == "Neutral")
                         {
                             if (random_number_2 == 1) text = "Crewmate";
                             if (random_number_2 == 2) text = "Impostor";
+                            if (random_number_2 == 3) text = "Coven";
                         }
                         if (text == "Impostor")
                         {
                             if (random_number_2 == 1) text = "Neutral";
                             if (random_number_2 == 2) text = "Crewmate";
+                            if (random_number_2 == 3) text = "Coven";
+                        }
+                        if (text == "Coven")
+                        {
+                            if (random_number_2 == 1) text = "Crewmate";
+                            if (random_number_2 == 2) text = "Impostor";
+                            if (random_number_2 == 3) text = "Neutral";
                         }
                     }
                 }
-                msg = string.Format(GetString("OracleCheck." + text), target.GetRealName());
+                msg = string.Format(GetString("OracleCheck." + text), targetName);
             }
 
             SendMessage(GetString("OracleCheck") + "\n" + msg + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));

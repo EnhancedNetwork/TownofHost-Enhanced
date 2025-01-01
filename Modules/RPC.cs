@@ -7,6 +7,7 @@ using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -115,6 +116,7 @@ public enum CustomRPC : byte // 185/255 USED
     SyncAdmiredAbility,
     SetImitateLimit,
     DictatorRPC,
+    Necronomicon,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -645,6 +647,9 @@ internal class RPCHandlerPatch
                 var pnum = reader.ReadPackedInt32();
                 for (int i = 0; i < pnum; i++)
                     Main.DeadPassedMeetingPlayers.Add(reader.ReadByte());
+                break;
+            case CustomRPC.Necronomicon:
+                CovenManager.ReceiveNecroRPC(reader);
                 break;
         }
     }

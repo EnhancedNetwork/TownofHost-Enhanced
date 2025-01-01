@@ -28,6 +28,7 @@ internal class Grenadier : RoleBase
     private static OptionItem GrenadierSkillDuration;
     private static OptionItem GrenadierCauseVision;
     private static OptionItem GrenadierCanAffectNeutral;
+    private static OptionItem GrenadierCanAffectCoven;
     private static OptionItem GrenadierSkillMaxOfUseage;
     private static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
 
@@ -41,6 +42,7 @@ internal class Grenadier : RoleBase
         GrenadierCauseVision = FloatOptionItem.Create(Id + 12, "GrenadierCauseVision", new(0f, 5f, 0.05f), 0.3f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
             .SetValueFormat(OptionFormat.Multiplier);
         GrenadierCanAffectNeutral = BooleanOptionItem.Create(Id + 13, "GrenadierCanAffectNeutral", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier]);
+        GrenadierCanAffectCoven = BooleanOptionItem.Create(Id + 16, "GrenadierCanAffectCoven", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier]);
         GrenadierSkillMaxOfUseage = FloatOptionItem.Create(Id + 14, "GrenadierSkillMaxOfUseage", new(0, 20, 1), 2, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
             .SetValueFormat(OptionFormat.Times);
         GrenadierAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Grenadier])
@@ -68,7 +70,8 @@ internal class Grenadier : RoleBase
         // Grenadier or Mad Grenadier enter the vent
         if ((GrenadierBlinding.Any() &&
             (player.GetCustomRole().IsImpostor() ||
-            (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
+            (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()) ||
+            (player.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
             )
             || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
@@ -105,12 +108,21 @@ internal class Grenadier : RoleBase
                     .Where(x => !x.GetCustomRole().IsImpostorTeam() && !x.Is(CustomRoles.Madmate))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
+            // Why in the world is there a separate list for Mad, whatever i guess -- Marg
+            else if (pc.Is(CustomRoles.Enchanted))
+            {
+                MadGrenadierBlinding.Remove(pc.PlayerId);
+                MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
+                Main.AllPlayerControls.Where(x => x.IsModded())
+                    .Where(x => !x.GetCustomRole().IsCoven() && !x.Is(CustomRoles.Enchanted))
+                    .Do(x => x.RPCPlayCustomSound("FlashBang"));
+            }
             else
             {
                 GrenadierBlinding.Remove(pc.PlayerId);
                 GrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => x.GetCustomRole().IsImpostor() || (x.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
+                    .Where(x => x.GetCustomRole().IsImpostor() || (x.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()) || (x.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);

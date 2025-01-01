@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -65,6 +66,10 @@ public static class CustomRoleManager
                 roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
                 break;
 
+            case Custom_Team.Coven:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven()).Select(r => r.Value).ToList();
+                break;
+
             default:
                 Logger.Info("Unsupported team was sent.", "GetExperimentalOptions");
                 break;
@@ -123,6 +128,9 @@ public static class CustomRoleManager
         if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
+        if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);
+
 
         var playerSubRoles = player.GetCustomSubRoles();
 

@@ -249,6 +249,10 @@ class SetEverythingUpPatch
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Egoist);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Egoist);
                 break;
+            case CustomWinner.Coven:
+                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Coven);
+                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Coven);
+                break;
             case CustomWinner.Terrorist:
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Terrorist);
                 break;
