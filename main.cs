@@ -1123,6 +1123,8 @@ public enum TieMode
     All,
     Random
 }
+
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class Coroutines : MonoBehaviour
 {
 }
