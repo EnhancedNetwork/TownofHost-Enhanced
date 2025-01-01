@@ -94,9 +94,10 @@ internal class Seeker : RoleBase
         {
             TotalPoints -= 1;
         }
-        if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill();
-        SetKillCooldown(killer.PlayerId);
-        killer.SyncSettings();
+
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown(forceAnime: true);
+
         SendRPC(killer.PlayerId, setTarget: false);
         return false;
     }
