@@ -1146,6 +1146,19 @@ class FixedUpdateInNormalGamePatch
 
                 player.OnFixedAddonUpdate(lowLoad);
 
+                if (Main.AllPlayerSpeed.ContainsKey(player.PlayerId) && !lowLoad)
+                {
+                    if (!Main.LastAllPlayerSpeed.ContainsKey(player.PlayerId))
+                    {
+                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                    }
+                    else if (!Main.LastAllPlayerSpeed[player.PlayerId].Equals(Main.AllPlayerSpeed[player.PlayerId]))
+                    {
+                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                        player.SyncSpeed();
+                    }
+                }
+
                 if (Main.LateOutfits.TryGetValue(player.PlayerId, out var Method) && !player.CheckCamoflague())
                 {
                     Method();
