@@ -152,7 +152,7 @@ internal class CopyCat : RoleBase
                 if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit);
                 if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
                 if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
-                if (target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)) killer.RpcSetCustomRole(CustomRoles.Admired);
+                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
