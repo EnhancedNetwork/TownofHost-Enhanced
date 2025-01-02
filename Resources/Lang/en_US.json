@@ -1309,7 +1309,7 @@
   "RandomSpawn_AirshipAdditionalSpawn": "Additional Spawn Locations (<color=#ed0007>Airship</color>)",
   "RandomSpawn_SpawnRandomVents": "Random Spawns On Vents",
   "CommsCamouflage": "Camouflage during Comms Sabotage",
-  "DisableOnSomeMaps": "Disable Comms camouflage on some maps",
+  "DisableOnSomeMaps": "Disable Comms Camouflage on some maps",
   "DisableOnSkeld": "Disable on <color=#66a186>The Skeld</color>",
   "DisableOnMira": "Disable on <color=#e84b56>MIRA HQ</color>",
   "DisableOnPolus": "Disable on <color=#a167c0>Polus</color>",
