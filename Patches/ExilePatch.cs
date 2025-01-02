@@ -184,6 +184,7 @@ class ExileControllerWrapUpPatch
                 if (GameStates.IsEnded) return;
 
                 AntiBlackout.ResetAfterMeeting();
+                Main.LastMeetingEnded = Utils.GetTimeStamp();
             }, 2f, "Reset Cooldown After Meeting");
         }
 
