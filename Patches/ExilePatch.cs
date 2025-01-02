@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -14,6 +15,7 @@ class ExileControllerWrapUpPatch
         public static void Prefix()
         {
             CheckAndDoRandomSpawn();
+            CustomNetObject.AfterMeetingTasks();
         }
         public static void Postfix(ExileController __instance)
         {
@@ -38,6 +40,7 @@ class ExileControllerWrapUpPatch
         public static void Prefix()
         {
             CheckAndDoRandomSpawn();
+            CustomNetObject.AfterMeetingTasks();
         }
         public static void Postfix(AirshipExileController __instance)
         {
