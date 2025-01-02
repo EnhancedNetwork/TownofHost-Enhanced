@@ -128,223 +128,253 @@ public class SabotageSystemPatch
 
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
-                {
-                    // Need for hiding player names if player is desync Impostor
-                    Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
-                }
-            }
-        }
-    }
-    [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
-    private static class MushroomMixupSabotageSystemPatch
-    {
-        private static void Prefix(MushroomMixupSabotageSystem __instance, ref bool __state)
-        {
-            __state = __instance.IsActive;
-
-            if (!Options.SabotageTimeControl.GetBool()) return;
-            if (!GameStates.FungleIsActive) return;
-
-            // If Mushroom Mixup sabotage is end
-            if (!__instance.IsActive || !SetDurationMushroomMixupSabotage)
-            {
-                if (!SetDurationMushroomMixupSabotage && !__instance.IsActive)
-                {
-                    SetDurationMushroomMixupSabotage = true;
-                }
-                return;
-            }
-
-            Logger.Info($" {ShipStatus.Instance.Type}", "MushroomMixupSabotageSystem - ShipStatus.Instance.Type");
-            Logger.Info($" {SetDurationMushroomMixupSabotage}", "MushroomMixupSabotageSystem - SetDurationCriticalSabotage");
-            SetDurationMushroomMixupSabotage = false;
-
-            // Set duration Mushroom Mixup (The Fungle)
-            __instance.currentSecondsUntilHeal = Options.FungleMushroomMixupDuration.GetFloat();
-        }
-        public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
-        {
-            if (GameStates.IsHideNSeek) return;
-
-            // if Mushroom Mixup Sabotage is end
-            if (__instance.IsActive != __state && !Main.MeetingIsStarted)
-            {
-                Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
-
-                if (AmongUsClient.Instance.AmHost)
-                {
-                    _ = new LateTask(() =>
+                if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsRandomizer) && pc.HasDesyncRole())
+                
                     {
-                        // After MushroomMixup sabotage, shapeshift cooldown sets to 0
+                        // Need for hiding player names if player is desync Impostor
+                        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
+                    }
+                }
+            }
+        }
+        [HarmonyPatch(typeof(MushroomMixupSabotageSystem), nameof(MushroomMixupSabotageSystem.Deteriorate))]
+        private static class MushroomMixupSabotageSystemPatch
+        {
+            private static void Prefix(MushroomMixupSabotageSystem __instance, ref bool __state)
+            {
+                __state = __instance.IsActive;
+
+                if (!Options.SabotageTimeControl.GetBool()) return;
+                if (!GameStates.FungleIsActive) return;
+
+                // If Mushroom Mixup sabotage is end
+                if (!__instance.IsActive || !SetDurationMushroomMixupSabotage)
+                {
+                    if (!SetDurationMushroomMixupSabotage && !__instance.IsActive)
+                    {
+                        SetDurationMushroomMixupSabotage = true;
+                    }
+                    return;
+                }
+
+                Logger.Info($" {ShipStatus.Instance.Type}", "MushroomMixupSabotageSystem - ShipStatus.Instance.Type");
+                Logger.Info($" {SetDurationMushroomMixupSabotage}", "MushroomMixupSabotageSystem - SetDurationCriticalSabotage");
+                SetDurationMushroomMixupSabotage = false;
+
+                // Set duration Mushroom Mixup (The Fungle)
+                __instance.currentSecondsUntilHeal = Options.FungleMushroomMixupDuration.GetFloat();
+            }
+            public static void Postfix(MushroomMixupSabotageSystem __instance, bool __state)
+            {
+                if (GameStates.IsHideNSeek) return;
+
+                // if Mushroom Mixup Sabotage is end
+                if (__instance.IsActive != __state && !Main.MeetingIsStarted)
+                {
+                    Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
+
+                    if (AmongUsClient.Instance.AmHost)
+                    {
+                        _ = new LateTask(() =>
+                        {
+                            // After MushroomMixup sabotage, shapeshift cooldown sets to 0
+                            foreach (var pc in Main.AllAlivePlayerControls)
+                            {
+                                // Reset Ability Cooldown To Default For Alive Players
+                                pc.RpcResetAbilityCooldown();
+                            }
+                        }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
+
                         foreach (var pc in Main.AllAlivePlayerControls)
                         {
-                            // Reset Ability Cooldown To Default For Alive Players
-                            pc.RpcResetAbilityCooldown();
-                        }
-                    }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
-
-                    foreach (var pc in Main.AllAlivePlayerControls)
-                    {
-                        if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
-                        {
-                            // Need for display player names if player is desync Impostor
-                            Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                            if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsRandomizer) && pc.HasDesyncRole())
+                            
+                                {
+                                // Need for display player names if player is desync Impostor
+                                Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
+                            }
                         }
                     }
                 }
             }
         }
-    }
-    [HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
-    private static class SwitchSystemUpdatePatch
-    {
-        private static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
+        [HarmonyPatch(typeof(SwitchSystem), nameof(SwitchSystem.UpdateSystem))]
+        private static class SwitchSystemUpdatePatch
         {
-            if (GameStates.IsHideNSeek) return false;
-
-            byte amount;
+            private static bool Prefix(SwitchSystem __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
             {
-                var newReader = MessageReader.Get(msgReader);
-                amount = newReader.ReadByte();
-                newReader.Recycle();
-            }
+                if (GameStates.IsHideNSeek) return false;
 
-            if (!AmongUsClient.Instance.AmHost)
-            {
-                return true;
-            }
+                byte amount;
+                {
+                    var newReader = MessageReader.Get(msgReader);
+                    amount = newReader.ReadByte();
+                    newReader.Recycle();
+                }
 
-            // No matter if the blackout sabotage is sounded (beware of misdirection as it flies under the host's name)
-            if (amount.HasBit(SwitchSystem.DamageSystem))
-            {
-                return true;
-            }
+                if (!AmongUsClient.Instance.AmHost)
+                {
+                    return true;
+                }
 
-            // Cancel if player can't fix a specific outage on Airship
-            if (GameStates.AirshipIsActive)
-            {
-                var truePosition = player.GetCustomPosition();
-                if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Utils.GetDistance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;
-                if (Options.DisableAirshipGapRoomLightsPanel.GetBool() && Utils.GetDistance(truePosition, new(13.92f, 6.43f)) <= 2f) return false;
-                if (Options.DisableAirshipCargoLightsPanel.GetBool() && Utils.GetDistance(truePosition, new(30.56f, 2.12f)) <= 2f) return false;
-            }
+                // No matter if the blackout sabotage is sounded (beware of misdirection as it flies under the host's name)
+                if (amount.HasBit(SwitchSystem.DamageSystem))
+                {
+                    return true;
+                }
 
-            if (Fool.IsEnable && player.Is(CustomRoles.Fool))
-            {
-                return false;
-            }
+                // Cancel if player can't fix a specific outage on Airship
+                if (GameStates.AirshipIsActive)
+                {
+                    var truePosition = player.GetCustomPosition();
+                    if (Options.DisableAirshipViewingDeckLightsPanel.GetBool() && Utils.GetDistance(truePosition, new(-12.93f, -11.28f)) <= 2f) return false;
+                    if (Options.DisableAirshipGapRoomLightsPanel.GetBool() && Utils.GetDistance(truePosition, new(13.92f, 6.43f)) <= 2f) return false;
+                    if (Options.DisableAirshipCargoLightsPanel.GetBool() && Utils.GetDistance(truePosition, new(30.56f, 2.12f)) <= 2f) return false;
+                }
 
-            if (Options.BlockDisturbancesToSwitches.GetBool())
-            {
-                // Shift 1 to the left by amount
-                // Each digit corresponds to each switch
-                // Far left switch - (amount: 0) 00001
-                // Far right switch - (amount: 4) 10000
-                // ref: SwitchSystem.RepairDamage, SwitchMinigame.FixedUpdate
-                var switchedKnob = (byte)(0b_00001 << amount);
-
-                // ExpectedSwitches: Up and down state of switches when all are on
-                // ActualSwitches: Actual up/down state of switch
-                // if Expected and Actual are the same for the operated knob, the knob is already fixed
-                if ((__instance.ActualSwitches & switchedKnob) == (__instance.ExpectedSwitches & switchedKnob))
+                if (Fool.IsEnable && player.Is(CustomRoles.Fool))
                 {
                     return false;
                 }
+
+                if (Options.BlockDisturbancesToSwitches.GetBool())
+                {
+                    // Shift 1 to the left by amount
+                    // Each digit corresponds to each switch
+                    // Far left switch - (amount: 0) 00001
+                    // Far right switch - (amount: 4) 10000
+                    // ref: SwitchSystem.RepairDamage, SwitchMinigame.FixedUpdate
+                    var switchedKnob = (byte)(0b_00001 << amount);
+
+                    // ExpectedSwitches: Up and down state of switches when all are on
+                    // ActualSwitches: Actual up/down state of switch
+                    // if Expected and Actual are the same for the operated knob, the knob is already fixed
+                    if ((__instance.ActualSwitches & switchedKnob) == (__instance.ExpectedSwitches & switchedKnob))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+        }
+        [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
+        public static class ElectricTaskInitializePatch
+        {
+            public static void Postfix()
+            {
+                Utils.MarkEveryoneDirtySettings();
+                if (!GameStates.IsMeeting)
+                    Utils.NotifyRoles(ForceLoop: true);
+            }
+        }
+        [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
+        public static class ElectricTaskCompletePatch
+        {
+            public static void Postfix()
+            {
+                Utils.MarkEveryoneDirtySettings();
+                if (!GameStates.IsMeeting)
+                    Utils.NotifyRoles(ForceLoop: true);
+            }
+        }
+        // https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
+        // Method called when sabotage occurs
+        [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.UpdateSystem))] // SetInitialSabotageCooldown - set sabotage cooldown in start game
+        public static class SabotageSystemTypeRepairDamagePatch
+        {
+            private static bool isCooldownModificationEnabled;
+            private static float modifiedCooldownSec;
+
+            public static void Initialize()
+            {
+                isCooldownModificationEnabled = Options.SabotageCooldownControl.GetBool();
+                modifiedCooldownSec = Options.SabotageCooldown.GetFloat();
             }
 
-            return true;
-        }
-    }
-    [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
-    public static class ElectricTaskInitializePatch
-    {
-        public static void Postfix()
-        {
-            Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
-        }
-    }
-    [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
-    public static class ElectricTaskCompletePatch
-    {
-        public static void Postfix()
-        {
-            Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
-        }
-    }
-    // https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
-    // Method called when sabotage occurs
-    [HarmonyPatch(typeof(SabotageSystemType), nameof(SabotageSystemType.UpdateSystem))] // SetInitialSabotageCooldown - set sabotage cooldown in start game
-    public static class SabotageSystemTypeRepairDamagePatch
-    {
-        private static bool isCooldownModificationEnabled;
-        private static float modifiedCooldownSec;
-
-        public static void Initialize()
-        {
-            isCooldownModificationEnabled = Options.SabotageCooldownControl.GetBool();
-            modifiedCooldownSec = Options.SabotageCooldown.GetFloat();
-        }
-
-        private static bool Prefix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
-        {
-            if (GameStates.IsHideNSeek) return false;
-
-            byte amount;
+            private static bool Prefix([HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(1)] MessageReader msgReader)
             {
-                var newReader = MessageReader.Get(msgReader);
-                amount = newReader.ReadByte();
-                newReader.Recycle();
-            }
-            var nextSabotage = (SystemTypes)amount;
+                if (GameStates.IsHideNSeek) return false;
 
-            if (Options.DisableSabotage.GetBool())
-            {
-                return false;
-            }
+                byte amount;
+                {
+                    var newReader = MessageReader.Get(msgReader);
+                    amount = newReader.ReadByte();
+                    newReader.Recycle();
+                }
+                var nextSabotage = (SystemTypes)amount;
 
-            Logger.Info($"PlayerName: {player.GetNameWithRole()}, SabotageType: {nextSabotage}, amount {amount}", "SabotageSystemType.UpdateSystem");
-
-            return CanSabotage(player, nextSabotage);
-        }
-        private static bool CanSabotage(PlayerControl player, SystemTypes systemType)
-        {
-            if (systemType is SystemTypes.Comms)
-            {
-                if (Camouflager.CantPressCommsSabotageButton(player))
+                if (Options.DisableSabotage.GetBool())
+                {
                     return false;
-            }
+                }
 
-            if (player.GetRoleClass() is Glitch gc)
+                Logger.Info($"PlayerName: {player.GetNameWithRole()}, SabotageType: {nextSabotage}, amount {amount}", "SabotageSystemType.UpdateSystem");
+
+                return CanSabotage(player, nextSabotage);
+            }
+            private static bool CanSabotage(PlayerControl player, SystemTypes systemType)
             {
-                gc.Mimic(player);
-                return false;
+                if (systemType is SystemTypes.Comms)
+                {
+                    if (Camouflager.CantPressCommsSabotageButton(player))
+                        return false;
+                }
+
+                if (player.GetRoleClass() is Glitch gc)
+                {
+                    gc.Mimic(player);
+                    return false;
+                }
+
+                return player.CanUseSabotage();
             }
 
-            return player.CanUseSabotage();
-        }
-
-        public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
-        {
-            // __runOriginal - the result that was returned from Prefix
-            if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !__runOriginal || !isCooldownModificationEnabled)
+            public static void Postfix(SabotageSystemType __instance, bool __runOriginal)
             {
-                return;
+                // __runOriginal - the result that was returned from Prefix
+                if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || !__runOriginal || !isCooldownModificationEnabled)
+                {
+                    return;
+                }
+
+                // Set cooldown sabotages
+                __instance.Timer = modifiedCooldownSec;
+                __instance.IsDirty = true;
             }
 
-            // Set cooldown sabotages
-            __instance.Timer = modifiedCooldownSec;
-            __instance.IsDirty = true;
-        }
+            [HarmonyPatch(typeof(SecurityCameraSystemType), nameof(SecurityCameraSystemType.UpdateSystem))]
+            private static class SecurityCameraSystemTypeUpdateSystemPatch
+            {
+                private static bool Prefix([HarmonyArgument(1)] MessageReader msgReader)
+                {
+                    byte amount;
+                    {
+                        var newReader = MessageReader.Get(msgReader);
+                        amount = newReader.ReadByte();
+                        newReader.Recycle();
+                    }
 
-        [HarmonyPatch(typeof(SecurityCameraSystemType), nameof(SecurityCameraSystemType.UpdateSystem))]
-        private static class SecurityCameraSystemTypeUpdateSystemPatch
+                    // When the camera is disabled, the vanilla player opens the camera so it does not blink.
+                    if (amount == SecurityCameraSystemType.IncrementOp)
+                    {
+                        var camerasDisabled = Utils.GetActiveMapName() switch
+                        {
+                            MapNames.Skeld or MapNames.Dleks => Options.DisableSkeldCamera.GetBool(),
+                            MapNames.Polus => Options.DisablePolusCamera.GetBool(),
+                            MapNames.Airship => Options.DisableAirshipCamera.GetBool(),
+                            _ => false,
+                        };
+                        return !camerasDisabled;
+                    }
+                    return true;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(DoorsSystemType), nameof(DoorsSystemType.UpdateSystem))]
+        public static class DoorsSystemTypePatch
         {
-            private static bool Prefix([HarmonyArgument(1)] MessageReader msgReader)
+            public static void Prefix(/*DoorsSystemType __instance,*/ PlayerControl player, MessageReader msgReader)
             {
                 byte amount;
                 {
@@ -353,35 +383,7 @@ public class SabotageSystemPatch
                     newReader.Recycle();
                 }
 
-                // When the camera is disabled, the vanilla player opens the camera so it does not blink.
-                if (amount == SecurityCameraSystemType.IncrementOp)
-                {
-                    var camerasDisabled = Utils.GetActiveMapName() switch
-                    {
-                        MapNames.Skeld or MapNames.Dleks => Options.DisableSkeldCamera.GetBool(),
-                        MapNames.Polus => Options.DisablePolusCamera.GetBool(),
-                        MapNames.Airship => Options.DisableAirshipCamera.GetBool(),
-                        _ => false,
-                    };
-                    return !camerasDisabled;
-                }
-                return true;
+                Logger.Info($"Door is opened by {player?.Data?.PlayerName}, amount: {amount}", "DoorsSystemType.UpdateSystem");
             }
         }
     }
-    [HarmonyPatch(typeof(DoorsSystemType), nameof(DoorsSystemType.UpdateSystem))]
-    public static class DoorsSystemTypePatch
-    {
-        public static void Prefix(/*DoorsSystemType __instance,*/ PlayerControl player, MessageReader msgReader)
-        {
-            byte amount;
-            {
-                var newReader = MessageReader.Get(msgReader);
-                amount = newReader.ReadByte();
-                newReader.Recycle();
-            }
-
-            Logger.Info($"Door is opened by {player?.Data?.PlayerName}, amount: {amount}", "DoorsSystemType.UpdateSystem");
-        }
-    }
-}

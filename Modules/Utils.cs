@@ -32,7 +32,7 @@ public static class Utils
     private static readonly DateTime timeStampStartTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public static long TimeStamp => (long)(DateTime.Now.ToUniversalTime() - timeStampStartTime).TotalSeconds;
     public static long GetTimeStamp(DateTime? dateTime = null) => (long)((dateTime ?? DateTime.Now).ToUniversalTime() - timeStampStartTime).TotalSeconds;
-    
+
     public static void ErrorEnd(string text)
     {
         if (AmongUsClient.Instance.AmHost)
@@ -40,7 +40,7 @@ public static class Utils
             Logger.Fatal($"Error: {text} - triggering critical error", "Anti-black");
             ChatUpdatePatch.DoBlockChat = true;
             Main.OverrideWelcomeMsg = GetString("AntiBlackOutNotifyInLobby");
-            
+
             _ = new LateTask(() =>
             {
                 Logger.SendInGame(GetString("AntiBlackOutLoggerSendInGame"));
@@ -88,7 +88,7 @@ public static class Utils
                 {
                     Logger.SendInGame(GetString("AntiBlackOutHostRejectForceEnd"));
                 }, 8f, "Anti-Black Msg SendInGame Host Reject Force End");
-                
+
                 _ = new LateTask(() =>
                 {
                     if (AmongUsClient.Instance.AmConnected)
@@ -264,7 +264,7 @@ public static class Utils
         }
         return;
     }
-    
+
     public static void TargetDies(PlayerControl killer, PlayerControl target)
     {
         if (!target.Data.IsDead || GameStates.IsMeeting) return;
@@ -342,18 +342,18 @@ public static class Utils
     public static string GetRoleTitle(this CustomRoles role)
     {
         string ColorName = ColorString(GetRoleColor(role), GetString($"{role}"));
-        
+
         string chance = GetRoleMode(role);
         if (role.IsAdditionRole() && !role.IsEnable()) chance = ColorString(Color.red, "(OFF)");
-        
+
         return $"{ColorName} {chance}";
     }
-    public static string GetInfoLong(this CustomRoles role) 
+    public static string GetInfoLong(this CustomRoles role)
     {
         var InfoLong = GetString($"{role}" + "InfoLong");
         var CustomName = GetString($"{role}");
         var ColorName = ColorString(GetRoleColor(role).ShadeColor(0.25f), CustomName);
-        
+
         Translator.GetActualRoleName(role, out var RealRole);
 
         return InfoLong.Replace(RealRole, $"{ColorName}");
@@ -377,14 +377,14 @@ public static class Utils
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
             mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
-            
+
         }
-        
+
         return parentheses ? $"({mode})" : mode;
     }
     public static string GetChance(float percent)
     {
-        return percent switch 
+        return percent switch
         {
             0 => "<color=#444444>0%</color>",
             5 => "<color=#EE5015>5%</color>",
@@ -465,6 +465,10 @@ public static class Utils
                 hexColor = "#7f8c8d";
                 break;
         }
+
+
+
+
 
         _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
         return c;
@@ -1769,6 +1773,7 @@ public static class Utils
     public static bool IsSameTeammate(this PlayerControl player, PlayerControl target, out Custom_Team team)
     {
         team = default;
+
         if (player.IsAnySubRole(x => x.IsConverted()))
         {
             var Compare = player.GetCustomSubRoles().First(x => x.IsConverted());
@@ -1782,9 +1787,13 @@ public static class Utils
             return target.Is(team);
         }
 
-
         return false;
     }
+
+
+
+
+
     public static IEnumerable<t> GetRoleBasesByType <t>() where t : RoleBase
     {
         try
@@ -1822,7 +1831,7 @@ public static class Utils
     {
         if (!SetUpRoleTextPatch.IsInIntro || player == null || player.IsModded()) return;
 
-        //Get role info font size based on the length of the role info
+        // Get role info font size based on the length of the role info
         static int GetInfoSize(string RoleInfo)
         {
             RoleInfo = Regex.Replace(RoleInfo, "<[^>]*>", "");
@@ -1844,6 +1853,8 @@ public static class Utils
         string SelfSubRolesName = string.Empty;
         string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
         string RoleNameUp = "<size=1350%>\n\n</size>";
+    
+
 
         if (!player.HasDesyncRole())
         {
@@ -1955,7 +1966,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsRandomizer) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -2104,7 +2115,7 @@ public static class Utils
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && !seer.Is(Custom_Team.Impostor) && seer.HasDesyncRole())
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsRandomizer) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
@@ -2320,6 +2331,8 @@ public static class Utils
         return checkbanned ? !BannedReason(reason) : reason switch
         {
             PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
+            PlayerState.DeathReason.FadedAway => (CustomRoles.LingeringPresence.IsEnable()),
+            PlayerState.DeathReason.AllergicReaction => (CustomRoles.Allergic.IsEnable()),
             PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
             PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
             PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
@@ -2407,6 +2420,7 @@ public static class Utils
             if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
+            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.AfterMeetingTasks();
         }
         catch (Exception error)
         {
@@ -2435,10 +2449,27 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
+        // Adjusted Impostor Count Logic (Include Randomizer if LockedTeam is Impostor)
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc =>
+        {
+            var playerState = Main.PlayerStates[pc.PlayerId];
+            return pc.Is(Custom_Team.Impostor) ||
+                   (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Impostor);
+        });
+
+        // Adjusted Crewmate Count Logic (Include Randomizer based on LockedTeam)
+        int AliveCrewmateCount = Main.AllAlivePlayerControls.Count(pc =>
+        {
+            var playerState = Main.PlayerStates[pc.PlayerId];
+            return pc.Is(Custom_Team.Crewmate) ||
+                   (playerState.IsRandomizer &&
+                    (playerState.LockedTeam == Custom_Team.Crewmate || playerState.LockedTeam == Custom_Team.Neutral));
+        });
+
+        // Log Impostor Count Changes
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
-            Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
+            Logger.Info("Number of Impostors left: " + AliveImpostorCount, "CountAliveImpostors");
             Main.AliveImpostorCount = AliveImpostorCount;
             LastImpostor.SetSubRole();
         }
@@ -2447,7 +2478,7 @@ public static class Utils
         {
             var sb = new StringBuilder(100);
             if (Options.CurrentGameMode != CustomGameMode.FFA)
-            { 
+            {
                 foreach (var countTypes in EnumHelper.GetAllValues<CountTypes>())
                 {
                     var playersCount = PlayersCount(countTypes);
@@ -2455,13 +2486,15 @@ public static class Utils
                     sb.Append($"{countTypes}:{AlivePlayersCount(countTypes)}/{playersCount}, ");
                 }
             }
-            sb.Append($"All:{AllAlivePlayersCount}/{AllPlayersCount}");
+            sb.Append($"Crewmates:{AliveCrewmateCount}, Impostors:{AliveImpostorCount}, All:{AllAlivePlayersCount}/{AllPlayersCount}");
             Logger.Info(sb.ToString(), "CountAlivePlayers");
         }
 
         if (AmongUsClient.Instance.AmHost && checkGameEnd)
             GameEndCheckerForNormal.Prefix();
     }
+
+
     public static string GetVoteName(byte num)
     {
         //  HasNotVoted = 255;
@@ -2688,4 +2721,9 @@ public static class Utils
     public static bool IsAllAlive => Main.PlayerStates.Values.All(state => state.countTypes == CountTypes.OutOfGame || !state.IsDead);
     public static int PlayersCount(CountTypes countTypes) => Main.PlayerStates.Values.Count(state => state.countTypes == countTypes);
     public static int AlivePlayersCount(CountTypes countTypes) => Main.AllAlivePlayerControls.Count(pc => pc.Is(countTypes));
+
+    internal static void SendMessage(string v, object playerId)
+    {
+        throw new NotImplementedException();
+    }
 }

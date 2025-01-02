@@ -175,6 +175,7 @@ class RpcSetTasksPatch
             taskState.AllTasksCount = NumShortTasks + NumLongTasks;
             hasCommonTasks = false;
         }
+       
 
         if (taskTypeIds.Count == 0) hasCommonTasks = false; //Common to 0 when redistributing tasks
         if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //Task 0 Measures

@@ -326,8 +326,10 @@ internal class DoubleAgent : RoleBase
             targetBox.name = "PlantBombButton";
             targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
             createdButtonsList.Add(targetBox);
+
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
             renderer.sprite = CustomButton.Get("DoubleAgentPocketBomb");
+
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => DestroyButtons(targetBox)));

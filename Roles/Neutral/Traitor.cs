@@ -54,6 +54,7 @@ internal class Traitor : RoleBase
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
+        if (Main.PlayerStates[seer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer) return string.Empty;
         if (target.Is(Custom_Team.Impostor))
         {
             return Main.roleColors[CustomRoles.Impostor];

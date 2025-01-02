@@ -34,11 +34,11 @@ public static class AntiBlackout
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
             // Impostors
-            if (pc.Is(Custom_Team.Impostor))
+            if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) 
+            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
                 NeutralKillers.Add(pc.PlayerId);
 
             // Crewmate

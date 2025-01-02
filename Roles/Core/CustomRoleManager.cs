@@ -161,6 +161,7 @@ public static class CustomRoleManager
     {
         if (killer == target) return true;
 
+        // Check if the target is Fragile
         if (target != null && target.Is(CustomRoles.Fragile))
         {
             if (Fragile.KillFragile(killer, target))
@@ -169,7 +170,20 @@ public static class CustomRoleManager
                 return false;
             }
         }
-        var canceled = false;
+
+        // Check if the target is Lingering Presence
+        if (target != null && target.Is(CustomRoles.LingeringPresence))
+        {
+            if (LingeringPresence.KillLingeringPresence(killer, target))
+            {
+                Logger.Info("Lingering Presence killed in OnCheckMurder, returning false", "LingeringPresence");
+                return false;
+            }
+        }
+
+     
+
+    var canceled = false;
         var cancelbutkill = false;
 
         var killerRoleClass = killer.GetRoleClass();
@@ -352,6 +366,8 @@ public static class CustomRoleManager
                     case CustomRoles.Spurt:
                         Spurt.DeathTask(target);
                         break;
+                    
+
 
                 }
             }
@@ -460,6 +476,8 @@ public static class CustomRoleManager
 
         return sb.ToString();
     }
+   
+
 
     private static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
     /// <summary>

@@ -3,6 +3,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using TOHE.Roles.Impostor;
+using TOHE.Roles.Neutral;
 using static TOHE.Translator;
 
 namespace TOHE.Modules.ChatManager
@@ -93,6 +94,10 @@ namespace TOHE.Modules.ChatManager
         }
         public static void SendMessage(PlayerControl player, string message)
         {
+            if (player == null || string.IsNullOrWhiteSpace(message)) return;
+
+           
+
             int operate = 0; // 1:ID 2:猜测
             string msg = message;
             string playername = player.GetNameWithRole();
@@ -102,7 +107,10 @@ namespace TOHE.Modules.ChatManager
             if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id|編號|玩家編號")) operate = 1;
             else if (CheckCommond(ref msg, "shoot|guess|bet|st|gs|bt|猜|赌|賭|sp|jj|tl|trial|审判|判|审|審判|審|compare|cmp|比较|比較|duel|sw|swap|st|换票|换|換票|換|finish|结束|结束会议|結束|結束會議|reveal|展示", false)) operate = 2;
             else if (ChatSentBySystem.Contains(GetTextHash(msg))) operate = 5;
-            
+
+           
+
+            // Handle Blackmailer blocking
             if ((operate == 1 || Blackmailer.CheckBlackmaile(player)) && player.IsAlive())
             {
                 Logger.Info($"包含特殊信息，不记录", "ChatManager");
@@ -131,29 +139,30 @@ namespace TOHE.Modules.ChatManager
             {
                 if (GameStates.IsExilling)
                 {
-                    if (Options.HideExileChat.GetBool()) 
-                    { 
+                    if (Options.HideExileChat.GetBool())
+                    {
                         Logger.Info($"Message sent in exiling screen, spamming the chat", "ChatManager");
-                        _ = new LateTask (SendPreviousMessagesToAll, 0.3f, "Spamming the chat");
+                        _ = new LateTask(SendPreviousMessagesToAll, 0.3f, "Spamming the chat");
                     }
                     return;
                 }
                 if (!player.IsAlive()) return;
+
                 message = msg;
-                //Logger.Warn($"Logging msg : {message}","Checking Exile");
                 Dictionary<byte, string> newChatEntry = new()
-                    {
-                        { player.PlayerId, message }
-                    };
+        {
+            { player.PlayerId, message }
+        };
                 chatHistory.Add(newChatEntry);
 
                 if (chatHistory.Count > maxHistorySize)
-                    {
-                        chatHistory.RemoveAt(0);
-                    }
-                    cancel = false;
+                {
+                    chatHistory.RemoveAt(0);
                 }
+                cancel = false;
             }
+        }
+
 
         public static void SendPreviousMessagesToAll()
         {

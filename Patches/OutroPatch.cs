@@ -32,21 +32,42 @@ class EndGamePatch
         {
             if (AmongUsClient.Instance.AmHost)
             {
-                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys)
                 {
-                    if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
+                    if (!Main.PlayerStates.TryGetValue(pvc, out var state)) continue;
+
+                    if (state.IsRandomizer)
+                    {
+                        // Ensure Randomizer role persists
+                        state.MainRole = CustomRoles.Randomizer;
+
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
+                        writer.Write(pvc);
+                        writer.WritePacked((int)CustomRoles.Randomizer);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                        Logger.Info($"Player {Utils.GetPlayerById(pvc).GetRealName()} is Randomizer. Ensuring role reverts to Randomizer.", "OutroPatch");
+                        continue;
+                    }
+
+                    // Handle normal ghost role reversion
+                    if (!state.MainRole.IsGhostRole()) continue;
                     if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
 
-                    Main.PlayerStates[pvc].MainRole = prevrole;
+                    state.MainRole = prevrole;
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
-                    writer.Write(pvc);
-                    writer.WritePacked((int)prevrole);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    MessageWriter writerNormal = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
+                    writerNormal.Write(pvc);
+                    writerNormal.WritePacked((int)prevrole);
+                    AmongUsClient.Instance.FinishRpcImmediately(writerNormal);
                 }
 
-                if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+                if (GhostRoleAssign.GhostGetPreviousRole.Any())
+                {
+                    Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+                }
             }
+
 
         }
         catch (Exception e)

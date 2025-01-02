@@ -285,7 +285,14 @@ class CheckMurderPatch
         {
             return false;
         }
+        if (killer.Is(CustomRoles.Summoned) && (target.Is(CustomRoles.Summoner) || target.Is(CustomRoles.Summoned)))
+        {
+            string errorMessage = "You cannot kill the Summoner or other summoned players!";
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), errorMessage));
+            return false; // Cancel the kill
+        }
 
+        
         Logger.Info($"Start", "TargetSubRoles");
 
         if (targetSubRoles.Any())
@@ -304,16 +311,18 @@ class CheckMurderPatch
                     case CustomRoles.Susceptible:
                         Susceptible.CallEnabledAndChange(target);
                         break;
-
+                    
                     //case CustomRoles.Fragile:
                     //    if (Fragile.KillFragile(killer, target))
                     //        return false;
                     //    break;
-
+                    case CustomRoles.LingeringPresence:
+                        if (LingeringPresence.KillLingeringPresence(killer, target))
+                            return false; // Stop further checks if kill is successful
+                        break;
                     case CustomRoles.Aware:
                         Aware.OnCheckMurder(killerRole, target);
                         break;
-
                     case CustomRoles.Lucky:
                         if (!Lucky.OnCheckMurder(killer, target))
                             return false;
@@ -1604,9 +1613,11 @@ class PlayerControlCompleteTaskPatch
                         case CustomRoles.Ghoul when taskState.CompletedTasksCount >= taskState.AllTasksCount:
                             Ghoul.OnTaskComplete(player);
                             break;
+                        
+
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor)).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) || !Main.PlayerStates[pc.PlayerId].IsRandomizer).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1734,7 +1745,9 @@ public static class PlayerControlMixupOutfitPatch
         }
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
-        if (!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
+        if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
+            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsRandomizer // Necromancer
+            ) &&    // Not an Impostor
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names

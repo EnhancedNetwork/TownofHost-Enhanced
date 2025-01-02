@@ -45,4 +45,9 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
     {
         base.SetValue(Rule.RepeatIndex(value), doSync);
     }
+
+    internal static object Create(int v1, string v2, string[] strings, int[] ints, TabGroup neutralRoles, bool v3)
+    {
+        throw new NotImplementedException();
+    }
 }

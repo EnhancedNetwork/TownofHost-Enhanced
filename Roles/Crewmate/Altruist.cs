@@ -45,6 +45,7 @@ internal class Altruist : RoleBase
         RevivedPlayerId = byte.MaxValue;
         //AllRevivedPlayerId.Clear();
         IsRevivingMode = true;
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

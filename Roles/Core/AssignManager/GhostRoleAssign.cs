@@ -26,6 +26,8 @@ public static class GhostRoleAssign
             || player.Data.Disconnected 
             || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
 
+
+
         if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) 
         {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");

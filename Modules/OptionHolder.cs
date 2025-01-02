@@ -736,7 +736,7 @@ public static class Options
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.ImpostorVanilla).ForEach(r => r.SetupCustomOption());
-       
+
         if (CustomRoleManager.RoleClass.Where(x => x.Key.IsImpostor()).Any(r => r.Value.IsExperimental))
         {
             TextOptionItem.Create(10000020, "Experimental.Roles", TabGroup.ImpostorRoles)
@@ -1128,9 +1128,9 @@ public static class Options
             .SetHeader(true);
         AllowConsole = BooleanOptionItem.Create(60382, "AllowConsole", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red);
-       /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(Color.red);*/
+        /* DisableAntiBlackoutProtects = BooleanOptionItem.Create(60384, "DisableAntiBlackoutProtects", false, TabGroup.SystemSettings, false)
+             .SetGameMode(CustomGameMode.Standard)
+             .SetColor(Color.red);*/
 
         RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
@@ -1232,7 +1232,7 @@ public static class Options
 
         // Random Spawn
         RandomSpawn.SetupCustomOption();
-        
+
         MapModification = BooleanOptionItem.Create(60480, "MapModification", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         // Airship Variable Electrical
@@ -1775,7 +1775,7 @@ public static class Options
         WhenTie = StringOptionItem.Create(60745, "WhenTie", tieModes, 0, TabGroup.ModSettings, false)
             .SetParent(VoteMode)
             .SetGameMode(CustomGameMode.Standard);
-        EnableVoteCommand  = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
+        EnableVoteCommand = BooleanOptionItem.Create(60746, "EnableVote", true, TabGroup.ModSettings, false)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue))
             .SetGameMode(CustomGameMode.Standard);
         ShouldVoteCmdsSpamChat = BooleanOptionItem.Create(60747, "ShouldVoteSpam", false, TabGroup.ModSettings, false)
@@ -1815,10 +1815,12 @@ public static class Options
         ShieldedCanUseKillButton = BooleanOptionItem.Create(60782, "ShieldedCanUseKillButton", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
-            
+
         EveryoneCanSeeDeathReason = BooleanOptionItem.Create(60781, "EveryoneCanSeeDeathReason", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+       
+       
 
         // 杀戮闪烁持续
         KillFlashDuration = FloatOptionItem.Create(60790, "KillFlashDuration", new(0.1f, 0.45f, 0.05f), 0.3f, TabGroup.ModSettings, false)
@@ -1850,7 +1852,7 @@ public static class Options
             .SetParent(ConvertedCanBecomeGhost)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-            
+
         MaxImpGhost = IntegerOptionItem.Create(60850, "MaxImpGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)

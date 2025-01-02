@@ -1147,16 +1147,59 @@ public static class CustomRolesHelper
     }
     public static Custom_Team GetCustomRoleTeam(this CustomRoles role)
     {
+        // Default team is Crewmate
         Custom_Team team = Custom_Team.Crewmate;
+
+        // Look up the associated player control
+        foreach (var pc in PlayerControl.AllPlayerControls)
+        {
+            if (pc.GetCustomRole() == role)
+            {
+                var playerState = Main.PlayerStates[pc.PlayerId];
+                if (playerState != null && playerState.IsRandomizer)
+                {
+                    if (playerState.IsImpostorTeam) return Custom_Team.Impostor;
+                    if (playerState.IsCrewmateTeam) return Custom_Team.Crewmate;
+                    if (playerState.IsNeutralTeam) return Custom_Team.Neutral;
+                }
+            }
+        }
+
+        // Assign team based on role attributes
         if (role.IsImpostor()) team = Custom_Team.Impostor;
         if (role.IsNeutral()) team = Custom_Team.Neutral;
         if (role.IsAdditionRole()) team = Custom_Team.Addon;
+
         return team;
     }
-    public static Custom_RoleType GetCustomRoleType(this CustomRoles role)
+
+
+    public static Custom_RoleType GetCustomRoleType(this CustomRoles role, byte playerId)
     {
+        var playerState = Main.PlayerStates[playerId];
+
+        if (playerState.IsRandomizer)
+        {
+            // Check the locked team and assign the corresponding Custom_RoleType
+            if (playerState.IsCrewmateTeam)
+                return Custom_RoleType.CrewmateBasic;
+            if (playerState.IsNeutralTeam)
+                return Custom_RoleType.NeutralBenign;
+            if (playerState.IsImpostorTeam)
+                return Custom_RoleType.ImpostorKilling;
+
+            // Default fallback for unexpected cases
+            return Custom_RoleType.CrewmateBasic;
+        }
+
+        // Fallback to the static role type for non-Randomizer roles
         return role.GetStaticRoleClass().ThisRoleType;
     }
+
+
+
+
+
     public static bool RoleExist(this CustomRoles role, bool countDead = false) => Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || countDead));
     public static int GetCount(this CustomRoles role)
     {
@@ -1208,56 +1251,60 @@ public static class CustomRolesHelper
     }
     public static bool IsEnable(this CustomRoles role) => role.GetCount() > 0;
     public static CountTypes GetCountTypes(this CustomRoles role)
-       => role switch
-       {
-           CustomRoles.GM => CountTypes.OutOfGame,
-           CustomRoles.Jackal => CountTypes.Jackal,
-           CustomRoles.Sidekick => CountTypes.Jackal,
-           CustomRoles.Doppelganger => CountTypes.Doppelganger,
-           CustomRoles.Bandit => CountTypes.Bandit,
-           CustomRoles.Poisoner => CountTypes.Poisoner,
-           CustomRoles.Pelican => CountTypes.Pelican,
-           CustomRoles.Minion => CountTypes.Impostor,
-           CustomRoles.Bloodmoon => CountTypes.Impostor,
-           CustomRoles.Possessor => CountTypes.Impostor,
-           CustomRoles.Demon => CountTypes.Demon,
-           CustomRoles.BloodKnight => CountTypes.BloodKnight,
-           CustomRoles.Cultist => CountTypes.Cultist,
-           CustomRoles.HexMaster => CountTypes.HexMaster,
-           CustomRoles.Necromancer => CountTypes.Necromancer,
-           CustomRoles.Stalker => Stalker.SnatchesWins ? CountTypes.Crew : CountTypes.Stalker,
-           CustomRoles.Arsonist => Arsonist.CanIgniteAnytime() ? CountTypes.Arsonist : CountTypes.Crew,
-           CustomRoles.Shroud => CountTypes.Shroud,
-           CustomRoles.Werewolf => CountTypes.Werewolf,
-           CustomRoles.Wraith => CountTypes.Wraith,
-           var r when r.IsNA() => CountTypes.Apocalypse,
-           CustomRoles.Agitater => CountTypes.Agitater,
-           CustomRoles.Parasite => CountTypes.Impostor,
-           CustomRoles.SerialKiller => CountTypes.SerialKiller,
-           CustomRoles.Quizmaster => CountTypes.Quizmaster,
-           CustomRoles.Juggernaut => CountTypes.Juggernaut,
-           CustomRoles.Jinx => CountTypes.Jinx,
-           CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
-           CustomRoles.Crewpostor => CountTypes.Impostor,
-           CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
-           CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
-           CustomRoles.Virus => CountTypes.Virus,
-           CustomRoles.PotionMaster => CountTypes.PotionMaster,
-           CustomRoles.Pickpocket => CountTypes.Pickpocket,
-           CustomRoles.Traitor => CountTypes.Traitor,
-           CustomRoles.Medusa => CountTypes.Medusa,
-           CustomRoles.Refugee => CountTypes.Impostor,
-           CustomRoles.Huntsman => CountTypes.Huntsman,
-           CustomRoles.Glitch => CountTypes.Glitch,
-           CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
-           CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
-           CustomRoles.SchrodingersCat => CountTypes.None,
-           CustomRoles.Solsticer => CountTypes.None,
-           _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
+    {
+       
 
-           // CustomRoles.Phantom => CountTypes.OutOfGame,
-           //   CustomRoles.CursedSoul => CountTypes.OutOfGame, // if they count as OutOfGame, it prevents them from winning lmao
-       };
+            // Default logic for other roles
+            return role switch
+        {
+            CustomRoles.GM => CountTypes.OutOfGame,
+            CustomRoles.Randomizer => CountTypes.None,
+            CustomRoles.Jackal => CountTypes.Jackal,
+            CustomRoles.Sidekick => CountTypes.Jackal,
+            CustomRoles.Doppelganger => CountTypes.Doppelganger,
+            CustomRoles.Bandit => CountTypes.Bandit,
+            CustomRoles.Poisoner => CountTypes.Poisoner,
+            CustomRoles.Pelican => CountTypes.Pelican,
+            CustomRoles.Minion => CountTypes.Impostor,
+            CustomRoles.Bloodmoon => CountTypes.Impostor,
+            CustomRoles.Possessor => CountTypes.Impostor,
+            CustomRoles.Demon => CountTypes.Demon,
+            CustomRoles.BloodKnight => CountTypes.BloodKnight,
+            CustomRoles.Cultist => CountTypes.Cultist,
+            CustomRoles.HexMaster => CountTypes.HexMaster,
+            CustomRoles.Necromancer => CountTypes.Necromancer,
+            CustomRoles.Stalker => Stalker.SnatchesWins ? CountTypes.Crew : CountTypes.Stalker,
+            CustomRoles.Arsonist => Arsonist.CanIgniteAnytime() ? CountTypes.Arsonist : CountTypes.Crew,
+            CustomRoles.Shroud => CountTypes.Shroud,
+            CustomRoles.Werewolf => CountTypes.Werewolf,
+            CustomRoles.Wraith => CountTypes.Wraith,
+            var r when r.IsNA() => CountTypes.Apocalypse,
+            CustomRoles.Agitater => CountTypes.Agitater,
+            CustomRoles.Parasite => CountTypes.Impostor,
+            CustomRoles.SerialKiller => CountTypes.SerialKiller,
+            CustomRoles.Quizmaster => CountTypes.Quizmaster,
+            CustomRoles.Juggernaut => CountTypes.Juggernaut,
+            CustomRoles.Jinx => CountTypes.Jinx,
+            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
+            CustomRoles.Crewpostor => CountTypes.Impostor,
+            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
+            CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
+            CustomRoles.Virus => CountTypes.Virus,
+            CustomRoles.PotionMaster => CountTypes.PotionMaster,
+            CustomRoles.Pickpocket => CountTypes.Pickpocket,
+            CustomRoles.Traitor => CountTypes.Traitor,
+            CustomRoles.Medusa => CountTypes.Medusa,
+            CustomRoles.Refugee => CountTypes.Impostor,
+            CustomRoles.Huntsman => CountTypes.Huntsman,
+            CustomRoles.Glitch => CountTypes.Glitch,
+            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
+            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
+            CustomRoles.SchrodingersCat => CountTypes.None,
+            CustomRoles.Solsticer => CountTypes.None,
+            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
+        };
+    }
+
     public static CustomWinner GetNeutralCustomWinnerFromRole(this CustomRoles role) // only to be used for Neutrals
         => role switch
         {
@@ -1358,6 +1405,10 @@ public static class CustomRolesHelper
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
+    public static bool HasSpecificSubRole(this PlayerControl pc, CustomRoles role)
+    {
+        return Main.PlayerStates[pc.PlayerId].SubRoles.Contains(role);
+    }
 }
 public enum Custom_Team
 {
@@ -1378,6 +1429,8 @@ public enum Custom_RoleType
 
     Madmate,
 
+    
+
     // Crewmate
     CrewmateVanilla,
     CrewmateVanillaGhosts,
@@ -1393,7 +1446,7 @@ public enum Custom_RoleType
     NeutralChaos,
     NeutralKilling,
     NeutralApocalypse,
-
+   
     None
 }
 public enum CountTypes

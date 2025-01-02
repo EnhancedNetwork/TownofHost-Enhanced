@@ -17,10 +17,10 @@ internal class Blackmailer : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
 
-    private static OptionItem SkillCooldown;
-    private static OptionItem ShowShapeshiftAnimationsOpt;
+    public static OptionItem SkillCooldown;
+    public static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static readonly HashSet<byte> ForBlackmailer = [];
+    public static readonly HashSet<byte> ForBlackmailer = [];
 
     public override void SetupCustomOption()
     {

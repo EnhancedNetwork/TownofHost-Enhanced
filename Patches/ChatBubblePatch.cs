@@ -31,7 +31,11 @@ class ChatBubbleSetNamePatch
             // When target is impostor, set name color as white
             __instance.NameText.color = Color.white;
         }
-
+        if (Main.PlayerStates[seer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer)
+        {
+            // When target is impostor, set name color as white
+            __instance.NameText.color = Color.white;
+        }
         if (Main.DarkTheme.Value)
         {
             if (isDead)

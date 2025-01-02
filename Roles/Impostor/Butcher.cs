@@ -9,14 +9,14 @@ internal class Butcher : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 24300;
-    private static readonly HashSet<byte> PlayerIds = [];
+    public static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    private static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
+    public static Dictionary<byte, (int, int, Vector2)> MurderTargetLateTask = [];
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Butcher);
@@ -38,7 +38,9 @@ internal class Butcher : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
 
-    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+    public static void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
     {
         if (inMeeting || isSuicide) return;
         if (target == null) return;

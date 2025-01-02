@@ -14,9 +14,9 @@ internal class Arrogance : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    private static OptionItem DefaultKillCooldown;
-    private static OptionItem ReduceKillCooldown;
-    private static OptionItem MinKillCooldown;
+    public static OptionItem DefaultKillCooldown;
+    public static OptionItem ReduceKillCooldown;
+    public static OptionItem MinKillCooldown;
     public static OptionItem BardChance;
 
     private static readonly Dictionary<byte, float> NowCooldown = [];

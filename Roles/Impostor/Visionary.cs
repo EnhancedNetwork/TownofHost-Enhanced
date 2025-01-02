@@ -42,7 +42,10 @@ internal class Visionary : RoleBase
                 or CustomRoles.Admired)
                 return Main.roleColors[CustomRoles.Knight];
         }
-
+        if (Main.PlayerStates[target.PlayerId].IsRandomizer)
+        {
+            return Main.roleColors[CustomRoles.Crewmate];
+        }
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
         {
             return Main.roleColors[CustomRoles.Impostor];

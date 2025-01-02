@@ -78,34 +78,21 @@ internal class Baker : RoleBase
         return (breaded, all);
     }
     public static byte CurrentBread() => BreadID;
-    private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
+    private static void SendRPC(PlayerControl player, PlayerControl target)
     {
-        if (!player.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(player);
-        writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte typeId = reader.ReadByte();
         byte BakerId = reader.ReadByte();
         byte BreadHolderId = reader.ReadByte();
 
-        switch (typeId)
-        {
-            case 0:
-                BreadList[BakerId].Add(BreadHolderId);
-                break;
-            case 1:
-                RevealList[BakerId].Add(BreadHolderId);
-                break;
-            case 2:
-                BarrierList[BakerId].Add(BreadHolderId);
-                break;
-        }
+        BreadList[BakerId].Add(BreadHolderId);
+        BarrierList[BakerId].Add(BreadHolderId);
     }
     public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f), $"({BreadedPlayerCount(playerId).Item1}/{BreadedPlayerCount(playerId).Item2})");
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
@@ -227,7 +214,6 @@ internal class Baker : RoleBase
         else 
         {
             BreadList[killer.PlayerId].Add(target.PlayerId);
-            SendRPC(0, killer, target);
 
             NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("BakerBreaded"));
@@ -241,17 +227,16 @@ internal class Baker : RoleBase
                 {
                     case 0: // Reveal
                         RevealList[killer.PlayerId].Add(target.PlayerId);
-                        SendRPC(1, killer, target);
                         break;
                     case 1: // Roleblock
                         target.SetKillCooldownV3(999f);
                         break;
                     case 2: // Barrier
                         BarrierList[killer.PlayerId].Add(target.PlayerId);
-                        SendRPC(2, killer, target);
                         break;
                 } 
             }
+            SendRPC(killer, target);
         }
         return false;
     }

@@ -18,7 +18,7 @@ internal class Consigliere : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem DivinationMaxCount;
 
-    private static readonly Dictionary<byte, int> DivinationCount = [];
+    public static readonly Dictionary<byte, int> DivinationCount = [];
     private static readonly Dictionary<byte, HashSet<byte>> DivinationTarget = [];
 
     public override void SetupCustomOption()

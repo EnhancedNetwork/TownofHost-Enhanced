@@ -13,7 +13,7 @@ public abstract class RoleBase
     public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
-
+    private static readonly Dictionary<CustomRoles, Custom_RoleType> RoleTypeOverrides = new();
     public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
@@ -52,6 +52,16 @@ public abstract class RoleBase
     {
         Remove(playerId);
         IsEnable = false;
+    }
+    public static void OverrideRoleType(CustomRoles role, Custom_RoleType newType)
+    {
+        RoleTypeOverrides[role] = newType;
+        Logger.Info($"Role type for {role} overridden to {newType}.", "Randomizer");
+    }
+
+    public static Custom_RoleType GetEffectiveRoleType(CustomRoles role)
+    {
+        return RoleTypeOverrides.TryGetValue(role, out var overriddenType) ? overriddenType : role.GetStaticRoleClass().ThisRoleType;
     }
 
     /// <summary>
