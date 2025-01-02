@@ -75,7 +75,7 @@ internal class Seeker : RoleBase
         if (!setTarget)
         {
             int points = reader.ReadInt32();
-            TotalPoints= points;
+            TotalPoints = points;
             return;
         }
 
