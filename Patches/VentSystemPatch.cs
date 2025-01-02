@@ -45,7 +45,7 @@ static class VentSystemDeterioratePatch
             LastUpadate = nowTime;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                 LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
             }
 
             ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
