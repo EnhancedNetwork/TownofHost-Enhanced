@@ -93,6 +93,10 @@ public class PlayerState(byte playerId)
         {
             countTypes = CountTypes.Crew;
         }
+        if (pc.Is(CustomRoles.Narc))
+        {
+            countTypes = CountTypes.Crew;
+        }
         if (pc.Is(CustomRoles.Soulless))
         {
             countTypes = CountTypes.OutOfGame;
@@ -132,6 +136,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
+                if (subRole != CustomRoles.Narc)//Narc cannot be cleansed
                 RemoveSubRole(subRole);
             }
         }
@@ -217,6 +222,10 @@ public class PlayerState(byte playerId)
                 SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
                 SubRoles.Remove(CustomRoles.Rascal);
                 SubRoles.Remove(CustomRoles.Loyal);
+                break;
+
+            case CustomRoles.Narc:
+                countTypes = CountTypes.Crew;
                 break;
 
             case CustomRoles.Soulless:

@@ -960,6 +960,7 @@ public enum CustomRoles
     Rebirth,
     Mimic,
     Mundane,
+    Narc,
     Necroview,
     Nimble,
     Oblivious,
@@ -1065,6 +1066,7 @@ public enum CustomWinner
     Solsticer = CustomRoles.Solsticer,
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
+    Narc = CustomRoles.Narc,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

@@ -1109,7 +1109,8 @@ static class ExtendedPlayerControl
     public static bool CanUseSabotage(this PlayerControl pc)
     {
         if (pc.Is(Custom_Team.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
-
+        if (Narc.CantUseSabotage(pc)) return false;
+        
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
 
@@ -1185,7 +1186,8 @@ static class ExtendedPlayerControl
             CustomRoles.Soulless and not
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
-            CustomRoles.Contagious;
+            CustomRoles.Contagious and not
+            CustomRoles.Narc;
     }
 
     public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
@@ -1284,14 +1286,14 @@ static class ExtendedPlayerControl
         else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Options.LoverKnowRoles.GetBool() && seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return true;
-        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor)) return true;
+        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc)) && target.Is(Custom_Team.Impostor)) return true;
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor)) return true;
-        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(Custom_Team.Impostor)) return true;
+        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc))) return true;
         else if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) return true;
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) && !target.Is(CustomRoles.Trickster)) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target) && !(target.Is(CustomRoles.Trickster) && !target.Is(CustomRoles.Narc))) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
@@ -1322,7 +1324,9 @@ static class ExtendedPlayerControl
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.IsHost() && Main.GodMode.Value)) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
-
+        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote && subRole.IsBetrayalAddonV2()) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target) && subRole == CustomRoles.Narc) return true;
+        
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
                 or CustomRoles.Recruit
@@ -1330,7 +1334,8 @@ static class ExtendedPlayerControl
                 or CustomRoles.Charmed
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
-                or CustomRoles.Egoist)
+                or CustomRoles.Egoist
+                or CustomRoles.Narc)
             && KnowSubRoleTarget(seer, target))
             return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
@@ -1351,7 +1356,7 @@ static class ExtendedPlayerControl
     {
         //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
 
-        if (seer.Is(Custom_Team.Impostor))
+        if (seer.Is(Custom_Team.Impostor) && !seer.Is(CustomRoles.Narc))
         {
             // Imp know Madmate
             if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())

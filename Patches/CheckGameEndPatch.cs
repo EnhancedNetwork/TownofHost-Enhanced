@@ -4,6 +4,7 @@ using Hazel;
 using System.Collections;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -100,8 +101,8 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
+                        if (((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) 
+                            || pc.Is(CustomRoles.Admired)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
@@ -183,7 +184,7 @@ class GameEndCheckerForNormal
                     switch (pc.GetCustomRole())
                     {
                         case CustomRoles.Stalker when pc.IsAlive() && ((WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || WinnerTeam == CustomWinner.Stalker
-                            || (WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && Stalker.IsWinKill[pc.PlayerId] && Stalker.SnatchesWins)):
+                            || (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Narc && !reason.Equals(GameOverReason.HumansByTask) && Stalker.IsWinKill[pc.PlayerId] && Stalker.SnatchesWins)):
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
                                 reason = GameOverReason.ImpostorByKill;
@@ -213,7 +214,7 @@ class GameEndCheckerForNormal
                 }
 
                 // Egoist (Crewmate)
-                if (WinnerTeam == CustomWinner.Crewmate)
+                if (WinnerTeam is CustomWinner.Crewmate or CustomWinner.Narc)
                 {
                     var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
 
@@ -246,6 +247,27 @@ class GameEndCheckerForNormal
                     }
                 }
 
+                //Narc(Custom Winner screen)
+                //I coded Narc as a custom Neutral winner for the custom victory screen
+                //If you are going to code a role's win condition and it needs to exclude/include CustomWinner.Crewmate(for example,Taskinator),
+                //don't forget to exclude/include CustomWinner.Narc too
+                if (WinnerTeam == CustomWinner.Crewmate && CustomRoles.Narc.RoleExist(countDead: true))
+                {
+                    var CrewTeamArray = Main.AllPlayerControls.Where(x => x != null && (x.Is(CustomRoles.Narc)
+                                                                || (x.Is(Custom_Team.Crewmate) 
+                                                                 && (Main.PlayerStates[x.PlayerId].countTypes == CountTypes.Crew || x.Is(CustomRoles.Soulless)))
+                                                                || x.Is(CustomRoles.Admired))).ToArray();
+                    if (Main.MeetingsPassed >= Narc.MeetingsNeededForWin.GetInt()
+                       || reason == GameOverReason.HumansByTask)
+                    {
+                        ResetAndSetWinner(CustomWinner.Narc);
+                        foreach (var Crew in CrewTeamArray)
+                        {
+                            WinnerIds.Add(Crew.PlayerId);
+                        }
+                    }
+                }       
+                
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
@@ -300,7 +322,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Shaman);
                             break;
-                        case CustomRoles.Taskinator when pc.IsAlive() && WinnerTeam != CustomWinner.Crewmate:
+                        case CustomRoles.Taskinator when pc.IsAlive() && WinnerTeam is not CustomWinner.Crewmate and not CustomWinner.Narc:
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
                             break;

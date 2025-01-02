@@ -105,7 +105,7 @@ internal class CopyCat : RoleBase
             killer.SetKillCooldown();
             return false;
         }
-        if (CopyCrewVar.GetBool())
+        if (CopyCrewVar.GetBool() && !target.Is(CustomRoles.Narc))
         {
             role = role switch
             {
@@ -130,14 +130,13 @@ internal class CopyCat : RoleBase
                 CustomRoles.Swooper or CustomRoles.Wraith => CustomRoles.Chameleon,
                 CustomRoles.Vindicator or CustomRoles.Pickpocket => CustomRoles.Mayor,
                 CustomRoles.Arrogance or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
-                CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
-                CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,
-                CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
                 _ => role
             };
         }
-        if (role.IsCrewmate())
+        if (CustomRolesHelper.IsNarcCrew(target))
         {
+            if (target.Is(CustomRoles.Narc))
+                role = CustomRoles.Sheriff;
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);

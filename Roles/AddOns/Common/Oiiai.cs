@@ -91,6 +91,11 @@ public class Oiiai : IAddon
         }
 
         var killerRole = killer.GetCustomRole();
+        if (killer.Is(CustomRoles.Narc) && killerRole.IsMadmate())
+        {
+            killer.RpcSetCustomRole(CustomRoles.Admired);
+            Main.PlayerStates[killer.PlayerId].RemoveSubRole(CustomRoles.Narc);
+        }
         if (killerRole.IsTasklessCrewmate() || killer.HasGhostRole() || Main.TasklessCrewmate.Contains(killer.PlayerId) || CopyCat.playerIdList.Contains(killer.PlayerId) || killer.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");

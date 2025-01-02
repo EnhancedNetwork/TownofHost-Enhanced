@@ -543,6 +543,7 @@ public static class Utils
                             case CustomRoles.Infected:
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
+                            case CustomRoles.Narc:
                                 RoleColor = GetRoleColor(subRole);
                                 RoleText = GetRoleString($"{subRole}-") + RoleText;
                                 break;
@@ -1005,7 +1006,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Narc) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
@@ -2013,13 +2014,19 @@ public static class Utils
                     var SeerRoleInfo = seer.GetRoleInfo();
                     string RoleText = string.Empty;
                     string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                    string RoleInfo = ColorString(seer.GetRoleColor(), seer.GetRoleInfo());
 
-                    if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                    if (seer.Is(CustomRoles.Narc))
+                    {
+                        RoleText =  ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("TeamCrewmate"));
+                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Narc), GetString($"{CustomRoles.Narc}" + "Info"));
+                    }
+                    else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
+                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
-                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
 
-                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
+                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{RoleInfo}</size></font>\n";
                 }
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
@@ -2112,6 +2119,13 @@ public static class Utils
                         if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
+                        if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
+
+                        if (target.Is(CustomRoles.Narc) 
+                            && seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice)
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
+                        
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
@@ -2131,7 +2145,7 @@ public static class Utils
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster) && !target.Is(CustomRoles.Narc))
                         {
                             TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
                             TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster

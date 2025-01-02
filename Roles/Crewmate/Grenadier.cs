@@ -67,8 +67,8 @@ internal class Grenadier : RoleBase
     {
         // Grenadier or Mad Grenadier enter the vent
         if ((GrenadierBlinding.Any() &&
-            (player.GetCustomRole().IsImpostor() ||
-            (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
+            (CustomRolesHelper.IsNarcImpV3(player) ||
+            (CustomRolesHelper.IsNarcNeutral(player) && GrenadierCanAffectNeutral.GetBool()))
             )
             || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeam() && !player.Is(CustomRoles.Madmate)))
         {
@@ -110,7 +110,7 @@ internal class Grenadier : RoleBase
                 GrenadierBlinding.Remove(pc.PlayerId);
                 GrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => x.GetCustomRole().IsImpostor() || (x.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()))
+                    .Where(x => CustomRolesHelper.IsNarcImpV3(x) || (CustomRolesHelper.IsNarcNeutral(x) && GrenadierCanAffectNeutral.GetBool()))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);

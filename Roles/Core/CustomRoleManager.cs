@@ -158,6 +158,9 @@ public static class CustomRoleManager
                     case CustomRoles.Mare:
                         Mare.ApplyGameOptions(player.PlayerId);
                         break;
+                    case CustomRoles.Narc:
+                        Narc.ApplyGameOptions(opt, player);
+                        break;
                 }
             }
 
@@ -254,6 +257,12 @@ public static class CustomRoleManager
                         if (!Swift.OnCheckMurder(killer, target))
                             cancelbutkill = true;
                         break;
+
+                    case CustomRoles.Narc:
+                        if (Narc.CancelMurder(killer,target))
+                            canceled = true;
+                    break;
+
                 }
             }
 
