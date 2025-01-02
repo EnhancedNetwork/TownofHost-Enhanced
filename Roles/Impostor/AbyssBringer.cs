@@ -123,7 +123,7 @@ internal class AbyssBringer : RoleBase
                     continue;
             }
 
-            if (MeetingHud.Instance || Main.LastMeetingEnded + 5 > nowTime) continue;
+            if (MeetingHud.Instance || Main.LastMeetingEnded + 2 > nowTime) continue;
 
             var nearestPlayer = Main.AllAlivePlayerControls.Where(x => x != pc).MinBy(x => Vector2.Distance(x.GetCustomPosition(), blackHole.Position));
             if (nearestPlayer != null)
