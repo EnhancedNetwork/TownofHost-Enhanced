@@ -429,7 +429,7 @@
   "NinjaInfo": "Mark a target, then Shift to kill",
   "ZombieInfo": "You are very slow",
   "AnonymousInfo": "Force a player to report a body",
-  "MinerInfo": "Warp to your last used vent by shifting"
+  "MinerInfo": "Warp to your last used vent by shifting",
   "KillingMachineInfo": "You can ONLY kill, but low Cooldown",
   "EscapistInfo": "Shift to mark places and warp back to them",
   "WitchInfo": "Spell Crewmates to kill them in meetings",

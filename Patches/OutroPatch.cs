@@ -123,7 +123,7 @@ class EndGamePatch
             {
                 if (item.Item2.IsVanilla()) continue;
                 item.Item2.GetActualRoleName(out var rolename);
-                sb2.Append($"\n => {Utils.ColorString(Utils.GetRoleColor(item.Item2),rolename)} [{item.Item1:T}]");
+                sb2.Append($"\n => {Utils.ColorString(Utils.GetRoleColor(item.Item2), rolename)} [{item.Item1:T}]");
             }
         }
         MainRoleLog = sb2.ToString();

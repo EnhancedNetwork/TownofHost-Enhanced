@@ -1199,7 +1199,7 @@ class MeetingHudStartPatch
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
 
-            
+
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
             if (tempNemeText != string.Empty)
             {
