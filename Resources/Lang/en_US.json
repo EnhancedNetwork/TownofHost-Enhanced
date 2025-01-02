@@ -2423,7 +2423,7 @@
   "Warning.GradientTags": "<color=#ff0000><size=150%>Warning:</size></color>\n\nHost has enabled gradient tags. This feature is not recommended to use because it can cause <b>disconnect issues</b>",
   "WarningTitle": "Warning!",
   "Warning.BrokenVentsInDleksSendInGame": "Warning! The Vents on this map are broken",
-  "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map, the Vents are broken</b>, they cannot be fixed in host-only mods, this is a vanilla bug, <b>so any roles using a Vent as an ability will not spawns on this Map</b>",
+  "Warning.BrokenVentsInDleksMessage": "<b>On the «dlekS ehT» map, the Vents are broken</b>, they cannot be fixed in Host-Only Mods, this is a vanilla bug, <b>so any roles using a Vent as an ability will not spawns on this map</b>",
 
   "Warning.NoGameEndIsEnabled": "Warning: <b>{0}</b> is enabled!",
 
