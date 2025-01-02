@@ -105,6 +105,7 @@ internal class AbyssBringer : RoleBase
     public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
     {
         var abyssbringer = _Player;
+
         foreach (var item in BlackHoles)
         {
             var blackHole = item.Value;
@@ -122,6 +123,8 @@ internal class AbyssBringer : RoleBase
                     continue;
             }
 
+            if (MeetingHud.Instance || Main.LastMeetingEnded + 5 > nowTime) continue;
+
             var nearestPlayer = Main.AllAlivePlayerControls.Where(x => x != pc).MinBy(x => Vector2.Distance(x.GetCustomPosition(), blackHole.Position));
             if (nearestPlayer != null)
             {
@@ -137,15 +140,15 @@ internal class AbyssBringer : RoleBase
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())
                 {
-                    nearestPlayer.RpcExileV2();
                     blackHole.PlayersConsumed++;
                     Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, id, (byte)blackHole.PlayersConsumed);
                     Notify();
 
-                    var state = Main.PlayerStates[nearestPlayer.PlayerId];
-                    state.deathReason = PlayerState.DeathReason.Consumed;
-                    state.RealKiller = (DateTime.Now, _state.PlayerId);
-                    state.SetDead();
+                    nearestPlayer.RpcExileV2();
+                    nearestPlayer.SetRealKiller(_Player);
+                    nearestPlayer.SetDeathReason(PlayerState.DeathReason.Consumed);
+                    Main.PlayerStates[nearestPlayer.PlayerId].SetDead();
+                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, false);
 
                     if (despawnMode == DespawnMode.After1PlayerEaten)
                     {
