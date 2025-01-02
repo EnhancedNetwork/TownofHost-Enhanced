@@ -33,6 +33,19 @@ namespace TOHE.Modules
             Sprite = sprite;
             _ = new LateTask(() =>
             {
+                NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+                subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+                subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
+                subPlayerInfo.name = "CNO_dummy";
+                subPlayerInfo.Outfits.Clear();
+                subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                subPlayerInfo.Puid = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer.Data.Puid : "";
+                subPlayerInfo.PlayerLevel = 250;
+                subPlayerInfo.Tasks.Clear();
+                subPlayerInfo.Role = PlayerControl.LocalPlayer.Data.Role;
+                subPlayerInfo.DespawnOnDestroy = false;
+
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerOutfit.PlayerName = "<size=14><br></size>" + sprite;
                 playerOutfit.ColorId = 255;
@@ -42,18 +55,8 @@ namespace TOHE.Modules
                 playerOutfit.VisorId = "";
                 playerOutfit.NamePlateId = "";
 
-                NetworkedPlayerInfo.PlayerOutfit original = new();
-                original.PlayerName = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
-                original.ColorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
-                original.HatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
-                original.SkinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
-                original.PetId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
-                original.VisorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
-                original.NamePlateId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].NamePlateId;
-
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = playerOutfit;
-
                 playerControl.RawSetName(sprite);
+                subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
                 var sender = CustomRpcSender.Create("SetFakeData");
                 MessageWriter writer = sender.stream;
@@ -68,8 +71,8 @@ namespace TOHE.Modules
 
                 writer.StartMessage(1);
                 {
-                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    writer.WritePacked(subPlayerInfo.NetId);
+                    subPlayerInfo.Serialize(writer, false);
                 }
                 writer.EndMessage();
 
@@ -77,8 +80,6 @@ namespace TOHE.Modules
                     .WriteNetObject(PlayerControl.LocalPlayer)
                     .Write(false)
                     .EndRpc();
-
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
 
                 writer.StartMessage(1);
                 {
@@ -96,6 +97,8 @@ namespace TOHE.Modules
                 writer.EndMessage();
                 sender.EndMessage();
                 sender.SendMessage();
+
+                UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
             }, 0f, "CNO_RpcChangeSprite");
         }
 
@@ -231,6 +234,19 @@ namespace TOHE.Modules
                     playerControl.NetTransform.RpcSnapTo(Position);
                     playerControl.RawSetName(Sprite);
 
+                    NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                    subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+                    subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+                    subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
+                    subPlayerInfo.name = "CNO_dummy";
+                    subPlayerInfo.Outfits.Clear();
+                    subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                    subPlayerInfo.Puid = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer.Data.Puid : "";
+                    subPlayerInfo.PlayerLevel = 250;
+                    subPlayerInfo.Tasks.Clear();
+                    subPlayerInfo.Role = PlayerControl.LocalPlayer.Data.Role;
+                    subPlayerInfo.DespawnOnDestroy = false;
+
                     NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                     playerOutfit.PlayerName = "<size=14><br></size>" + Sprite;
                     playerOutfit.ColorId = 255;
@@ -240,16 +256,7 @@ namespace TOHE.Modules
                     playerOutfit.VisorId = "";
                     playerOutfit.NamePlateId = "";
 
-                    NetworkedPlayerInfo.PlayerOutfit original = new();
-                    original.PlayerName = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
-                    original.ColorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
-                    original.HatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
-                    original.SkinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
-                    original.PetId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
-                    original.VisorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
-                    original.NamePlateId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].NamePlateId;
-
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = playerOutfit;
+                    subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
                     var sender = CustomRpcSender.Create("SetFakeData");
                     MessageWriter writer = sender.stream;
@@ -264,8 +271,8 @@ namespace TOHE.Modules
 
                     writer.StartMessage(1);
                     {
-                        writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                        PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                        writer.WritePacked(subPlayerInfo.NetId);
+                        subPlayerInfo.Serialize(writer, false);
                     }
                     writer.EndMessage();
 
@@ -273,8 +280,6 @@ namespace TOHE.Modules
                         .WriteNetObject(PlayerControl.LocalPlayer)
                         .Write(false)
                         .EndRpc();
-
-                    PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
 
                     writer.StartMessage(1);
                     {
@@ -292,6 +297,8 @@ namespace TOHE.Modules
                     writer.EndMessage();
                     sender.EndMessage();
                     sender.SendMessage();
+
+                    UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
                 }, 0.2f, "CNO_RespawnPlayerControl_SendData");
 
                 _ = new LateTask(() => oldPlayerControl.Despawn(), 0.3f);
@@ -319,6 +326,11 @@ namespace TOHE.Modules
                 }, 0.4f, "CNO_RespawnPlayerControl_FixModdedCNO");
                 PlayerControlTimer = 0f;
             }
+        }
+
+        protected virtual void OnAfterMeetingTasks()
+        {
+            playerControl.NetTransform.RpcSnapTo(Position);
         }
 
         public void CreateNetObject(string sprite, Vector2 position)
@@ -385,6 +397,19 @@ namespace TOHE.Modules
                 playerControl.NetTransform.RpcSnapTo(position);
                 playerControl.RawSetName(sprite);
 
+                NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+                subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+                subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+                subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
+                subPlayerInfo.name = "CNO_dummy";
+                subPlayerInfo.Outfits.Clear();
+                subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+                subPlayerInfo.Puid = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer.Data.Puid : "";
+                subPlayerInfo.PlayerLevel = 250;
+                subPlayerInfo.Tasks.Clear();
+                subPlayerInfo.Role = PlayerControl.LocalPlayer.Data.Role;
+                subPlayerInfo.DespawnOnDestroy = false;
+
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 playerOutfit.PlayerName = "<size=14><br></size>" + Sprite;
                 playerOutfit.ColorId = 255;
@@ -394,16 +419,7 @@ namespace TOHE.Modules
                 playerOutfit.VisorId = "";
                 playerOutfit.NamePlateId = "";
 
-                NetworkedPlayerInfo.PlayerOutfit original = new();
-                original.PlayerName = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PlayerName;
-                original.ColorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].ColorId;
-                original.HatId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].HatId;
-                original.SkinId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].SkinId;
-                original.PetId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].PetId;
-                original.VisorId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].VisorId;
-                original.NamePlateId = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default].NamePlateId;
-
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = playerOutfit;
+                subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
                 var sender = CustomRpcSender.Create("SetFakeData");
                 MessageWriter writer = sender.stream;
@@ -418,8 +434,8 @@ namespace TOHE.Modules
 
                 writer.StartMessage(1);
                 {
-                    writer.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-                    PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+                    writer.WritePacked(subPlayerInfo.NetId);
+                    subPlayerInfo.Serialize(writer, false);
                 }
                 writer.EndMessage();
 
@@ -427,8 +443,6 @@ namespace TOHE.Modules
                     .WriteNetObject(PlayerControl.LocalPlayer)
                     .Write(false)
                     .EndRpc();
-
-                PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default] = original;
 
                 writer.StartMessage(1);
                 {
@@ -446,6 +460,8 @@ namespace TOHE.Modules
                 writer.EndMessage();
                 sender.EndMessage();
                 sender.SendMessage();
+
+                UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
             }, 0.2f);
 
             Position = position;
@@ -471,6 +487,7 @@ namespace TOHE.Modules
             }, 0.4f, "CNO_CreatePlayerControl_FixModdedCNO");
         }
         public static void FixedUpdate() => AllObjects.ToArray().Do(x => x.OnFixedUpdate());
+        public static void AfterMeetingTasks() => AllObjects.ToArray().Do(x => x.OnAfterMeetingTasks());
         public static CustomNetObject Get(int id) => AllObjects.FirstOrDefault(x => x.Id == id);
         public static void DespawnOnQuit(byte Playerid) => AllObjects.Where(x => x.OwnerId == Playerid).ToArray().Do(x => x.Despawn());
 

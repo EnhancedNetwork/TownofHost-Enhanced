@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace TOHE.Modules;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class Dispatcher : MonoBehaviour
 {
     public static Dispatcher Instance;

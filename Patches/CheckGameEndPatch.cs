@@ -82,6 +82,9 @@ class GameEndCheckerForNormal
 
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
+            Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
+            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
+
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
                 reason = GameOverReason.ImpostorByKill;
@@ -89,6 +92,7 @@ class GameEndCheckerForNormal
                 ResetAndSetWinner(CustomWinner.Jackal);
                 WinnerRoles.Add(CustomRoles.Jackal);
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
@@ -171,6 +175,7 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
+
             if (WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (PlayerControl pc in Main.AllPlayerControls)
@@ -369,6 +374,7 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
+
                 if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
                 {
                     foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
@@ -447,6 +453,9 @@ class GameEndCheckerForNormal
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
 
             ShipStatus.Instance.enabled = false;
+
+            Logger.Info($"Final WinnerTeam: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
+            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
             // When crewmates win, show as impostor win, for displaying all names players
             //reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
             StartEndGame(reason);
