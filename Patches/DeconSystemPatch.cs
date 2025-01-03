@@ -8,7 +8,7 @@ public static class DeconSystemUpdateSystemPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (Options.ChangeDecontaminationTime.GetBool())
-        {         
+        {
             // Temp decon time
             var deconTime = Utils.GetActiveMapName() switch
             {

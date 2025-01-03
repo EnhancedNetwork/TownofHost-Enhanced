@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Eraser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Eraser;
     private const int Id = 24200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Eraser);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -125,7 +126,10 @@ internal class Eraser : RoleBase
                 Logger.Info($"Canceled {player.GetNameWithRole()} because player have ghost role", "Eraser");
                 return;
             }
+            player.GetRoleClass()?.OnRemove(player.PlayerId);
+            player.RpcChangeRoleBasis(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+            player.GetRoleClass()?.OnAdd(player.PlayerId);
             player.ResetKillCooldown();
             player.SetKillCooldown();
             Logger.Info($"{player.GetNameWithRole()} Erase by Eraser", "Eraser");

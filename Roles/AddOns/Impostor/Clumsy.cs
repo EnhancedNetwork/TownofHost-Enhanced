@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class Clumsy : IAddon
 {
+    public CustomRoles Role => CustomRoles.Clumsy;
     private const int Id = 22700;
     public AddonTypes Type => AddonTypes.Impostor;
 

@@ -1,14 +1,14 @@
-using System.Collections;
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
-using UnityEngine;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.Neutral;
+using System.Collections;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
-using static TOHE.Translator;
+using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.CustomWinnerHolder;
+using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -82,6 +82,9 @@ class GameEndCheckerForNormal
 
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
+            Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
+            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
+
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
                 reason = GameOverReason.ImpostorByKill;
@@ -89,6 +92,7 @@ class GameEndCheckerForNormal
                 ResetAndSetWinner(CustomWinner.Jackal);
                 WinnerRoles.Add(CustomRoles.Jackal);
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
@@ -171,6 +175,7 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
+
             if (WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (PlayerControl pc in Main.AllPlayerControls)
@@ -244,7 +249,7 @@ class GameEndCheckerForNormal
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
-                    
+
                     if (godArray.Any())
                     {
                         bool isGodWinConverted = false;
@@ -338,7 +343,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Romantic:
-                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
+                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
                             {
                                 WinnerIds.Add(pc.PlayerId);
@@ -369,6 +374,7 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
+
                 if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
                 {
                     foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
@@ -447,6 +453,9 @@ class GameEndCheckerForNormal
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
 
             ShipStatus.Instance.enabled = false;
+
+            Logger.Info($"Final WinnerTeam: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
+            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
             // When crewmates win, show as impostor win, for displaying all names players
             //reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
             StartEndGame(reason);

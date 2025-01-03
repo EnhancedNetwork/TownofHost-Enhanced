@@ -3,10 +3,11 @@ namespace TOHE.Roles.Impostor;
 internal class TimeThief : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.TimeThief;
     private const int Id = 3700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -15,6 +16,7 @@ internal class TimeThief : RoleBase
     private static OptionItem DecreaseMeetingTime;
     public static OptionItem LowerLimitVotingTime;
     private static OptionItem ReturnStolenTimeUponDeath;
+    public static OptionItem MaxMeetingTimeOnAdmired;
 
 
     public override void SetupCustomOption()
@@ -27,6 +29,8 @@ internal class TimeThief : RoleBase
         LowerLimitVotingTime = IntegerOptionItem.Create(Id + 12, "TimeThiefLowerLimitVotingTime", new(1, 300, 1), 10, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.TimeThief])
             .SetValueFormat(OptionFormat.Seconds);
         ReturnStolenTimeUponDeath = BooleanOptionItem.Create(Id + 13, "TimeThiefReturnStolenTimeUponDeath", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.TimeThief]);
+        MaxMeetingTimeOnAdmired = IntegerOptionItem.Create(Id + 14, "TimeThiefMaxTimeOnAdmired", new(100, 900, 10), 300, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.TimeThief])
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
     {
@@ -34,7 +38,8 @@ internal class TimeThief : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -42,11 +47,16 @@ internal class TimeThief : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    
-    private static int StolenTime(byte id) 
-        => playerIdList.Contains(id) && (Utils.GetPlayerById(id).IsAlive() || !ReturnStolenTimeUponDeath.GetBool()) 
-            ? DecreaseMeetingTime.GetInt() * Main.PlayerStates[id].GetKillCount(true)
-            : 0;
+
+    private static int StolenTime(byte id)
+    {
+        var timethief = Utils.GetPlayerById(id);
+        bool isalive = playerIdList.Contains(id) && (timethief.IsAlive() || !ReturnStolenTimeUponDeath.GetBool());
+        bool iscrew = timethief.Is(CustomRoles.Admired);
+        int decreased = DecreaseMeetingTime.GetInt() * Main.PlayerStates[id].GetKillCount(true);
+        int increased = 0 - decreased;
+        return isalive ? (iscrew ? increased : decreased) : 0;
+    }
 
     public static int TotalDecreasedMeetingTime()
     {

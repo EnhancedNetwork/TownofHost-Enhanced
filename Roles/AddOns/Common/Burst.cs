@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Burst : IAddon
 {
+    public CustomRoles Role => CustomRoles.Burst;
     private const int Id = 19000;
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Helpful;

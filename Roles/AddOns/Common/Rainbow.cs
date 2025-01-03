@@ -5,6 +5,7 @@ namespace TOHE.Roles.AddOns.Common;
 // https://github.com/Yumenopai/TownOfHost_Y/blob/main/Roles/Crewmate/Y/Rainbow.cs
 public class Rainbow : IAddon
 {
+    public CustomRoles Role => CustomRoles.Rainbow;
     private const int Id = 27700;
     public AddonTypes Type => AddonTypes.Misc;
 

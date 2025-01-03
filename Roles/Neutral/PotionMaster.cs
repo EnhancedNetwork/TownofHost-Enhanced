@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class PotionMaster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.PotionMaster;
     private const int Id = 17700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PotionMaster);
     public override bool IsDesyncRole => true;
@@ -61,8 +62,8 @@ internal class PotionMaster : RoleBase
         byte playerId = reader.ReadByte();
 
         AbilityLimit = reader.ReadSingle();
-          RitualTarget[playerId].Add(reader.ReadByte());
-        
+        RitualTarget[playerId].Add(reader.ReadByte());
+
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

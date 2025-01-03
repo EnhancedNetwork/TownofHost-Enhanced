@@ -1,13 +1,14 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Jinx : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Jinx;
     private const int Id = 16800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jinx);
     public override bool IsDesyncRole => true;
@@ -43,10 +44,10 @@ internal class Jinx : RoleBase
         if (AbilityLimit <= 0) return true;
         if (killer.IsTransformedNeutralApocalypse()) return true;
         if (killer == target) return true;
-        
+
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
-       
+
         AbilityLimit -= 1;
         SendSkillRPC();
 
@@ -65,8 +66,8 @@ internal class Jinx : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 
-    public override string GetProgressText(byte playerId, bool comms) 
+    public override string GetProgressText(byte playerId, bool comms)
         => Utils.ColorString(CanJinx(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
+
     private bool CanJinx(byte id) => AbilityLimit > 0;
 }

@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Paranoia : IAddon
 {
+    public CustomRoles Role => CustomRoles.Paranoia;
     private const int Id = 22400;
 
     public static OptionItem CanBeImp;

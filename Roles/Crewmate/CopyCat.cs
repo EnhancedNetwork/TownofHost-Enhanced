@@ -8,9 +8,10 @@ namespace TOHE.Roles.Crewmate;
 internal class CopyCat : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.CopyCat;
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -39,12 +40,14 @@ internal class CopyCat : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
-        //playerIdList.Remove(playerId);
+        // Copy cat role wont be removed for now i guess
+        // playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
@@ -67,18 +70,19 @@ internal class CopyCat : RoleBase
                 continue;
             }
             ////////////           /*remove the settings for current role*/             /////////////////////
-            
+
             var pcRole = pc.GetCustomRole();
-            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Retributionist)
+            if (pcRole is not CustomRoles.Sidekick && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
+                    pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
                 }
-                pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
-                pc.RpcSetCustomRole(CustomRoles.CopyCat);
             }
             pc.ResetKillCooldown();
+            pc.SetKillCooldown();
         }
     }
 
@@ -87,7 +91,8 @@ internal class CopyCat : RoleBase
         return role is CustomRoles.CopyCat or
             CustomRoles.Doomsayer or // CopyCat cannot guessed roles because he can be know others roles players
             CustomRoles.EvilGuesser or
-            CustomRoles.NiceGuesser;
+            CustomRoles.NiceGuesser or
+            CustomRoles.Baker or CustomRoles.Famine;
     }
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -97,6 +102,7 @@ internal class CopyCat : RoleBase
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
             killer.ResetKillCooldown();
+            killer.SetKillCooldown();
             return false;
         }
         if (CopyCrewVar.GetBool())
@@ -138,7 +144,6 @@ internal class CopyCat : RoleBase
                 killer.RpcSetCustomRole(role);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
-                Main.PlayerStates[killer.PlayerId].InitTask(killer);
             }
             if (CopyTeamChangingAddon.GetBool())
             {
@@ -148,14 +153,16 @@ internal class CopyCat : RoleBase
                 if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit);
                 if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
                 if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
+                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
             return false;
-            
+
         }
         killer.Notify(GetString("CopyCatCanNotCopy"));
         killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return false;
     }
 

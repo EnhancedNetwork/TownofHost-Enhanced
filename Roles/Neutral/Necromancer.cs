@@ -7,9 +7,8 @@ namespace TOHE.Roles.Neutral;
 internal class Necromancer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Necromancer;
     private const int Id = 17100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -38,7 +37,6 @@ internal class Necromancer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsRevenge = false;
         Success = false;
         Killer = null;
@@ -46,14 +44,13 @@ internal class Necromancer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         Timer = RevengeTime.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
-    
+
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (IsRevenge) return true;
@@ -98,7 +95,7 @@ internal class Necromancer : RoleBase
         {
             Timer = RevengeTime.GetInt();
             Success = false;
-            Killer = null; 
+            Killer = null;
             return;
         }
         if (GameStates.IsMeeting && player.IsAlive())
@@ -112,12 +109,12 @@ internal class Necromancer : RoleBase
             Killer = null;
             return;
         }
-        if (seconds <= 0) 
-        { 
-            player.RpcMurderPlayer(player); 
+        if (seconds <= 0)
+        {
+            player.RpcMurderPlayer(player);
             player.SetRealKiller(killer);
-            Killer = null; 
-            return; 
+            Killer = null;
+            return;
         }
         player.Notify(string.Format(GetString("NecromancerRevenge"), seconds, Killer.GetRealName()), 1.1f);
         Timer = seconds;

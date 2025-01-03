@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Necroview : IAddon
 {
+    public CustomRoles Role => CustomRoles.Necroview;
     private const int Id = 19600;
     public AddonTypes Type => AddonTypes.Helpful;
 

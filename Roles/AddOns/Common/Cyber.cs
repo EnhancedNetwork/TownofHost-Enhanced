@@ -4,6 +4,7 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Cyber : IAddon
 {
+    public CustomRoles Role => CustomRoles.Cyber;
     private const int Id = 19100;
     public AddonTypes Type => AddonTypes.Helpful;
 
