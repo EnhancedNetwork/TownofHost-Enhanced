@@ -2418,6 +2418,7 @@ public static class Utils
 
         RPC.SyncDeadPassedMeetingList();
         DoorsReset.ResetDoors();
+        CustomNetObject.AfterMeetingTasks();
 
         // Empty Deden bug support Empty vent after meeting
         var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.TryCast<VentilationSystem>() : null;

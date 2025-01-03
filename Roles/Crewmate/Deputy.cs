@@ -69,7 +69,7 @@ internal class Deputy : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
             }
         }
-        
+
         return false;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
@@ -109,7 +109,7 @@ internal class Deputy : RoleBase
         if (RoleblockedPlayers.Count < 1) return;
         foreach (var player in RoleblockedPlayers.Keys)
         {
-            if (RoleblockedPlayers[player].Contains(target)) 
+            if (RoleblockedPlayers[player].Contains(target))
                 RoleblockedPlayers[player].Remove(target);
         }
     }

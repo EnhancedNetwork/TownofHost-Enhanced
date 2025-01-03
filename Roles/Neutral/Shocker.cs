@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -53,8 +53,9 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]).SetValueFormat(OptionFormat.Multiplier);
         ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        ShockerImpostorVision = BooleanOptionItem.Create(Id + 17, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
+        ShockerImpostorVision = BooleanOptionItem.Create(Id + 20, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
+        OverrideTasksData.Create(18, TabGroup.NeutralRoles, CustomRoles.Shocker);
     }
     public override void Init()
     {

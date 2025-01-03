@@ -17,7 +17,7 @@ internal class Troller : RoleBase
     private const int Id = 28700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Troller);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem TrollsPerRound;

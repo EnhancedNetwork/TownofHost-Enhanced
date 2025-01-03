@@ -3,13 +3,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using TOHE.Modules;
 using UnityEngine;
 using UnityEngine.Networking;
 using static TOHE.Translator;
 using IEnumerator = System.Collections.IEnumerator;
-using TOHE.Modules;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace TOHE;
 
@@ -45,6 +45,7 @@ public class ModUpdater
 
     public static IEnumerator PrefixCoroutine()
     {
+        CheckCustomRegions();
         NewVersionCheck();
         DeleteOldFiles();
         InfoPopup = UnityEngine.Object.Instantiate(Twitch.TwitchManager.Instance.TwitchPopup);
@@ -60,6 +61,78 @@ public class ModUpdater
             Logger.Info("downloadUrl: " + downloadUrl, "CheckRelease");
             Logger.Info("latestVersionl: " + latestVersion, "CheckRelease");
             ResetUpdateButton();
+        }
+    }
+
+    const string RegionConfigPath = "./BepInEx/config/at.duikbo.regioninstall.cfg";
+    const string MiniRegionInstallPath = "./BepInEx/plugins/Mini.RegionInstall.dll";
+    const string RegionConfigResource = "TOHE.Resources.at.duikbo.regioninstall.cfg";
+    const string MiniRegionInstallResource = "TOHE.Resources.Mini.RegionInstall.dll";
+    private static void CheckCustomRegions()
+    {
+        var regions = ServerManager.Instance.AvailableRegions;
+        var hasCustomRegions = false;
+        var forceUpdate = false;
+
+        foreach (var region in regions)
+        {
+            if (region.Name.Contains("Niko233", StringComparison.OrdinalIgnoreCase))
+            {
+                hasCustomRegions = true;
+                break;
+            }
+        }
+
+        foreach (var region in regions)
+        {
+            if (region.Name.Contains("Niko233(NA_US)", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("NikoCat233", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("Niko233(EU)", StringComparison.OrdinalIgnoreCase))
+            {
+                forceUpdate = true;
+                break;
+            }
+        }
+
+        if (!hasCustomRegions || forceUpdate)
+        {
+            Logger.Info("No custom regions found.", "CheckCustomRegions");
+            MoveFile();
+            return;
+        }
+
+        if (!File.Exists(RegionConfigPath) || !File.Exists(MiniRegionInstallPath))
+        {
+            Logger.Info("Updating Region file due to it is missing.", "CheckCustomRegions");
+            MoveFile();
+            return;
+        }
+
+        static void MoveFile()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using Stream resourceStream = assembly.GetManifestResourceStream(RegionConfigResource);
+            if (resourceStream == null)
+            {
+                Logger.Error($"Resource {RegionConfigResource} not found in assembly.", "MoveRegionConfig");
+                return;
+            }
+
+            using FileStream fileStream = new(RegionConfigPath, FileMode.Create, FileAccess.Write);
+            resourceStream.CopyTo(fileStream);
+            Logger.Info($"Resource {RegionConfigResource} has been moved to {RegionConfigPath}.", "MoveRegionConfig");
+
+            if (!File.Exists(MiniRegionInstallPath))
+            {
+                using Stream miniResourceStream = assembly.GetManifestResourceStream(MiniRegionInstallResource);
+                if (miniResourceStream == null)
+                {
+                    Logger.Error($"Resource {MiniRegionInstallResource} not found in assembly.", "MoveRegionConfig");
+                    return;
+                }
+
+                using FileStream miniFileStream = new(MiniRegionInstallPath, FileMode.Create, FileAccess.Write);
+                miniResourceStream.CopyTo(miniFileStream);
+                Logger.Info($"Resource {MiniRegionInstallResource} has been moved to {MiniRegionInstallPath}.", "MoveRegionConfig");
+            }
         }
     }
     public static void ResetUpdateButton()
