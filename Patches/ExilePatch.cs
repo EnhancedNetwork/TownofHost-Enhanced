@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -184,6 +185,7 @@ class ExileControllerWrapUpPatch
                 if (GameStates.IsEnded) return;
 
                 AntiBlackout.ResetAfterMeeting();
+                Main.LastMeetingEnded = Utils.GetTimeStamp();
             }, 2f, "Reset Cooldown After Meeting");
         }
 

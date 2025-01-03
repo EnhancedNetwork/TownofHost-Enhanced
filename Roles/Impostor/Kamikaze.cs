@@ -99,6 +99,27 @@ internal class Kamikaze : RoleBase
         SendRPC();
     }
 
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    {
+        if (_Player == null || !exileIds.Contains(_Player.PlayerId)) return;
+        var deathList = new List<byte>();
+        var death = _Player;
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (KamikazedList.Contains(pc.PlayerId))
+            {
+                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
+                {
+                    pc.SetRealKiller(death);
+                    deathList.Add(pc.PlayerId);
+                }
+            }
+        }
+        KamikazedList.Clear();
+        SendRPC();
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Targeted, [.. deathList]);
+    }
+
     public void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
