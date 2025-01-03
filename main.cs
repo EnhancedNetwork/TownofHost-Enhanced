@@ -911,6 +911,10 @@ public enum CustomRoles
     //FFA
     Killer,
 
+    //C&R
+    Cop,
+    Robber,
+
     //GM
     GM,
 
@@ -1065,6 +1069,8 @@ public enum CustomWinner
     Solsticer = CustomRoles.Solsticer,
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
+    Robbers = CustomRoles.Robber, //C&R
+    Cops = CustomRoles.Cop, //C&R
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
