@@ -3566,7 +3566,7 @@
   "DCNotify.Auth": "You are not authenticated.\n\nYou may need to restart your game.",
   "DCNotify.DupeLogin": "An instance of your account is already present in this lobby.",
   "DCNotify.InvalidSettings": "Game settings have been detected to be invalid.\n\nEnter local play to reset them, then try again.",
-  "ModeDescribe.SoloKombat": "Current mode is [Solo PVP]\nNo role assignment. Everyone has HP and can use the Kill button to cause damage to other players. The player with the highest number of kills wins at the end of the game.",
+  "ModeDescribe.SoloKombat": "Current Gamemode is [Solo PVP]\nNo role assignment. Everyone has HP and can use the Kill button to cause damage to other players. The player with the highest number of kills wins at the end of the game.",
   "RoleType.VanillaRoles": "★ Vanilla Roles",
   "RoleType.ImpKilling": "<color=#6a0000>★</color> Impostor <color=#6a0000>Killing</color> Roles",
   "RoleType.ImpSupport": "<color=#00ffff>★</color> Impostor <color=#00ffff>Support</color> Roles",
