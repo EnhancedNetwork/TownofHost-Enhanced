@@ -1516,7 +1516,7 @@
   "PhantomBase_InvisDuration": "Invisibility Duration",
   "GuardianAngelBase_ProtectCooldown": "Protect Cooldown",
   "GuardianAngelBase_ProtectionDuration": "Protection Duration",
-  "GuardianAngelBase_ImpostorsCanSeeProtect": "Protect Visible To Impostors",
+  "GuardianAngelBase_ImpostorsCanSeeProtect": "Protect Visible to Impostors",
   "ScientistBase_BatteryCooldown": "Vitals Display Cooldown",
   "ScientistBase_BatteryDuration": "Battery Duration",
   "EngineerBase_VentCooldown": "Vent Cooldown",
