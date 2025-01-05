@@ -1067,7 +1067,7 @@
   "ShowSpecificRole": "Know specific roles on Task Completion",
   "TimeMasterMaxUses": "(Initial) Maximum Amount of Ability Uses",
   "SwooperVentNormallyOnCooldown": "<color=#ff1919>Swooper</color> Vents normally when Swooping is on Cooldown",
-  "WraithVentNormallyOnCooldown": "<color=#4b0082>Wraith</color> Vents normally when Invis is on Cooldown",
+  "WraithVentNormallyOnCooldown": "<color=#4b0082>Wraith</color> Vents normally when Invisibility is on Cooldown",
   "DisableMeeting": "Disable Meetings",
   "DisableCloseDoor": "Disable Doors Sabotage",
   "DisableSabotage": "Disable Sabotages",
