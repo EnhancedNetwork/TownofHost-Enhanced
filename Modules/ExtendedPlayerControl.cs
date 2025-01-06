@@ -1055,7 +1055,7 @@ static class ExtendedPlayerControl
             }
 
             return player.Data.DefaultOutfit.PlayerName;
-        }    
+        }
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
