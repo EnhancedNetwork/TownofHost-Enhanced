@@ -38,7 +38,6 @@ internal class Visionary : RoleBase
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
                 or CustomRoles.Soulless
-                or CustomRoles.Refugee
                 or CustomRoles.Admired)
                 return Main.roleColors[CustomRoles.Knight];
         }

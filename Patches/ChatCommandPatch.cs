@@ -539,7 +539,7 @@ internal class ChatCommands
                     {
                         Logger.Info("GetRealKiller()", "/death command");
                         var killer = PlayerControl.LocalPlayer.GetRealKiller(out var MurderRole);
-                        string killerName = killer == null ? "N/A" : killer.GetRealName();
+                        string killerName = killer == null ? "N/A" : killer.GetRealName(clientData: true);
                         string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
                         Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
 
@@ -2048,6 +2048,8 @@ internal class ChatCommands
 
 
         // Create directories for chat logs if necessary
+
+        // Create directories for chat logs if necessary
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
         Directory.CreateDirectory(sponsorTagsFiles);
@@ -2401,7 +2403,7 @@ internal class ChatCommands
                 else
                 {
                     var killer = player.GetRealKiller(out var MurderRole);
-                    string killerName = killer == null ? "N/A" : killer.GetRealName();
+                    string killerName = killer == null ? "N/A" : killer.GetRealName(clientData: true);
                     string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
                     Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
                     break;

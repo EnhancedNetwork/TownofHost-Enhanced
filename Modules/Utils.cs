@@ -992,6 +992,10 @@ public static class Utils
             var tytul = !Options.OldKillLog.GetBool() ? ColorString(new Color32(102, 16, 16, 255),  "《 " + GetString("KillLog") + " 》") : "";
             SendSpesificMessage(kl, PlayerId, tytul);
         }
+        if (EndGamePatch.MainRoleLog != "")
+        {
+            SendSpesificMessage(EndGamePatch.MainRoleLog, PlayerId);
+        }
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
     {
@@ -2403,6 +2407,12 @@ public static class Utils
 
                 playerState.RoleClass.AfterMeetingTasks();
                 playerState.RoleClass.HasVoted = false;
+
+                foreach (var ventId in playerState.RoleClass.LastBlockedMoveInVentVents)
+                {
+                    CustomRoleManager.BlockedVentsList[playerState.PlayerId].Remove(ventId);
+                }
+                playerState.RoleClass.LastBlockedMoveInVentVents.Clear();
             }
 
             //Set kill timer
@@ -2431,6 +2441,7 @@ public static class Utils
             AirshipElectricalDoors.Initialize();
 
         DoorsReset.ResetDoors();
+        CustomNetObject.AfterMeetingTasks();
 
         // Empty Deden bug support Empty vent after meeting
         var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.TryCast<VentilationSystem>() : null;

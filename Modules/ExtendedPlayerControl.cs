@@ -1025,7 +1025,7 @@ static class ExtendedPlayerControl
 
     public static string GetRealName(this PlayerControl player, bool isMeeting = false, bool clientData = false)
     {
-        if (clientData)
+        if (clientData || player == null)
         {
             var client = player.GetClient();
 
@@ -1037,6 +1037,16 @@ static class ExtendedPlayerControl
                 }
                 return player.GetClient().PlayerName;
             }
+        }
+
+        if (player.shapeshifting)
+        {
+            if (Main.AllClientRealNames.TryGetValue(player.OwnerId, out var realname))
+            {
+                return realname;
+            }
+
+            return player.Data.DefaultOutfit.PlayerName;
         }
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
@@ -1270,6 +1280,17 @@ static class ExtendedPlayerControl
         if (Options.SeeEjectedRolesInMeeting.GetBool() && targetState.deathReason == PlayerState.DeathReason.Vote) return true;
         if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;
         if (Main.VisibleTasksCount && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool()) return true;
+
+       
+        // Other visibility logic
+        if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
+        if (Options.LoverKnowRoles.GetBool() && seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return true;
+        if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor)  && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true; 
+        if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
+        if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
+        if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
+        if (target.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
+        if (seer.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return true;
 
        
         // Other visibility logic

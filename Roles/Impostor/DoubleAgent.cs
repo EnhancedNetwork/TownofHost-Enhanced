@@ -120,7 +120,7 @@ internal class DoubleAgent : RoleBase
         }
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => false;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.AliveImpostorCount < 2;
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {

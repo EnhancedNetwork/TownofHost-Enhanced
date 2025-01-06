@@ -51,10 +51,28 @@ internal class Godfather : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => GodfatherTarget.Clear();
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (GodfatherTarget.Contains(target.PlayerId) && !(killer.GetCustomRole().IsImpostor() || killer.GetCustomRole().IsMadmate() || killer.Is(CustomRoles.Madmate)))
+        var godfather = _Player;
+        var ChangeRole = godfather.Is(CustomRoles.Admired) ? CustomRoles.Sheriff : CustomRoles.Refugee;
+        var ChangeAddon = godfather.Is(CustomRoles.Admired) ? CustomRoles.Admired : CustomRoles.Madmate;
+        if (GodfatherTarget.Contains(target.PlayerId))
         {
-            if (GodfatherChangeOpt.GetValue() == 0) killer.RpcSetCustomRole(CustomRoles.Refugee);
-            else killer.RpcSetCustomRole(CustomRoles.Madmate);
+            if (GodfatherChangeOpt.GetValue() == 0)
+            {
+                killer.RpcChangeRoleBasis(ChangeRole);
+                killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+                killer.RpcSetCustomRole(ChangeRole);
+                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+            }
+            else
+            {
+                killer.RpcSetCustomRole(ChangeAddon);
+            }
+
+            killer.RpcGuardAndKill();
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Godfather), GetString("GodfatherRefugeeMsg")));
+            NotifyRoles(killer);
         }
     }
     public override void AfterMeetingTasks() => Didvote = false;
