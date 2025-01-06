@@ -33,6 +33,11 @@ internal class Visionary : RoleBase
                 return Main.roleColors[CustomRoles.Knight];
         }
 
+        if (Main.PlayerStates[target.PlayerId].IsNecromancer)
+        {
+            return Main.roleColors[CustomRoles.Coven];
+        }
+
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))
         {
             return Main.roleColors[CustomRoles.Impostor];
@@ -41,6 +46,11 @@ internal class Visionary : RoleBase
         if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel))
         {
             return Main.roleColors[CustomRoles.Bait];
+        }
+
+        if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))
+        {
+            return Main.roleColors[CustomRoles.Coven];
         }
 
         return Main.roleColors[CustomRoles.Knight];

@@ -24,6 +24,7 @@ internal class Merchant : RoleBase
     private static OptionItem OptionCanTargetCrew;
     private static OptionItem OptionCanTargetImpostor;
     private static OptionItem OptionCanTargetNeutral;
+    private static OptionItem OptionCanTargetCoven;
     private static OptionItem OptionCanSellHelpful;
     private static OptionItem OptionCanSellHarmful;
     private static OptionItem OptionCanSellNeutral;
@@ -46,6 +47,7 @@ internal class Merchant : RoleBase
         OptionCanTargetCrew = BooleanOptionItem.Create(Id + 6, "MerchantTargetCrew", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionCanTargetImpostor = BooleanOptionItem.Create(Id + 7, "MerchantTargetImpostor", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionCanTargetNeutral = BooleanOptionItem.Create(Id + 8, "MerchantTargetNeutral", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
+        OptionCanTargetCoven = BooleanOptionItem.Create(Id + 16, "MerchantTargetCoven", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionCanSellHelpful = BooleanOptionItem.Create(Id + 9, "MerchantSellHelpful", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionCanSellHarmful = BooleanOptionItem.Create(Id + 10, "MerchantSellHarmful", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionCanSellNeutral = BooleanOptionItem.Create(Id + 11, "MerchantSellMixed", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
@@ -53,7 +55,7 @@ internal class Merchant : RoleBase
         OptionSellOnlyHelpfulToCrew = BooleanOptionItem.Create(Id + 14, "MerchantSellHelpfulToCrew", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
         OptionSellOnlyEnabledAddons = BooleanOptionItem.Create(Id + 15, "MerchantSellOnlyEnabledAddons", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Merchant]);
 
-        OverrideTasksData.Create(Id + 16, TabGroup.CrewmateRoles, CustomRoles.Merchant);
+        OverrideTasksData.Create(Id + 17, TabGroup.CrewmateRoles, CustomRoles.Merchant);
     }
     public override void Init()
     {
@@ -123,7 +125,8 @@ internal class Merchant : RoleBase
                 && (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))
                 && ((OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.Rebel)) ||
                     (OptionCanTargetImpostor.GetBool() && x.GetCustomRole().IsImpostor()) ||
-                    (OptionCanTargetNeutral.GetBool() && (x.GetCustomRole().IsNeutral() || x.Is(CustomRoles.Rebel))))
+                    (OptionCanTargetNeutral.GetBool() && (x.GetCustomRole().IsNeutral() || x.Is(CustomRoles.Rebel))) ||
+                    (OptionCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven())
             ).ToList();
 
         if (AllAlivePlayer.Any())
@@ -141,7 +144,8 @@ internal class Merchant : RoleBase
                 AllAlivePlayer = AllAlivePlayer.Where(a =>
                     a.GetCustomRole().IsImpostor() ||
                     a.GetCustomRole().IsNeutral() ||
-                    a.Is(CustomRoles.Rebel)
+                    a.Is(CustomRoles.Rebel) ||
+                    a.GetCustomRole().IsCoven()
                 ).ToList();
             }
 

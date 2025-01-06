@@ -6,6 +6,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -438,6 +439,8 @@ class CheckForEndVotingPatch
         int impnum = 0;
         int neutralnum = 0;
         int apocnum = 0;
+        int covennum = 0;
+
 
         if (CustomRoles.Bard.RoleExist())
         {
@@ -457,6 +460,8 @@ class CheckForEndVotingPatch
                 neutralnum++;
             else if (pc_role.IsNA() && pc != exiledPlayer.Object)
                 apocnum++;
+            else if (pc_role.IsCoven() && pc != exiledPlayer.Object)
+                covennum++;
         }
         switch (Options.CEMode.GetInt())
         {
@@ -473,6 +478,9 @@ class CheckForEndVotingPatch
                 else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Soulless)) && !player.GetCustomRole().IsMadmate())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
+                else if (player.GetCustomRole().IsCoven())
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+
                 break;
             case 2:
                 name = string.Format(GetString("PlayerIsRole"), realName, coloredRole);
@@ -485,6 +493,8 @@ class CheckForEndVotingPatch
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Admired)) && !player.Is(CustomRoles.Rebel))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
+                    else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
+                        name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }
                 break;
@@ -510,6 +520,8 @@ class CheckForEndVotingPatch
                     name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
                 name += string.Format(GetString("ApocRemain"), apocnum) + comma;
+            if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
+                name += string.Format(GetString("CovenRemain"), covennum) + comma;
         }
 
     EndOfSession:
@@ -676,6 +688,55 @@ class CastVotePatch
             {
                 voter.GetRoleClass().HasVoted = true;
                 SendMessage(GetString("VoteNotUseAbility"), voter.PlayerId);
+                __instance.RpcClearVoteDelay(voter.GetClientId());
+                return false;
+            }
+        }
+
+
+        // Coven Leader Retraining
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        {
+            PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
+            voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
+            SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
+            SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
+
+            CovenLeader.retrainPlayer.Clear();
+            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
+            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+            __instance.RpcClearVoteDelay(voter.GetClientId());
+            return false;
+        }
+        else if (CustomRoles.CovenLeader.RoleExist() && target != voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        {
+            PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
+            SendMessage(string.Format(GetString("CovenLeaderDeclineRetrain"), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
+            SendMessage(string.Format(GetString("RetrainDeclineOffer"), CustomRoles.CovenLeader.ToColoredString()), voter.PlayerId);
+            CovenLeader.retrainPlayer.Clear();
+            __instance.RpcClearVoteDelay(voter.GetClientId());
+            return false;
+        }
+
+        // Coven Necronomicon Voting
+
+        if (suspectPlayerId == 253 && voter.IsPlayerCoven())
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                SendMessage(GetString("VoteNotUseAbility"), voter.PlayerId);
+                __instance.RpcClearVoteDelay(voter.GetClientId());
+                return false;
+            }
+        }
+        else if (voter.IsPlayerCoven() && target.IsPlayerCoven())
+        {
+            if (!voter.GetRoleClass().HasVoted)
+            {
+                voter.GetRoleClass().HasVoted = true;
+                CovenManager.necroVotes.Add(voter.PlayerId, target.PlayerId);
+                SendMessage(string.Format(GetString("NecronomiconVote"), target.GetRealName()), voter.PlayerId);
                 __instance.RpcClearVoteDelay(voter.GetClientId());
                 return false;
             }
@@ -931,6 +992,7 @@ class MeetingHudStartPatch
                 if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
                 if (!Cyber.NeutralKnowCyberDead.GetBool() && (pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Rebel))) continue;
                 if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel)) continue;
+                if (!Cyber.CovenKnowCyberDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
 
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }
@@ -1053,6 +1115,20 @@ class MeetingHudStartPatch
                 roleTextMeeting.text += TaskState.GetTaskState(); // Random task count for revealed trickster
                 //enable = false;
             }
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsCovIllusioned(pc.PlayerId))
+            {
+                roleTextMeeting.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
+                roleTextMeeting.text += TaskState.GetTaskState();
+            }
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsNonCovIllusioned(pc.PlayerId))
+            {
+                var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                roleTextMeeting.text = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
+                {
+                    roleTextMeeting.text += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                }
+            }
 
             var suffixBuilder = new StringBuilder(32);
             if (myRole != null)
@@ -1146,6 +1222,12 @@ class MeetingHudStartPatch
 
             // if based role is Shapeshifter and is Desync Shapeshifter
             if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
+            {
+                // When target is impostor, set name color as white
+                target.cosmetics.SetNameColor(Color.white);
+                pva.NameText.color = Color.white;
+            }
+            if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer)
             {
                 // When target is impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);

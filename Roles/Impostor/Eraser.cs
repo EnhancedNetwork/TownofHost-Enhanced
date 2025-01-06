@@ -64,7 +64,7 @@ internal class Eraser : RoleBase
         }
 
         var targetRole = target.GetCustomRole();
-        if (targetRole.IsNeutral() || target.Is(CustomRoles.Rebel) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
+        if (targetRole.IsTasklessCrewmate() || targetRole.IsNeutral() || targetRole.IsCoven() || target.Is(CustomRoles.Rebel) || Main.TasklessCrewmate.Contains(target.PlayerId) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
             SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
