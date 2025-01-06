@@ -362,6 +362,9 @@ public class Main : BasePlugin
                     case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
+                    case Custom_Team.Coven:
+                        roleColors.TryAdd(role, "#ac42f2");
+                        break;
                     default:
                         break;
                 }
@@ -847,19 +850,15 @@ public enum CustomRoles
     Glitch,
     God,
     Hater,
-    HexMaster,
     Huntsman,
     Imitator,
     Infectious,
     Innocent,
     Jackal,
     Jester,
-    Jinx,
     Juggernaut,
     Lawyer,
     Maverick,
-    Medusa,
-    Necromancer,
     Opportunist,
     Pelican,
     Pestilence,
@@ -868,8 +867,6 @@ public enum CustomRoles
     Pixie,
     PlagueBearer,
     PlagueDoctor,
-    Poisoner,
-    PotionMaster,
     Provocateur,
     PunchingBag,
     Pursuer,
@@ -905,6 +902,22 @@ public enum CustomRoles
     Workaholic,
     Wraith,
 
+    //Coven
+    Coven,
+    Conjurer,
+    CovenLeader,
+    HexMaster,
+    Illusionist,
+    Jinx,
+    Medusa,
+    MoonDancer,
+    Necromancer,
+    Poisoner,
+    PotionMaster,
+    Ritualist,
+    Sacrifist,
+    VoodooMaster,
+
     //two-way camp
     Mini,
 
@@ -937,6 +950,7 @@ public enum CustomRoles
     DoubleShot,
     Eavesdropper,
     Egoist,
+    Enchanted,
     Evader,
     EvilSpirit,
     Flash,
@@ -1065,6 +1079,7 @@ public enum CustomWinner
     Solsticer = CustomRoles.Solsticer,
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
+    Coven = CustomRoles.Coven,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
