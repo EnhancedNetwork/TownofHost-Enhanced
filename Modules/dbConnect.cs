@@ -290,7 +290,7 @@ public class dbConnect
         while (attempt < maxAttempts && !success)
         {
             string apiUrl = apiUrls[attempt % 2];
-            string endpoint = $"{apiUrl}/eac?token={apiToken}";
+            string endpoint = $"{apiUrl}/eac?token={apiToken}&hash={Main.FileHash}";
 
             Logger.Info($"Fetching EAC List from {apiUrls[attempt % 2]}", "GetEACList");
             UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
