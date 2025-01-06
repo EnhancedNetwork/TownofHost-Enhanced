@@ -27,6 +27,7 @@ public class PlayerState(byte playerId)
     public TaskState taskState = new();
     public bool IsBlackOut { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
+    public List<(DateTime, CustomRoles)> MainRoleLogs = [];
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];

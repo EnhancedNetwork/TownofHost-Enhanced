@@ -845,7 +845,7 @@
   "TaskManagerInfoLong": "(Coéquipiers):\nLe Gestionnaire de Tâches voit le nombre total de Tâches Accomplies (par tout le monde) à côté du nom de son Rôle, qui est Actualisé en temps réel.",
   "WitnessInfoLong": "(Coéquipiers):\nLe Témoin en utilisant son Bouton d'Exécution sur quelqu'un, saura s'il a Exécuté dans les X dernières secondes ou non. (X dépend des Réglages).",
   "SwapperInfoLong": "(Crewmates):\nAs the Swapper, you can swap votes in meetings.\n\nTo swap votes, use '/sw [playerID]' twice.\n\nPlayer IDs are displayed next to player names in meetings, but you can also use /id to get a list of all player IDs.\n\nNote: Depending on the Host's settings, you can exchange your own votes.",
-  "ChiefOfPoliceInfoLong": "(Crewmates):\nPlayers with swords can be recruited to join the sheriff's team to serve the crew\nNote: only one recruitment opportunity\nDepending on settings, you may recruit non killers or non crews.\nYou may suidice for recruiting wrong target.",
+  "ChiefOfPoliceInfoLong": "(Crewmates):\nAs the Chief of Police,you can recruit a player to be a Sheriff(only once per game).\nDepending on the settings,you may recruit non-Crewmates or players without a kill button.\nYou may die when you recruit a wrong player.",
   "NiceMiniInfoLong": "(Crewmates):\nAs a Nice Mini, your survival is crucial. You can't be killed until you grow up, and if you die or are evicted from the meeting before you grow up, everyone loses. This unique role adds a new dynamic to the game, where your survival is not just for your benefit but for the entire Crew's success.",
   "SpyInfoLong": "(Crewmates):\nAs the Spy, when someone uses their kill button on you (any ability used through the kill button), you'll see their name in orange for a few seconds.\nNote: If a Crewmate used their ability on you, you'll also see them with an orange name!\nNote: If you cannot use left, you won't see orange names!\nNote: If the kill button interaction is blocked, the player's cooldown will reset to 10s'",
   "RandomizerInfoLong": "(Crewmates):\nAs this Randomizer, when you die, your killer will do one of the following:\n  1. self-report your body\n  2. stand next to your body\n  3. have their kill cooldown set to 600s\n  4. Randomly avenge a player.",
@@ -3646,6 +3646,7 @@
   "Evader_ChanceNotExiled": "Chance not be exiled",
   "EavesdropperMsgTitle": "You found a secret",
   "EavesdropPercentChance": "Chance to eavesdrop",
+  "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting sheriffs",
   "PolicCanImpostorAndNeutarl": "Can recruit <color=#ff1919>Impostor</color> or <color=#7f8c8d>Neutral</color>",
   "SheriffSuccessfullyRecruited": "You recruited a sheriff.",
@@ -3653,6 +3654,6 @@
   "PoliceFailedRecruit": "Failed to recruit target.",
   "ChiefOfPoliceKillButtonText": "Recruitment",
   "PolicPreventRecruitNonKiller": "Prevent recruit players without kill button",
-  "PolicSuidiceWhenTargetNotKiller": "Suidices when recruit a non killer or non crewmate",
+  "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non killer or non crewmate",
   "PolicPassConverted": "Can pass Converted Addon to Sheriff"
 }

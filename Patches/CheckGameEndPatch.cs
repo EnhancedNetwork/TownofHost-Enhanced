@@ -89,6 +89,9 @@ class GameEndCheckerForNormal
 
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
+            Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
+            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
+
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
                 reason = GameOverReason.ImpostorByKill;
@@ -96,6 +99,7 @@ class GameEndCheckerForNormal
                 ResetAndSetWinner(CustomWinner.Jackal);
                 WinnerRoles.Add(CustomRoles.Jackal);
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
                 var playerState = Main.PlayerStates[pc.PlayerId];
@@ -198,6 +202,7 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
+
             if (WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (PlayerControl pc in Main.AllPlayerControls)
@@ -407,6 +412,7 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
+
                 if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
                 {
                     foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))

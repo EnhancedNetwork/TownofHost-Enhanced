@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 
@@ -182,8 +183,10 @@ class ExileControllerWrapUpPatch
         {
             if (GameStates.IsEnded) return;
 
-            AntiBlackout.ResetAfterMeeting();
-        }, 2f, "Reset Cooldown After Meeting");
+                AntiBlackout.ResetAfterMeeting();
+                Main.LastMeetingEnded = Utils.GetTimeStamp();
+            }, 2f, "Reset Cooldown After Meeting");
+        }
 
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.

@@ -1116,7 +1116,7 @@ internal static class RPC
         try
         {
             target = targetClientId < 0 ? "All" : AmongUsClient.Instance.GetClient(targetClientId).PlayerName;
-            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.Data?.PlayerName;
+            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.GetRealName(clientData: true);
         }
         catch { }
         Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");

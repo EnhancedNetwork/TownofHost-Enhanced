@@ -45,9 +45,6 @@ internal class EvilGuesser : RoleBase
         PlayerIds.Add(playerId);
     }
 
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
-
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.EvilGuesser) && EGTryHideMsg.GetBool();
 
     public static bool HideTabInGuesserUI(int TabId)

@@ -14,7 +14,7 @@ internal class Cultist : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cultist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem CharmCooldown;

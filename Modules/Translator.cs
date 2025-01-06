@@ -11,7 +11,7 @@ namespace TOHE;
 public static class Translator
 {
     public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = "Language";
+    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static void Init()
     {

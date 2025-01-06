@@ -94,6 +94,48 @@ internal class Kamikaze : RoleBase
             pc.SetRealKiller(_Player);
         }
         KamikazedList.Clear();
+        SendRPC();
+    }
+
+    public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
+    {
+        if (_Player == null || !exileIds.Contains(_Player.PlayerId)) return;
+        var deathList = new List<byte>();
+        var death = _Player;
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (KamikazedList.Contains(pc.PlayerId))
+            {
+                if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
+                {
+                    pc.SetRealKiller(death);
+                    deathList.Add(pc.PlayerId);
+                }
+            }
+        }
+        KamikazedList.Clear();
+        SendRPC();
+        CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Targeted, [.. deathList]);
+    }
+
+    public void SendRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.WritePacked(KamikazedList.Count);
+        foreach (var playerId in KamikazedList)
+        {
+            writer.Write(playerId);
+        }
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        AbilityLimit = reader.ReadSingle();
+        var count = reader.ReadPackedInt32();
+        KamikazedList.Clear();
     }
 
     public override string GetProgressText(byte playerId, bool comms)

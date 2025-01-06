@@ -242,8 +242,15 @@ public class dbConnect
             yield break;
         }
 
-        string apiUrl = ApiUrl;
-        string endpoint = $"{apiUrl}/eac?token={apiToken}";
+        string[] apiUrls = { ApiUrl, FallBackUrl };
+        int maxAttempts = !InitOnce ? 4 : 2;
+        int attempt = 0;
+        bool success = false;
+
+        while (attempt < maxAttempts && !success)
+        {
+            string apiUrl = apiUrls[attempt % 2];
+            string endpoint = $"{apiUrl}/eac?token={apiToken}&hash={Main.FileHash}";
 
         UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
 

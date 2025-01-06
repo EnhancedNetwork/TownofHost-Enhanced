@@ -70,8 +70,11 @@ class CheckMurderPatch
     public static Dictionary<byte, float> TimeSinceLastKill = [];
     public static void Update()
     {
-        for (byte i = 0; i < 15; i++)
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
+            if (pc == null) continue;
+            var i = pc.PlayerId;
+
             if (TimeSinceLastKill.ContainsKey(i))
             {
                 TimeSinceLastKill[i] += Time.deltaTime;
@@ -176,7 +179,7 @@ class CheckMurderPatch
         }
 
         var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        float minTime = Mathf.Max(0.04f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
@@ -875,6 +878,22 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+
+                    foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                    {
+                        CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                    }
+                    player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
+                }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -1231,10 +1250,10 @@ class FixedUpdateInNormalGamePatch
                 if (Main.playerVersion.TryGetValue(__instance.GetClientId(), out var ver))
                 {
                     if (Main.ForkId != ver.forkId)
-                        __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>{ver.forkId}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.4>{ver.forkId}</size>\n{__instance?.name}</color>";
                     else if (Main.version.CompareTo(ver.version) == 0)
-                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
-                    else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>v{ver.version}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#00a5ff><size=1.4>{GetString("ModdedClient")}</size>\n{__instance.name}</color>" : $"<color=#ffff00><size=1.4>{ver.tag}</size>\n{__instance?.name}</color>";
+                    else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.4>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
                 else if (Main.BAUPlayers.TryGetValue(__instance.Data, out var puid)) // Set name color for BAU users
                 {
@@ -1520,7 +1539,27 @@ class CoEnterVentPatch
             return true;
         }
 
-        playerRoleClass?.OnCoEnterVent(__instance, id);
+        if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
+        {
+            foreach (var ventId in playerRoleClass.LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Remove(ventId);
+            }
+            playerRoleClass.LastBlockedMoveInVentVents.Clear();
+
+            var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
+            foreach (var nextvent in vent.NearbyVents.ToList())
+            {
+                if (nextvent == null) continue;
+                // Skip current vent or ventid 5 in Dleks to prevent stuck
+                if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Add(nextvent.Id);
+                playerRoleClass.LastBlockedMoveInVentVents.Add(nextvent.Id);
+            }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
         return true;
     }
     public static void Postfix()
@@ -1567,7 +1606,13 @@ class CoExitVentPatch
 
         if (!AmongUsClient.Instance.AmHost) return;
 
-        player.GetRoleClass()?.OnExitVent(player, id);
+        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+        {
+            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+        }
+        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+        }
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
