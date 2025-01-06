@@ -1638,8 +1638,21 @@
     "SniperAimAssist": "Aim Assist",
     "SniperAimAssistOneshot": "One shot Assist",
 
+  "MercenaryLimit": "Time Until Suicide",
+  "ArsonistDouseTime": "Douse Duration",
+  "CanTerroristSuicideWin": "Can Win By Suicide",
+  "FireworkerMaxCount": "Fireworker Count",
+  "FireworkerRadius": "Firework Explosion Radius",
+  "SniperCanKill": "<color=#ff1919>Sniper</color> can kill with bullets remaining",
+  "SniperBulletCount": "Ammo",
+  "SniperPrecisionShooting": "Precise Shooting",
+  "SniperAimAssist": "Aim Assist",
+  "SniperAimAssistOneshot": "One shot Assist",
+
+
   "PyroDouseCooldown": "Douse Cooldown",
   "PyroBurnCooldown": "Kill Cooldown after killing a doused player",
+
 
     "Prohibited_OverrideBlockedVentsAfterMeeting": "Override Blocked Vents After Meeting",
     "Prohibited_CountBlockedVentsInSkeld": "Count Blocked Vents In <color=#66a186>The Skeld</color>",
@@ -1648,6 +1661,15 @@
     "Prohibited_CountBlockedVentsInDleks": "Count Blocked Vents In <color=#66a186>Dleks</color>",
     "Prohibited_CountBlockedVentsInAirship": "Count Blocked Vents In <color=#ed0007>Airship</color>",
     "Prohibited_CountBlockedVentsInFungle": "Count Blocked Vents In <color=#ffa646>The Fungle</color>",
+
+  "Prohibited_OverrideBlockedVentsAfterMeeting": "Override Blocked Vents After Meeting",
+  "Prohibited_CountBlockedVentsInSkeld": "Count Blocked Vents In <color=#66a186>The Skeld</color>",
+  "Prohibited_CountBlockedVentsInMira": "Count Blocked Vents In <color=#e84b56>MIRA HQ</color>",
+  "Prohibited_CountBlockedVentsInPolus": "Count Blocked Vents In <color=#a167c0>Polus</color>",
+  "Prohibited_CountBlockedVentsInDleks": "Count Blocked Vents In <color=#66a186>Dleks</color>",
+  "Prohibited_CountBlockedVentsInAirship": "Count Blocked Vents In <color=#ed0007>Airship</color>",
+  "Prohibited_CountBlockedVentsInFungle": "Count Blocked Vents In <color=#ffa646>The Fungle</color>",
+
 
   "UndertakerFreezeDuration": "Freeze Duration",
   "NameDisplayAddons": "Display Add-Ons next to the role name",
@@ -1893,6 +1915,7 @@
   "InfectiousTargetKnowOtherTarget": "<color=#7B8968>Infected</color> players know each other",
   "DoubleClickKill": "Double click to kill the target",
 
+
     "VirusInfectMax": "Maximum Number Of <color=#2E8B57>Spreads</color>",
     "VirusKnowTargetRole": "Know <color=#2E8B57>Contagious</color> Player's Role",
     "VirusTargetKnowOtherTarget": "<color=#2E8B57>Contagious</color> players know each other",
@@ -1909,6 +1932,24 @@
     "Cultist_CharmedCountMode_None": "Nothing",
     "Cultist_CharmedCountMode_Cultist": "<color=#cf6acd>Cultist</color>",
     "Cultist_CharmedCountMode_Original": "Original Team",
+
+  "VirusInfectMax": "Maximum Number Of <color=#2E8B57>Spreads</color>",
+  "VirusKnowTargetRole": "Know <color=#2E8B57>Contagious</color> Player's Role",
+  "VirusTargetKnowOtherTarget": "<color=#2E8B57>Contagious</color> players know each other",
+  "VirusKillInfectedPlayerAfterMeeting": "<color=#2E8B57>Contagious</color> player dies after meeting",
+  "Virus_ContagiousCountMode": "<color=#2E8B57>Contagious</color> players count as",
+  "Virus_ContagiousCountMode_None": "Nothing",
+  "Virus_ContagiousCountMode_Virus": "<color=#2E8B57>Virus</color>",
+  "Virus_ContagiousCountMode_Original": "Original Team",
+  "VirusNoticeTitle": "[ Infected Corpse! ]",
+  "VirusNoticeMessage": "The body you reported was infected by the Virus! You are now part of Team Virus. Help the Virus win the game.",
+  "VirusNoticeMessage2": "The body you reported was infected by the Virus! Vote the Virus out during this meeting, or you will die.",
+
+  "Cultist_CharmedCountMode": "<color=#cf6acd>Charmed</color> players count as",
+  "Cultist_CharmedCountMode_None": "Nothing",
+  "Cultist_CharmedCountMode_Cultist": "<color=#cf6acd>Cultist</color>",
+  "Cultist_CharmedCountMode_Original": "Original Team",
+
 
   "JackalCanWinBySabotageWhenNoImpAlive": "When all <color=#ff1919>Impostors</color> are dead, the <color=#00b4eb>Jackal</color> wins by Sabotage instead",
   "JackalResetKillCooldownWhenPlayerGetKilled": "Reset Kill Cooldown if someone gets killed by another player",
@@ -2217,6 +2258,7 @@
   "MorticianGetNoInfo": "According to your inspection, <b>{0}</b> did not seem to have contact with anyone during their lifetime.",
   "MorticianGetInfo": "According to your inspection, the last person <b>{0}</b> came into contact with during their lifetime was <b>{1}</b>.",
 
+
     "MediumOnlyReceiveMsgFromCrew": "Receive messages only from <color=#8cffff>Crewmates</color> (including <color=#ff1919>Madmates</color> and <color=#cf6acd>Charmed</color> Players)",
     "MediumTitle": "MEDIUM",
     "MediumHelp": "<b>/ms yes</b> to agree\n<b>/ms no</b> to disagree",
@@ -2226,6 +2268,17 @@
     "MediumNotifyTarget": "<b>{0}</b>, the Medium, has established contact with you. Before the end of this meeting, you have a chance to respond to their question. Type one of the following commands to answer:\nConfirm: /ms yes\nDeny: /ms no",
     "MediumNotifySelf": "You established contact with <b>{0}</b>. Please ask them questions and wait for them to respond.\n\nRemaining ability uses: {1}",
     "MediumKnowPlayerDead": "Someone died somewhere",
+
+  "MediumOnlyReceiveMsgFromCrew": "Receive messages only from <color=#8cffff>Crewmates</color> (including <color=#ff1919>Madmates</color> and <color=#cf6acd>Charmed</color> Players)",
+  "MediumTitle": "MEDIUM",
+  "MediumHelp": "<b>/ms yes</b> to agree\n<b>/ms no</b> to disagree",
+  "MediumYes": "You thought you heard a quiet voice from another world affirming the answer to your question.",
+  "MediumNo": "You thought you heard a quiet voice from another world denying the answer to your question.",
+  "MediumDone": "You successfully responded to the Medium.",
+  "MediumNotifyTarget": "<b>{0}</b>, the Medium, has established contact with you. Before the end of this meeting, you have a chance to respond to their question. Type one of the following commands to answer:\nConfirm: /ms yes\nDeny: /ms no",
+  "MediumNotifySelf": "You established contact with <b>{0}</b>. Please ask them questions and wait for them to respond.\n\nRemaining ability uses: {1}",
+  "MediumKnowPlayerDead": "Someone died somewhere",
+
 
   "SpurtMinSpeed": "Minimum Speed",
   "SpurtMaxSpeed": "Maximum Speed",
@@ -3242,6 +3295,7 @@
   "AlchemistGotInvisibility": "Potion of Invisibility: Become Invisible",
   "NoPotion": "You have no potions",
 
+
     "StoreShield": "<color=#00ff97>Potion of Resistance</color>",
     "StoreSuicide": "<color=#478800>Potion of Poison</color>",
     "StoreTP": "<color=#42d1ff>Potion of Warping</color>",
@@ -3261,6 +3315,27 @@
     "AlchemistPotionBloodthirst": "You gained bloodthirst",
     "AlchemistHasSpeed": "Potion Of Speed started",
     "AlchemistSpeedOut": "Potion Of Speed ended",
+
+  "StoreShield": "<color=#00ff97>Potion of Resistance</color>",
+  "StoreSuicide": "<color=#478800>Potion of Poison</color>",
+  "StoreTP": "<color=#42d1ff>Potion of Warping</color>",
+  "StoreSP": "<color=#77e0cb>Potion Of Speed</color>",
+  "StoreQF": "<color=#3333ff>Potion of Fixing</color>",
+  "StoreBL": "<color=#691a2e>Potion of Harming</color>",
+  "StoreNS": "<color=#663399>Potion of Night Vision</color>",
+  "StoreINV": "<color=#663399>Potion of Invisibility</color>",
+  "StoreNull": "<color=#888888>None</color>",
+  "PotionStore": "<color=#00ffa5>Potion in store: </color>",
+  "WaitQFPotion": "\n<color=#3333ff>Potion of Fixing</color> waiting for use",
+
+  "AlchemistShielded": "Potion of Resistance started",
+  "AlchemistHasVision": "Potion of Night Vision started",
+  "AlchemistShieldOut": "Potion of Resistance ended",
+  "AlchemistVisionOut": "Potion of Night Vision ended",
+  "AlchemistPotionBloodthirst": "You gained bloodthirst",
+  "AlchemistHasSpeed": "Potion Of Speed started",
+  "AlchemistSpeedOut": "Potion Of Speed ended",
+
 
   "DeathpactDuration": "<color=#ff1919>Deathpact</color> Duration",
   "DeathPactCooldown": "<color=#ff1919>Deathpact</color> Assign Cooldown",
@@ -3722,6 +3797,7 @@
 
 
 
+
     "ChanceCrew": "Chance that randomizer gets crewmate roles",
     "ChanceImpostor": "Chance that randomizer gets impostor roles",
     "ChanceNeutral": "Chance that randomizer gets neutral roles",
@@ -3773,6 +3849,43 @@
     "MenuTitle.Hide&Seek": "Hide & Seek Settings",
     "NumImpostorsHnS": "Num Impostors",
 
+  "FFA": "Free For All",
+  "ModeFFA": "Gamemode: FFA",
+  "ModeDescribe.FFA": "In the FFA (Free For All) Gamemode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
+  "KillerInfoLong": "In the FFA (Free For All) Gamemode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
+  "FFA_GameTime": "Maximum Game Length",
+  "FFA_KCD": "Kill Cooldown",
+  "FFA_DisableVentingWhenTwoPlayersAlive": "Prevent Venting when only 2 players are alive",
+  "FFA_EnableRandomAbilities": "Enable Random Events",
+  "FFA_ShieldDuration": "Shield Duration",
+  "FFA_IncreasedSpeed": "Increased Speed",
+  "FFA_DecreasedSpeed": "Decreased Speed",
+  "FFA_ModifiedSpeedDuration": "Modified Speed Duration",
+  "FFA_LowerVision": "Lowered Vision",
+  "FFA_ModifiedVisionDuration": "Lowered Vision Duration",
+  "FFA_EnableRandomTwists": "Enable Random Swaps from time to time",
+  "FFA-Event-GetShield": "You have a temporary shield!",
+  "FFA-Event-GetIncreasedSpeed": "You have a temporary speed boost!",
+  "FFA-Event-GetLowKCD": "You got a lower Kill Cooldown!",
+  "FFA-Event-GetHighKCD": "You got a higher Kill Cooldown",
+  "FFA-Event-GetLowVision": "You have lower vision temporarily",
+  "FFA-Event-GetDecreasedSpeed": "You have decreased speed temporarily",
+  "FFA-Event-GetTP": "You got teleported to a random Vent!",
+  "FFA-Event-RandomTP": "Everyone was swapped with someone",
+  "FFA-NoVentingBecauseTwoPlayers": "There are only 2 players alive, stop hiding in Vents!",
+  "FFA-NoVentingBecauseKCDIsUP": "Your kill Cooldown is up, don't hide in Vents!",
+  "FFA_DisableVentingWhenKCDIsUp": "Prevent players whose Kill Cooldown is up from Venting",
+  "FFA_TargetIsShielded": "<color=#ffff00>The player you tried to kill is shielded!</color>",
+  "FFA_ShieldIsOneTimeUse": "Shields break after 1 kill attempt",
+  "FFA_ShieldBroken": "<color=#ffff00>Someone tried to kill you, your shield is now broken!</color>",
+  "Killer": "FREE FOR ALL",
+  "KillerInfo": "Kill Everyone to Win",
+
+  "Hide&SeekTOHE": "Hide & Seek",
+  "MenuTitle.Hide&Seek": "Hide & Seek Settings",
+  "NumImpostorsHnS": "Num Impostors",
+
+
   "EveryOneKnowSolsticer": "Every One Know who is Solsticer",
   "SolsticerKnowItsKiller": "Solsticer knows the role of whom used the Kill button on it",
   "SolsticerSpeed": "Movement speed of Solsticer",
@@ -3818,6 +3931,7 @@
   "QuizmasterChat.AnswerNotValid": "Your answer must be A, B, or C",
   "QuizmasterChat.SyntaxNotValid": "<b>Usage:</b>\n/answer [A/B/C]",
 
+
     "QuizmasterSettings.QuestionDifficulty": "Question Difficulty",
     "QuizmasterSettings.CanVentAfterMark": "Can Vent After Marked Somebody For Quiz",
     "QuizmasterSettings.CanKillAfterMark": "Can Kill After Marked Somebody For Quiz",
@@ -3851,6 +3965,41 @@
     "QuizmasterAnswers.Experimental": "Experimental",
     "QuizmasterAnswers.Enhanced": "Enhanced",
     "QuizmasterAnswers.Edited": "Edited",
+
+  "QuizmasterSettings.QuestionDifficulty": "Question Difficulty",
+  "QuizmasterSettings.CanVentAfterMark": "Can Vent After Marked Somebody For Quiz",
+  "QuizmasterSettings.CanKillAfterMark": "Can Kill After Marked Somebody For Quiz",
+  "QuizmasterSettings.NumOfKillAfterMark": "How Many Kills Per Round",
+  "QuizmasterSettings.CanGiveQuestionsAboutPastGames": "Can Give Questions About Past Games",
+
+  "Quizmaster.None": "None",
+
+  "QuizmasterSabotages.Lights": "Lights",
+  "QuizmasterSabotages.Reactor": "Reactor",
+  "QuizmasterSabotages.Communications": "Communications",
+  "QuizmasterSabotages.O2": "O2",
+  "QuizmasterSabotages.MushroomMixup": "Mushroom Mixup",
+  "QuizmasterAnswers.One": "One",
+  "QuizmasterAnswers.Two": "Two",
+  "QuizmasterAnswers.Three": "Three",
+  "QuizmasterAnswers.Four": "Four",
+  "QuizmasterAnswers.Five": "Five",
+  "QuizmasterAnswers.Pacifist": "Pacifist",
+  "QuizmasterAnswers.Vampire": "Vampire",
+  "QuizmasterAnswers.Snitch": "Snitch",
+  "QuizmasterAnswers.Vigilante": "Vigilante",
+  "QuizmasterAnswers.Jackal": "Jackal",
+  "QuizmasterAnswers.Mole": "Mole",
+  "QuizmasterAnswers.Sniper": "Sniper",
+  "QuizmasterAnswers.Coven": "Coven",
+  "QuizmasterAnswers.Sabotuer": "Saboteur",
+  "QuizmasterAnswers.Sorcerers": "Sorcerers",
+  "QuizmasterAnswers.Killer": "Killer",
+  "QuizmasterAnswers.Edition": "Edition",
+  "QuizmasterAnswers.Experimental": "Experimental",
+  "QuizmasterAnswers.Enhanced": "Enhanced",
+  "QuizmasterAnswers.Edited": "Edited",
+
 
   "QuizmasterQuestions.LastSabotage": "What was the Sabotage was called last?",
   "QuizmasterQuestions.FirstRoundSabotage": "What was the first Sabotage called this round?",
