@@ -17,6 +17,7 @@
   "PlayerNameForRoleInfo": "Hi {0}, your role is:- \n",
 
   "HostIconInMeeting": "HOST: {0}",
+  "ModdedClient": "Modded Client",
 
   "SubText.GM": "Spectate the chaos!",
   "SubText.Crewmate": "Find and exile the <color=#ff1919>Impostors</color>",
