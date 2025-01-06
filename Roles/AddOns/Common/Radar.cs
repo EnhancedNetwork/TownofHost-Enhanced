@@ -4,7 +4,6 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Radar : IAddon
 {
-    public CustomRoles Role => CustomRoles.Radar;
     private const int Id = 28200;
     public AddonTypes Type => AddonTypes.Helpful;
 
@@ -15,7 +14,7 @@ public class Radar : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Radar, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
     }
     public void Init()
-    {
+    { 
         ClosestPlayer.Clear();
     }
     public void Add(byte playerId, bool gameIsLoading = true)

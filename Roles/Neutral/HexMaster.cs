@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Text;
 using UnityEngine;
+using System.Text;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -11,7 +11,6 @@ namespace TOHE.Roles.Neutral;
 internal class HexMaster : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.HexMaster;
     private const int Id = 16400;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
@@ -30,7 +29,6 @@ internal class HexMaster : RoleBase
     private static readonly Color RoleColorHex = Utils.GetRoleColor(CustomRoles.HexMaster);
     private static readonly Color RoleColorSpell = Utils.GetRoleColor(CustomRoles.Impostor);
 
-    [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
     {
         TriggerKill,
@@ -41,10 +39,10 @@ internal class HexMaster : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.HexMaster, 1, zeroOne: false);
+        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.HexMaster, 1, zeroOne: false);        
         ModeSwitchAction = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HexesLookLikeSpells = BooleanOptionItem.Create(Id + 11, "HexesLookLikeSpells",  false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 12, GeneralOption.ImpostorVision,  true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.HexMaster]);
     }
     public override void Init()
     {
@@ -54,9 +52,7 @@ internal class HexMaster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        if (!playerIdList.Contains(playerId))
-            playerIdList.Add(playerId);
-
+        playerIdList.Add(playerId);
         HexMode.Add(playerId, false);
         HexedPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTriggerList)ModeSwitchAction.GetValue();
@@ -269,7 +265,7 @@ internal class HexMaster : RoleBase
 
         return str.ToString();
     }
-
+    
     public override void SetAbilityButtonText(HudManager hud, byte playerid)
     {
         if (IsHexMode(playerid) && NowSwitchTrigger != SwitchTriggerList.TriggerDouble)
@@ -279,15 +275,6 @@ internal class HexMaster : RoleBase
         else
         {
             hud.KillButton.OverrideText($"{GetString("KillButtonText")}");
-        }
-    }
-
-    public override void Remove(byte playerId)
-    {
-        if (HexedPlayer.ContainsKey(playerId))
-        {
-            HexedPlayer[playerId].Clear();
-            SendRPC(true, playerId);
         }
     }
 }

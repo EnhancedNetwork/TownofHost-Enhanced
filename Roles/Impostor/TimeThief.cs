@@ -3,11 +3,10 @@ namespace TOHE.Roles.Impostor;
 internal class TimeThief : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.TimeThief;
     private const int Id = 3700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -35,8 +34,7 @@ internal class TimeThief : RoleBase
     }
     public override void Add(byte playerId)
     {
-        if (!playerIdList.Contains(playerId))
-            playerIdList.Add(playerId);
+        playerIdList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -44,9 +42,9 @@ internal class TimeThief : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
-    private static int StolenTime(byte id)
-        => playerIdList.Contains(id) && (Utils.GetPlayerById(id).IsAlive() || !ReturnStolenTimeUponDeath.GetBool())
+    
+    private static int StolenTime(byte id) 
+        => playerIdList.Contains(id) && (Utils.GetPlayerById(id).IsAlive() || !ReturnStolenTimeUponDeath.GetBool()) 
             ? DecreaseMeetingTime.GetInt() * Main.PlayerStates[id].GetKillCount(true)
             : 0;
 

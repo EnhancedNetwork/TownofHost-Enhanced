@@ -16,20 +16,7 @@ public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
     public static readonly Dictionary<CustomRoles, IAddon> AddonClasses = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role)
-    {
-        var roleClass = RoleClass.FirstOrDefault(x => x.Key == role).Value;
-
-        if (!role.IsVanilla() && !role.IsAdditionRole()
-            && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
-        {
-            if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
-                Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
-            if (roleClass == null)
-                Logger.Error($"RoleClass for {role} is null.", "GetStaticRoleClass");
-        }
-        return roleClass ?? new DefaultSetup();
-    }
+    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
 
@@ -75,7 +62,7 @@ public static class CustomRoleManager
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
-    public static RoleBase CreateRoleClass(this CustomRoles role)
+    public static RoleBase CreateRoleClass(this CustomRoles role) 
     {
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
@@ -119,10 +106,10 @@ public static class CustomRoleManager
         }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
-        if (CustomRoles.Dazzler.RoleExist()) Dazzler.SetDazzled(player, opt);
-        if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
+        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
+        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
-        if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
+        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -174,6 +161,7 @@ public static class CustomRoleManager
     {
         if (killer == target) return true;
 
+        // Check if the target is Fragile
         if (target != null && target.Is(CustomRoles.Fragile))
         {
             if (Fragile.KillFragile(killer, target))
@@ -182,18 +170,31 @@ public static class CustomRoleManager
                 return false;
             }
         }
-        var canceled = false;
+
+        // Check if the target is Lingering Presence
+        if (target != null && target.Is(CustomRoles.LingeringPresence))
+        {
+            if (LingeringPresence.KillLingeringPresence(killer, target))
+            {
+                Logger.Info("Lingering Presence killed in OnCheckMurder, returning false", "LingeringPresence");
+                return false;
+            }
+        }
+
+     
+
+    var canceled = false;
         var cancelbutkill = false;
 
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
         // If Target is possessed by Dollmaster swap controllers.
-        target = DollMaster.SwapPlayerInfo(target);
+        target = DollMaster.SwapPlayerInfo(target);   
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (CustomRoles.PlagueBearer.RoleExist(true) && !killer.Is(CustomRoles.PlagueBearer))
+        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }
@@ -263,7 +264,7 @@ public static class CustomRoleManager
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             __state = true;
-            if (cancelbutkill && target.IsAlive()
+            if (cancelbutkill && target.IsAlive() 
                 && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out _)) // some roles have an internal rpcmurderplayer, but still had to cancel
             {
                 target.RpcMurderPlayer(target);
@@ -300,7 +301,7 @@ public static class CustomRoleManager
             Oiiai.OnMurderPlayer(killer, target);
             return false;
         }
-
+                
         return true;
     }
     /// <summary>
@@ -365,6 +366,8 @@ public static class CustomRoleManager
                     case CustomRoles.Spurt:
                         Spurt.DeathTask(target);
                         break;
+                    
+
 
                 }
             }
@@ -397,13 +400,13 @@ public static class CustomRoleManager
             FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
         }
     }
-
+    
     /// <summary>
     /// Check if this task is marked by a role and do something.
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
         => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
-
+    
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
@@ -473,6 +476,8 @@ public static class CustomRoleManager
 
         return sb.ToString();
     }
+   
+
 
     private static HashSet<Func<PlayerControl, PlayerControl, bool, string>> SuffixOthers = [];
     /// <summary>
@@ -511,8 +516,7 @@ public static class CustomRoleManager
 
     // ADDONS ////////////////////////////
 
-    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x =>
-    {
+    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x => {
         if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
             IAddon.OnFixedUpdate(pc);
         else return;

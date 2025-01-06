@@ -1,15 +1,17 @@
-﻿using static TOHE.MeetingHudStartPatch;
-using static TOHE.Options;
-using static TOHE.Translator;
+﻿using static TOHE.Options;
 using static TOHE.Utils;
+using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Celebrity : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Celebrity;
     private const int Id = 6500;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -30,7 +32,12 @@ internal class Celebrity : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         CelebrityDead.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
     }
     public override bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {

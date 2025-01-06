@@ -34,11 +34,11 @@ public static class AntiBlackout
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
             // Impostors
-            if (pc.Is(Custom_Team.Impostor))
+            if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse())
+            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
                 NeutralKillers.Add(pc.PlayerId);
 
             // Crewmate
@@ -100,13 +100,7 @@ public static class AntiBlackout
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
-
-        if (dummyImp == null)
-        {
-            Logger.Warn("Cant find a alive dummy Imp, AntiBlackout may break?", "AntiBlackout.RevivePlayersAndSetDummyImp");
-            Logger.SendInGame("Cant find a alive dummy Imp, AntiBlackout may break?");
-            return;
-        }
+        if (dummyImp == null) return;
 
         foreach (var seer in Main.AllPlayerControls)
         {
@@ -133,25 +127,7 @@ public static class AntiBlackout
         }
         isDeadCache.Clear();
         IsCached = false;
-        if (doSend)
-        {
-            SendGameData();
-            _ = new LateTask(() => RestoreIsDeadByExile(), 0.3f, "AntiBlackOut_RestoreIsDeadByExile");
-        }
-    }
-
-    private static void RestoreIsDeadByExile()
-    {
-        var sender = CustomRpcSender.Create("AntiBlackout RestoreIsDeadByExile", SendOption.Reliable);
-        foreach (var player in Main.AllPlayerControls)
-        {
-            if (player.Data.IsDead && !player.Data.Disconnected)
-            {
-                sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
-                sender.EndRpc();
-            }
-        }
-        sender.SendMessage();
+        if (doSend) SendGameData();
     }
 
     public static void SendGameData([CallerMemberName] string callerMethodName = "")
@@ -250,7 +226,7 @@ public static class AntiBlackout
         {
             // skip host
             if (seerId == 0) continue;
-
+            
             var seer = seerId.GetPlayer();
             var target = targetId.GetPlayer();
 

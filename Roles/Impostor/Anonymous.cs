@@ -10,7 +10,6 @@ namespace TOHE.Roles.Impostor;
 internal class Anonymous : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Anonymous;
     private const int Id = 5300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Anonymous);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -18,8 +17,9 @@ internal class Anonymous : RoleBase
     //==================================================================\\
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Hack");
 
-    private static OptionItem HackLimitOpt;
-    private static OptionItem KillCooldown;
+    public static OptionItem HackLimitOpt;
+    public static OptionItem KillCooldown;
+
 
     private static readonly List<byte> DeadBodyList = [];
 
@@ -38,6 +38,12 @@ internal class Anonymous : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = HackLimitOpt.GetInt();
+        if (Main.PlayerStates[playerId].IsRandomizer)
+        {
+            
+        }
+
+        base.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

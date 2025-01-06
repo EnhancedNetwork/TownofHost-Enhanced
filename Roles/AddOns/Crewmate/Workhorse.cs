@@ -6,7 +6,6 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Workhorse : IAddon
 {
-    public CustomRoles Role => CustomRoles.Workhorse;
     private const int Id = 23730;
     public AddonTypes Type => AddonTypes.Misc;
     private static readonly HashSet<byte> playerIdList = [];
@@ -46,8 +45,7 @@ public class Workhorse : IAddon
     { }
     public static void AddMidGame(byte playerId)
     {
-        if (!playerIdList.Contains(playerId))
-            playerIdList.Add(playerId);
+        playerIdList.Add(playerId);
         IsEnable = true;
     }
     public void Remove(byte playerId)

@@ -8,7 +8,6 @@ namespace TOHE.Roles.Neutral;
 internal class Pickpocket : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Pickpocket;
     private const int Id = 17400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pickpocket);
     public override bool IsDesyncRole => true;
@@ -65,7 +64,7 @@ internal class Pickpocket : RoleBase
         if (isSuicide || inMeeting) return;
 
         killer.Notify(string.Format(GetString("PickpocketGetVote"),
-            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * VotesPerKill.GetFloat() + 1f)
+            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * VotesPerKill.GetFloat())
             .ToString("0.0#####")));
     }
 }

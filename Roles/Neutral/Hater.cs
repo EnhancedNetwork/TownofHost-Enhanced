@@ -7,10 +7,9 @@ namespace TOHE.Roles.Neutral;
 internal class Hater : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Hater;
     private const int Id = 12900;
     public static readonly HashSet<byte> playerIdList = [];
-
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
@@ -28,7 +27,7 @@ internal class Hater : RoleBase
     private static OptionItem CanKillContagious;
 
     public static bool isWon = false; // There's already a playerIdList, so replaced this with a boolean value
-
+    
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Hater, zeroOne: false);
@@ -52,8 +51,7 @@ internal class Hater : RoleBase
 
     public override void Add(byte playerId)
     {
-        if (!playerIdList.Contains(playerId))
-            playerIdList.Add(playerId);
+        playerIdList.Add(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -96,7 +94,7 @@ internal class Hater : RoleBase
 
         killer.SetDeathReason(PlayerState.DeathReason.Sacrifice);
         killer.RpcMurderPlayer(killer);
-
+        
         Logger.Info($"{killer.GetRealName()} killed incorrect target => misfire", "Hater");
         return false;
     }

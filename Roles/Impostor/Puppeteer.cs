@@ -13,8 +13,10 @@ namespace TOHE.Roles.Impostor;
 internal class Puppeteer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Puppeteer;
     private const int Id = 4300;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -31,6 +33,7 @@ internal class Puppeteer : RoleBase
     }
     public override void Init()
     {
+        PlayerIds.Clear();
         PuppeteerList.Clear();
     }
     public override void Add(byte playerId)
@@ -39,15 +42,12 @@ internal class Puppeteer : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
 
+        PlayerIds.Add(playerId);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
-    }
-    public override void Remove(byte playerId)
-    {
-        DoubleTrigger.PlayerIdList.Remove(playerId);
-        CustomRoleManager.OnFixedUpdateOthers.Remove(OnFixedUpdateOthers);
     }
 
     private static void SendRPC(byte puppetId, byte targetId, byte typeId)
@@ -82,19 +82,19 @@ internal class Puppeteer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.Is(CustomRoles.LazyGuy)
+        if (target.Is(CustomRoles.LazyGuy) 
             || target.Is(CustomRoles.Lazy)
             || target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
             return false;
 
-        return killer.CheckDoubleTrigger(target, () =>
-        {
-            PuppeteerList[target.PlayerId] = killer.PlayerId;
-            killer.SetKillCooldown();
-            SendRPC(killer.PlayerId, target.PlayerId, 1);
-            killer.RPCPlayCustomSound("Line");
-            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-        });
+            return killer.CheckDoubleTrigger(target, () => 
+            {         
+                PuppeteerList[target.PlayerId] = killer.PlayerId;
+                killer.SetKillCooldown();
+                SendRPC(killer.PlayerId, target.PlayerId, 1);
+                killer.RPCPlayCustomSound("Line");
+                Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
+            });
     }
 
     private void OnFixedUpdateOthers(PlayerControl puppet, bool lowLoad, long nowTime)

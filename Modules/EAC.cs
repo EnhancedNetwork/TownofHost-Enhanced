@@ -1,6 +1,6 @@
 ﻿using Hazel;
-using InnerNet;
 using System;
+using InnerNet;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -252,37 +252,6 @@ internal class EAC
                         // Do nothing
                     }
                     break;
-                case 119: // KN Chat
-                    try
-                    {
-                        var firstString = sr.ReadString();
-                        var secondString = sr.ReadString();
-                        sr.ReadInt32();
-
-                        var flag = string.IsNullOrEmpty(firstString) && string.IsNullOrEmpty(secondString);
-
-                        if (!flag)
-                        {
-                            Report(pc, "KN Chat RPC");
-                            HandleCheat(pc, "KN Chat RPC");
-                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KN聊天，已驳回", "EAC");
-                            return true;
-                        }
-                    }
-                    catch
-                    {
-                        // Do nothing
-                    }
-                    break;
-                case 250: // KN
-                    if (sr.BytesRemaining == 0)
-                    {
-                        Report(pc, "KN RPC");
-                        HandleCheat(pc, "KN RPC");
-                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KN RPC，已驳回", "EAC");
-                        return true;
-                    }
-                    break;
                 case unchecked((byte)420): // 164 Sicko
                     if (sr.BytesRemaining == 0)
                     {
@@ -490,8 +459,8 @@ internal class EAC
         if (!GameStates.IsInGame)
         {
             WarnHost();
-            Report(player, "Report body out of game C");
-            HandleCheat(player, "Report body out of game C");
+            Report(player, "Report body out of game");
+            HandleCheat(player, "Report body out of game");
             Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】非游戏内开会，已驳回", "EAC");
             return true;
         }

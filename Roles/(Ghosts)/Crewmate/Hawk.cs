@@ -12,7 +12,6 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 internal class Hawk : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Hawk;
     private const int Id = 28000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Hawk);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -24,7 +23,7 @@ internal class Hawk : RoleBase
     public static OptionItem MinimumPlayersAliveToKill;
     public static OptionItem MissChance;
     public static OptionItem IncreaseByOneIfConvert;
-
+    
     public readonly Dictionary<byte, float> KillerChanceMiss = [];
     public int KeepCount = 0;
     public override void SetupCustomOption()
@@ -115,7 +114,7 @@ internal class Hawk : RoleBase
             && !target.Is(CustomRoles.CursedWolf)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
-    public override string GetProgressText(byte playerId, bool coms)
+    public override string GetProgressText(byte playerId, bool coms) 
         => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Hawk).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
 }

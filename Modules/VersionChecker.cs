@@ -12,7 +12,7 @@ public static class VersionChecker
     public static void Check()
     {
         if (Ischecked) return;
-
+        
         var amongUsVersion = Version.Parse(Application.version);
         Logger.Info($" {amongUsVersion}", "Among Us Version Check");
 

@@ -7,7 +7,6 @@ namespace TOHE.Roles.Neutral;
 internal class Imitator : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Imitator;
     private const int Id = 13000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Imitator);
     public override bool IsExperimental => true;
@@ -19,7 +18,6 @@ internal class Imitator : RoleBase
     private static OptionItem RememberCooldown;
     private static OptionItem IncompatibleNeutralMode;
 
-    [Obfuscation(Exclude = true)]
     private enum ImitatorIncompatibleNeutralModeSelectList
     {
         Role_Imitator,
@@ -51,7 +49,7 @@ internal class Imitator : RoleBase
         if (role is CustomRoles.Jackal
             or CustomRoles.HexMaster
             or CustomRoles.Poisoner
-            or CustomRoles.Juggernaut
+            or CustomRoles.Juggernaut 
             or CustomRoles.BloodKnight
             or CustomRoles.Sheriff)
         {

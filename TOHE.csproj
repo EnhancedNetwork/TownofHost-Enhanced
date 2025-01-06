@@ -6,17 +6,15 @@
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
 		<Description>Town Of Host Enhanced</Description>
 		<Authors>Moe</Authors>
-		<LangVersion>12.0</LangVersion>
+		<langVersion>12.0</langVersion>
 		<!--<AmongUs>C:\Program Files\Epic Games\AmongUs</AmongUs>-->
 		<Configurations>Debug;Release;Canary</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>True</Optimize>
-		<CodePage>65001</CodePage>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include=".\Resources\**" />
-		<EmbeddedResource Include="token.env" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -40,8 +38,8 @@
 	</ItemGroup>
 
 	<Target Name="EnsureTokenEnvExists" BeforeTargets="BeforeBuild">
-		<Exec Condition=" '$(OS)' == 'Windows_NT' " Command="if not exist token.env (echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env)" />
-		<Exec Condition=" '$(OS)' != 'Windows_NT' " Command="if [ ! -f token.env ]; then echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env; fi" />
+		<Exec Condition=" '$(OS)' == 'Windows_NT' " Command="if not exist token.env (echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN &gt; token.env)" />
+		<Exec Condition=" '$(OS)' != 'Windows_NT' " Command="if [ ! -f token.env ]; then echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN &gt; token.env; fi" />
 	</Target>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

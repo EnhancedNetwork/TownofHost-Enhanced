@@ -1,10 +1,11 @@
-﻿using AmongUs.Data;
-using System;
-using System.IO;
+﻿using System;
 using System.Text.Json;
-using UnityEngine.Networking;
+using System.IO;
+using System.Reflection;
 using static TOHE.Translator;
+using AmongUs.Data;
 using IEnumerator = System.Collections.IEnumerator;
+using UnityEngine.Networking;
 
 namespace TOHE;
 
@@ -14,7 +15,6 @@ public class dbConnect
     private static Dictionary<string, string> UserType = [];
 
     private const string ApiUrl = "https://api.weareten.ca";
-    private const string FallBackUrl = "https://tohe.niko233.me"; // Mirror of Enhanced Api
 
     public static IEnumerator Init()
     {
@@ -90,7 +90,7 @@ public class dbConnect
             shouldDisconnect = false;
 
             // Show waring message
-            if (GameStates.IsLobby || GameStates.IsInGame)
+            if (GameStates.IsLobby || GameStates.InGame)
             {
                 DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailurePublic"));
             }
@@ -104,7 +104,7 @@ public class dbConnect
             // Build not found
             shouldDisconnect = true;
         }
-
+        
         if (shouldDisconnect)
         {
             if (AmongUsClient.Instance.mode != InnerNet.MatchMakerModes.None)
@@ -116,12 +116,8 @@ public class dbConnect
         }
     }
 
-    private static string decidedApiToken = "";
     private static string GetToken()
     {
-        if (decidedApiToken != "")
-            return decidedApiToken;
-
         string apiToken = "";
         Assembly assembly = Assembly.GetExecutingAssembly();
 
@@ -144,29 +140,13 @@ public class dbConnect
                 // Process the content as needed
                 apiToken = content.Replace("API_TOKEN=", string.Empty).Trim();
             }
-        }
-
-        // Check if the token contains spaces or is empty
-        if (string.IsNullOrWhiteSpace(apiToken) || apiToken.Contains(' '))
-        {
-            Logger.Info("No api token provided in token.env", "db.Connect");
-            if (!string.IsNullOrEmpty(Main.FileHash) && Main.FileHash.Length >= 16)
+            if (stream == null || apiToken == "")
             {
-                string prefix = Main.FileHash.Substring(0, 8);
-                string suffix = Main.FileHash.Substring(Main.FileHash.Length - 8, 8);
-                apiToken = $"hash{prefix}{suffix}";
-            }
-            else
-            {
-                Logger.Info("Main.FileHash is not valid for generating token.", "db.Connect");
-                return "";
+                Logger.Warn("Embedded resource not found.", "apiToken.error");
             }
         }
-
-        decidedApiToken = apiToken;
         return apiToken;
     }
-
     private static IEnumerator GetRoleTable()
     {
         var tempUserType = new Dictionary<string, string>(); // Create a temporary dictionary
@@ -177,74 +157,54 @@ public class dbConnect
             yield return null;
         }
 
-        string[] apiUrls = [ApiUrl, FallBackUrl];
-        int maxAttempts = !InitOnce ? 4 : 2;
-        int attempt = 0;
-        bool success = false;
+        string apiUrl = ApiUrl;
+        string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
 
-        while (attempt < maxAttempts && !success)
+        UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
+
+        yield return webRequest.SendWebRequest();
+
+        if (webRequest.result != UnityWebRequest.Result.Success)
         {
-            string apiUrl = apiUrls[attempt % 2];
-            string endpoint = $"{apiUrl}/userInfo?token={apiToken}";
-
-            UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
-            Logger.Info($"Fetching UserInfo from {apiUrls[attempt % 2]}", "GetRoleTable");
-
-            yield return webRequest.SendWebRequest();
-
-            if (webRequest.result == UnityWebRequest.Result.Success)
-            {
-                try
-                {
-                    var userList = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
-                    foreach (var user in userList)
-                    {
-                        var userData = user;
-                        if (!DevManager.IsDevUser(userData["friendcode"].ToString()))
-                        {
-                            DevManager.DevUserList.Add(new(
-                                code: userData["friendcode"].ToString(),
-                                color: userData["color"].ToString(),
-                                tag: ToAutoTranslate(userData["overhead_tag"]),
-                                userType: userData["type"].ToString(),
-                                isUp: userData["isUP"].GetInt32() == 1,
-                                isDev: userData["isDev"].GetInt32() == 1,
-                                deBug: userData["debug"].GetInt32() == 1,
-                                colorCmd: userData["colorCmd"].GetInt32() == 1,
-                                upName: userData["name"].ToString()));
-                        }
-                        tempUserType[userData["friendcode"].ToString()] = userData["type"].ToString(); // Store the data in the temporary dictionary
-                    }
-                    if (tempUserType.Count > 1)
-                    {
-                        UserType = tempUserType; // Replace userType with the temporary dictionary
-                        success = true;
-                    }
-                    else if (!InitOnce)
-                    {
-                        Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error($"Error processing response: {ex.Message}", "GetRoleTable.error");
-                }
-                finally
-                {
-                    webRequest.Dispose();
-                }
-            }
-            else
-            {
-                Logger.Error($"Error in fetching the User List: {webRequest.error}", "GetRoleTable.error");
-            }
-
-            attempt++;
+            Logger.Error($"Error in fetching the User List: {webRequest.error}", "GetRoleTable.error");
+            yield return null;
         }
 
-        if (!success)
+        try
         {
-            Logger.Error("Failed to fetch User List from both primary and fallback URLs.", "GetRoleTable.error");
+            var userList = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
+            foreach (var user in userList)
+            {
+                var userData = user;
+                if (!DevManager.IsDevUser(userData["friendcode"].ToString()))
+                {
+                    DevManager.DevUserList.Add(new(
+                        code: userData["friendcode"].ToString(),
+                        color: userData["color"].ToString(),
+                        tag: ToAutoTranslate(userData["overhead_tag"]),
+                        userType: userData["type"].ToString(),
+                        isUp: userData["isUP"].GetInt32() == 1,
+                        isDev: userData["isDev"].GetInt32() == 1,
+                        deBug: userData["debug"].GetInt32() == 1,
+                        colorCmd: userData["colorCmd"].GetInt32() == 1,
+                        upName: userData["name"].ToString()));
+                }
+                tempUserType[userData["friendcode"].ToString()] = userData["type"].ToString(); // Store the data in the temporary dictionary
+            }
+            if (tempUserType.Count > 1)
+                UserType = tempUserType; // Replace userType with the temporary dictionary
+            else if (!InitOnce)
+            {
+                Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Error processing response: {ex.Message}", "GetRoleTable.error");
+        }
+        finally
+        {
+            webRequest.Dispose();
         }
     }
 
@@ -282,52 +242,34 @@ public class dbConnect
             yield break;
         }
 
-        string[] apiUrls = { ApiUrl, FallBackUrl };
-        int maxAttempts = !InitOnce ? 4 : 2;
-        int attempt = 0;
-        bool success = false;
+        string apiUrl = ApiUrl;
+        string endpoint = $"{apiUrl}/eac?token={apiToken}";
 
-        while (attempt < maxAttempts && !success)
+        UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
+
+        // Send the request
+        yield return webRequest.SendWebRequest();
+
+        // Check for errors
+        if (webRequest.result != UnityWebRequest.Result.Success)
         {
-            string apiUrl = apiUrls[attempt % 2];
-            string endpoint = $"{apiUrl}/eac?token={apiToken}";
-
-            Logger.Info($"Fetching EAC List from {apiUrls[attempt % 2]}", "GetEACList");
-            UnityWebRequest webRequest = UnityWebRequest.Get(endpoint);
-
-            // Send the request
-            yield return webRequest.SendWebRequest();
-
-            // Check for errors
-            if (webRequest.result == UnityWebRequest.Result.Success)
-            {
-                try
-                {
-                    var tempEACDict = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
-                    BanManager.EACDict = [.. BanManager.EACDict, .. tempEACDict]; // Merge the temporary list with BanManager.EACDict
-                    success = true;
-                }
-                catch (JsonException jsonEx)
-                {
-                    // If deserialization fails
-                    Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList.error");
-                }
-                finally
-                {
-                    webRequest.Dispose();
-                }
-            }
-            else
-            {
-                Logger.Error($"Error in fetching the EAC List: {webRequest.error}", "GetEACList.error");
-            }
-
-            attempt++;
+            Logger.Error($"Error in fetching the EAC List: {webRequest.error}", "GetEACList.error");
+            yield break;
         }
 
-        if (!success)
+        try
         {
-            Logger.Error("Failed to fetch EAC List from both primary and fallback URLs.", "GetEACList.error");
+            var tempEACDict = JsonSerializer.Deserialize<List<Dictionary<string, JsonElement>>>(webRequest.downloadHandler.text);
+            BanManager.EACDict = [.. BanManager.EACDict, .. tempEACDict]; // Merge the temporary list with BanManager.EACDict
+        }
+        catch (JsonException jsonEx)
+        {
+            // If deserialization fails
+            Logger.Error($"Error deserializing JSON: {jsonEx.Message}", "GetEACList.error");
+        }
+        finally
+        {
+            webRequest.Dispose();
         }
     }
 
@@ -347,7 +289,6 @@ public class dbConnect
         return true;
     }
 
-    [Obfuscation(Exclude = true)]
     private enum FailedConnectReason
     {
         Build_Not_Specified,

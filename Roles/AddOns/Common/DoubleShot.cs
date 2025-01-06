@@ -4,7 +4,6 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class DoubleShot : IAddon
 {
-    public CustomRoles Role => CustomRoles.DoubleShot;
     public static readonly HashSet<byte> IsActive = [];
     public AddonTypes Type => AddonTypes.Guesser;
 

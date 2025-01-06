@@ -1,16 +1,16 @@
 using Hazel;
+using TMPro;
 using System;
 using System.Text;
-using TMPro;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
-using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Crewmate;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -32,21 +32,42 @@ class EndGamePatch
         {
             if (AmongUsClient.Instance.AmHost)
             {
-                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys) // Sets role back to original so it shows up in /l results.
+                foreach (var pvc in GhostRoleAssign.GhostGetPreviousRole.Keys)
                 {
-                    if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
+                    if (!Main.PlayerStates.TryGetValue(pvc, out var state)) continue;
+
+                    if (state.IsRandomizer)
+                    {
+                        // Ensure Randomizer role persists
+                        state.MainRole = CustomRoles.Randomizer;
+
+                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
+                        writer.Write(pvc);
+                        writer.WritePacked((int)CustomRoles.Randomizer);
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                        Logger.Info($"Player {Utils.GetPlayerById(pvc).GetRealName()} is Randomizer. Ensuring role reverts to Randomizer.", "OutroPatch");
+                        continue;
+                    }
+
+                    // Handle normal ghost role reversion
+                    if (!state.MainRole.IsGhostRole()) continue;
                     if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
 
-                    Main.PlayerStates[pvc].MainRole = prevrole;
+                    state.MainRole = prevrole;
 
-                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
-                    writer.Write(pvc);
-                    writer.WritePacked((int)prevrole);
-                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                    MessageWriter writerNormal = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
+                    writerNormal.Write(pvc);
+                    writerNormal.WritePacked((int)prevrole);
+                    AmongUsClient.Instance.FinishRpcImmediately(writerNormal);
                 }
 
-                if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+                if (GhostRoleAssign.GhostGetPreviousRole.Any())
+                {
+                    Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerById(x.Key).GetRealName()}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+                }
             }
+
 
         }
         catch (Exception e)
@@ -74,7 +95,6 @@ class EndGamePatch
         }
 
         CustomRoleManager.RoleClass.Values.Where(x => x.IsEnable).Do(x => x.IsEnable = false);
-        CustomNetObject.Reset();
 
         var sb = new StringBuilder(GetString("KillLog") + ":");
         if (Options.OldKillLog.GetBool())
@@ -102,14 +122,14 @@ class EndGamePatch
                 if (killerId != byte.MaxValue && killerId != targetId)
                     sb.Append($"<br>\t⇐ {Main.AllPlayerNames[killerId]}({(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetDisplayRoleAndSubName(killerId, killerId, true))}{(Options.CurrentGameMode == CustomGameMode.FFA ? string.Empty : Utils.GetSubRolesText(killerId, summary: true))})");
             }
-
+            
         }
         KillLog = sb.ToString();
         if (!KillLog.Contains('\n')) KillLog = "";
 
         if (GameStates.IsNormalGame)
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
-
+        
         //winnerListリセット
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
@@ -200,7 +220,7 @@ class SetEverythingUpPatch
         {
             CustomWinnerText = GetWinnerRoleName(winnerRole);
             CustomWinnerColor = Utils.GetRoleColorCode(winnerRole);
-            //     __instance.WinText.color = Utils.GetRoleColor(winnerRole);
+       //     __instance.WinText.color = Utils.GetRoleColor(winnerRole);
             __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
             if (winnerRole.IsNeutral())
             {
@@ -211,7 +231,7 @@ class SetEverythingUpPatch
         {
             __instance.WinText.text = GetString("GameOver");
             __instance.WinText.color = Utils.GetRoleColor(CustomRoles.GM);
-            __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
+           __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
         }
         switch (CustomWinnerHolder.WinnerTeam)
         {
@@ -241,9 +261,9 @@ class SetEverythingUpPatch
                 WinnerText.color = Color.gray;
                 break;
             case CustomWinner.NiceMini:
-                //    __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Mini);
+            //    __instance.WinText.color = Utils.GetRoleColor(CustomRoles.Mini);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.NiceMini);
-                //    WinnerText.text = GetString("NiceMiniDied");
+            //    WinnerText.text = GetString("NiceMiniDied");
                 WinnerText.color = Utils.GetRoleColor(CustomRoles.NiceMini);
                 break;
             case CustomWinner.Neutrals:

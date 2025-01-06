@@ -9,8 +9,10 @@ namespace TOHE.Roles.Crewmate;
 internal class Tracefinder : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Tracefinder;
     private const int Id = 7300;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -36,8 +38,14 @@ internal class Tracefinder : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Tracefinder])
             .SetValueFormat(OptionFormat.Seconds);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+    }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
+
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
@@ -45,7 +53,7 @@ internal class Tracefinder : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
+        playerIdList.Remove(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerid)
     {
@@ -55,11 +63,13 @@ internal class Tracefinder : RoleBase
 
     public override void OnReportDeadBody(PlayerControl GODZILLA_VS, NetworkedPlayerInfo KINGKONG)
     {
-        if (_Player)
-            LocateArrow.RemoveAllTarget(_Player.PlayerId);
+        foreach (var apc in playerIdList)
+        {
+            LocateArrow.RemoveAllTarget(apc);
+        }
     }
 
-    public void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || target.IsDisconnected()) return;
 
@@ -72,13 +82,15 @@ internal class Tracefinder : RoleBase
 
         var tempPositionTarget = target.transform.position;
 
-        _ = new LateTask(() =>
-        {
+        _ = new LateTask(() => {
             if (!GameStates.IsMeeting && GameStates.IsInTask)
             {
-                var player = _Player;
-                if (player == null || !player.IsAlive()) return;
-                LocateArrow.Add(player.PlayerId, tempPositionTarget);
+                foreach (var pc in playerIdList)
+                {
+                    var player = Utils.GetPlayerById(pc);
+                    if (player == null || !player.IsAlive()) continue;
+                    LocateArrow.Add(pc, tempPositionTarget);
+                }
             }
         }, delay, "Get Arrow Tracefinder");
     }

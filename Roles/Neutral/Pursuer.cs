@@ -1,15 +1,14 @@
 ﻿using AmongUs.GameOptions;
-using TOHE.Modules;
-using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Modules;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Pursuer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Pursuer;
     private const int Id = 13400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pursuer);
     public override bool IsDesyncRole => true;
@@ -40,7 +39,7 @@ internal class Pursuer : RoleBase
         AbilityLimit = PursuerSkillLimitTimes.GetInt();
     }
     public override bool CanUseKillButton(PlayerControl pc) => CanUseKillButton(pc.PlayerId);
-
+    
     public bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
         && AbilityLimit >= 1;
@@ -61,10 +60,10 @@ internal class Pursuer : RoleBase
 
         AbilityLimit--;
         SendSkillRPC();
-        if (target.Is(CustomRoles.KillingMachine))
+        if (target.Is(CustomRoles.KillingMachine)) 
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");
-            return false;
+            return false; 
         }
 
         clientList.Add(target.PlayerId);
@@ -84,13 +83,13 @@ internal class Pursuer : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
         if (!IsClient(pc.PlayerId) || notActiveList.Contains(pc.PlayerId)) return false;
-
+        
         byte cfId = byte.MaxValue;
         foreach (var cf in clientList)
             if (cf == pc.PlayerId) cfId = cf;
-
+        
         if (cfId == byte.MaxValue) return false;
-
+        
         var killer = Utils.GetPlayerById(cfId);
         var target = pc;
         if (killer == null) return false;

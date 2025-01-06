@@ -25,11 +25,10 @@ class LateTask
         this.timer = time;
         this.name = name;
         this.shouldLog = shoudLog;
-
         Tasks.Add(this);
         if (name != "")
             if (shoudLog)
-                Logger.Info("\"" + name + "\" is created", "LateTask");
+            Logger.Info("\"" + name + "\" is created", "LateTask");
     }
     public static void Update(float deltaTime)
     {

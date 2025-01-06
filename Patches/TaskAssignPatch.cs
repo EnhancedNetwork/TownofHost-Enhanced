@@ -16,7 +16,7 @@ class AddTasksFromListPatch
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
 
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
-
+        
         List<NormalPlayerTask> disabledTasks = [];
 
         foreach (var task in unusedTasks.GetFastEnumerator())
@@ -112,28 +112,21 @@ class RpcSetTasksPatch
 {
     // Patch to overwrite the task just before the process of allocating the task and sending the RPC is performed
     // Does not interfere with the vanilla task allocation process itself
-
-    /* TO DO:
-     * Try to make players get different tasks from each other
-     * InnerSloth uses task pool to achieve this.
-     */
-
-    public static List<byte> decidedCommonTasks = [];
-    public static bool Prefix(NetworkedPlayerInfo __instance)
+    public static void Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] ref Il2CppStructArray<byte> taskTypeIds)
     {
-        if (!AmongUsClient.Instance.AmHost) return false;
-        if (GameStates.IsHideNSeek) return true;
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (GameStates.IsHideNSeek) return;
 
         // null measure
         if (Main.RealOptionsData == null)
         {
             Logger.Warn("Warning: RealOptionsData is null", "RpcSetTasksPatch");
-            return true;
+            return;
         }
 
         var pc = __instance.Object;
         CustomRoles? RoleNullable = pc?.GetCustomRole();
-        if (RoleNullable == null) return true;
+        if (RoleNullable == null) return;
         CustomRoles role = RoleNullable.Value;
 
         // Default number of tasks
@@ -172,7 +165,7 @@ class RpcSetTasksPatch
         if (pc.Is(CustomRoles.Workhorse))
         {
             (hasCommonTasks, NumLongTasks, NumShortTasks) = Workhorse.TaskData;
-        }
+        } 
 
         if (pc.Is(CustomRoles.Solsticer))
         {
@@ -182,149 +175,79 @@ class RpcSetTasksPatch
             taskState.AllTasksCount = NumShortTasks + NumLongTasks;
             hasCommonTasks = false;
         }
+       
 
-        // Above is override task num
-        /* --------------------------------------------------------------*/
-        //Below is assign tasks
+        if (taskTypeIds.Count == 0) hasCommonTasks = false; //Common to 0 when redistributing tasks
+        if (!hasCommonTasks && NumLongTasks == 0 && NumShortTasks == 0) NumShortTasks = 1; //Task 0 Measures
+        if (hasCommonTasks && NumLongTasks == Main.NormalOptions.NumLongTasks && NumShortTasks == Main.NormalOptions.NumShortTasks) return; //If there are no changes
 
-        // We completely igonre the tasks decided by ShipStatus and assign our own.
-        List<NormalPlayerTask> commonTasks = ShipStatus.Instance.CommonTasks.Shuffle().ToList();
-        List<NormalPlayerTask> shortTasks = ShipStatus.Instance.ShortTasks.Shuffle().ToList();
-        List<NormalPlayerTask> longTasks = ShipStatus.Instance.LongTasks.Shuffle().ToList();
-
-        if (!GameManager.Instance.LogicOptions.GetVisualTasks())
-        {
-            shortTasks.RemoveAll(x => x.TaskType == TaskTypes.SubmitScan);
-            longTasks.RemoveAll(x => x.TaskType == TaskTypes.SubmitScan);
-            // Niko admits this is shit.
-        }
-        List<TaskTypes> usedTaskTypes = [];
-
-        int defaultcommoncount = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
-        int commonTasksNum = System.Math.Min(commonTasks.Count, defaultcommoncount);
-
-        // Setting task num to 0 will make role description disappear from task panel for vanilla players and mod crews
-        if (!hasCommonTasks && NumShortTasks + NumLongTasks < 1)
-        {
-            NumShortTasks = 1;
-        }
-
-        if (decidedCommonTasks.Count < 1)
-        {
-            for (int i = 0; i < commonTasksNum; i++)
-            {
-                decidedCommonTasks.Add((byte)commonTasks[i].Index);
-            }
-        }
-
+        // A list containing the IDs of tasks that can be assigned
+        // Clone of the second argument of the original RpcSetTasks
         Il2CppSystem.Collections.Generic.List<byte> TasksList = new();
+        foreach (var num in taskTypeIds)
+            TasksList.Add(num);
 
-        if (hasCommonTasks)
+        // Reference:ShipStatus.Begin
+        // Deleting unnecessary allocated tasks
+        // Deleting tasks other than common tasks if common tasks are assigned
+        // Empty the list if common tasks are not allocated
+        int defaultCommonTasksNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
+        if (hasCommonTasks) TasksList.RemoveRange(defaultCommonTasksNum, TasksList.Count - defaultCommonTasksNum);
+        else TasksList.Clear();
+        TasksList = Shuffle(TasksList);
+
+        // A HashSet into which allocated tasks can be placed
+        // Prevents multiple assignments of the same task
+        Il2CppSystem.Collections.Generic.HashSet<TaskTypes> usedTaskTypes = new();
+        int start2 = 0;
+        int start3 = 0;
+
+        // List of long tasks that can be assigned
+        Il2CppSystem.Collections.Generic.List<NormalPlayerTask> LongTasks = new();
+        foreach (var task in ShipStatus.Instance.LongTasks)
+            LongTasks.Add(task);
+        LongTasks = Shuffle(LongTasks);
+
+        // List of short tasks that can be assigned
+        Il2CppSystem.Collections.Generic.List<NormalPlayerTask> ShortTasks = new();
+        foreach (var task in ShipStatus.Instance.ShortTasks)
+            ShortTasks.Add(task);
+        ShortTasks = Shuffle(ShortTasks);
+
+        // Use the function to assign tasks that are actually used on the Among Us side
+        ShipStatus.Instance.AddTasksFromList(
+            ref start2,
+            NumLongTasks,
+            TasksList,
+            usedTaskTypes,
+            LongTasks
+        );
+        ShipStatus.Instance.AddTasksFromList(
+            ref start3,
+            NumShortTasks,
+            TasksList,
+            usedTaskTypes,
+            ShortTasks
+        );
+
+        // Converts a list of tasks into an array (Il2CppStructArray)
+        taskTypeIds = new Il2CppStructArray<byte>(TasksList.Count);
+        for (int i = 0; i < TasksList.Count; i++)
         {
-            if (__instance.Object != null)
-            {
-                if (__instance.Object.GetCustomRole().IsCrewmateTeamV2() && !__instance.Object.GetCustomSubRoles().Any(x => !x.IsCrewmateTeamV2()))
-                {
-                    foreach (var id in decidedCommonTasks)
-                        TasksList.Add(id);
-                }
-                else
-                {
-                    for (int i = 0; i < commonTasksNum; i++)
-                    {
-                        TasksList.Add((byte)commonTasks[i].Index);
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < commonTasksNum; i++)
-                {
-                    TasksList.Add((byte)commonTasks[i].Index);
-                }
-            }
+            taskTypeIds[i] = TasksList[i];
         }
 
-        byte list = 0; byte assigned = 0;
-        while (assigned < System.Math.Min(longTasks.Count, NumLongTasks))
+    }
+    public static Il2CppSystem.Collections.Generic.List<T> Shuffle<T>(Il2CppSystem.Collections.Generic.List<T> list)
+    {
+        int listCount = list.Count;
+        while (listCount > 1)
         {
-            if (!TasksList.Contains((byte)longTasks[list].Index))
-            {
-                if (usedTaskTypes.Contains(longTasks[list].TaskType))
-                {
-                    list++;
-                }
-                else
-                {
-                    usedTaskTypes.Add(longTasks[list].TaskType);
-                    TasksList.Add((byte)longTasks[list].Index);
-                    assigned++;
-                    list++;
-                }
-            }
-            else
-            {
-                list++;
-            }
-
-            if (list >= longTasks.Count - 1)
-            {
-                list = 0;
-                longTasks = longTasks.Shuffle().ToList();
-                usedTaskTypes.Clear();
-            }
+            listCount--;
+            int k = IRandom.Instance.Next(listCount + 1);
+            (list[listCount], list[k]) = (list[k], list[listCount]);
         }
-
-        list = 0; assigned = 0;
-
-        usedTaskTypes.Clear();
-        foreach (var task in longTasks)
-        {
-            if (TasksList.Contains((byte)task.Index))
-            {
-                if (!usedTaskTypes.Contains(task.TaskType))
-                    usedTaskTypes.Add(task.TaskType);
-            }
-        }
-
-        while (assigned < System.Math.Min(shortTasks.Count, NumShortTasks))
-        {
-            if (!TasksList.Contains((byte)shortTasks[list].Index))
-            {
-                if (usedTaskTypes.Contains(shortTasks[list].TaskType))
-                {
-                    list++;
-                }
-                else
-                {
-                    usedTaskTypes.Add(shortTasks[list].TaskType);
-                    TasksList.Add((byte)shortTasks[list].Index);
-                    assigned++;
-                    list++;
-                }
-            }
-            else
-            {
-                list++;
-            }
-
-            if (list >= shortTasks.Count - 1)
-            {
-                list = 0;
-                shortTasks = shortTasks.Shuffle().ToList();
-                usedTaskTypes.Clear();
-            }
-        }
-
-        if (AmongUsClient.Instance.AmClient)
-        {
-            __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());
-        }
-
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, 29, SendOption.Reliable);
-        messageWriter.WriteBytesAndSize((Il2CppStructArray<byte>)TasksList.ToArray());
-        messageWriter.EndMessage();
-        return false;
+        return list;
     }
 }
 
@@ -338,7 +261,7 @@ class HandleRpcPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            Logger.Error($"Received Rpc {(RpcCalls)callId} for {__instance.Object.GetRealName()}({__instance.PlayerId}), which is impossible.", "NetworkedPlayerInfo");
+            Logger.Error($"Received Rpc {(RpcCalls)callId} for {__instance.Object.GetRealName()}({__instance.PlayerId}), which is impossible.", "TaskAssignPatch");
 
             EAC.WarnHost();
             return false;

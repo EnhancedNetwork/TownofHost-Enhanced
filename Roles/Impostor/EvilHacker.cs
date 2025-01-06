@@ -1,7 +1,7 @@
-using Hazel;
-using InnerNet;
 using System;
 using System.Text;
+using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -13,7 +13,6 @@ namespace TOHE.Roles.Impostor;
 internal class EvilHacker : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.EvilHacker;
     private const int Id = 28400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.EvilHacker);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -28,7 +27,6 @@ internal class EvilHacker : RoleBase
     private static byte player = 0;
     private string message;
 
-    [Obfuscation(Exclude = true)]
     public enum OptionName
     {
         EvilHackerCanSeeDeadMark,

@@ -60,19 +60,19 @@ public static class CustomWinnerHolder
                     ResetAndSetWinner(CustomWinner.Crewmate);
                     return true;
                 case CustomRoles.Madmate:
-                    ResetAndSetWinner(CustomWinner.Impostor);
+                    ResetAndSetWinner(CustomWinner.Impostor); 
                     return true;
                 case CustomRoles.Recruit:
-                    ResetAndSetWinner(CustomWinner.Jackal);
+                    ResetAndSetWinner(CustomWinner.Jackal); 
                     return true;
                 case CustomRoles.Charmed:
-                    ResetAndSetWinner(CustomWinner.Cultist);
+                    ResetAndSetWinner(CustomWinner.Cultist); 
                     return true;
                 case CustomRoles.Infectious:
-                    ResetAndSetWinner(CustomWinner.Infectious);
+                    ResetAndSetWinner(CustomWinner.Infectious); 
                     return true;
                 case CustomRoles.Contagious:
-                    ResetAndSetWinner(CustomWinner.Virus);
+                    ResetAndSetWinner(CustomWinner.Virus); 
                     return true;
             }
         }

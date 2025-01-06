@@ -57,7 +57,6 @@ class ExileControllerWrapUpPatch
     }
     private static void CheckAndDoRandomSpawn()
     {
-        if (!AmongUsClient.Instance.AmHost) return;
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap spawnMap = Utils.GetActiveMapName() switch
@@ -108,13 +107,13 @@ class ExileControllerWrapUpPatch
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
-
+        
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-
+        
         foreach (var player in Main.AllPlayerControls)
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
@@ -158,7 +157,7 @@ class ExileControllerWrapUpPatch
                 {
                     var player = x.Key.GetPlayer();
                     var state = Main.PlayerStates[x.Key];
-
+                    
                     Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
@@ -172,20 +171,19 @@ class ExileControllerWrapUpPatch
                 });
 
                 Main.AfterMeetingDeathPlayers.Clear();
-
+                
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
                 Utils.NotifyRoles(NoCache: true);
             }, 1.2f, "AfterMeetingDeathPlayers Task");
-
-            _ = new LateTask(() =>
-            {
-                if (GameStates.IsEnded) return;
-
-                AntiBlackout.ResetAfterMeeting();
-            }, 2f, "Reset Cooldown After Meeting");
         }
+        _ = new LateTask(() =>
+        {
+            if (GameStates.IsEnded) return;
+
+            AntiBlackout.ResetAfterMeeting();
+        }, 2f, "Reset Cooldown After Meeting");
 
         //This should happen shortly after the Exile Controller wrap up finished for clients
         //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.

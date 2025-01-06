@@ -1,11 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
-using static TOHE.Translator;
 using static TOHE.Utils;
+using static TOHE.Translator;
 
 
 namespace TOHE.Roles.Crewmate;
@@ -13,7 +13,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Medic : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Medic;
     private const int Id = 8600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medic);
     public override bool IsDesyncRole => true;
@@ -34,7 +33,6 @@ internal class Medic : RoleBase
     private readonly HashSet<byte> ProtectedList = [];
     private readonly HashSet<byte> TempMarkProtected = [];
 
-    [Obfuscation(Exclude = true)]
     private enum SelectOptionsList
     {
         Medic_SeeMedicAndTarget,
@@ -42,7 +40,7 @@ internal class Medic : RoleBase
         Medic_SeeTarget,
         Medic_SeeNoOne
     }
-    [Obfuscation(Exclude = true)]
+
     private enum ShieldDeactivationIsVisibleList
     {
         MedicShieldDeactivationIsVisible_Immediately,

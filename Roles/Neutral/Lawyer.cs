@@ -10,7 +10,6 @@ namespace TOHE.Roles.Neutral;
 internal class Lawyer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Lawyer;
     private const int Id = 13100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Lawyer);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -30,7 +29,6 @@ internal class Lawyer : RoleBase
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
 
-    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,
@@ -56,7 +54,7 @@ internal class Lawyer : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Lawyer);
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Lawyer);
         CanTargetImpostor = BooleanOptionItem.Create(Id + 10, "LawyerCanTargetImpostor", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetNeutralKiller = BooleanOptionItem.Create(Id + 11, "LawyerCanTargetNeutralKiller", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         CanTargetNeutralApoc = BooleanOptionItem.Create(Id + 18, "LawyerCanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
@@ -127,7 +125,6 @@ internal class Lawyer : RoleBase
         }
         TargetList.Remove(TargetId);
         TargetId = byte.MaxValue;
-        CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
     }
     private void SendRPC(bool SetTarget = false)
     {

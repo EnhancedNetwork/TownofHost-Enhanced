@@ -43,12 +43,14 @@ static class VentSystemDeterioratePatch
         if (ForceUpadate || (nowTime != LastUpadate))
         {
             LastUpadate = nowTime;
-            foreach (var pc in Main.AllAlivePlayerControls)
+            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
-                 LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                if (pc.BlockVentInteraction())
+                {
+                    LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                    pc.RpcCloseVent(__instance);
+                }
             }
-
-            ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>
@@ -65,10 +67,10 @@ static class VentSystemDeterioratePatch
 
     public static void SerializeV2(VentilationSystem __instance, PlayerControl player = null)
     {
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             if (pc.AmOwner || (player != null && pc != player)) continue;
-
+            
             if (pc.BlockVentInteraction())
             {
                 pc.RpcCloseVent(__instance);

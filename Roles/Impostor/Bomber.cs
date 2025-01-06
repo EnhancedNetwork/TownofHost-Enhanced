@@ -1,16 +1,17 @@
 ﻿using AmongUs.GameOptions;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Bomber : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Bomber;
     private const int Id = 700;
-
+    public static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -43,6 +44,14 @@ internal class Bomber : RoleBase
         BomberDiesInExplosion = BooleanOptionItem.Create(Id + 7, "BomberDiesInExplosion", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Bomber]);
     }
+    public override void Init()
+    {
+        Playerids.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        Playerids.Add(playerId);
+    }
     public override bool CanUseKillButton(PlayerControl pc) => BomberCanKill.GetBool() && pc.IsAlive();
     public override void SetKillCooldown(byte id)
     {
@@ -61,8 +70,6 @@ internal class Bomber : RoleBase
 
         Logger.Info("The bomb went off", playerRole.ToString());
         CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
-
-        _ = new Explosion(5f, 0.5f, shapeshifter.GetCustomPosition());
 
         foreach (var target in Main.AllPlayerControls)
         {

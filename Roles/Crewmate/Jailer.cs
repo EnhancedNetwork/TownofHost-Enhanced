@@ -9,8 +9,9 @@ namespace TOHE.Roles.Crewmate;
 internal class Jailer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Jailer;
     private const int Id = 10600;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
@@ -49,6 +50,7 @@ internal class Jailer : RoleBase
 
     public override void Init()
     {
+        playerIdList.Clear();
         JailerExeLimit.Clear();
         JailerTarget.Clear();
         JailerHasExe.Clear();
@@ -56,6 +58,7 @@ internal class Jailer : RoleBase
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         JailerExeLimit.Add(playerId, MaxExecution.GetInt());
         JailerTarget[playerId] = byte.MaxValue;
         JailerHasExe.Add(playerId, false);
@@ -63,6 +66,7 @@ internal class Jailer : RoleBase
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         JailerExeLimit.Remove(playerId);
         JailerHasExe.Remove(playerId);
         JailerDidVote.Remove(playerId);

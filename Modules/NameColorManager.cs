@@ -12,23 +12,56 @@ public static class NameColorManager
 {
     public static string ApplyNameColorData(this string name, PlayerControl seer, PlayerControl target, bool isMeeting)
     {
-        if (!AmongUsClient.Instance.IsGameStarted) return name;
+        // Ensure game is started
+        if (AmongUsClient.Instance == null || !AmongUsClient.Instance.IsGameStarted)
+        {
+            return name; // Return unformatted name
+        }
 
-        if (!TryGetData(seer, target, out var colorCode))
+        // Ensure seer and target are valid
+        if (seer == null || target == null)
         {
-            if (KnowTargetRoleColor(seer, target, isMeeting, out var color))
-                colorCode = color == "" ? target.GetRoleColorCode() : color;
+            return name; // Return unformatted name
         }
-        string openTag = "", closeTag = "";
-        if (colorCode != "")
+
+       
+
+        string colorCode = "";
+
+        // Try to get color from data or role
+        if (!TryGetData(seer, target, out colorCode))
         {
-            if (!colorCode.StartsWith('#'))
-                colorCode = "#" + colorCode;
-            openTag = $"<color={colorCode}>";
-            closeTag = "</color>";
+            // Check if the seer or target is a Randomizer
+
+            if (Main.PlayerStates[seer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer)
+            {
+                // Assign default color (e.g., white for Randomizer)
+                colorCode = "#FFFFFF"; // White color code
+            }
+            else if (KnowTargetRoleColor(seer, target, isMeeting, out var color))
+            {
+                colorCode = string.IsNullOrEmpty(color) ? target.GetRoleColorCode() : color;
+            }
         }
+
+        // Fallback if colorCode is still null or empty
+        if (string.IsNullOrEmpty(colorCode))
+        {
+            return name; // No color code available, return unformatted name
+        }
+
+
+        // Ensure the color code starts with "#"
+        if (!colorCode.StartsWith("#"))
+        {
+            colorCode = "#" + colorCode;
+        }
+
+        string openTag = $"<color={colorCode}>";
+        string closeTag = "</color>";
         return openTag + name + closeTag;
     }
+
     private static bool KnowTargetRoleColor(PlayerControl seer, PlayerControl target, bool isMeeting, out string color)
     {
         if (Altruist.HasEnabled && seer.IsMurderedThisRound())
@@ -38,89 +71,88 @@ public static class NameColorManager
         }
 
         if (seer != target)
-            target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster swap each other's controllers.
+            target = DollMaster.SwapPlayerInfo(target); // If a player is possessed by the Dollmaster, swap controllers.
 
-        color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // returns "" unless overriden
+        // Default color assignment logic
+        color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // Returns "" unless overridden.
 
-        // Impostor & Madmate
-        if (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
-        if (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
-        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
+        // Randomizer team color logic
+        if (seer.Is(CustomRoles.Randomizer) || target.Is(CustomRoles.Randomizer))
+        {
+            color = Main.roleColors[CustomRoles.Randomizer];
+            return true; // Skip further checks and directly apply Randomizer color
+        }
 
-        // Cultist
-        if (Cultist.NameRoleColor(seer, target)) color = Main.roleColors[CustomRoles.Cultist];
 
-        // Admirer
-        if (seer.Is(CustomRoles.Admirer) && target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Admirer];
-        if (seer.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer)) color = Main.roleColors[CustomRoles.Admirer];
+        // Impostor & Madmate logic
+        if (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target)
+                ? Main.roleColors[CustomRoles.Egoist]
+                : Main.roleColors[CustomRoles.Impostor];
+        if (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            color = Main.roleColors[CustomRoles.Impostor];
+        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            color = Main.roleColors[CustomRoles.Madmate];
+        if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            color = Main.roleColors[CustomRoles.Impostor];
+        if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            color = Main.roleColors[CustomRoles.Madmate];
+
+        // Cultist logic
+        if (Cultist.NameRoleColor(seer, target))
+            color = Main.roleColors[CustomRoles.Cultist];
+
+
+
+        // Admirer logic
+        if (seer.Is(CustomRoles.Admirer) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && target.Is(CustomRoles.Admired)) color = Main.roleColors[CustomRoles.Admirer];
+        if (seer.Is(CustomRoles.Admired) && target.Is(CustomRoles.Admirer) && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Admirer];
 
         // Bounties
-        if (seer.Is(CustomRoles.BountyHunter) && BountyHunter.GetTarget(seer) == target.PlayerId) color = "bf1313";
+        if (seer.Is(CustomRoles.BountyHunter) && BountyHunter.GetTarget(seer) == target.PlayerId)
+            color = "bf1313";
 
-        // Amnesiac
-        if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) color = Main.roleColors[seer.GetCustomRole()];
+        // Amnesiac and Neutral Killer logic
+        if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK())
+            color = Main.roleColors[seer.GetCustomRole()];
 
-        if (seer.Is(CustomRoles.Refugee) && (target.Is(Custom_Team.Impostor))) color = Main.roleColors[CustomRoles.ImpostorTOHE];
-        if (seer.Is(Custom_Team.Impostor) && (target.Is(CustomRoles.Refugee))) color = Main.roleColors[CustomRoles.Refugee];
+        // Refugee
+        if (seer.Is(CustomRoles.Refugee) && (target.Is(Custom_Team.Impostor)) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.ImpostorTOHE];
+        if (seer.Is(Custom_Team.Impostor) && (target.Is(CustomRoles.Refugee)) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer) color = Main.roleColors[CustomRoles.Refugee];
 
-        // Infectious
-        if (Infectious.InfectedKnowColorOthersInfected(seer, target)) color = Main.roleColors[CustomRoles.Infectious];
+        // Other roles
+        if (Infectious.InfectedKnowColorOthersInfected(seer, target))
+            color = Main.roleColors[CustomRoles.Infectious];
+        if (!seer.Is(CustomRoles.Visionary) && target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
+            color = Main.roleColors[CustomRoles.Cyber];
+        if (seer.Is(CustomRoles.Necroview) && seer.IsAlive() && target.Data.IsDead && !target.IsAlive())
+            color = Necroview.NameColorOptions(target);
+        if (Jackal.JackalKnowRole(seer, target))
+            color = Main.roleColors[CustomRoles.Jackal];
+        if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical) && !isMeeting)
+            color = Main.roleColors[CustomRoles.Mare];
+        if (Virus.KnowRoleColor(seer, target) != "")
+            color = Virus.KnowRoleColor(seer, target);
 
-        // Cyber
-        if (!seer.Is(CustomRoles.Visionary) && target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool()) color = Main.roleColors[CustomRoles.Cyber];
-
-        // Necroview
-        if (seer.Is(CustomRoles.Necroview) && seer.IsAlive())
-        {
-            if (target.Data.IsDead && !target.IsAlive())
-            {
-                color = Necroview.NameColorOptions(target);
-            }
-        }
-
-        // Jackal recruit
-        if (Jackal.JackalKnowRole(seer, target)) color = Main.roleColors[CustomRoles.Jackal];
-
-        if (target.Is(CustomRoles.Mare) && Utils.IsActive(SystemTypes.Electrical) && !isMeeting) color = Main.roleColors[CustomRoles.Mare];
-
-        //Virus
-        if (Virus.KnowRoleColor(seer, target) != "") color = Virus.KnowRoleColor(seer, target);
-
-        if (color != "" && color != string.Empty) return true;
-
-        else return seer == target
+        // Default visibility checks
+        return color != "" && color != string.Empty
+            || seer == target
             || (Main.GodMode.Value && seer.IsHost())
-            || (Options.CurrentGameMode == CustomGameMode.FFA)
+            || Options.CurrentGameMode == CustomGameMode.FFA
             || seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM)
+            || (Main.VisibleTasksCount && Main.PlayerStates[seer.Data.PlayerId].IsDead && seer.Data.IsDead && !seer.IsAlive() && Options.GhostCanSeeOtherRoles.GetBool())
             || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)
-            || (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor))
-            || (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool())
-            || (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
-            || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool())
+            || (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            || (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            || (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
+            || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
             || Workaholic.OthersKnowWorka(target)
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
-            || Mare.KnowTargetRoleColor(target, isMeeting)
-            || DeadKnowRole(seer, target);
-
-        static bool DeadKnowRole(PlayerControl seer, PlayerControl target)
-        {
-            if (Main.VisibleTasksCount && !seer.IsAlive())
-            {
-                if (Nemesis.PreventKnowRole(seer)) return false;
-                if (Retributionist.PreventKnowRole(seer)) return false;
-
-                if (!Options.GhostCanSeeOtherRoles.GetBool())
-                    return false;
-                else if (Options.PreventSeeRolesImmediatelyAfterDeath.GetBool() && !Main.DeadPassedMeetingPlayers.Contains(seer.PlayerId))
-                    return false;
-                return true;
-            }
-            return false;
-        }
+            || Mare.KnowTargetRoleColor(target, isMeeting);
     }
+
+
     public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {
         colorCode = "";

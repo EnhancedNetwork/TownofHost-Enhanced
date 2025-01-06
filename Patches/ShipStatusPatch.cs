@@ -1,10 +1,10 @@
 using Hazel;
 using System;
+using UnityEngine;
 using TOHE.Patches;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
-using UnityEngine;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -266,10 +266,6 @@ class StartMeetingPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class ShipStatusBeginPatch
 {
-    public static void Prefix()
-    {
-        RpcSetTasksPatch.decidedCommonTasks.Clear();
-    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
@@ -359,12 +355,11 @@ class ShipStatusSerializePatch
 
             if (GameStates.IsInGame)
             {
-                foreach (var pc in Main.AllAlivePlayerControls)
+                foreach (var pc in PlayerControl.AllPlayerControls)
                 {
                     if (pc.BlockVentInteraction())
                     {
                         customVentilation = true;
-                        break;
                     }
                 }
             }

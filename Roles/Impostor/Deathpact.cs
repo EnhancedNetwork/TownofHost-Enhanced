@@ -13,9 +13,10 @@ namespace TOHE.Roles.Impostor;
 internal class Deathpact : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Deathpact;
     private const int Id = 1200;
-
+    private static readonly HashSet<byte> Playerids = [];
+    public static bool HasEnabled => Playerids.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -63,16 +64,19 @@ internal class Deathpact : RoleBase
         PlayersInDeathpact.Clear();
         DeathpactTime.Clear();
         ActiveDeathpacts.Clear();
+        Playerids.Clear();
     }
     public override void Add(byte playerId)
     {
         PlayersInDeathpact[playerId] = [];
         DeathpactTime[playerId] = 0;
+        Playerids.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
         PlayersInDeathpact.Remove(playerId);
         DeathpactTime.Remove(playerId);
+        Playerids.Remove(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -143,7 +147,7 @@ internal class Deathpact : RoleBase
             return;
         }
 
-        if (PlayersInDeathpact.Any(a => a.Value.Any(b => b.PlayerId == player.PlayerId) && a.Value.Count == NumberOfPlayersInPact.GetInt()))
+        if (PlayersInDeathpact.Any(a => a.Value.Any(b => b.PlayerId == player.PlayerId) && a.Value.Count == NumberOfPlayersInPact.GetInt() ))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, VisionWhileInPact.GetFloat());
@@ -215,7 +219,7 @@ internal class Deathpact : RoleBase
     {
         if (deathpact == null || target == null || target.Data.Disconnected) return;
         if (!target.IsAlive()) return;
-
+        
         target.SetDeathReason(PlayerState.DeathReason.Suicide);
         target.RpcMurderPlayer(target);
         target.SetRealKiller(deathpact);

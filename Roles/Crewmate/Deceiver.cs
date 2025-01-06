@@ -9,7 +9,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Deceiver : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Deceiver;
     private const int Id = 10500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Deceiver);
     public override bool IsDesyncRole => true;

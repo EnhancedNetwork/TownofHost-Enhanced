@@ -1,6 +1,4 @@
-﻿using Hazel;
-using InnerNet;
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -11,7 +9,6 @@ namespace TOHE.Roles.Impostor;
 internal class Kamikaze : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Kamikaze;
     private const int Id = 26900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Kamikaze);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -40,9 +37,9 @@ internal class Kamikaze : RoleBase
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
     }
-
+    
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-
+    
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
         => KamikazedList.Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "∇") : string.Empty;
 
@@ -50,27 +47,28 @@ internal class Kamikaze : RoleBase
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), GetString("KamikazeHostage")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), GetString("KamikazeHostage"))); 
             return false;
         }
 
         return killer.CheckDoubleTrigger(target, () =>
         {
-            if (AbilityLimit >= 1 && !KamikazedList.Contains(target.PlayerId))
+
+            if (AbilityLimit >= 1 && !KamikazedList.Contains(target.PlayerId)) 
             {
                 KamikazedList.Add(target.PlayerId);
                 killer.RpcGuardAndKill(killer);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
                 AbilityLimit--;
-                SendRPC();
-            }
+                SendSkillRPC();
+            } 
             else
             {
                 killer.RpcMurderPlayer(target);
             }
         });
-
+        
     }
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
@@ -96,34 +94,6 @@ internal class Kamikaze : RoleBase
             pc.SetRealKiller(_Player);
         }
         KamikazedList.Clear();
-        SendRPC();
-    }
-
-    public void SendRPC()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
-        writer.WritePacked(KamikazedList.Count);
-        foreach (var playerId in KamikazedList)
-        {
-            writer.Write(playerId);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    {
-        AbilityLimit = reader.ReadSingle();
-        var count = reader.ReadPackedInt32();
-        KamikazedList.Clear();
-        if (count > 0)
-        {
-            for (int i = 0; i < count; i++)
-            {
-                KamikazedList.Add(reader.ReadByte());
-            }
-        }
     }
 
     public override string GetProgressText(byte playerId, bool comms)

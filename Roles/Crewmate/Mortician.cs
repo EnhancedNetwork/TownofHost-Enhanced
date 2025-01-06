@@ -1,15 +1,17 @@
 ﻿using TOHE.Roles.Core;
 using UnityEngine;
-using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 internal class Mortician : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Mortician;
     private const int Id = 8900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -25,31 +27,38 @@ internal class Mortician : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         msgToSend.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
+
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
     public override void Remove(byte playerId)
     {
-        CustomRoleManager.CheckDeadBodyOthers.Remove(CheckDeadBody);
+        playerIdList.Remove(playerId);
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || target.IsDisconnected()) return;
 
-        var player = _Player;
-        if (player == null || !player.IsAlive()) return;
-        LocateArrow.Add(player.PlayerId, target.Data.GetDeadBody().transform.position);
+        foreach (var pc in playerIdList.ToArray())
+        {
+            var player = pc.GetPlayer();
+            if (player == null || !player.IsAlive()) continue;
+            LocateArrow.Add(pc, target.Data.GetDeadBody().transform.position);
+        }
     }
     public override void OnReportDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
     {
-        if (_Player)
-            LocateArrow.RemoveAllTarget(_Player.PlayerId);
-
+        foreach (var apc in playerIdList)
+        {
+            LocateArrow.RemoveAllTarget(apc);
+        }
         if (pc == null || target == null || !pc.Is(CustomRoles.Mortician) || pc.PlayerId == target.PlayerId) return;
-
+        
         string name = string.Empty;
         var killer = target.PlayerId.GetRealKillerById();
         if (killer == null)

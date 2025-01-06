@@ -8,7 +8,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Altruist : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Altruist;
     private const int Id = 29800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Altruist);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
@@ -46,6 +45,7 @@ internal class Altruist : RoleBase
         RevivedPlayerId = byte.MaxValue;
         //AllRevivedPlayerId.Clear();
         IsRevivingMode = true;
+
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -121,7 +121,7 @@ internal class Altruist : RoleBase
                         if (NeutralKillersCanGetsArrow.GetBool())
                             getArrow = true;
                     }
-
+                    
                     if (getAlert)
                     {
                         pc.KillFlash(playKillSound: false);
@@ -149,7 +149,7 @@ internal class Altruist : RoleBase
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl target, bool isForMeeting = false, bool isForHud = false)
     {
-        if (seer.PlayerId != target.PlayerId || isForMeeting || !_Player.IsAlive()) return string.Empty;
+        if (seer.PlayerId != target.PlayerId || isForMeeting  || !_Player.IsAlive()) return string.Empty;
         return string.Format(Translator.GetString("AltruistSuffix"), Translator.GetString(IsRevivingMode ? "AltruistReviveMode" : "AltruistReportMode"));
     }
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)

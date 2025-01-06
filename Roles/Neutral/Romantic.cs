@@ -13,7 +13,6 @@ namespace TOHE.Roles.Neutral;
 internal class Romantic : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Romantic;
     private const int Id = 13500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Romantic);
     public override bool IsDesyncRole => true;
@@ -175,7 +174,7 @@ internal class Romantic : RoleBase
                 killer.RPCPlayCustomSound("Shield");
                 killer.Notify(GetString("RomanticProtectPartner"));
                 tpc.Notify(GetString("RomanticIsProtectingYou"));
-
+                
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsInTask || !tpc.IsAlive()) return;
@@ -196,7 +195,7 @@ internal class Romantic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seer == seen) return string.Empty;
+        if (seer == seen) return string.Empty; 
 
         return BetPlayer.ContainsValue(seen.PlayerId)
             ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;
@@ -265,9 +264,7 @@ internal class Romantic : RoleBase
         if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
-            pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
-            pc.GetRoleClass()?.OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
@@ -314,7 +311,7 @@ internal class VengefulRomantic : RoleBase
 {
 
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.VengefulRomantic;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Romantic);
     public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => new Romantic().ThisRoleType;
@@ -381,18 +378,20 @@ internal class VengefulRomantic : RoleBase
 internal class RuthlessRomantic : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.RuthlessRomantic;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+
     public override bool IsDesyncRole => new Romantic().IsDesyncRole;
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
     public override void Init()
     {
-
+        playerIdList.Clear();
     }
     public override void Add(byte playerId)
     {
-
+        playerIdList.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.RuthlessKCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;

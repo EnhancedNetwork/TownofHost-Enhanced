@@ -4,7 +4,6 @@ namespace TOHE.Roles.AddOns.Impostor;
 
 public class Stealer : IAddon
 {
-    public CustomRoles Role => CustomRoles.Stealer;
     private const int Id = 23200;
     public AddonTypes Type => AddonTypes.Impostor;
 
@@ -47,7 +46,7 @@ public class Stealer : IAddon
     public static void OnMurderPlayer(PlayerControl killer)
     {
         killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
-            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * TicketsPerKill.GetFloat() + 1f)
+            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId) + 1) * TicketsPerKill.GetFloat())
             .ToString("0.0#####")));
     }
 }

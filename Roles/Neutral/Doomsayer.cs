@@ -1,17 +1,16 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
-using TOHE.Roles.Core;
+﻿using Hazel;
 using UnityEngine;
-using static TOHE.Translator;
 using static TOHE.Utils;
+using static TOHE.Translator;
+using TOHE.Roles.Core;
+using InnerNet;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Doomsayer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Doomsayer;
     private const int Id = 14100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doomsayer);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -102,12 +101,12 @@ internal class Doomsayer : RoleBase
     {
         var (GuessingToWin, AmountOfGuessesToWin) = GuessedPlayerCount(playerId);
         return ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({GuessingToWin}/{AmountOfGuessesToWin})");
-
+        
     }
 
     public static bool CheckCantGuess = CantGuess;
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.Doomsayer) && DoomsayerTryHideMsg.GetBool();
-
+    
     private void CheckCountGuess(PlayerControl doomsayer)
     {
         if (!(GuessingToWin[doomsayer.PlayerId] >= DoomsayerAmountOfGuessesToWin.GetInt())) return;
@@ -120,7 +119,7 @@ internal class Doomsayer : RoleBase
             CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
         }
     }
-
+    
     public override void OnReportDeadBody(PlayerControl goku, NetworkedPlayerInfo solos)
     {
         if (!AdvancedSettings.GetBool()) return;
@@ -147,7 +146,7 @@ internal class Doomsayer : RoleBase
 
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (CheckCantGuess || GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt())
+        if (CheckCantGuess)
         {
             guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
             return true;
@@ -188,7 +187,6 @@ internal class Doomsayer : RoleBase
         {
             if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != target.PlayerId)
             {
-                CantGuess = true;
                 guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
                 return true;
             }

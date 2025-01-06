@@ -1,8 +1,7 @@
 ﻿namespace TOHE.Patches
 {
     [HarmonyPatch(typeof(StatsManager), nameof(StatsManager.BanMinutesLeft), MethodType.Getter)]
-    public static class DisconnectPenaltyPatch
-    {
+    public static class DisconnectPenaltyPatch {
         public static bool Prefix(StatsManager __instance, ref int __result)
         {
             if (!DebugModeManager.AmDebugger)

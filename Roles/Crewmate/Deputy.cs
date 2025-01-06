@@ -8,7 +8,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Deputy : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Deputy;
     private const int Id = 7800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -57,7 +56,7 @@ internal class Deputy : RoleBase
 
             return false;
         }
-
+        
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
         return false;
     }

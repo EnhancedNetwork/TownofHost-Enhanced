@@ -1,43 +1,42 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
-using System;
+﻿using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Chronomancer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Chronomancer;
     private const int Id = 900;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    private int ChargedTime = 0;
+    public int ChargedTime = 0;
     long now = Utils.GetTimeStamp();
-    private int FullCharge = 0;
-    private bool IsInMassacre;
+    public int FullCharge = 0;
+    public bool IsInMassacre;
 
     public float realcooldown;
 
-    private float LastNowF = 0;
-    private float countnowF = 0;
+    public float LastNowF = 0;
+    public float countnowF = 0;
 
-    private string LastCD;
+    public string LastCD;
 
-    private static Color32 OrangeColor = new(255, 190, 92, 255); // The lest color
-    private static Color32 GreenColor = new(0, 128, 0, 255); // The final color
+    public static Color32 OrangeColor = new(255, 190, 92, 255); // The lest color
+    public static Color32 GreenColor = new(0, 128, 0, 255); // The final color
 
-    private static int Charges;
+    public static int Charges;
 
-    private static OptionItem KillCooldown;
-    private static OptionItem Dtime;
-    private static OptionItem ReduceVision;
+    public static OptionItem KillCooldown;
+    public static OptionItem Dtime;
+    public static OptionItem ReduceVision;
 
     public override void SetupCustomOption()
     {

@@ -11,7 +11,6 @@ namespace TOHE.Roles.Impostor;
 internal class Swooper : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Swooper;
     private const int Id = 4700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swooper);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -89,7 +88,7 @@ internal class Swooper : RoleBase
         var swooperId = swooper.PlayerId;
 
         if (!AmongUsClient.Instance.AmHost || IsInvis(swooperId)) return;
-
+        
         _ = new LateTask(() =>
         {
             if (CanGoInvis(swooperId))
@@ -102,7 +101,7 @@ internal class Swooper : RoleBase
                 InvisDuration.Remove(swooperId);
                 InvisDuration.Add(swooperId, Utils.GetTimeStamp());
                 SendRPC(swooper);
-
+                
                 swooper.Notify(GetString("SwooperInvisState"), SwooperDuration.GetFloat());
             }
             else
@@ -213,7 +212,7 @@ internal class Swooper : RoleBase
     {
         // Only for modded
         if (seer == null || !isForHud || isForMeeting || !seer.IsAlive()) return string.Empty;
-
+        
         var str = new StringBuilder();
         var seerId = seer.PlayerId;
 

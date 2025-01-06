@@ -1,13 +1,13 @@
-using AmongUs.GameOptions;
-using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using AmongUs.GameOptions;
 using System;
-using TOHE.Roles.AddOns.Impostor;
+using UnityEngine;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Utils;
+using Hazel;
 
 namespace TOHE;
 
@@ -34,8 +34,6 @@ public class PlayerState(byte playerId)
 
     public void SetMainRole(CustomRoles role)
     {
-        CustomRoles preMainRole = MainRole;
-
         MainRole = role;
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
@@ -43,6 +41,23 @@ public class PlayerState(byte playerId)
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
 
+        if (role == CustomRoles.Opportunist)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (!pc.HasImpKillButton(considerVanillaShift: true))
+                {
+                    var taskstate = pc.GetPlayerTaskState();
+                    if (taskstate != null)
+                    {
+                        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+                        taskstate.CompletedTasksCount = 0;
+                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
+                        taskstate.hasTasks = true;
+                    }
+                }
+            }
+        }
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
@@ -54,6 +69,17 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
+        if (Main.PlayerStates[pc.PlayerId].IsRandomizer)
+        {
+            countTypes = Main.PlayerStates[pc.PlayerId].LockedTeam switch
+            {
+                Custom_Team.Crewmate => CountTypes.None,
+                Custom_Team.Impostor => CountTypes.None,
+                Custom_Team.Neutral => CountTypes.None,
+                _ => CountTypes.None // Default fallback if team is unknown
+            };
+        }
+
         if (pc.Is(CustomRoles.Charmed))
         {
             countTypes = Cultist.CharmedCountMode.GetInt() switch
@@ -96,36 +122,120 @@ public class PlayerState(byte playerId)
         {
             countTypes = CountTypes.OutOfGame;
         }
+        // check for role addon
+        
 
-        if (GameStates.IsInGame && preMainRole != CustomRoles.NotAssigned)
+}
+    public bool IsSummoner { get; set; } = false;
+    public bool IsSummoned { get; set; } = false;
+    public CustomWinner LingeringPresenceAssignedTeam { get; set; } = CustomWinner.None;
+
+    public void ResetSubRoles()
+    {
+        foreach (var subRole in SubRoles.ToArray()) // Use ToArray() to avoid modification during iteration
         {
-            // Role got assigned mid game.
-            // Since role basis may change, we need to re assign tasks?
+            RemoveSubRole(subRole); // Ensure this method exists and removes a subrole correctly
+        }
+        SubRoles.Clear(); // Clear the SubRoles list after removal
+    }
 
-            //Some role may be bugged for this, need further testing.
-            Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
-            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            InitTask(pc);
+    public bool IsRandomizer { get; set; } = false; // Flag indicating if the player is a Randomizer
+    public Custom_Team LockedTeam { get; set; }
 
-            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+
+
+
+    // Team flags for Randomizer
+    private bool isCrewmateTeam;
+    private bool isNeutralTeam;
+    private bool isImpostorTeam;
+
+    public bool TeamLockApplied { get; set; } = false; // Flag to lock the team once set
+
+    public Custom_RoleType? LockedRoleType { get; set; } // Role type enforced after lock
+    public Custom_Team RandomizerWinCondition { get; set; } = Custom_Team.Neutral;
+
+    public bool IsCrewmateTeam
+    {
+        get => IsRandomizer && isCrewmateTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
             {
-                Main.UnShapeShifter.Add(pc.PlayerId);
-                Logger.Info($"Added {pc.GetNameWithRole()} to UnShapeShifter list mid game", "PlayerState.SetMainRole");
+                isCrewmateTeam = value;
+                isNeutralTeam = false; // Reset others
+                isImpostorTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Crewmate; // Lock to Crewmate team
+                LockedRoleType = Custom_RoleType.CrewmateBasic; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Crewmate; // Set win condition
             }
         }
     }
+
+    public bool IsNeutralTeam
+    {
+        get => IsRandomizer && isNeutralTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isNeutralTeam = value;
+                isCrewmateTeam = false; // Reset others
+                isImpostorTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Neutral; // Lock to Neutral team
+                LockedRoleType = Custom_RoleType.NeutralChaos; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Neutral; // Set win condition
+            }
+        }
+    }
+
+    public bool IsImpostorTeam
+    {
+        get => IsRandomizer && isImpostorTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isImpostorTeam = value;
+                isCrewmateTeam = false; // Reset others
+                isNeutralTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Impostor; // Lock to Impostor team
+                LockedRoleType = Custom_RoleType.ImpostorVanilla; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Impostor; // Set win condition
+            }
+        }
+    }
+
+
+    /// <summary>
+    /// Resets team lock and related properties. Should be used cautiously.
+    /// </summary>
+
+
+    /// <summary>
+    /// Gets the effective role type for the player based on the Randomizer logic.
+    /// </summary>
+    /// <returns>The enforced role type if the player is Randomizer; otherwise, the default.</returns>
+    /// 
+    public CustomRoles GetCustomRole()
+    {
+        return (CustomRoles)(Main.PlayerStates[this.PlayerId]?.MainRole);
+    }
+
+    
+
+
+
+
+
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
-
-            // Remove lovers on Cleansed
-            if (pc.Is(CustomRoles.Lovers))
-            {
-                var lover = Main.PlayerStates.Values.FirstOrDefault(x => x.PlayerId != pc.PlayerId && x.SubRoles.Contains(CustomRoles.Lovers));
-                lover?.RemoveSubRole(CustomRoles.Lovers);
-            }
 
             foreach (var subRole in SubRoles.ToArray())
             {
@@ -263,10 +373,12 @@ public class PlayerState(byte playerId)
     }
     public bool IsSuicide => deathReason == DeathReason.Suicide;
     public TaskState TaskState => taskState;
+
+    public bool IsLingeringPresence { get; internal set; }
+
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
-    [Obfuscation(Exclude = true)]
     public enum DeathReason
     {
         Kill,
@@ -285,6 +397,9 @@ public class PlayerState(byte playerId)
         Revenge,
         Execution,
         Fall,
+        FadedAway,
+        SummonedExpired,
+        AllergicReaction,
 
         // TOHE
         Gambled,
@@ -296,7 +411,6 @@ public class PlayerState(byte playerId)
         PissedOff,
         Dismembered,
         LossOfHead,
-        Consumed,
         Trialed,
         Infected,
         Jinx,
@@ -316,8 +430,6 @@ public class PlayerState(byte playerId)
         Starved,
         Armageddon,
         Sacrificed,
-        Electrocuted,
-        Scavenged,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
@@ -405,6 +517,7 @@ public class TaskState
 
         //Solsticer task state is updated by host rpc
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
+        if (player.Is(CustomRoles.LingeringPresence) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;
 
@@ -454,7 +567,8 @@ public static class GameStates
     {
         get
         {
-            if (IsLocalGame && !IsNotJoined) return true;
+            if (!IsOnlineGame) return false;
+
             const string Domain = "among.us";
 
             // From Reactor.gg

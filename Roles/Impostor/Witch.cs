@@ -9,11 +9,10 @@ namespace TOHE.Roles.Impostor;
 internal class Witch : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Witch;
     private const int Id = 2500;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -23,7 +22,6 @@ internal class Witch : RoleBase
     private static readonly Dictionary<byte, bool> SpellMode = [];
     private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
-    [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
     {
         TriggerKill,
@@ -46,8 +44,7 @@ internal class Witch : RoleBase
     }
     public override void Add(byte playerId)
     {
-        if (!playerIdList.Contains(playerId))
-            playerIdList.Add(playerId);
+        playerIdList.Add(playerId);
         SpellMode.Add(playerId, false);
         SpelledPlayer.Add(playerId, []);
         NowSwitchTrigger = (SwitchTriggerList)ModeSwitchActionOpt.GetValue();
@@ -185,7 +182,7 @@ internal class Witch : RoleBase
                 Main.AfterMeetingDeathPlayers.Remove(pc.PlayerId);
             }
         }
-
+        
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Spell, [.. spelledIdList]);
         RemoveSpelledPlayer();
     }
@@ -243,15 +240,6 @@ internal class Witch : RoleBase
         else
         {
             hud.KillButton.OverrideText(GetString("KillButtonText"));
-        }
-    }
-
-    public override void Remove(byte playerId)
-    {
-        if (SpelledPlayer.ContainsKey(playerId))
-        {
-            SpelledPlayer[playerId].Clear();
-            SendRPC(true, playerId);
         }
     }
 }

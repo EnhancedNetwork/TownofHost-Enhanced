@@ -11,7 +11,6 @@ public class RoleAssign
     public static Dictionary<byte, CustomRoles> RoleResult = [];
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
-    [Obfuscation(Exclude = true)]
     enum RoleAssignType
     {
         Impostor,

@@ -9,8 +9,9 @@ namespace TOHE.Roles.Neutral;
 internal class CursedSoul : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.CursedSoul;
     private const int Id = 14000;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
@@ -38,10 +39,12 @@ internal class CursedSoul : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         CurseLimit = CurseMax.GetInt();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         CurseLimit = CurseMax.GetInt();
     }
 
@@ -55,13 +58,13 @@ internal class CursedSoul : RoleBase
     public static void ReceiveRPC(MessageReader reader)
     {
         var pID = reader.ReadByte();
-        if (Main.PlayerStates[pID].RoleClass is CursedSoul cs)
+        if (Main.PlayerStates[pID].RoleClass is CursedSoul cs) 
             cs.CurseLimit = reader.ReadInt32();
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CurseLimit >= 1 ? CurseCooldown.GetFloat() + (CurseMax.GetInt() - CurseLimit) * CurseCooldownIncrese.GetFloat() : 300f;
     public override bool CanUseKillButton(PlayerControl player) => CurseLimit >= 1;
-
+    
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (CurseLimit < 1) return false;
@@ -78,8 +81,8 @@ internal class CursedSoul : RoleBase
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
-
-            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+            
+            Utils.NotifyRoles(SpecifySeer: target , SpecifyTarget: killer, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
 
             killer.ResetKillCooldown();
@@ -101,11 +104,11 @@ internal class CursedSoul : RoleBase
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : string.Empty;
-
+    
     public override string GetProgressText(byte id, bool cooms) => Utils.ColorString(CurseLimit >= 1 ? Utils.GetRoleColor(CustomRoles.CursedSoul) : Color.gray, $"({CurseLimit})");
     private static bool CanBeSoulless(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
             (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

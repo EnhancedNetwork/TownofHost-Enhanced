@@ -13,10 +13,9 @@ namespace TOHE.Roles.Crewmate;
 internal class Inspector : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Inspector;
     private const int Id = 8300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
-
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -214,7 +213,7 @@ internal class Inspector : RoleBase
                 }
                 else
                 {
-                    if
+                    if 
                     (
                         (
                         (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired)
@@ -426,7 +425,7 @@ internal class Inspector : RoleBase
 
     public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
         => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
-
+    
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
 }

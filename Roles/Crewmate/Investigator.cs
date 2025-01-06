@@ -8,8 +8,9 @@ namespace TOHE.Roles.Crewmate;
 internal class Investigator : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Investigator;
     private const int Id = 24900;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -36,18 +37,21 @@ internal class Investigator : RoleBase
 
     public override void Init()
     {
+        playerIdList.Clear();
         InvestigatedList.Clear();
         MaxInvestigateLimit.Clear();
         RoundInvestigateLimit.Clear();
     }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         MaxInvestigateLimit[playerId] = InvestigateMax.GetInt();
         RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         InvestigatedList[playerId] = [];
     }
     public override void Remove(byte playerId)
     {
+        playerIdList.Remove(playerId);
         MaxInvestigateLimit.Remove(playerId);
         RoundInvestigateLimit.Remove(playerId);
         InvestigatedList.Remove(playerId);

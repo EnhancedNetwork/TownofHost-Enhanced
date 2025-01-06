@@ -1,7 +1,6 @@
 namespace TOHE;
 
-[Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class PresetOptionItem(int defaultValue, TabGroup tab, bool vanilla) : OptionItem(0, "Preset", defaultValue, tab, true, vanillaStr: vanilla)
+public class PresetOptionItem(int defaultValue, TabGroup tab, bool vanilla) : OptionItem(0, "Preset", defaultValue, tab, true, vanillaStr:vanilla)
 {
     public IntegerValueRule Rule = (0, NumPresets - 1, 1);
     public int ValuePresets = NumPresets;

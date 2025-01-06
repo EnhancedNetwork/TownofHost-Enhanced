@@ -1,5 +1,5 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+﻿using Hazel;
+using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.Core;
 using UnityEngine;

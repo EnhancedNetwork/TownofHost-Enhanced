@@ -1,11 +1,10 @@
-﻿using static TOHE.Options;
-using static TOHE.Translator;
+﻿using static TOHE.Translator;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Aware : IAddon
 {
-    public CustomRoles Role => CustomRoles.Aware;
     private const int Id = 21600;
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Mixed;
@@ -61,7 +60,7 @@ public class Aware : IAddon
         }
     }
 
-    public static void OnReportDeadBody()
+    public static void OnReportDeadBody() 
     {
         foreach (var (pid, list) in AwareInteracted)
         {

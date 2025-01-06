@@ -1,16 +1,17 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
-using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
+using TOHE.Roles.Core;
+using InnerNet;
 
 namespace TOHE.Roles.Neutral;
 internal class Agitater : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Agitater;
     private const int Id = 15800;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -45,6 +46,7 @@ internal class Agitater : RoleBase
     }
     public override void Init()
     {
+        playerIdList.Clear();
         CurrentBombedPlayer = byte.MaxValue;
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;
@@ -53,6 +55,7 @@ internal class Agitater : RoleBase
 
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
     }
 
@@ -77,6 +80,7 @@ internal class Agitater : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (!HasEnabled) return false;
         if (AgitaterAutoReportBait.GetBool() && target.Is(CustomRoles.Bait)) return true;
         if (target.Is(CustomRoles.Pestilence))
         {
@@ -94,7 +98,7 @@ internal class Agitater : RoleBase
         AgitaterHasBombed = true;
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-
+        
         _ = new LateTask(() =>
         {
             if (CurrentBombedPlayer != byte.MaxValue && GameStates.IsInTask)
@@ -118,7 +122,7 @@ internal class Agitater : RoleBase
     {
         if (CurrentBombedPlayer == byte.MaxValue) return;
         var target = Utils.GetPlayerById(CurrentBombedPlayer);
-        var killer = _Player;
+        var killer = Utils.GetPlayerById(playerIdList.First());
         if (target == null || killer == null) return;
 
         CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);

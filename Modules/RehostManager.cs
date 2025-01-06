@@ -1,5 +1,5 @@
-﻿using AmongUs.GameOptions;
-using InnerNet;
+﻿using InnerNet;
+using AmongUs.GameOptions;
 using TMPro;
 using UnityEngine;
 using static TOHE.Translator;

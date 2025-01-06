@@ -8,9 +8,10 @@ namespace TOHE.Roles.Neutral;
 internal class Executioner : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Executioner;
     private const int Id = 14200;
     public static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
@@ -28,7 +29,6 @@ internal class Executioner : RoleBase
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
 
-    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,
@@ -73,10 +73,7 @@ internal class Executioner : RoleBase
     }
     public override void Add(byte playerId)
     {
-        if (!playerIdList.Contains(playerId))
-        {
-            playerIdList.Add(playerId);
-        }
+        playerIdList.Add(playerId);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnOthersDead);
 
@@ -110,7 +107,7 @@ internal class Executioner : RoleBase
             }
             else
             {
-                Logger.Warn("Warning! No suitableable target was found for executioner, switching role", "Executioner.Add");
+                Logger.Warn("Warning! No suitableable target was found for executioner, switching role","Executioner.Add");
                 ChangeRole();
             }
         }
@@ -121,7 +118,7 @@ internal class Executioner : RoleBase
         {
             SendRPC(SetTarget: false);
         }
-
+        playerIdList.Remove(playerId);
         TargetList.Remove(TargetId);
         TargetId = byte.MaxValue;
     }

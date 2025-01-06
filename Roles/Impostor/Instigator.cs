@@ -5,8 +5,10 @@ namespace TOHE.Roles.Impostor;
 internal class Instigator : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Instigator;
     private const int Id = 1700;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -27,8 +29,13 @@ internal class Instigator : RoleBase
         KillsPerAbilityUse = IntegerOptionItem.Create(Id + 12, "InstigatorKillsPerAbilityUse", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Instigator])
             .SetValueFormat(OptionFormat.Times);
     }
+    public override void Init()
+    {
+        playerIdList.Clear();
+    }
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         AbilityLimit = AbilityLimitt.GetInt();
     }
 
@@ -48,7 +55,7 @@ internal class Instigator : RoleBase
         foreach (var playerVote in votedForExiled)
         {
             var crewPlayer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
-            if (crewPlayer == null || !crewPlayer.GetCustomRole().IsCrewmate() || crewPlayer.IsAnySubRole(x => !x.IsCrewmateTeamV2()) || !crewPlayer.IsAlive()) continue;
+            if (crewPlayer == null || !crewPlayer.GetCustomRole().IsCrewmate()) return;
             killPotentials.Add(crewPlayer);
         }
 

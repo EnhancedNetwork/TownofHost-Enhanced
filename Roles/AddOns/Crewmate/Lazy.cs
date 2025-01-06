@@ -4,13 +4,12 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Lazy : IAddon
 {
-    public CustomRoles Role => CustomRoles.Lazy;
     private const int Id = 19300;
     public AddonTypes Type => AddonTypes.Helpful;
 
     private static OptionItem TasklessCrewCanBeLazy;
     private static OptionItem TaskBasedCrewCanBeLazy;
-
+    
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Lazy, canSetNum: true);
@@ -31,8 +30,8 @@ public class Lazy : IAddon
             || player.Is(CustomRoles.LazyGuy))
             return false;
 
-        if (player.GetCustomRole().IsNeutral()
-            || player.GetCustomRole().IsImpostor()
+        if (player.GetCustomRole().IsNeutral() 
+            || player.GetCustomRole().IsImpostor() 
             || (player.GetCustomRole().IsTasklessCrewmate() && !TasklessCrewCanBeLazy.GetBool())
             || (player.GetCustomRole().IsTaskBasedCrewmate() && !TaskBasedCrewCanBeLazy.GetBool()))
             return false;

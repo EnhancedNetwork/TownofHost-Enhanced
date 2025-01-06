@@ -80,7 +80,11 @@ public static class OutfitManager
 
             player.Data.SetOutfit(OutfitTypeSet, Outfit);
 
-            player.Data.MarkDirty();
+            //Used instead of GameData.Instance.DirtyAllData();
+            foreach (var innerNetObject in GameData.Instance.AllPlayers)
+            {
+                innerNetObject.SetDirtyBit(uint.MaxValue);
+            }
         }
         if (player.CheckCamoflague() && !force)
         {

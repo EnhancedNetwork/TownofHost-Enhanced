@@ -12,7 +12,6 @@ class CreateOptionsPickerPatch
     {
         [HarmonyPatch(nameof(GameOptionsMapPicker.Initialize))]
         [HarmonyPostfix]
-        [Obfuscation(Exclude = true)]
         public static void Postfix_Initialize(GameOptionsMapPicker __instance)
         {
             int DleksPos = 3;
@@ -85,7 +84,6 @@ class CreateOptionsPickerPatch
 
         [HarmonyPatch(nameof(GameOptionsMapPicker.FixedUpdate))]
         [HarmonyPrefix]
-        [Obfuscation(Exclude = true)]
         public static bool Prefix_FixedUpdate(GameOptionsMapPicker __instance)
         {
             if (__instance == null) return true;

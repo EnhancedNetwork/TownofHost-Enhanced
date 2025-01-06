@@ -205,7 +205,7 @@ public static class SpamManager
 
         if (text == "C O M E Ç A") return true;
         if (text == "I N I C I A R") return true;
-
+        
         if (text == "Го") return true;
         if (text == "гО") return true;
         if (text == "го") return true;

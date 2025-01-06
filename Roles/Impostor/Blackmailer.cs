@@ -10,18 +10,17 @@ namespace TOHE.Roles.Impostor;
 internal class Blackmailer : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Blackmailer;
     private const int Id = 24600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Blackmailer);
-
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
 
-    private static OptionItem SkillCooldown;
-    private static OptionItem ShowShapeshiftAnimationsOpt;
+    public static OptionItem SkillCooldown;
+    public static OptionItem ShowShapeshiftAnimationsOpt;
 
-    private static readonly Dictionary<byte, byte> ForBlackmailer = []; // <Target, BlackMailer>
+    public static readonly HashSet<byte> ForBlackmailer = [];
 
     public override void SetupCustomOption()
     {
@@ -33,17 +32,6 @@ internal class Blackmailer : RoleBase
     public override void Init()
     {
         ForBlackmailer.Clear();
-    }
-    public override void Remove(byte playerId)
-    {
-        foreach (var item in ForBlackmailer)
-        {
-            if (item.Value == playerId)
-            {
-                ForBlackmailer.Remove(item.Key);
-                SendRPC();
-            }
-        }
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -63,16 +51,9 @@ internal class Blackmailer : RoleBase
         var targetId = reader.ReadByte();
 
         if (targetId == byte.MaxValue)
-        {
             ClearBlackmaile(false);
-        }
         else
-        {
-            if (!ForBlackmailer.ContainsKey(targetId))
-            {
-                ForBlackmailer.Add(targetId, _Player.PlayerId);
-            }
-        }
+            ForBlackmailer.Add(targetId);
     }
     public override bool OnCheckShapeshift(PlayerControl blackmailer, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
@@ -82,13 +63,15 @@ internal class Blackmailer : RoleBase
         blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
         return false;
     }
+    public override void OnShapeshift(PlayerControl blackmailer, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (shapeshifting && IsAnimate)
+        {
+            DoBlackmaile(blackmailer, target);
+        }
+    }
     private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {
-        if (ForBlackmailer.ContainsKey(target.PlayerId))
-        {
-            return;
-        }
-
         if (!target.IsAlive())
         {
             blackmailer.Notify(Utils.ColorString(Utils.GetRoleColor(blackmailer.GetCustomRole()), GetString("TargetIsAlreadyDead")));
@@ -96,7 +79,7 @@ internal class Blackmailer : RoleBase
         }
 
         ClearBlackmaile(true);
-        ForBlackmailer.Add(target.PlayerId, _Player.PlayerId);
+        ForBlackmailer.Add(target.PlayerId);
         SendRPC(target.PlayerId);
     }
 
@@ -113,8 +96,8 @@ internal class Blackmailer : RoleBase
         ForBlackmailer.Clear();
         if (sendRpc) SendRPC();
     }
-
-    public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.ContainsKey(player.PlayerId);
+    
+    public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.Contains(player.PlayerId);
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
        => isForMeeting && CheckBlackmaile(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳") : string.Empty;
@@ -124,7 +107,7 @@ internal class Blackmailer : RoleBase
         if (CheckBlackmaile(pc))
         {
             var playername = pc.GetRealName(isMeeting: true);
-            if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name;
+            if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name; 
             AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
         }
     }

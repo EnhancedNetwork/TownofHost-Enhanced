@@ -9,8 +9,10 @@ namespace TOHE.Roles.Impostor;
 internal class Dazzler : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Dazzler;
     private const int Id = 5400;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -44,16 +46,19 @@ internal class Dazzler : RoleBase
     public override void Init()
     {
         PlayersDazzled = [];
+        PlayerIds.Clear();
     }
 
     public override void Add(byte playerId)
     {
         PlayersDazzled.TryAdd(playerId, []);
+        PlayerIds.Add(playerId);
     }
 
     public override void Remove(byte playerId)
     {
         PlayersDazzled.Remove(playerId);
+        PlayerIds.Remove(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

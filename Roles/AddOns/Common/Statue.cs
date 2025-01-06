@@ -4,7 +4,6 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Statue : IAddon
 {
-    public CustomRoles Role => CustomRoles.Statue;
     private const int Id = 13800;
     public AddonTypes Type => AddonTypes.Harmful;
     public static bool IsEnable = false;
@@ -61,13 +60,13 @@ public class Statue : IAddon
         }
         Active = false;
         CountNearplr.Clear();
-        _ = new LateTask(() =>
+        _ = new LateTask(() => 
         {
             Active = true;
         }, 6f);
     }
 
-    public void OnFixedUpdate(PlayerControl victim)
+    public void OnFixedUpdate(PlayerControl victim) 
     {
         if (!victim.Is(CustomRoles.Statue)) return;
         if (!victim.IsAlive() && victim != null)
@@ -106,8 +105,8 @@ public class Statue : IAddon
 
             if (CountNearplr.Count >= PeopleAmount.GetInt())
             {
-                if (Main.AllPlayerSpeed[victim.PlayerId] != SlowDown.GetFloat())
-                {
+                if (Main.AllPlayerSpeed[victim.PlayerId] != SlowDown.GetFloat()) 
+                { 
                     Main.AllPlayerSpeed[victim.PlayerId] = SlowDown.GetFloat();
                     victim.MarkDirtySettings();
                 }

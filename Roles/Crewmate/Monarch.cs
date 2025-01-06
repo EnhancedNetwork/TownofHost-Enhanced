@@ -10,7 +10,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Monarch : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Monarch;
     private const int Id = 12100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Monarch);
     public override bool IsDesyncRole => true;

@@ -9,7 +9,6 @@ namespace TOHE.Roles.Crewmate;
 internal class Psychic : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Psychic;
     private const int Id = 9400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Psychic);
 

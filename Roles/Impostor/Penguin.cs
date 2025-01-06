@@ -1,10 +1,10 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
-using TOHE.Roles.Core;
+﻿using Hazel;
+using AmongUs.GameOptions;
 using UnityEngine;
-using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Options;
+using TOHE.Roles.Core;
+using InnerNet;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;
@@ -12,7 +12,6 @@ namespace TOHE.Roles.Impostor;
 internal class Penguin : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Penguin;
     private const int Id = 27500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Penguin);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -223,7 +222,7 @@ internal class Penguin : RoleBase
                         penguin.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
-                        {
+                        {  
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
                                 NetHelpers.WriteVector2(penguin.transform.position, sender.stream);

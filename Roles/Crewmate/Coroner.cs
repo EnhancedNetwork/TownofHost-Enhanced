@@ -1,19 +1,18 @@
 ﻿using Hazel;
-using InnerNet;
 using System;
 using System.Text;
-using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Coroner : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Coroner;
     private const int Id = 7700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Coroner);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

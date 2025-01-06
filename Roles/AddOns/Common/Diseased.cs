@@ -4,7 +4,6 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Diseased : IAddon
 {
-    public CustomRoles Role => CustomRoles.Diseased;
     private const int Id = 21800;
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Mixed;
@@ -66,8 +65,8 @@ public class Diseased : IAddon
         }
     }
 
-    public static void CheckMurder(PlayerControl killer)
-    {
+   public static void CheckMurder(PlayerControl killer)
+   {
         if (KilledDiseased.ContainsKey(killer.PlayerId))
         {
             // Key already exists, update the value
@@ -78,7 +77,7 @@ public class Diseased : IAddon
             // Key doesn't exist, add the key-value pair
             KilledDiseased.Add(killer.PlayerId, 1);
         }
-    }
+   }
 }
 
 

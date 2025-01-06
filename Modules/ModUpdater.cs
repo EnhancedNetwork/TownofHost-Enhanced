@@ -1,15 +1,13 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Reflection;
 using UnityEngine;
-using UnityEngine.Networking;
 using static TOHE.Translator;
+using UnityEngine.Networking;
 using IEnumerator = System.Collections.IEnumerator;
-using TOHE.Modules;
-using System.Threading.Tasks;
-using System.Threading;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace TOHE;
 
@@ -31,7 +29,6 @@ public class ModUpdater
     public static string notice = null;
     public static GenericPopup InfoPopup;
     public static PassiveButton updateButton;
-    private static CancellationTokenSource downloadCancellationTokenSource = new();
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
     public static void Start_Postfix(/*MainMenuManager __instance*/)
@@ -174,7 +171,7 @@ public class ModUpdater
     public static void StartUpdate(string url)
     {
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
-        Task.Run(() => DownloadDLLAsync(url));
+        Main.Instance.StartCoroutine(DownloadDLL(url));
         return;
     }
     public static bool NewVersionCheck()
@@ -198,21 +195,18 @@ public class ModUpdater
     }
     public static void StopDownload()
     {
-        lock (downloadLock)
-        {
-            downloadCancellationTokenSource?.Cancel();
-
-            cachedfileStream?.Dispose();
-            cachedfileStream = null;
-        }
+        cachedfileStream.Dispose();
+        Main.Instance.StopAllCoroutines();
+        Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
     }
     public static IEnumerator DeleteFilesAfterCancel()
     {
-        ShowPopupAsync(GetString("deletingFiles"), StringNames.None, false);
+        ShowPopup(GetString("deletingFiles"), StringNames.None, false);
         yield return new WaitForSeconds(2f);
         InfoPopup.Close();
         yield return new WaitForSeconds(0.3f);
         DeleteOldFiles();
+        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
         yield break;
     }
     public static void DeleteOldFiles()
@@ -239,92 +233,64 @@ public class ModUpdater
     private static readonly object downloadLock = new();
     private static FileStream cachedfileStream;
 
-    private static async Task DownloadDLLAsync(string url)
+    private static IEnumerator DownloadDLL(string url)
     {
         var savePath = "BepInEx/plugins/TOHE.dll.temp";
+        Application.targetFrameRate = -1;
 
         // Delete the temporary file if it exists
         DeleteOldFiles();
 
-        try
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.timeout = 10;
+        request.SetRequestHeader("Connection", "Keep-Alive");
+        request.SetRequestHeader("User-Agent", "Mozilla/5.0");
+        request.chunkedTransfer = false;
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            downloadCancellationTokenSource = new CancellationTokenSource();
-            CancellationToken token = downloadCancellationTokenSource.Token;
+            Logger.Error($"File retrieval failed with status code: {request.responseCode}", "DownloadDLL", false);
+            ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+            Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
+            yield break;
+        }
 
-            using (HttpClient client = new())
+        var total = request.downloadedBytes;
+        using (var stream = new MemoryStream(request.downloadHandler.data))
+        {
+            using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
             {
-                client.Timeout = TimeSpan.FromSeconds(10);
-                client.DefaultRequestHeaders.Connection.Add("Keep-Alive");
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
-
-                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    Logger.Error($"File retrieval failed with status code: {response.StatusCode}", "DownloadDLL", false);
-                    ShowPopupAsync(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
-                    return;
-                }
-
-                var total = response.Content.Headers.ContentLength ?? -1L;
-                using var stream = await response.Content.ReadAsStreamAsync(token);
-                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
-
                 cachedfileStream = fileStream;
                 byte[] buffer = new byte[1024];
                 long readLength = 0;
                 int length;
 
-                while ((length = await stream.ReadAsync(buffer, token)) > 0)
+                while ((length = stream.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    await fileStream.WriteAsync(buffer.AsMemory(0, length), token);
+                    yield return null;
+
+                    fileStream.Write(buffer, 0, length);
 
                     readLength += length;
-                    double progress = total > 0 ? Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero) : 0;
+                    double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
 
                     lock (downloadLock)
                     {
-                        DownloadCallBack(total, readLength, progress);
+                        DownloadCallBack(total, readLength, progress ?? 0); // Call back with progress info
                     }
                 }
-
-                await fileStream.DisposeAsync();
             }
+        }
 
-            var fileName = Assembly.GetExecutingAssembly().Location;
-            File.Move(fileName, fileName + ".bak");
-            File.Move(savePath, fileName);
-            ShowPopupAsync(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
-        }
-        catch (OperationCanceledException)
-        {
-            Logger.Warn("Download operation was canceled.", "DownloadDLL");
-            Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
-        }
-        catch (Exception ex)
-        {
-            Logger.Error($"An error occurred during the download: {ex.Message}", "DownloadDLL", false);
-            ShowPopupAsync(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
-        }
-        finally
-        {
-            cachedfileStream?.Dispose();
-            cachedfileStream = null;
-
-            downloadCancellationTokenSource?.Dispose();
-            downloadCancellationTokenSource = null;
-        }
+        var fileName = Assembly.GetExecutingAssembly().Location;
+        File.Move(fileName, fileName + ".bak");
+        File.Move(savePath, fileName);
+        ShowPopup(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
     }
-    private static void DownloadCallBack(long total, long downloaded, double progress)
+    private static void DownloadCallBack(ulong total, long downloaded, double progress)
     {
-        ShowPopupAsync($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
-    }
-    private static void ShowPopupAsync(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
-    {
-        Dispatcher.Dispatch(() =>
-        {
-            ShowPopup(message, buttonText, showButton, onClick);
-        });
+        ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {

@@ -9,7 +9,6 @@ namespace TOHE.Roles.Double;
 internal class Mini : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Mini;
     private const int Id = 7000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.EvilMini) || CustomRoleManager.HasEnabled(CustomRoles.NiceMini);
     public override CustomRoles ThisRoleBase => IsEvilMini ? CustomRoles.Impostor : CustomRoles.Crewmate;
@@ -21,7 +20,6 @@ internal class Mini : RoleBase
     private static OptionItem CountMeetingTime;
     private static OptionItem EvilMiniSpawnChances;
     private static OptionItem CanBeEvil;
-    public static OptionItem CanGuessEvil;
     private static OptionItem UpDateAge;
     private static OptionItem MinorCD;
     private static OptionItem MajorCD;
@@ -43,7 +41,6 @@ internal class Mini : RoleBase
         CanBeEvil = BooleanOptionItem.Create(Id + 106, "CanBeEvil", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Mini]);
         EvilMiniSpawnChances = IntegerOptionItem.Create(Id + 108, "EvilMiniSpawnChances", new(0, 100, 5), 50, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Percent);
-        CanGuessEvil = BooleanOptionItem.Create(Id + 104, "EvilMiniCanBeGuessed", true, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil);
         MinorCD = FloatOptionItem.Create(Id + 110, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 45f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
             .SetValueFormat(OptionFormat.Seconds);
         MajorCD = FloatOptionItem.Create(Id + 112, "MajorCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(CanBeEvil)
@@ -133,7 +130,7 @@ internal class Mini : RoleBase
 
             if (player.Is(CustomRoles.NiceMini))
                 player.RpcGuardAndKill();
-
+            
             /*Dont show guard animation for evil mini,
             this would simply stop them from murdering.
             Imagine reseting kill cool down every 20 seconds
@@ -171,8 +168,7 @@ internal class Mini : RoleBase
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
-        if (role is not CustomRoles.NiceMini or CustomRoles.EvilMini) return false;
-        if (Age < 18 && (target.Is(CustomRoles.NiceMini) || !CanGuessEvil.GetBool() && target.Is(CustomRoles.EvilMini)))
+        if (target.Is(CustomRoles.NiceMini) && Age < 18)
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessMini"));
             return true;

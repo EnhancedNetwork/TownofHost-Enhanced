@@ -8,11 +8,13 @@ namespace TOHE.Roles.Impostor;
 internal class Mastermind : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Mastermind;
     private const int Id = 4100;
+
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
-    public override bool IsExperimental => true;
     //==================================================================\\
 
     private static OptionItem KillCooldown;
@@ -38,6 +40,7 @@ internal class Mastermind : RoleBase
 
     public override void Init()
     {
+        playerIdList.Clear();
         ManipulatedPlayers.Clear();
         ManipulateDelays.Clear();
         TempKCDs.Clear();
@@ -45,16 +48,13 @@ internal class Mastermind : RoleBase
 
     public override void Add(byte playerId)
     {
+        playerIdList.Add(playerId);
         ManipulateCD = KillCooldown.GetFloat() + (TimeLimit.GetFloat() / 2) + (Delay.GetFloat() / 2);
 
         // Double Trigger
         var pc = GetPlayerById(playerId);
         pc.AddDoubleTrigger();
-    }
 
-    public override void Remove(byte playerId)
-    {
-        DoubleTrigger.PlayerIdList.Remove(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -139,7 +139,7 @@ internal class Mastermind : RoleBase
             {
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);
-                pc.SetRealKiller(GetPlayerById(_playerIdList.First()));
+                pc.SetRealKiller(GetPlayerById(playerIdList.First()));
             }
         }
         ManipulateDelays.Clear();
@@ -153,7 +153,7 @@ internal class Mastermind : RoleBase
 
         ManipulatedPlayers.Remove(killer.PlayerId);
 
-        var mastermind = GetPlayerById(_playerIdList.First());
+        var mastermind = GetPlayerById(playerIdList.First());
         mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), killer.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
         killer.Notify(GetString("SurvivedManipulation"));

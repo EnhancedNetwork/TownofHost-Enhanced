@@ -1,4 +1,4 @@
-using Hazel;
+﻿using Hazel;
 using System;
 using System.Text.RegularExpressions;
 using TMPro;
@@ -195,8 +195,7 @@ public static class GuessManager
                 if (pc.GetRoleClass().GuessCheck(isUI, pc, target, role, ref guesserSuicide)) return true;
 
                 if (target.GetRoleClass().OnRoleGuess(isUI, target, pc, role, ref guesserSuicide)) return true;
-                // Used to be a exploit. Guess may be canceled even misguessed
-                // You need to manually check whether guessed correct and then perform role abilities
+
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
@@ -252,7 +251,7 @@ public static class GuessManager
                     return true;
                 }
 
-                if (role.IsTNA() && role != CustomRoles.Pestilence && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool() || role == CustomRoles.Pestilence && !PlagueBearer.PestilenceKillsGuessers.GetBool())
+                if (role.IsTNA() && role != CustomRoles.Pestilence && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
                     return true;
@@ -970,6 +969,7 @@ public static class GuessManager
                 if (role is CustomRoles.GM
                     or CustomRoles.SpeedBooster
                     or CustomRoles.Oblivious
+                    or CustomRoles.ChiefOfPolice
                     or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     or CustomRoles.SuperStar
@@ -986,13 +986,14 @@ public static class GuessManager
                     or CustomRoles.Apocalypse
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
-                if (role is CustomRoles.NiceMini && Mini.Age < 18) continue;
-                if (role is CustomRoles.EvilMini && Mini.Age < 18 && !Mini.CanGuessEvil.GetBool()) continue;
-
                 CreateRole(role);
             }
             void CreateRole(CustomRoles role)
             {
+                var tempMini = Mini.IsEvilMini;
+                if (role is CustomRoles.EvilMini) Mini.IsEvilMini = true;
+                else if (role is CustomRoles.NiceMini) Mini.IsEvilMini = false;
+
                 if (40 <= info[(int)role.GetCustomRoleTeam()]) info[(int)role.GetCustomRoleTeam()] = 0;
                 Transform buttonParent = new GameObject().transform;
                 buttonParent.SetParent(container);
@@ -1017,6 +1018,8 @@ public static class GuessManager
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.6f;
                 label.autoSizeTextContainer = true;
+
+
                 //int copiedIndex = info[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
@@ -1049,6 +1052,8 @@ public static class GuessManager
                 }));
                 info[(int)role.GetCustomRoleTeam()]++;
                 ind++;
+
+                Mini.IsEvilMini = tempMini;
             }
             container.transform.localScale *= 0.75f;
             GuesserSelectRole(Custom_Team.Crewmate);
@@ -1062,7 +1067,11 @@ public static class GuessManager
 
         PlayerControl.LocalPlayer.RPCPlayCustomSound("Gunload");
 
-    }
+    } 
+
+
+
+    
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class MeetingHudOnDestroyGuesserUIClose

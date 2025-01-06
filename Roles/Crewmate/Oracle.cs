@@ -1,19 +1,18 @@
 using Hazel;
-using InnerNet;
-using System;
 using System.Text;
+using System;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using InnerNet;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Oracle : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Oracle;
     private const int Id = 9100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Oracle);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -40,7 +39,7 @@ internal class Oracle : RoleBase
         OracleAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle])
             .SetValueFormat(OptionFormat.Times);
-        ChangeRecruitTeam = BooleanOptionItem.Create(Id + 15, "OracleCheckAddons", false, TabGroup.CrewmateRoles, false)
+        ChangeRecruitTeam = BooleanOptionItem.Create(Id+15,"OracleCheckAddons",false,TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Oracle]);
 
     }
@@ -161,10 +160,10 @@ internal class Oracle : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo tagret)
     {
         DidVote.Clear();
-
+            
         TempCheckLimit[_state.PlayerId] = AbilityLimit;
         SendRPC(_state.PlayerId, isTemp: true);
-
+        
     }
     public override string GetProgressText(byte playerId, bool comms)
     {

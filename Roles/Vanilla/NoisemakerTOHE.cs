@@ -6,7 +6,6 @@ namespace TOHE.Roles.Vanilla;
 internal class NoisemakerTOHE : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.NoisemakerTOHE;
     private const int Id = 6230;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();

@@ -8,7 +8,7 @@ public static class ShouldShowTogglePatch
 {
     public static void Postfix(ref bool __result)
     {
-        __result = false;
+        __result = true;
     }
 }
 #region GameManager Patches
@@ -22,7 +22,7 @@ public static class GetNormalBodyType_Patch
             __result = PlayerBodyTypes.Horse;
             return;
         }
-        if (Main.LongMode.Value)
+        if (AprilFoolsMode.ShouldLongAround())
         {
             __result = PlayerBodyTypes.Long;
             return;
@@ -43,7 +43,7 @@ public static class GetHnsBodyType_Patch
                 __result = PlayerBodyTypes.Horse;
                 return;
             }
-            if (Main.LongMode.Value)
+            if (AprilFoolsMode.ShouldLongAround())
             {
                 __result = PlayerBodyTypes.Long;
                 return;
@@ -61,7 +61,7 @@ public static class GetHnsBodyType_Patch
             __result = PlayerBodyTypes.Horse;
             return;
         }
-        else if (Main.LongMode.Value)
+        else if (AprilFoolsMode.ShouldLongAround())
         {
             if (player.Data.Role.IsImpostor)
             {
@@ -142,9 +142,9 @@ public static class LongBoiPatches
     [HarmonyPrefix]
     public static bool CheckLongMode_Prefix(out bool __result, ref string cosmeticID)
     {
-        if (AprilFoolsMode.ShouldHorseAround())
+        if (Main.HorseMode.Value)
         {
-            __result = true;
+            __result = false;
             return false;
         }
 

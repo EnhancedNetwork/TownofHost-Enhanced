@@ -10,7 +10,6 @@ namespace TOHE.Roles.Neutral;
 internal class Doppelganger : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Doppelganger;
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
     public override bool IsDesyncRole => true;

@@ -8,11 +8,10 @@ namespace TOHE.Roles.Crewmate;
 internal class Sheriff : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Sheriff;
     private const int Id = 11200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Sheriff);
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor; 
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
@@ -40,7 +39,6 @@ internal class Sheriff : RoleBase
 
     private static readonly Dictionary<CustomRoles, OptionItem> KillTargetOptions = [];
 
-    [Obfuscation(Exclude = true)]
     private enum KillOptionList
     {
         SheriffCanKillAll,
@@ -134,6 +132,7 @@ internal class Sheriff : RoleBase
         var cRole = player.GetCustomRole();
         var subRole = player.GetCustomSubRoles();
         bool CanKill = false;
+
         foreach (var SubRoleTarget in subRole)
         {
             if (SubRoleTarget == CustomRoles.Madmate)
@@ -156,7 +155,6 @@ internal class Sheriff : RoleBase
                 CanKill = false;
         }
 
-
         return cRole switch
         {
             CustomRoles.Trickster => false,
@@ -169,6 +167,7 @@ internal class Sheriff : RoleBase
             }
         };
     }
+
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.KillButton.OverrideText(GetString("SheriffKillButtonText"));

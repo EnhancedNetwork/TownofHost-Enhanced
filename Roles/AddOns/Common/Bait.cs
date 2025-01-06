@@ -1,13 +1,12 @@
 ﻿using System;
 using TOHE.Modules;
-using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Bait : IAddon
 {
-    public CustomRoles Role => CustomRoles.Bait;
     private const int Id = 18700;
     public AddonTypes Type => AddonTypes.Helpful;
 
@@ -16,7 +15,7 @@ public class Bait : IAddon
     public static OptionItem BaitDelayNotify;
     public static OptionItem BaitNotification;
     public static OptionItem BaitCanBeReportedUnderAllConditions;
-
+    
     public static readonly HashSet<byte> BaitAlive = [];
 
     public void SetupCustomOption()
@@ -63,7 +62,7 @@ public class Bait : IAddon
         }
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
-    {
+    {        
         if (killer.PlayerId == target.PlayerId)
         {
             if (target.GetRealKiller() != null)

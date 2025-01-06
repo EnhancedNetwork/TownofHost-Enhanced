@@ -4,7 +4,6 @@ namespace TOHE.Roles.AddOns.Common;
 
 public class Fool : IAddon
 {
-    public CustomRoles Role => CustomRoles.Fool;
     private const int Id = 25600;
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Harmful;

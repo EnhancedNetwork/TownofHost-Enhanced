@@ -1,11 +1,11 @@
 ﻿using Hazel;
-using InnerNet;
 using System;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.MeetingHudStartPatch;
 
 
 namespace TOHE.Roles.Neutral;
@@ -13,7 +13,6 @@ namespace TOHE.Roles.Neutral;
 internal class Quizmaster : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Quizmaster;
     private const int Id = 27000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Quizmaster);
     public override bool IsExperimental => true;
@@ -131,7 +130,7 @@ internal class Quizmaster : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc)
     {
         if (pc == null || !pc.IsAlive()) return false;
-
+       
         bool canVent = false;
         if (CanVentAfterMark.GetBool() && MarkedPlayer != byte.MaxValue)
         {
@@ -227,35 +226,38 @@ internal class Quizmaster : RoleBase
         Player = _Player;
         if (MarkedPlayer != byte.MaxValue)
         {
+            // Get random roles
             CustomRoles randomRole = GetRandomRole([.. CustomRolesHelper.AllRoles], false);
             CustomRoles randomRoleWithAddon = GetRandomRole([.. CustomRolesHelper.AllRoles], false);
             List<QuizQuestionBase> Questions =
             [
                 new SabotageQuestion { Stage = 1, Question = "LastSabotage",/* JSON ENTRIES */ QuizmasterQuestionType = QuizmasterQuestionType.LatestSabotageQuestion },
-                new SabotageQuestion { Stage = 1, Question = "FirstRoundSabotage", QuizmasterQuestionType = QuizmasterQuestionType.FirstRoundSabotageQuestion },
-                new PlrColorQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
-                new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },
-                new PlrColorQuestion { Stage = 1, Question = "LastButtonPressedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.LastMeetingColorQuestion },
+            new SabotageQuestion { Stage = 1, Question = "FirstRoundSabotage", QuizmasterQuestionType = QuizmasterQuestionType.FirstRoundSabotageQuestion },
+            new PlrColorQuestion { Stage = 1, Question = "LastEjectedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.EjectionColorQuestion },
+            new PlrColorQuestion { Stage = 1, Question = "LastReportPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.ReportColorQuestion },
+            new PlrColorQuestion { Stage = 1, Question = "LastButtonPressedPlayerColor", QuizmasterQuestionType = QuizmasterQuestionType.LastMeetingColorQuestion },
 
-                new CountQuestion { Stage = 2, Question = "MeetingPassed", QuizmasterQuestionType = QuizmasterQuestionType.MeetingCountQuestion },
+            new CountQuestion { Stage = 2, Question = "MeetingPassed", QuizmasterQuestionType = QuizmasterQuestionType.MeetingCountQuestion },
                 new SetAnswersQuestion { Stage = 2, Question = "HowManyFactions", Answer = "Three", PossibleAnswers = { "One", "Two", "Three", "Four", "Five" }, QuizmasterQuestionType = QuizmasterQuestionType.FactionQuestion },
                 new SetAnswersQuestion { Stage = 2, Question = GetString("QuizmasterQuestions.BasisOfRole").Replace("{QMROLE}", randomRoleWithAddon.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetCustomRoleTeam(randomRoleWithAddon).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral", "Addon" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleBasisQuestion },
                 new SetAnswersQuestion { Stage = 2, Question = GetString("QuizmasterQuestions.FactionOfRole").Replace("{QMROLE}", randomRole.ToString()), HasQuestionTranslation = false, Answer = CustomRolesHelper.GetRoleTypes(randomRole).ToString(), PossibleAnswers = { "Crewmate", "Impostor", "Neutral" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleFactionQuestion },
 
-                new SetAnswersQuestion { Stage = 3, Question = "FactionRemovedName", Answer = "Coven", PossibleAnswers = { "Sabotuer", "Sorcerers", "Coven", "Killer" }, QuizmasterQuestionType = QuizmasterQuestionType.RemovedFactionQuestion },
-                new SetAnswersQuestion { Stage = 3, Question = "WhatDoesEOgMeansInName", Answer = "Edited", PossibleAnswers = { "Edition", "Experimental", "Enhanced", "Edited" }, QuizmasterQuestionType = QuizmasterQuestionType.NameOriginQuestion },
-                new CountQuestion { Stage = 3, Question = "HowManyDiedFirstRound", QuizmasterQuestionType = QuizmasterQuestionType.DiedFirstRoundCountQuestion },
-                new CountQuestion { Stage = 3, Question = "ButtonPressedBefore", QuizmasterQuestionType = QuizmasterQuestionType.ButtonPressedBeforeThisQuestion },
+            new SetAnswersQuestion { Stage = 3, Question = "FactionRemovedName", Answer = "Coven", PossibleAnswers = { "Sabotuer", "Sorcerers", "Coven", "Killer" }, QuizmasterQuestionType = QuizmasterQuestionType.RemovedFactionQuestion },
+            new SetAnswersQuestion { Stage = 3, Question = "WhatDoesEOgMeansInName", Answer = "Edited", PossibleAnswers = { "Edition", "Experimental", "Enhanced", "Edited" }, QuizmasterQuestionType = QuizmasterQuestionType.NameOriginQuestion },
+            new CountQuestion { Stage = 3, Question = "HowManyDiedFirstRound", QuizmasterQuestionType = QuizmasterQuestionType.DiedFirstRoundCountQuestion },
+            new CountQuestion { Stage = 3, Question = "ButtonPressedBefore", QuizmasterQuestionType = QuizmasterQuestionType.ButtonPressedBeforeThisQuestion },
 
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieReason", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathReasonQuestion},
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieMethod", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathMethodQuestion},
-                new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion },
+            new SetAnswersQuestion { Stage = 4, Question = "LastAddedRoleForKarped", Answer = "Pacifist", PossibleAnswers = { "Pacifist", "Vampire", "Snitch", "Vigilante", "Jackal", "Mole", "Sniper" }, QuizmasterQuestionType = QuizmasterQuestionType.RoleAddedQuestion },
                 new DeathReasonQuestion { Stage = 4, Question = "PlrDieFaction", QuizmasterQuestionType = QuizmasterQuestionType.PlrDeathKillerFactionQuestion},
             ];
 
+            // Randomize the question
             Question = GetRandomQuestion(Questions);
         }
     }
+
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (Player == null) return;
@@ -330,7 +332,7 @@ internal class Quizmaster : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
             => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
-
+        
 
     public static void OnSabotageCall(SystemTypes systemType)
     {
@@ -432,17 +434,17 @@ internal class Quizmaster : RoleBase
                 }
                 else
                 {
-                    Utils.SendMessage(GetString("QuizmasterChat.AnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                    Utils.SendMessage(GetString("QuizmasterAnswerNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
                 }
             }
             else
             {
-                Utils.SendMessage(GetString("QuizmasterChat.SyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+                Utils.SendMessage(GetString("QuizmasterSyntaxNotValid"), plr.PlayerId, GetString("QuizmasterChat.Title"));
             }
         }
         else if (plr.GetCustomRole() is CustomRoles.Quizmaster)
         {
-            Utils.SendMessage(GetString("QuizmasterChat.CantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
+            Utils.SendMessage(GetString("QuizmasterCantAnswer"), plr.PlayerId, GetString("QuizmasterChat.Title"));
         }
     }
 
@@ -462,7 +464,7 @@ abstract public class QuizQuestionBase
     public int Stage { get; set; }
     public QuizmasterQuestionType QuizmasterQuestionType { get; set; }
 
-    public string Question { get; set; }
+    public string Question { get; set;  }
     public string Answer { get; set; }
     public string AnswerLetter { get; set; }
     public List<string> Answers { get; set; }
@@ -481,7 +483,7 @@ class PlrColorQuestion : QuizQuestionBase
 
         foreach (PlayerControl plr in Main.AllPlayerControls)
         {
-            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString()))
+            if (!PossibleAnswers.Contains(plr.Data.GetPlayerColorString())) 
                 PossibleAnswers.Add(plr.Data.GetPlayerColorString());
         }
 
@@ -742,7 +744,6 @@ class SabotageQuestion : QuizQuestionBase
     }
 }
 
-[Obfuscation(Exclude = true)]
 public enum QuizmasterQuestionType
 {
     FirstRoundSabotageQuestion,
@@ -764,7 +765,6 @@ public enum QuizmasterQuestionType
     PlrDeathKillerFactionQuestion,
 }
 
-[Obfuscation(Exclude = true)]
 public enum Sabotages
 {
     None = -1,

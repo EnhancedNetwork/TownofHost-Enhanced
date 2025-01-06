@@ -6,8 +6,10 @@ namespace TOHE.Roles.Impostor;
 internal class Morphling : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Morphling;
     private const int Id = 3500;
+    private static readonly HashSet<byte> playerIdList = [];
+    public static bool HasEnabled => playerIdList.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //===========================SETUP================================\\
@@ -26,6 +28,14 @@ internal class Morphling : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         ShapeshiftDur = FloatOptionItem.Create(Id + 16, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Morphling])
             .SetValueFormat(OptionFormat.Seconds);
+    }
+    public override void Init()
+    {
+        playerIdList.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        playerIdList.Add(playerId);
     }
 
     public override bool CanUseKillButton(PlayerControl player)

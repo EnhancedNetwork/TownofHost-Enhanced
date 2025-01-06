@@ -2,7 +2,6 @@
 
 public class Influenced : IAddon
 {
-    public CustomRoles Role => CustomRoles.Influenced;
     private const int Id = 21200;
     public AddonTypes Type => AddonTypes.Harmful;
 
@@ -17,15 +16,15 @@ public class Influenced : IAddon
     public void Remove(byte playerId)
     { }
     public static void ChangeVotingData(Dictionary<byte, int> VotingData)
-    {
+    { 
         //The incoming votedata does not count influenced votes
-        HashSet<byte> influencedPlayerIds = [];
+        HashSet<byte> playerIdList = [];
 
         Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Influenced))
-            .Do(x => influencedPlayerIds.Add(x.PlayerId));
-
-        if (influencedPlayerIds.Count == 0) return;
-        if (influencedPlayerIds.Count >= Main.AllAlivePlayerControls.Length) return;
+            .Do(x => playerIdList.Add(x.PlayerId));
+        
+        if (playerIdList.Count == 0) return;
+        if (playerIdList.Count >= Main.AllAlivePlayerControls.Length) return;
 
         int max = 0;
         bool tie = false;
@@ -46,7 +45,7 @@ public class Influenced : IAddon
         }
         if (tie) return;
 
-        foreach (var playerId in influencedPlayerIds)
+        foreach (var playerId in playerIdList)
         {
             PlayerVoteArea pva = CheckForEndVotingPatch.GetPlayerVoteArea(playerId);
             if (pva != null && pva.VotedFor != exileId)

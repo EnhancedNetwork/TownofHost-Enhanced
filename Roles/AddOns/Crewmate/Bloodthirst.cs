@@ -5,7 +5,6 @@ namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Bloodthirst : IAddon
 {
-    public CustomRoles Role => CustomRoles.Bloodthirst;
     private const int Id = 21700;
     public AddonTypes Type => AddonTypes.Mixed;
 

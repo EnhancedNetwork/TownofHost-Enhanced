@@ -3,8 +3,10 @@
 internal class Ludopath : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Ludopath;
     private const int Id = 1800;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -17,6 +19,14 @@ internal class Ludopath : RoleBase
         LudopathRandomKillCD = IntegerOptionItem.Create(Id + 2, "LudopathRandomKillCD", new(1, 100, 1), 45, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ludopath])
             .SetValueFormat(OptionFormat.Seconds);
+    }
+    public override void Init()
+    {
+        PlayerIds.Clear();
+    }
+    public override void Add(byte playerId)
+    {
+        PlayerIds.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = LudopathRandomKillCD.GetFloat();

@@ -11,7 +11,6 @@ namespace TOHE.Roles.Neutral;
 internal class Huntsman : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Huntsman;
     private const int Id = 16500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Huntsman);
     public override bool IsDesyncRole => true;

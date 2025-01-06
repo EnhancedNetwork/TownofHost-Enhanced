@@ -9,7 +9,6 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 internal class Possessor : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Possessor;
     private const int Id = 28900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Possessor);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -131,8 +130,16 @@ internal class Possessor : RoleBase
     {
         if (target.GetCustomRole().IsImpostorTeam())
         {
+            var killerState = Main.PlayerStates[killer.PlayerId];
+
+            // Allow Randomizer to bypass the check
+            if (killerState.IsRandomizer)
+            {
+                Logger.Info($"Randomizer {killer.name} is attempting to use the ability on {target.name}. Bypassing impostor restriction.", "GhostRole");
+                return true; // Allow the ability to proceed
+            }
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Possessor), GetString("DollMaster_CannotPossessImpTeammate")));
-            return false;
+            return true;
         }
 
         if (!controllingPlayer)
