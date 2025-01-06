@@ -1290,7 +1290,7 @@ static class ExtendedPlayerControl
         if (Workaholic.OthersKnowWorka(target)) return true;
         if (Jackal.JackalKnowRole(seer, target)) return true;
         if (Cultist.KnowRole(seer, target)) return true;
-        if (Summoner.KnowRole(seer, target)) return true;
+        
         if (Infectious.KnowRole(seer, target)) return true;
         if (Virus.KnowRole(seer, target)) return true;
 
@@ -1336,7 +1336,7 @@ static class ExtendedPlayerControl
 
         if (Admirer.HasEnabled && Admirer.CheckKnowRoleTarget(seer, target)) return true;
         if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
-        if (Summoner.HasEnabled && Summoner.KnowRole(seer, target)) return true;
+        
         if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
         if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
         if (Jackal.HasEnabled)

@@ -65,7 +65,7 @@ internal class ChatCommands
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Evolver.EvolverCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (Summoner.SummonerCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        
         if (PlayerControl.LocalPlayer.GetRoleClass() is Councillor cl && cl.MurderMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -2043,7 +2043,7 @@ internal class ChatCommands
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
         if (Evolver.EvolverCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Evolver command", "OnReceiveChat"); return; }
-        if (Summoner.SummonerCheckMsg(player, text))  { canceled = true;  Logger.Info($"Command handled for Summoner {player.PlayerId}.", "OnReceiveChat"); return;}
+        
         
 
 
