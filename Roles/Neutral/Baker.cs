@@ -62,7 +62,7 @@ internal class Baker : RoleBase
         RevealList[playerId] = [];
         BarrierList[playerId] = [];
         RoleblockedPlayers[playerId] = [];
-        
+
         Famine.FamineList[playerId] = [];
         CanUseAbility = true;
         StarvedNonBreaded = false;
@@ -286,8 +286,8 @@ internal class Baker : RoleBase
             return true;
         }
         if (killer.GetCustomRole() is CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false;
-        else 
-        { 
+        else
+        {
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

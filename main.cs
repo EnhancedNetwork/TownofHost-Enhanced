@@ -46,13 +46,13 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1230.220.00100"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 10 Coven";
+    public const string PluginVersion = "2025.0106.220.11000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 11";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = true; // Latest: V2.1.0 Beta 3
+    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
     public static bool hasAccess = true;
@@ -137,7 +137,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
-    const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -1138,6 +1138,8 @@ public enum TieMode
     All,
     Random
 }
+
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class Coroutines : MonoBehaviour
 {
 }
