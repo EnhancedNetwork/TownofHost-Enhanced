@@ -29,6 +29,7 @@ internal class Baker : RoleBase
     public static readonly Dictionary<byte, HashSet<byte>> BreadList = [];
     private static readonly Dictionary<byte, HashSet<byte>> RevealList = [];
     private static readonly Dictionary<byte, HashSet<byte>> BarrierList = [];
+    private static readonly Dictionary<byte, List<byte>> RoleblockedPlayers = [];
 
     private static bool CanUseAbility;
     public static bool StarvedNonBreaded;
@@ -48,6 +49,7 @@ internal class Baker : RoleBase
         BreadList.Clear();
         RevealList.Clear();
         BarrierList.Clear();
+        RoleblockedPlayers.Clear();
         Famine.FamineList.Clear();
         CanUseAbility = false;
         StarvedNonBreaded = false;
@@ -58,6 +60,8 @@ internal class Baker : RoleBase
         BreadList[playerId] = [];
         RevealList[playerId] = [];
         BarrierList[playerId] = [];
+        RoleblockedPlayers[playerId] = [];
+
         Famine.FamineList[playerId] = [];
         CanUseAbility = true;
         StarvedNonBreaded = false;
@@ -78,19 +82,16 @@ internal class Baker : RoleBase
         return (breaded, all);
     }
     public static byte CurrentBread() => BreadID;
-    private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
+    private static void SendRPC(PlayerControl player, PlayerControl target)
     {
-        if (!player.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(player);
-        writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        byte typeId = reader.ReadByte();
         byte BakerId = reader.ReadByte();
         byte BreadHolderId = reader.ReadByte();
 
@@ -104,6 +105,9 @@ internal class Baker : RoleBase
                 break;
             case 2:
                 BarrierList[BakerId].Add(BreadHolderId);
+                break;
+            case 3:
+                RoleblockedPlayers[BakerId].Add(BreadHolderId);
                 break;
         }
     }
@@ -227,7 +231,6 @@ internal class Baker : RoleBase
         else 
         {
             BreadList[killer.PlayerId].Add(target.PlayerId);
-            SendRPC(0, killer, target);
 
             NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("BakerBreaded"));
@@ -241,32 +244,53 @@ internal class Baker : RoleBase
                 {
                     case 0: // Reveal
                         RevealList[killer.PlayerId].Add(target.PlayerId);
-                        SendRPC(1, killer, target);
                         break;
                     case 1: // Roleblock
-                        target.SetKillCooldownV3(999f);
+                        RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId);
+                        SendRPC(3, killer, target);
                         break;
                     case 2: // Barrier
                         BarrierList[killer.PlayerId].Add(target.PlayerId);
-                        SendRPC(2, killer, target);
                         break;
                 } 
             }
+            SendRPC(killer, target);
         }
         return false;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (_Player == null || !_Player.IsAlive()) return false;
-        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId)) return false;
+        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId) && !IsRoleblocked(killer.PlayerId)) return false;
 
-        killer.RpcGuardAndKill(target);
-        killer.ResetKillCooldown();
-        killer.SetKillCooldown();
 
-        NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
-        NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+        if (BarrierList[_Player.PlayerId].Contains(target.PlayerId))
+        {
+            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
+            NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+            return true;
+        }
+        if (killer.GetCustomRole() is CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false;
+        else
+        {
+            if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
+            killer.ResetKillCooldown();
+            killer.SetKillCooldown();
+            Logger.Info($"{killer.GetRealName()} fail ability because roleblocked", "Baker");
+        }
         return true;
+    }
+    public static bool IsRoleblocked(byte target)
+    {
+        if (RoleblockedPlayers.Count < 1) return false;
+        foreach (var player in RoleblockedPlayers.Keys)
+        {
+            if (RoleblockedPlayers[player].Contains(target)) return true;
+        }
+        return false;
     }
     public override void AfterMeetingTasks()
     {
@@ -275,14 +299,19 @@ internal class Baker : RoleBase
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || !AllHasBread(player) || player.Is(CustomRoles.Famine)) return;
+        if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        player.RpcSetCustomRole(CustomRoles.Famine);
-        player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()))
+        {
+            player.RpcChangeRoleBasis(CustomRoles.Famine);
+            player.RpcSetCustomRole(CustomRoles.Famine);
+            player.GetRoleClass()?.OnAdd(_Player.PlayerId);
 
-        player.Notify(GetString("BakerToFamine"));
-        player.RpcGuardAndKill(player);
+            player.Notify(GetString("BakerToFamine"));
+            player.RpcGuardAndKill(player);
+        }
     }
+
 }
 internal class Famine : RoleBase
 {

@@ -42,14 +42,14 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1103.211.9999"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.1.1";
-    public const string SupportedVersionAU = "2024.8.13"; // Also 2024.9.4 and 2024.10.29
+    public const string PluginVersion = "2025.0106.220.11000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 11";
+    public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.1.0 Alpha 16 Hotfix 1
-    public static readonly bool canaryRelease = false; // Latest: V2.1.0 Beta 3
-    public static readonly bool fullRelease = true; // Latest: V2.1.1
+    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
+    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
+    public static readonly bool fullRelease = false; // Latest: V2.1.1
 
     public static bool hasAccess = true;
 
@@ -131,11 +131,12 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
-    const string LANGUAGE_FOLDER_NAME = "Language";
-    
+    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
     public static NetworkedPlayerInfo LastVotedPlayerInfo;
+    public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static string LastVotedPlayer;
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
@@ -358,6 +359,7 @@ public class Main : BasePlugin
                         break;
                 }
             }
+
             if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
             CreateTemplateRoleColorFile();
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/RoleColor.dat"))
@@ -598,6 +600,7 @@ public class Main : BasePlugin
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
+
 public enum CustomRoles
 {
     // Crewmate(Vanilla)
@@ -706,6 +709,8 @@ public enum CustomRoles
     Witch,
     Zombie,
 
+
+   
     //Crewmate Ghost
     Ghastly,
     Hawk,
@@ -801,8 +806,10 @@ public enum CustomRoles
     Doomsayer,
     Doppelganger,
     Executioner,
+    Evolver,
     Famine,
     Follower,
+    LingeringPresence,
     Glitch,
     God,
     Hater,
@@ -840,6 +847,7 @@ public enum CustomRoles
     SchrodingersCat,
     Seeker,
     SerialKiller,
+    Summoner,
     Shaman,
     Shroud,
     Sidekick,
@@ -876,6 +884,7 @@ public enum CustomRoles
 
     // Add-ons
     Admired,
+    Allergic,
     Antidote,
     Autopsy,
     Avanger,
@@ -899,6 +908,7 @@ public enum CustomRoles
     Flash,
     Fool,
     Fragile,
+    FadingLight,
     Ghoul,
     Glow,
     Gravestone,
@@ -938,6 +948,7 @@ public enum CustomRoles
     Sloth,
     Soulless,
     Statue,
+    Summoned,
     Stubborn,
     Susceptible,
     Swift,
@@ -952,7 +963,8 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber   
+    Youtuber,
+  
 }
 //WinData
 public enum CustomWinner
@@ -1020,12 +1032,15 @@ public enum CustomWinner
     Doppelganger = CustomRoles.Doppelganger,
     Solsticer = CustomRoles.Solsticer,
     Apocalypse = CustomRoles.Apocalypse,
+    Random = 581,
 }
 public enum AdditionalWinners
 {
     None = -1,
     Lovers = CustomRoles.Lovers,
     Opportunist = CustomRoles.Opportunist,
+    Randomizer = CustomRoles.Randomizer,
+    Evolver = CustomRoles.Evolver,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
     Hater = CustomRoles.Hater,
@@ -1074,6 +1089,8 @@ public enum TieMode
     All,
     Random
 }
+
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class Coroutines : MonoBehaviour
 {
 }

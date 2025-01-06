@@ -526,7 +526,7 @@ class BeginImpostorPatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
         var role = PlayerControl.LocalPlayer.GetCustomRole();
-        
+
         if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             yourTeam = new();
@@ -563,20 +563,100 @@ class BeginImpostorPatch
     {
         BeginCrewmatePatch.Postfix(__instance);
     }
-}
-[HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
-class IntroCutsceneDestroyPatch
-{
-    public static void Prefix()
+    }
+
+    [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
+    class IntroCutsceneDestroyPatch
     {
-        if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
+        public static void Prefix()
         {
-            // Host is desync role
-            if (PlayerControl.LocalPlayer.HasDesyncRole())
+            if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
+            {
+                // Host is desync role
+                if (PlayerControl.LocalPlayer.HasDesyncRole())
+                {
+                    PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
+
+                    foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                    {
+                        // Set all players as killable players
+                        target.Data.Role.CanBeKilled = true;
+
+                        // When target is impostor, set name color as white
+                        target.cosmetics.SetNameColor(Color.white);
+                        target.Data.Role.NameColor = Color.white;
+                    }
+                }
+
+                if (Main.UnShapeShifter.Any())
+                {
+                    _ = new LateTask(() =>
+                    {
+                        Main.UnShapeShifter.Do(x =>
+                        {
+                            var PC = x.GetPlayer();
+                            var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
+                            PC.RpcShapeshift(firstPlayer, false);
+                            PC.RpcRejectShapeshift();
+                            PC.ResetPlayerOutfit(force: true);
+                            Main.CheckShapeshift[x] = false;
+                        });
+                        Main.GameIsLoaded = true;
+                    }, 3f, "Set UnShapeShift Button");
+                }
+            }
+        }
+        public static void Postfix()
+        {
+            if (!GameStates.IsInGame) return;
+
+            Main.IntroDestroyed = true;
+
+            // Set roleAssigned as false for override role for modded players
+            // For override role for vanilla clients we use "Data.Disconnected" while assign
+            Main.AllPlayerControls.Do(pc => pc.roleAssigned = false);
+
+            if (!GameStates.AirshipIsActive)
+            {
+                foreach (var state in Main.PlayerStates.Values)
+                {
+                    state.HasSpawned = true;
+                }
+            }
+
+            CustomRoleManager.Add();
+
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
+                {
+                    foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                    {
+                        pc.RpcResetAbilityCooldown();
+
+                        if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
+                        {
+                            _ = new LateTask(() =>
+                            {
+                                if (pc != null)
+                                {
+                                    pc.ResetKillCooldown();
+
+                                    if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                                    {
+                                        pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
+                                    }
+                                }
+                            }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
+                        }
+                    }
+                }
+            if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsRandomizer)
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
 
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator().Where(x =>
+                    !Main.PlayerStates[x.PlayerId].IsRandomizer || !Main.PlayerStates[x.PlayerId].IsImpostorTeam))
                 {
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
@@ -587,109 +667,46 @@ class IntroCutsceneDestroyPatch
                 }
             }
 
-            if (Main.UnShapeShifter.Any())
-            {
-                _ = new LateTask(() =>
-                {
-                    Main.UnShapeShifter.Do(x =>
-                    {
-                        var PC = x.GetPlayer();
-                        var firstPlayer = Main.AllPlayerControls.FirstOrDefault(x => x != PC);
-                        PC.RpcShapeshift(firstPlayer, false);
-                        PC.RpcRejectShapeshift();
-                        PC.ResetPlayerOutfit(force: true);
-                        Main.CheckShapeshift[x] = false;
-                    });
-                    Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
-            }
-        }
-    }
-    public static void Postfix()
-    {
-        if (!GameStates.IsInGame) return;
-
-        Main.IntroDestroyed = true;
-
-        // Set roleAssigned as false for override role for modded players
-        // For override role for vanilla clients we use "Data.Disconnected" while assign
-        Main.AllPlayerControls.Do(pc => pc.roleAssigned = false);
-
-        if (!GameStates.AirshipIsActive)
-        {
-            foreach (var state in Main.PlayerStates.Values)
-            {
-                state.HasSpawned = true;
-            }
-        }
-
-        CustomRoleManager.Add();
-
-        if (AmongUsClient.Instance.AmHost)
-        {
-            if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
-            {
-                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
-                {
-                    pc.RpcResetAbilityCooldown();
-
-                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
-                    {
-                        _ = new LateTask(() =>
-                        {
-                            if (pc != null)
-                            {
-                                pc.ResetKillCooldown();
-
-                                if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
-                                {
-                                    pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
-                                }
-                            }
-                        }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
-                    }
-                }
-            }
-
             if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
-            {
-                PlayerControl.LocalPlayer.RpcExile();
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
-            }
-            else if (GhostRoleAssign.forceRole.Any())
-            {
-                // Needs to be delayed for the game to load it properly
-                _ = new LateTask(() =>
                 {
-                    GhostRoleAssign.forceRole.Do(x =>
+                    PlayerControl.LocalPlayer.RpcExile();
+                    Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+                }
+                else if (GhostRoleAssign.forceRole.Any())
+                {
+                    // Needs to be delayed for the game to load it properly
+                    _ = new LateTask(() =>
                     {
-                        var plr = x.Key.GetPlayer();
-                        plr.RpcExile();
-                        Main.PlayerStates[x.Key].SetDead();
+                        GhostRoleAssign.forceRole.Do(x =>
+                        {
+                            var plr = x.Key.GetPlayer();
+                            plr.RpcExile();
+                            Main.PlayerStates[x.Key].SetDead();
 
-                    });
-                }, 3f, "Set Dev Ghost-Roles");
+                        });
+                    }, 3f, "Set Dev Ghost-Roles");
+                }
+
+                bool chatVisible = Options.CurrentGameMode switch
+                {
+                    CustomGameMode.FFA => true,
+                    _ => false
+                };
+                try
+                {
+                    if (chatVisible) Utils.SetChatVisibleForEveryone();
+                }
+                catch (Exception error)
+                {
+                    Logger.Error($"Error: {error}", "FFA chat visible");
+                }
+
+                Utils.CheckAndSetVentInteractions();
             }
 
-            bool chatVisible = Options.CurrentGameMode switch
-            {
-                CustomGameMode.FFA => true,
-                _ => false
-            };
-            try
-            {
-                if (chatVisible) Utils.SetChatVisibleForEveryone();
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error: {error}", "FFA chat visible");
-            }
-
-            Utils.CheckAndSetVentInteractions();
+            Utils.DoNotifyRoles(NoCache: true);
+            Logger.Info("OnDestroy", "IntroCutscene");
         }
-
-        Utils.DoNotifyRoles(NoCache: true);
-        Logger.Info("OnDestroy", "IntroCutscene");
     }
-}
+
  

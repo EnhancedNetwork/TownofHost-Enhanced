@@ -19,7 +19,7 @@ internal class AntiAdminer : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
 
-    private static OptionItem CanCheckCamera;
+    public static OptionItem CanCheckCamera;
 
     private static bool IsAdminWatch;
     private static bool IsVitalWatch;

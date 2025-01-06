@@ -35,6 +35,10 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
+
+    private bool hasConverted;
+
+    [Obfuscation(Exclude = true)]
     private enum SidekickAssignModeSelectList
     {
         Jackal_SidekickAssignMode_SidekickAndRecruit,
@@ -82,7 +86,15 @@ internal class Jackal : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
+        AbilityLimit = 0;
+        hasConverted = false;
+        if (Playerids.Count == 0 || RestoreLimitOnNewJackal.GetBool())
+        {
+            AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
+        }
+
+        if (!Playerids.Contains(playerId))
+            Playerids.Add(playerId);
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -215,8 +227,87 @@ internal class Jackal : RoleBase
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 
-    private string GetRecruitLimit(byte playerId)
-        => Utils.ColorString(CanRecruit(playerId)
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
+    {
+        if (!target.Is(CustomRoles.Jackal)) return;
+
+        if (hasConverted) return;
+
+        if (SidekickTurnIntoJackal.GetBool())
+        {
+            Logger.Info("Starting Jackal Death Assign.", "Jackal");
+            var readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Sidekick) && x.PlayerId != target.PlayerId).ToList();
+
+            if (readySideKicks.Count < 1)
+            {
+                readySideKicks = Main.AllAlivePlayerControls.Where(x => x.IsAlive() && x.Is(CustomRoles.Recruit) && x.PlayerId != target.PlayerId).ToList();
+            }
+
+            if (readySideKicks.Count < 1)
+            {
+                Logger.Info("Jackal dead, but no alive sidekick can be assigned!", "Jackal");
+                hasConverted = true;
+                return;
+            }
+
+            var newJackal = readySideKicks.RandomElement();
+            if (newJackal.IsAlive())
+            {
+                Logger.Info($"Assigned new Jackal {newJackal.GetNameWithRole()}", "Jackal");
+                newJackal.GetRoleClass()?.OnRemove(newJackal.PlayerId);
+                newJackal.RpcChangeRoleBasis(CustomRoles.Jackal);
+                newJackal.RpcSetCustomRole(CustomRoles.Jackal);
+                newJackal.GetRoleClass()?.OnAdd(target.PlayerId);
+
+                if (inMeeting)
+                {
+                    Utils.SendMessage(string.Format(GetString("Jackal_OnBecomeNewJackalMeeting"), target.GetRealName(true)), newJackal.PlayerId);
+                    foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
+                    {
+                        if (player.PlayerId == newJackal.PlayerId) continue;
+                        Utils.SendMessage(string.Format(GetString("Jackal_OnNewJackalSelectedMeeting"), target.GetRealName(true), newJackal.GetRealName(true)), player.PlayerId);
+                    }
+                }
+
+                newJackal.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BecomeNewJackal")));
+                newJackal.ResetKillCooldown();
+                target.SetKillCooldown(forceAnime: true);
+
+                foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
+                {
+                    player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
+                }
+                Utils.NotifyRoles();
+
+                hasConverted = true;
+            }
+            else
+            {
+                Logger.Info($"Selected alive Sidekick [{newJackal.PlayerId}]{newJackal.GetNameWithRole()} is dead? wtf", "Jackal");
+                hasConverted = true;
+            }
+        }
+        else
+        {
+            Logger.Info("Opps, Jackal boss is dead!", "Jackal");
+            foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
+            {
+                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BossIsDead")));
+            }
+            Utils.NotifyRoles();
+            hasConverted = true;
+        }
+    }
+
+    public override void AfterMeetingTasks()
+    {
+        if (_Player && !_Player.IsAlive() && !hasConverted)
+        {
+            OnMurderPlayerAsTarget(_Player, _Player, true, false);
+        }
+    }
+    private string GetRecruitLimit()
+        => Utils.ColorString(CanRecruit()
             ? Utils.GetRoleColor(CustomRoles.Jackal).ShadeColor(0.25f)
             : Color.gray, $"({AbilityLimit})");
     

@@ -120,7 +120,7 @@ internal class DoubleAgent : RoleBase
         }
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => false;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.AliveImpostorCount < 2;
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
@@ -326,8 +326,10 @@ internal class DoubleAgent : RoleBase
             targetBox.name = "PlantBombButton";
             targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
             createdButtonsList.Add(targetBox);
+
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
             renderer.sprite = CustomButton.Get("DoubleAgentPocketBomb");
+
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => DestroyButtons(targetBox)));

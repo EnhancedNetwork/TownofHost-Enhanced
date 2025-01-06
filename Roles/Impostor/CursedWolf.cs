@@ -15,6 +15,7 @@ internal class CursedWolf : RoleBase
     private static OptionItem GuardSpellTimes;
     private static OptionItem KillAttacker;
 
+    
 
     public override void SetupCustomOption()
     {

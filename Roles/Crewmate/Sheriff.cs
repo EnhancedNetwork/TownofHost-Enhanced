@@ -132,6 +132,7 @@ internal class Sheriff : RoleBase
         var cRole = player.GetCustomRole();
         var subRole = player.GetCustomSubRoles();
         bool CanKill = false;
+
         foreach (var SubRoleTarget in subRole)
         {
             if (SubRoleTarget == CustomRoles.Madmate)
@@ -154,7 +155,6 @@ internal class Sheriff : RoleBase
                 CanKill = false;
         }
 
-
         return cRole switch
         {
             CustomRoles.Trickster => false,
@@ -167,6 +167,7 @@ internal class Sheriff : RoleBase
             }
         };
     }
+
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.KillButton.OverrideText(GetString("SheriffKillButtonText"));

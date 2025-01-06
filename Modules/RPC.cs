@@ -4,6 +4,7 @@ using InnerNet;
 using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -37,6 +38,8 @@ enum CustomRPC : byte // 185/255 USED
     KillFlash,
     DumpLog,
     SyncRoleSkill,
+    SendChatMessage = 186,
+    MuteChat = 187,
     SetNameColorData,
     GuessKill,
     Judge,
@@ -73,6 +76,7 @@ enum CustomRPC : byte // 185/255 USED
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
+    UpdateSoulMeter,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
@@ -207,6 +211,9 @@ internal class RPCHandlerPatch
         }
         return true;
     }
+
+    
+
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
         // Process nothing but CustomRPC
@@ -555,6 +562,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetJailerTarget:
                 Jailer.ReceiveRPC(reader, setTarget: true);
                 break;
+            case CustomRPC.SendChatMessage: 
+                HandleSendChatMessage(reader);
+                break;
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
@@ -717,6 +727,52 @@ internal class RPCHandlerPatch
                 break;
         }
     }
+
+    private static void HandleSendChatMessage(MessageReader reader)
+    {
+        string message = reader.ReadString();
+        byte targetPlayerId = reader.ReadByte();
+
+        PlayerControl target = null;
+        foreach (var player in PlayerControl.AllPlayerControls)
+        {
+            if (player.PlayerId == targetPlayerId)
+            {
+                target = player;
+                break;
+            }
+        }
+
+        if (target != null && target.AmOwner)
+        {
+            // Send the private message to the summoner
+            Utils.SendMessage($"SYSTEM MESSAGE: {message}", target.PlayerId);
+            Logger.Info($"Sent SYSTEM MESSAGE to {target.GetRealName()}", "ChatManager");
+            ChatManager.cancel = true; // Prevent normal chat behavior
+        }
+    }
+
+
+
+
+    private static void SendChatMessage(PlayerControl recipient, string message)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(
+            PlayerControl.LocalPlayer.NetId,
+            (byte)CustomRPC.SendChatMessage,
+            SendOption.Reliable
+        );
+
+        // Write the recipient's PlayerId and the message
+        writer.Write(recipient.PlayerId);
+        writer.Write(message);
+
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        Logger.Info($"Sent private message to {recipient.GetRealName()}: {message}", "ChatManager");
+    }
+
+    
 
     private static bool IsVersionMatch(int ClientId)
     {
@@ -1060,7 +1116,7 @@ internal static class RPC
         try
         {
             target = targetClientId < 0 ? "All" : AmongUsClient.Instance.GetClient(targetClientId).PlayerName;
-            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.Data?.PlayerName;
+            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.GetRealName(clientData: true);
         }
         catch { }
         Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
@@ -1073,6 +1129,9 @@ internal static class RPC
         else rpcName = callId.ToString();
         return rpcName;
     }
+    
+
+
     public static void SetRealKiller(byte targetId, byte killerId)
     {
         var state = Main.PlayerStates[targetId];

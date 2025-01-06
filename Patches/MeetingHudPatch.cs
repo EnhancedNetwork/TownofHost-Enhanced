@@ -898,6 +898,7 @@ class MeetingHudStartPatch
         //Bait Notify
         Bait.SendNotify();
 
+
         // Apocalypse Notify, thanks tommy
         var transformRoles = new CustomRoles[] { CustomRoles.Pestilence, CustomRoles.War, CustomRoles.Famine, CustomRoles.Death };
         foreach (var role in transformRoles)
@@ -1152,6 +1153,12 @@ class MeetingHudStartPatch
                 // When target is impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);
                 pva.NameText.color = Color.white;
+                if (Main.PlayerStates[seer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer)
+                {
+                    // When target is impostor, set name color as white
+                    target.cosmetics.SetNameColor(Color.white);
+                    pva.NameText.color = Color.white;
+                }
             }
 
             var sb = new StringBuilder();
@@ -1170,6 +1177,7 @@ class MeetingHudStartPatch
                 if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
+
 
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
             if (tempNemeText != string.Empty)

@@ -11,24 +11,24 @@ internal class BountyHunter : RoleBase
 {
     //===========================SETUP================================\\
     private const int Id = 800;
-    private static readonly HashSet<byte> playerIdList = [];
+    public static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
     
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    private static OptionItem OptionTargetChangeTime;
-    private static OptionItem OptionSuccessKillCooldown;
-    private static OptionItem OptionFailureKillCooldown;
-    private static OptionItem OptionShowTargetArrow;
+    public static OptionItem OptionTargetChangeTime;
+    public static OptionItem OptionSuccessKillCooldown;
+    public static OptionItem OptionFailureKillCooldown;
+    public static OptionItem OptionShowTargetArrow;
 
-    private static float TargetChangeTime;
-    private static float SuccessKillCooldown;
-    private static float FailureKillCooldown;
-    private static bool ShowTargetArrow;
+    public static float TargetChangeTime;
+    public static float SuccessKillCooldown;
+    public static float FailureKillCooldown;
+    public static bool ShowTargetArrow;
 
-    private static Dictionary<byte, byte> Targets = [];
+    public static Dictionary<byte, byte> Targets = [];
     public static readonly Dictionary<byte, float> ChangeTimer = [];
 
     public override void SetupCustomOption()
@@ -97,7 +97,9 @@ internal class BountyHunter : RoleBase
         return false;
     }
 
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+    public static bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
     {
         if (GetTarget(killer) == target.PlayerId)
         {
@@ -116,7 +118,9 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => ChangeTimer.Clear();
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
     {
         if (!ChangeTimer.TryGetValue(player.PlayerId, out var timer)) return;
 
@@ -157,7 +161,7 @@ internal class BountyHunter : RoleBase
         var targetId = GetTarget(player);
         return targetId == 0xff ? null : Utils.GetPlayerById(targetId);
     }
-    private static bool PotentialTarget(PlayerControl player, PlayerControl target)
+    public static bool PotentialTarget(PlayerControl player, PlayerControl target)
     {
         if (target == null || player == null) return false;
 
@@ -193,7 +197,7 @@ internal class BountyHunter : RoleBase
         return true;
 
     }
-    private static byte ResetTarget(PlayerControl player)
+    public static byte ResetTarget(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return 0xff;
 
@@ -227,7 +231,9 @@ internal class BountyHunter : RoleBase
         return targetId;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.AbilityButton.OverrideText(GetString("BountyHunterChangeButtonText"));
-    public override void AfterMeetingTasks()
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+    public static void AfterMeetingTasks()
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
     {
         foreach (var id in playerIdList.ToArray())
         {
@@ -238,14 +244,18 @@ internal class BountyHunter : RoleBase
             }
         }
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+    public static string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
     {
         if (isForMeeting) return string.Empty;
 
         var targetId = GetTarget(seer);
         return targetId != 0xff ? $"{(isForHud ? GetString("BountyCurrentTarget") : GetString("Target"))}: {Main.AllPlayerNames[targetId].RemoveHtmlTags().Replace("\r\n", string.Empty)}" : string.Empty;
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+#pragma warning disable CS0114 // Member hides inherited member; missing override keyword
+    public static string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+#pragma warning restore CS0114 // Member hides inherited member; missing override keyword
     {
         if (!ShowTargetArrow || isForMeeting || seer.PlayerId != seen.PlayerId) return string.Empty;
 

@@ -32,7 +32,7 @@ public static class GuessManager
     public static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        foreach(string comm in comList)
+        foreach (string comm in comList)
         {
             if (exact)
             {
@@ -96,12 +96,12 @@ public static class GuessManager
 
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
-        if (!pc.Is(CustomRoles.NiceGuesser) 
-            && !pc.Is(CustomRoles.EvilGuesser) 
-            && !pc.Is(CustomRoles.Doomsayer) 
-            && !pc.Is(CustomRoles.Judge) 
-            && !pc.Is(CustomRoles.Councillor) 
-            && !pc.Is(CustomRoles.Guesser) 
+        if (!pc.Is(CustomRoles.NiceGuesser)
+            && !pc.Is(CustomRoles.EvilGuesser)
+            && !pc.Is(CustomRoles.Doomsayer)
+            && !pc.Is(CustomRoles.Judge)
+            && !pc.Is(CustomRoles.Councillor)
+            && !pc.Is(CustomRoles.Guesser)
             && !Options.GuesserMode.GetBool()) return false;
 
         int operate = 0; // 1:ID 2:猜测
@@ -165,7 +165,7 @@ public static class GuessManager
             Doomsayer.NeedHideMsg(pc) ||
             (pc.Is(CustomRoles.Guesser) && Guesser.GTryHideMsg.GetBool()) ||
             (Options.GuesserMode.GetBool() && Options.HideGuesserCommands.GetBool())
-            ) 
+            )
             {
                 //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
                 //else TryHideMsg(); 
@@ -223,7 +223,7 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;
                 }
-                
+
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessNotifiedBait"));
@@ -621,8 +621,8 @@ public static class GuessManager
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
                     CreateGuesserButton(__instance);
 
-            /*    if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.Ritualist))
-                    CreateGuesserButton(__instance); */
+                /*    if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.Ritualist))
+                        CreateGuesserButton(__instance); */
 
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser))
                     CreateGuesserButton(__instance);
@@ -874,7 +874,7 @@ public static class GuessManager
 
             if (Options.ShowOnlyEnabledRolesInGuesserUI.GetBool())
             {
-                
+
                 List<CustomRoles> listOfRoles = CustomRolesHelper.AllRoles.Where(role => !role.IsGhostRole() && (role.IsEnable() || role.RoleExist(countDead: true))).ToList();
 
                 // Always show
@@ -1018,6 +1018,8 @@ public static class GuessManager
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.6f;
                 label.autoSizeTextContainer = true;
+
+
                 //int copiedIndex = info[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
@@ -1065,7 +1067,11 @@ public static class GuessManager
 
         PlayerControl.LocalPlayer.RPCPlayCustomSound("Gunload");
 
-    }
+    } 
+
+
+
+    
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]
     class MeetingHudOnDestroyGuesserUIClose

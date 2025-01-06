@@ -21,7 +21,7 @@ internal class Crewpostor : RoleBase
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
-    private static Dictionary<byte, int> TasksDone = [];
+    public static Dictionary<byte, int> TasksDone = [];
 
     public override void SetupCustomOption()
     {

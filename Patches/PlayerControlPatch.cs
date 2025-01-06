@@ -70,8 +70,11 @@ class CheckMurderPatch
     public static Dictionary<byte, float> TimeSinceLastKill = [];
     public static void Update()
     {
-        for (byte i = 0; i < 15; i++)
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
+            if (pc == null) continue;
+            var i = pc.PlayerId;
+
             if (TimeSinceLastKill.ContainsKey(i))
             {
                 TimeSinceLastKill[i] += Time.deltaTime;
@@ -176,7 +179,7 @@ class CheckMurderPatch
         }
 
         var divice = Options.CurrentGameMode == CustomGameMode.FFA ? 3000f : 1500f;
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
+        float minTime = Mathf.Max(0.04f, AmongUsClient.Instance.Ping / divice * 6f); //Ping value is milliseconds (ms), so ÷ 2000
         // No value is stored in TimeSinceLastKill || Stored time is greater than or equal to minTime => Allow kill
 
         //↓ If not permitted
@@ -285,7 +288,14 @@ class CheckMurderPatch
         {
             return false;
         }
+        if (killer.Is(CustomRoles.Summoned) && (target.Is(CustomRoles.Summoner) || target.Is(CustomRoles.Summoned)))
+        {
+            string errorMessage = "You cannot kill the Summoner or other summoned players!";
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), errorMessage));
+            return false; // Cancel the kill
+        }
 
+        
         Logger.Info($"Start", "TargetSubRoles");
 
         if (targetSubRoles.Any())
@@ -304,16 +314,18 @@ class CheckMurderPatch
                     case CustomRoles.Susceptible:
                         Susceptible.CallEnabledAndChange(target);
                         break;
-
+                    
                     //case CustomRoles.Fragile:
                     //    if (Fragile.KillFragile(killer, target))
                     //        return false;
                     //    break;
-
+                    case CustomRoles.LingeringPresence:
+                        if (LingeringPresence.KillLingeringPresence(killer, target))
+                            return false; // Stop further checks if kill is successful
+                        break;
                     case CustomRoles.Aware:
                         Aware.OnCheckMurder(killerRole, target);
                         break;
-
                     case CustomRoles.Lucky:
                         if (!Lucky.OnCheckMurder(killer, target))
                             return false;
@@ -866,6 +878,22 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
+
+                    foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                    {
+                        CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                    }
+                    player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+
+                    if (playerStates.IsDead)
+                    {
+                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
+                        {
+                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
+                        }
+                    }
+                }
+                    }
                 }
                 catch (Exception error)
                 {
@@ -1222,10 +1250,10 @@ class FixedUpdateInNormalGamePatch
                 if (Main.playerVersion.TryGetValue(__instance.GetClientId(), out var ver))
                 {
                     if (Main.ForkId != ver.forkId)
-                        __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>{ver.forkId}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.4>{ver.forkId}</size>\n{__instance?.name}</color>";
                     else if (Main.version.CompareTo(ver.version) == 0)
-                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#87cefa>{__instance.name}</color>" : $"<color=#ffff00><size=1.2>{ver.tag}</size>\n{__instance?.name}</color>";
-                    else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.2>v{ver.version}</size>\n{__instance?.name}</color>";
+                        __instance.cosmetics.nameText.text = ver.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})" ? $"<color=#00a5ff><size=1.4>{GetString("ModdedClient")}</size>\n{__instance.name}</color>" : $"<color=#ffff00><size=1.4>{ver.tag}</size>\n{__instance?.name}</color>";
+                    else __instance.cosmetics.nameText.text = $"<color=#ff0000><size=1.4>v{ver.version}</size>\n{__instance?.name}</color>";
                 }
                 else if (Main.BAUPlayers.TryGetValue(__instance.Data, out var puid)) // Set name color for BAU users
                 {
@@ -1511,7 +1539,27 @@ class CoEnterVentPatch
             return true;
         }
 
-        playerRoleClass?.OnCoEnterVent(__instance, id);
+        if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
+        {
+            foreach (var ventId in playerRoleClass.LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Remove(ventId);
+            }
+            playerRoleClass.LastBlockedMoveInVentVents.Clear();
+
+            var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
+            foreach (var nextvent in vent.NearbyVents.ToList())
+            {
+                if (nextvent == null) continue;
+                // Skip current vent or ventid 5 in Dleks to prevent stuck
+                if (nextvent.Id == id || (GameStates.DleksIsActive && id is 5 && nextvent.Id is 6)) continue;
+                CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Add(nextvent.Id);
+                playerRoleClass.LastBlockedMoveInVentVents.Add(nextvent.Id);
+            }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
+            __instance.myPlayer.RpcSetVentInteraction();
+        }
         return true;
     }
     public static void Postfix()
@@ -1558,7 +1606,13 @@ class CoExitVentPatch
 
         if (!AmongUsClient.Instance.AmHost) return;
 
-        player.GetRoleClass()?.OnExitVent(player, id);
+        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+        {
+            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+        }
+        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
+        }
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
@@ -1617,9 +1671,11 @@ class PlayerControlCompleteTaskPatch
                         case CustomRoles.Ghoul when taskState.CompletedTasksCount >= taskState.AllTasksCount:
                             Ghoul.OnTaskComplete(player);
                             break;
+                        
+
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor)).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) || !Main.PlayerStates[pc.PlayerId].IsRandomizer).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1747,7 +1803,9 @@ public static class PlayerControlMixupOutfitPatch
         }
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
-        if (!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) &&  // Not an Impostor
+        if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
+            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsRandomizer // Necromancer
+            ) &&    // Not an Impostor
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {
             // Hide names

@@ -10,8 +10,8 @@ public class Tired : IAddon
     public AddonTypes Type => AddonTypes.Harmful;
     private static readonly Dictionary<byte, bool> playerIdList = []; // Target Action player for Vision
 
-    private static OptionItem SetVision;
-    private static OptionItem SetSpeed;
+    public static OptionItem SetSpeed;
+    public static OptionItem SetVision;
     private static OptionItem TiredDuration;
 
     public void SetupCustomOption()

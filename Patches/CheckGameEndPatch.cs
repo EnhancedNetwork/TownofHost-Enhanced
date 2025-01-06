@@ -9,6 +9,7 @@ using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.CustomWinnerHolder;
+using System;
 
 namespace TOHE;
 
@@ -21,6 +22,7 @@ class CheckEndGameViaTasksForNormalPatch
         return false;
     }
 }
+
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.CheckTaskCompletion))]
 class CheckTaskCompletionPatch
 {
@@ -65,9 +67,14 @@ class GameEndCheckerForNormal
             return false;
         }
 
+
+
+
+
         // Start end game
         if (WinnerTeam != CustomWinner.Default)
         {
+
             // Clear all Notice players 
             NameNotifyManager.Reset();
 
@@ -82,6 +89,9 @@ class GameEndCheckerForNormal
 
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
+            Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
+            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
+
             if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeam()))
             {
                 reason = GameOverReason.ImpostorByKill;
@@ -89,31 +99,52 @@ class GameEndCheckerForNormal
                 ResetAndSetWinner(CustomWinner.Jackal);
                 WinnerRoles.Add(CustomRoles.Jackal);
             }
+
             foreach (var pc in Main.AllPlayerControls)
             {
+                var playerState = Main.PlayerStates[pc.PlayerId];
+                if (playerState.IsRandomizer)
+                {
+                    Logger.Info($"Skipping Randomizer {pc.name} from game-ending criteria.", "CheckEndCriteria");
+
+
+                    {
+                        pc.RpcSetCustomRole(CustomRoles.Randomizer);
+                        pc.RpcChangeRoleBasis(CustomRoles.Crewmate);
+                        Logger.Info($"Reverted {pc.name} to Randomizer before game-end checks.", "CheckEndCriteria");
+                    }
+
+                    continue;
+                }
+
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
 
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
+                            (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Crewmate))
                         {
-                            // When admired neutral win, set end game reason "HumansByVote"
+                            // When admired neutral wins, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
                             {
                                 reason = GameOverReason.HumansByVote;
                             }
+
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+
                     case CustomWinner.Impostor:
-                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)))
-                            || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
+                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) &&
+                             (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless))) ||
+                            (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Impostor))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
+
+
                     case CustomWinner.Apocalypse:
                         if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
                             && !WinnerIds.Contains(pc.PlayerId))
@@ -171,6 +202,7 @@ class GameEndCheckerForNormal
                         break;
                 }
             }
+
             if (WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (PlayerControl pc in Main.AllPlayerControls)
@@ -244,7 +276,7 @@ class GameEndCheckerForNormal
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
-                    
+
                     if (godArray.Any())
                     {
                         bool isGodWinConverted = false;
@@ -288,6 +320,17 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Opportunist);
                             break;
+
+
+
+                        case CustomRoles.Evolver when pc.IsAlive()
+                            && Main.PlayerStates[pc.PlayerId].RoleClass is Evolver ev
+                            && ev.GetPurchasedUpgrades() >= Evolver.MinEvolutionsForWin.GetInt():
+                            WinnerIds.Add(pc.PlayerId);
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Evolver);
+                            break;
+
+
                         case CustomRoles.Pixie when !CheckForConvertedWinner(pc.PlayerId):
                             Pixie.PixieWinCondition(pc);
                             break;
@@ -338,7 +381,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             break;
                         case CustomRoles.Romantic:
-                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget) 
+                            if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
                                 && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
                             {
                                 WinnerIds.Add(pc.PlayerId);
@@ -369,6 +412,7 @@ class GameEndCheckerForNormal
                             break;
                     }
                 }
+
                 if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
                 {
                     foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse()))
@@ -445,8 +489,48 @@ class GameEndCheckerForNormal
 
             /*Keep Schrodinger cat win condition at last*/
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
+            foreach (var pc in Main.AllPlayerControls)
 
-            ShipStatus.Instance.enabled = false;
+
+                foreach (var player in Main.AllPlayerControls) // Renamed `pc` to `player` here
+                {
+                    var playerState = Main.PlayerStates[player.PlayerId];
+                    if (playerState.IsRandomizer)
+                    {
+                        // Call RandomizerWinCondition to evaluate the player's win condition
+                        Randomizer.RandomizerWinCondition(player);
+
+                        // If Randomizer met its win condition, log and add it to winners
+                        if (CustomWinnerHolder.WinnerIds.Contains(player.PlayerId))
+                        {
+                            Logger.Info($"Randomizer {player.name} has been added to the winners list.", "GameEnd");
+                        }
+                        else
+                        {
+                            Logger.Warn($"Randomizer {player.name} did not meet its win condition.", "GameEnd");
+                        }
+                    }
+                
+            // Check if the player is Lingering Presence
+            if (player.Is(CustomRoles.LingeringPresence))
+            {
+                LingeringPresence.LingeringPresenceWinCondition(player);
+
+                // Log and add Lingering Presence to winners list if it met its win condition
+                if (CustomWinnerHolder.WinnerIds.Contains(player.PlayerId))
+                {
+                    Logger.Info($"Lingering Presence {player.name} has been added to the winners list.", "GameEnd");
+                }
+                else
+                {
+                    Logger.Warn($"Lingering Presence {player.name} did not meet its win condition.", "GameEnd");
+                }
+            }
+        }
+
+
+
+        ShipStatus.Instance.enabled = false;
             // When crewmates win, show as impostor win, for displaying all names players
             //reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
             StartEndGame(reason);
@@ -454,6 +538,12 @@ class GameEndCheckerForNormal
         }
         return false;
     }
+
+    public static Custom_Team GetRoleTeam(Custom_RoleType roleType)
+    {
+        return RoleTypeToTeamMap.TryGetValue(roleType, out var team) ? team : Custom_Team.Crewmate; // Default to Crewmate
+    }
+
     public static void StartEndGame(GameOverReason reason)
     {
         // Sync of CustomWinnerHolder info
@@ -464,6 +554,43 @@ class GameEndCheckerForNormal
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
     public static bool ForEndGame = false;
+
+    private static readonly Dictionary<CustomWinner, Custom_Team> WinnerToTeamMap = new()
+{
+    { CustomWinner.Crewmate, Custom_Team.Crewmate },
+    { CustomWinner.Impostor, Custom_Team.Impostor },
+    { CustomWinner.Neutrals, Custom_Team.Neutral },
+    // Add additional mappings as needed
+};
+
+
+    private static readonly Dictionary<Custom_RoleType, Custom_Team> RoleTypeToTeamMap = new()
+{
+    { Custom_RoleType.ImpostorVanilla, Custom_Team.Impostor },
+    { Custom_RoleType.ImpostorKilling, Custom_Team.Impostor },
+    { Custom_RoleType.ImpostorSupport, Custom_Team.Impostor },
+    { Custom_RoleType.ImpostorConcealing, Custom_Team.Impostor },
+    { Custom_RoleType.ImpostorHindering, Custom_Team.Impostor },
+    { Custom_RoleType.ImpostorGhosts, Custom_Team.Impostor },
+
+    { Custom_RoleType.CrewmateVanilla, Custom_Team.Crewmate },
+    { Custom_RoleType.CrewmateVanillaGhosts, Custom_Team.Crewmate },
+    { Custom_RoleType.CrewmateBasic, Custom_Team.Crewmate },
+    { Custom_RoleType.CrewmateSupport, Custom_Team.Crewmate },
+    { Custom_RoleType.CrewmateKilling, Custom_Team.Crewmate },
+    { Custom_RoleType.CrewmatePower, Custom_Team.Crewmate },
+    { Custom_RoleType.CrewmateGhosts, Custom_Team.Crewmate },
+
+    { Custom_RoleType.NeutralBenign, Custom_Team.Neutral },
+    { Custom_RoleType.NeutralEvil, Custom_Team.Neutral },
+    { Custom_RoleType.NeutralChaos, Custom_Team.Neutral },
+    { Custom_RoleType.NeutralKilling, Custom_Team.Neutral },
+    { Custom_RoleType.NeutralApocalypse, Custom_Team.Neutral },
+
+    { Custom_RoleType.Madmate, Custom_Team.Impostor },
+};
+
+
     private static IEnumerator CoEndGame(AmongUsClient self, GameOverReason reason)
     {
         CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.OnCoEndGame());

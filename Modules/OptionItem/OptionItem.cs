@@ -54,6 +54,8 @@ public abstract class OptionItem
 
     // Parent and Child Info
     public OptionItem Parent { get; private set; }
+    
+
     public List<OptionItem> Children;
 
     public OptionBehaviour OptionBehaviour;
