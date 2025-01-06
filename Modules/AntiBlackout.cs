@@ -10,7 +10,7 @@ namespace TOHE;
 public static class AntiBlackout
 {
     ///<summary>
-    /// Check num alive Impostors & Crewmates & NeutralKillers
+    /// Check num alive Impostors & Crewmates & NeutralKillers & Coven
     ///</summary>
     public static bool BlackOutIsActive => false; /*!Options.DisableAntiBlackoutProtects.GetBool() && CheckBlackOut();*/
 
@@ -26,6 +26,7 @@ public static class AntiBlackout
         HashSet<byte> Impostors = [];
         HashSet<byte> Crewmates = [];
         HashSet<byte> NeutralKillers = [];
+        HashSet<byte> Coven = [];
 
         var lastExiled = ExileControllerWrapUpPatch.AntiBlackout_LastExiled;
         foreach (var pc in Main.AllAlivePlayerControls)
@@ -34,12 +35,16 @@ public static class AntiBlackout
             if (lastExiled != null && pc.PlayerId == lastExiled.PlayerId) continue;
 
             // Impostors
-            if (pc.Is(Custom_Team.Impostor))
+            if (pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                 Impostors.Add(pc.PlayerId);
 
             // Only Neutral killers
-            else if (pc.IsNeutralKiller() || pc.IsNeutralApocalypse())
+            else if ((pc.IsNeutralKiller() || pc.IsNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                 NeutralKillers.Add(pc.PlayerId);
+
+            //Coven
+            if (pc.Is(Custom_Team.Coven) || Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                Coven.Add(pc.PlayerId);
 
             // Crewmate
             else Crewmates.Add(pc.PlayerId);
@@ -48,10 +53,12 @@ public static class AntiBlackout
         var numAliveImpostors = Impostors.Count;
         var numAliveCrewmates = Crewmates.Count;
         var numAliveNeutralKillers = NeutralKillers.Count;
+        var numAliveCoven = Coven.Count;
 
         Logger.Info($" {numAliveImpostors}", "AntiBlackout Num Alive Impostors");
         Logger.Info($" {numAliveCrewmates}", "AntiBlackout Num Alive Crewmates");
         Logger.Info($" {numAliveNeutralKillers}", "AntiBlackout Num Alive Neutral Killers");
+        Logger.Info($" {numAliveCoven}", "AntiBlackout Num Alive Coven");
 
         var BlackOutIsActive = false;
 
@@ -61,11 +68,19 @@ public static class AntiBlackout
 
         // Alive Impostors > or = others team count
         if (!BlackOutIsActive)
-            BlackOutIsActive = (numAliveNeutralKillers + numAliveCrewmates) <= numAliveImpostors;
+            BlackOutIsActive = (numAliveNeutralKillers + numAliveCrewmates + numAliveCoven) <= numAliveImpostors;
 
         // One Impostor and one Neutral Killer is alive, and living Crewmates very few
         if (!BlackOutIsActive)
             BlackOutIsActive = numAliveNeutralKillers == 1 && numAliveImpostors == 1 && numAliveCrewmates <= 2;
+
+        // One Neutral Killer and one Coven is alive, and living Crewmates very few
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveNeutralKillers == 1 && numAliveCoven == 1 && numAliveCrewmates <= 2;
+
+        // One Coven and one Impostor is alive, and living Crewmates very few
+        if (!BlackOutIsActive)
+            BlackOutIsActive = numAliveCoven == 1 && numAliveImpostors == 1 && numAliveCrewmates <= 2;
 
         Logger.Info($" {BlackOutIsActive}", "BlackOut Is Active");
         return BlackOutIsActive;
