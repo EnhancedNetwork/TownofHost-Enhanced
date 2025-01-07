@@ -15,7 +15,7 @@ internal class Cultist : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cultist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem CharmCooldown;
@@ -24,6 +24,7 @@ internal class Cultist : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem TargetKnowOtherTarget;
     private static OptionItem CanCharmNeutral;
+    private static OptionItem CanCharmCoven;
     public static OptionItem CharmedCountMode;
 
     [Obfuscation(Exclude = true)]
@@ -47,6 +48,7 @@ internal class Cultist : RoleBase
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "CultistTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
         CharmedCountMode = StringOptionItem.Create(Id + 17, "Cultist_CharmedCountMode", EnumHelper.GetAllNames<CharmedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
         CanCharmNeutral = BooleanOptionItem.Create(Id + 18, "CultistCanCharmNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
+        CanCharmCoven = BooleanOptionItem.Create(Id + 19, "CultistCanCharmCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
     }
     public override void Add(byte playerId)
     {
@@ -104,7 +106,8 @@ internal class Cultist : RoleBase
     public static bool CanBeCharmed(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed)
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
+            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());

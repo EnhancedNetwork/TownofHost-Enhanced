@@ -8,6 +8,7 @@ using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -67,6 +68,7 @@ internal class ChatCommands
         if (Nemesis.NemesisMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Exorcist ex && ex.CheckCommand(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Ritualist.RitualistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dt && dt.ExilePlayer(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -225,6 +227,11 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.ApocalypseInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
                     break;
 
+                case "/coveninfo":
+                case "/covinfo":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
+                    break;
 
                 case "/rn":
                 case "/rename":
@@ -448,13 +455,19 @@ internal class ChatCommands
                 case "/阵营":
                 case "/存货阵营信息":
                 case "/阵营信息":
-                    if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
+                    if (GameStates.IsLobby) break;
 
+                    if (!Options.EnableKillerLeftCommand.GetBool())
+                    {
+                        Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
                     var allAlivePlayers = Main.AllAlivePlayerControls;
                     int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                     int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                     int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
+                    int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
 
                     var sub = new StringBuilder();
                     sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
@@ -464,6 +477,9 @@ internal class ChatCommands
 
                     if (Options.ShowApocalypseInLeftCommand.GetBool())
                         sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+
+                    if (Options.ShowCovenInLeftCommand.GetBool())
+                        sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
 
                     sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 
@@ -555,7 +571,7 @@ internal class ChatCommands
                     {
                         Logger.Info("GetRealKiller()", "/death command");
                         var killer = PlayerControl.LocalPlayer.GetRealKiller(out var MurderRole);
-                        string killerName = killer == null ? "N/A" : killer.GetRealName();
+                        string killerName = killer == null ? "N/A" : killer.GetRealName(clientData: true);
                         string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
                         Utils.SendMessage(text: GetString("DeathCmd.YourName") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(PlayerControl.LocalPlayer.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", sendTo: PlayerControl.LocalPlayer.PlayerId);
 
@@ -1988,6 +2004,7 @@ internal class ChatCommands
         if (role.EndsWith("\r\n")) _ = role.Replace("\r\n", string.Empty);
         if (role.EndsWith("\n")) _ = role.Replace("\n", string.Empty);
         if (role.StartsWith("/bt")) _ = role.Replace("/bt", string.Empty);
+        if (role.StartsWith("/rt")) _ = role.Replace("/rt", string.Empty);
 
         if (role == "" || role == string.Empty)
         {
@@ -2088,7 +2105,9 @@ internal class ChatCommands
         if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
         if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Exorcist ex && ex.ExorcismMsg(player, text)) { canceled = true; Logger.Info($"Is Exorcist command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
+        if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true;  Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -2100,6 +2119,13 @@ internal class ChatCommands
             ChatManager.SendPreviousMessagesToAll();
             ChatManager.cancel = false;
             canceled = true;
+            return;
+        }
+        if (Exorcist.IsExorcismCurrentlyActive() && player.IsAlive() && !player.IsHost())
+        {
+            Logger.Info($"This player (id {player.PlayerId}) was Exorcised", "OnReceiveChat");
+            Exorcist.ExorcisePlayer(player);
+            canceled=true;
             return;
         }
 
@@ -2250,6 +2276,11 @@ internal class ChatCommands
                 Utils.SendMessage(GetString("Message.ApocalypseInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Apocalypse), GetString("ApocalypseInfoTitle")));
                 break;
 
+            case "/coveninfo":
+            case "/covinfo":
+                Utils.SendMessage(GetString("Message.CovenInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
+                break;
+
             case "/rn":
             case "/rename":
             case "/renomear":
@@ -2384,13 +2415,20 @@ internal class ChatCommands
             case "/阵营":
             case "/存货阵营信息":
             case "/阵营信息":
-                if (GameStates.IsLobby || !Options.EnableKillerLeftCommand.GetBool()) break;
+                if (GameStates.IsLobby) break;
+
+                if (!Options.EnableKillerLeftCommand.GetBool())
+                {
+                    Utils.SendMessage(GetString("DisableUseCommand"), player.PlayerId);
+                    break;
+                }
 
                 var allAlivePlayers = Main.AllAlivePlayerControls;
                 int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
                 int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                 int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
                 int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
 
                 var sub = new StringBuilder();
                 sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
@@ -2400,6 +2438,9 @@ internal class ChatCommands
 
                 if (Options.ShowApocalypseInLeftCommand.GetBool())
                     sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+
+                if (Options.ShowCovenInLeftCommand.GetBool())
+                    sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
 
                 sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
 
@@ -2441,7 +2482,7 @@ internal class ChatCommands
                 else
                 {
                     var killer = player.GetRealKiller(out var MurderRole);
-                    string killerName = killer == null ? "N/A" : killer.GetRealName();
+                    string killerName = killer == null ? "N/A" : killer.GetRealName(clientData: true);
                     string killerRole = killer == null ? "N/A" : Utils.GetRoleName(MurderRole);
                     Utils.SendMessage(GetString("DeathCmd.YourName") + "<b>" + player.GetRealName() + "</b>" + "\n\r" + GetString("DeathCmd.YourRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>" + "\n\r" + GetString("DeathCmd.DeathReason") + "<b>" + Utils.GetVitalText(player.PlayerId) + "</b>" + "\n\r" + "</b>" + "\n\r" + GetString("DeathCmd.KillerName") + "<b>" + killerName + "</b>" + "\n\r" + GetString("DeathCmd.KillerRole") + "<b>" + $"<color={Utils.GetRoleColorCode(killer.GetCustomRole())}>{killerRole}</color>" + "</b>", player.PlayerId);
                     break;

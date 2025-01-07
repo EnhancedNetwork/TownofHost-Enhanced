@@ -28,9 +28,6 @@ internal class NiceGuesser : RoleBase
             .SetColor(Color.green);
     }
 
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-            => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
-
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.NiceGuesser) && GGTryHideMsg.GetBool();
 
     public static bool HideTabInGuesserUI(int TabId)

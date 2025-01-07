@@ -2,6 +2,7 @@
 using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -117,7 +118,7 @@ internal class DoubleAgent : RoleBase
         }
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => false;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.AliveImpostorCount < 2;
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
@@ -127,6 +128,12 @@ internal class DoubleAgent : RoleBase
         {
             if (target.Is(Custom_Team.Impostor)) return false;
             if (voter == target) return false;
+
+            if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+            {
+                target = GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+            }
 
             CurrentBombedTime = -1;
             CurrentBombedPlayers.Add(target.PlayerId);
