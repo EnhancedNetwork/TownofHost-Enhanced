@@ -88,6 +88,11 @@ internal class ChiefOfPolice : RoleBase
                 isSuccess = true;
             }
         }
+        else if (target.Is(CustomRoles.Narc))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantRecruitNarc")));
+            return false;
+        }
         else
         {
             if (!CanRecruitImpostorAndNeutarl.GetBool())
