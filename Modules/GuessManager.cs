@@ -280,6 +280,18 @@ public static class GuessManager
                     return true;
                 }
 
+                if (pc.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
+                {
+                    pc.ShowInfoMessage(isUI,GetString("GuessSheriffOrNarc"));
+                    return true;
+                }
+
+                if (pc.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.Narc))
+                {
+                    pc.ShowInfoMessage(isUI,GetString("GuessSheriffOrNarc"));
+                    return true;
+                }               
+                
                 // Guesser Mode Can/Cant Guess Addons
                 if (Options.GuesserMode.GetBool())
                 {
