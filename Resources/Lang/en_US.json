@@ -83,9 +83,9 @@
 
   "CanGuessAddons": "Can Guess Add-ons",
   "ShowOnlyEnabledRolesInGuesserUI": "Show Only Enabled Roles In Guesser UI",
-  "CrewCanGuessCrew": "<color=#8cffff>Crewmates</color> Can Guess <color=#8cffff>Crewmate</color> Roles",
-  "ImpCanGuessImp": "<color=#ff1919>Impostors</color> Can Guess <color=#ff1919>Impostor</color> Roles",
-  "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
+  "CrewCanGuessCrew": "<color=#8cffff>Crewmates</color> can Guess <color=#8cffff>Crewmate</color> Roles",
+  "ImpCanGuessImp": "<color=#ff1919>Impostors</color> can Guess <color=#ff1919>Impostor</color> Roles",
+  "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "CovenCanGuessCoven": "<color=#ac42f2>Coven</color> Can Guess <color=#ac42f2>Coven</color> Roles",
   "GuessImmune": "Sorry, but target is immune to being guessed!",
 
@@ -3061,7 +3061,7 @@
 
   "AdminWarning": "Admin Table in use!",
   "VitalsWarning": "Vitals in use!",
-  "DoorlogWarning": "Doorlogs in use!",
+  "DoorlogWarning": "DoorLogs in use!",
   "CameraWarning": "Cameras in use!",
   "MinWaitAutoStart": "Minutes to wait before auto-starting",
   "MaxWaitAutoStart": "Force start when Lobby Timer (in minutes) goes below",
