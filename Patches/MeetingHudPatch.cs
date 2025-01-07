@@ -440,6 +440,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
+        int badnum = 0;
 
 
         if (CustomRoles.Bard.RoleExist())
@@ -454,7 +455,7 @@ class CheckForEndVotingPatch
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var pc_role = pc.GetCustomRole();
-            if (pc_role.IsImpostor() && pc != exiledPlayer.Object)
+            if (pc.IsNonNarcImpV3() && pc != exiledPlayer.Object)
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
@@ -462,6 +463,9 @@ class CheckForEndVotingPatch
                 apocnum++;
             else if (pc_role.IsCoven() && pc != exiledPlayer.Object)
                 covennum++;
+
+            if (pc != exiledPlayer.Object && pc.IsBad())
+                badnum++; //counts everything that keeps the game going
         }
         switch (Options.CEMode.GetInt())
         {
@@ -469,17 +473,31 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee))
+                if (player.Is(CustomRoles.Madmate))
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
+
+                else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
+                    name = string.Format(GetString("IsGood"), realName);
+
+                else if (CustomRolesHelper.IsConvertedV2(player))  
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
+
+                else if (player.Is(CustomRoles.Enchanted))
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+
+//The above 4 "if"s check betrayal add-ons,while the below 4 check main role when exiled doesn't have any betrayal add-on
+                
+                else if (player.IsNonNarcImpV3()) 
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor))
+                else if (player.GetCustomRole().IsNeutralTeamV3())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 else if (player.GetCustomRole().IsCoven())
-                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));               
 
                 break;
             case 2:
@@ -487,13 +505,22 @@ class CheckForEndVotingPatch
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Madmate))
+                    if (player.Is(CustomRoles.Madmate))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Charmed))
+                    else if (CustomRolesHelper.IsConvertedV2(player))
+                        name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
+                    else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
+                        name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
+                    else if (player.Is(CustomRoles.Enchanted))
+                        name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
+//The above 4 "if"s check betrayal add-ons,while the below 4 check main role when exiled doesn't have any betrayal add-on
+                    else if (player.IsNonNarcImpV3())
+                        name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
+                    else if (player.GetCustomRole().IsNeutralTeamV3())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.GetCustomRole().IsCrewmate())
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
-                    else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
+                    else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }
@@ -508,22 +535,26 @@ class CheckForEndVotingPatch
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
-            name += "\n";
-            string comma = neutralnum > 0 ? "" : "";
-            if (impnum == 0) name += GetString("NoImpRemain") + comma;
-            if (impnum == 1) name += GetString("OneImpRemain") + comma;
-            if (impnum == 2) name += GetString("TwoImpRemain") + comma;
-            if (impnum == 3) name += GetString("ThreeImpRemain") + comma;
-            //    else name += string.Format(GetString("ImpRemain"), impnum) + comma;
-            if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
-                if (neutralnum == 1)
-                    name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
-                else
-                    name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
-            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                name += string.Format(GetString("ApocRemain"), apocnum) + comma;
-            if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
-                name += string.Format(GetString("CovenRemain"), covennum) + comma;
+            // name += "\n";
+            string comma = "\n";
+            if (badnum == 0)
+                name += comma + GetString("NoImpRemain");
+            if (badnum > 0)
+            {
+                if (impnum == 1) name += comma + GetString("OneImpRemain");
+                if (impnum > 1) name += comma + string.Format(GetString("ImpRemain"), impnum);
+                if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
+                    if (neutralnum == 1)
+                        name += string.Format(GetString("OneNeutralRemain"), neutralnum);
+                    else
+                        name += string.Format(GetString("NeutralRemain"), neutralnum);
+                if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                        name += string.Format(GetString("ApocRemain"), apocnum);
+                if ((impnum == 0)
+                    && ((neutralnum == 0) || !Options.ShowNKRemainOnEject.GetBool())
+                    && ((apocnum == 0) || !Options.ShowNARemainOnEject.GetBool()))
+                        name += comma + GetString("NoImpRemain") + comma + GetString("PotentialThreat");
+            }
         }
 
     EndOfSession:
@@ -1111,7 +1142,7 @@ class MeetingHudStartPatch
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             var enable = true;
 
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster))
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster) && !pc.Is(CustomRoles.Narc))
             {
                 roleTextMeeting.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                 roleTextMeeting.text += TaskState.GetTaskState(); // Random task count for revealed trickster
@@ -1253,6 +1284,9 @@ class MeetingHudStartPatch
                     sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
             }
 
+            if (seer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
+                sb.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
+
 
             var tempNemeText = seer.GetRoleClass().PVANameText(pva, seer, target);
             if (tempNemeText != string.Empty)
@@ -1285,6 +1319,9 @@ class MeetingHudStartPatch
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
                         sb.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                        break;
+                    case CustomRoles.Narc when seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice:
+                        sb.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
                         break;
                 }
             }
