@@ -128,7 +128,7 @@ public class SabotageSystemPatch
 
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
+                if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                 {
                     // Need for hiding player names if player is desync Impostor
                     Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
@@ -186,7 +186,7 @@ public class SabotageSystemPatch
 
                     foreach (var pc in Main.AllAlivePlayerControls)
                     {
-                        if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
+                        if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                         {
                             // Need for display player names if player is desync Impostor
                             Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);

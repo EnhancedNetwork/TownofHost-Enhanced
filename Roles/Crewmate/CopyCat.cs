@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -114,7 +115,6 @@ internal class CopyCat : RoleBase
                 CustomRoles.Consigliere => CustomRoles.Overseer,
                 CustomRoles.Mercenary => CustomRoles.Addict,
                 CustomRoles.Miner => CustomRoles.Mole,
-                CustomRoles.PotionMaster => CustomRoles.Overseer,
                 CustomRoles.Twister => CustomRoles.TimeMaster,
                 CustomRoles.Disperser => CustomRoles.Transporter,
                 CustomRoles.Eraser => CustomRoles.Cleanser,
@@ -133,6 +133,12 @@ internal class CopyCat : RoleBase
                 CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
                 CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,
                 CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
+                CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 0 => CustomRoles.Overseer,
+                CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 1 => CustomRoles.Medic,
+                CustomRoles.Sacrifist => CustomRoles.Alchemist,
+                CustomRoles.MoonDancer => CustomRoles.Merchant,
+                CustomRoles.Ritualist => CustomRoles.Admirer,
+                CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 _ => role
             };
         }
@@ -154,6 +160,7 @@ internal class CopyCat : RoleBase
                 if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
                 if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
                 if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
+                if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted);
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));

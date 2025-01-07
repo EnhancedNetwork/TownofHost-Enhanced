@@ -60,6 +60,7 @@ class DisableDevice
                 bool ignore = (Options.DisableDevicesIgnoreImpostors.GetBool() && pc.Is(Custom_Team.Impostor)) ||
                         (Options.DisableDevicesIgnoreNeutrals.GetBool() && pc.Is(Custom_Team.Neutral)) ||
                         (Options.DisableDevicesIgnoreCrewmates.GetBool() && pc.Is(Custom_Team.Crewmate)) ||
+                        (Options.DisableDevicesIgnoreCoven.GetBool() && pc.Is(Custom_Team.Coven)) ||
                         (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
                 var mapId = Utils.GetActiveMapId();
@@ -157,6 +158,7 @@ public class RemoveDisableDevicesPatch
             (Options.DisableDevicesIgnoreImpostors.GetBool() && player.Is(Custom_Team.Impostor)) ||
             (Options.DisableDevicesIgnoreNeutrals.GetBool() && player.Is(Custom_Team.Neutral)) ||
             (Options.DisableDevicesIgnoreCrewmates.GetBool() && player.Is(Custom_Team.Crewmate)) ||
+            (Options.DisableDevicesIgnoreCoven.GetBool() && player.Is(Custom_Team.Coven)) ||
             (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
         var admins = UnityEngine.Object.FindObjectsOfType<MapConsole>(true);
