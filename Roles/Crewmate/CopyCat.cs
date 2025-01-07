@@ -106,7 +106,7 @@ internal class CopyCat : RoleBase
             killer.SetKillCooldown();
             return false;
         }
-        if (CopyCrewVar.GetBool())
+        if (CopyCrewVar.GetBool() && !target.Is(CustomRoles.Narc))
         {
             role = role switch
             {
@@ -135,6 +135,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
                 CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 0 => CustomRoles.Overseer,
                 CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 1 => CustomRoles.Medic,
+                CustomRoles.Apprentice when Main.AliveImpostorCount > 1 => CustomRoles.Overseer,
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
                 CustomRoles.MoonDancer => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,
@@ -142,8 +143,10 @@ internal class CopyCat : RoleBase
                 _ => role
             };
         }
-        if (role.IsCrewmate())
+        if (target.IsNarcCrew())
         {
+            if (target.Is(CustomRoles.Narc))
+                role = CustomRoles.Sheriff;
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);
