@@ -26,6 +26,7 @@ public class PlayerState(byte playerId)
 #pragma warning restore IDE1006
     public TaskState taskState = new();
     public bool IsBlackOut { get; set; } = false;
+    public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
     public PlainShipRoom LastRoom = null;
@@ -43,6 +44,11 @@ public class PlayerState(byte playerId)
 
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
+
+        if (pc.Is(CustomRoles.Necromancer))
+        {
+            IsNecromancer = true;
+        }
 
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
@@ -96,6 +102,14 @@ public class PlayerState(byte playerId)
         if (pc.Is(CustomRoles.Soulless))
         {
             countTypes = CountTypes.OutOfGame;
+        }
+        if (pc.Is(CustomRoles.Enchanted))
+        {
+            countTypes = CountTypes.Coven;
+        }
+        if (Main.PlayerStates[pc.PlayerId].IsNecromancer)
+        {
+            countTypes = CountTypes.Coven;
         }
 
         MainRoleLogs.Add((DateTime.Now, role));
@@ -222,6 +236,10 @@ public class PlayerState(byte playerId)
             case CustomRoles.Soulless:
                 countTypes = CountTypes.OutOfGame;
                 break;
+
+            case CustomRoles.Enchanted:
+                countTypes = CountTypes.Coven;
+                break;
         }
     }
     public void RemoveSubRole(CustomRoles addOn)
@@ -321,6 +339,7 @@ public class PlayerState(byte playerId)
         Sacrificed,
         Electrocuted,
         Scavenged,
+        BlastedOff,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
