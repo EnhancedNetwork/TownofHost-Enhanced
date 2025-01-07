@@ -82,7 +82,7 @@
   "PassiveNeutralsCanGuess": "Passive <color=#7f8c8d>Neutrals</color> can guess",
 
   "CanGuessAddons": "Can Guess Add-ons",
-  "ShowOnlyEnabledRolesInGuesserUI": "Show Only Enabled Roles In Guesser UI",
+  "ShowOnlyEnabledRolesInGuesserUI": "Show Only Enabled Roles in Guesser UI",
   "CrewCanGuessCrew": "<color=#8cffff>Crewmates</color> can Guess <color=#8cffff>Crewmate</color> Roles",
   "ImpCanGuessImp": "<color=#ff1919>Impostors</color> can Guess <color=#ff1919>Impostor</color> Roles",
   "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
