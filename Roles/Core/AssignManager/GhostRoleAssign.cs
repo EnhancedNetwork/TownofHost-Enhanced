@@ -40,7 +40,15 @@ public static class GhostRoleAssign
         var getplrRole = player.GetCustomRole();
 
         // Neutral Apocalypse can't get ghost roles
-        if (getplrRole.IsNA() || getplrRole.IsTNA()) return;
+        if (getplrRole.IsNA() || getplrRole.IsTNA() && !Main.PlayerStates[player.PlayerId].IsNecromancer) return;
+
+        // Coven Ghost Roles don't exist yet
+        if (getplrRole.IsCoven() && !Main.PlayerStates[player.PlayerId].IsNecromancer) return;
+        if (Main.PlayerStates[player.PlayerId].IsNecromancer)
+        {
+            GhostGetPreviousRole[player.PlayerId] = CustomRoles.Necromancer;
+            return;
+        }
 
         // Roles can win after death, should not get ghost roles
         if (getplrRole is CustomRoles.GM

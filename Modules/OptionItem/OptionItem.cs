@@ -302,10 +302,10 @@ public enum TabGroup
 {
     SystemSettings,
     ModSettings,
-    ModifierSettings,
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
+    CovenRoles,
     Addons
 }
 [Obfuscation(Exclude = true)]

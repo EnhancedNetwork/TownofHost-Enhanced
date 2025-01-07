@@ -7,6 +7,7 @@ using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -117,6 +118,7 @@ public enum CustomRPC : byte // 189/255 USED
     SyncAdmiredAbility,
     SetImitateLimit,
     DictatorRPC,
+    Necronomicon,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -652,6 +654,9 @@ internal class RPCHandlerPatch
                 for (int i = 0; i < pnum; i++)
                     Main.DeadPassedMeetingPlayers.Add(reader.ReadByte());
                 break;
+            case CustomRPC.Necronomicon:
+                CovenManager.ReceiveNecroRPC(reader);
+                break;
         }
     }
 
@@ -1008,9 +1013,10 @@ internal static class RPC
         try
         {
             target = targetClientId < 0 ? "All" : AmongUsClient.Instance.GetClient(targetClientId).PlayerName;
-            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.Data?.PlayerName;
+            from = Main.AllPlayerControls.FirstOrDefault(c => c.NetId == targetNetId)?.GetRealName(clientData: true);
         }
         catch { }
+
         Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
     }
     public static string GetRpcName(byte callId)

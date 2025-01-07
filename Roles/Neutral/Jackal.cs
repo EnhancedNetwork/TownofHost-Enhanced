@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -40,6 +39,9 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
+
+    private bool hasConverted;
+
     [Obfuscation(Exclude = true)]
     private enum SidekickAssignModeSelectList
     {
@@ -99,6 +101,7 @@ internal class Jackal : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = 0;
+        hasConverted = false;
         if (Playerids.Count == 0 || RestoreLimitOnNewJackal.GetBool())
         {
             AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
@@ -360,13 +363,14 @@ internal class Jackal : RoleBase
         return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit)
             && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate)
             && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Paranoia)
-            && !pc.Is(CustomRoles.Contagious) && pc.GetCustomRole().IsAbleToBeSidekicked()
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Enchanted) && pc.GetCustomRole().IsAbleToBeSidekicked();
     }
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
     {
         if (!target.Is(CustomRoles.Jackal)) return;
+
+        if (hasConverted) return;
 
         if (SidekickTurnIntoJackal.GetBool())
         {
@@ -381,6 +385,7 @@ internal class Jackal : RoleBase
             if (readySideKicks.Count < 1)
             {
                 Logger.Info("Jackal dead, but no alive sidekick can be assigned!", "Jackal");
+                hasConverted = true;
                 return;
             }
 
@@ -412,10 +417,13 @@ internal class Jackal : RoleBase
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
                 }
                 Utils.NotifyRoles();
+
+                hasConverted = true;
             }
             else
             {
                 Logger.Info($"Selected alive Sidekick [{newJackal.PlayerId}]{newJackal.GetNameWithRole()} is dead? wtf", "Jackal");
+                hasConverted = true;
             }
         }
         else
@@ -426,6 +434,15 @@ internal class Jackal : RoleBase
                 player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BossIsDead")));
             }
             Utils.NotifyRoles();
+            hasConverted = true;
+        }
+    }
+
+    public override void AfterMeetingTasks()
+    {
+        if (_Player && !_Player.IsAlive() && !hasConverted)
+        {
+            OnMurderPlayerAsTarget(_Player, _Player, true, false);
         }
     }
     private string GetRecruitLimit()

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.CheckForEndVotingPatch;
 using static TOHE.Translator;
@@ -69,9 +70,6 @@ internal class Swapper : RoleBase
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
-
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
     public bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -258,8 +256,18 @@ internal class Swapper : RoleBase
         if (!Vote.TryGetValue(pc.PlayerId, out var tid1) || !VoteTwo.TryGetValue(pc.PlayerId, out var tid2)) return;
         if (tid1 == 253 || tid2 == 253 || tid1 == tid2) return;
 
-        var target1 = Utils.GetPlayerById(tid1);
-        var target2 = Utils.GetPlayerById(tid2);
+        var target1 = GetPlayerById(tid1);
+        if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+        {
+            target1 = GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+        }
+        var target2 = GetPlayerById(tid2);
+        if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target2.PlayerId].Count > 0)
+        {
+            target2 = GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+        }
 
         if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) return;
 

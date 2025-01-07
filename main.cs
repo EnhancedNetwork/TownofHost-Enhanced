@@ -46,13 +46,13 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2024.1213.220.00082"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 8 Hotfix 2";
+    public const string PluginVersion = "2025.0106.220.11000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 11";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = true; // Latest: V2.1.0 Beta 3
+    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
     public static bool hasAccess = true;
@@ -80,6 +80,7 @@ public class Main : BasePlugin
     public static bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public Coroutines coroutines;
+    public Dispatcher dispatcher;
     public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
     public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
@@ -136,7 +137,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
-    const string LANGUAGE_FOLDER_NAME = "Language";
+    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -162,6 +163,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<int, int> SayStartTimes = [];
     public static readonly Dictionary<int, int> SayBanwordsTimes = [];
     public static readonly Dictionary<byte, float> AllPlayerSpeed = [];
+    public static readonly Dictionary<byte, float> LastAllPlayerSpeed = [];
     public static readonly HashSet<byte> PlayersDiedInMeeting = [];
     public static readonly Dictionary<byte, long> AllKillers = [];
     public static readonly Dictionary<byte, (NetworkedPlayerInfo.PlayerOutfit outfit, string name)> OvverideOutfit = [];
@@ -360,6 +362,9 @@ public class Main : BasePlugin
                     case Custom_Team.Impostor:
                         roleColors.TryAdd(role, "#ff1919");
                         break;
+                    case Custom_Team.Coven:
+                        roleColors.TryAdd(role, "#ac42f2");
+                        break;
                     default:
                         break;
                 }
@@ -540,6 +545,7 @@ public class Main : BasePlugin
 
         Logger = BepInEx.Logging.Logger.CreateLogSource("TOHE");
         coroutines = AddComponent<Coroutines>();
+        dispatcher = AddComponent<Dispatcher>();
         TOHE.Logger.Enable();
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
@@ -845,19 +851,15 @@ public enum CustomRoles
     Glitch,
     God,
     Hater,
-    HexMaster,
     Huntsman,
     Imitator,
     Infectious,
     Innocent,
     Jackal,
     Jester,
-    Jinx,
     Juggernaut,
     Lawyer,
     Maverick,
-    Medusa,
-    Necromancer,
     Opportunist,
     Pelican,
     Pestilence,
@@ -866,8 +868,6 @@ public enum CustomRoles
     Pixie,
     PlagueBearer,
     PlagueDoctor,
-    Poisoner,
-    PotionMaster,
     Provocateur,
     PunchingBag,
     Pursuer,
@@ -903,6 +903,22 @@ public enum CustomRoles
     Workaholic,
     Wraith,
 
+    //Coven
+    Coven,
+    Conjurer,
+    CovenLeader,
+    HexMaster,
+    Illusionist,
+    Jinx,
+    Medusa,
+    MoonDancer,
+    Necromancer,
+    Poisoner,
+    PotionMaster,
+    Ritualist,
+    Sacrifist,
+    VoodooMaster,
+
     //two-way camp
     Mini,
 
@@ -935,6 +951,7 @@ public enum CustomRoles
     DoubleShot,
     Eavesdropper,
     Egoist,
+    Enchanted,
     Evader,
     EvilSpirit,
     Flash,
@@ -1063,6 +1080,7 @@ public enum CustomWinner
     Solsticer = CustomRoles.Solsticer,
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
+    Coven = CustomRoles.Coven,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
@@ -1121,6 +1139,8 @@ public enum TieMode
     All,
     Random
 }
+
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class Coroutines : MonoBehaviour
 {
 }

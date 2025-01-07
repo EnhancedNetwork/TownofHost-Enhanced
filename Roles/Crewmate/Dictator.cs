@@ -121,8 +121,6 @@ internal class Dictator : RoleBase
         }
         return true;
     }
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-    => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + pva.NameText.text : "";
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && ChangeCommandToExpel.GetBool() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
 
