@@ -300,6 +300,18 @@ public static class CustomRolesHelper
             CustomRoles.Shapeshifter or
             CustomRoles.Phantom;
     }
+    public static int AliveImpV3Num => Main.AllAlivePlayerControls.Count(pc => pc.IsNonNarcImpV3());
+
+    public static bool CheckMMCanSeeImp(this PlayerControl pc, bool CheckImp = true)
+    {
+        var role = pc.GetCustomRole();
+
+        return role is CustomRoles.Refugee 
+                || (role.IsImpostor() && CheckImp)
+                || (role == CustomRoles.Parasite && AliveImpV3Num < 2)
+                || (role == CustomRoles.Apprentice && AliveImpV3Num < 2)
+                || (role == CustomRoles.Crewpostor && Crewpostor.CPAndAlliesKnowEachOther.GetBool());
+    }
     public static bool IsCoven(this CustomRoles role)
     {
         return role.GetStaticRoleClass().ThisRoleType is
@@ -381,9 +393,16 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
-            or CustomRoles.Enchanted;
+            or CustomRoles.Enchanted
+            or CustomRoles.Narc;
     }
-
+    
+    public static bool IsBetrayalAddonV2(this CustomRoles role)
+    {
+        return (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
+               || role is CustomRoles.Admired;
+    }
+    
     public static bool IsImpOnlyAddon(this CustomRoles role)
     {
         return role is CustomRoles.Mare or
@@ -795,7 +814,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Gangster)
                     || pc.Is(CustomRoles.Admirer)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Narc)
+                    || (pc.Is(CustomRoles.Sheriff) && CustomRoles.Narc.RoleExist()))  //even impy herself doubts if it works
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;
@@ -804,7 +825,7 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Nemesis))
+                if (pc.Is(CustomRoles.Nemesis)  || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -837,7 +858,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Swooper)
-                    || pc.Is(CustomRoles.DoubleAgent))
+                    || pc.Is(CustomRoles.DoubleAgent)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -860,7 +882,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
-                    || pc.Is(CustomRoles.Tired))
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -892,7 +915,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Stealer)
                     || pc.Is(CustomRoles.Tricky)
                     || pc.Is(CustomRoles.DoubleAgent)
-                    || pc.Is(CustomRoles.YinYanger))
+                    || pc.Is(CustomRoles.YinYanger)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1114,6 +1138,20 @@ public static class CustomRolesHelper
                 if (pc.IsNeutralApocalypse())
                     return false;
                 break;
+
+            case CustomRoles.Narc:
+                if (!pc.GetCustomRole().IsImpostorTeamV3())
+                    return false;
+                if (pc.Is(CustomRoles.Egoist)
+                    || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.Mimic)
+                    || pc.Is(CustomRoles.Tricky)
+                    || pc.Is(CustomRoles.Swift)
+                    || (pc.Is(CustomRoles.Visionary) && !Narc.VisionaryCanBeNarc.GetBool())
+                    || (pc.Is(CustomRoles.DoubleAgent) && !Narc.DoubleAgentCanBeNarc.GetBool())
+                    || ((pc.Is(CustomRoles.Zombie) || pc.Is(CustomRoles.KillingMachine)) && !Narc.ZombieAndKMCanBeNarc.GetBool()))
+                    return false;
+                break;
         }
 
         return true;
@@ -1161,6 +1199,32 @@ public static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
+
+    public static bool IsNeutralTeamV3(this CustomRoles role) => role.IsNeutral() && !role.IsMadmate();
+
+    /// <summary>
+    /// Narc part
+    /// </summary>
+    public static bool IsNarcCrew(this PlayerControl pc)
+    {
+        return pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Narc);
+    }
+    public static bool IsNonNarcImp(this PlayerControl pc)
+    {
+        return pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc);
+    }
+    public static bool IsNonNarcMM(this PlayerControl pc)
+    {
+        return pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc);
+    }
+    public static bool IsNonNarcImpV3(this PlayerControl pc)
+    {
+        return pc.IsNonNarcImp() || pc.IsNonNarcMM();
+    }
+    /// <summary>
+    /// end of Narc part
+    /// </summary> 
+
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
@@ -1339,6 +1403,7 @@ public static class CustomRolesHelper
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
             CustomRoles.Shocker => CustomWinner.Shocker,
+            CustomRoles.Narc => CustomWinner.Narc,
             _ => throw new NotImplementedException()
 
         };
