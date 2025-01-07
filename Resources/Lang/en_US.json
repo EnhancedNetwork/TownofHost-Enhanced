@@ -1732,7 +1732,7 @@
   "Ventguard_BlockVentCooldown": "Block Vent Cooldown",
   "Ventguard_BlockDoesNotAffectCrew": "<color=#8cffff>Crewmates</color> can use blocked Vents",
   "Ventguard_BlocksResetOnMeeting": "Reset Blocked Vents Every Meeting",
-  "VentIsBlocked": "This Vent Is Now Blocked!",
+  "VentIsBlocked": "This Vent is Now Blocked!",
 
   "TraitorKnowMadmate": "Traitor Knows Madmates",
   "Psychic_NBareRed": "<color=#7f8c8d>Neutral</color> <color=#046300>Benign</color> can be red",
@@ -1922,7 +1922,7 @@
   "FollowerBetTargetKnowFollower": "Follower target knows who the Follower is",
   "FortuneTellerHideVote": "Hide Fortune Teller's Votes",
   "CultistCharmCooldown": "Charm Cooldown",
-  "CultistCharmCooldownIncrese": "Increases Charm Cooldown For Each Charm",
+  "CultistCharmCooldownIncrese": "Increases Charm Cooldown for Each Charm",
   "CultistCharmMax": "Maximum Number Of Charm",
   "CultistKnowTargetRole": "Know <color=#cf6acd>Charmed</color> Player's Role",
   "CultistTargetKnowOtherTarget": "<color=#cf6acd>Charmed</color> players know each other",
