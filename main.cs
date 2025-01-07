@@ -678,6 +678,7 @@ public enum CustomRoles
     Abyssbringer,
     Anonymous,
     AntiAdminer,
+    Apprentice,
     Arrogance,
     Bard,
     Blackmailer,
@@ -688,6 +689,7 @@ public enum CustomRoles
     Chronomancer,
     Cleaner,
     Consigliere,
+    Convict,
     Councillor,
     Crewpostor,
     CursedWolf,
@@ -969,6 +971,7 @@ public enum CustomRoles
     Lovers,
     Loyal,
     Lucky,
+    Narc,
     Madmate,
     Mare,
     Rebirth,
@@ -1080,6 +1083,7 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
+    Narc = CustomRoles.Narc,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
