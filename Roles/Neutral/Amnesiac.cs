@@ -137,7 +137,7 @@ internal class Amnesiac : RoleBase
             else
             {
                 var role = targetPlayerStates.MainRole;
-                if (targetPlayerStates.Is(CustomRoles.Narc)) role = CustomRoles.Sheriff;
+                if (targetPlayerStates.MainRole == CustomRoles.Narc) role = CustomRoles.Sheriff;
                 __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                 __instance.RpcChangeRoleBasis(role);
                 __instance.RpcSetCustomRole(role);
