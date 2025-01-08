@@ -251,7 +251,7 @@ internal class Inspector : RoleBase
                         )
                         ||
                         (
-                        (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired && !target1.Is(CustomRoles.Narc))
+                        (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired) && !target1.Is(CustomRoles.Narc))
                         &&
                         (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2()) && !target2.Is(CustomRoles.Admired) && !target2.Is(CustomRoles.Narc))
                         )
