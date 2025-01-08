@@ -12,7 +12,6 @@ internal class Parasite : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 
-    private static OptionItem ParasiteCD;
     private static OptionItem LegacyParasite;
     private static OptionItem ParasiteShapeshiftCD;
     private static OptionItem ParasiteShapeshiftDur;
