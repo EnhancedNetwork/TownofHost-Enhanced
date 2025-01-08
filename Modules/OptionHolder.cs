@@ -509,6 +509,7 @@ public static class Options
     //public static OptionItem MadmateCanFixSabotage;
     public static OptionItem DefaultShapeshiftCooldown;
     public static OptionItem DeadImpCantSabotage;
+    public static OptionItem NumberOfMadmates;
 
     // Neutral
     public static OptionItem NonNeutralKillingRolesMinPlayer;
@@ -832,6 +833,10 @@ public static class Options
         TextOptionItem.Create(10000005, "RoleType.Madmate", TabGroup.ImpostorRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 25, 25, byte.MaxValue));
+
+        NumberOfMadmates = IntegerOptionItem.Create(60091, "NumberOfMadmates", new(0, 5, 1), 0, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.Madmate).ForEach(r => r.SetupCustomOption());
 
