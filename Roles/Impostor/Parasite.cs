@@ -20,9 +20,6 @@ internal class Parasite : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Parasite, zeroOne: false);
-        ParasiteCD = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Parasite])
-            .SetValueFormat(OptionFormat.Seconds);
         LegacyParasite = BooleanOptionItem.Create(Id + 11, "LegacyParasite", false, TabGroup.ImpostorRoles, false)
                 .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Parasite]);
         ParasiteShapeshiftCD = FloatOptionItem.Create(Id + 12, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
@@ -38,7 +35,6 @@ internal class Parasite : RoleBase
         AURoleOptions.ShapeshifterCooldown = ParasiteShapeshiftCD.GetFloat();
         AURoleOptions.ShapeshifterDuration = ParasiteShapeshiftDur.GetFloat();
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ParasiteCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => true;
