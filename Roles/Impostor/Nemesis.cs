@@ -31,17 +31,17 @@ internal class Nemesis : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
         NemesisCanKillNum = IntegerOptionItem.Create(Id + 10, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
-                .SetValueFormat(OptionFormat.Players);
+            .SetValueFormat(OptionFormat.Players);
         PreventSeeRolesBeforeSkillUsedUp = BooleanOptionItem.Create(Id + 14, "PreventSeeRolesBeforeSkillUsedUp", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
         LegacyNemesis = BooleanOptionItem.Create(Id + 11, "LegacyNemesis", false, TabGroup.ImpostorRoles, false)
-                .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
         NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-                .SetParent(LegacyNemesis)
-                .SetValueFormat(OptionFormat.Seconds);
+            .SetParent(LegacyNemesis)
+            .SetValueFormat(OptionFormat.Seconds);
         NemesisShapeshiftDur = FloatOptionItem.Create(Id + 13, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-                .SetParent(LegacyNemesis)
-                .SetValueFormat(OptionFormat.Seconds);
+            .SetParent(LegacyNemesis)
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
     {
@@ -139,7 +139,7 @@ internal class Nemesis : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (target.Is(CustomRoles.Jinx) || target.Is(CustomRoles.CursedWolf))
+        else if (target.Is(CustomRoles.CursedWolf) && CursedWolf.GuardSpellTimes.GetInt() > 0)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;

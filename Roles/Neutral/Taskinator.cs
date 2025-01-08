@@ -13,7 +13,7 @@ internal class Taskinator : RoleBase
     public override CustomRoles Role => CustomRoles.Taskinator;
     private const int Id = 13700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Taskinator);
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
+    public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
@@ -145,4 +145,3 @@ internal class Taskinator : RoleBase
         }
     }
 }
-

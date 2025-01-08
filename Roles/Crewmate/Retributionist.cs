@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Double;
+using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -31,14 +32,14 @@ internal class Retributionist : RoleBase
         RetributionistCanKillNum = IntegerOptionItem.Create(Id + 10, "RetributionistCanKillNum", new(1, 15, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
-        PreventSeeRolesBeforeSkillUsedUp = BooleanOptionItem.Create(Id + 20, "PreventSeeRolesBeforeSkillUsedUp", true, TabGroup.ImpostorRoles, false)
+        PreventSeeRolesBeforeSkillUsedUp = BooleanOptionItem.Create(Id + 13, "PreventSeeRolesBeforeSkillUsedUp", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
         MinimumPlayersAliveToRetri = IntegerOptionItem.Create(Id + 11, "MinimumPlayersAliveToRetri", new(0, 15, 1), 5, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist])
             .SetValueFormat(OptionFormat.Players);
         CanOnlyRetributeWithTasksDone = BooleanOptionItem.Create(Id + 12, "CanOnlyRetributeWithTasksDone", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Retributionist]);
-        OverrideTasksData.Create(Id + 13, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
+        OverrideTasksData.Create(Id + 14, TabGroup.CrewmateRoles, CustomRoles.Retributionist);
     }
     public override void Init()
     {
@@ -152,7 +153,7 @@ internal class Retributionist : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (target.Is(CustomRoles.Jinx) || target.Is(CustomRoles.CursedWolf))
+        else if (target.Is(CustomRoles.CursedWolf) && CursedWolf.GuardSpellTimes.GetInt() > 0)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;

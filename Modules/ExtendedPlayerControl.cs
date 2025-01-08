@@ -1295,6 +1295,7 @@ static class ExtendedPlayerControl
         else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
+        else if (Madmate.MadmateKnowWhosMadmate.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate)) return true;
         else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven)) return true;
         else if (target.Is(CustomRoles.Enchanted) && seer.Is(Custom_Team.Coven)) return true;
         else if (target.Is(Custom_Team.Coven) && seer.Is(Custom_Team.Coven)) return true;
@@ -1330,9 +1331,14 @@ static class ExtendedPlayerControl
 
         if (seer.PlayerId == target.PlayerId) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.IsHost() && Main.GodMode.Value)) return true;
+        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote && subRole.IsBetrayalAddonV2()) return true;
+        else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK() && !subRole.IsBetrayalAddon()) return true;
+        else if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick) && !subRole.IsBetrayalAddon()) return true;
+        else if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Jackal) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
+        else if (Gravestone.EveryoneKnowRole(target)) return true;
 
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
@@ -1362,8 +1368,6 @@ static class ExtendedPlayerControl
     }
     public static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
-
         if (seer.Is(Custom_Team.Impostor))
         {
             // Imp know Madmate

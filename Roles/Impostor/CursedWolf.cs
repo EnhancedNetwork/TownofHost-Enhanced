@@ -13,9 +13,8 @@ internal class CursedWolf : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    private static OptionItem GuardSpellTimes;
+    public static OptionItem GuardSpellTimes;
     private static OptionItem KillAttacker;
-
 
     public override void SetupCustomOption()
     {

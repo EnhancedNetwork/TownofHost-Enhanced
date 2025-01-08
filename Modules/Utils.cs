@@ -2032,10 +2032,22 @@ public static class Utils
                         RoleText = $"<size=150%><color=#7f8c8d>{GetString("TeamNeutral")}</size></color>";
                         RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
                     }
+                    else if (seer.Is(CustomRoles.Madmate))
+                    {
+                        RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate"));
+                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Madmate), GetString($"{CustomRoles.Madmate}" + "Info"));
+                    }
+                    else if (seer.Is(CustomRoles.Egoist))
+                    {
+                        RoleText = $"<size=150%><color=#7f8c8d>{GetString("TeamNeutral")}</size></color>";
+                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Egoist), GetString($"{CustomRoles.Egoist}" + "Info"));
+                    }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
+                    else if (seerRole.IsNA()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamApocalypse")); }
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
+                    else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
                     SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{RoleInfo}</size></font>\n";
                 }

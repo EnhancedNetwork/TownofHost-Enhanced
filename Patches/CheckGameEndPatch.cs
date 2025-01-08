@@ -219,37 +219,26 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                // Egoist (Crewmate)
-                if (WinnerTeam == CustomWinner.Crewmate)
-                {
-                    var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
-
-                    if (egoistCrewArray.Length > 0)
-                    {
-                        reason = GameOverReason.ImpostorByKill;
-                        ResetAndSetWinner(CustomWinner.Egoist);
-
-                        foreach (var egoistCrew in egoistCrewArray)
-                        {
-                            WinnerIds.Add(egoistCrew.PlayerId);
-                        }
-                    }
-                }
-
-                // Egoist (Impostor)
                 if (WinnerTeam == CustomWinner.Impostor)
                 {
-                    var egoistImpArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.Egoist)).ToArray();
+                    var aliveImps = Main.AllAlivePlayerControls.Where(x => x.Is(Custom_Team.Impostor));
+                    var imps = aliveImps as PlayerControl[] ?? aliveImps.ToArray();
+                    var aliveImpCount = imps.Length;
 
-                    if (egoistImpArray.Length > 0)
+                    switch (aliveImpCount)
                     {
-                        reason = GameOverReason.ImpostorByKill;
-                        ResetAndSetWinner(CustomWinner.Egoist);
-
-                        foreach (var egoistImp in egoistImpArray)
-                        {
-                            WinnerIds.Add(egoistImp.PlayerId);
-                        }
+                        // If there's an Egoist, and there is at least 1 non-Egoist impostor alive, Egoist loses
+                        case > 1 when WinnerIds.Any(x => x.GetPlayer().Is(CustomRoles.Egoist)):
+                            WinnerIds.RemoveWhere(x => x.GetPlayer().Is(CustomRoles.Egoist));
+                            break;
+                        // If there's only 1 impostor alive, and all living impostors are Egoists, the Egoist wins alone
+                        case 1 when imps.All(x => x.Is(CustomRoles.Egoist)):
+                            var pc = imps[0];
+                            reason = GameOverReason.ImpostorByKill;
+                            WinnerTeam = CustomWinner.Egoist;
+                            WinnerIds.RemoveWhere(x => Main.PlayerStates[x].MainRole.IsImpostor() || Main.PlayerStates[x].MainRole.IsMadmate() || x.GetPlayer().Is(CustomRoles.Madmate));
+                            WinnerIds.Add(pc.PlayerId);
+                            break;
                     }
                 }
 
