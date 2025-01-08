@@ -468,7 +468,6 @@ class BeginCrewmatePatch
             case CustomRoles.SoulCatcher:
             case CustomRoles.Specter:
             case CustomRoles.Stalker:
-            case CustomRoles.CovenLeader:
             case CustomRoles.PhantomTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
                 break;
@@ -557,10 +556,14 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
                 break;
             case CustomRoles.Jinx:
+            case CustomRoles.Romantic:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
                 break;
             case CustomRoles.Illusionist:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Phantom)?.UseSound;
+                break;
+            case CustomRoles.Telecommunication:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Tracker)?.UseSound;
                 break;
         }
 
@@ -568,6 +571,7 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = GetString("TeamLovers");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Lovers");
         }
