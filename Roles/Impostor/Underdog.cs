@@ -23,7 +23,8 @@ internal class Underdog : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Length <= UnderdogMaximumPlayersNeededToKill.GetInt();
+    public override bool CanUseKillButton(PlayerControl pc) => CheckCanSeeImp(pc);
+    public static bool CheckCanSeeImp(PlayerControl pc) => Main.AllAlivePlayerControls.Length <= UnderdogMaximumPlayersNeededToKill.GetInt();
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = UnderdogKillCooldown.GetFloat();
 }
