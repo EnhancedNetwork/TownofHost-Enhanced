@@ -565,6 +565,9 @@ class BeginCrewmatePatch
             case CustomRoles.Telecommunication:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Tracker)?.UseSound;
                 break;
+            case CustomRoles.Morphling:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Shapeshifter)?.UseSound;
+                break;
         }
 
         if (PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
