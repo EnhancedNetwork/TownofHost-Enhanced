@@ -111,6 +111,11 @@ internal class Amnesiac : RoleBase
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
             }
 
+            if (targetPlayerStates.MainRole == CustomRoles.Narc)
+            {
+                __instance.GetCustomSubRoles()?.Add(CustomRoles.Narc);
+            }
+
             if (targetPlayerStates.MainRole.IsGhostRole())
             {
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
