@@ -1,4 +1,5 @@
-﻿using Hazel;
+﻿using AmongUs.GameOptions;
+using Hazel;
 using InnerNet;
 using System;
 using TOHE.Modules;
@@ -6,7 +7,6 @@ using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
-
 
 namespace TOHE.Roles.Neutral;
 
@@ -24,8 +24,8 @@ internal class Quizmaster : RoleBase
     private static OptionItem MinQuestionDifficulty;
     private static OptionItem MaxQuestionDifficulty;
     public static OptionItem CanKillAfterMarkOpt;
-    private static OptionItem CanVentAfterMark;
-    private static OptionItem NumOfKillAfterMark;
+    private static OptionItem CanVent;
+    private static OptionItem HasImpostorVision;
     private static OptionItem CanGiveQuestionsAboutPastGames;
 
     private static QuizQuestionBase Question = new SetAnswersQuestion { Stage = 0, Answer = "Select Me", PossibleAnswers = { "Select me", "Die", "Die", "Die" }, Question = "This question is to prevent crashes answer the letter with the answer \"Select me\"", HasAnswersTranslation = false, HasQuestionTranslation = false };
@@ -59,13 +59,12 @@ internal class Quizmaster : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         MaxQuestionDifficulty = IntegerOptionItem.Create(Id + 10, "QuizmasterSettings.MaxQuestionDifficulty", new(1, 5, 1), 1, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-        CanVentAfterMark = BooleanOptionItem.Create(Id + 11, "QuizmasterSettings.CanVentAfterMark", true, tab, false)
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanKillAfterMarkOpt = BooleanOptionItem.Create(Id + 12, "QuizmasterSettings.CanKillAfterMark", false, tab, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
-        NumOfKillAfterMark = IntegerOptionItem.Create(Id + 13, "QuizmasterSettings.NumOfKillAfterMark", new(1, 15, 1), 1, tab, false)
-            .SetValueFormat(OptionFormat.Players)
-            .SetParent(CanKillAfterMarkOpt);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, tab, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
         CanGiveQuestionsAboutPastGames = BooleanOptionItem.Create(Id + 14, "QuizmasterSettings.CanGiveQuestionsAboutPastGames", false, tab, false)
            .SetParent(CustomRoleSpawnChances[CustomRoles.Quizmaster]);
     }
@@ -73,9 +72,7 @@ internal class Quizmaster : RoleBase
     {
         Player = null;
         firstSabotageOfRound = Sabotages.None;
-        //killsForRound = 0;
         allowedKilling = false;
-        //allowedVenting = true;
         AlreadyMarked = false;
         MarkedPlayer = byte.MaxValue;
 
@@ -131,18 +128,8 @@ internal class Quizmaster : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 15;
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseImpostorVentButton(PlayerControl pc)
-    {
-        if (pc == null || !pc.IsAlive()) return false;
-
-        bool canVent = false;
-        if (CanVentAfterMark.GetBool() && MarkedPlayer != byte.MaxValue)
-        {
-            canVent = true;
-        }
-
-        return canVent;
-    }
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

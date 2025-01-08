@@ -1263,7 +1263,7 @@ public static class CustomRolesHelper
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
-           CustomRoles.Quizmaster => CountTypes.Quizmaster,
+           CustomRoles.Quizmaster => Quizmaster.CanKillsAfterMark() ? CountTypes.Quizmaster : CountTypes.Crew,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
            CustomRoles.Crewpostor => CountTypes.Impostor,
