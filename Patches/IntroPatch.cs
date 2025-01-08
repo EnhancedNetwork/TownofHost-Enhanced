@@ -663,7 +663,7 @@ class BeginImpostorPatch
             __instance.BeginCrewmate(yourTeam);
             return false;
         }
-        // Madmate called from BeginCrewmate, need to skip previous lovers and egoist check here
+        // Madmate called from BeginCrewmate, need to skip previous Lovers and Egoist check here
 
         if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
@@ -680,7 +680,7 @@ class BeginImpostorPatch
                         yourTeam.Add(pc);
                     }
                 }
-                // Crew postor is counted as madmate but should be a impostor
+                // Crewpostor is counted as Madmate but should be a Impostor
                 if (Madmate.MadmateKnowWhosMadmate.GetBool() || role != CustomRoles.Madmate && Madmate.ImpKnowWhosMadmate.GetBool())
                 {
                     foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
@@ -714,7 +714,7 @@ class BeginImpostorPatch
             return false;
         }
 
-        // We only check impostor main role here!
+        // We only check Impostor main role here!
         if (role.IsImpostor())
         {
             yourTeam = new();
@@ -787,7 +787,7 @@ class IntroCutsceneDestroyPatch
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
 
-                    // When target is impostor, set name color as white
+                    // When target is Impostor, set name color as white
                     target.cosmetics.SetNameColor(Color.white);
                     target.Data.Role.NameColor = Color.white;
                 }
