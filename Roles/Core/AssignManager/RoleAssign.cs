@@ -15,6 +15,7 @@ public class RoleAssign
     enum RoleAssignType
     {
         Impostor,
+        Madmate,
         NeutralKilling,
         NonKillingNeutral,
         NeutralApocalypse,
