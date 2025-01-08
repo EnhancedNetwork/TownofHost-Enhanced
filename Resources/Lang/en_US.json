@@ -2973,7 +2973,7 @@
   "RpsCommandInfo": "<b>This command can only be used when in the lobby or after you die.</b>\n\ntype <b>/rps X</b> to play Rock Paper Scissors with the system. X can be 0 (rock), 1 (paper) or 2 (scissors). \n\nExample :- /rps 0",
   "RpsDraw": "I choose <b>{0}</b>\n\nWow, what an intense battle of wits we just had! It's almost as if we're equally matched in this game of sheer luck and randomness.",
   "RpsLose": "I choose <b>{0}</b>\n\nWell, well, well, looks like I've managed to outsmart a human again in this highly complex game of Rock, Paper, Scissors. I guess my unbeatable powers strike again! ",
-  "RpsWin": "I choose <b>{0}</b>\n\nOh, congratulations! You must have a crystal ball hidden behind that screen to beat me at Rock, Paper, Scissors. Or maybe I have the world's worst luck algorithm.",
+  "RpsWin": "I choose <b>{0}</b>\n\nOh, congratulations! You must have a Crystal Ball hidden behind that screen to beat me at Rock, Paper, Scissors. Or maybe I have the world's worst luck algorithm.",
 
   "CoinFlipCommandInfo": "<b>This command can only be used when in the lobby or after you die.</b>",
   "CoinFlipResult": "Drumroll, please... After an intense battle of gravity and randomness, the coin has decided to grace us with its presence! And the majestic winner is... (wait for it) ... the one and only... <b>{0}</b>! Who could have seen that coming?! Clearly, a momentous occasion in the history of coin flips.",
@@ -3052,10 +3052,10 @@
   "ChronomancerKillCooldown": "Ability Charge Time",
   "ChronomancerDecreaseTime": "Slaughter Decrease Time (lower is faster)",
   "ChronomancerStartMassacre": "SLAUGHTER: ACTIVATED",
-  "ChronomancerVisionMassacre": "Vision When In Slaughter",
+  "ChronomancerVisionMassacre": "Vision When in Slaughter",
 
   "ShamanButtonText": "Voodoo",
-  "ShamanTargetAlreadySelected": "You have already selected a voodoo doll in this round",
+  "ShamanTargetAlreadySelected": "You have already selected a Voodoo Doll in this round",
   "Shaman_KillerCannotMurderChosenTarget": "The killer cannot murder chosen target",
   "VoodooCooldown": "Voodoo Cooldown",
 
