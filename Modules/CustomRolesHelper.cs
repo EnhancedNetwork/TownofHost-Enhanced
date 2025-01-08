@@ -351,6 +351,15 @@ public static class CustomRolesHelper
             CustomRoles.Madmate or
             CustomRoles.Enchanted;
 
+    public static bool IsConvertedV2(PlayerControl pc) //add-ons that make players counted as a converted neutral
+    {
+        return pc.Is(CustomRoles.Charmed) || 
+               pc.Is(CustomRoles.Infected) || 
+               pc.Is(CustomRoles.Contagious) || 
+               pc.Is(CustomRoles.Recruit) || 
+               (pc.Is(CustomRoles.Egoist) && Egoist.EgoistCountAsConverted.GetBool());
+    }
+    
     public static bool IsNotKnightable(this CustomRoles role)
     {
         return role is
@@ -402,6 +411,18 @@ public static class CustomRolesHelper
     {
         return (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
                || role is CustomRoles.Admired;
+    }
+
+    public static bool IsBad(this PlayerControl pc) //gets all players that keep the game going
+    {
+        var pc_role = pc.GetCustomRole();
+        return (!pc.Is(CustomRoles.Admired) && 
+               (pc.IsNonNarcImpV3() || pc_role.IsNK() || pc_role.IsNA())) ||
+               pc.Is(CustomRoles.Infected) ||
+               (pc.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1) ||
+               (pc.Is(CustomRoles.Charmed) && Cultist.CharmedCountMode.GetInt() == 1) || 
+               (pc.Is(CustomRoles.Recruit) && Jackal.SidekickCountMode.GetInt() == 1) || 
+               (pc.Is(CustomRoles.Contagious) && Virus.ContagiousCountMode.GetInt() == 1);
     }
     
     public static bool IsImpOnlyAddon(this CustomRoles role)
