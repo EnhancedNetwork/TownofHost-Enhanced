@@ -80,7 +80,7 @@ internal class Gangster : RoleBase
         if (CanRecruit(killer.PlayerId))
         {
             if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Enchanted) && target.CanBeMadmate(forGangster: true)
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Enchanted) && !killer.Is(CustomRoles.Narc) && target.CanBeMadmate(forGangster: true)
                && CanBeGansterRecruit(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ganster Assign");
@@ -88,7 +88,7 @@ internal class Gangster : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BeRecruitedByGangster")));
             }
-            else if (killer.Is(CustomRoles.Admired) && Admirer.CanBeAdmired(target, killer))
+            else if ((killer.Is(CustomRoles.Admired) || killer.Is(CustomRoles.Narc)) && Admirer.CanBeAdmired(target, killer))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Ganster Assign");
                 target.RpcSetCustomRole(CustomRoles.Admired);
