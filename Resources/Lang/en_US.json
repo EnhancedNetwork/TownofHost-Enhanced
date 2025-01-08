@@ -1489,10 +1489,14 @@
 
   "BombCooldown": "Bomb Cooldown",
   "Warlock_CanKillSelf": "Can Kill Themselves",
-  "CrewpostorKnowsAllies": "Knows <color=#ff1919>Impostors</color>",
-  "AlliesKnowCrewpostor": "Known to <color=#ff1919>Impostors</color>",
+  "CPAndAlliesKnowEachOther": "Crewpostor And <color=#ff1919>Impostors</color> Know Each Other",
   "CrewpostorLungeKill": "Crewpostor lunges on kill",
   "CrewpostorKillAfterTask": "Number of tasks completed to make one kill",
+
+  "ConvictRoleChange": "You've completed your tasks.\nWaiting for a meeting to start and become the {0}.",
+  "ConvictToRefugeeMsg": "You role has been changed to {0}\nGood luck killing!",
+
+  "NumberOfMadmates": "Amount of <color=#ff1919>Madmates</color>",
 
   "NonNeutralKillingRolesMinPlayer": "<color=#00ffff>Minimum</color> amount of <color=#ffff00>Non-Killing</color> <color=#7f8c8d>Neutrals</color>",
   "NonNeutralKillingRolesMaxPlayer": "<color=#00a5ff>Maximum</color> amount of <color=#ffff00>Non-Killing</color> <color=#7f8c8d>Neutrals</color>",
