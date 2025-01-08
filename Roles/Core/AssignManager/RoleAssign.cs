@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
