@@ -84,7 +84,6 @@ public enum CustomRPC : byte // 185/255 USED
 
     SetEvilTrackerTarget,
     SetDrawPlayer,
-    SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
@@ -117,6 +116,7 @@ public enum CustomRPC : byte // 185/255 USED
     SetImitateLimit,
     DictatorRPC,
     Necronomicon,
+    ApprenticeRPC,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -483,9 +483,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetJailerTarget:
                 Jailer.ReceiveRPC(reader, setTarget: true);
                 break;
-            case CustomRPC.SetCrewpostorTasksDone:
-                Crewpostor.ReceiveRPC(reader);
-                break;
             case CustomRPC.SyncAdmiredList:
                 Admirer.ReceiveRPC(reader, true);
                 break;
@@ -650,6 +647,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Necronomicon:
                 CovenManager.ReceiveNecroRPC(reader);
+                break;
+            case CustomRPC.ApprenticeRPC:
+                Apprentice.ReceiveRPC(reader);
                 break;
         }
     }
