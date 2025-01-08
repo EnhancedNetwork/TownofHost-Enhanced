@@ -311,7 +311,7 @@ public static class CustomRolesHelper
                 || (role == CustomRoles.Parasite && AliveImpV3Num < 2)
                 || (role == CustomRoles.Apprentice && AliveImpV3Num < 2)
                 || (role == CustomRoles.Crewpostor && Crewpostor.CPAndAlliesKnowEachOther.GetBool())
-                || (role == CustomRoles.Underdog && Underdog.CanUseKillButton(pc));
+                || (role == CustomRoles.Underdog && Underdog.CheckCanSeeImp(pc));
     }
     public static bool IsCoven(this CustomRoles role)
     {
