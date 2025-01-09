@@ -45,92 +45,81 @@ internal class Imitator : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
-
+        CustomRoles ChangeRole = CustomRoles.Imitator;
         var role = target.GetCustomRole();
 
-        if (role is CustomRoles.Jackal
-            or CustomRoles.HexMaster
-            or CustomRoles.Poisoner
-            or CustomRoles.Juggernaut
-            or CustomRoles.BloodKnight
-            or CustomRoles.Sheriff)
+        if (target.IsAnySubRole(x => x.IsBetrayalAddonV2()))
         {
-            AbilityLimit--;
-            SendSkillRPC();
-            killer.RpcSetCustomRole(role);
-            killer.GetRoleClass().OnAdd(killer.PlayerId);
-
-            if (role.IsCrewmate())
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
-            else
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedNeutralKiller")));
-
-            // Notify target
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
+            foreach (var subrole in target.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
+            {
+                // role returns respective recruiting role for subrole,returns sheriff for narc,taskinator for egoist
+                role = subrole switch
+                {
+                    CustomRoles.Madmate => CustomRoles.Gangster,
+                    CustomRoles.Charmed => CustomRoles.Cultist,
+                    CustomRoles.Recruit => CustomRoles.Jackal,
+                    CustomRoles.Infected => CustomRoles.Infectious,
+                    CustomRoles.Contagious => CustomRoles.Virus,
+                    CustomRoles.Admired => CustomRoles.Admirer,
+                    CustomRoles.Enchanted => CustomRoles.Ritualist,
+                    CustomRoles.Egoist => CustomRoles.Taskinator,            
+                    CustomRoles.Narc => CustomRoles.Sheriff,
+                    _ => role
+                };
+            }
         }
-        else if (role.IsAmneMaverick())
+
+        if (role.IsCrewmate()) ChangeRole = CustomRoles.Sheriff;
+        else if (role.IsImpostor() || role == CustomRoles.Refugee) ChangeRole = CustomRoles.Refugee;
+        else if (role.IsMadmate() && role != CustomRoles.Refugee) 
+            ChangeRole = role.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter ? 
+            CustomRoles.Apprentice : CustomRoles.Convict; 
+        else if (role.IsNK()) ChangeRole = role is CustomRoles.Jackal ? CustomRoles.Sidekick : role; 
+        else if (role.IsNA()) ChangeRole = CustomRoles.Berserker; 
+        else if (role.IsCoven()) ChangeRole = CustomRoles.Sacrifist;         
+        else if (role.IsNonNK() && role != CustomRoles.Imitator)
         {
-            AbilityLimit--;
-            SendSkillRPC();
             switch (IncompatibleNeutralMode.GetInt())
             {
                 case 0:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImitator")));
                     break;
                 case 1:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedPursuer")));
-                    killer.RpcSetCustomRole(CustomRoles.Pursuer);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
+                    ChangeRole = CustomRoles.Pursuer;
                     break;
                 case 2:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedFollower")));
-                    killer.RpcSetCustomRole(CustomRoles.Follower);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
+                    ChangeRole = CustomRoles.Follower;
                     break;
                 case 3:
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedMaverick")));
-                    killer.RpcSetCustomRole(CustomRoles.Maverick);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
+                    ChangeRole = CustomRoles.Maverick;
                     break;
                 case 4: //....................................................................................x100
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedAmnesiac")));
-                    killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-                    killer.GetRoleClass().OnAdd(killer.PlayerId);
+                    ChangeRole = CustomRoles.Amnesiac;
                     break;
             }
 
         }
-        else if (role.IsCrewmate())
+
+        if (ChangeRole != CustomRoles.Imitator)
         {
             AbilityLimit--;
             SendSkillRPC();
-            killer.RpcSetCustomRole(CustomRoles.Sheriff);
+            killer.RpcChangeRoleBasis(ChangeRole);
+            killer.RpcSetCustomRole(ChangeRole);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedCrewmate")));
+            killer.SyncSettings();
+            killer.SetKillCooldown();
+            Main.PlayerStates[killer.PlayerId].InitTask(killer);
+            {
+                if (ChangeRole is CustomRoles.Amnesiac)
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
+                else killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), Utils.GetRoleName(ChangeRole))));
+            }
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-        }
-        else if (role.IsImpostor())
-        {
-            AbilityLimit--;
-            SendSkillRPC();
-            killer.RpcSetCustomRole(CustomRoles.Refugee);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
-        }
-
-        var killerRole = killer.GetCustomRole();
-
-        if (killerRole != CustomRoles.Imitator)
-        {
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown(forceAnime: true);
 
             Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
             Logger.Info($"{killer.GetNameWithRole()} : {AbilityLimit} remember limits left", "Imitator");
-
-            Utils.NotifyRoles(SpecifySeer: killer);
         }
-        else if (killerRole == CustomRoles.Imitator)
+        else 
         {
             killer.SetKillCooldown(forceAnime: true);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorInvalidTarget")));
