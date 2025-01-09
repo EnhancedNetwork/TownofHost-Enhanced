@@ -22,7 +22,6 @@ internal class Sheriff : RoleBase
     private static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
-    private static OptionItem MisfireOnAdmired;
     private static OptionItem CanKillNeutrals;
     private static OptionItem MisfireOnAdmired;
     private static OptionItem CanKillNeutralsMode;
