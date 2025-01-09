@@ -1518,17 +1518,25 @@ public static class Utils
     }
     public static bool IsPlayerModerator(string friendCode)
     {
-        if (friendCode == "") return false;
+        /*
         var friendCodesFilePath = @"./TOHE-DATA/Moderators.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
+        */
+        if (friendCode == "") return false;
+        if (TagManager.ReadPermission(friendCode) >= 2) return true;
+        return false;
     }
     public static bool IsPlayerVIP(string friendCode)
     {
-        if (friendCode == "") return false;
+        /*
         var friendCodesFilePath = @"./TOHE-DATA/VIP-List.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
+        */
+        if (friendCode == "") return false;
+        if (TagManager.ReadPermission(friendCode) is 0 or 1) return true;
+        return false;
     }
     public static bool CheckColorHex(string ColorCode)
     {
@@ -1637,7 +1645,9 @@ public static class Utils
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
         }
 
+        
         var modtag = "";
+        /*
         if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
         {
             if (IsPlayerVIP(player.FriendCode))
@@ -1726,6 +1736,13 @@ public static class Utils
                 }
             }
         }
+        */
+        if (player.FriendCode != PlayerControl.LocalPlayer.FriendCode && TagManager.CheckFriendCode(player.FriendCode))
+        {
+            if (TagManager.ReadTagColor(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagColor(player.FriendCode) == "" || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
+            else modtag = $"<color=#{TagManager.ReadTagColor(player.FriendCode)}>{TagManager.ReadTagName(player.FriendCode)} </color>";
+        }
+
         if (player.AmOwner)
         {
             name = Options.GetSuffixMode() switch
