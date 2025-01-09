@@ -73,8 +73,8 @@ public static class NameColorManager
         // Amnesiac
         if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) color = Main.roleColors[seer.GetCustomRole()];
 
-        if (seer.Is(CustomRoles.Refugee) && (target.Is(Custom_Team.Impostor)) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.ImpostorTOHE];
-        if (seer.Is(Custom_Team.Impostor) && (target.Is(CustomRoles.Refugee)) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Refugee];
+        if (seer.Is(CustomRoles.Refugee) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.ImpostorTOHE];
+        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Refugee) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Refugee];
 
         // Infectious
         if (Infectious.InfectedKnowColorOthersInfected(seer, target)) color = Main.roleColors[CustomRoles.Infectious];

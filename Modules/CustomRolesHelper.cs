@@ -247,7 +247,6 @@ public static class CustomRolesHelper
         if (role is
             //FFA
             CustomRoles.Killer) return true;
-        if (role is CustomRoles.Rebel) return true;
 
         return role.IsNK() || role.IsNonNK() || role.IsNA() || role.IsMadmate();
     }
@@ -257,8 +256,6 @@ public static class CustomRolesHelper
     }
     public static bool IsNonNK(this CustomRoles role) // ROLE ASSIGNING, NOT NEUTRAL TYPE
     {
-        if (role is CustomRoles.Rebel) return true;
-
         return role.IsNB() || role.IsNE() || role.IsNC();
     }
     public static bool IsNA(this CustomRoles role)
@@ -275,8 +272,6 @@ public static class CustomRolesHelper
     }
     public static bool IsNB(this CustomRoles role)
     {
-        if (role is CustomRoles.Rebel) return true;
-
         return role.GetStaticRoleClass().ThisRoleType
             is Custom_RoleType.NeutralBenign;
     }

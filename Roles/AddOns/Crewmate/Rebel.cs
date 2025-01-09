@@ -6,7 +6,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 public class Rebel : IAddon
 {
     public CustomRoles Role => CustomRoles.Rebel;
-    private const int Id = 31400;
+    private const int Id = 31600;
     public AddonTypes Type => AddonTypes.Misc;
 
     public static OptionItem CanWinAfterDeath;
