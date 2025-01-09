@@ -1581,6 +1581,7 @@
   "SheriffCanKillSeparately": "Individual Settings",
   "In%team%": "(Team %team%)",
   "SheriffMisfireKillsTarget": "Misfire Kills Target",
+  "SheriffMisfireOnAdmired" : "Sheriff Misfires on <color=#ee43c3>Admired</color> Players",
   "BlackHolePlaceCooldown": "Black Hole Place Cooldown",
   "BlackHoleDespawnMode": "Black Hole Despawn Mode",
   "BlackHoleDespawnTime": "Time After Black Hole Despawns",
