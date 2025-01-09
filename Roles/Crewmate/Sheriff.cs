@@ -22,6 +22,7 @@ internal class Sheriff : RoleBase
     private static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
+    private static OptionItem MisfireOnAdmired;
     private static OptionItem CanKillNeutrals;
     private static OptionItem CanKillNeutralsMode;
     private static OptionItem CanKillMadmate;
@@ -68,10 +69,11 @@ internal class Sheriff : RoleBase
         CanKillInfected = BooleanOptionItem.Create(Id + 26, "SheriffCanKillInfected", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         CanKillContagious = BooleanOptionItem.Create(Id + 27, "SheriffCanKillContagious", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         CanKillEnchanted = BooleanOptionItem.Create(Id + 30, "SheriffCanKillEnchanted", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
+        MisfireOnAdmired = BooleanOptionItem.Create(Id + 32, "SheriffMisfireOnAdmired", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);        
         CanKillCoven = BooleanOptionItem.Create(Id + 29, "SheriffCanKillCoven", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         CanKillNeutrals = BooleanOptionItem.Create(Id + 16, "SheriffCanKillNeutrals", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         CanKillNeutralsMode = StringOptionItem.Create(Id + 14, "SheriffCanKillNeutralsMode", EnumHelper.GetAllNames<KillOptionList>(), 0, TabGroup.CrewmateRoles, false).SetParent(CanKillNeutrals);
-        SetUpNeutralOptions(Id + 32);
+        SetUpNeutralOptions(Id + 33);
         SidekickSheriffCanGoBerserk = BooleanOptionItem.Create(Id + 28, "SidekickSheriffCanGoBerserk", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         SetNonCrewCanKill = BooleanOptionItem.Create(Id + 18, "SheriffSetMadCanKill", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Sheriff]);
         NonCrewCanKillImp = BooleanOptionItem.Create(Id + 19, "SheriffMadCanKillImp", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
@@ -170,15 +172,16 @@ internal class Sheriff : RoleBase
         }
 
 
+        bool CanKillAdmired = !(player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool());
         return cRole switch
         {
             CustomRoles.Trickster => false,
             var r when cRole.IsTNA() => false,
             _ => cRole.GetCustomRoleTeam() switch
             {
-                Custom_Team.Impostor => true,
-                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
-                Custom_Team.Coven => CanKillCoven.GetBool(),
+                Custom_Team.Impostor => CanKillAdmired,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())) && CanKillAdmired,
+                Custom_Team.Coven => CanKillCoven.GetBool() && CanKillAdmired,
                 _ => CanKill,
             }
         };
