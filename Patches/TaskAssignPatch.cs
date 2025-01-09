@@ -187,7 +187,7 @@ class RpcSetTasksPatch
         {
             hasCommonTasks = false;
             NumLongTasks = 0;
-            NumShortTasks = pc.Is(CustomRoles.LastImpostor) ? 1 : Crewpostor:KillAfterTasks.GetInt();
+            NumShortTasks = pc.Is(CustomRoles.LastImpostor) ? 1 : Crewpostor.KillAfterTasks.GetInt();
         }
 
         // Above is override task num
