@@ -82,8 +82,9 @@ internal class Crewpostor : RoleBase
             CrewpostorResetTasks(player);
             list = [.. list.OrderBy(x => Utils.GetDistance(player.transform.position, x.transform.position))];
             var target = list[0];
+            bool cpttks = player.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff); //narc CrewPostor Trying To Kill Sheriff
 
-            if (!target.IsTransformedNeutralApocalypse() && !(player.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)))
+            if (!target.IsTransformedNeutralApocalypse() && !cpttks)
             {
                 if (!LungeKill.GetBool())
                 {
@@ -100,6 +101,11 @@ internal class Crewpostor : RoleBase
                     Logger.Info("lunge mode kill", "Crewpostor");
                 }
                 Logger.Info($"Crewpostor completed task to kill：{player.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}", "Crewpostor");
+            }
+            else if (cpttks)
+            {
+                player.RpcGuardAndKill();
+                Logger.Info($"Narc Crewpostor tried to kill Sheriff：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Narc");
             }
             else if (target.Is(CustomRoles.Pestilence))
             {
