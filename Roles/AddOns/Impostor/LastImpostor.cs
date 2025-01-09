@@ -31,7 +31,7 @@ public class LastImpostor : IAddon
         Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
-        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer;
+        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.GetCustomRole().IsImpostorTeamV3() && !Main.PlayerStates[pc.PlayerId].IsNecromancer;
 
     public static void SetSubRole()
     {

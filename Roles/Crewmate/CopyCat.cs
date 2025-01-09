@@ -138,12 +138,14 @@ internal class CopyCat : RoleBase
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
                 CustomRoles.MoonDancer => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,
-                CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
+                CustomRoles.Trickster or CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 _ => role
             };
         }
         if (role.IsCrewmate())
         {
+            if (target.Is(CustomRoles.Rebel))
+                role = CustomRoles.Benefactor;
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);

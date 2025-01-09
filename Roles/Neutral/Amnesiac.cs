@@ -4,6 +4,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -108,15 +109,29 @@ internal class Amnesiac : RoleBase
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
             }
 
-            if (targetPlayerStates.MainRole == CustomRoles.Rebel)
-            {
-                __instance.GetCustomSubRoles()?.Add(CustomRoles.Rebel);
-            }
-
             if (targetPlayerStates.MainRole.IsGhostRole())
             {
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
                 {
+                    if (role.IsBetrayalAddonV2())
+                    {
+                        foreach (var subrole in deadBody.Object.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
+                        {
+                            role = subrole switch
+                            {
+                                CustomRoles.Madmate => CustomRoles.Gangster,
+                                CustomRoles.Charmed => CustomRoles.Cultist,
+                                CustomRoles.Recruit => CustomRoles.Jackal,
+                                CustomRoles.Infected => CustomRoles.Infectious,
+                                CustomRoles.Contagious => CustomRoles.Virus,
+                                CustomRoles.Admired => CustomRoles.Admirer,
+                                CustomRoles.Enchanted => CustomRoles.Ritualist,
+                                CustomRoles.Egoist => CustomRoles.Traitor,
+                                CustomRoles.Rebel => CustomRoles.Taskinator,
+                                _ => role
+                            };
+                        }
+                    }
                     __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                     __instance.RpcChangeRoleBasis(role);
                     __instance.RpcSetCustomRole(role);
@@ -138,6 +153,25 @@ internal class Amnesiac : RoleBase
             else
             {
                 var role = targetPlayerStates.MainRole;
+                if (role.IsBetrayalAddonV2())
+                {
+                    foreach (var subrole in deadBody.Object.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
+                    {
+                        role = subrole switch
+                        {
+                            CustomRoles.Madmate => CustomRoles.Gangster,
+                            CustomRoles.Charmed => CustomRoles.Cultist,
+                            CustomRoles.Recruit => CustomRoles.Jackal,
+                            CustomRoles.Infected => CustomRoles.Infectious,
+                            CustomRoles.Contagious => CustomRoles.Virus,
+                            CustomRoles.Admired => CustomRoles.Admirer,
+                            CustomRoles.Enchanted => CustomRoles.Ritualist,
+                            CustomRoles.Egoist => CustomRoles.Traitor,
+                            CustomRoles.Rebel => CustomRoles.Taskinator,
+                            _ => role
+                        };
+                    }
+                }
                 __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                 __instance.RpcChangeRoleBasis(role);
                 __instance.RpcSetCustomRole(role);
