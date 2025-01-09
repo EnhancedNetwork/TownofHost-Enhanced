@@ -479,7 +479,6 @@ class BeginCrewmatePatch
             case CustomRoles.SoulCatcher:
             case CustomRoles.Specter:
             case CustomRoles.Stalker:
-            case CustomRoles.CovenLeader:
             case CustomRoles.PhantomTOHE:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Phantom);
                 break;
@@ -568,10 +567,19 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.MyPhysics.ImpostorDiscoveredSound;
                 break;
             case CustomRoles.Jinx:
+            case CustomRoles.Romantic:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
                 break;
             case CustomRoles.Illusionist:
+            case CustomRoles.MoonDancer:    
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Phantom)?.UseSound;
+                break;
+            case CustomRoles.Telecommunication:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Tracker)?.UseSound;
+                break;
+            case CustomRoles.Morphling:
+            case CustomRoles.Twister:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.Shapeshifter)?.UseSound;
                 break;
         }
 
@@ -579,6 +587,7 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = GetString("TeamLovers");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == RoleTypes.GuardianAngel)?.UseSound;
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Lovers");
         }
@@ -678,9 +687,9 @@ class BeginImpostorPatch
             __instance.BeginCrewmate(yourTeam);
             return false;
         }
-        // Madmate called from BeginCrewmate, need to skip previous lovers and egoist check here
+        // Madmate called from BeginCrewmate, need to skip previous Lovers and Egoist check here
 
-        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
+        if ((role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)) && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -690,12 +699,12 @@ class BeginImpostorPatch
                 // Crew postor is counted as madmate but should be a impostor
                 if (Madmate.MadmateKnowWhosImp.GetBool() || role != CustomRoles.Madmate)
                 {
-                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CheckMMCanSeeImp(CheckImp:false) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                    foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostor() && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
                     {
                         yourTeam.Add(pc);
                     }
                 }
-                // Crew postor is counted as madmate but should be a impostor
+                // Crewpostor is counted as Madmate but should be a Impostor
                 if (Madmate.MadmateKnowWhosMadmate.GetBool() || role != CustomRoles.Madmate && Madmate.ImpKnowWhosMadmate.GetBool())
                 {
                     foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
@@ -729,14 +738,14 @@ class BeginImpostorPatch
             return false;
         }
 
-        // We only check impostor main role here!
+        // We only check Impostor main role here!
         if (role.IsImpostor() && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
 
             // Parasite and Impostor doesnt know each other
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && !x.Is(CustomRoles.Parasite) && (x.GetCustomRole().IsImpostor() || !x.Is(CustomRoles.Madmate) && x.GetCustomRole().IsMadmate())))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && x.CheckMMCanSeeImp(CheckImp:false)))
             {
                 yourTeam.Add(pc);
             }
@@ -802,7 +811,7 @@ class IntroCutsceneDestroyPatch
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
 
-                    // When target is impostor, set name color as white
+                    // When target is Impostor, set name color as white
                     target.cosmetics.SetNameColor(Color.white);
                     target.Data.Role.NameColor = Color.white;
                 }
