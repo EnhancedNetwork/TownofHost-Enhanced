@@ -10,7 +10,7 @@ internal class Provocateur : RoleBase
     public override CustomRoles Role => CustomRoles.Provocateur;
     private const int Id = 15100;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem ProvKillCD;
