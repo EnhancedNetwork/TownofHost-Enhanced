@@ -42,7 +42,7 @@ internal class Imitator : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit > 0;
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (AbilityLimit < 1) return false;
         CustomRoles ChangeRole = CustomRoles.Imitator;
