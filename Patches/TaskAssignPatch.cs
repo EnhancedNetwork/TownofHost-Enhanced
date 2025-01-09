@@ -183,6 +183,13 @@ class RpcSetTasksPatch
             hasCommonTasks = false;
         }
 
+        if (pc.Is(CustomRoles.Crewpostor))
+        {
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = pc.Is(CustomRoles.LastImpostor) ? 1 : Crewpostor:KillAfterTasks.GetInt();
+        }
+
         // Above is override task num
         /* --------------------------------------------------------------*/
         //Below is assign tasks
