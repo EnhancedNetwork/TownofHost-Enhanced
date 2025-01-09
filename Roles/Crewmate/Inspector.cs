@@ -240,14 +240,15 @@ internal class Inspector : RoleBase
                     if
                     (
                         (
-                        ((target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId)))
-                        && (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId))
+                        (target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId))
+                        &&
+                        (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId))
                         )
                         ||
                         (
-                        (Illusionist.IsCovIllusioned(target1.PlayerId) || (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target1.GetCustomSubRoles().Count == 0)) || target1.Is(CustomRoles.Admired))) && !target1.Is(CustomRoles.Rebel)
+                        (Illusionist.IsCovIllusioned(target1.PlayerId) || (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target1.GetCustomSubRoles().Count == 0)) || target1.Is(CustomRoles.Admired)) && !target1.Is(CustomRoles.Rebel)
                         &&
-                        (Illusionist.IsCovIllusioned(target2.PlayerId) || (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) || target2.Is(CustomRoles.Admired))) && !target2.Is(CustomRoles.Rebel)
+                        (Illusionist.IsCovIllusioned(target2.PlayerId) || (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) || target2.Is(CustomRoles.Admired)) && !target2.Is(CustomRoles.Rebel)
                         )
                         ||
                         (

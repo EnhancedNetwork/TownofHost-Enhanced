@@ -113,24 +113,41 @@ internal class Amnesiac : RoleBase
             {
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
                 {
-                    if (role.IsBetrayalAddonV2())
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Madmate))
                     {
-                        foreach (var subrole in deadBody.Object.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
-                        {
-                            role = subrole switch
-                            {
-                                CustomRoles.Madmate => CustomRoles.Gangster,
-                                CustomRoles.Charmed => CustomRoles.Cultist,
-                                CustomRoles.Recruit => CustomRoles.Jackal,
-                                CustomRoles.Infected => CustomRoles.Infectious,
-                                CustomRoles.Contagious => CustomRoles.Virus,
-                                CustomRoles.Admired => CustomRoles.Admirer,
-                                CustomRoles.Enchanted => CustomRoles.Ritualist,
-                                CustomRoles.Egoist => CustomRoles.Traitor,
-                                CustomRoles.Rebel => CustomRoles.Taskinator,
-                                _ => role
-                            };
-                        }
+                        role = CustomRoles.Refugee;
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Charmed))
+                    {
+                        __instance.RpcSetCustomRole(CustomRoles.Charmed);
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Recruit))
+                    {
+                        role = CustomRoles.Sidekick;
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Infected))
+                    {
+                        __instance.RpcSetCustomRole(CustomRoles.Infected);
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Contagious))
+                    {
+                        __instance.RpcSetCustomRole(CustomRoles.Contagious);
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Admired))
+                    {
+                        role = CustomRoles.Admirer;
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Enchanted))
+                    {
+                        role = CustomRoles.Ritualist;
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Egoist))
+                    {
+                        role = CustomRoles.Traitor;
+                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel))
+                    {
+                        role = CustomRoles.Taskinator;
                     }
                     __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                     __instance.RpcChangeRoleBasis(role);
@@ -153,24 +170,41 @@ internal class Amnesiac : RoleBase
             else
             {
                 var role = targetPlayerStates.MainRole;
-                if (role.IsBetrayalAddonV2())
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Madmate))
                 {
-                    foreach (var subrole in deadBody.Object.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
-                    {
-                        role = subrole switch
-                        {
-                            CustomRoles.Madmate => CustomRoles.Gangster,
-                            CustomRoles.Charmed => CustomRoles.Cultist,
-                            CustomRoles.Recruit => CustomRoles.Jackal,
-                            CustomRoles.Infected => CustomRoles.Infectious,
-                            CustomRoles.Contagious => CustomRoles.Virus,
-                            CustomRoles.Admired => CustomRoles.Admirer,
-                            CustomRoles.Enchanted => CustomRoles.Ritualist,
-                            CustomRoles.Egoist => CustomRoles.Traitor,
-                            CustomRoles.Rebel => CustomRoles.Taskinator,
-                            _ => role
-                        };
-                    }
+                    role = CustomRoles.Refugee;
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Charmed))
+                {
+                    __instance.RpcSetCustomRole(CustomRoles.Charmed);
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Recruit))
+                {
+                    role = CustomRoles.Sidekick;
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Infected))
+                {
+                    __instance.RpcSetCustomRole(CustomRoles.Infected);
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Contagious))
+                {
+                    __instance.RpcSetCustomRole(CustomRoles.Contagious);
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Admired))
+                {
+                    role = CustomRoles.Admirer;
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Enchanted))
+                {
+                    role = CustomRoles.Ritualist;
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Egoist))
+                {
+                    role = CustomRoles.Traitor;
+                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel))
+                {
+                    role = CustomRoles.Taskinator;
                 }
                 __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                 __instance.RpcChangeRoleBasis(role);

@@ -221,7 +221,7 @@ class GameEndCheckerForNormal
 
                 if (WinnerTeam == CustomWinner.Impostor)
                 {
-                    var aliveImps = Main.AllAlivePlayerControls.Where(x => x.Is(Custom_Team.Impostor));
+                    var aliveImps = Main.AllAlivePlayerControls.Where(x => x.Is(Custom_Team.Impostor) && !Main.PlayerStates[x.PlayerId].IsNecromancer);
                     var imps = aliveImps as PlayerControl[] ?? aliveImps.ToArray();
                     var aliveImpCount = imps.Length;
 

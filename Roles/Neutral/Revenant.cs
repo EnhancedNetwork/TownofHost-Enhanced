@@ -35,7 +35,7 @@ internal class Revenant : RoleBase
                 {
                     CustomRoles.Madmate => CustomRoles.Gangster,
                     CustomRoles.Charmed => CustomRoles.Cultist,
-                    CustomRoles.Recruit => CustomRoles.Jackal,
+                    CustomRoles.Recruit => CustomRoles.Sidekick,
                     CustomRoles.Infected => CustomRoles.Infectious,
                     CustomRoles.Contagious => CustomRoles.Virus,
                     CustomRoles.Admired => CustomRoles.Admirer,

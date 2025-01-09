@@ -126,7 +126,7 @@ internal class Merchant : RoleBase
                 && ((OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.Rebel)) ||
                     (OptionCanTargetImpostor.GetBool() && x.GetCustomRole().IsImpostor()) ||
                     (OptionCanTargetNeutral.GetBool() && (x.GetCustomRole().IsNeutral() || x.Is(CustomRoles.Rebel))) ||
-                    (OptionCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven())
+                    (OptionCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven()))
             ).ToList();
 
         if (AllAlivePlayer.Any())
