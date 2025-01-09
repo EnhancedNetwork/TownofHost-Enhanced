@@ -278,6 +278,10 @@ class CheckMurderPatch
             return false;
         }
 
+        //Madmate roles and Impostors cannot kill each other when they can see each other
+        if (killer.CheckMMCanSeeImp() && target.CheckMMCanSeeImp())
+            return false;
+        
         // Impostors can kill Madmate
         if (killer.CheckMMCanSeeImp() && target.Is(CustomRoles.Madmate))
             return killer.Is(CustomRoles.Narc) ? 
