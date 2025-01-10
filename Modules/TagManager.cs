@@ -61,7 +61,7 @@ public static class TagManager
         {
             if (line.Contains(searchTarget))
             {
-                temp = line.Split("TagName:").Skip(1).First().Trim().TrimEnd();
+                temp = line.Split("TagName:").Skip(1).First().Trim();
                 break; 
             }
         }

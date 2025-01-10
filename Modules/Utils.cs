@@ -1517,26 +1517,18 @@ public static class Utils
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
-    {
-        /*
+    {        
+        if (friendCode == "") return false;
         var friendCodesFilePath = @"./TOHE-DATA/Moderators.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
-        */
-        if (friendCode == "") return false;
-        if (TagManager.ReadPermission(friendCode) >= 2) return true;
-        return false;
     }
     public static bool IsPlayerVIP(string friendCode)
     {
-        /*
+        if (friendCode == "") return false;
         var friendCodesFilePath = @"./TOHE-DATA/VIP-List.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
-        */
-        if (friendCode == "") return false;
-        if (TagManager.ReadPermission(friendCode) is 0 or 1) return true;
-        return false;
     }
     public static bool CheckColorHex(string ColorCode)
     {
@@ -1616,7 +1608,7 @@ public static class Utils
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
-            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
+            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode) && !TagManager.CheckFriendCode(player.FriendCode))
             {
                 SetRealName();
                 return;
@@ -1647,7 +1639,6 @@ public static class Utils
 
         
         var modtag = "";
-        /*
         if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
         {
             if (IsPlayerVIP(player.FriendCode))
@@ -1736,11 +1727,11 @@ public static class Utils
                 }
             }
         }
-        */
         if (player.FriendCode != PlayerControl.LocalPlayer.FriendCode && TagManager.CheckFriendCode(player.FriendCode))
         {
-            if (TagManager.ReadTagColor(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagColor(player.FriendCode) == "" || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
-            else modtag = $"<color=#{TagManager.ReadTagColor(player.FriendCode)}>{TagManager.ReadTagName(player.FriendCode)} </color>";
+            if ((TagManager.ReadTagColor(player.FriendCode) == " " || TagManager.ReadTagColor(player.FriendCode) == "") && (TagManager.ReadTagName(player.FriendCode) != "" && TagManager.ReadTagName(player.FriendCode) != " ")) modtag = $"{TagManager.ReadTagName(player.FriendCode)}";
+            else if (TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
+            else modtag = $"<color=#{TagManager.ReadTagColor(player.FriendCode)}>{TagManager.ReadTagName(player.FriendCode)}</color>";
         }
 
         if (player.AmOwner)
