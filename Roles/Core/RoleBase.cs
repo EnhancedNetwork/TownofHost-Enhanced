@@ -129,6 +129,8 @@ public abstract class RoleBase
     public virtual void SetupCustomOption()
     { }
 
+    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
+    { }
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
     /// </summary>

@@ -111,6 +111,16 @@ public class PlayerState(byte playerId)
         {
             countTypes = CountTypes.Coven;
         }
+        if (pc.Is(CustomRoles.Darkened))
+        {
+            countTypes = DarkFairy.DarkenedCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.DarkFairy,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
+        }
 
         MainRoleLogs.Add((DateTime.Now, role));
 
@@ -215,6 +225,16 @@ public class PlayerState(byte playerId)
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Virus,
+                    2 => countTypes,
+                    _ => throw new NotImplementedException()
+                };
+                break;
+
+            case CustomRoles.Darkened:
+                countTypes = DarkFairy.DarkenedCountMode.GetInt() switch
+                {
+                    0 => CountTypes.OutOfGame,
+                    1 => CountTypes.DarkFairy,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };

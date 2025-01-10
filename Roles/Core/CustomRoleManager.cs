@@ -445,6 +445,19 @@ public static class CustomRoleManager
         }
     }
 
+    public static HashSet<Action<PlayerControl>> OnFixedUpdateLowLoadOthers = [];
+    public static void OnFixedUpdateLowLoad(PlayerControl player)
+    {
+        player.GetRoleClass()?.OnFixedUpdateLowLoad(player);
+
+        if (!OnFixedUpdateLowLoadOthers.Any()) return;
+        //Execute other viewpoint processing if any
+        foreach (var onFixedUpdateLowLoad in OnFixedUpdateLowLoadOthers.ToArray())
+        {
+            onFixedUpdateLowLoad(player);
+        }
+    }
+
     /// <summary>
     /// When others players on entered to vent
     /// </summary>

@@ -77,6 +77,9 @@ public static class CustomWinnerHolder
                 case CustomRoles.Enchanted:
                     ResetAndSetWinner(CustomWinner.Coven);
                     return true;
+                case CustomRoles.Darkened:
+                    ResetAndSetWinner(CustomWinner.DarkFairy);
+                    return true;
             }
         }
         return false;

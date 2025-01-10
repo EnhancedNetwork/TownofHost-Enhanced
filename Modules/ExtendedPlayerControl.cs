@@ -1174,6 +1174,7 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Infected)
             || sheriff.Is(CustomRoles.Contagious)
             || sheriff.Is(CustomRoles.Egoist)
+            || sheriff.Is(CustomRoles.Darkened)
             || sheriff.Is(CustomRoles.Enchanted);
     }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
@@ -1188,6 +1189,7 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Enchanted and not
+            CustomRoles.Darkened and not
             CustomRoles.Contagious;
     }
 
@@ -1307,6 +1309,7 @@ static class ExtendedPlayerControl
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (DarkFairy.KnowRole(seer, target)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
             if (Nemesis.PreventKnowRole(seer)) return false;
@@ -1340,6 +1343,7 @@ static class ExtendedPlayerControl
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
+                or CustomRoles.Darkened
                 or CustomRoles.Enchanted)
             && KnowSubRoleTarget(seer, target))
             return true;
@@ -1379,6 +1383,7 @@ static class ExtendedPlayerControl
         else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
+        else if (DarkFairy.HasEnabled && DarkFairy.KnowRole(seer, target)) return true;
         else if (Jackal.HasEnabled)
         {
             if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))

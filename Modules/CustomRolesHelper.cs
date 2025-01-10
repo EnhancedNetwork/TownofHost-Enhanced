@@ -206,6 +206,7 @@ public static class CustomRolesHelper
             CustomRoles.Jackal or
             CustomRoles.Juggernaut or
             CustomRoles.BloodKnight or
+            CustomRoles.DarkFairy or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -318,7 +319,8 @@ public static class CustomRolesHelper
             CustomRoles.Necromancer or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
-            CustomRoles.Ritualist;
+            CustomRoles.Ritualist or
+            CustomRoles.DarkFairy;
 
     public static bool IsMadmate(this CustomRoles role)
     {
@@ -336,6 +338,7 @@ public static class CustomRolesHelper
             CustomRoles.Contagious or
             CustomRoles.Soulless or
             CustomRoles.Madmate or
+            CustomRoles.Darkened or
             CustomRoles.Enchanted;
 
     public static bool IsNotKnightable(this CustomRoles role)
@@ -381,6 +384,7 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
+            or CustomRoles.Darkened
             or CustomRoles.Enchanted;
     }
 
@@ -591,6 +595,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Lazy:
                 if (!Lazy.CheckConflicts(pc))
+                if (pc.Is(CustomRoles.Protector))
                     return false;
                 break;
 
@@ -628,6 +633,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Fragile:
                 if (pc.Is(CustomRoles.Lucky)
+                    || pc.Is(CustomRoles.Valkyrie)
+                    || pc.Is(CustomRoles.Diviner)
                     || pc.Is(CustomRoles.Veteran)
                     || pc.Is(CustomRoles.Guardian)
                     || pc.Is(CustomRoles.Medic)
@@ -900,7 +907,9 @@ public static class CustomRolesHelper
 
             case CustomRoles.Nimble:
                 if (Knight.CheckCanUseVent(pc)
-                    || pc.Is(CustomRoles.CopyCat))
+                    || pc.Is(CustomRoles.CopyCat)
+                    || pc.Is(CustomRoles.Valkyrie)
+                    || pc.Is(CustomRoles.Diviner))
                     return false;
                 if (!pc.GetCustomRole().IsTasklessCrewmate())
                     return false;
@@ -1278,6 +1287,7 @@ public static class CustomRolesHelper
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.Shocker => CountTypes.Shocker,
+           CustomRoles.DarkFairy => CountTypes.DarkFairy,
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
@@ -1339,6 +1349,7 @@ public static class CustomRolesHelper
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
             CustomRoles.Shocker => CustomWinner.Shocker,
+            CustomRoles.DarkFairy => CustomWinner.DarkFairy,
             _ => throw new NotImplementedException()
 
         };
@@ -1373,6 +1384,7 @@ public static class CustomRolesHelper
             CountTypes.Arsonist => CustomRoles.Arsonist,
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
             CountTypes.Shocker => CustomRoles.Shocker,
+            CountTypes.DarkFairy => CustomRoles.DarkFairy,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1459,5 +1471,7 @@ public enum CountTypes
     Agitater,
     RuthlessRomantic,
     Shocker,
-    Coven
+    Coven,
+    DarkFairy,
+    Darkened
 }
