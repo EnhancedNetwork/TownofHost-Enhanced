@@ -126,7 +126,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Apocalypse:
-                        if (pc.IsNeutralApocalypse() && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless))
+                        if (pc.IsNeutralApocalypse() && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
