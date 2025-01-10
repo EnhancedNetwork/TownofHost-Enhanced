@@ -32,25 +32,38 @@ public class LastImpostor : IAddon
         Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
-        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.IsNonNarcImpV3() && !Main.PlayerStates[pc.PlayerId].IsNecromancer;
+        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && pc.IsNonNarcImpV3() && !Main.PlayerStates[pc.PlayerId].IsNecromancer;
 
     public static void SetSubRole()
     {
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;
         if (Options.CurrentGameMode == CustomGameMode.FFA || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1) return;
+        if (Main.AliveImpostorCount >= 2 && !CustomRoles.LastImpostor.RoleExist(countDead: true)) return;
 
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.AllPlayerControls)//Why do we have to do "var pc in Main.AllAlivePlayerControls" if CanBeLastImpostor already checked IsAlive
         {
-            if (CanBeLastImpostor(pc))
+            if (Main.AliveImpostorCount == 1)
             {
-                pc.RpcSetCustomRole(CustomRoles.LastImpostor);
-                AddMidGame(pc.PlayerId);
-                SetKillCooldown();
-                pc.SyncSettings();
-                Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
-                if (pc.Is(CustomRoles.Crewpostor)) Crewpostor.CrewpostorResetTasks(pc);
+                Main.AllPlayerControls.Where(x => x.Is(CustomRoles.LastImpostor) && !x.IsAlive())
+                .Do(x => RemoveLastImpostor(x));//If AliveImpostorCount increases from 0 to 1,remove Last Impostor from dead players
+                if (CanBeLastImpostor(pc)) AssignLastImpostor(pc);
                 break;
             }
+            if (Main.AliveImpostorCount >= 2 && pc.Is(CustomRoles.LastImpostor)) RemoveLastImpostor(pc);
         }
+    }
+    private static void AssignLastImpostor(PlayerControl pc)
+    {
+        pc.RpcSetCustomRole(CustomRoles.LastImpostor);
+        AddMidGame(pc.PlayerId);
+        SetKillCooldown();
+        pc.SyncSettings();
+        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
+        if (pc.Is(CustomRoles.Crewpostor)) Crewpostor.CrewpostorResetTasks(pc);
+    }
+    private static void RemoveLastImpostor(PlayerControl lastimp) 
+    {
+        Main.PlayerStates[lastimp.PlayerId].RemoveSubRole(CustomRoles.LastImpostor);
+        currentId = byte.MaxValue;
     }
 }
