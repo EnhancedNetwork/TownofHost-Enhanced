@@ -119,31 +119,15 @@ public class Oiiai : IAddon
             killer.AddInSwitchAddons(killer, CustomRoles.Madmate);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Madmates assign.", "Oiiai");
         }
-        else if (killer.Is(CustomRoles.Rebel))
+        else if (killer.Is(CustomRoles.Sidekick))
         {
-            int changeValue = ChangeNeutralRole.GetValue();
-
-            if (changeValue != 0)
-            {
-                killer.GetRoleClass()?.OnRemove(killer.PlayerId);
-                killer.RpcChangeRoleBasis(NRoleChangeRoles[changeValue - 1]);
-                killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
-                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-                Main.PlayerStates[killer.PlayerId].RemoveSubRole(CustomRoles.Rebel);
-            }
-            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Rebel assign.", "Oiiai");
+            killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
+            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            killer.RpcSetCustomRole(CustomRoles.Recruit);
+            killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }
-        else if (!killer.GetCustomRole().IsNeutral() && !killer.Is(CustomRoles.Rebel))
-        {
-            var readyrole = Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole());
-            //Use eraser here LOL
-            killer.GetRoleClass()?.OnRemove(killer.PlayerId);
-            killer.RpcChangeRoleBasis(readyrole);
-            killer.RpcSetCustomRole(readyrole);
-            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
-        }
-        else
+        else if (killer.GetCustomRole().IsNeutral() || killer.Is(CustomRoles.Rebel))
         {
             int changeValue = ChangeNeutralRole.GetValue();
 
@@ -153,11 +137,22 @@ public class Oiiai : IAddon
                 killer.RpcChangeRoleBasis(NRoleChangeRoles[changeValue - 1]);
                 killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                 killer.GetRoleClass().OnAdd(killer.PlayerId);
+                if (killer.Is(CustomRoles.Rebel)) Main.PlayerStates[killer.PlayerId].RemoveSubRole(CustomRoles.Rebel);
 
                 killer.SyncSettings();
 
                 Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals with kill button assign.", "Oiiai");
             }
+        }
+        else
+        {
+            var readyrole = Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole());
+            //Use eraser here LOL
+            killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+            killer.RpcChangeRoleBasis(readyrole);
+            killer.RpcSetCustomRole(readyrole);
+            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+            Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
         }
         killer.ResetKillCooldown();
         killer.SetKillCooldown();

@@ -1588,7 +1588,7 @@
   "SheriffCanKillSeparately": "Individual Settings",
   "In%team%": "(Team %team%)",
   "SheriffMisfireKillsTarget": "Misfire Kills Target",
-  "SheriffMisfireOnAdmired" : "Sheriff Misfires On <color=#ee43c3>Admired Players</color>",
+  "SheriffMisfireOnAdmired": "Sheriff Misfires On <color=#ee43c3>Admired Players</color>",
   "BlackHolePlaceCooldown": "Black Hole Place Cooldown",
   "BlackHoleDespawnMode": "Black Hole Despawn Mode",
   "BlackHoleDespawnTime": "Time After Black Hole Despawns",
@@ -3396,6 +3396,7 @@
   "OverseerCanBeRebel": "<color=#BA55D3>Overseer</color> can become <color=#ffab1b>Rebel</color>",
   "SwapperCanBeRebel": "<color=#66e666>Swapper</color> can become <color=#ffab1b>Rebel</color>",
   "CleanserCanBeRebel": "<color=#98ff98>Cleanser</color> can become <color=#ffab1b>Rebel</color>",
+  "ReverieCanBeRebel": "<color=#00BFFF>Reverie</color> can become <color=#ffab1b>Rebel</color>",
 
   "CouncillorDead": "Sorry, you can't murder from the dead.",
   "CouncillorMurderMaxMeeting": "Sorry, you've reached the maximum amount of murders for the meeting.",

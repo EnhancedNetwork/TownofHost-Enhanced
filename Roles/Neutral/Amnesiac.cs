@@ -31,8 +31,10 @@ internal class Amnesiac : RoleBase
         ImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
-        VentCoolDown = FloatOptionItem.Create(Id + 14, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
-        VentDuration = FloatOptionItem.Create(Id + 16, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
+        VentCoolDown = FloatOptionItem.Create(Id + 14, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent)
+            .SetValueFormat(OptionFormat.Seconds);
+        VentDuration = FloatOptionItem.Create(Id + 16, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent)
+            .SetValueFormat(OptionFormat.Seconds);
         ReportWhenFailedRemember = BooleanOptionItem.Create(Id + 15, "ReportWhenFailedRemember", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]).SetHidden(true);
     }
     public override void Init()
@@ -112,42 +114,15 @@ internal class Amnesiac : RoleBase
             {
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
                 {
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Madmate))
-                    {
-                        role = CustomRoles.Refugee;
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Charmed))
-                    {
-                        __instance.RpcSetCustomRole(CustomRoles.Charmed);
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Recruit))
-                    {
-                        role = CustomRoles.Sidekick;
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Infected))
-                    {
-                        __instance.RpcSetCustomRole(CustomRoles.Infected);
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Contagious))
-                    {
-                        __instance.RpcSetCustomRole(CustomRoles.Contagious);
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Admired))
-                    {
-                        role = CustomRoles.Admirer;
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Enchanted))
-                    {
-                        role = CustomRoles.Ritualist;
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Egoist))
-                    {
-                        role = CustomRoles.Traitor;
-                    }
-                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel))
-                    {
-                        role = CustomRoles.Taskinator;
-                    }
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Madmate)) role = CustomRoles.Refugee;
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Charmed)) __instance.RpcSetCustomRole(CustomRoles.Charmed);
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Recruit)) role = CustomRoles.Sidekick;
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Infected)) __instance.RpcSetCustomRole(CustomRoles.Infected);
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Contagious)) __instance.RpcSetCustomRole(CustomRoles.Contagious);
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Admired)) role = CustomRoles.Admirer;
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Enchanted)) role = CustomRoles.Ritualist;
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Egoist)) role = CustomRoles.Traitor;
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
                     __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                     __instance.RpcChangeRoleBasis(role);
                     __instance.RpcSetCustomRole(role);
@@ -169,42 +144,15 @@ internal class Amnesiac : RoleBase
             else
             {
                 var role = targetPlayerStates.MainRole;
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Madmate))
-                {
-                    role = CustomRoles.Refugee;
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Charmed))
-                {
-                    __instance.RpcSetCustomRole(CustomRoles.Charmed);
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Recruit))
-                {
-                    role = CustomRoles.Sidekick;
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Infected))
-                {
-                    __instance.RpcSetCustomRole(CustomRoles.Infected);
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Contagious))
-                {
-                    __instance.RpcSetCustomRole(CustomRoles.Contagious);
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Admired))
-                {
-                    role = CustomRoles.Admirer;
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Enchanted))
-                {
-                    role = CustomRoles.Ritualist;
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Egoist))
-                {
-                    role = CustomRoles.Traitor;
-                }
-                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel))
-                {
-                    role = CustomRoles.Taskinator;
-                }
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Madmate)) role = CustomRoles.Refugee;
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Charmed)) __instance.RpcSetCustomRole(CustomRoles.Charmed);
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Recruit)) role = CustomRoles.Sidekick;
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Infected)) __instance.RpcSetCustomRole(CustomRoles.Infected);
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Contagious)) __instance.RpcSetCustomRole(CustomRoles.Contagious);
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Admired)) role = CustomRoles.Admirer;
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Enchanted)) role = CustomRoles.Ritualist;
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Egoist)) role = CustomRoles.Traitor;
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
                 __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                 __instance.RpcChangeRoleBasis(role);
                 __instance.RpcSetCustomRole(role);

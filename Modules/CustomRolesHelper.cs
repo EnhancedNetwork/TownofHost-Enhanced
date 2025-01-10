@@ -246,7 +246,8 @@ public static class CustomRolesHelper
     {
         if (role is
             //FFA
-            CustomRoles.Killer) return true;
+            CustomRoles.Killer or
+            CustomRoles.Rebel) return true;
 
         return role.IsNK() || role.IsNonNK() || role.IsNA() || role.IsMadmate();
     }
@@ -337,6 +338,13 @@ public static class CustomRolesHelper
             CustomRoles.Soulless or
             CustomRoles.Madmate or
             CustomRoles.Enchanted;
+
+    public static bool IsConvertedV2(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
+        || role is
+            CustomRoles.Charmed or
+            CustomRoles.Recruit or
+            CustomRoles.Infected or
+            CustomRoles.Contagious;
 
     public static bool IsNotKnightable(this CustomRoles role)
     {
@@ -808,6 +816,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Rascal)
+                    || pc.Is(CustomRoles.CopyCat)
+                    || pc.Is(CustomRoles.Vigilante)
                     || pc.Is(CustomRoles.Ghoul)
                     || pc.Is(CustomRoles.Bloodthirst)
                     || pc.Is(CustomRoles.Paranoia)
@@ -1308,18 +1318,16 @@ public static class CustomRolesHelper
            var r when r.IsCoven() => CountTypes.Coven,
            CustomRoles.Enchanted => CountTypes.Coven,
            CustomRoles.Agitater => CountTypes.Agitater,
-           CustomRoles.Parasite => CountTypes.Impostor,
+           var r when r.IsMadmate() => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
            CustomRoles.Quizmaster => CountTypes.Quizmaster,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
-           CustomRoles.Crewpostor => CountTypes.Impostor,
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
            CustomRoles.Virus => CountTypes.Virus,
            CustomRoles.Pickpocket => CountTypes.Pickpocket,
            CustomRoles.Traitor => CountTypes.Traitor,
-           CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,

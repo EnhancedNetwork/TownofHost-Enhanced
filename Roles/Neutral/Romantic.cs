@@ -63,9 +63,11 @@ internal class Romantic : RoleBase
         VengefulKCD = FloatOptionItem.Create(Id + 15, "VengefulKCD", new(0f, 60f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
             .SetValueFormat(OptionFormat.Seconds);
         VengefulCanVent = BooleanOptionItem.Create(Id + 16, "VengefulCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
-        RuthlessKCD = FloatOptionItem.Create(Id + 17, "RuthlessKCD", new(0f, 60f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
+        VengefulHasImpVision = BooleanOptionItem.Create(Id + 17, "VengefulHasImpVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
+        RuthlessKCD = FloatOptionItem.Create(Id + 18, "RuthlessKCD", new(0f, 60f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
             .SetValueFormat(OptionFormat.Seconds);
-        RuthlessCanVent = BooleanOptionItem.Create(Id + 18, "RuthlessCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
+        RuthlessCanVent = BooleanOptionItem.Create(Id + 19, "RuthlessCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
+        RuthlessHasImpVision = BooleanOptionItem.Create(Id + 20, "RuthlessHasImpVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
     }
     public override void Init()
     {
@@ -265,6 +267,7 @@ internal class Romantic : RoleBase
         if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC() || player.Is(CustomRoles.Egoist) || killer == player || !killer.IsAlive() || killer.HasGhostRole())
         {
             Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
+            pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
@@ -274,8 +277,16 @@ internal class Romantic : RoleBase
         else if (ConvertingRolesAndAddons.TryGetValue(player.GetCustomRole(), out var convertedRole))
         {
             Logger.Info($"Converting Romantic Partner Died => Romantic becomes their ally ({pc.GetNameWithRole()})", "Romantic");
-            pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+            pc.GetRoleClass().OnRemove(pc.PlayerId);
+            pc.RpcChangeRoleBasis(convertedRole);
+            pc.RpcSetCustomRole(convertedRole);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
+            if (convertedRole.IsAdditionRole())
+            {
+                pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
+                pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+                pc.GetRoleClass().OnAdd(pc.PlayerId);
+            }
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
@@ -284,6 +295,7 @@ internal class Romantic : RoleBase
         {
             Logger.Info($"Impostor Romantic Partner Died => Changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
+            pc.RpcChangeRoleBasis(CustomRoles.Refugee);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
             pc.GetRoleClass()?.OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
@@ -305,9 +317,10 @@ internal class Romantic : RoleBase
         {
             _ = new LateTask(() =>
             {
-                Logger.Info($"Crew/nnk Romantic Partner Died changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful romantic", "Romantic");
+                Logger.Info($"Crew/NB Romantic Partner Died => Changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful Romantic", "Romantic");
                 VengefulTargetId = killer.PlayerId;
 
+                pc.RpcChangeRoleBasis(CustomRoles.VengefulRomantic);
                 pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
                 pc.GetRoleClass().OnAdd(pc.PlayerId);
                 if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);

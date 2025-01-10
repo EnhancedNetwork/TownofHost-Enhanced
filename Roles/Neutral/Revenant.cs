@@ -34,10 +34,7 @@ internal class Revenant : RoleBase
                 role = subrole switch
                 {
                     CustomRoles.Madmate => CustomRoles.Gangster,
-                    CustomRoles.Charmed => CustomRoles.Cultist,
                     CustomRoles.Recruit => CustomRoles.Sidekick,
-                    CustomRoles.Infected => CustomRoles.Infectious,
-                    CustomRoles.Contagious => CustomRoles.Virus,
                     CustomRoles.Admired => CustomRoles.Admirer,
                     CustomRoles.Enchanted => CustomRoles.Ritualist,
                     CustomRoles.Egoist => CustomRoles.Traitor,
@@ -46,6 +43,10 @@ internal class Revenant : RoleBase
                 };
             }
         }
+
+        if (killer.Is(CustomRoles.Charmed)) target.RpcSetCustomRole(CustomRoles.Charmed);
+        if (killer.Is(CustomRoles.Infected)) target.RpcSetCustomRole(CustomRoles.Infected);
+        if (killer.Is(CustomRoles.Contagious)) target.RpcSetCustomRole(CustomRoles.Contagious);
 
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);

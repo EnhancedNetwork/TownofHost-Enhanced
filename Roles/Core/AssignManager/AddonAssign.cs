@@ -21,11 +21,6 @@ public static class AddonAssign
                 return true;
         }
 
-        /*else if (Options.IsActiveDleks) // Dleks
-        {
-            if (role is CustomRoles.Nimble or CustomRoles.Burst or CustomRoles.Circumvent) continue;
-        }*/
-
         return false;
     }
 
@@ -174,6 +169,8 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Mini)
                 || pc.Is(CustomRoles.NiceMini)
                 || pc.Is(CustomRoles.EvilMini)
+                || pc.Is(CustomRoles.Altruist)
+                || pc.Is(CustomRoles.Rebel)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))

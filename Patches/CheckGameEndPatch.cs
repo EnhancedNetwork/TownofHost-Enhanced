@@ -221,22 +221,20 @@ class GameEndCheckerForNormal
 
                 if (WinnerTeam == CustomWinner.Impostor)
                 {
-                    var aliveImps = Main.AllAlivePlayerControls.Where(x => x.Is(Custom_Team.Impostor) && !Main.PlayerStates[x.PlayerId].IsNecromancer);
+                    var aliveImps = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostorTeamV3());
                     var imps = aliveImps as PlayerControl[] ?? aliveImps.ToArray();
                     var aliveImpCount = imps.Length;
 
                     switch (aliveImpCount)
                     {
-                        // If there's an Egoist, and there is at least 1 non-Egoist impostor alive, Egoist loses
                         case > 1 when WinnerIds.Any(x => x.GetPlayer().Is(CustomRoles.Egoist)):
                             WinnerIds.RemoveWhere(x => x.GetPlayer().Is(CustomRoles.Egoist));
                             break;
-                        // If there's only 1 impostor alive, and all living impostors are Egoists, the Egoist wins alone
                         case 1 when imps.All(x => x.Is(CustomRoles.Egoist)):
                             var pc = imps[0];
                             reason = GameOverReason.ImpostorByKill;
                             WinnerTeam = CustomWinner.Egoist;
-                            WinnerIds.RemoveWhere(x => Main.PlayerStates[x].MainRole.IsImpostor() || Main.PlayerStates[x].MainRole.IsMadmate() || x.GetPlayer().Is(CustomRoles.Madmate));
+                            WinnerIds.RemoveWhere(x => Main.PlayerStates[x].MainRole.IsImpostorTeamV3() || x.GetPlayer().Is(CustomRoles.Madmate));
                             WinnerIds.Add(pc.PlayerId);
                             break;
                     }
@@ -443,7 +441,7 @@ class GameEndCheckerForNormal
                 }
 
                 //Neutral Win Together
-                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && ((Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() && !Utils.GetPlayerById(x).Is(CustomRoles.Rebel)) || Utils.GetPlayerById(x).GetCustomRole().IsImpostor())))
+                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && ((Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() && !Utils.GetPlayerById(x).Is(CustomRoles.Rebel)) || Utils.GetPlayerById(x).GetCustomRole().IsImpostor() || Utils.GetPlayerById(x).GetCustomRole().IsCoven()) && !Main.PlayerStates[x].IsNecromancer))
                 {
                     foreach (var pc in Main.AllPlayerControls)
                         if (pc.GetCustomRole().IsNeutral() && !WinnerIds.Contains(pc.PlayerId) && !WinnerRoles.Contains(pc.GetCustomRole()))

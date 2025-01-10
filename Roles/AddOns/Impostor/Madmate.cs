@@ -68,17 +68,12 @@ public static class Madmate
 
     public static void ApplyGameOptions(IGameOptions opt)
     {
+        bool lightsOut = Utils.IsActive(SystemTypes.Electrical);
+        float impVision = lightsOut ? Main.DefaultImpostorVision * 5 : Main.DefaultImpostorVision;
         if (MadmateHasImpostorVision.GetBool())
         {
-            var impVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
-            if (Utils.IsActive(SystemTypes.Electrical))
-            {
-                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision * 5);
-            }
-            else
-            {
-                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
-            }
+            opt.SetVision(true);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, impVision);
         }
     }
@@ -98,7 +93,7 @@ public static class Madmate
 
     public static bool CanBeMadmate(this PlayerControl pc, bool forAdmirer = false, bool forGangster = false)
     {
-        return pc != null && !pc.Is(CustomRoles.Madmate) && ((pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel)) || (forAdmirer && pc.GetCustomRole().IsNeutral() || forAdmirer && pc.GetCustomRole().IsCoven()))
+        return pc != null && !pc.Is(CustomRoles.Madmate) && ((pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel)) || forAdmirer && pc.GetCustomRole().IsNeutral() || forAdmirer && pc.GetCustomRole().IsCoven())
         && !(pc.CheckCanBeMadmate(forGangster) ||
             pc.Is(CustomRoles.ChiefOfPolice) ||
             pc.Is(CustomRoles.LazyGuy) ||

@@ -52,8 +52,8 @@ internal class Godfather : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         var godfather = _Player;
-        var ChangeRole = godfather.Is(CustomRoles.Admired) ? CustomRoles.Sheriff : CustomRoles.Refugee;
-        var ChangeAddon = godfather.Is(CustomRoles.Admired) ? CustomRoles.Admired : CustomRoles.Madmate;
+        var ChangeRole = godfather.Is(CustomRoles.Admired) ? CustomRoles.Sheriff : godfather.Is(CustomRoles.Recruit) ? CustomRoles.Sidekick : CustomRoles.Refugee;
+        var ChangeAddon = godfather.Is(CustomRoles.Admired) ? CustomRoles.Admired : godfather.Is(CustomRoles.Recruit) ? CustomRoles.Recruit : CustomRoles.Madmate;
         if (GodfatherTarget.Contains(target.PlayerId))
         {
             if (GodfatherChangeOpt.GetValue() == 0)
