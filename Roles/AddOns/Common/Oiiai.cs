@@ -20,7 +20,7 @@ public class Oiiai : IAddon
     private static OptionItem ChangeNeutralRole;
 
     [Obfuscation(Exclude = true)]
-    private enum ChangeRolesForNeutralSelectList
+    private enum ChangeRolesSelectList
     {
         Role_NoChange,
         Role_Amnesiac,
@@ -37,7 +37,7 @@ public class Oiiai : IAddon
     {
         SetupAdtRoleOptions(Id, CustomRoles.Oiiai, canSetNum: true, tab: TabGroup.Addons, teamSpawnOptions: true);
         CanPassOn = BooleanOptionItem.Create(Id + 14, "OiiaiCanPassOn", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesForNeutralSelectList>(), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oiiai]);
+        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oiiai]);
     }
     public void Init()
     {
