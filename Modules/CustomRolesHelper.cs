@@ -417,8 +417,9 @@ public static class CustomRolesHelper
     {
         var pc_role = pc.GetCustomRole();
         return (!pc.Is(CustomRoles.Admired) && 
-               (pc.IsNonNarcImpV3() || pc_role.IsNK() || pc_role.IsNA())) ||
+               (pc.IsNonNarcImpV3() || pc_role.IsNK() || pc_role.IsNA() || pc_role.IsCoven())) ||
                pc.Is(CustomRoles.Infected) ||
+               pc.Is(CustomRoles.Enchanted) ||
                (pc.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1) ||
                (pc.Is(CustomRoles.Charmed) && Cultist.CharmedCountMode.GetInt() == 1) || 
                (pc.Is(CustomRoles.Recruit) && Jackal.SidekickCountMode.GetInt() == 1) || 
@@ -1347,18 +1348,16 @@ public static class CustomRolesHelper
            var r when r.IsCoven() => CountTypes.Coven,
            CustomRoles.Enchanted => CountTypes.Coven,
            CustomRoles.Agitater => CountTypes.Agitater,
-           CustomRoles.Parasite => CountTypes.Impostor,
+           var r when r.IsMadmate() => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
            CustomRoles.Quizmaster => CountTypes.Quizmaster,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
-           CustomRoles.Crewpostor => CountTypes.Impostor,
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
            CustomRoles.Virus => CountTypes.Virus,
            CustomRoles.Pickpocket => CountTypes.Pickpocket,
            CustomRoles.Traitor => CountTypes.Traitor,
-           CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
