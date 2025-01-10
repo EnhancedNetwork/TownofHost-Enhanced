@@ -29,7 +29,7 @@ internal class Revenant : RoleBase
 
         if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2()))
         {
-            foreach (var subrole in target.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
+            foreach (var subrole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
             {
                 role = subrole switch
                 {
