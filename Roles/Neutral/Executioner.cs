@@ -203,6 +203,9 @@ internal class Executioner : RoleBase
             case CustomRoles.Dictator:
                 new[] { CustomRoles.Tiebreaker, CustomRoles.Paranoia, CustomRoles.Knighted, CustomRoles.VoidBallot, CustomRoles.Silent, CustomRoles.Influenced }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
                 break;
+            case CustomRoles.Mayor:
+                new[] { CustomRoles.Knighted, CustomRoles.VoidBallot }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
+                break;
             case CustomRoles.Doctor:
                 new[] { CustomRoles.Autopsy, CustomRoles.Necroview }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
                 break;
