@@ -143,6 +143,7 @@ public class Main : BasePlugin
     public static float RefixCooldownDelay = 0f;
     public static NetworkedPlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
+    public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
@@ -695,6 +696,7 @@ public enum CustomRoles
     Deathpact,
     Devourer,
     Disperser,
+    Diviner,
     DollMaster,
     DoubleAgent,
     Eraser,
@@ -704,6 +706,7 @@ public enum CustomRoles
     EvilMini,
     EvilTracker,
     Fireworker,
+    Fury,
     Gangster,
     Godfather,
     Greedy,
@@ -806,6 +809,7 @@ public enum CustomRoles
     Overseer,
     Pacifist,
     President,
+    Protector,
     Psychic,
     Randomizer,
     Retributionist,
@@ -823,6 +827,7 @@ public enum CustomRoles
     TimeMaster,
     Tracefinder,
     Transporter,
+    Valkyrie,
     Ventguard,
     Veteran,
     Vigilante,
@@ -840,6 +845,7 @@ public enum CustomRoles
     Collector,
     Cultist,
     CursedSoul,
+    DarkFairy,
     Death,
     Demon,
     Doomsayer,
@@ -946,6 +952,7 @@ public enum CustomRoles
     Clumsy,
     Contagious,
     Cyber,
+    Darkened,
     Diseased,
     DoubleShot,
     Eavesdropper,
@@ -1080,6 +1087,7 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
+    DarkFairy = CustomRoles.DarkFairy,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

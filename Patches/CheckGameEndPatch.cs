@@ -180,6 +180,12 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(Romantic.BetPlayer[pc.PlayerId]);
                         }
                         break;
+                    case CustomWinner.DarkFairy:
+                        if ((pc.Is(CustomRoles.Darkened) || pc.Is(CustomRoles.DarkFairy)) && !CustomWinnerHolder.WinnerIds.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        }
+                        break;
                 }
             }
 

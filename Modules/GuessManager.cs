@@ -991,6 +991,11 @@ public static class GuessManager
                     if (!listOfRoles.Contains(CustomRoles.Enchanted))
                         listOfRoles.Add(CustomRoles.Enchanted);
                 }
+                if (CustomRoles.DarkFairy.IsEnable())
+                {
+                    if (!listOfRoles.Contains(CustomRoles.Darkened))
+                        listOfRoles.Add(CustomRoles.Darkened);
+                }
 
                 arrayOfRoles = [.. listOfRoles];
             }
