@@ -3401,7 +3401,22 @@ internal class ChatCommands
                 GameStartManager.Instance.countDownTimer = countdown;
                 Utils.SendMessage(string.Format(GetString("StartCommandStarted"), player.name));
                 break;
+            case "/end":
+            case "/encerrar":
+            case "/завершить":
+            case "/结束":
+            case "/结束游戏":
+                if (!TagManager.CanUseEndCommand(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("EndCommandNoAccess"), player.PlayerId);
+                    break;
 
+                }
+                Utils.SendMessage(string.Format(GetString("EndCommandEnded"), player.name));
+                canceled = true;
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
+                GameManager.Instance.LogicFlow.CheckEndCriteria();
+                break;
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
