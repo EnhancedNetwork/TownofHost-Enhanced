@@ -940,8 +940,10 @@ public static class CustomRolesHelper
             case CustomRoles.Burst:
                 if (pc.Is(CustomRoles.Avanger)
                     || pc.Is(CustomRoles.Trapper)
+                    || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Bait)
+                    || pc.Is(CustomRoles.Ghoul)
                     || pc.Is(CustomRoles.PunchingBag))
                     return false;
                 break;
