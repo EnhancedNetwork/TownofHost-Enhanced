@@ -38,32 +38,19 @@ public class LastImpostor : IAddon
     {
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;
         if (Options.CurrentGameMode == CustomGameMode.FFA || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1) return;
-        if (Main.AliveImpostorCount >= 2 && !CustomRoles.LastImpostor.RoleExist(countDead: true)) return;
 
-        foreach (var pc in Main.AllPlayerControls)//Why do we have to do "var pc in Main.AllAlivePlayerControls" if CanBeLastImpostor already checked IsAlive
+        foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (Main.AliveImpostorCount == 1)
+            if (CanBeLastImpostor(pc))
             {
-                Main.AllPlayerControls.Where(x => x.Is(CustomRoles.LastImpostor) && !x.IsAlive())
-                .Do(x => RemoveLastImpostor(x));//If AliveImpostorCount increases from 0 to 1,remove Last Impostor from dead players
-                if (CanBeLastImpostor(pc)) AssignLastImpostor(pc);
+                pc.RpcSetCustomRole(CustomRoles.LastImpostor);
+                AddMidGame(pc.PlayerId);
+                SetKillCooldown();
+                pc.SyncSettings();
+                Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
+                if (pc.Is(CustomRoles.Crewpostor)) Crewpostor.CrewpostorResetTasks(pc);
                 break;
             }
-            if (Main.AliveImpostorCount >= 2 && pc.Is(CustomRoles.LastImpostor)) RemoveLastImpostor(pc);
         }
-    }
-    private static void AssignLastImpostor(PlayerControl pc)
-    {
-        pc.RpcSetCustomRole(CustomRoles.LastImpostor);
-        AddMidGame(pc.PlayerId);
-        SetKillCooldown();
-        pc.SyncSettings();
-        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
-        if (pc.Is(CustomRoles.Crewpostor)) Crewpostor.CrewpostorResetTasks(pc);
-    }
-    private static void RemoveLastImpostor(PlayerControl lastimp) 
-    {
-        Main.PlayerStates[lastimp.PlayerId].RemoveSubRole(CustomRoles.LastImpostor);
-        currentId = byte.MaxValue;
     }
 }
