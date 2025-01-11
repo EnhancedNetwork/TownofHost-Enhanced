@@ -41,8 +41,7 @@ internal class Romantic : RoleBase
     {
         [CustomRoles.Cultist] = CustomRoles.Charmed,
         [CustomRoles.Jackal] = CustomRoles.Sidekick,
-        [CustomRoles.Virus] = CustomRoles.Contagious,
-        [CustomRoles.Ritualist] = CustomRoles.Enchanted
+        [CustomRoles.Virus] = CustomRoles.Contagious
     };
 
     public static byte VengefulTargetId;
@@ -264,7 +263,7 @@ internal class Romantic : RoleBase
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
         var killer = player.GetRealKiller();
-        if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC() || player.Is(CustomRoles.Egoist) || killer == player || !killer.IsAlive() || killer.HasGhostRole())
+        if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC() || player.Is(CustomRoles.Egoist) || killer == player || killer == null || !killer.IsAlive() || killer.HasGhostRole())
         {
             Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
@@ -302,9 +301,21 @@ internal class Romantic : RoleBase
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
-        else if (player.GetCustomRole().IsNK() || player.GetCustomRole().IsNA() || player.GetCustomRole().IsCoven() || player.GetCustomRole().IsTasklessCrewmate())
+        else if (player.GetCustomRole().IsCoven())
         {
-            Logger.Info($"NK/NA/Coven Romantic Partner Died => Changing {pc.GetNameWithRole()} to {pc.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
+            Logger.Info($"Coven Romantic Partner Died => Changing {pc.GetNameWithRole()} to Enchanted Ruthless Romantic", "Romantic");
+            pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
+            pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+            pc.RpcSetCustomRole(CustomRoles.Enchanted);
+            pc.AddInSwitchAddons(pc, CustomRoles.Enchanted);
+            pc.GetRoleClass().OnAdd(pc.PlayerId);
+            Utils.NotifyRoles(ForceLoop: true);
+            pc.ResetKillCooldown();
+            pc.SetKillCooldown();
+        }
+        else if (player.GetCustomRole().IsNK() || player.GetCustomRole().IsNA() || player.GetCustomRole().IsTasklessCrewmate())
+        {
+            Logger.Info($"NK/NA/Taskless Crew Romantic Partner Died => Changing {pc.GetNameWithRole()} to {pc.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcChangeRoleBasis(player.GetCustomRole());
             pc.RpcSetCustomRole(player.GetCustomRole());

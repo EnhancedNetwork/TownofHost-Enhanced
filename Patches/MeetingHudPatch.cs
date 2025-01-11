@@ -469,16 +469,28 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostorTeamV3() || player.Is(CustomRoles.Madmate))
+                if (player.Is(CustomRoles.Madmate))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
-                else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Admired))
+                else if (player.Is(CustomRoles.Admired))
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutralTeamV3() || player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConvertedV2()))
+                else if (player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConvertedV2()))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
-                else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
+                else if (player.Is(CustomRoles.Enchanted))
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+
+                else if (player.GetCustomRole().IsImpostorTeamV3())
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
+
+                else if (player.GetCustomRole().IsCrewmate())
+                    name = string.Format(GetString("IsGood"), realName);
+
+                else if (player.GetCustomRole().IsNeutralTeamV3())
+                    name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
+
+                else if (player.GetCustomRole().IsCoven())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
 
                 break;
@@ -487,13 +499,21 @@ class CheckForEndVotingPatch
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (player.GetCustomRole().IsImpostorTeamV3() || player.Is(CustomRoles.Madmate))
+                    if (player.Is(CustomRoles.Madmate))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutralTeamV3() || player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConvertedV2()))
+                    else if (player.Is(CustomRoles.Rebel) || player.IsAnySubRole(x => x.IsConvertedV2()))
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                    else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Admired))
+                    else if (player.Is(CustomRoles.Admired))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
-                    else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
+                    else if (player.Is(CustomRoles.Enchanted))
+                        name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
+                    else if (player.GetCustomRole().IsImpostorTeamV3())
+                        name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
+                    else if (player.GetCustomRole().IsNeutralTeamV3())
+                        name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
+                    else if (player.GetCustomRole().IsCrewmate())
+                        name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
+                    else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }

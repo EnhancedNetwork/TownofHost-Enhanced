@@ -69,7 +69,7 @@ internal class Grenadier : RoleBase
         // Grenadier or Mad Grenadier enter the vent
         if ((GrenadierBlinding.Any() &&
             (player.GetCustomRole().IsImpostor() ||
-            (player.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()) ||
+            ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel)) && GrenadierCanAffectNeutral.GetBool()) ||
             (player.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
             )
             || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Madmate)))
@@ -107,14 +107,6 @@ internal class Grenadier : RoleBase
                     .Where(x => !x.GetCustomRole().IsImpostorTeamV3() && !x.Is(CustomRoles.Madmate))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
-            else if (pc.Is(CustomRoles.Rebel))
-            {
-                MadGrenadierBlinding.Remove(pc.PlayerId);
-                MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
-                Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => !x.GetCustomRole().IsImpostor() && !x.GetCustomRole().IsNeutral() && !x.GetCustomRole().IsConverted() && !x.Is(CustomRoles.Rebel))
-                    .Do(x => x.RPCPlayCustomSound("FlashBang"));
-            }
             // Why in the world is there a separate list for Mad, whatever i guess -- Marg
             else if (pc.Is(CustomRoles.Enchanted))
             {
@@ -122,6 +114,14 @@ internal class Grenadier : RoleBase
                 MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
                     .Where(x => !x.GetCustomRole().IsCoven() && !x.Is(CustomRoles.Enchanted))
+                    .Do(x => x.RPCPlayCustomSound("FlashBang"));
+            }
+            else if (pc.Is(CustomRoles.Rebel))
+            {
+                MadGrenadierBlinding.Remove(pc.PlayerId);
+                MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
+                Main.AllPlayerControls.Where(x => x.IsModded())
+                    .Where(x => x.Is(CustomRoles.Admired) && !x.GetCustomRole().IsConverted() && x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.Rebel))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             else
