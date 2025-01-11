@@ -99,7 +99,7 @@ public class Narc : IAddon
     {
         bool lightsout = Utils.IsActive(SystemTypes.Electrical);
         float crewvision = lightsout? Main.DefaultCrewmateVision / 5 : Main.DefaultCrewmateVision;
-        if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie) && !player.Is(CustomRoles.Crewpostor)
+        if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie) && !(player.Is(CustomRoles.Chronomancer) && Chronomancer.IsInMassacre)
            && NarcHasCrewVision.GetBool())
         {
             opt.SetVision(true);
