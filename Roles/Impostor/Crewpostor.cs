@@ -15,7 +15,7 @@ internal class Crewpostor : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 
-    private static OptionItem CrewpostorAndAlliesKnowEachOther;
+    private static OptionItem CPAndAlliesKnowEachOther;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
@@ -24,7 +24,7 @@ internal class Crewpostor : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
-        CanKillAllies = BooleanOptionItem.Create(Id + 4, "CrewpostorAndAlliesKnowEachOther", true, TabGroup.ImpostorRoles, false)
+        CPAndAlliesKnowEachOther = BooleanOptionItem.Create(Id + 4, "CPAndAlliesKnowEachOther", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         LungeKill = BooleanOptionItem.Create(Id + 5, "CrewpostorLungeKill", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
