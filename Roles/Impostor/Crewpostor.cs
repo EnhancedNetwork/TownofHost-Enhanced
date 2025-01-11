@@ -16,7 +16,7 @@ internal class Crewpostor : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 
-    private static OptionItem CPAndAlliesKnowEachOther;
+    public static OptionItem CPAndAlliesKnowEachOther;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
