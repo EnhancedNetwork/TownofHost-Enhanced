@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
