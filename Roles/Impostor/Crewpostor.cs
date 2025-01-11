@@ -7,7 +7,7 @@ namespace TOHE.Roles.Impostor;
 internal class Crewpostor : RoleBase
 {
     //===========================SETUP================================\\
-    public CustomRoles Role => CustomRoles.Crewpostor;
+    public override CustomRoles Role => CustomRoles.Crewpostor;
     private const int Id = 5800;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
