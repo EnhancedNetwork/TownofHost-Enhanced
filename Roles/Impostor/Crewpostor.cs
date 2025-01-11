@@ -98,7 +98,11 @@ internal class Crewpostor : RoleBase
             TasksDone[player.PlayerId] = 0;
 
         SendRPC(player.PlayerId, TasksDone[player.PlayerId]);
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) && (CrewpostorAndAlliesKnowEachOther.GetBool() || !(x.CheckMMCanSeeImp() || (x.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())) && !(player.Is(CustomRoles.Narc) && x.Is(CustomRoles.Sheriff))).ToList();
+        List<PlayerControl> list = Main.AllAlivePlayerControls
+        .Where(x => x.PlayerId != player.PlayerId 
+        && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) 
+        && (CrewpostorAndAlliesKnowEachOther.GetBool() || !(x.CheckMMCanSeeImp() || (x.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool()))) 
+        && !(player.Is(CustomRoles.Narc) && x.Is(CustomRoles.Sheriff))).ToList();
 
         if (!list.Any())
         {
