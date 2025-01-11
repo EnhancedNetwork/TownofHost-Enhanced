@@ -82,6 +82,7 @@ public enum CustomRPC : byte // 185/255 USED
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetCrewpostorTasksDone,
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCurrentDrawTarget,
@@ -453,6 +454,9 @@ internal class RPCHandlerPatch
 
                     Main.BAUPlayers[__instance.Data] = __instance.Data.Puid;
                 }
+                break;
+            case CustomRPC.SetCrewpostorTasksDone:
+                Crewpostor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SendFireworkerState:
                 Fireworker.ReceiveRPC(reader);
