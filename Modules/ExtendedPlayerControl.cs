@@ -444,7 +444,7 @@ static class ExtendedPlayerControl
 
         killer.RpcMurderPlayer(target, true);
     }
-    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool fromSetKCD = false)
+    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool forTechnician = false, bool fromSetKCD = false)
     {
         if (!AmongUsClient.Instance.AmHost)
         {
@@ -462,6 +462,12 @@ static class ExtendedPlayerControl
         if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
             Observer.ActivateGuardAnimation(killer.PlayerId, target);
+        }
+
+        // Check Technician
+        if (Technician.HasEnabled && !forTechnician && !MeetingStates.FirstMeeting)
+        {
+            Technician.ActivateGuardAnimation(killer.PlayerId, target, 11);
         }
 
         // Host
@@ -523,6 +529,11 @@ static class ExtendedPlayerControl
             {
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
+            // Check Technician
+            if (Technician.HasEnabled)
+            {
+                Technician.ActivateGuardAnimation(target.PlayerId, target, 11);
+            }
         }
         player.ResetKillCooldown();
     }
@@ -564,6 +575,11 @@ static class ExtendedPlayerControl
             if (Observer.HasEnabled)
             {
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
+            }
+            // Check Technician
+            if (Technician.HasEnabled)
+            {
+                Technician.ActivateGuardAnimation(target.PlayerId, target, 11);
             }
         }
         player.ResetKillCooldown();
@@ -1147,6 +1163,10 @@ static class ExtendedPlayerControl
 
                     case CustomRoles.Overclocked:
                         Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
+                        break;
+
+                    case CustomRoles.Underclocked:
+                        Main.AllPlayerKillCooldown[player.PlayerId] += Main.AllPlayerKillCooldown[player.PlayerId] * (Underclocked.UnderclockedIncrease.GetFloat() / 100);
                         break;
 
                     case CustomRoles.Diseased:

@@ -822,6 +822,7 @@ public enum CustomRoles
     SuperStar,
     Swapper,
     TaskManager,
+    Technician,
     Telecommunication,
     TimeManager,
     TimeMaster,
@@ -838,6 +839,7 @@ public enum CustomRoles
     Amnesiac,
     Apocalypse,
     Arsonist,
+    Assassin,
     Baker,
     Bandit,
     Berserker,
@@ -968,6 +970,7 @@ public enum CustomRoles
     Gravestone,
     Guesser,
     Hurried,
+    Identifier,
     Infected,
     Influenced,
     Knighted,
@@ -1011,6 +1014,7 @@ public enum CustomRoles
     Trapper,
     Tricky,
     Tired,
+    Underclocked,
     Unlucky,
     Unreportable, //disregarded
     VoidBallot,
@@ -1088,6 +1092,7 @@ public enum CustomWinner
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
     DarkFairy = CustomRoles.DarkFairy,
+    Assassin = CustomRoles.Assassin,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

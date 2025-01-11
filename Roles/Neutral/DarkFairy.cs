@@ -13,7 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class DarkFairy : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 29100;
+    private const int Id = 31500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.DarkFairy);
     public override CustomRoles Role => CustomRoles.DarkFairy;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

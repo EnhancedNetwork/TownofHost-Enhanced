@@ -12,7 +12,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Protector : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 29500;
+    private const int Id = 31200;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
 

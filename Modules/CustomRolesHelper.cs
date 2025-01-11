@@ -160,6 +160,7 @@ public static class CustomRolesHelper
                 || target.GetCustomRole() is
                 CustomRoles.Sheriff or
                 CustomRoles.ChiefOfPolice or
+                CustomRoles.Technician or
                 CustomRoles.LazyGuy or
                 CustomRoles.SuperStar or
                 CustomRoles.Celebrity or
@@ -207,6 +208,7 @@ public static class CustomRolesHelper
             CustomRoles.Juggernaut or
             CustomRoles.BloodKnight or
             CustomRoles.DarkFairy or
+            CustomRoles.Assassin or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -593,6 +595,11 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Underclocked:
+                if (!pc.CanUseKillButton())
+                    return false;
+                break;
+
             case CustomRoles.Lazy:
                 if (!Lazy.CheckConflicts(pc))
                 if (pc.Is(CustomRoles.Protector))
@@ -700,6 +707,18 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.Identifier:
+                if (pc.Is(CustomRoles.Oblivious)
+                    || pc.Is(CustomRoles.Mortician)
+                    || pc.Is(CustomRoles.Cleaner)
+                    || pc.Is(CustomRoles.Medusa)
+                    || pc.Is(CustomRoles.Vulture)
+                    || pc.Is(CustomRoles.Coroner))
+                    return false;
+                if ((pc.GetCustomRole().IsCrewmate() && !Identifier.CrewCanBeIdentifier.GetBool()) || (pc.GetCustomRole().IsNeutral() && !Identifier.NeutralCanBeIdentifier.GetBool()) || (pc.GetCustomRole().IsImpostor() && !Identifier.ImpCanBeIdentifier.GetBool()))
+                    return false;
+                break;
+
             case CustomRoles.Necroview:
                 if (pc.Is(CustomRoles.Doctor)
                     || pc.Is(CustomRoles.God)
@@ -759,6 +778,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sleuth)
                     || pc.Is(CustomRoles.Cleaner)
                     || pc.Is(CustomRoles.Amnesiac)
+                    || pc.Is(CustomRoles.Identifier)
                     || pc.Is(CustomRoles.Coroner)
                     || pc.Is(CustomRoles.Medusa)
                     || pc.Is(CustomRoles.Mortician)
@@ -1288,6 +1308,7 @@ public static class CustomRolesHelper
            CustomRoles.RuthlessRomantic => CountTypes.RuthlessRomantic,
            CustomRoles.Shocker => CountTypes.Shocker,
            CustomRoles.DarkFairy => CountTypes.DarkFairy,
+           CustomRoles.Assassin => CountTypes.Assassin,
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
@@ -1350,6 +1371,7 @@ public static class CustomRolesHelper
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
             CustomRoles.Shocker => CustomWinner.Shocker,
             CustomRoles.DarkFairy => CustomWinner.DarkFairy,
+            CustomRoles.Assassin => CustomWinner.Assassin,
             _ => throw new NotImplementedException()
 
         };
@@ -1385,6 +1407,7 @@ public static class CustomRolesHelper
             CountTypes.RuthlessRomantic => CustomRoles.RuthlessRomantic,
             CountTypes.Shocker => CustomRoles.Shocker,
             CountTypes.DarkFairy => CustomRoles.DarkFairy,
+            CountTypes.Assassin => CustomRoles.Assassin,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1473,5 +1496,6 @@ public enum CountTypes
     Shocker,
     Coven,
     DarkFairy,
-    Darkened
+    Darkened,
+    Assassin
 }

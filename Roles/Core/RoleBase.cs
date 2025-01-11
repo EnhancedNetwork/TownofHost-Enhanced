@@ -59,6 +59,9 @@ public abstract class RoleBase
         Main.UnShapeShifter.Remove(playerId);
     }
 
+    public virtual void OnOthersShapeshift()
+    { }
+
     /// <summary>
     /// Variable resets when the game starts.
     /// </summary>
