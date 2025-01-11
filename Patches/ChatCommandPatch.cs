@@ -3413,10 +3413,41 @@ internal class ChatCommands
 
                 }
                 Utils.SendMessage(string.Format(GetString("EndCommandEnded"), player.name));
-                canceled = true;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 break;
+            case "/exe":
+            case "/уничтожить":
+            case "/повесить":
+            case "/казнить":
+            case "/казнь":
+            case "/мут":
+            case "/驱逐":
+            case "/驱赶":
+                if (!TagManager.CanUseExecuteCommand(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("ExecuteCommandNoAccess"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
+                    break;
+                }
+                if (args.Length < 2 || !int.TryParse(args[1], out int id)) break;
+                var target = Utils.GetPlayerById(id);
+                if (target != null)
+                {
+                    target.Data.IsDead = true;
+                    target.SetDeathReason(PlayerState.DeathReason.etc);
+                    target.SetRealKiller(player);
+                    Main.PlayerStates[target.PlayerId].SetDead();
+                    target.RpcExileV2();
+                    MurderPlayerPatch.AfterPlayerDeathTasks(player, target, GameStates.IsMeeting);                    
+                    Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
+                }
+                break;
+
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;

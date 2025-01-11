@@ -134,4 +134,21 @@ public static class TagManager
         if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
         return false;
     }
+    public static bool CanUseExecuteCommand(string friendCode)
+    {
+        if (!CheckFriendCode(friendCode)) { return false; }
+        string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
+        string temp = "";
+        var searchTarget = "ExecuteCommandAccess:";
+        foreach (var line in File.ReadLines(fileName))
+        {
+            if (line.Contains(searchTarget))
+            {
+                temp = line.Split("ExecuteCommandAccess:").Skip(1).First().Trim().TrimEnd().ToLower();
+                break;
+            }
+        }
+        if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
+        return false;
+    }
 }

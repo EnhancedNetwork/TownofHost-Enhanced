@@ -2205,6 +2205,7 @@
   "StartCommandInvalidCountdown": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>The countdown must be between {0} and {1}!</color>",
   "EndCommandNoAccess": "You do not have access to the end command.",
   "EndCommandEnded": "The game has been ended by {0}!",
+  "ExecuteCommandNoAccess": "You do not have access to the execute command.",
 
 
   "WarnCommandWarnMod": "You are not permitted to warn other Moderators.",
@@ -2545,6 +2546,7 @@
   "Message.TemplateNotFoundClient": "The Host doesn't have a template called <b>{0}</b>",
   "Message.SyncButtonLeft": "There are {0} more Emergency buttons left",
   "Message.Executed": "<b>{0}</b> was executed",
+  "Message.ExecutedNonHost": "<b>{0}</b> was executed by <b>{1}</b>",
   "Message.HideGameSettings": "The Host has hidden the game settings.",
   "Message.NowOverrideText": "Please enter the root folder of the game.\\Language\\English.dat. Change this text in the dat file \nIf you don't need this feature or want to display regular /n messages. \nPlease disable [Enable only custom /n messages in the settings.]",
   "Message.NoDescription": "No description",
