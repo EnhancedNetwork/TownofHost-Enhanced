@@ -108,6 +108,9 @@ public class Narc : IAddon
         }
     }
 
+    public static bool CheckWinCondition(CustomWinner winner, GameOverReason reason)
+        => winner is CustomWinner.Crewmate 
+        && (Main.MeetingsPassed >= MeetingsNeededForWin.GetInt() || reason == GameOverReason.HumansByTask);
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 /**/
 }

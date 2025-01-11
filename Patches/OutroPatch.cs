@@ -259,10 +259,6 @@ class SetEverythingUpPatch
             case CustomWinner.Lovers:
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Lovers);
                 break;
-            case CustomWinner.Narc:
-                CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Narc);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(CustomRoles.Narc);
-                break;
             case CustomWinner.Draw:
                 __instance.WinText.text = GetString("ForceEnd");
                 __instance.WinText.color = Color.white;
