@@ -745,7 +745,7 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
 
             // Parasite and Impostor doesnt know each other
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && x.CheckMMCanSeeImp(CheckImp:false)))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && x.CheckMMCanSeeImp()))
             {
                 yourTeam.Add(pc);
             }
