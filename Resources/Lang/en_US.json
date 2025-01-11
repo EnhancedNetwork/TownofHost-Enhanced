@@ -2122,7 +2122,7 @@
   "PotionMasterKillButtonText": "Use Potion",
 
   "HexMasterHexCooldown": "Hex Cooldown",
-  "HexMasterCovenCanGetMovingHex": "<color=#ac42f2>Coven</color> Can Get Moving Hex",
+  "HexMasterCovenCanGetMovingHex": "<color=#ac42f2>Coven</color> can get Moving Hex",
   "HexMasterMovingHexCooldown": "Moving Hex Pass Cooldown",
   "HexesLookLikeSpells": "<color=#ff00ff>Hexes</color> appear as <color=#ff1919>Spells</color>",
   "HexButtonText": "Hex",
