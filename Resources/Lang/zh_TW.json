@@ -1977,7 +1977,7 @@
   "CovenLeaderRetrainNonCoven": "你無法轉變非巫師集會的玩家!",
   "CovenLeaderAcceptRetrain": "你所選擇的玩家接受了轉變，現在他們的職業是<b>{0}</b>!",
   "CovenLeaderDeclineRetrain": "你所選擇的玩家拒絕了將他的職業轉變為<b>{0}</b>的提議...",
-  "RetrainNotification": "The <b>{0}</b> has requested to retrain you into a <b>{1}</b>.<br>Vote yourself to accept the offer, vote someone else to decline.",
+  "RetrainNotification": "<b>{0}</b>向你提出將你的職業改變成<b>{1}</b>。<br>自投來接受這個提議，投票給其他玩家來拒絕。",
   "RetrainAcceptOffer": "You have accepted the <b>{0}</b>'s retraining and you are now a <b>{1}</b>!",
   "RetrainDeclineOffer": "You declined the <b>{0}</b>'s retraining and your role has not been changed...",
   "RitualistMaxRitsPerRound": "一回合進行的最大血之儀式次數",
