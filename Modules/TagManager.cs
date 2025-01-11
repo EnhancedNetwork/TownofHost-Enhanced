@@ -25,7 +25,6 @@ public static class TagManager
             var defaultTagMsg = GetResourcesTxt($"TOHE.Resources.Config.TagTemplate.txt");
             if (!File.Exists(@"./TOHE-DATA/Tag_Template.txt")) //default tag
             {
-                Logger.Warn("Creating Tag_Template.txt", "TagManager");
                 using FileStream fs = File.Create(@"./TOHE-DATA/Tags/Tag_Template.txt");
             }
             File.WriteAllText(@"./TOHE-DATA/Tags/Tag_Template.txt", defaultTagMsg); //overwriting default template
