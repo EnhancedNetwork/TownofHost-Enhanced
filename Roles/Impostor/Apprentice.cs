@@ -75,12 +75,8 @@ internal class Apprentice : RoleBase
         if (killer.CheckMMCanSeeImp() && target.CheckMMCanSeeImp()) return false;
         else if (Main.AliveImpostorCount > 1)
         {
-            if (RevealCount[killer.PlayerId] > 0)
-            {
-                SetRevealed(killer, target);
+            if (RevealCount[killer.PlayerId] > 0) SetRevealed(killer, target);
                 return false;
-            }
-            else return true;
         }
         else 
         {
