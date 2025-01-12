@@ -97,7 +97,7 @@ public class Narc : IAddon
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        bool lightsout = Utils.IsActive(SystemTypes.Electrical);
+        bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor();
         float crewvision = lightsout? Main.DefaultCrewmateVision / 5 : Main.DefaultCrewmateVision;
         if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie)
            && NarcHasCrewVision.GetBool())
