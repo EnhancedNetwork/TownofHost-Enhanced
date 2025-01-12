@@ -13,7 +13,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Savior : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 31000;
+    private const int Id = 32400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Savior);
     public override CustomRoles Role => CustomRoles.Savior;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
