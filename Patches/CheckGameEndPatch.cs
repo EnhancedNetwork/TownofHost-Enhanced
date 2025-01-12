@@ -5,6 +5,7 @@ using System.Collections;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.CustomWinnerHolder;
@@ -384,6 +385,31 @@ class GameEndCheckerForNormal
                             && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
+                            break;
+                        case CustomRoles.Repellant:
+                            if (pc.Is(CustomRoles.Repellant) && pc.IsAlive())
+                            {
+                                WinnerIds.Add(pc.PlayerId);
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Repellant);
+                            }
+                            break;
+                        case CustomRoles.Laborer:
+                            if (pc.Is(CustomRoles.Laborer) && pc.IsAlive() && WinnerTeam != CustomWinner.Crewmate)
+                            {
+                                WinnerIds.Add(pc.PlayerId);
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Laborer);
+                            }
+                            break;
+                        case CustomRoles.Keymaster:
+                            if (!Keymaster.StealsWin.GetBool())
+                            {
+                                //Phantom
+                                if (pc.Is(CustomRoles.Keymaster) && Keymaster.HasWon == true)
+                                {
+                                    WinnerIds.Add(pc.PlayerId);
+                                    AdditionalWinnerTeams.Add(AdditionalWinners.Keymaster);
+                                }
+                            }
                             break;
                     }
                 }

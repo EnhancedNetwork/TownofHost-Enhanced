@@ -45,6 +45,24 @@ public class PlayerState(byte playerId)
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
 
+        if (role == CustomRoles.Repellant)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (!pc.HasImpKillButton(considerVanillaShift: true))
+                {
+                    var taskstate = pc.GetPlayerTaskState();
+                    if (taskstate != null)
+                    {
+                        pc.Data.RpcSetTasks(Array.Empty<byte>());
+                        taskstate.CompletedTasksCount = 0;
+                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
+                        taskstate.hasTasks = true;
+                    }
+                }
+            }
+        }
+
         if (pc.Is(CustomRoles.Necromancer))
         {
             IsNecromancer = true;
@@ -360,6 +378,7 @@ public class PlayerState(byte playerId)
         Electrocuted,
         Scavenged,
         BlastedOff,
+        Vaporized,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,

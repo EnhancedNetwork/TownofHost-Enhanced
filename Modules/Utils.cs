@@ -2398,6 +2398,7 @@ public static class Utils
             PlayerState.DeathReason.Electrocuted => CustomRoles.Shocker.IsEnable(),
             PlayerState.DeathReason.Scavenged => CustomRoles.Scavenger.IsEnable(),
             PlayerState.DeathReason.BlastedOff => CustomRoles.MoonDancer.IsEnable(),
+            PlayerState.DeathReason.Vaporized => CustomRoles.Vaporizer.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };

@@ -152,6 +152,8 @@ public static class CustomRolesHelper
             CustomRoles.VengefulRomantic or
             CustomRoles.Doppelganger or
             CustomRoles.SchrodingersCat or
+            CustomRoles.Repellant or
+            CustomRoles.Laborer or
             CustomRoles.Follower;
     }
     public static bool IsAmneCrew(this PlayerControl target)
@@ -209,6 +211,7 @@ public static class CustomRolesHelper
             CustomRoles.BloodKnight or
             CustomRoles.DarkFairy or
             CustomRoles.Assassin or
+            CustomRoles.Vaporizer or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -1309,6 +1312,7 @@ public static class CustomRolesHelper
            CustomRoles.Shocker => CountTypes.Shocker,
            CustomRoles.DarkFairy => CountTypes.DarkFairy,
            CustomRoles.Assassin => CountTypes.Assassin,
+           CustomRoles.Vaporizer => CountTypes.Vaporizer,
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
@@ -1372,6 +1376,8 @@ public static class CustomRolesHelper
             CustomRoles.Shocker => CustomWinner.Shocker,
             CustomRoles.DarkFairy => CustomWinner.DarkFairy,
             CustomRoles.Assassin => CustomWinner.Assassin,
+            CustomRoles.Vaporizer => CustomWinner.Vaporizer,
+            CustomRoles.Keymaster => CustomWinner.Keymaster,
             _ => throw new NotImplementedException()
 
         };
@@ -1408,6 +1414,7 @@ public static class CustomRolesHelper
             CountTypes.Shocker => CustomRoles.Shocker,
             CountTypes.DarkFairy => CustomRoles.DarkFairy,
             CountTypes.Assassin => CustomRoles.Assassin,
+            CountTypes.Vaporizer => CustomRoles.Vaporizer,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1497,5 +1504,6 @@ public enum CountTypes
     Coven,
     DarkFairy,
     Darkened,
-    Assassin
+    Assassin,
+    Vaporizer
 }

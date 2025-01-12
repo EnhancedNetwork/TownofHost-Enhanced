@@ -814,6 +814,7 @@ public enum CustomRoles
     Randomizer,
     Retributionist,
     Reverie,
+    Savior,
     Sheriff,
     Snitch,
     SpeedBooster,
@@ -865,6 +866,8 @@ public enum CustomRoles
     Jackal,
     Jester,
     Juggernaut,
+    Keymaster,
+    Laborer,
     Lawyer,
     Maverick,
     Opportunist,
@@ -880,6 +883,7 @@ public enum CustomRoles
     Pursuer,
     Pyromaniac,
     Quizmaster,
+    Repellant,
     Revenant,
     Revolutionist,
     Romantic,
@@ -901,6 +905,7 @@ public enum CustomRoles
     Terrorist,
     Traitor,
     Troller,
+    Vaporizer,
     Vector,
     VengefulRomantic,
     Virus,
@@ -1093,6 +1098,8 @@ public enum CustomWinner
     Coven = CustomRoles.Coven,
     DarkFairy = CustomRoles.DarkFairy,
     Assassin = CustomRoles.Assassin,
+    Vaporizer = CustomRoles.Vaporizer,
+    Keymaster = CustomRoles.Keymaster,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
@@ -1120,6 +1127,9 @@ public enum AdditionalWinners
     Quizmaster = CustomRoles.Quizmaster,
     SchrodingersCat = CustomRoles.SchrodingersCat,
     Troller = CustomRoles.Troller,
+    Repellant = CustomRoles.Repellant,
+    Laborer = CustomRoles.Laborer,
+    Keymaster = CustomRoles.Keymaster,
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }
