@@ -2399,6 +2399,8 @@ public static class Utils
             PlayerState.DeathReason.Scavenged => CustomRoles.Scavenger.IsEnable(),
             PlayerState.DeathReason.BlastedOff => CustomRoles.MoonDancer.IsEnable(),
             PlayerState.DeathReason.Vaporized => CustomRoles.Vaporizer.IsEnable(),
+            PlayerState.DeathReason.Toxined => CustomRoles.Bane.IsEnable(),
+            PlayerState.DeathReason.Arrested => CustomRoles.Narc.IsEnable(),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };

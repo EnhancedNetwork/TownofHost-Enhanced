@@ -677,9 +677,11 @@ public enum CustomRoles
 
     //Impostor
     Abyssbringer,
+    Agent,
     Anonymous,
     AntiAdminer,
     Arrogance,
+    Bane,
     Bard,
     Blackmailer,
     Bomber,
@@ -754,6 +756,7 @@ public enum CustomRoles
     Zombie,
 
     //Crewmate Ghost
+    Cursebearer,
     Ghastly,
     Hawk,
     Warden,
@@ -840,6 +843,7 @@ public enum CustomRoles
     Amnesiac,
     Apocalypse,
     Arsonist,
+    Artist,
     Assassin,
     Baker,
     Bandit,
@@ -870,6 +874,7 @@ public enum CustomRoles
     Laborer,
     Lawyer,
     Maverick,
+    Narc,
     Opportunist,
     Pelican,
     Pestilence,
@@ -987,6 +992,7 @@ public enum CustomRoles
     Madmate,
     Mare,
     Rebirth,
+    Revealed,
     Mimic,
     Mundane,
     Necroview,
@@ -1100,6 +1106,8 @@ public enum CustomWinner
     Assassin = CustomRoles.Assassin,
     Vaporizer = CustomRoles.Vaporizer,
     Keymaster = CustomRoles.Keymaster,
+    Narc = CustomRoles.Narc,
+    Artist = CustomRoles.Artist,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

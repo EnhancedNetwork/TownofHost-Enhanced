@@ -154,6 +154,7 @@ public static class CustomRolesHelper
             CustomRoles.SchrodingersCat or
             CustomRoles.Repellant or
             CustomRoles.Laborer or
+            CustomRoles.Narc or
             CustomRoles.Follower;
     }
     public static bool IsAmneCrew(this PlayerControl target)
@@ -212,6 +213,7 @@ public static class CustomRolesHelper
             CustomRoles.DarkFairy or
             CustomRoles.Assassin or
             CustomRoles.Vaporizer or
+            CustomRoles.Artist or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -1316,6 +1318,7 @@ public static class CustomRolesHelper
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
+           CustomRoles.Artist => CountTypes.Artist,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
 
            // CustomRoles.Phantom => CountTypes.OutOfGame,
@@ -1378,6 +1381,8 @@ public static class CustomRolesHelper
             CustomRoles.Assassin => CustomWinner.Assassin,
             CustomRoles.Vaporizer => CustomWinner.Vaporizer,
             CustomRoles.Keymaster => CustomWinner.Keymaster,
+            CustomRoles.Narc => CustomWinner.Narc,
+            CustomRoles.Artist => CustomWinner.Artist,
             _ => throw new NotImplementedException()
 
         };
@@ -1400,6 +1405,7 @@ public static class CustomRolesHelper
             CountTypes.SerialKiller => CustomRoles.SerialKiller,
             CountTypes.Quizmaster => CustomRoles.Quizmaster,
             CountTypes.Juggernaut => CustomRoles.Juggernaut,
+            CountTypes.Artist => CustomRoles.Artist,
             CountTypes.Infectious => CustomRoles.Infectious,
             CountTypes.Pyromaniac => CustomRoles.Pyromaniac,
             CountTypes.Virus => CustomRoles.Virus,
@@ -1444,6 +1450,7 @@ public enum Custom_RoleType
     CrewmateVanilla,
     CrewmateVanillaGhosts,
     CrewmateBasic,
+    CrewmateHindering,
     CrewmateSupport,
     CrewmateKilling,
     CrewmatePower,
@@ -1505,5 +1512,6 @@ public enum CountTypes
     DarkFairy,
     Darkened,
     Assassin,
-    Vaporizer
+    Vaporizer,
+    Artist
 }

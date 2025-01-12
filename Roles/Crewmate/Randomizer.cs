@@ -12,7 +12,7 @@ internal class Randomizer : RoleBase
     public override CustomRoles Role => CustomRoles.Randomizer;
     private const int Id = 7500;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
     //==================================================================\\
 
     public static OptionItem BecomeBaitDelayNotify;

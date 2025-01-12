@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Patches;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -1330,6 +1331,7 @@ static class ExtendedPlayerControl
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
         else if (DarkFairy.KnowRole(seer, target)) return true;
+        else if (Cursebearer.KnowRole(seer, target)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
             if (Nemesis.PreventKnowRole(seer)) return false;

@@ -3804,6 +3804,7 @@
   "RoleType.CrewKilling": "<color=#ff1919>★</color> Crewmate <color=#ff1919>Killing</color> Roles",
   "RoleType.CrewBasic": "<color=#FF6600>★</color> Crewmate <color=#FF6600>Basic</color> Roles",
   "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles /ghostinfo",
+  "RoleType.CrewHindering": "<color=#00ffff>★</color> Crewmate <color=#FFA500>Hindering</color> Roles",
   "RoleType.NeutralEvil": "<color=#912900>★</color> Neutral <color=#912900>Evil</color> Roles",
   "RoleType.NeutralBenign": "<color=#046300>★</color> Neutral <color=#046300>Benign</color> Roles",
   "RoleType.NeutralChaos": "<color=#D4AF37>★</color> Neutral <color=#D4AF37>Chaos</color> Roles",
@@ -4270,5 +4271,41 @@
   "Savior": "Savior",
   "SaviorInfo": "Choose a player to protect every round",
   "SaviorInfoLong": "(Crewmates):\nThe Savior can choose a player to protect every round. After a meeting, the player will no longer be protected.",
-  "SaviorResetCooldown": "Kill cooldown reset after breaking shield"
+  "SaviorResetCooldown": "Kill cooldown reset after breaking shield",
+
+  "Cursebearer": "Cursebearer",
+  "CursebearerInfo": "Reveal roles of alive players",
+  "CursebearerInfoLong": "(Crewmates [Ghost]):\nAs the Cursebearer, when you use your protect button on a target, their role will be revealed to everyone.",
+  "Revealed": "Revealed",
+  "RevealedInfoLong": "(Add-ons):\nYou have been revealed by the Cursebearer and everyone can see your role.",
+
+  "Agent": "Agent",
+  "AgentInfo": "Add members to your team with each kill",
+  "AgentInfoLong": "(Impostor):\nWhen the Agent's kills are reported, the reporter will become a Madmate.",
+  "AgentKillCooldown": "Kill cooldown",
+
+  "Bane": "Bane",
+  "BaneInfo": "Mark a spot to kill players",
+  "BaneInfoLong": "(Impostors):\nAs the Bane, use the shapeshift button to mark a spot. For a short period of time, anyone who walks in that spot dies.",
+  "BaneTrapCooldown": "Trap cooldown",
+  "BaneMaxTrapCount": "Max traps",
+  "BaneTrapMaxPlayerCount": "Max kills per trap",
+  "BaneTrapDuration": "Trap duration",
+  "BaneTrapRadius": "Trap radius",
+  "BaneTrap": "You have been killed by the Bane after walking into their trap.",
+  "DeathReason.Toxined": "Toxined",
+
+  "Narc": "Narc",
+  "NarcInfo": "Find the Impostors and kill them",
+  "NarcInfoLong": "(Neutral):\nThe Narc's main objective is to reveal the Impostors. By using its kill button, the Narc can check if the player is a Crewmate or Impostor. If the Narc reveals a Crewmate or Neutral, the Narc will turn into an Amnesiac, and the target will not die. If the Narc reveals an Impostor, they will kill the Impostor and leave no body behind and add the death reason 'Arrested'. If the Narc reveals all the Impostors it wins alone.\nNote: If killing the last Impostor triggers another win, the Narc will not win.",
+  "WinnerRoleText.Narc": "Narc Wins!",
+  "DeathReason.Arrested": "Arrested",
+
+  "Artist": "Artist",
+  "ArtistInfo": "Paint players to victory",
+  "ArtistInfoLong": "(Neutral):\nThe Artist can single click on a player to paint them gray, similair to Devourer. Double click to kill normally.",
+  "ArtistPaintedSkin": "Painted target",
+  "ArtistPaintCooldown": "Paint cooldown",
+  "ArtistAbilityUses": "Max paint uses",
+  "WinnerRoleText.Artist": "Artist Wins!"
 }
