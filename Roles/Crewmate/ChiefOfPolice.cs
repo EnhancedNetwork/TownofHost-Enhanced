@@ -18,7 +18,7 @@ internal class ChiefOfPolice : RoleBase
 
     private static OptionItem SkillCooldown;
     private static OptionItem CanRecruitImpostor;
-    private static OptionItem CanRecruitNeutarl;
+    private static OptionItem CanRecruitNeutral;
     private static OptionItem CanRecruitCoven;
     private static OptionItem ChiefOfPoliceCanSeePolice;
     private static OptionItem PreventRecruitNonKiller;
@@ -31,7 +31,7 @@ internal class ChiefOfPolice : RoleBase
         SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])
             .SetValueFormat(OptionFormat.Seconds);
         CanRecruitImpostor = BooleanOptionItem.Create(Id + 11, "PolicCanImpostor", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
-        CanRecruitNeutarl = BooleanOptionItem.Create(Id + 12, "PolicCanNeutarl", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        CanRecruitNeutral = BooleanOptionItem.Create(Id + 12, "PolicCanNeutral", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
         CanRecruitCoven = BooleanOptionItem.Create(Id + 13, "PolicCanCoven", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
         ChiefOfPoliceCanSeePolice = BooleanOptionItem.Create(Id + 14, "ChiefOfPoliceCanSeePolice", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
         PreventRecruitNonKiller = BooleanOptionItem.Create(Id + 15, "PolicPreventRecruitNonKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
@@ -96,7 +96,7 @@ internal class ChiefOfPolice : RoleBase
         }
         else
         {
-            if (!CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven() || !CanRecruitNeutarl.GetBool() && target.GetCustomRole().IsNeutral() || !CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor())
+            if (!CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven() || !CanRecruitNeutral.GetBool() && target.GetCustomRole().IsNeutral() || !CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor())
             {
                 suidice = true;
             }
