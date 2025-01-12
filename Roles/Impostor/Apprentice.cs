@@ -67,7 +67,8 @@ internal class Apprentice : RoleBase
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 
     ((RevealCount[id] > 0) && Main.AliveImpostorCount > 1) ? RevealCooldown.GetFloat() : Options.DefaultKillCooldown;
-    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseKillButton(PlayerControl pc) 
+        => (Main.AliveImpostorCount >= 2 && RevealCount[pc.PlayerId] > 0) || Main.AliveImpostorCount < 2;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Main.AliveImpostorCount < 2;
     public override bool CanUseSabotage(PlayerControl pc) => Main.AliveImpostorCount < 2;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
