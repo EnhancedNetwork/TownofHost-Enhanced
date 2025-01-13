@@ -163,7 +163,7 @@ public class Oiiai : IAddon
     private static bool CanGetOiiaied(PlayerControl player)
     {
         if (player.GetCustomRole().IsNeutral() && ChangeNeutralRole.GetValue() == 0) return false;
-        if (player.Is(CustomRoles.Loyal)) return false;
+        if (player.Is(CustomRoles.Loyal) || player.Is(CustomRoles.Stubborn)) return false;
 
         return true;
     }
