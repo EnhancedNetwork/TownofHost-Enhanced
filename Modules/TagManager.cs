@@ -1,11 +1,6 @@
-using AmongUs.Data;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
-using static Il2CppSystem.DateTimeParse;
-using static TOHE.Translator;
 
 namespace TOHE;
 
@@ -20,7 +15,7 @@ public static class TagManager
     {
         try
         {
-            
+
             if (!Directory.Exists(@"TOHE-DATA/Tags")) Directory.CreateDirectory(@"TOHE-DATA/Tags");
             var defaultTagMsg = GetResourcesTxt($"TOHE.Resources.Config.TagTemplate.txt");
             if (!File.Exists(@"./TOHE-DATA/Tag_Template.txt")) //default tag
@@ -41,18 +36,19 @@ public static class TagManager
         using StreamReader reader = new(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }
-    public static bool CheckFriendCode(string friendCode)
+    public static bool CheckFriendCode(string friendCode, bool log = false)
     {
         if (!File.Exists(@$"{TAGS_FILE_PATH}/{friendCode}.txt"))
         {
-            Logger.Warn($"{friendCode} does not have a tag", "TagManager");
+            if (log)
+                Logger.Info($"{friendCode} does not have a tag", "TagManager");
             return false;
         }
         return true;
     }
     public static string ReadTagName(string friendCode)
     {
-        if (!CheckFriendCode(friendCode)) { return string.Empty; }
+        if (!CheckFriendCode(friendCode, false)) { return string.Empty; }
         string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
         string temp = "";
         var searchTarget = "TagName:";
@@ -61,14 +57,14 @@ public static class TagManager
             if (line.Contains(searchTarget))
             {
                 temp = line.Split("TagName:").Skip(1).First().TrimStart();
-                break; 
+                break;
             }
         }
         return temp;
     }
     public static string ReadTagColor(string friendCode)
     {
-        if (!CheckFriendCode(friendCode)) { return string.Empty; }
+        if (!CheckFriendCode(friendCode, false)) { return string.Empty; }
         string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
         string temp = "";
         var searchTarget = "TagColor:";
@@ -84,7 +80,7 @@ public static class TagManager
     }
     public static int ReadPermission(string friendCode)
     {
-        if (!CheckFriendCode(friendCode)) { return -1; }
+        if (!CheckFriendCode(friendCode, true)) { return -1; }
         string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
         string temp = "";
         var searchTarget = "PermissionLevel:";
@@ -101,7 +97,7 @@ public static class TagManager
     }
     public static bool CanUseSayCommand(string friendCode)
     {
-        if (!CheckFriendCode(friendCode)) { return false; }
+        if (!CheckFriendCode(friendCode, true)) { return false; }
         string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
         string temp = "";
         var searchTarget = "SayCommandAccess:";
@@ -118,7 +114,7 @@ public static class TagManager
     }
     public static bool CanUseEndCommand(string friendCode)
     {
-        if (!CheckFriendCode(friendCode)) { return false; }
+        if (!CheckFriendCode(friendCode, true)) { return false; }
         string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
         string temp = "";
         var searchTarget = "EndCommandAccess:";
@@ -135,7 +131,7 @@ public static class TagManager
     }
     public static bool CanUseExecuteCommand(string friendCode)
     {
-        if (!CheckFriendCode(friendCode)) { return false; }
+        if (!CheckFriendCode(friendCode, true)) { return false; }
         string fileName = @$"{TAGS_FILE_PATH}/{friendCode}.txt";
         string temp = "";
         var searchTarget = "ExecuteCommandAccess:";

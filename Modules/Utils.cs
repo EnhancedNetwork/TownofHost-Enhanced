@@ -1517,7 +1517,7 @@ public static class Utils
         Main.MessagesToSend.Add((text.RemoveHtmlTagsTemplate(), sendTo, title));
     }
     public static bool IsPlayerModerator(string friendCode)
-    {        
+    {
         if (friendCode == "") return false;
         var friendCodesFilePath = @"./TOHE-DATA/Moderators.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
@@ -1608,7 +1608,7 @@ public static class Utils
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
-            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode) && !TagManager.CheckFriendCode(player.FriendCode))
+            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode) && !TagManager.CheckFriendCode(player.FriendCode, false))
             {
                 SetRealName();
                 return;
@@ -1637,7 +1637,7 @@ public static class Utils
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
         }
 
-        
+
         var modtag = "";
         if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
         {
@@ -1727,7 +1727,7 @@ public static class Utils
                 }
             }
         }
-        if (player.FriendCode != PlayerControl.LocalPlayer.FriendCode && TagManager.CheckFriendCode(player.FriendCode))
+        if (player.FriendCode != PlayerControl.LocalPlayer.FriendCode && TagManager.CheckFriendCode(player.FriendCode, false))
         {
             if ((TagManager.ReadTagColor(player.FriendCode) == " " || TagManager.ReadTagColor(player.FriendCode) == "") && (TagManager.ReadTagName(player.FriendCode) != "" && TagManager.ReadTagName(player.FriendCode) != " ")) modtag = $"{TagManager.ReadTagName(player.FriendCode)}";
             else if (TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
