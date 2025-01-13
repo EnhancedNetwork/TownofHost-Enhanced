@@ -17,7 +17,10 @@ internal class ChiefOfPolice : RoleBase
     //==================================================================\\
 
     private static OptionItem SkillCooldown;
-    private static OptionItem CanRecruitImpostorAndNeutarl;
+    private static OptionItem CanRecruitImpostor;
+    private static OptionItem CanRecruitNeutral;
+    private static OptionItem CanRecruitCoven;
+    private static OptionItem ChiefOfPoliceCanSeePolice;
     private static OptionItem PreventRecruitNonKiller;
     private static OptionItem SuidiceWhenTargetNotKiller;
     private static OptionItem PassConverted;
@@ -27,10 +30,13 @@ internal class ChiefOfPolice : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.ChiefOfPolice);
         SkillCooldown = FloatOptionItem.Create(Id + 10, "ChiefOfPoliceSkillCooldown", new(2.5f, 900f, 2.5f), 20f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice])
             .SetValueFormat(OptionFormat.Seconds);
-        CanRecruitImpostorAndNeutarl = BooleanOptionItem.Create(Id + 11, "PolicCanImpostorAndNeutarl", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
-        PreventRecruitNonKiller = BooleanOptionItem.Create(Id + 12, "PolicPreventRecruitNonKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
-        SuidiceWhenTargetNotKiller = BooleanOptionItem.Create(Id + 13, "PolicSuidiceWhenTargetNotKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
-        PassConverted = BooleanOptionItem.Create(Id + 14, "PolicPassConverted", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        CanRecruitImpostor = BooleanOptionItem.Create(Id + 11, "PolicCanImpostor", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        CanRecruitNeutral = BooleanOptionItem.Create(Id + 12, "PolicCanNeutral", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        CanRecruitCoven = BooleanOptionItem.Create(Id + 13, "PolicCanCoven", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        ChiefOfPoliceCanSeePolice = BooleanOptionItem.Create(Id + 14, "ChiefOfPoliceCanSeePolice", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        PreventRecruitNonKiller = BooleanOptionItem.Create(Id + 15, "PolicPreventRecruitNonKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        SuidiceWhenTargetNotKiller = BooleanOptionItem.Create(Id + 16, "PolicSuidiceWhenTargetNotKiller", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
+        PassConverted = BooleanOptionItem.Create(Id + 17, "PolicPassConverted", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.ChiefOfPolice]);
     }
 
     public override void Add(byte playerId)
@@ -46,9 +52,9 @@ internal class ChiefOfPolice : RoleBase
     {
         if (seer.IsAnySubRole(x => x.IsConverted()) || target.IsAnySubRole(x => x.IsConverted()))
             return false;
-        if (seer.Is(CustomRoles.ChiefOfPolice) && target.Is(CustomRoles.Sheriff))
+        if (seer.Is(CustomRoles.ChiefOfPolice) && target.Is(CustomRoles.Sheriff) && ChiefOfPoliceCanSeePolice.GetBool())
             return true;
-        if (seer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.ChiefOfPolice))
+        if (seer.Is(CustomRoles.Sheriff) && target.Is(CustomRoles.ChiefOfPolice) && ChiefOfPoliceCanSeePolice.GetBool())
             return true;
         return false;
     }
@@ -59,7 +65,7 @@ internal class ChiefOfPolice : RoleBase
         bool suidice = false;
         bool isSuccess = false;
 
-        if (target.GetCustomRole().IsCrewmate() && !target.IsAnySubRole(x => x.IsConverted()))
+        if (target.IsPlayerCrewmateTeam())
         {
             if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
             {
@@ -95,7 +101,7 @@ internal class ChiefOfPolice : RoleBase
         }
         else
         {
-            if (!CanRecruitImpostorAndNeutarl.GetBool())
+            if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
             {
                 suidice = true;
             }
@@ -143,7 +149,7 @@ internal class ChiefOfPolice : RoleBase
             {
                 if (killer.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Egoist))
                 {
-                    var role = killer.GetCustomSubRoles().FirstOrDefault(x => x.IsConverted() && x is not CustomRoles.Egoist);
+                    var role = killer.GetCustomSubRoles().FirstOrDefault(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Egoist);
                     Logger.Info($"Giving addon {role} to {target.GetNameWithRole()}", "ChiefOfPolice");
                     target.RpcSetCustomRole(role);
                 }

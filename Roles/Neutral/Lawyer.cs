@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
@@ -27,6 +28,7 @@ internal class Lawyer : RoleBase
     private static OptionItem ChangeRolesAfterTargetKilled;
     private static OptionItem KnowTargetRole;
     private static OptionItem TargetKnowsLawyer;
+    private static OptionItem HasImpostorVision;
 
     public static HashSet<byte> TargetList = [];
     private byte TargetId;
@@ -35,17 +37,26 @@ internal class Lawyer : RoleBase
     private enum ChangeRolesSelectList
     {
         Role_Crewmate,
+        Role_Amnesiac,
         Role_Jester,
         Role_Opportunist,
         Role_Celebrity,
         Role_Bodyguard,
         Role_Dictator,
         Role_Mayor,
-        Role_Doctor
+        Role_Doctor,
+        Role_Maverick,
+        Role_Follower,
+        Role_Tracker,
+        Role_Mechanic,
+        Role_Refugee,
+        Role_Sheriff,
+        Role_Medic
     }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
         CustomRoles.CrewmateTOHE,
+        CustomRoles.Amnesiac,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
         CustomRoles.Celebrity,
@@ -53,6 +64,13 @@ internal class Lawyer : RoleBase
         CustomRoles.Dictator,
         CustomRoles.Mayor,
         CustomRoles.Doctor,
+        CustomRoles.Maverick,
+        CustomRoles.Follower,
+        CustomRoles.TrackerTOHE,
+        CustomRoles.Mechanic,
+        CustomRoles.Refugee,
+        CustomRoles.Sheriff,
+        CustomRoles.Medic,
     ];
 
     public override void SetupCustomOption()
@@ -66,6 +84,7 @@ internal class Lawyer : RoleBase
         CanTargetJester = BooleanOptionItem.Create(Id + 13, "LawyerCanTargetJester", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 14, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         TargetKnowsLawyer = BooleanOptionItem.Create(Id + 15, "TargetKnowsLawyer", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
+        HasImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         ShouldChangeRoleAfterTargetDeath = BooleanOptionItem.Create(Id + 17, "LaywerShouldChangeRoleAfterTargetKilled", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lawyer]);
         ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 16, "LawyerChangeRolesAfterTargetKilled", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(ShouldChangeRoleAfterTargetDeath);
     }
@@ -132,6 +151,7 @@ internal class Lawyer : RoleBase
         TargetId = byte.MaxValue;
         CustomRoleManager.CheckDeadBodyOthers.Remove(OthersAfterPlayerDeathTask);
     }
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
     private void SendRPC(bool SetTarget = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
@@ -160,7 +180,7 @@ internal class Lawyer : RoleBase
     public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
-        => ChangeRolesAfterTargetKilled.GetValue() is not 1 && !ForRecompute;
+        => !ForRecompute;
 
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
@@ -207,6 +227,38 @@ internal class Lawyer : RoleBase
         lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
         lawyer.RpcSetCustomRole(newCustomRole);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
+
+        switch (newCustomRole)
+        {
+            case CustomRoles.Amnesiac:
+                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Oblivious);
+                break;
+            case CustomRoles.Celebrity:
+                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Cyber);
+                break;
+            case CustomRoles.Dictator:
+                new[] { CustomRoles.Tiebreaker, CustomRoles.Paranoia, CustomRoles.Knighted, CustomRoles.VoidBallot, CustomRoles.Silent, CustomRoles.Influenced }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Mayor:
+                new[] { CustomRoles.Knighted, CustomRoles.VoidBallot }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Doctor:
+                new[] { CustomRoles.Autopsy, CustomRoles.Necroview }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Jester:
+                new[] { CustomRoles.Rebirth, CustomRoles.Susceptible }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Opportunist when Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool():
+            case CustomRoles.Medic:
+                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Fragile);
+                break;
+            case CustomRoles.Mechanic:
+                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Fool);
+                break;
+            case CustomRoles.Refugee:
+                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Madmate);
+                break;
+        }
 
         if (inMeeting)
         {

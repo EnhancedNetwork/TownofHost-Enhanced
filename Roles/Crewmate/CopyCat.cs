@@ -73,7 +73,7 @@ internal class CopyCat : RoleBase
             ////////////           /*remove the settings for current role*/             /////////////////////
 
             var pcRole = pc.GetCustomRole();
-            if (pcRole is not CustomRoles.Sidekick && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
+            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Refugee && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
@@ -139,7 +139,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
                 CustomRoles.MoonDancer => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,
-                CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
+                CustomRoles.Trickster or CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 _ => role
             };
         }
