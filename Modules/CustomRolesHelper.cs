@@ -889,7 +889,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Gangster)
                     || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
+                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;
@@ -957,7 +958,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Rebound)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Flash)
-                    || pc.Is(CustomRoles.Sloth))
+                    || pc.Is(CustomRoles.Sloth)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
