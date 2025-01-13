@@ -905,7 +905,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
                     || pc.Is(CustomRoles.Tired)
-                    || pc.Is(CustomRoles.Narc))
+                    || pc.Is(CustomRoles.Narc)
+                    || pc.Is(CustomRoles.Flash)
+                    || pc.Is(CustomRoles.Sloth))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
