@@ -5,6 +5,7 @@ using System;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Patches;
+using TOHE.Roles._Ghosts_.Crewmate;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -444,7 +445,7 @@ static class ExtendedPlayerControl
 
         killer.RpcMurderPlayer(target, true);
     }
-    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool fromSetKCD = false)
+    public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool forTechnician = false, bool fromSetKCD = false)
     {
         if (!AmongUsClient.Instance.AmHost)
         {
@@ -462,6 +463,12 @@ static class ExtendedPlayerControl
         if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
             Observer.ActivateGuardAnimation(killer.PlayerId, target);
+        }
+
+        // Check Technician
+        if (Technician.HasEnabled && !forTechnician && !MeetingStates.FirstMeeting)
+        {
+            Technician.ActivateGuardAnimation(killer.PlayerId, target, 11);
         }
 
         // Host
@@ -523,6 +530,11 @@ static class ExtendedPlayerControl
             {
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
             }
+            // Check Technician
+            if (Technician.HasEnabled)
+            {
+                Technician.ActivateGuardAnimation(target.PlayerId, target, 11);
+            }
         }
         player.ResetKillCooldown();
     }
@@ -564,6 +576,11 @@ static class ExtendedPlayerControl
             if (Observer.HasEnabled)
             {
                 Observer.ActivateGuardAnimation(target.PlayerId, target);
+            }
+            // Check Technician
+            if (Technician.HasEnabled)
+            {
+                Technician.ActivateGuardAnimation(target.PlayerId, target, 11);
             }
         }
         player.ResetKillCooldown();
@@ -1149,6 +1166,10 @@ static class ExtendedPlayerControl
                         Main.AllPlayerKillCooldown[player.PlayerId] -= Main.AllPlayerKillCooldown[player.PlayerId] * (Overclocked.OverclockedReduction.GetFloat() / 100);
                         break;
 
+                    case CustomRoles.Underclocked:
+                        Main.AllPlayerKillCooldown[player.PlayerId] += Main.AllPlayerKillCooldown[player.PlayerId] * (Underclocked.UnderclockedIncrease.GetFloat() / 100);
+                        break;
+
                     case CustomRoles.Diseased:
                         Diseased.IncreaseKCD(player);
                         break;
@@ -1174,6 +1195,7 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Infected)
             || sheriff.Is(CustomRoles.Contagious)
             || sheriff.Is(CustomRoles.Egoist)
+            || sheriff.Is(CustomRoles.Darkened)
             || sheriff.Is(CustomRoles.Enchanted);
     }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
@@ -1188,6 +1210,7 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Enchanted and not
+            CustomRoles.Darkened and not
             CustomRoles.Contagious;
     }
 
@@ -1307,6 +1330,8 @@ static class ExtendedPlayerControl
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (DarkFairy.KnowRole(seer, target)) return true;
+        else if (Cursebearer.KnowRole(seer, target)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
             if (Nemesis.PreventKnowRole(seer)) return false;
@@ -1340,6 +1365,7 @@ static class ExtendedPlayerControl
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
+                or CustomRoles.Darkened
                 or CustomRoles.Enchanted)
             && KnowSubRoleTarget(seer, target))
             return true;
@@ -1379,6 +1405,7 @@ static class ExtendedPlayerControl
         else if (Cultist.HasEnabled && Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.HasEnabled && Infectious.KnowRole(seer, target)) return true;
         else if (Virus.HasEnabled && Virus.KnowRole(seer, target)) return true;
+        else if (DarkFairy.HasEnabled && DarkFairy.KnowRole(seer, target)) return true;
         else if (Jackal.HasEnabled)
         {
             if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Recruit))

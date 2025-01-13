@@ -33,9 +33,9 @@ public class Main : BasePlugin
     // == Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
-    public static readonly string ModName = "TOHE";
-    public static readonly string ForkId = "TOHE";
-    public static readonly string ModColor = "#ffc0cb";
+    public static readonly string ModName = "Town of Host Optimized";
+    public static readonly string ForkId = "TOHO";
+    public static readonly string ModColor = "#b47ede";
     public static readonly bool AllowPublicRoom = true;
 
     public static HashAuth DebugKeyAuth { get; private set; }
@@ -45,30 +45,30 @@ public class Main : BasePlugin
 
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
-    public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0109.220.11000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 11";
+    public const string PluginGuid = "com.Limeau.townofhostoptimized";
+    public const string PluginVersion = "2025.0113.132.00000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.3.2";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
-    public static readonly bool fullRelease = false; // Latest: V2.1.1
+    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 1
+    public static readonly bool fullRelease = true; // Latest: V2.1.1
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = true;
+    public static readonly bool ShowUpdateButton = false;
 
-    public static readonly bool ShowGitHubButton = true;
+    public static readonly bool ShowGitHubButton = false;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
 
     public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/BWh9Vj5UJ2";
 
-    public static readonly bool ShowWebsiteButton = true;
+    public static readonly bool ShowWebsiteButton = false;
     public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
 
-    public static readonly bool ShowDonationButton = true;
+    public static readonly bool ShowDonationButton = false;
     public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
@@ -143,6 +143,7 @@ public class Main : BasePlugin
     public static float RefixCooldownDelay = 0f;
     public static NetworkedPlayerInfo LastVotedPlayerInfo;
     public static string LastVotedPlayer;
+    public static readonly HashSet<byte> ResetCamPlayerList = [];
     public static readonly HashSet<byte> winnerList = [];
     public static readonly HashSet<string> winnerNameList = [];
     public static readonly HashSet<int> clientIdList = [];
@@ -676,9 +677,11 @@ public enum CustomRoles
 
     //Impostor
     Abyssbringer,
+    Agent,
     Anonymous,
     AntiAdminer,
     Arrogance,
+    Bane,
     Bard,
     Blackmailer,
     Bomber,
@@ -695,6 +698,7 @@ public enum CustomRoles
     Deathpact,
     Devourer,
     Disperser,
+    Diviner,
     DollMaster,
     DoubleAgent,
     Eraser,
@@ -704,6 +708,7 @@ public enum CustomRoles
     EvilMini,
     EvilTracker,
     Fireworker,
+    Fury,
     Gangster,
     Godfather,
     Greedy,
@@ -751,6 +756,7 @@ public enum CustomRoles
     Zombie,
 
     //Crewmate Ghost
+    Cursebearer,
     Ghastly,
     Hawk,
     Warden,
@@ -806,10 +812,12 @@ public enum CustomRoles
     Overseer,
     Pacifist,
     President,
+    Protector,
     Psychic,
     Randomizer,
     Retributionist,
     Reverie,
+    Savior,
     Sheriff,
     Snitch,
     SpeedBooster,
@@ -818,11 +826,13 @@ public enum CustomRoles
     SuperStar,
     Swapper,
     TaskManager,
+    Technician,
     Telecommunication,
     TimeManager,
     TimeMaster,
     Tracefinder,
     Transporter,
+    Valkyrie,
     Ventguard,
     Veteran,
     Vigilante,
@@ -833,6 +843,8 @@ public enum CustomRoles
     Amnesiac,
     Apocalypse,
     Arsonist,
+    Artist,
+    Assassin,
     Baker,
     Bandit,
     Berserker,
@@ -840,6 +852,7 @@ public enum CustomRoles
     Collector,
     Cultist,
     CursedSoul,
+    DarkFairy,
     Death,
     Demon,
     Doomsayer,
@@ -857,8 +870,11 @@ public enum CustomRoles
     Jackal,
     Jester,
     Juggernaut,
+    Keymaster,
+    Laborer,
     Lawyer,
     Maverick,
+    Narc,
     Opportunist,
     Pelican,
     Pestilence,
@@ -872,6 +888,7 @@ public enum CustomRoles
     Pursuer,
     Pyromaniac,
     Quizmaster,
+    Repellant,
     Revenant,
     Revolutionist,
     Romantic,
@@ -893,6 +910,7 @@ public enum CustomRoles
     Terrorist,
     Traitor,
     Troller,
+    Vaporizer,
     Vector,
     VengefulRomantic,
     Virus,
@@ -946,6 +964,7 @@ public enum CustomRoles
     Clumsy,
     Contagious,
     Cyber,
+    Darkened,
     Diseased,
     DoubleShot,
     Eavesdropper,
@@ -961,6 +980,7 @@ public enum CustomRoles
     Gravestone,
     Guesser,
     Hurried,
+    Identifier,
     Infected,
     Influenced,
     Knighted,
@@ -972,6 +992,7 @@ public enum CustomRoles
     Madmate,
     Mare,
     Rebirth,
+    Revealed,
     Mimic,
     Mundane,
     Necroview,
@@ -1004,6 +1025,7 @@ public enum CustomRoles
     Trapper,
     Tricky,
     Tired,
+    Underclocked,
     Unlucky,
     Unreportable, //disregarded
     VoidBallot,
@@ -1080,6 +1102,12 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
+    DarkFairy = CustomRoles.DarkFairy,
+    Assassin = CustomRoles.Assassin,
+    Vaporizer = CustomRoles.Vaporizer,
+    Keymaster = CustomRoles.Keymaster,
+    Narc = CustomRoles.Narc,
+    Artist = CustomRoles.Artist,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
@@ -1107,6 +1135,9 @@ public enum AdditionalWinners
     Quizmaster = CustomRoles.Quizmaster,
     SchrodingersCat = CustomRoles.SchrodingersCat,
     Troller = CustomRoles.Troller,
+    Repellant = CustomRoles.Repellant,
+    Laborer = CustomRoles.Laborer,
+    Keymaster = CustomRoles.Keymaster,
     //   NiceMini = CustomRoles.NiceMini,
     //   Baker = CustomRoles.Baker,
 }

@@ -53,7 +53,7 @@ public class GameSettingMenuPatch
                 TabGroup.CrewmateRoles => "#8cffff",
                 TabGroup.NeutralRoles => "#7f8c8d",
                 TabGroup.CovenRoles => "#ac42f2",
-                TabGroup.Addons => "#ff9ace",
+                TabGroup.Addons => "#ffff00",
                 _ => "#ffffff",
             };
             label.fontStyle = FontStyles.UpperCase;

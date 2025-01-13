@@ -147,7 +147,7 @@ class VersionShowerStartPatch
         var buildtype = "";
 
 #if RELEASE
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#00ff00>Limeau</color>";
             buildtype = "Release";
 #endif
 

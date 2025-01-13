@@ -59,6 +59,9 @@ public abstract class RoleBase
         Main.UnShapeShifter.Remove(playerId);
     }
 
+    public virtual void OnOthersShapeshift()
+    { }
+
     /// <summary>
     /// Variable resets when the game starts.
     /// </summary>
@@ -129,6 +132,8 @@ public abstract class RoleBase
     public virtual void SetupCustomOption()
     { }
 
+    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
+    { }
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions.
     /// </summary>

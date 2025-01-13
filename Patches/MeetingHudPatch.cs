@@ -1003,6 +1003,10 @@ class MeetingHudStartPatch
             if (Sleuth.SleuthNotify.ContainsKey(pc.PlayerId))
                 AddMsg(Sleuth.SleuthNotify[pc.PlayerId], pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Sleuth), GetString("SleuthNoticeTitle")));
 
+            // Identifier notify msg
+            if (Identifier.IdentifierNotify.ContainsKey(pc.PlayerId))
+                AddMsg(Identifier.IdentifierNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Identifier), GetString("IdentifierNoticeTitle")));
+
             // Check Mimic kill
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())
                 Main.AllAlivePlayerControls.Where(x => x.GetRealKiller()?.PlayerId == pc.PlayerId).Do(x => MimicMsg += $"\n{x.GetNameWithRole(true)}");
@@ -1042,6 +1046,7 @@ class MeetingHudStartPatch
 
         Cyber.Clear();
         Sleuth.Clear();
+        Identifier.Clear();
     }
     public static void Prefix(/*MeetingHud __instance*/)
     {

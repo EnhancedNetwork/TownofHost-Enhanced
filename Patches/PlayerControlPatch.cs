@@ -676,6 +676,13 @@ class ShapeshiftPatch
             return;
         }
 
+        foreach (var state in Main.PlayerStates.Values)
+        {
+            if (state.RoleClass == null) continue;
+
+            state.RoleClass.OnOthersShapeshift();
+        }
+
         Main.CheckShapeshift[shapeshifter.PlayerId] = shapeshifting;
         Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
 
@@ -900,6 +907,7 @@ class ReportDeadBodyPatch
             if (Aware.IsEnable) Aware.OnReportDeadBody();
 
             Sleuth.OnReportDeadBody(player, target);
+            Identifier.OnReportDeadBody(player, target);
             Evader.ReportDeadBody();
         }
         catch (Exception error)

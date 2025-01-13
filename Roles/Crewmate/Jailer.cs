@@ -14,7 +14,7 @@ internal class Jailer : RoleBase
     private const int Id = 10600;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
     //==================================================================\\
 
     private static OptionItem JailCooldown;

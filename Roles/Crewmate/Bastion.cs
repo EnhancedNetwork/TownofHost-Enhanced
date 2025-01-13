@@ -14,7 +14,7 @@ internal class Bastion : RoleBase
     public override CustomRoles Role => CustomRoles.Bastion;
     private const int Id = 10200;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 

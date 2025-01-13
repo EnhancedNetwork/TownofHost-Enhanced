@@ -45,6 +45,24 @@ public class PlayerState(byte playerId)
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
 
+        if (role == CustomRoles.Repellant)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                if (!pc.HasImpKillButton(considerVanillaShift: true))
+                {
+                    var taskstate = pc.GetPlayerTaskState();
+                    if (taskstate != null)
+                    {
+                        pc.Data.RpcSetTasks(Array.Empty<byte>());
+                        taskstate.CompletedTasksCount = 0;
+                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
+                        taskstate.hasTasks = true;
+                    }
+                }
+            }
+        }
+
         if (pc.Is(CustomRoles.Necromancer))
         {
             IsNecromancer = true;
@@ -110,6 +128,16 @@ public class PlayerState(byte playerId)
         if (Main.PlayerStates[pc.PlayerId].IsNecromancer)
         {
             countTypes = CountTypes.Coven;
+        }
+        if (pc.Is(CustomRoles.Darkened))
+        {
+            countTypes = DarkFairy.DarkenedCountMode.GetInt() switch
+            {
+                0 => CountTypes.OutOfGame,
+                1 => CountTypes.DarkFairy,
+                2 => countTypes,
+                _ => throw new NotImplementedException()
+            };
         }
 
         MainRoleLogs.Add((DateTime.Now, role));
@@ -215,6 +243,16 @@ public class PlayerState(byte playerId)
                 {
                     0 => CountTypes.OutOfGame,
                     1 => CountTypes.Virus,
+                    2 => countTypes,
+                    _ => throw new NotImplementedException()
+                };
+                break;
+
+            case CustomRoles.Darkened:
+                countTypes = DarkFairy.DarkenedCountMode.GetInt() switch
+                {
+                    0 => CountTypes.OutOfGame,
+                    1 => CountTypes.DarkFairy,
                     2 => countTypes,
                     _ => throw new NotImplementedException()
                 };
@@ -340,6 +378,9 @@ public class PlayerState(byte playerId)
         Electrocuted,
         Scavenged,
         BlastedOff,
+        Vaporized,
+        Toxined,
+        Arrested,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
