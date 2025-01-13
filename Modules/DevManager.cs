@@ -49,6 +49,24 @@ public static class DevManager
             new(code: "noshsame#8116", color: "#011efe", tag: "Bait Killer", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Dailyhare"),
             
             /*TOHO DEVS ABOVE*/
+            /*TESTERS BELOW*/
+
+            // BXO
+            new(code: "justgust#5169", color: "#07296c", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "BXO"),
+
+            // Apoc
+            new(code: "crunchwide#1938", color: "#ffa500", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Apoc"),
+
+            // Diffy
+            new(code: "funnytiger#8420", color: "#FFC5CB", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Diffy"),
+
+            // Plague
+            new(code: "trunksun#2271", color: "#800080", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Plague"),
+
+            // Glazecraft
+            new(code: "motorstack#2287", color: "#ec9d2f", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Glazecraft"),
+
+            /*TESTERS ABOVE*/
         ];
     }
 
