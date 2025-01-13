@@ -224,26 +224,50 @@ public static class GameOptionsMenuPatch
         {
             scaleOffset = new(-0.18f, 0, 0);
             positionOffset = new(0.3f, 0f, 0f);
-            color = new(0.8f, 0.8f, 0.2f);
             sizeDelta_x = 5.1f;
         }
         else if (option.Parent?.Parent != null)
         {
             scaleOffset = new(-0.12f, 0, 0);
             positionOffset = new(0.2f, 0f, 0f);
-            color = new(0.5f, 0.2f, 0.8f);
             sizeDelta_x = 5.3f;
         }
         else if (option.Parent != null)
         {
             scaleOffset = new(-0.05f, 0, 0);
             positionOffset = new(0.1f, 0f, 0f);
-            color = new(0.2f, 0.8f, 0.8f);
             sizeDelta_x = 5.5f;
         }
 
         var labelBackground = optionBehaviour.transform.FindChild("LabelBackground");
-        labelBackground.GetComponent<SpriteRenderer>().color = color;
+        if (option.Tab == TabGroup.SystemSettings)
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.White;
+        }
+        else if (option.Tab == TabGroup.ModSettings)
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.AcceptedGreen;
+        }
+        else if (option.Tab == TabGroup.CovenRoles)
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.Purple;
+        }
+        else if (option.Tab == TabGroup.ImpostorRoles)
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.ImpostorRed;
+        }
+        else if (option.Tab == TabGroup.CrewmateRoles)
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.CrewmateBlue;
+        }
+        else if (option.Tab == TabGroup.NeutralRoles)
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.DisabledGrey;
+        }
+        else
+        {
+            labelBackground.GetComponent<SpriteRenderer>().color = Palette.Brown;
+        }
         labelBackground.localScale += new Vector3(1f, -0.2f, 0f) + scaleOffset;
         labelBackground.localPosition += new Vector3(-0.6f, 0f, 0f) + positionOffset;
 
