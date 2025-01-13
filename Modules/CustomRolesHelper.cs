@@ -836,8 +836,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Gangster)
-                    || pc.Is(CustomRoles.Admirer)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE)
+                    || pc.Is(CustomRoles.Admirer)                    
+                    || pc.Is(CustomRoles.NiceMini)
+                    || pc.Is(CustomRoles.GuardianAngelTOHE))
                     || pc.Is(CustomRoles.Narc)
                     || (pc.Is(CustomRoles.Sheriff) && CustomRoles.Narc.RoleExist()))  //even impy herself doubts if it works
                     return false;
