@@ -246,8 +246,7 @@ public static class CustomRolesHelper
     {
         if (role is
             //FFA
-            CustomRoles.Killer or
-            CustomRoles.Rebel) return true;
+            CustomRoles.Killer) return true;
 
         return role.IsNK() || role.IsNonNK() || role.IsNA() || role.IsMadmate();
     }
@@ -339,13 +338,6 @@ public static class CustomRolesHelper
             CustomRoles.Madmate or
             CustomRoles.Enchanted;
 
-    public static bool IsConvertedV2(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
-        || role is
-            CustomRoles.Charmed or
-            CustomRoles.Recruit or
-            CustomRoles.Infected or
-            CustomRoles.Contagious;
-
     public static bool IsNotKnightable(this CustomRoles role)
     {
         return role is
@@ -389,13 +381,7 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
-            or CustomRoles.Enchanted
-            or CustomRoles.Rebel;
-    }
-    public static bool IsBetrayalAddonV2(this CustomRoles role)
-    {
-        return (role.IsBetrayalAddon() && role is not CustomRoles.Rascal)
-            || role is CustomRoles.Admired;
+            or CustomRoles.Enchanted;
     }
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
@@ -409,6 +395,53 @@ public static class CustomRolesHelper
             CustomRoles.Stealer or
             CustomRoles.Circumvent or
             CustomRoles.Swift;
+    }
+
+    public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);
+    public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
+    {
+        if (!onlyMainRole)
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+
+        return player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate;
+    }
+
+    public static bool IsPlayerCrewmateTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerCrewmateTeam(onlyMainRole);
+    public static bool IsPlayerCrewmateTeam(this PlayerState player, bool onlyMainRole = false)
+    {
+        if (!onlyMainRole)
+        {
+            if (player.SubRoles.Contains(CustomRoles.Admired)) return true;
+            if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
+        }
+
+        return player.MainRole.IsCrewmate();
+    }
+
+    public static bool IsPlayerNeutralTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerNeutralTeam(onlyMainRole);
+    public static bool IsPlayerNeutralTeam(this PlayerState player, bool onlyMainRole = false)
+    {
+        if (!onlyMainRole)
+        {
+            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return false;
+        }
+
+        // Imp roles like crewposter and parasite is counted as netural, but should be treated as impostor team in general
+        return player.MainRole.IsNeutral() && player.MainRole.GetCustomRoleType() is not Custom_RoleType.Madmate;
+    }
+
+    public static bool IsPlayerCovenTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerCovenTeam(onlyMainRole);
+    public static bool IsPlayerCovenTeam(this PlayerState player, bool onlyMainRole = false)
+    {
+        if (!onlyMainRole)
+        {
+            if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
+            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
+        }
+
+        return player.MainRole.IsCoven();
     }
     public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
     {
@@ -515,9 +548,9 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Guesser) || pc.Is(CustomRoles.NiceGuesser)) return true;
                 if (Options.GuesserMode.GetBool())
                 {
-                    if ((pc.GetCustomRole().IsNonNK() || pc.Is(CustomRoles.Rebel)) && Options.PassiveNeutralsCanGuess.GetBool())
+                    if (pc.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
                         return true;
-                    if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel) && Options.CrewmatesCanGuess.GetBool())
+                    if (pc.GetCustomRole().IsCrewmate() && Options.CrewmatesCanGuess.GetBool())
                         return true;
                     else return false;
                 }
@@ -566,8 +599,8 @@ public static class CustomRolesHelper
 
                 if (pc.Is(CustomRoles.CopyCat)
                     || pc.Is(CustomRoles.Workaholic) && !Workaholic.WorkaholicCanGuess.GetBool()
-                    || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool()))
-                    || (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool())
+                    || (pc.Is(CustomRoles.Terrorist) && (!Terrorist.TerroristCanGuess.GetBool() || Terrorist.CanTerroristSuicideWin.GetBool())
+                    || (pc.Is(CustomRoles.Specter) && !Specter.CanGuess.GetBool()))
                     || (pc.Is(CustomRoles.Solsticer) && !Solsticer.SolsticerCanGuess.GetBool())
                     || (pc.Is(CustomRoles.God) && !God.CanGuess.GetBool()))
                     return false;
@@ -575,9 +608,9 @@ public static class CustomRolesHelper
                 {
                     if (DoubleShot.ImpCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.EvilGuesser) && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !Options.ImpostorsCanGuess.GetBool())
                         return false;
-                    if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool())
+                    if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && (pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool()))
                         return false;
-                    if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && (((pc.GetCustomRole().IsNonNK() || pc.Is(CustomRoles.Rebel)) && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
+                    if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && ((pc.GetCustomRole().IsNonNK() && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
                         return false;
                     if (DoubleShot.CovenCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && (pc.Is(Custom_Team.Coven) && !Options.CovenCanGuess.GetBool()))
                         return false;
@@ -613,7 +646,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.LazyGuy)
                     || pc.Is(CustomRoles.Mundane)
                     || pc.Is(CustomRoles.Burst)
-                    || pc.Is(CustomRoles.Rebel)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven() || pc.GetCustomRole().IsTasklessCrewmate() || pc.GetCustomRole().IsTaskBasedCrewmate())
@@ -627,7 +659,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.LazyGuy)
                     || pc.Is(CustomRoles.Crewpostor)
                     || pc.Is(CustomRoles.Bodyguard)
-                    || pc.Is(CustomRoles.Rebel)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsTasklessCrewmate())
@@ -756,8 +787,9 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Madmate:
-                if (pc.Is(CustomRoles.Rebel)
+                if (pc.Is(CustomRoles.Sidekick)
                     || pc.Is(CustomRoles.SuperStar)
+                    || pc.Is(CustomRoles.Egoist)
                     || pc.Is(CustomRoles.Rascal)
                     || pc.Is(CustomRoles.NiceMini))
                     return false;
@@ -802,44 +834,14 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sheriff)
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.Rebel)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
                     return false;
                 break;
 
-            case CustomRoles.Rebel:
-                if (pc.Is(CustomRoles.Madmate)
-                    || pc.Is(CustomRoles.Snitch)
-                    || pc.Is(CustomRoles.Admirer)
-                    || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.Hurried)
-                    || pc.Is(CustomRoles.Rascal)
-                    || pc.Is(CustomRoles.Egoist)
-                    || pc.Is(CustomRoles.CopyCat)
-                    || pc.Is(CustomRoles.Vigilante)
-                    || pc.Is(CustomRoles.Ghoul)
-                    || pc.Is(CustomRoles.Bloodthirst)
-                    || pc.Is(CustomRoles.Paranoia)
-                    || pc.Is(CustomRoles.Loyal)
-                    || pc.Is(CustomRoles.Youtuber)
-                    || pc.Is(CustomRoles.GuardianAngelTOHE))
-                    return false;
-                if ((pc.Is(CustomRoles.Sheriff) && !Rebel.SheriffCanBeRebel.GetBool())
-                    || (pc.Is(CustomRoles.Marshall) && !Rebel.MarshallCanBeRebel.GetBool())
-                    || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
-                    || (pc.Is(CustomRoles.Swapper) && !Rebel.SwapperCanBeRebel.GetBool())
-                    || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
-                    || (pc.Is(CustomRoles.Dictator) && (!Rebel.DictatorCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
-                    || (pc.Is(CustomRoles.Retributionist) && (!Rebel.RetributionistCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool())))
-                    return false;
-                if (!pc.GetCustomRole().IsCrewmate() || pc.IsAnySubRole(sub => sub.IsConverted()))
-                    return false;
-                break;
-
             case CustomRoles.Egoist:
-                if (pc.Is(CustomRoles.Rebel)
+                if (pc.Is(CustomRoles.Sidekick)
                     || pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Gangster)
@@ -864,8 +866,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.SuperStar)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Madmate)
-                    || pc.Is(CustomRoles.ChiefOfPolice)
-                    || pc.Is(CustomRoles.Rebel))
+                    || pc.Is(CustomRoles.ChiefOfPolice))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
                     return false;
@@ -989,8 +990,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Randomizer)
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.Bait)
-                    || pc.Is(CustomRoles.PunchingBag)
-                    || pc.Is(CustomRoles.Ghoul))
+                    || pc.Is(CustomRoles.Ghoul)
+                    || pc.Is(CustomRoles.PunchingBag))
                     return false;
                 break;
 
@@ -1007,7 +1008,6 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.VoidBallot)
-                    || pc.Is(CustomRoles.Rebel)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate() && !pc.GetCustomRole().IsCoven())
@@ -1026,7 +1026,6 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Solsticer)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.EvilMini)
-                    || pc.Is(CustomRoles.Rebel)
                     || (pc.Is(CustomRoles.CopyCat) && CopyCat.CanCopyTeamChangingAddon()))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate() && !pc.GetCustomRole().IsCoven())
@@ -1107,9 +1106,9 @@ public static class CustomRolesHelper
 
             case CustomRoles.Hurried:
                 if (pc.Is(CustomRoles.Youtuber)
+                    || pc.Is(CustomRoles.Egoist)
                     || pc.Is(CustomRoles.Cleanser)
-                    || pc.Is(CustomRoles.Solsticer)
-                    || pc.Is(CustomRoles.Rebel))
+                    || pc.Is(CustomRoles.Solsticer))
                     return false;
                 if (pc.Is(CustomRoles.Madmate) && !Hurried.CanBeOnMadMate.GetBool()) return false;
                 if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Madmate)) return false;
@@ -1222,7 +1221,6 @@ public static class CustomRolesHelper
     /// </summary>
     public static bool IsCovenTeam(this CustomRoles role) => role.IsCoven() || role == CustomRoles.Enchanted;
     public static bool IsImpostorTeamV3(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
-    public static bool IsNeutralTeamV3(this CustomRoles role) => role.IsNeutral() && !role.IsMadmate();
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
@@ -1326,16 +1324,18 @@ public static class CustomRolesHelper
            var r when r.IsCoven() => CountTypes.Coven,
            CustomRoles.Enchanted => CountTypes.Coven,
            CustomRoles.Agitater => CountTypes.Agitater,
-           var r when r.IsMadmate() => CountTypes.Impostor,
+           CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
-           CustomRoles.Quizmaster => CountTypes.Quizmaster,
+           CustomRoles.Quizmaster => Quizmaster.CanKillsAfterMark() ? CountTypes.Quizmaster : CountTypes.Crew,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
+           CustomRoles.Crewpostor => CountTypes.Impostor,
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
            CustomRoles.Virus => CountTypes.Virus,
            CustomRoles.Pickpocket => CountTypes.Pickpocket,
            CustomRoles.Traitor => CountTypes.Traitor,
+           CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,
