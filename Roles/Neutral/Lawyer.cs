@@ -180,7 +180,7 @@ internal class Lawyer : RoleBase
     public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
-        => !(ChangeRolesAfterTargetKilled.GetValue() is 1 or 2 or 9 or 10 or 13 or 14 or 15) && !ForRecompute;
+        => !ForRecompute;
 
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {

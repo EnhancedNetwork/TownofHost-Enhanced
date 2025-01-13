@@ -172,7 +172,7 @@ internal class Executioner : RoleBase
     public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
-        => !(ChangeRolesAfterTargetKilled.GetValue() is 0 or 1 or 8 or 10 or 11 or 13 or 14 or 15) && !ForRecompute;
+        => !ForRecompute;
 
     private void ChangeRole()
     {
