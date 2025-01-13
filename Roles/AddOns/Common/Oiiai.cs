@@ -100,8 +100,8 @@ public class Oiiai : IAddon
         }
         else if (killer.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(killer))
         {
-            killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Enchanted);
             killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");

@@ -2457,6 +2457,7 @@
   "EraserEraseBaseImpostorOrNeutralRoleNotice": "Oops, your target cannot be erased!",
   "EraserEraseSelf": "Unfortunately, you can't erase yourself... Wait, why would you do that in the first place?!",
   "EraserTryingGuessErasedPlayer": "You can't guess the role of the player you erased, except Add-ons",
+  "EraserCanGuessErasedPlayer": "Can Guess Erased Players",
   "LostRoleByEraser": "You lost your role because of the <color=#ff1919>Eraser</color>",
   "KilledByScavenger": "The Scavenger killed you and thus teleported off-map",
   "SnitchDoneTasks": "Call a meeting to find the Impostors",
