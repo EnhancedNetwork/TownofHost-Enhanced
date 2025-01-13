@@ -18,6 +18,7 @@ internal class Eraser : RoleBase
     //==================================================================\\
 
     private static OptionItem EraseLimitOpt;
+    private static OptionItem CanGuessErasedPlayer;
 
     private static readonly HashSet<byte> didVote = [];
     private static readonly HashSet<byte> PlayerToErase = [];
@@ -29,6 +30,8 @@ internal class Eraser : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eraser);
         EraseLimitOpt = IntegerOptionItem.Create(Id + 10, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Times);
+        CanGuessErasedPlayer = BooleanOptionItem.Create(Id + 11, "EraserCanGuessErasedPlayer", true, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Eraser]);
+
     }
     public override void Init()
     {
@@ -82,7 +85,7 @@ internal class Eraser : RoleBase
     }
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (PlayerToErase.Contains(target.PlayerId) && !role.IsAdditionRole())
+        if (PlayerToErase.Contains(target.PlayerId) && CanGuessErasedPlayer.GetBool() && !role.IsAdditionRole())
         {
             guesser.ShowInfoMessage(isUI, GetString("EraserTryingGuessErasedPlayer"));
             return true;
@@ -146,9 +149,12 @@ internal class Eraser : RoleBase
             {
                 RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
                 RoleTypes.Scientist => CustomRoles.ScientistTOHE,
+                RoleTypes.Tracker => CustomRoles.TrackerTOHE,
+                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHE,
                 RoleTypes.Engineer => CustomRoles.EngineerTOHE,
                 RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
                 RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
+                RoleTypes.Phantom => CustomRoles.PhantomTOHE,
                 _ => role,
             };
     }
