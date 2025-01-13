@@ -1,5 +1,4 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
+﻿using Hazel;
 using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -252,10 +251,9 @@ internal class Romantic : RoleBase
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
         var killer = player.GetRealKiller();
-        if (player.IsNeutralKiller() || killer == player || killer == null || !killer.IsAlive() || killer.HasGhostRole())
+        if (player.IsNeutralKiller() || killer == null)
         {
             Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
-            pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
@@ -266,21 +264,8 @@ internal class Romantic : RoleBase
         {
             Logger.Info($"Impostor Romantic Partner Died => Changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
-            pc.RpcChangeRoleBasis(CustomRoles.Refugee);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
             pc.GetRoleClass()?.OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
-            pc.ResetKillCooldown();
-            pc.SetKillCooldown();
-        }
-        else if (player.GetCustomRole().IsCoven())
-        {
-            Logger.Info($"Coven Romantic Partner Died => Changing {pc.GetNameWithRole()} to Enchanted Ruthless Romantic", "Romantic");
-            pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
-            pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
-            pc.RpcSetCustomRole(CustomRoles.Enchanted);
-            pc.AddInSwitchAddons(pc, CustomRoles.Enchanted);
-            pc.GetRoleClass().OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
@@ -289,10 +274,9 @@ internal class Romantic : RoleBase
         {
             _ = new LateTask(() =>
             {
-                Logger.Info($"Crew/NB Romantic Partner Died => Changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful Romantic", "Romantic");
+                Logger.Info($"Crew Romantic Partner Died => Changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful Romantic", "Romantic");
                 VengefulTargetId = killer.PlayerId;
 
-                pc.RpcChangeRoleBasis(CustomRoles.VengefulRomantic);
                 pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
                 pc.GetRoleClass().OnAdd(pc.PlayerId);
                 if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
