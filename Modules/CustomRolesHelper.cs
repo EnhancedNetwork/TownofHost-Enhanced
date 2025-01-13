@@ -438,7 +438,7 @@ public static class CustomRolesHelper
             if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return false;
         }
 
-        // Imp roles like crewposter and parasite is counted as netural, but should be treated as impostor team in general
+        // Impostor roles like Crewpostor and Parasite is counted as Netural, but should be treated as Impostor team in general
         return player.MainRole.IsNeutral() && player.MainRole.GetCustomRoleType() is not Custom_RoleType.Madmate;
     }
 
@@ -456,13 +456,13 @@ public static class CustomRolesHelper
     }
     public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
     {
-        // Only add-ons
+        // Only Add-ons
         if (!role.IsAdditionRole() || pc == null) return false;
 
         if (Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()) || (!o.Coven.GetBool() && pc.GetCustomRole().IsCoven())))
             return false;
 
-        // if player already has this addon
+        // if player already has this Add-on
         else if (pc.Is(role)) return false;
 
         // Checking Lovers and Romantics
@@ -475,7 +475,7 @@ public static class CustomRolesHelper
             if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
 
 
-        // Checking for conflicts with roles and other add-ons
+        // Checking for conflicts with Roles and other Add-ons
         switch (role)
         {
             case var Addon when (pc.IsAnySubRole(x => x.IsSpeedRole()) || pc.GetCustomRole().IsSpeedRole()) && Addon.IsSpeedRole():
