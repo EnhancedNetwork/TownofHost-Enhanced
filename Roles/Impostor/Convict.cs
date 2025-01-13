@@ -11,7 +11,6 @@ internal class Convict : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Convict;
     private const int Id = 31500;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Convict);
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
