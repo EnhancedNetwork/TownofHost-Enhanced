@@ -32,6 +32,8 @@ internal class Executioner : RoleBase
     [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectList
     {
+        Role_Amnesiac,
+        Role_Maverick,
         Role_Crewmate,
         Role_Celebrity,
         Role_Bodyguard,
@@ -39,10 +41,18 @@ internal class Executioner : RoleBase
         Role_Mayor,
         Role_Doctor,
         Role_Jester,
-        Role_Opportunist
+        Role_Opportunist,
+        Role_Pursuer,
+        Role_Refugee,
+        Role_Tracker,
+        Role_Sheriff,
+        Role_Deputy,
+        Role_Medic
     }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
+        CustomRoles.Amnesiac,
+        CustomRoles.Maverick,
         CustomRoles.CrewmateTOHE,
         CustomRoles.Celebrity,
         CustomRoles.Bodyguard,
@@ -51,6 +61,12 @@ internal class Executioner : RoleBase
         CustomRoles.Doctor,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
+        CustomRoles.Pursuer,
+        CustomRoles.Refugee,
+        CustomRoles.TrackerTOHE,
+        CustomRoles.Sheriff,
+        CustomRoles.Deputy,
+        CustomRoles.Medic,
     ];
 
     public override void SetupCustomOption()
@@ -156,7 +172,7 @@ internal class Executioner : RoleBase
     public byte GetTargetId() => TargetId;
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
-        => !(ChangeRolesAfterTargetKilled.GetValue() is 6 or 7) && !ForRecompute;
+        => !(ChangeRolesAfterTargetKilled.GetValue() is 0 or 1 or 8 or 10 or 11 or 13 or 14 or 15) && !ForRecompute;
 
     private void ChangeRole()
     {
@@ -175,6 +191,35 @@ internal class Executioner : RoleBase
         executioner.GetRoleClass()?.OnRemove(executionerId);
         executioner.RpcSetCustomRole(newCustomRole);
         executioner.GetRoleClass().OnAdd(executionerId);
+
+        switch (newCustomRole)
+        {
+            case CustomRoles.Amnesiac:
+                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Oblivious);
+                break;
+            case CustomRoles.Celebrity:
+                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Cyber);
+                break;
+            case CustomRoles.Dictator:
+                new[] { CustomRoles.Tiebreaker, CustomRoles.Paranoia, CustomRoles.Knighted, CustomRoles.VoidBallot, CustomRoles.Silent, CustomRoles.Influenced }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Mayor:
+                new[] { CustomRoles.Knighted, CustomRoles.VoidBallot }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Doctor:
+                new[] { CustomRoles.Autopsy, CustomRoles.Necroview }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Jester:
+                new[] { CustomRoles.Rebirth, CustomRoles.Susceptible }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
+                break;
+            case CustomRoles.Opportunist when Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool():
+            case CustomRoles.Medic:
+                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Fragile);
+                break;
+            case CustomRoles.Refugee:
+                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Madmate);
+                break;
+        }
 
         Utils.NotifyRoles(SpecifySeer: executioner);
     }

@@ -62,7 +62,7 @@ internal class Eraser : RoleBase
         }
 
         var targetRole = target.GetCustomRole();
-        if (targetRole.IsTasklessCrewmate() || targetRole.IsNeutral() || targetRole.IsCoven() || Main.TasklessCrewmate.Contains(target.PlayerId) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
+        if (targetRole.IsNeutral() || targetRole.IsCoven() || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
             Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
@@ -147,6 +147,7 @@ internal class Eraser : RoleBase
                 RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
                 RoleTypes.Scientist => CustomRoles.ScientistTOHE,
                 RoleTypes.Engineer => CustomRoles.EngineerTOHE,
+                RoleTypes.Impostor when role.IsCrewmate() => CustomRoles.CrewmateTOHE,
                 RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
                 RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
                 _ => role,
