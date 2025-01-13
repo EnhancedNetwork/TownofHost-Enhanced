@@ -223,6 +223,9 @@ internal class ChatCommands
 
                 case "/coveninfo":
                 case "/covinfo":
+                case "/巫师阵营职业介绍":
+                case "/巫师阵营介绍":
+                case "/巫师介绍":
                     canceled = true;
                     Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
                     break;
