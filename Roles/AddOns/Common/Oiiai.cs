@@ -91,12 +91,7 @@ public class Oiiai : IAddon
         }
 
         var killerRole = killer.GetCustomRole();
-        if (killerRole.IsTasklessCrewmate() 
-        || killer.HasGhostRole() 
-        || Main.TasklessCrewmate.Contains(killer.PlayerId) 
-        || CopyCat.playerIdList.Contains(killer.PlayerId) 
-        || killer.Is(CustomRoles.Stubborn) 
-        || killer.Is(CustomRoles.Narc))
+        if (killer.HasGhostRole() || CopyCat.playerIdList.Contains(killer.PlayerId) || killer.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
             return;
