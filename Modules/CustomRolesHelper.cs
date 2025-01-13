@@ -661,7 +661,9 @@ public static class CustomRolesHelper
             case CustomRoles.Ghoul:
                 if (pc.Is(CustomRoles.Lazy)
                     || pc.Is(CustomRoles.LazyGuy)
-                    || pc.Is(CustomRoles.Mundane))
+                    || pc.Is(CustomRoles.Mundane)
+                    || pc.Is(CustomRoles.Burst)
+                    || pc.Is(CustomRoles.NiceMini))   
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven() || pc.GetCustomRole().IsTasklessCrewmate() || pc.GetCustomRole().IsTaskBasedCrewmate())
                     return false;
@@ -673,7 +675,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Alchemist)
                     || pc.Is(CustomRoles.LazyGuy)
                     || pc.Is(CustomRoles.Crewpostor)
-                    || pc.Is(CustomRoles.Bodyguard))
+                    || pc.Is(CustomRoles.Bodyguard)
+                    || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsTasklessCrewmate())
                     return false;
@@ -709,6 +712,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Demon)
                     || pc.Is(CustomRoles.Shaman)
                     || pc.Is(CustomRoles.Monarch)
+                    || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.Opportunist) && Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool())
                     return false;
                 break;
@@ -874,6 +878,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Gangster)
                     || pc.Is(CustomRoles.Admirer)
+                    || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
@@ -939,7 +944,9 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Trapster)
                     || pc.Is(CustomRoles.Onbound)
                     || pc.Is(CustomRoles.Rebound)
-                    || pc.Is(CustomRoles.Tired))
+                    || pc.Is(CustomRoles.Tired)
+                    || pc.Is(CustomRoles.Flash)
+                    || pc.Is(CustomRoles.Sloth))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1032,6 +1039,7 @@ public static class CustomRolesHelper
             case CustomRoles.Paranoia:
                 if (pc.Is(CustomRoles.Dictator)
                     || pc.Is(CustomRoles.Madmate)
+                    || pc.Is(CustomRoles.VoidBallot)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate() && !pc.GetCustomRole().IsCoven())
@@ -1095,7 +1103,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Sloth)
                     || pc.Is(CustomRoles.Zombie)
                     || pc.Is(CustomRoles.Wraith)
-                    || pc.Is(CustomRoles.Spurt))
+                    || pc.Is(CustomRoles.Spurt)
+                    || pc.Is(CustomRoles.Chameleon)
+                    || pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Mare))
                     return false;
                 break;
 
@@ -1188,7 +1199,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Flash)
                     || pc.Is(CustomRoles.Zombie)
                     || pc.Is(CustomRoles.Wraith)
-                    || pc.Is(CustomRoles.Spurt))
+                    || pc.Is(CustomRoles.Spurt)
+                    || pc.Is(CustomRoles.Chameleon)
+                    || pc.Is(CustomRoles.Alchemist)
+                    || pc.Is(CustomRoles.Mare))    
                     return false;
                 break;
             case CustomRoles.Evader:
