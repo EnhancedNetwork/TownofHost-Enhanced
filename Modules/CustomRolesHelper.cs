@@ -836,7 +836,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Madmate)
                     || pc.Is(CustomRoles.Hurried)
                     || pc.Is(CustomRoles.Gangster)
-                    || pc.Is(CustomRoles.Admirer)                    
+                    || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
