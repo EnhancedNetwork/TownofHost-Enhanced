@@ -4153,6 +4153,7 @@
   "PolicCanImpostor": "Can Recruit <color=#ff1919>Impostors</color>",
   "PolicCanNeutral": "Can Recruit <color=#7f8c8d>Neutrals</color>",
   "PolicCanCoven": "Can Recruit <color=#ac42f2>Coven</color>",  
+  "ChiefOfPoliceCanSeePolice": "Can see <color=#ffb347>Sheriffs</color>",
   "SheriffSuccessfullyRecruited": "You recruited a Sheriff.",
   "BeSheriffByPolice": "You've been recruited by the Police Chief! Serve the Crewmates!",
   "PoliceFailedRecruit": "Failed to recruit target.",
