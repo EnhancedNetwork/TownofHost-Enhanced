@@ -57,18 +57,18 @@ public class Main : BasePlugin
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = true;
+    public static readonly bool ShowUpdateButton = false;
 
-    public static readonly bool ShowGitHubButton = true;
+    public static readonly bool ShowGitHubButton = false;
     public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
 
     public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/BWh9Vj5UJ2";
 
-    public static readonly bool ShowWebsiteButton = true;
+    public static readonly bool ShowWebsiteButton = false;
     public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
 
-    public static readonly bool ShowDonationButton = true;
+    public static readonly bool ShowDonationButton = false;
     public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
