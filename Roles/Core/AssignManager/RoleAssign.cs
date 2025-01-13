@@ -75,8 +75,8 @@ public class RoleAssign
 
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
-        int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
-        int optMadmateNum = Options.NumberOfMadmates.GetInt();
+        int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors) + Narc.ExtraImpSpotNarc;
+        int optMadmateNum = Options.NumberOfMadmates.GetInt() + Narc.ExtraMadSpotNarc;
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
         int optNeutralApocalypseNum = 0;
