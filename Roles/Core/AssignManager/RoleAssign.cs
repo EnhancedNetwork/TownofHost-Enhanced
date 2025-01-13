@@ -219,6 +219,10 @@ public class RoleAssign
             AllPlayers.Remove(PlayerControl.LocalPlayer);
             SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
         }
+
+        AllPlayers.RemoveAll(x => ChatCommands.Spectators.Contains(x.PlayerId));
+        RoleResult.AddRange(ChatCommands.Spectators.ToDictionary(x => x, _ => CustomRoles.GM));
+        
         // Pre-Assigned Roles By Host Are Selected First
         foreach (var item in SetRoles)
         {
