@@ -14,14 +14,41 @@ public static class CollectionExtensions
     /// <typeparam name="TKey">The type of the keys in the <paramref name="dictionary"/></typeparam>
     /// <typeparam name="TValue">The type of the values in the <paramref name="dictionary"/></typeparam>
     /// <returns>The key of the <paramref name="dictionary"/> that corresponds to the given <paramref name="value"/>, or the default value of <typeparamref name="TKey"/> if the <paramref name="value"/> is not found in the <paramref name="dictionary"/></returns>
-    public static Dictionary<TKey, TValue> AddRange<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Dictionary<TKey, TValue> other, bool overrideExistingKeys = true)
-{
-    foreach ((TKey key, TValue value) in other)
-        if (overrideExistingKeys || !dictionary.ContainsKey(key))
-            dictionary[key] = value;
+    public static TKey GetKeyByValue<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, TValue value)
+    {
+        foreach (KeyValuePair<TKey, TValue> pair in dictionary)
+        {
+            if (pair.Value.Equals(value))
+            {
+                return pair.Key;
+            }
+        }
 
-    return dictionary;
-}
+        return default;
+    }
+    /// <summary>
+    /// Adds a range of elements to a dictionary
+    /// </summary>
+    /// <param name="dictionary">The dictionary to add elements to</param>
+    /// <param name="other">The dictionary containing the elements to add</param>
+    /// <param name="overrideExistingKeys">
+    /// Whether to override existing keys in the <paramref name="dictionary" /> with the
+    /// same keys in the <paramref name="other" /> dictionary. If <c>true</c>, the same keys in the
+    /// <paramref name="dictionary" /> will be overwritten with the values from the <paramref name="other" /> dictionary.
+    /// If <c>false</c>, the same keys in the <paramref name="dictionary" /> will be kept and the values from the
+    /// <paramref name="other" /> dictionary will be ignored
+    /// </param>
+    /// <typeparam name="TKey">The type of the keys in the dictionaries</typeparam>
+    /// <typeparam name="TValue">The type of the values in the dictionaries</typeparam>
+    /// <returns>The <paramref name="dictionary" /> with the elements from the <paramref name="other" /> dictionary added</returns>
+    public static Dictionary<TKey, TValue> AddRange<TKey, TValue>(this Dictionary<TKey, TValue> dictionary, Dictionary<TKey, TValue> other, bool overrideExistingKeys = true)
+    {
+        foreach ((TKey key, TValue value) in other)
+            if (overrideExistingKeys || !dictionary.ContainsKey(key))
+                dictionary[key] = value;
+
+        return dictionary;
+    }
     /// <summary>
     /// Returns a random element from a collection
     /// </summary>
