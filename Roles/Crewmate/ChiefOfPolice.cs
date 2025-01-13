@@ -65,7 +65,7 @@ internal class ChiefOfPolice : RoleBase
         bool suidice = false;
         bool isSuccess = false;
 
-        if (target.GetCustomRole().IsCrewmate() && !target.IsAnySubRole(x => x.IsConverted()))
+        if (target.IsPlayerCrewmateTeam())
         {
             if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
             {
@@ -96,7 +96,7 @@ internal class ChiefOfPolice : RoleBase
         }
         else
         {
-            if (!CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven() || !CanRecruitNeutral.GetBool() && target.GetCustomRole().IsNeutral() || !CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor())
+            if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
             {
                 suidice = true;
             }
@@ -144,7 +144,7 @@ internal class ChiefOfPolice : RoleBase
             {
                 if (killer.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Egoist))
                 {
-                    var role = killer.GetCustomSubRoles().FirstOrDefault(x => x.IsConverted() && x is not CustomRoles.Egoist);
+                    var role = killer.GetCustomSubRoles().FirstOrDefault(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Egoist);
                     Logger.Info($"Giving addon {role} to {target.GetNameWithRole()}", "ChiefOfPolice");
                     target.RpcSetCustomRole(role);
                 }
