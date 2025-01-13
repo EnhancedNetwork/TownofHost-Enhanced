@@ -408,33 +408,50 @@ public static class CustomRolesHelper
             CustomRoles.Swift;
     }
 
-    public static bool IsPlayerImpostorTeam(this PlayerControl player) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam();
-    public static bool IsPlayerImpostorTeam(this PlayerState player)
+    public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);
+    public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
-        if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+        if (!onlyMainRole)
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+
         return player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate;
     }
-    public static bool IsPlayerCrewmateTeam(this PlayerControl player) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerCrewmateTeam();
-    public static bool IsPlayerCrewmateTeam(this PlayerState player)
+
+    public static bool IsPlayerCrewmateTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerCrewmateTeam(onlyMainRole);
+    public static bool IsPlayerCrewmateTeam(this PlayerState player, bool onlyMainRole = false)
     {
-        if (player.SubRoles.Contains(CustomRoles.Admired)) return true;
-        if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
+        if (!onlyMainRole)
+        {
+            if (player.SubRoles.Contains(CustomRoles.Admired)) return true;
+            if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
+        }
+
         return player.MainRole.IsCrewmate();
     }
-    public static bool IsPlayerNeutralTeam(this PlayerControl player) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerNeutralTeam();
-    public static bool IsPlayerNeutralTeam(this PlayerState player)
+
+    public static bool IsPlayerNeutralTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerNeutralTeam(onlyMainRole);
+    public static bool IsPlayerNeutralTeam(this PlayerState player, bool onlyMainRole = false)
     {
-        if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
-        if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return false;
+        if (!onlyMainRole)
+        {
+            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return false;
+        }
+
         // Imp roles like crewposter and parasite is counted as netural, but should be treated as impostor team in general
         return player.MainRole.IsNeutral() && player.MainRole.GetCustomRoleType() is not Custom_RoleType.Madmate;
     }
-    public static bool IsPlayerCovenTeam(this PlayerControl player) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerCovenTeam();
-    public static bool IsPlayerCovenTeam(this PlayerState player)
+
+    public static bool IsPlayerCovenTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerCovenTeam(onlyMainRole);
+    public static bool IsPlayerCovenTeam(this PlayerState player, bool onlyMainRole = false)
     {
-        if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
-        if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
-        if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
+        if (!onlyMainRole)
+        {
+            if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
+            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
+        }
+        
         return player.MainRole.IsCoven();
     }
     public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
