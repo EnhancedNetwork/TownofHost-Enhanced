@@ -839,8 +839,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Admirer)                    
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Narc)
-                    || (pc.Is(CustomRoles.Sheriff) && CustomRoles.Narc.RoleExist()))  //even impy herself doubts if it works
+                    || pc.Is(CustomRoles.Narc))  //even impy herself doubts if it works
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;
