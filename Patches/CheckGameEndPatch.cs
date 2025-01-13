@@ -219,24 +219,37 @@ class GameEndCheckerForNormal
                     }
                 }
 
+                // Egoist (Crewmate)
+                if (WinnerTeam == CustomWinner.Crewmate)
+                {
+                    var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
+
+                    if (egoistCrewArray.Length > 0)
+                    {
+                        reason = GameOverReason.ImpostorByKill;
+                        ResetAndSetWinner(CustomWinner.Egoist);
+
+                        foreach (var egoistCrew in egoistCrewArray)
+                        {
+                            WinnerIds.Add(egoistCrew.PlayerId);
+                        }
+                    }
+                }
+
+                // Egoist (Impostor)
                 if (WinnerTeam == CustomWinner.Impostor)
                 {
-                    var aliveImps = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole().IsImpostorTeamV3());
-                    var imps = aliveImps as PlayerControl[] ?? aliveImps.ToArray();
-                    var aliveImpCount = imps.Length;
+                    var egoistImpArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsImpostor() && x.Is(CustomRoles.Egoist)).ToArray();
 
-                    switch (aliveImpCount)
+                    if (egoistImpArray.Length > 0)
                     {
-                        case > 1 when WinnerIds.Any(x => x.GetPlayer().Is(CustomRoles.Egoist)):
-                            WinnerIds.RemoveWhere(x => x.GetPlayer().Is(CustomRoles.Egoist));
-                            break;
-                        case 1 when imps.All(x => x.Is(CustomRoles.Egoist)):
-                            var pc = imps[0];
-                            reason = GameOverReason.ImpostorByKill;
-                            WinnerTeam = CustomWinner.Egoist;
-                            WinnerIds.RemoveWhere(x => Main.PlayerStates[x].MainRole.IsImpostorTeamV3() || x.GetPlayer().Is(CustomRoles.Madmate));
-                            WinnerIds.Add(pc.PlayerId);
-                            break;
+                        reason = GameOverReason.ImpostorByKill;
+                        ResetAndSetWinner(CustomWinner.Egoist);
+
+                        foreach (var egoistImp in egoistImpArray)
+                        {
+                            WinnerIds.Add(egoistImp.PlayerId);
+                        }
                     }
                 }
 

@@ -32,17 +32,8 @@ internal class Romantic : RoleBase
     private static OptionItem BetTargetKnowRomantic;
     public static OptionItem VengefulKCD;
     public static OptionItem VengefulCanVent;
-    public static OptionItem VengefulHasImpVision;
     public static OptionItem RuthlessKCD;
     public static OptionItem RuthlessCanVent;
-    public static OptionItem RuthlessHasImpVision;
-
-    private static readonly Dictionary<CustomRoles, CustomRoles> ConvertingRolesAndAddons = new()
-    {
-        [CustomRoles.Cultist] = CustomRoles.Charmed,
-        [CustomRoles.Jackal] = CustomRoles.Sidekick,
-        [CustomRoles.Virus] = CustomRoles.Contagious
-    };
 
     public static byte VengefulTargetId;
     private static readonly Dictionary<byte, int> BetTimes = [];
@@ -62,11 +53,9 @@ internal class Romantic : RoleBase
         VengefulKCD = FloatOptionItem.Create(Id + 15, "VengefulKCD", new(0f, 60f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
             .SetValueFormat(OptionFormat.Seconds);
         VengefulCanVent = BooleanOptionItem.Create(Id + 16, "VengefulCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
-        VengefulHasImpVision = BooleanOptionItem.Create(Id + 17, "VengefulHasImpVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
-        RuthlessKCD = FloatOptionItem.Create(Id + 18, "RuthlessKCD", new(0f, 60f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
+        RuthlessKCD = FloatOptionItem.Create(Id + 17, "RuthlessKCD", new(0f, 60f, 2.5f), 22.5f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic])
             .SetValueFormat(OptionFormat.Seconds);
-        RuthlessCanVent = BooleanOptionItem.Create(Id + 19, "RuthlessCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
-        RuthlessHasImpVision = BooleanOptionItem.Create(Id + 20, "RuthlessHasImpVision", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
+        RuthlessCanVent = BooleanOptionItem.Create(Id + 18, "RuthlessCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Romantic]);
     }
     public override void Init()
     {
@@ -263,7 +252,7 @@ internal class Romantic : RoleBase
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
         var killer = player.GetRealKiller();
-        if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC() || player.Is(CustomRoles.Egoist) || killer == player || killer == null || !killer.IsAlive() || killer.HasGhostRole())
+        if (player.IsNeutralKiller() || killer == player || killer == null || !killer.IsAlive() || killer.HasGhostRole())
         {
             Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
@@ -273,24 +262,7 @@ internal class Romantic : RoleBase
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
-        else if (ConvertingRolesAndAddons.TryGetValue(player.GetCustomRole(), out var convertedRole))
-        {
-            Logger.Info($"Converting Romantic Partner Died => Romantic becomes their ally ({pc.GetNameWithRole()})", "Romantic");
-            pc.GetRoleClass().OnRemove(pc.PlayerId);
-            pc.RpcChangeRoleBasis(convertedRole);
-            pc.RpcSetCustomRole(convertedRole);
-            pc.GetRoleClass().OnAdd(pc.PlayerId);
-            if (convertedRole.IsAdditionRole())
-            {
-                pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
-                pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
-                pc.GetRoleClass().OnAdd(pc.PlayerId);
-            }
-            Utils.NotifyRoles(ForceLoop: true);
-            pc.ResetKillCooldown();
-            pc.SetKillCooldown();
-        }
-        else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Egoist))
+        else if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died => Changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
@@ -309,17 +281,6 @@ internal class Romantic : RoleBase
             pc.RpcSetCustomRole(CustomRoles.Enchanted);
             pc.AddInSwitchAddons(pc, CustomRoles.Enchanted);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
-            pc.ResetKillCooldown();
-            pc.SetKillCooldown();
-        }
-        else if (player.GetCustomRole().IsNK() || player.GetCustomRole().IsNA() || player.GetCustomRole().IsTasklessCrewmate())
-        {
-            Logger.Info($"NK/NA/Taskless Crew Romantic Partner Died => Changing {pc.GetNameWithRole()} to {pc.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
-            pc.GetRoleClass()?.OnRemove(pc.PlayerId);
-            pc.RpcChangeRoleBasis(player.GetCustomRole());
-            pc.RpcSetCustomRole(player.GetCustomRole());
-            pc.GetRoleClass()?.OnAdd(pc.PlayerId);
             Utils.NotifyRoles(ForceLoop: true);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
@@ -409,7 +370,6 @@ internal class VengefulRomantic : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = hasKilledKiller ? 300f : Romantic.VengefulKCD.GetFloat();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.VengefulCanVent.GetBool();
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Romantic.VengefulHasImpVision.GetBool());
 }
 
 internal class RuthlessRomantic : RoleBase
@@ -424,5 +384,4 @@ internal class RuthlessRomantic : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.RuthlessKCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.RuthlessCanVent.GetBool();
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Romantic.RuthlessHasImpVision.GetBool());
 }

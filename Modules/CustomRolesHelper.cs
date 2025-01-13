@@ -838,10 +838,16 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Egoist:
-                if (pc.Is(CustomRoles.Godfather)
-                    || pc.Is(CustomRoles.Gangster))
+                if (pc.Is(CustomRoles.Sidekick)
+                    || pc.Is(CustomRoles.Madmate)
+                    || pc.Is(CustomRoles.Hurried)
+                    || pc.Is(CustomRoles.Gangster)
+                    || pc.Is(CustomRoles.Admirer)
+                    || pc.Is(CustomRoles.GuardianAngelTOHE))
                     return false;
-                if (!pc.GetCustomRole().IsImpostor() || pc.IsAnySubRole(sub => sub.IsConverted()))
+                if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
+                    return false;
+                if ((pc.GetCustomRole().IsImpostor() && !Egoist.ImpCanBeEgoist.GetBool()) || (pc.GetCustomRole().IsCrewmate() && !Egoist.CrewCanBeEgoist.GetBool()))
                     return false;
                 break;
 
