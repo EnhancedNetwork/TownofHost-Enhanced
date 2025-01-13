@@ -27,27 +27,6 @@ internal class Revenant : RoleBase
     {
         CustomRoles role = killer.GetCustomRole();
 
-        if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2()))
-        {
-            foreach (var subrole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
-            {
-                role = subrole switch
-                {
-                    CustomRoles.Madmate => CustomRoles.Gangster,
-                    CustomRoles.Recruit => CustomRoles.Sidekick,
-                    CustomRoles.Admired => CustomRoles.Admirer,
-                    CustomRoles.Enchanted => CustomRoles.Ritualist,
-                    CustomRoles.Egoist => CustomRoles.Traitor,
-                    CustomRoles.Rebel => CustomRoles.Taskinator,
-                    _ => role
-                };
-            }
-        }
-
-        if (killer.Is(CustomRoles.Charmed)) target.RpcSetCustomRole(CustomRoles.Charmed);
-        if (killer.Is(CustomRoles.Infected)) target.RpcSetCustomRole(CustomRoles.Infected);
-        if (killer.Is(CustomRoles.Contagious)) target.RpcSetCustomRole(CustomRoles.Contagious);
-
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
 
