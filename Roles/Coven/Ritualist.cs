@@ -6,7 +6,6 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -87,7 +86,7 @@ internal class Ritualist : CovenManager
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
-        else if (CheckCommond(ref msg, "rt|rit|ritual|bloodritual", false)) operate = 2;
+        else if (CheckCommond(ref msg, "rt|rit|ritual|bloodritual|鲜血仪式|仪式|献祭|举行|附魔", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
@@ -202,7 +201,7 @@ internal class Ritualist : CovenManager
     public void ConvertRole(PlayerControl killer, PlayerControl target)
     {
         if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Madmate) 
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Madmate)
                && CanBeConverted(target))
         {
             Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Ritualist Assign");

@@ -11,7 +11,7 @@ internal class Opportunist : RoleBase
     public override CustomRoles ThisRoleBase => OpportunistCanUseVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => OppoImmuneToAttacksWhenTasksDone.GetBool() && !ForRecompute;
 
     public static OptionItem OppoImmuneToAttacksWhenTasksDone;
     private static OptionItem OpportunistCanUseVent;
@@ -38,5 +38,4 @@ internal class Opportunist : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
         => !(OppoImmuneToAttacksWhenTasksDone.GetBool() && target.AllTasksCompleted());
-
 }
