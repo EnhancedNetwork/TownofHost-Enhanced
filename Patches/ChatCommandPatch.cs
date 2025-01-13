@@ -2273,7 +2273,7 @@ internal class ChatCommands
             case "/переименовать":
             case "/重命名":
             case "/命名为":
-                if (Options.PlayerCanSetName.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().NameCmd || Utils.IsPlayerVIP(player.FriendCode))
+                if (Options.PlayerCanSetName.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().NameCmd || TagManager.ReadPermission(player.FriendCode) >= 1)
                 {
                     if (GameStates.IsInGame)
                     {
@@ -2546,7 +2546,7 @@ internal class ChatCommands
             case "/айди":
             case "/编号":
             case "/玩家编号":
-                if ((Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode))
+                if ((Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2))
                     && !Options.EnableVoteCommand.GetBool()) break;
 
                 string msgText = GetString("PlayerIdList");
@@ -2570,7 +2570,7 @@ internal class ChatCommands
                     break;
                 }
                 //checking if player is has necessary privellege or not
-                if (!Utils.IsPlayerModerator(player.FriendCode))
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2)
                 {
                     Utils.SendMessage(GetString("midCommandNoAccess"), player.PlayerId);
                     break;
@@ -2598,7 +2598,7 @@ internal class ChatCommands
                 }
 
                 // Check if the player has the necessary privileges to use the command
-                if (!Utils.IsPlayerModerator(player.FriendCode))
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 5)
                 {
                     Utils.SendMessage(GetString("BanCommandNoAccess"), player.PlayerId);
                     break;
@@ -2635,7 +2635,7 @@ internal class ChatCommands
                 }
 
                 // Prevent moderators from baning other moderators
-                if (Utils.IsPlayerModerator(bannedPlayer.FriendCode))
+                if (Utils.IsPlayerModerator(bannedPlayer.FriendCode) || TagManager.ReadPermission(bannedPlayer.FriendCode) >= 2)
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
                     break;
@@ -2675,7 +2675,7 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("WarnCommandDisabled"), player.PlayerId);
                     break;
                 }
-                if (!Utils.IsPlayerModerator(player.FriendCode))
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2)
                 {
                     Utils.SendMessage(GetString("WarnCommandNoAccess"), player.PlayerId);
                     break;
@@ -2700,7 +2700,7 @@ internal class ChatCommands
                 }
 
                 // Prevent moderators from warning other moderators
-                if (Utils.IsPlayerModerator(warnedPlayer.FriendCode))
+                if (Utils.IsPlayerModerator(warnedPlayer.FriendCode) || TagManager.ReadPermission(warnedPlayer.FriendCode) >= 2)
                 {
                     Utils.SendMessage(GetString("WarnCommandWarnMod"), player.PlayerId);
                     break;
@@ -2745,7 +2745,7 @@ internal class ChatCommands
                 }
 
                 // Check if the player has the necessary privileges to use the command
-                if (!Utils.IsPlayerModerator(player.FriendCode))
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 4)
                 {
                     Utils.SendMessage(GetString("KickCommandNoAccess"), player.PlayerId);
                     break;
@@ -2772,7 +2772,7 @@ internal class ChatCommands
                 }
 
                 // Prevent moderators from kicking other moderators
-                if (Utils.IsPlayerModerator(kickedPlayer.FriendCode))
+                if (Utils.IsPlayerModerator(kickedPlayer.FriendCode) || TagManager.ReadPermission(kickedPlayer.FriendCode) >= 4)
                 {
                     Utils.SendMessage(GetString("KickCommandKickMod"), player.PlayerId);
                     break;
@@ -3060,7 +3060,7 @@ internal class ChatCommands
                     if (args.Length > 1)
                         Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#4bc9b0>{GetString("MessageFromSponsor")} ~ <size=1.25>{player.GetRealName(clientData: true)}</size></color>");
                 }
-                else if (Utils.IsPlayerModerator(player.FriendCode))
+                else if (Utils.IsPlayerModerator(player.FriendCode) || TagManager.CanUseSayCommand(player.FriendCode))
                 {
                     if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowSayCommand.GetBool() == false)
                     {
@@ -3069,8 +3069,9 @@ internal class ChatCommands
                     }
                     else
                     {
+                        var modTitle = (Utils.IsPlayerModerator(player.FriendCode) || TagManager.ReadPermission(player.FriendCode) >= 2) ? $"<color=#8bbee0>{GetString("MessageFromModerator")}" : $"<color=#ffff00>{GetString("MessageFromVIP")}";
                         if (args.Length > 1)
-                            Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"<color=#8bbee0>{GetString("MessageFromModerator")} ~ <size=1.25>{player.GetRealName(clientData: true)}</size></color>");
+                            Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"{modTitle} ~ <size=1.25>{player.GetRealName(clientData: true)}</size></color>");
                         //string moderatorName3 = player.GetRealName().ToString();
                         //int startIndex3 = moderatorName3.IndexOf("♥</color>") + "♥</color>".Length;
                         //moderatorName3 = moderatorName3.Substring(startIndex3);
@@ -3322,7 +3323,7 @@ internal class ChatCommands
                 }
                 else
                 {
-                    if (Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode))
+                    if (Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2))
                     {
                         Utils.SendMessage(GetString("Message.MeCommandNoPermission"), player.PlayerId);
                         break;
@@ -3365,7 +3366,7 @@ internal class ChatCommands
                     break;
                 }
 
-                if (!Utils.IsPlayerModerator(player.FriendCode))
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 3)
                 {
                     Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
 
@@ -3399,6 +3400,52 @@ internal class ChatCommands
                 GameStartManager.Instance.BeginGame();
                 GameStartManager.Instance.countDownTimer = countdown;
                 Utils.SendMessage(string.Format(GetString("StartCommandStarted"), player.name));
+                break;
+            case "/end":
+            case "/encerrar":
+            case "/завершить":
+            case "/结束":
+            case "/结束游戏":
+                if (!TagManager.CanUseEndCommand(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("EndCommandNoAccess"), player.PlayerId);
+                    break;
+
+                }
+                Utils.SendMessage(string.Format(GetString("EndCommandEnded"), player.name));
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
+                GameManager.Instance.LogicFlow.CheckEndCriteria();
+                break;
+            case "/exe":
+            case "/уничтожить":
+            case "/повесить":
+            case "/казнить":
+            case "/казнь":
+            case "/мут":
+            case "/驱逐":
+            case "/驱赶":
+                if (!TagManager.CanUseExecuteCommand(player.FriendCode))
+                {
+                    Utils.SendMessage(GetString("ExecuteCommandNoAccess"), player.PlayerId);
+                    break;
+                }
+                if (GameStates.IsLobby)
+                {
+                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
+                    break;
+                }
+                if (args.Length < 2 || !int.TryParse(args[1], out int id)) break;
+                var target = Utils.GetPlayerById(id);
+                if (target != null)
+                {
+                    target.Data.IsDead = true;
+                    target.SetDeathReason(PlayerState.DeathReason.etc);
+                    target.SetRealKiller(player);
+                    Main.PlayerStates[target.PlayerId].SetDead();
+                    target.RpcExileV2();
+                    MurderPlayerPatch.AfterPlayerDeathTasks(player, target, GameStates.IsMeeting);                    
+                    Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
+                }
                 break;
 
 

@@ -605,6 +605,7 @@ public class Main : BasePlugin
         Translator.Init();
         BanManager.Init();
         TemplateManager.Init();
+        TagManager.Init();
         //SpamManager.Init();
         DevManager.Init();
         Cloud.Init();
