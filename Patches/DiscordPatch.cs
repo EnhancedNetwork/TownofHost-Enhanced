@@ -34,10 +34,10 @@ namespace TOHE.Patches
                         if (lobbycode != "" && region != "")
                         {
                             if (GameStates.IsNormalGame)
-                                details = $"TOHE - {lobbycode} ({region})";
+                                details = $"TOHO - {lobbycode} ({region})";
 
                             else if (GameStates.IsHideNSeek)
-                                details = $"TOHE Hide & Seek - {lobbycode} ({region})";
+                                details = $"TOHO Hide & Seek - {lobbycode} ({region})";
                         }
 
                         activity.Details = details;
