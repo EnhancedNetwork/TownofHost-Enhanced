@@ -3948,7 +3948,6 @@
   "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostorAndNeutarl": "Can recruit non-<color=#8cffff>Crewmates</color>",
-  "ChiefOfPoliceCanSeePolice": "Can see <color=#ffb347>Sheriffs</color>",
   "SheriffSuccessfullyRecruited": "You recruited a Sheriff.",
   "BeSheriffByPolice": "You've been recruited by the Police Chief! Serve the Crewmates!",
   "PoliceFailedRecruit": "Failed to recruit target.",
