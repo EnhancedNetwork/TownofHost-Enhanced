@@ -1,10 +1,4 @@
-﻿using Hazel;
-using InnerNet;
 using AmongUs.GameOptions;
-using TOHE.Modules;
-using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
-using TOHE.Roles.AddOns.Impostor;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.MeetingHudStartPatch;
@@ -53,13 +47,10 @@ internal class Convict : RoleBase
         var convict = _Player;
         if (convict.GetPlayerTaskState().IsTaskFinished && convict.IsAlive())
         {
-            convict.GetRoleClass()?.OnRemove(convict.PlayerId);
             convict.RpcChangeRoleBasis(CustomRoles.Refugee);
             convict.RpcSetCustomRole(CustomRoles.Refugee);
-            convict.GetRoleClass().OnAdd(convict.PlayerId);
             convict.SyncSettings();
             convict.SetKillCooldown();
-            Main.PlayerStates[convict.PlayerId].InitTask(convict);
             AddMsg(string.Format(GetString("ConvictToRefugeeMsg"), Utils.GetRoleName(CustomRoles.Refugee)), convict.PlayerId);
         }
     }
