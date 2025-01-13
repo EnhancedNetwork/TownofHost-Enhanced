@@ -1236,7 +1236,7 @@ public static class CustomRolesHelper
                     || (pc.Is(CustomRoles.Visionary) && !Narc.VisionaryCanBeNarc.GetBool())
                     || (pc.Is(CustomRoles.DoubleAgent) && !Narc.DoubleAgentCanBeNarc.GetBool())
                     || ((pc.Is(CustomRoles.Zombie) || pc.Is(CustomRoles.KillingMachine)) && !Narc.ZombieAndKMCanBeNarc.GetBool())
-                    || (pc.GetCustomRole.().IsMadmate() && !Narc.MadmateCanBeNarc.GetBool()))
+                    || (pc.GetCustomRole().IsMadmate() && !Narc.MadmateCanBeNarc.GetBool()))
                     return false;
                 break;
         }
