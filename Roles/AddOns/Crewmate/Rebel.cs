@@ -42,6 +42,23 @@ public class Rebel : IAddon
     public void Remove(byte playerId)
     { }
 
+    ///----------------------------------------Check Rebel Assign----------------------------------------///
+    private static bool CheckCanBeRebel()
+    {
+        int playerCount = Main.AllAlivePlayerControls.Length;
+        int optnnknum = NonNeutralKillingRolesMinPlayer.GetInt() + NonNeutralKillingRolesMaxPlayer.GetInt();
+        int assignvalue = IRandom.Instance.Next(1, optnnknum);
+
+        if (optnnknum == 0) return false;
+        else if (assignvalue > optnnknum) return false;
+
+        return true;
+    }
+
+    public static int ExtraNNKSpotRebel
+        => CheckCanBeRebel() ? 0 : 1;
+    ///-------------------------------------------------------------------------------------------------///
+
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
         bool lightsOut = Utils.IsActive(SystemTypes.Electrical);
