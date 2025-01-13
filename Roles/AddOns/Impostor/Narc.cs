@@ -21,7 +21,7 @@ public class Narc : IAddon
     public static OptionItem VisionaryCanBeNarc;
     public static OptionItem DoubleAgentCanBeNarc;
     public static OptionItem ZombieAndKMCanBeNarc;
-    private static OptionItem MadmateCanBeNarc;
+    public static OptionItem MadmateCanBeNarc;
 
     public void SetupCustomOption()
     {
@@ -52,29 +52,6 @@ public class Narc : IAddon
     { }
     public void Remove(byte playerId)
     { }
-
-///----------------------------------------Check Narc Assign----------------------------------------///
-    private static bool CheckMadmateCanBeNarc()
-    {
-        int optimpnum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
-        int optmmnum = Options.NumberOfMadmates.GetInt();
-        int totalimpnum = optimpnum + optmmnum;
-        int assignvalue = IRandom.Instance.Next(1, totalimpnum);
-
-        bool mmisnarc = true;
-        if (optmmnum == 0) mmisnarc = false;
-        else if (!MadmateCanBeNarc.GetBool()) mmisnarc = false;
-        else if (assignvalue > optmmnum) mmisnarc = false;
-    
-        return mmisnarc;
-    }
-
-    public static int ExtraImpSpotNarc
-        => CheckMadmateCanBeNarc() ? 1 : 0;
-        
-    public static int ExtraMadSpotNarc
-        => CheckMadmateCanBeNarc() ? 0 : 1;
-///-------------------------------------------------------------------------------------------------///
 
     //Narc Checkmurder
     public static bool CancelMurder(PlayerControl killer, PlayerControl target)
