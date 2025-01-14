@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TOHE;
 
-public class DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, string upName = "Unknown")
+public class DevUser(string code = "", string color = "null", string userType = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, bool nameCmd = false, string upName = "未认证用户")
 {
     public string Code { get; set; } = code;
     public string Color { get; set; } = color;
+    public string UserType { get; set; } = userType;
     public string Tag { get; set; } = tag;
     public bool IsUp { get; set; } = isUp;
     public bool IsDev { get; set; } = isDev;
     public bool DeBug { get; set; } = deBug;
     public bool ColorCmd { get; set; } = colorCmd;
+    public bool NameCmd { get; set; } = nameCmd;
     public string UpName { get; set; } = upName;
 
     public bool HasTag() => Tag != "null";
@@ -49,30 +51,46 @@ public static class DevManager
             new(code: "noshsame#8116", color: "#011efe", tag: "Bait Killer", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Dailyhare"),
             
             /*TOHO DEVS ABOVE*/
-            /*TESTERS BELOW*/
-
-            // BXO
-            new(code: "justgust#5169", color: "#07296c", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "BXO"),
-
-            // Apoc
-            new(code: "crunchwide#1938", color: "#ffa500", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Apoc"),
-
-            // Diffy
-            new(code: "funnytiger#8420", color: "#FFC5CB", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Diffy"),
-
-            // Plague
-            new(code: "trunksun#2271", color: "#800080", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Plague"),
-
-            // Glazecraft
-            new(code: "motorstack#2287", color: "#ec9d2f", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Glazecraft"),
-
-            // Mirage
-            new(code: "spyside#1041", color: "#a300a3", tag: "Illusionist", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Mirage"),
-
-            /*TESTERS ABOVE*/
         ];
     }
 
     public static bool IsDevUser(this string code) => DevUserList.Any(x => x.Code == code);
     public static DevUser GetDevUser(this string code) => code.IsDevUser() ? DevUserList.Find(x => x.Code == code) : DefaultDevUser;
+    public static string GetUserType(this DevUser user)
+    {
+        string rolename = "Crewmate";
+
+        if (user.UserType != "null" && user.UserType != string.Empty)
+        {
+            switch (user.UserType)
+            {
+                case "s_cr":
+                    rolename = "<color=#ff0000>Contributor</color>";
+                    break;
+                case "s_bo":
+                    rolename = "<color=#7f00ff>Booster</color>";
+                    break;
+                case "s_tr":
+                    rolename = "<color=#f46e6e>Tester</color>";
+                    break;
+                case "s_jc":
+                    rolename = "<color=#f46e6e>Junior Contributor</color>";
+                    break;
+
+                default:
+                    if (user.UserType.StartsWith("s_"))
+                    {
+                        rolename = "<color=#ffff00>Sponsor</color>";
+                    }
+                    else if (user.UserType.StartsWith("t_"))
+                    {
+                        rolename = "<color=#00ffff>Translator</color>";
+                    }
+                    break;
+            }
+        }
+
+        return rolename;
+    }
+
 }
