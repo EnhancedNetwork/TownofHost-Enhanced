@@ -13,19 +13,20 @@ public class Narc : IAddon
     private const int Id = 31200;
     public AddonTypes Type => AddonTypes.Experimental;
 
+    public static OptionItem NarcSpawnChance;
     public static OptionItem MeetingsNeededForWin;
     public static OptionItem NarcCanSeeTeammates;
     public static OptionItem NarcCanKillMadmate;
     private static OptionItem NarcCanUseSabotage;
     private static OptionItem NarcHasCrewVision;
-    public static OptionItem VisionaryCanBeNarc;
-    public static OptionItem DoubleAgentCanBeNarc;
-    public static OptionItem ZombieAndKMCanBeNarc;
     public static OptionItem MadmateCanBeNarc;
 
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Narc, canSetNum: false, tab: TabGroup.Addons, canSetChance: false);
+        NarcSpawnChance = IntegerOptionItem.Create(Id + 9, "ChanceToSpawn", new(0, 100, 5), 65, TabGroup.Addons, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc])
+            .SetValueFormat(OptionFormat.Percent);
         MeetingsNeededForWin = IntegerOptionItem.Create(Id + 10, "MeetingsNeededForWin", new(0, 10, 1), 5, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc])
             .SetValueFormat(OptionFormat.Times);
@@ -37,13 +38,7 @@ public class Narc : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
         NarcHasCrewVision = BooleanOptionItem.Create(Id + 14, "NarcHasCrewVision", true, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        VisionaryCanBeNarc = BooleanOptionItem.Create(Id + 15, "VisionaryCanBeNarc", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        DoubleAgentCanBeNarc = BooleanOptionItem.Create(Id + 16, "DoubleAgentCanBeNarc", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        ZombieAndKMCanBeNarc = BooleanOptionItem.Create(Id + 17, "ZombieAndKMCanBeNarc", false, TabGroup.Addons, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
-        MadmateCanBeNarc = BooleanOptionItem.Create(Id + 18, "MadmateCanBeNarc", false, TabGroup.Addons, false)
+        MadmateCanBeNarc = BooleanOptionItem.Create(Id + 15, "MadmateCanBeNarc", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
     }
     public void Init()
@@ -54,7 +49,10 @@ public class Narc : IAddon
     { }
 
 ///----------------------------------------Check Narc Assign----------------------------------------///
-    private static bool CheckMadmateCanBeNarc()
+    public static bool CheckNarcAssign()
+        => IRandom.Instance.Next(1, 100) <= NarcSpawnChance.GetInt() && CustomRoles.Narc.IsEnable();
+
+    private static bool CheckAddMMSpot()
     {
         int optimpnum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int optmmnum = Options.NumberOfMadmates.GetInt();
@@ -70,10 +68,13 @@ public class Narc : IAddon
     }
 
     public static int ExtraImpSpotNarc
-        => CheckMadmateCanBeNarc() ? 1 : 0;
+        => (CheckNarcAssign() && !CheckAddMMSpot()) ? 1 : 0;
         
     public static int ExtraMadSpotNarc
-        => CheckMadmateCanBeNarc() ? 0 : 1;
+        => (CheckNarcAssign() && CheckAddMMSpot()) ? 1 : 0;
+
+    public static bool RemoveTheseRoles(CustomRoles role)
+        => role is CustomRoles.Egoist or CustomRoles.Mare or CustomRoles.Mimic;
 ///-------------------------------------------------------------------------------------------------///
 
     //Narc Checkmurder
