@@ -994,37 +994,6 @@ public class RoleAssign
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
-        if (FinalRolesList.Contains(CustomRoles.Narc))
-        {
-            List<CustomRoles> NotAssignedImpRoleList = //Impostor/Madmate roles that are enabled but not assigned
-            CustomRolesHelper.AllRoles
-                .Where(x => x.IsEnable() && x.IsImpostorTeamV3() && !FinalRolesList.Contains(x)
-                        && (x != CustomRoles.Visionary || Narc.VisionaryCanBeNarc.GetBool())
-                        && (x != CustomRoles.DoubleAgent || Narc.DoubleAgentCanBeNarc.GetBool())
-                        && (x is not CustomRoles.Zombie and not CustomRoles.KillingMachine || Narc.ZombieAndKMCanBeNarc.GetBool())
-                        && (!x.IsMadmate() || Narc.MadmateCanBeNarc.GetBool())).ToList();
-            List<CustomRoles> AssignedCrewRoles = 
-                CustomRolesHelper.AllRoles
-                    .Where(x => x.IsCrewmate() 
-                            && (FinalRolesList.Contains(x) || x is CustomRoles.CrewmateTOHE) 
-                            && x is not CustomRoles.Sheriff).ToList();
-            if (NotAssignedImpRoleList.Any() && AssignedCrewRoles.Any())
-            {
-                var ChosenImpRole = NotAssignedImpRoleList.RandomElement();
-                var ChosenCrewRole = AssignedCrewRoles.RandomElement();
-                FinalRolesList.Remove(ChosenCrewRole);
-                FinalRolesList.Add(ChosenImpRole);
-                Logger.Info($"Replaced {ChosenCrewRole} with {ChosenImpRole} for Narc", "Narc.RoleAssign");
-            }
-            else
-            {
-                FinalRolesList.Remove(CustomRoles.Narc);
-                //Log the reason Narc isn't assigned
-                if (!NotAssignedImpRoleList.Any()) Logger.Info($"No Impostor role to assign to Narc.Removed Narc.", "Narc.RoleAssign");
-                if (!AssignedCrewRoles.Any()) Logger.Info($"No Crewmate role for Narc to replace.Removed Narc.", "Narc.RoleAssign");
-            }
-        }
-
         // if roles are very few, add vanilla сrewmate roles
         if (AllPlayers.Count > FinalRolesList.Count)
         {
