@@ -14,7 +14,7 @@ namespace TOHE.Roles.Neutral
         private static readonly NetworkedPlayerInfo.PlayerOutfit PaintedOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
         private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = new Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit>();
 
-        private const int Id = 31600;
+        private const int Id = 32900;
         private static readonly HashSet<byte> PlayerIds = new HashSet<byte>();
         public static bool HasEnabled => PlayerIds.Any();
 
