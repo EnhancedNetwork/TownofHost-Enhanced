@@ -1956,8 +1956,8 @@
   "KnowTargetRole": "Knows role of target",
   "TargetKnowsLawyer": "Target knows their <color=#008080>Lawyer</color>",
   "InfectiousBiteMax": "Maximum Infections",
-  "InfectiousKnowTargetRole": "Know <color=#7B8968>infected</color> player's role",
-  "InfectiousTargetKnowOtherTarget": "<color=#7B8968>Infected</color> players know each other",
+  "InfectiousKnowTargetRole": "Know <color=#7b8968>infected</color> player's role",
+  "InfectiousTargetKnowOtherTarget": "<color=#7b8968>Infected</color> players know each other",
   "DoubleClickKill": "Double click to kill the target",
 
   "VirusInfectMax": "Maximum Number Of <color=#2e8b57>Spreads</color>",
