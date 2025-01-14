@@ -307,6 +307,7 @@ public static class Utils
 
         string mode = GetChance(role.GetMode());
         if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
+        else if (role is CustomRoles.Narc) mode = GetChance(Narc.NarcSpawnChance.GetInt());
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
             mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
@@ -860,6 +861,7 @@ public static class Utils
             if (role.IsEnable())
             {
                 if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
+                else if (role is CustomRoles.Narc) mode = GetChance(Narc.NarcSpawnChance.GetInt());
                 else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
                 {
                     mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());

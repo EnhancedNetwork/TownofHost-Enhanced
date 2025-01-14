@@ -14,6 +14,7 @@ public static class AddonAssign
             case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
+            case CustomRoles.Narc:
                 return true;
             case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
@@ -197,5 +198,40 @@ public static class AddonAssign
         }
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
+    }
+
+    public static void AssignNarc()
+    {
+        if (CustomRoles.Narc.IsEnable() && Narc.CheckNarcAssign())
+        {
+            AddNarcToPlayer();
+        }
+    }
+    private static void AddNarcToPlayer()
+    {
+        var allPlayers = new List<PlayerControl>();
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (!pc.GetCustomRole().IsImpostorTeamV3()
+                || pc.Is(CustomRoles.Lovers)
+                || (pc.GetCustomRole().IsMadmate() && !Narc.MadmateCanBeNarc.GetBool())
+                )
+                continue;
+
+            allPlayers.Add(pc);
+        }
+        if (!allPlayers.Any()) return;
+        int count = 1;
+        for (var i = 0; i < count; i++)
+        {
+            var player = allPlayers.RandomElement();
+            Main.PlayerStates[player.PlayerId].SetSubRole(CustomRoles.Narc);
+            Logger.Info($"Narc Assigned: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {CustomRoles.Narc}", "NarcAssign");
+            foreach (var addon in player.GetCustomSubRoles().Where(x => Narc.RemoveTheseRoles(x)).ToArray())
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon); 
+                Logger.Info($"Removed {addon} from {player?.Data?.PlayerName} because Narc should not get these add-ons", "NarcAssign");           
+            }
+        }
     }
 }
