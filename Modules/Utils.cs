@@ -1610,7 +1610,7 @@ public static class Utils
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
-            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
+            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode) && !TagManager.CheckFriendCode(player.FriendCode))
             {
                 SetRealName();
                 return;
@@ -1728,6 +1728,13 @@ public static class Utils
                 }
             }
         }
+        if (player.FriendCode != PlayerControl.LocalPlayer.FriendCode && TagManager.CheckFriendCode(player.FriendCode, false))
+        {
+            if ((TagManager.ReadTagColor(player.FriendCode) == " " || TagManager.ReadTagColor(player.FriendCode) == "") && (TagManager.ReadTagName(player.FriendCode) != "" && TagManager.ReadTagName(player.FriendCode) != " ")) modtag = $"{TagManager.ReadTagName(player.FriendCode)}";
+            else if (TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
+            else modtag = $"<color=#{TagManager.ReadTagColor(player.FriendCode)}>{TagManager.ReadTagName(player.FriendCode)}</color>";
+        }
+        
         if (player.AmOwner)
         {
             name = Options.GetSuffixMode() switch
