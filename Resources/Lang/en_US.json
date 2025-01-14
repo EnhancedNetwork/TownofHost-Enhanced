@@ -988,7 +988,7 @@
   "ShockerInfoLong": "(Neutrals):\nAs the Shocker, you can mark rooms by doing tasks in them, and then Vent to electrocute anyone in those rooms for a set period of time. When you finish all of your tasks, you get new ones. Note: Doing tasks during that period will mark them for the next ability use.",
   "CovenInfoLong": "(Coven):\nCoven members are on a separate team that works together and wins together. If there are multiple Coven roles in the game, they can see each other's roles.\nDepending on the Host's settings, Coven roles can guess or be guessed.\nDo /coveninfo for more info.",
   "PoisonerInfoLong": "(Coven):\nThe Poisoner can use their Kill button on a player to roleblock them. The next time the roleblocked player tries to use their ability, it will do nothing, and their Cooldown will be reset.\n<b>With the Necronomicon, you can double-click to kill. These kills will be delayed.</b>",
-  "HexMasterInfoLong": "(Coven):\nThe Hex Master can use their Kill button to mark a player with the 乂 symbol. If a player has this at the end of the meeting and the Hex Master hasn't died - then they die.\n<b>With the Necronomicon, the Hex will be passed around - similar to an Agitator bomb. Also, you can double-click the Kill button to kill normally.</b>",
+
   "JinxInfoLong": "(Coven):\nThe Jinx can use their Kill button to jinx a player. Anyone who interacts with the jinxed player will die with the death reason Jinxed.\n<b>With the Necronomicon the Jinx can double-kill to kill normally. Also, the jinxed player and the player who interacted with the jinxed person will die.</b>",
   "MedusaInfoLong": "(Coven):\nThe Medusa can use their Kill button on players to mark them as Stoned. When the Medusa clicks the Shapeshift button, all Stoned players will be unable to move and will have reduced vision for a configurable amount of time.\n<b>With the Necronomicon, killed players will be unreportable.</b>",
   "PotionMasterInfoLong": "(Coven):\nThe Potion Master has two potions available for their use. The Reveal potion reveals a player's role. The Barrier potion places a shield on a player for one round, the player will not be notified of this unless they are Coven as well. Click the Shapeshift button to change potions.\n<b>With the Necronomicon, the Potion Master can double-click their Kill button to kill.</b>",
@@ -1109,6 +1109,8 @@
   "AbilityUseLimit": "Initial Ability Use Limit",
   "AbilityInUse": "Ability in use",
   "AbilityExpired": "Ability expired, {0} uses remain",
+
+  "HexMasterInfoLong": "(Coven):\nThe Hex Master can use their Kill button to mark a player with a symbol. If a player has this at the end of the meeting and the Hex Master hasn't died - then they die.\n<b>With the Necronomicon, the Hex will be passed around - similar to an Agitator bomb. Also, you can double-click the Kill button to kill normally.</b>",
 
   "RevenantTargeted": "Your role has changed to <b>{0}</b>",
   "RevenantCanCopyAddons": "Can Steal Add-ons",
@@ -4161,7 +4163,7 @@
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can Recruit <color=#ff1919>Impostors</color>",
   "PolicCanNeutral": "Can Recruit <color=#7f8c8d>Neutrals</color>",
-  "PolicCanCoven": "Can Recruit <color=#ac42f2>Coven</color>",  
+  "PolicCanCoven": "Can Recruit <color=#ac42f2>Coven</color>",
   "ChiefOfPoliceCanSeePolice": "Can see <color=#ffb347>Sheriffs</color>",
   "SheriffSuccessfullyRecruited": "You recruited a Sheriff.",
   "BeSheriffByPolice": "You've been recruited by the Police Chief! Serve the Crewmates!",
