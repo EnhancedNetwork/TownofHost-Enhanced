@@ -1256,12 +1256,12 @@ static class ExtendedPlayerControl
         return rangePlayers;
     }
     public static bool IsNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNK();
-    public static bool IsNeutralBenign(this PlayerControl player) => player.GetCustomRole().IsNB();
+    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoles.Rebel) || player.GetCustomRole().IsNB();
     public static bool IsNeutralEvil(this PlayerControl player) => player.GetCustomRole().IsNE();
     public static bool IsNeutralChaos(this PlayerControl player) => player.GetCustomRole().IsNC();
     public static bool IsNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsNA();
     public static bool IsTransformedNeutralApocalypse(this PlayerControl player) => player.GetCustomRole().IsTNA();
-    public static bool IsNonNeutralKiller(this PlayerControl player) => player.GetCustomRole().IsNonNK();
+    public static bool IsNonNeutralKiller(this PlayerControl player) => player.Is(CustomRoles.Rebel) || player.GetCustomRole().IsNonNK();
 
     public static bool IsPlayerCoven(this PlayerControl player) => player.GetCustomRole().IsCoven();
     public static bool IsMurderedThisRound(this PlayerControl player) => player.PlayerId.IsMurderedThisRound();

@@ -1,4 +1,5 @@
 ﻿using System;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
@@ -14,6 +15,7 @@ public static class AddonAssign
             case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
+            case CustomRoles.Rebel:
                 return true;
             case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
@@ -192,5 +194,48 @@ public static class AddonAssign
         }
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
+    }
+    public static void AssignRebel()
+    {
+        if (CustomRoles.Rebel.IsEnable()) AddRebelToPlayer();
+    }
+    private static void AddRebelToPlayer()
+    {
+        var allPlayers = new List<PlayerControl>();
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (!pc.GetCustomRole().IsCrewmate()
+                || pc.IsAnySubRole(sub => sub.IsConverted())
+                || pc.Is(CustomRoles.Snitch)
+                || pc.Is(CustomRoles.Admirer)
+                || pc.Is(CustomRoles.NiceMini)
+                || pc.Is(CustomRoles.CopyCat)
+                || pc.Is(CustomRoles.Vigilante)
+                || pc.Is(CustomRoles.Lovers)
+                || (pc.Is(CustomRoles.Altruist) && !Rebel.CanWinAfterDeath.GetBool())
+                || (pc.Is(CustomRoles.Sheriff) && !Rebel.SheriffCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.Marshall) && !Rebel.MarshallCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.Swapper) && !Rebel.SwapperCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.Cleanser) && !Rebel.CleanserCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.Reverie) && !Rebel.ReverieCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.Dictator) && (!Rebel.DictatorCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
+                || (pc.Is(CustomRoles.Retributionist) && (!Rebel.RetributionistCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool())))
+                continue;
+            allPlayers.Add(pc);
+        }
+        if (!allPlayers.Any()) return;
+        int count = 1;
+        for (var i = 0; i < count; i++)
+        {
+            var player = allPlayers.RandomElement();
+            Main.PlayerStates[player.PlayerId].SetSubRole(CustomRoles.Rebel);
+            Logger.Info($"Rebel Assigned: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {CustomRoles.Rebel}", "RebelAssign");
+            foreach (var addon in player.GetCustomSubRoles().Where(x => Rebel.RemoveTheseRoles(x)).ToArray())
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
+                Logger.Info($"Removed {addon} from {player?.Data?.PlayerName} because Rebel should not get these add-ons", "RebelAssign");
+            }
+        }
     }
 }

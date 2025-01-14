@@ -127,7 +127,7 @@ public class Oiiai : IAddon
             killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }
-        else if (!killer.GetCustomRole().IsNeutral())
+        else if (!killer.IsRebelNeutralV3())
         {
             var readyrole = Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole());
             //Use eraser here LOL
@@ -147,6 +147,7 @@ public class Oiiai : IAddon
                 killer.RpcChangeRoleBasis(NRoleChangeRoles[changeValue - 1]);
                 killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
                 killer.GetRoleClass().OnAdd(killer.PlayerId);
+                if (killer.Is(CustomRoles.Rebel)) Main.PlayerStates[killer.PlayerId].RemoveSubRole(CustomRoles.Rebel);
 
                 killer.SyncSettings();
 
@@ -162,7 +163,7 @@ public class Oiiai : IAddon
 
     private static bool CanGetOiiaied(PlayerControl player)
     {
-        if (player.GetCustomRole().IsNeutral() && ChangeNeutralRole.GetValue() == 0) return false;
+        if (player.IsRebelNeutralV3() && ChangeNeutralRole.GetValue() == 0) return false;
         if (player.Is(CustomRoles.Loyal) || player.Is(CustomRoles.Stubborn)) return false;
 
         return true;

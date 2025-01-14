@@ -40,8 +40,8 @@ internal class Celebrity : RoleBase
         if (target.PlayerId == _Player.PlayerId && seer.PlayerId == _Player.PlayerId) return true;
 
         // Hide kill flash for some team
-        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostor()) return false;
-        if (!NeutralKnowCelebrityDead.GetBool() && (seer.GetCustomRole().IsNeutral() || seer.Is(CustomRoles.Rebel))) return false;
+        if (!ImpKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsImpostorTeamV3()) return false;
+        if (!NeutralKnowCelebrityDead.GetBool() && seer.IsRebelNeutralV3()) return false;
         if (!CovenKnowCelebrityDead.GetBool() && seer.GetCustomRole().IsCoven()) return false;
 
         seer.Notify(ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("OnCelebrityDead")));
@@ -56,8 +56,8 @@ internal class Celebrity : RoleBase
             //Death Message
             foreach (var pc in Main.AllPlayerControls)
             {
-                if (!ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!NeutralKnowCelebrityDead.GetBool() && (pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Rebel))) continue;
+                if (!ImpKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsImpostorTeamV3()) continue;
+                if (!NeutralKnowCelebrityDead.GetBool() && pc.IsRebelNeutralV3()) continue;
                 if (!CovenKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
 
                 SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
@@ -73,8 +73,8 @@ internal class Celebrity : RoleBase
     {
         foreach (var csId in CelebrityDead)
         {
-            if (!ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
-            if (!NeutralKnowCelebrityDead.GetBool() && (targets.GetCustomRole().IsNeutral() || targets.Is(CustomRoles.Rebel))) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostorTeamV3()) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && targets.IsRebelNeutralV3()) continue;
             if (!CovenKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsCoven()) continue;
             AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
         }

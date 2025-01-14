@@ -2037,7 +2037,7 @@ public static class Utils
 
                     if (seer.Is(CustomRoles.Rebel))
                     {
-                        RoleText = $"<size=150%><color=#7f8c8d>{GetString("TeamNeutral")}</size></color>";
+                        RoleText = ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                         RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
                     }
                     else if (seer.Is(CustomRoles.Madmate))
@@ -2047,7 +2047,7 @@ public static class Utils
                     }
                     else if (seer.Is(CustomRoles.Egoist))
                     {
-                        RoleText = $"<size=150%><color=#7f8c8d>{GetString("TeamNeutral")}</size></color>";
+                        RoleText = ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                         RoleInfo = ColorString(GetRoleColor(CustomRoles.Egoist), GetString($"{CustomRoles.Egoist}" + "Info"));
                     }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
@@ -2215,7 +2215,7 @@ public static class Utils
                                     var GetTragetId = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
 
                                     //Crewmates
-                                    if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Rebel) && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
+                                    if (Options.CrewmatesCanGuess.GetBool() && seer.IsNonRebelCrewmate() && !seer.Is(CustomRoles.Rebel) && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
                                         TargetPlayerName = GetTragetId;
 
                                     else if (seer.Is(CustomRoles.NiceGuesser) && !Options.CrewmatesCanGuess.GetBool())
@@ -2239,7 +2239,7 @@ public static class Utils
                                     if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
                                         TargetPlayerName = GetTragetId;
 
-                                    if (Options.PassiveNeutralsCanGuess.GetBool() && (seer.GetCustomRole().IsNonNK() || seer.Is(CustomRoles.Rebel)) && !seer.Is(CustomRoles.Doomsayer))
+                                    if (Options.PassiveNeutralsCanGuess.GetBool() && seer.IsNonNeutralKiller() && !seer.Is(CustomRoles.Doomsayer))
                                         TargetPlayerName = GetTragetId;
 
                                     if (Options.CovenCanGuess.GetBool() && seer.GetCustomRole().IsCoven())

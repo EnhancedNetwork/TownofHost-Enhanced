@@ -39,7 +39,7 @@ public class Necroview : IAddon
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel))
+        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && customRole is not CustomRoles.Rebel and not CustomRoles.Rascal)
         {
             return Main.roleColors[CustomRoles.Bait];
         }

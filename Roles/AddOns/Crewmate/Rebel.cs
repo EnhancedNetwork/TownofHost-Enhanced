@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using static TOHE.Options;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
@@ -9,7 +10,6 @@ public class Rebel : IAddon
     private const int Id = 31600;
     public AddonTypes Type => AddonTypes.Misc;
 
-    public static OptionItem CanWinAfterDeath;
     public static OptionItem SheriffCanBeRebel;
     public static OptionItem MarshallCanBeRebel;
     public static OptionItem OverseerCanBeRebel;
@@ -18,20 +18,21 @@ public class Rebel : IAddon
     public static OptionItem SwapperCanBeRebel;
     public static OptionItem CleanserCanBeRebel;
     public static OptionItem ReverieCanBeRebel;
+    public static OptionItem CanWinAfterDeath;
     private static OptionItem HasImpostorVision;
 
     public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Rebel, canSetNum: true, tab: TabGroup.Addons);
-        CanWinAfterDeath = BooleanOptionItem.Create(Id + 10, "CanWinAfterDeath", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        SheriffCanBeRebel = BooleanOptionItem.Create(Id + 11, "SheriffCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        MarshallCanBeRebel = BooleanOptionItem.Create(Id + 12, "MarshallCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        OverseerCanBeRebel = BooleanOptionItem.Create(Id + 13, "OverseerCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        DictatorCanBeRebel = BooleanOptionItem.Create(Id + 14, "DictatorCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        RetributionistCanBeRebel = BooleanOptionItem.Create(Id + 15, "RetributionistCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        SwapperCanBeRebel = BooleanOptionItem.Create(Id + 16, "SwapperCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        CleanserCanBeRebel = BooleanOptionItem.Create(Id + 17, "CleanserCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
-        ReverieCanBeRebel = BooleanOptionItem.Create(Id + 18, "ReverieCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        SetupSingleRoleOptions(Id, TabGroup.Addons, CustomRoles.Rebel);
+        SheriffCanBeRebel = BooleanOptionItem.Create(Id + 10, "SheriffCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        MarshallCanBeRebel = BooleanOptionItem.Create(Id + 11, "MarshallCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        OverseerCanBeRebel = BooleanOptionItem.Create(Id + 12, "OverseerCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        DictatorCanBeRebel = BooleanOptionItem.Create(Id + 13, "DictatorCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        RetributionistCanBeRebel = BooleanOptionItem.Create(Id + 14, "RetributionistCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        SwapperCanBeRebel = BooleanOptionItem.Create(Id + 15, "SwapperCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        CleanserCanBeRebel = BooleanOptionItem.Create(Id + 16, "CleanserCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        ReverieCanBeRebel = BooleanOptionItem.Create(Id + 17, "ReverieCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
+        CanWinAfterDeath = BooleanOptionItem.Create(Id + 18, "CanWinAfterDeath", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 19, "ImpostorVision", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
     }
 
@@ -43,9 +44,8 @@ public class Rebel : IAddon
     { }
 
     ///----------------------------------------Check Rebel Assign----------------------------------------///
-    private static bool CheckCanBeRebel()
+    public static bool CheckRebelAssign()
     {
-        int playerCount = Main.AllAlivePlayerControls.Length;
         int optnnknum = NonNeutralKillingRolesMinPlayer.GetInt() + NonNeutralKillingRolesMaxPlayer.GetInt();
         int assignvalue = IRandom.Instance.Next(1, optnnknum);
 
@@ -56,12 +56,24 @@ public class Rebel : IAddon
     }
 
     public static int ExtraNNKSpotRebel
-        => CheckCanBeRebel() ? 0 : 1;
+        => CheckRebelAssign() ? 0 : 1;
+
+    public static bool RemoveTheseRoles(CustomRoles role) => role is
+        CustomRoles.Ghoul or
+        CustomRoles.Bloodthirst or
+        CustomRoles.Torch or
+        CustomRoles.Madmate or
+        CustomRoles.Egoist or
+        CustomRoles.Rascal or
+        CustomRoles.Paranoia or
+        CustomRoles.Loyal or
+        CustomRoles.Hurried or
+        CustomRoles.Youtuber;
     ///-------------------------------------------------------------------------------------------------///
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        bool lightsOut = Utils.IsActive(SystemTypes.Electrical);
+        bool lightsOut = IsActive(SystemTypes.Electrical);
         float impVision = lightsOut ? Main.DefaultImpostorVision * 5 : Main.DefaultImpostorVision;
         if (!player.Is(CustomRoles.Lighter) && HasImpostorVision.GetBool())
         {

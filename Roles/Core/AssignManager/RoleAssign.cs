@@ -877,40 +877,6 @@ public class RoleAssign
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
-        if (FinalRolesList.Contains(CustomRoles.Rebel))
-        {
-            List<CustomRoles> NotAssignedCrewRoleList = // Crewmate roles that are enabled but not assigned
-            CustomRolesHelper.AllRoles
-                .Where(x => x.IsEnable() && x.IsImpostorTeamV3() && !FinalRolesList.Contains(x)
-                        && (x != CustomRoles.Sheriff || Rebel.SheriffCanBeRebel.GetBool())
-                        && (x != CustomRoles.Marshall || Rebel.MarshallCanBeRebel.GetBool())
-                        && (x != CustomRoles.Overseer || Rebel.OverseerCanBeRebel.GetBool())
-                        && (x != CustomRoles.Dictator || Rebel.DictatorCanBeRebel.GetBool())
-                        && (x != CustomRoles.Retributionist || Rebel.RetributionistCanBeRebel.GetBool())
-                        && (x != CustomRoles.Swapper || Rebel.SwapperCanBeRebel.GetBool())
-                        && (x != CustomRoles.Cleanser || Rebel.CleanserCanBeRebel.GetBool())
-                        && (x != CustomRoles.Reverie || Rebel.ReverieCanBeRebel.GetBool())).ToList();
-            List<CustomRoles> AssignedNNKRoles =
-                CustomRolesHelper.AllRoles
-                    .Where(x => x.IsNonNK()
-                            && FinalRolesList.Contains(x)).ToList();
-            if (NotAssignedCrewRoleList.Any() && AssignedNNKRoles.Any())
-            {
-                var ChosenCrewRole = NotAssignedCrewRoleList.RandomElement();
-                var ChosenNNKRole = AssignedNNKRoles.RandomElement();
-                FinalRolesList.Remove(ChosenCrewRole);
-                FinalRolesList.Add(ChosenNNKRole);
-                Logger.Info($"Replaced {ChosenCrewRole} with {ChosenNNKRole} for Narc", "Narc.RoleAssign");
-            }
-            else
-            {
-                FinalRolesList.Remove(CustomRoles.Rebel);
-                // Log the reason Rebel isn't assigned
-                if (!NotAssignedCrewRoleList.Any()) Logger.Info($"No Crewmate role to assign to Rebel. Removed Rebel.", "Rebel.RoleAssign");
-                if (!AssignedNNKRoles.Any()) Logger.Info($"No Non-Killing Neutral role for Rebel to replace. Removed Rebel.", "Rebel.RoleAssign");
-            }
-        }
-
         // if roles are very few, add vanilla сrewmate roles
         if (AllPlayers.Count > FinalRolesList.Count)
         {

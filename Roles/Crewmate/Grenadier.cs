@@ -68,8 +68,8 @@ internal class Grenadier : RoleBase
     {
         // Grenadier or Mad Grenadier enter the vent
         if ((GrenadierBlinding.Any() &&
-            (player.GetCustomRole().IsImpostor() ||
-            ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel)) && GrenadierCanAffectNeutral.GetBool()) ||
+            (player.GetCustomRole().IsImpostorTeamV3() ||
+            (player.IsRebelNeutralV3() && GrenadierCanAffectNeutral.GetBool()) ||
             (player.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
             )
             || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Madmate)))
@@ -121,7 +121,7 @@ internal class Grenadier : RoleBase
                 MadGrenadierBlinding.Remove(pc.PlayerId);
                 MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => x.Is(CustomRoles.Admired) && !x.GetCustomRole().IsConverted() && x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.Rebel))
+                    .Where(x => x.IsPlayerCrewmateTeam())
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             else
@@ -129,7 +129,7 @@ internal class Grenadier : RoleBase
                 GrenadierBlinding.Remove(pc.PlayerId);
                 GrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => x.GetCustomRole().IsImpostor() || (x.GetCustomRole().IsNeutral() && GrenadierCanAffectNeutral.GetBool()) || (x.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
+                    .Where(x => x.GetCustomRole().IsImpostorTeamV3() || (x.IsRebelNeutralV3() && GrenadierCanAffectNeutral.GetBool()) || (x.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);

@@ -110,11 +110,7 @@ internal class Deceiver : RoleBase
         {
             var target = Utils.GetPlayerById(pc);
             if (target == null || !target.IsAlive()) continue;
-            var role = target.GetCustomRole();
-            if (
-                (role.IsCrewmate() && !role.IsCrewKiller()) ||
-                (role.IsNeutral() && !role.IsNK())
-                )
+            if (!target.HasKillButton())
             {
                 var killer = _Player;
                 if (killer == null) continue;

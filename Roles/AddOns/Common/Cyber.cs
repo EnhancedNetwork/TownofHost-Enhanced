@@ -46,9 +46,9 @@ public class Cyber : IAddon
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (!ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-            if (!NeutralKnowCyberDead.GetBool() && (pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Rebel))) continue;
-            if (!CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel)) continue;
+            if (!ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostorTeamV3()) continue;
+            if (!NeutralKnowCyberDead.GetBool() && pc.IsRebelNeutralV3()) continue;
+            if (!CrewKnowCyberDead.GetBool() && pc.IsNonRebelCrewmate()) continue;
             if (!CovenKnowCyberDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
 
             if (inMeeting)

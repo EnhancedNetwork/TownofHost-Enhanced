@@ -128,8 +128,8 @@ internal class Oracle : RoleBase
                 {
                     if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
                     else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
-                    else if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
-                    else if (target.GetCustomRole().IsNeutral() || target.Is(CustomRoles.Rebel)) text = "Neutral";
+                    else if (target.GetCustomRole().IsImpostorTeamV3() && !target.Is(CustomRoles.Trickster)) text = "Impostor";
+                    else if (target.IsRebelNeutralV3()) text = "Neutral";
                     else if (target.Is(Custom_Team.Coven)) text = "Coven";
                     else text = "Crewmate";
                 }

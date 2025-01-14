@@ -162,7 +162,7 @@ internal class Gangster : RoleBase
     private bool CanRecruit(byte id) => AbilityLimit >= 1;
     private static bool CanBeGansterRecruit(PlayerControl pc)
     {
-        return pc != null && ((pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel)) || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven())
+        return pc != null && (pc.IsNonRebelCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());

@@ -77,7 +77,7 @@ internal class Bastion : RoleBase
         if (!BombedVents.Contains(ventId)) return false;
 
         var pc = physics.myPlayer;
-        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Rebel) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
+        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
         {
             Logger.Info("Crewmate enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
             return false;
