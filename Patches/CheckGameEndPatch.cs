@@ -213,6 +213,14 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                             }
                             break;
+                        case CustomRoles.Quizmaster when pc.IsAlive() && !Quizmaster.CanKillsAfterMark():
+                            reason = GameOverReason.ImpostorByKill;
+                            if (!CheckForConvertedWinner(pc.PlayerId))
+                            {
+                                ResetAndSetWinner(CustomWinner.Quizmaster);
+                                WinnerIds.Add(pc.PlayerId);
+                            }
+                            break;
                         case CustomRoles.CursedSoul when pc.IsAlive():
                             reason = GameOverReason.ImpostorByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))

@@ -384,6 +384,10 @@ internal class EAC
     }
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
+        if (GameStates.IsLocalGame)
+        {
+            return false;
+        }
         //Update system rpc can not get received by playercontrol.handlerpc
         var Mapid = Utils.GetActiveMapId();
         Logger.Info("Check sabotage RPC" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");

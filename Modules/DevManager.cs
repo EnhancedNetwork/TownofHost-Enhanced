@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace TOHE;
 
-public class DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, string upName = "Unknown")
+public class DevUser(string code = "", string color = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, bool NameCmd = false, string upName = "Unknown")
 {
     public string Code { get; set; } = code;
     public string Color { get; set; } = color;
@@ -12,6 +12,7 @@ public class DevUser(string code = "", string color = "null", string tag = "null
     public bool IsDev { get; set; } = isDev;
     public bool DeBug { get; set; } = deBug;
     public bool ColorCmd { get; set; } = colorCmd;
+    public bool NameCmd { get; set; } = NameCmd;
     public string UpName { get; set; } = upName;
 
     public bool HasTag() => Tag != "null";
