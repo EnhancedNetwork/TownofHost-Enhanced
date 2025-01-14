@@ -2669,7 +2669,7 @@ internal class ChatCommands
                     break;
                 }
 
-                // Prevent moderators from baning other moderators
+                // Prevent Moderators from baning other Moderators
                 if (Utils.IsPlayerModerator(bannedPlayer.FriendCode) || TagManager.ReadPermission(bannedPlayer.FriendCode) >= 2)
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
@@ -2734,7 +2734,7 @@ internal class ChatCommands
                     break;
                 }
 
-                // Prevent moderators from warning other moderators
+                // Prevent Moderators from warning other Moderators
                 if (Utils.IsPlayerModerator(warnedPlayer.FriendCode) || TagManager.ReadPermission(warnedPlayer.FriendCode) >= 2)
                 {
                     Utils.SendMessage(GetString("WarnCommandWarnMod"), player.PlayerId);
@@ -2806,7 +2806,7 @@ internal class ChatCommands
                     break;
                 }
 
-                // Prevent moderators from kicking other moderators
+                // Prevent Moderators from kicking other Moderators
                 if (Utils.IsPlayerModerator(kickedPlayer.FriendCode) || TagManager.ReadPermission(kickedPlayer.FriendCode) >= 4)
                 {
                     Utils.SendMessage(GetString("KickCommandKickMod"), player.PlayerId);
@@ -3363,9 +3363,6 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("Message.MeCommandNoPermission"), player.PlayerId);
                         break;
                     }
-
-
-
                     if (byte.TryParse(subArgs, out byte meid))
                     {
                         if (meid != player.PlayerId)
@@ -3435,7 +3432,6 @@ internal class ChatCommands
                 if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 3)
                 {
                     Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
-
                     break;
 
                 }
