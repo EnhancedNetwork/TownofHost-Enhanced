@@ -11,6 +11,7 @@ public class Identifier : IAddon
     public static OptionItem ImpCanBeIdentifier;
     public static OptionItem CrewCanBeIdentifier;
     public static OptionItem NeutralCanBeIdentifier;
+    public static OptionItem CovenCanBeIdentifier;
 
     public static Dictionary<byte, string> IdentifierNotify = [];
 
@@ -20,6 +21,7 @@ public class Identifier : IAddon
         ImpCanBeIdentifier = BooleanOptionItem.Create(Id + 10, "ImpCanBeIdentifier", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Identifier]);
         CrewCanBeIdentifier = BooleanOptionItem.Create(Id + 11, "CrewCanBeIdentifier", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Identifier]);
         NeutralCanBeIdentifier = BooleanOptionItem.Create(Id + 12, "NeutralCanBeIdentifier", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Identifier]);
+        CovenCanBeIdentifier = BooleanOptionItem.Create(Id + 13, "CovenCanBeIdentifier", true, TabGroup.Addons, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Identifier]);
     }
 
     public void Init()
