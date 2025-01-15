@@ -1654,7 +1654,7 @@ public static class Utils
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
             else if (Options.CurrentGameMode == CustomGameMode.CandR)
-                name = $"<color=#007BFF><size=1.7>{GetString("ModeC&R")}</size></color>\r\n" + name;
+                name = $"<color=#007bff><size=1.7>{GetString("ModeC&R")}</size></color>\r\n" + name;
         }
 
         var modtag = "";
