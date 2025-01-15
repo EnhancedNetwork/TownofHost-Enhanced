@@ -272,7 +272,7 @@ public static class OnPlayerJoinedPatch
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, true);
-            Logger.Info($"Ban Player Òâ╝ {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
+            Logger.Info($"Ban Player => {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
         }
         BanManager.CheckBanPlayer(client);
 
@@ -293,7 +293,7 @@ public static class OnPlayerJoinedPatch
                             BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                         AmongUsClient.Instance.KickPlayer(client.Id, true);
                         Logger.SendInGame(string.Format(GetString("Message.TempBannedForSpamQuitting"), client.PlayerName));
-                        Logger.Info($"Temp Ban Player Òâ╝ {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
+                        Logger.Info($"Temp Ban Player => {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
                     }
                 }
             }

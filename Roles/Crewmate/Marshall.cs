@@ -32,7 +32,7 @@ internal class Marshall : RoleBase
     {
         target ??= seer;
 
-        return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "â˜…") : string.Empty;
+        return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
     }
 
     private static bool VisibleToCrewmate(PlayerControl seer, PlayerControl target) => target.GetPlayerTaskState().IsTaskFinished && target.Is(CustomRoles.Marshall) && seer.Is(Custom_Team.Crewmate);

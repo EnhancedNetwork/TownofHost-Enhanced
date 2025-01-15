@@ -200,11 +200,11 @@ internal class Lawyer : RoleBase
 
         if ((!seer.IsAlive() || seer.Is(CustomRoles.Lawyer)) && IsTarget(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "â™¦");
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
         }
         else if (seer.IsAlive() && TargetKnowsLawyer.GetBool() && IsTarget(seer.PlayerId) && _state.PlayerId == target.PlayerId)
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "â™¦");
+            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
         }
 
         return string.Empty;

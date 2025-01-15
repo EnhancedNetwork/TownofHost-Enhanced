@@ -144,10 +144,10 @@ internal class Telecommunication : RoleBase
         if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 
         StringBuilder sb = new();
-        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "â˜…")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("AdminWarning")));
-        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "â˜…")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("VitalsWarning")));
-        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "â˜…")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("DoorlogWarning")));
-        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "â˜…")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("CameraWarning")));
+        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("CameraWarning")));
 
         return sb.ToString();
     }
