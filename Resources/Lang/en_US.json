@@ -3787,7 +3787,7 @@
   "YouKillRandomizer4": "You kill Randomizer, Triggered Random Revenge!",
   "MadmateCanBeHurried": "<color=#ff1919>Madmate</color> can be Hurried on game start",
   "TaskBasedCrewCanBeHurried": "Task-based Crewmates can be Hurried",
-  "HurriedCanBeConverted": "Hurried can be <color=#ffab1b>Converted</color> in the game (excludes <color=#ff1919>Madmate</color>)",
+  "HurriedCanBeConverted": "Hurried can be <color=#ffab1b>Converted</color> in-game (excludes <color=#ff1919>Madmate</color>)",
   "Developer": "Developer",
   "Sponsor": "Sponsor",
   "Booster": "Server Booster",
