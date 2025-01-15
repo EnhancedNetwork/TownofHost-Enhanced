@@ -943,6 +943,10 @@ public enum CustomRoles
     //FFA
     Killer,
 
+    //C&R
+    Cop,
+    Robber,
+
     //GM
     GM,
 
@@ -1103,6 +1107,8 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
+    Robbers = CustomRoles.Robber, //C&R
+    Cops = CustomRoles.Cop, //C&R
     DarkFairy = CustomRoles.DarkFairy,
     Assassin = CustomRoles.Assassin,
     Vaporizer = CustomRoles.Vaporizer,
