@@ -1634,6 +1634,10 @@ internal class ChatCommands
 
                     Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.Success"));
                     break;
+                case "/ability":
+                    subArgs = args.Length < 2 ? "" : args[1];
+                    CopsAndRobbersManager.AbilityDescription(subArgs);
+                    break;  
             }
         }
         goto Skip;
