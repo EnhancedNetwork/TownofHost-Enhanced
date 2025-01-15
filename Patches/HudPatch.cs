@@ -326,7 +326,7 @@ class TaskPanelBehaviourPatch
                     foreach (var eachLine in lines)
                     {
                         var line = eachLine.Trim();
-                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb.Length < 1 && !line.Contains('(')) continue;
+                        if ((line.StartsWith("<color=#ff1919ff>") || line.StartsWith("<color=#ff0000ff>")) && sb.Length < 1 && !line.Contains('(')) continue;
                         sb.Append(line + "\r\n");
                     }
 
@@ -373,7 +373,7 @@ class TaskPanelBehaviourPatch
                     foreach (var eachLine in lines1)
                     {
                         var line = eachLine.Trim();
-                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb1.Length < 1 && !line.Contains('(')) continue;
+                        if ((line.StartsWith("<color=#ff1919ff>") || line.StartsWith("<color=#ff0000ff>")) && sb1.Length < 1 && !line.Contains('(')) continue;
                         sb1.Append(line + "\r\n");
                     }
 
