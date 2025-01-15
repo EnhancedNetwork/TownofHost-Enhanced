@@ -791,7 +791,7 @@ class CandRGameEndPredicate : GameEndPredicate
             else if (pc.Is(CustomRoles.Robber) && !CopsAndRobbersManager.captured.ContainsKey(pc.PlayerId)) allCaptured = false;
         }
 
-        // no cops left
+        // no Cops left
         if (!copsAlive)
         {
             reason = GameOverReason.ImpostorDisconnect;
@@ -801,7 +801,7 @@ class CandRGameEndPredicate : GameEndPredicate
             return true;
         }
 
-        // all robbers captured
+        // all Robbers captured
         if (allCaptured)
         {
             reason = GameOverReason.ImpostorByKill;
