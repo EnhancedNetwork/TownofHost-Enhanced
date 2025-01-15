@@ -1358,7 +1358,6 @@ class FixedUpdateInNormalGamePatch
                         RoleText.text += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
                     }
                 }
-
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {
                     RoleText.enabled = false;
@@ -1414,7 +1413,6 @@ class FixedUpdateInNormalGamePatch
                         Mark.Append("<color=#4fa1ff>✚</color>");
                     }
                 }
-
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
