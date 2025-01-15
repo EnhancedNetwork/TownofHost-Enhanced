@@ -15,7 +15,7 @@ public enum CustomGameMode
     FFA = 0x02,
     CandR = 0x03,
 
-    HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other game modes
+    HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other Gamemodes
     All = int.MaxValue
 }
 
@@ -51,7 +51,7 @@ public static class Options
         {
             1 => CustomGameMode.FFA,
             2 => CustomGameMode.CandR,
-            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
+            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other Gamemodes
             _ => CustomGameMode.Standard
         };
     public static int GetGameModeInt(CustomGameMode mode)
@@ -59,7 +59,7 @@ public static class Options
         {
             CustomGameMode.FFA => 1,
             CustomGameMode.CandR => 2,
-            CustomGameMode.HidenSeekTOHE => 3, // HidenSeekTOHE must be after other game modes
+            CustomGameMode.HidenSeekTOHE => 3, // HidenSeekTOHE must be after other Gamemodes
             _ => 0
         };
 
@@ -70,7 +70,7 @@ public static class Options
         "C&R",
 
 
-        "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
+        "Hide&SeekTOHE", // HidenSeekTOHE must be after other Gamemodes
     ];
 
 
