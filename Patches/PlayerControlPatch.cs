@@ -694,6 +694,7 @@ class ShapeshiftPatch
             Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} : Cancel Shapeshift.Prefix", "ShapeshiftPatch");
             return;
         }
+        
         foreach (var state in Main.PlayerStates.Values)
         {
             if (state.RoleClass == null) continue;
