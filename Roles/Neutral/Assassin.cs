@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 internal class Assassin : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 29800;
+    private const int Id = 31900;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
 

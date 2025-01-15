@@ -81,19 +81,15 @@ namespace TOHE.Roles.Neutral
 
                 if (RepellantInProtect[target.PlayerId] + RepellantSkillDuration.GetInt() >= GetTimeStamp(DateTime.UtcNow))
                 {
-
-                    killer.Notify(GetString("RepellantBlockedMurder"));
-
-
                     target.Notify(GetString("RepellantProtected"));
-
-
-                    return true;
+                    killer.ResetKillCooldown();
+                    killer.SetKillCooldown();
+                    return false;
                 }
             }
 
 
-            return false;
+            return true;
         }
 
         public override void OnEnterVent(PlayerControl pc, Vent AirConditioning)

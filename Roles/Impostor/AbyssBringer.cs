@@ -11,7 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class AbyssBringer : RoleBase
 {
     public override CustomRoles Role => CustomRoles.Abyssbringer;
-    const int Id = 31300;
+    const int Id = 33000;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     private static OptionItem BlackHolePlaceCooldown;
