@@ -550,9 +550,12 @@ class CheckForEndVotingPatch
                         name += string.Format(GetString("NeutralRemain"), neutralnum);
                 if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
                         name += string.Format(GetString("ApocRemain"), apocnum);
+                if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
+                        name += string.Format(GetString("CovenRemain"), covennum);
                 if ((impnum == 0)
                     && ((neutralnum == 0) || !Options.ShowNKRemainOnEject.GetBool())
-                    && ((apocnum == 0) || !Options.ShowNARemainOnEject.GetBool()))
+                    && ((apocnum == 0) || !Options.ShowNARemainOnEject.GetBool())
+                    && ((covennum == 0) || !Options.ShowCovenRemainOnEject.GetBool()))
                         name += comma + GetString("NoImpRemain") + comma + GetString("PotentialThreat");
             }
         }
