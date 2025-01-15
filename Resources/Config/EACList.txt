@@ -97,6 +97,7 @@ polkaoval#0453,自作Modな橋本環奈
 
 ## Other
 tenthrope#3476,Oldishwire
+huesassy#4051
 
 ## teaming and harassing hosts in multiple lobbies
 broadbarn#7413,niah
