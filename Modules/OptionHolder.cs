@@ -13,6 +13,7 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     FFA = 0x02,
+    CandR = 0x03,
 
     HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other game modes
     All = int.MaxValue
@@ -49,13 +50,24 @@ public static class Options
         => GameMode.GetInt() switch
         {
             1 => CustomGameMode.FFA,
-            2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
+            2 => CustomGameMode.CandR,
+            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
+    public static int GetGameModeInt(CustomGameMode mode)
+        => mode switch
+        {
+            CustomGameMode.FFA => 1,
+            CustomGameMode.CandR => 2,
+            CustomGameMode.HidenSeekTOHE => 3, // HidenSeekTOHE must be after other game modes
+            _ => 0
+        };
+
     public static readonly string[] gameModes =
     [
         "Standard",
         "FFA",
+        "C&R",
 
 
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
@@ -1095,7 +1107,8 @@ public static class Options
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
-            .HideInHnS();
+            .HideInHnS()
+            .HideInCandR();
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand);
         ShowApocalypseInLeftCommand = BooleanOptionItem.Create(60043, "ShowApocalypseInLeftCommand", true, TabGroup.SystemSettings, false)
@@ -1103,7 +1116,8 @@ public static class Options
         ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .HideInHnS();
+            .HideInHnS()
+            .HideInCandR();
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
@@ -1193,9 +1207,11 @@ public static class Options
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue)
-            .HideInHnS();
+            .HideInHnS()
+            .HideInCandR();
         RemovePetsAtDeadPlayers = BooleanOptionItem.Create(60294, "RemovePetsAtDeadPlayers", false, TabGroup.SystemSettings, false)
-            .SetColor(Color.magenta);
+            .SetColor(Color.magenta)
+            .HideInCandR();
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
@@ -1256,6 +1272,9 @@ public static class Options
         #region Game Settings
         //FFA
         FFAManager.SetupCustomOption();
+
+        //C&R
+        CopsAndRobbersManager.SetupCustomOption();
 
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
@@ -1903,11 +1922,13 @@ public static class Options
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
+            .HideInCandR()
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 梯子摔死
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
-            .HideInFFA();
+            .HideInFFA()
+            .HideInCandR();
         LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
 
