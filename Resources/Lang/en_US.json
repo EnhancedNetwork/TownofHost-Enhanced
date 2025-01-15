@@ -1245,6 +1245,7 @@
   "FixFirstKillCooldown": "Override Starting Kill Cooldown",
   "FixKillCooldownValue": "Starting Kill Cooldown",
   "OverclockedReduction": "Kill Cooldown Reduction",
+  "UnderclockedIncrease": "Kill Cooldown Increase",
   "GhostCanSeeOtherRoles": "Ghosts can see Other Roles",
   "PreventSeeRolesImmediatelyAfterDeath": "Prevent seeing other's roles immediately after death",
   "GhostCanSeeOtherVotes": "Ghosts can see Vote Colors",
