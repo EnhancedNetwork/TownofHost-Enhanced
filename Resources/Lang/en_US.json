@@ -4029,7 +4029,7 @@
 "C&R_NotifyRobbersWhenCaptured": "Notify Robbers when captured",
 "Robber": "Robber",
 "RobberInfo": "Complete all tasks to win",
-"RobberInfoLong": "As robber, your goal is to complete all tasks and escape the watchful eyes of the Cops! If you encounter a captured player, you can touch them to set them free!\n\nWhen you emerge from a Vent, you’ll activate a random ability.\nUse <b>/ability robber</b> to check all the abilities. Work together, stay stealthy, and outsmart the Cops to pull of a great Heist!",
+"RobberInfoLong": "As a Robber, your goal is to complete all tasks and escape the watchful eyes of the Cops! If you encounter a captured player, you can touch them to set them free!\n\nWhen you emerge from a Vent, you’ll activate a random ability.\nUse <b>/ability robber</b> to check all the abilities. Work together, stay stealthy, and outsmart the Cops to pull of a great Heist!",
 "WinnerRoleText.Robber": "Robbers Win!",
 "C&R_RobberVentDuration": "Robber Vent Duration",
 "C&R_RobberVentCooldown": "Robber Vent Cooldown",
