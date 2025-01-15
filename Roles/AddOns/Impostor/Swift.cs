@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;

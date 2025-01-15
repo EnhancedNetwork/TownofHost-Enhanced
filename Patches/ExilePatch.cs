@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;

@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns;

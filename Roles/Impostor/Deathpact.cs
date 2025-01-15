@@ -222,7 +222,7 @@ internal class Deathpact : RoleBase
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => IsInDeathpact(seer.PlayerId, seen) ? ColorString(Palette.ImpostorRed, "◀") : string.Empty;
+        => IsInDeathpact(seer.PlayerId, seen) ? ColorString(Palette.ImpostorRed, "â—€") : string.Empty;
 
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {

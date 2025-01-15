@@ -202,7 +202,7 @@ internal class Snitch : RoleBase
     {
         if (seen == seer) return string.Empty;
 
-        return IsSnitchTarget(seen) && IsComplete[seer.PlayerId] ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
+        return IsSnitchTarget(seen) && IsComplete[seer.PlayerId] ? Utils.ColorString(RoleColor, "ÔÜá") : string.Empty;
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
@@ -222,7 +222,7 @@ internal class Snitch : RoleBase
     {
         if (target == null) return string.Empty;
 
-        return IsSnitchTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
+        return IsSnitchTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "ÔÜá") : string.Empty;
     }
 
     public override string GetSuffixOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
@@ -233,7 +233,7 @@ internal class Snitch : RoleBase
         var exposedSnitch = playerIdList.Where(s => !Main.PlayerStates[s].IsDead && IsExposed[s]).ToArray();
         if (exposedSnitch.Length <= 0) return string.Empty;
 
-        var warning = "⚠";
+        var warning = "ÔÜá";
         if (EnableTargetArrow)
             warning += TargetArrow.GetArrows(seer, [.. exposedSnitch]);
 

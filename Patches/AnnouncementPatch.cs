@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using AmongUs.Data.Player;
 using Assets.InnerNet;
 using BepInEx.Unity.IL2CPP.Utils.Collections;

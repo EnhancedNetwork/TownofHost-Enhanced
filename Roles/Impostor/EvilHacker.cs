@@ -104,7 +104,7 @@ internal class EvilHacker : RoleBase
 
             if (canSeeImpostorMark && entry.NumImpostors > 0)
             {
-                var ImpostorMark = "★".Color(Palette.ImpostorRed);
+                var ImpostorMark = "â˜…".Color(Palette.ImpostorRed);
                 builder.Append(ImpostorMark);
             }
 
