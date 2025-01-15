@@ -2946,7 +2946,7 @@
   "ExiledInnocentTargetInOneLine": "{0} was the {1}.\nBut looking back, there's the <color=#8f815e>Innocent</color> counting the money in their hands....\nGG!",
   "ExiledDeath": "{0} was {1}!\nThe Crew has been saved from <color=#ff174f>Armageddon</color>!",
   "ExiledNotDeath": "{0} was the {1}.\nBut they were not <color=#644661>Death</color>...\n<b><color=#ff174f>Death has claimed the Souls of the Crew!</color></b>\nGG!",
-  "IsGood": "{0} was a <color=#8cffff>good guy</color>",
+  "IsGood": "{0} was a <color=#8cffff>Crewmate</color>",
   "BelongTo": "{0} belongs to {1}",
   "PlayerIsRole": "{0} was The {1}",
   "PlayerExiled": "{0} was ejected",
