@@ -4049,7 +4049,7 @@
 "RobberAbility.Radar": "Radar",
 "Description.AdrenalineRush": "Increases the speed of Robber.",
 "Description.EnergyShield": "Protects from the capture attempt.",
-"Description.SmokeBomb": "Blinds the Cop when robber is captured.",
+"Description.SmokeBomb": "Blinds the Cop when Robber is captured.",
 "Description.Disguise": "Wear the same costume as Cop.",
 "Description.Radar": "Points towards closest captured player, if no captured player, it points towards a Cop (colored arrows indicating Cops or captured).",
 "Captured": "Captured",
