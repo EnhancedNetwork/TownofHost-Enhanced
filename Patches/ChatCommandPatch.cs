@@ -2022,13 +2022,51 @@ internal class ChatCommands
     }
     public static void SendRolesInfo(string role, byte playerId, bool isDev = false, bool isUp = false)
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
-        {
-            Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
-            return;
-        }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) _ = role.Replace("/r", string.Empty);
+        switch (Options.CurrentGameMode)
+        {
+            case CustomGameMode.FFA:
+                Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+                return;
+            case CustomGameMode.CandR:
+                var copName = GetString(CustomRoles.Cop.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
+                var robberName = GetString(CustomRoles.Robber.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
+                var Conf1 = new StringBuilder();
+
+                CustomRoles rl1;
+                if (role == copName) rl1 = CustomRoles.Cop;
+                else if (role == robberName) rl1 = CustomRoles.Robber;
+                else
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.C&R"), playerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), GetString("ModeC&R")));
+                    return;
+                }
+
+                var description = rl1.GetInfoLong();
+                var title1 = Utils.ColorString(Utils.GetRoleColor(rl1), GetString($"{rl1}"));
+                string rlHex1 = Utils.GetRoleColorCode(rl1);
+                var Setting = $"<size={Csize}><color={rlHex1}>{GetString(rl1.ToString())} {GetString("Settings:")}</color>\n";
+                Conf1.Clear().Append(Setting);
+
+                foreach (OptionItem opt in CopsAndRobbersManager.roleSettings[rl1])
+                {
+                    Conf1.Append($"{opt.GetName(true)}: {opt.GetString()}\n");
+                    int deep = 0;
+                    if (opt.Children.Any()) deep = 1;
+                    Utils.ShowChildrenSettings(opt, ref Conf1, deep: deep);
+                    var cleared = Conf1.ToString();
+                    Conf1.Clear().Append($"<color=#ffffff>{cleared}</color>");
+                }
+                Conf1.Append("</size>");
+
+                // Show role info
+                Utils.SendMessage(description, playerId, title1, noReplay: true);
+
+                // Show role settings
+                Utils.SendMessage("", playerId, Conf1.ToString(), noReplay: true);
+                return;
+        }
         if (role.StartsWith("/up")) _ = role.Replace("/up", string.Empty);
         if (role.EndsWith("\r\n")) _ = role.Replace("\r\n", string.Empty);
         if (role.EndsWith("\n")) _ = role.Replace("\n", string.Empty);
@@ -3509,7 +3547,10 @@ internal class ChatCommands
                     Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
                 }
                 break;
-
+            case "/ability":
+                subArgs = args.Length < 2 ? "" : args[1];
+                CopsAndRobbersManager.AbilityDescription(subArgs, player.PlayerId);
+                break;
 
             default:
                 if (SpamManager.CheckSpam(player, text)) return;
