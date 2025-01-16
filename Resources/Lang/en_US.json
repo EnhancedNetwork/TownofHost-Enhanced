@@ -4073,7 +4073,7 @@
   "SAddTasksPreDeadPlayer": "How many extra short tasks Solsticer gets when a player dies",
   "SolsticerMurdered": "{0} attempted to murder you!",
   "MurderSolsticer": "You stopped Solsticer this round!",
-  "SolsticerMurderMessage": "<b>{0}</b> used Kill button on you last round! Its role is <b>{1}</b>!",
+  "SolsticerMurderMessage": "<b>{0}</b> used Kill button on you last round! Their role is <b>{1}</b>!",
   "SolsticerOnMeeting": "You witnessed too many deaths! Next round you will have {0} more short task!",
   "SolsticerTitle": "SOLSTICER",
   "GuessSolsticer": "Sorry, but you can not guess Solsticer!",
@@ -4154,7 +4154,7 @@
   "QuizmasterAnswers.Engineer": "Engineer",
   "QuizmasterAnswers.GuardianAngel": "GuardianAngel",
 
-  "QuizmasterQuestions.LastSabotage": "What was the Sabotage was called last?",
+  "QuizmasterQuestions.LastSabotage": "What was the Sabotage that was called last?",
   "QuizmasterQuestions.FirstRoundSabotage": "What was the first Sabotage called this round?",
   "QuizmasterQuestions.LastEjectedPlayerColor": "What was the color of the player that was last ejected?",
   "QuizmasterQuestions.LastReportPlayerColor": "What was the color of the body that was last reported before this meeting?",
@@ -4204,7 +4204,7 @@
   "WinnerRoleText.PlagueDoctor": "Plague Scientist Wins!",
 
   "StatueSlow": "Statue Slowness",
-  "StatuePeopleToSlow": "People Needed To Slow",
+  "StatuePeopleToSlow": "People Needed to Slow",
 
   "WardenIncreaseSpeed": "Increase Speed By",
   "WardenWarn": "DANGER! RUN!",
@@ -4219,7 +4219,7 @@
   "ShockerAbilityPerRound": "Abilities per Round",
   "ShockerShockInVents": "Shock people in Vents",
   "ShockerAbilityResetAfterMeeting": "Reset marked rooms after meeting",
-  "ShockerOutsideRadius": "Radius Of Outside Tasks (not in a room)",
+  "ShockerOutsideRadius": "Radius of Outside Tasks (not in a room)",
   "ShockerCanShockHimself": "Can Shock Himself",
   "ShockerImpostorVision": "Shocker has Impostor vision",
   "ShockerIsShocking": "You're already shocking!",
@@ -4283,7 +4283,7 @@
   "DarkFairyCanDarkenNeutral": "Can darken Neutrals",
 
   "DarkFairy": "Dark Fairy",
-  "DarkFairyInfo": "Convert ALL the players, via your tasks!",
+  "DarkFairyInfo": "Convert ALL players, via your tasks!",
   "DarkFairyInfoLong": "(Neutral):\nAs the Dark Fairy, you can mark tasks to <color=#4B0082>Darken</color> other players. <color=#4B0082>Darkened</color> players know the Dark Fairy, depending on the settings set by the host.\nTo win, Darken as much players as possible and gain the majority.\n\nDepending on the settings you may <color=#4B0082>Darken</color> Neutrals.\nThose you <color=#4B0082>Darken</color> may count as their original team, nothing, or a Dark Fairy to determine when you win due to majority.\nThe Dark Fairy & <color=#4B0082>Darkened</color> team win together.",
 
   "Identifier": "Identifier",
