@@ -634,8 +634,8 @@ public class Main : BasePlugin
 
         Harmony.PatchAll();
 
-        if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
-        else ConsoleManager.CreateConsole();
+        ConsoleManager.DetachConsole();
+        if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
 
         InitializeFileHash();
