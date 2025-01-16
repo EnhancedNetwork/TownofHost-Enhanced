@@ -3948,7 +3948,7 @@
   "HaterCanKillSidekick": "Can kill <color=#00b4eb>Jackal</color> team",
   "HaterCanKillEgoist": "Can kill <color=#5600ff>Egoist</color>",
   "HaterCanKillInfected": "Can kill <color=#7b8968>Infected</color> team",
-  "HaterCanKillContagious": "Can kill <color=#2e8b57>Virus</color team",
+  "HaterCanKillContagious": "Can kill <color=#2e8b57>Virus</color> team",
   "HaterCanKillAdmired": "Can kill <color=#ee43c3>Admirer</color>",
   "HaterCanKillEnchanted": "Can kill <color=#ac42f2>Enchanted</color>",
   "HorseMode": "Enable to become a horse",
