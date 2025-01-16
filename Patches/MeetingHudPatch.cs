@@ -700,7 +700,12 @@ class CastVotePatch
         if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
+
+            Logger.Info($"Coven Leader Retraining [{voter.PlayerId}]{voter.GetNameWithRole()} => {CovenLeader.retrainPlayer[voter.PlayerId]}", "CastVotePatch");
+            voter.GetRoleClass()?.OnRemove(voter.PlayerId);
+            voter.RpcChangeRoleBasis(CovenLeader.retrainPlayer[voter.PlayerId]);
             voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
+            voter.GetRoleClass()?.OnAdd(voter.PlayerId);
             SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
