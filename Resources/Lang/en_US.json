@@ -1089,7 +1089,7 @@
   "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific Vents that you can't use.\nHow many Vents are disabled depends on the Host's settings.",
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other Role/Add-on information-based messages like Mortician or Sleuth.",
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
-  "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
+  "RevenantInfoLong": "(Neutrals):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
   "ValkyrieInfoLong": "(Crewmates):\nAs the Valkyrie, you you spawn with a Kill button but may not kill. When someone tried to kill you, you will be teleported to a random Vent, and will have a limited amount of time to kill your killer. If you do so, you live. Otherwise, you will die.",
   "ProtectorInfoLong": "(Crewmates):\nAs the Protector, whenever you finish a task, you get a temporary shield.\n\n Note: Shield only protects from direct kill attacks.",
   "FuryInfoLong": "(Impostor):\nAs the Fury, Shapeshift to enter Rage Mode.\nRage Mode changes the Fury their speed and Kill Cooldown for a set duration of time.\n\nAdditionally there is a setting to reveal when the Fury enters Rage Mode to everyone.\nWithout the use of Rage Mode, the Fury acts like a regular Impostor.",
@@ -4221,7 +4221,6 @@
   "ShockerAbilityResetAfterMeeting": "Reset marked rooms after meeting",
   "ShockerOutsideRadius": "Radius of Outside Tasks (not in a room)",
   "ShockerCanShockHimself": "Can Shock Himself",
-  "ShockerImpostorVision": "Shocker has Impostor vision",
   "ShockerIsShocking": "You're already shocking!",
   "ShockerAbilityActivate": "Begin Shocking!",
   "ShockerAbilityDeactivate": "Ability Deactivated",
@@ -4284,7 +4283,7 @@
 
   "DarkFairy": "Dark Fairy",
   "DarkFairyInfo": "Convert ALL players, via your tasks!",
-  "DarkFairyInfoLong": "(Neutral):\nAs the Dark Fairy, you can mark tasks to <color=#4B0082>Darken</color> other players. <color=#4B0082>Darkened</color> players know the Dark Fairy, depending on the settings set by the host.\nTo win, Darken as much players as possible and gain the majority.\n\nDepending on the settings you may <color=#4B0082>Darken</color> Neutrals.\nThose you <color=#4B0082>Darken</color> may count as their original team, nothing, or a Dark Fairy to determine when you win due to majority.\nThe Dark Fairy & <color=#4B0082>Darkened</color> team win together.",
+  "DarkFairyInfoLong": "(Neutrals):\nAs the Dark Fairy, you can mark tasks to <color=#4B0082>Darken</color> other players. <color=#4B0082>Darkened</color> players know the Dark Fairy, depending on the settings set by the host.\nTo win, Darken as much players as possible and gain the majority.\n\nDepending on the settings you may <color=#4B0082>Darken</color> Neutrals.\nThose you <color=#4B0082>Darken</color> may count as their original team, nothing, or a Dark Fairy to determine when you win due to majority.\nThe Dark Fairy & <color=#4B0082>Darkened</color> team win together.",
 
   "Identifier": "Identifier",
   "IdentifierInfo": "Find killers based on their color",
@@ -4309,7 +4308,7 @@
 
   "Assassin": "Assassin",
   "AssassinInfo": "Choose your own team by killing",
-  "AssassinInfoLong": "(Neutral):\nAfter you kill for the first time, certain things will happen:\nIf you kill a Crewmate, you become an Impostor.\nIf you kill a Neutral, you become a Neutral Killer.\nIf you kill an Impostor, you become a Sheriff.",
+  "AssassinInfoLong": "(Neutrals):\nAfter you kill for the first time, certain things will happen:\nIf you kill a Crewmate, you become an Impostor.\nIf you kill a Neutral, you become a Neutral Killer.\nIf you kill an Impostor, you become a Sheriff.",
   "AssassinImpostorNotify": "You have become an Impostor",
   "AssassinSheriffNotify": "You have become a Sheriff",
   "AssassinNeutralNotify": "You have become a Neutral Killer",
@@ -4317,7 +4316,7 @@
 
   "Repellant": "Repellant",
   "RepellantInfo": "Shield yourself against the killers",
-  "RepellantInfoLong": "(Neutral):\nAs the Repellant, you can Vent to temporarily shield yourself against killers. Live till the end to win.",
+  "RepellantInfoLong": "(Neutrals):\nAs the Repellant, you can Vent to temporarily shield yourself against killers. Live till the end to win.",
   "RepellantSkillCooldown": "Protect Cooldown",
   "RepellantSkillDuration": "Shield Duration",
   "RepellantMaxUses": "Maximum Shields",
@@ -4328,14 +4327,14 @@
 
   "Vaporizer": "Vaporizer",
   "VaporizerInfo": "Leave no trace with your kills",
-  "VaporizerInfoLong": "(Neutral):\nThe Vaporizer's kills will not leave dead bodies. Additionaly, vaporized players will have the 'Vaporized' death reason.",
+  "VaporizerInfoLong": "(Neutrals):\nThe Vaporizer's kills will not leave dead bodies. Additionaly, vaporized players will have the 'Vaporized' death reason.",
   "WinnerRoleText.Vaporizer": "Vaporizer Wins!",
   "VaporizedTarget": "You have been Vaporized and will leave no body.",
   "DeathReason.Vaporized": "Vaporized",
 
   "Laborer": "Laborer",
   "LaborerInfo": "Kill <color=#8cffff>Crewmates</color> and see them lose",
-  "LaborerInfoLong": "(Neutral):\nThe Laborer can mark a target, and when someone kills the target, the Laborer will kill the target instead, Live till the end while making sure crewmates lose.",
+  "LaborerInfoLong": "(Neutrals):\nThe Laborer can mark a target, and when someone kills the target, the Laborer will kill the target instead, Live till the end while making sure crewmates lose.",
   "LaborerSkillCooldown": "Mark cooldown",
   "LaborerSkillLimitOpt": "Ability Uses",
   "LaborerCanVent": "Can Vent",
@@ -4344,7 +4343,7 @@
 
   "Keymaster": "Keymaster",
   "KeymasterInfo": "Unlock your focus",
-  "KeymasterInfoLong": "(Neutral):\nThe Keymaster has 2 stages.\n\nStage 1:\nThe Keymaster must mark every living player with a key by using their Kill button. To gain a key, the Keymaster has to simply enter a Vent.\nAfter marking a player with a key, the Keymaster needs to Vent again to gain a new key.\n\nStage 2:\nWhen the last needed player gets marked, the Keymaster gains a random shown colored key for a set duration of time. Additionally, the Keymaster their body color will switch repeatedly. The goal is to vent whenever the player's body color is equal to the key's color.\n\nThe Keymaster either wins when timing it correctly, or loses when timing it incorrectly.\nThey only have one chance!\n(Higher Difficulty = Faster color swaps)\n\nExtra:\nAfter beating both stages, by default, the Keymaster wins along with the other winners. They can also solo win depending on settings.",
+  "KeymasterInfoLong": "(Neutrals):\nThe Keymaster has 2 stages.\n\nStage 1:\nThe Keymaster must mark every living player with a key by using their Kill button. To gain a key, the Keymaster has to simply enter a Vent.\nAfter marking a player with a key, the Keymaster needs to Vent again to gain a new key.\n\nStage 2:\nWhen the last needed player gets marked, the Keymaster gains a random shown colored key for a set duration of time. Additionally, the Keymaster their body color will switch repeatedly. The goal is to vent whenever the player's body color is equal to the key's color.\n\nThe Keymaster either wins when timing it correctly, or loses when timing it incorrectly.\nThey only have one chance!\n(Higher Difficulty = Faster color swaps)\n\nExtra:\nAfter beating both stages, by default, the Keymaster wins along with the other winners. They can also solo win depending on settings.",
   "KeymasterGiveKeyCooldown": "Give Key Cooldown",
   "KeymasterColoredKeyNotiDuration": "Colored Key Notification Time",
   "KeymasterStage2Difficulty": "Stage 2 Difficulty",
@@ -4391,13 +4390,13 @@
 
   "Narc": "Narc",
   "NarcInfo": "Find the <color=#ff1919>Impostors</color> and kill them",
-  "NarcInfoLong": "(Neutral):\nThe Narc's main objective is to reveal the Impostors. By using its Kill button, the Narc can check if the player is a Crewmate or Impostor. If the Narc reveals a Crewmate or Neutral, the Narc will turn into an Amnesiac, and the target will not die. If the Narc reveals an Impostor, they will kill the Impostor and leave no body behind and add the death reason 'Arrested'. If the Narc reveals all the Impostors it wins alone.\nNote: If killing the last Impostor triggers another win, the Narc will not win.",
+  "NarcInfoLong": "(Neutrals):\nThe Narc's main objective is to reveal the Impostors. By using its Kill button, the Narc can check if the player is a Crewmate or Impostor. If the Narc reveals a Crewmate or Neutral, the Narc will turn into an Amnesiac, and the target will not die. If the Narc reveals an Impostor, they will kill the Impostor and leave no body behind and add the death reason 'Arrested'. If the Narc reveals all the Impostors it wins alone.\nNote: If killing the last Impostor triggers another win, the Narc will not win.",
   "WinnerRoleText.Narc": "Narc Wins!",
   "DeathReason.Arrested": "Arrested",
 
   "Artist": "Artist",
   "ArtistInfo": "Paint players to victory",
-  "ArtistInfoLong": "(Neutral):\nThe Artist can single click on a player to paint them gray, similair to Devourer. Double click to kill normally.",
+  "ArtistInfoLong": "(Neutrals):\nThe Artist can single click on a player to paint them gray, similair to Devourer. Double click to kill normally.",
   "ArtistPaintedSkin": "Painted Target",
   "ArtistPaintCooldown": "Paint Cooldown",
   "ArtistAbilityUses": "Maximum Paint Uses",
