@@ -23,7 +23,7 @@ public class Rebel : IAddon
 
     public void SetupCustomOption()
     {
-        SetupSingleRoleOptions(Id, TabGroup.Addons, CustomRoles.Rebel);
+        SetupSingleRoleOptions(Id, TabGroup.Addons, CustomRoles.Rebel, 1, zeroOne: false);
         SheriffCanBeRebel = BooleanOptionItem.Create(Id + 10, "SheriffCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
         MarshallCanBeRebel = BooleanOptionItem.Create(Id + 11, "MarshallCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);
         OverseerCanBeRebel = BooleanOptionItem.Create(Id + 12, "OverseerCanBeRebel", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Rebel]);

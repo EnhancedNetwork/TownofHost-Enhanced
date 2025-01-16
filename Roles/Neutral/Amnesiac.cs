@@ -114,6 +114,7 @@ internal class Amnesiac : RoleBase
             {
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
                 {
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
                     __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                     __instance.RpcChangeRoleBasis(role);
                     __instance.RpcSetCustomRole(role);
@@ -135,6 +136,7 @@ internal class Amnesiac : RoleBase
             else
             {
                 var role = targetPlayerStates.MainRole;
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
                 __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                 __instance.RpcChangeRoleBasis(role);
                 __instance.RpcSetCustomRole(role);

@@ -1243,9 +1243,7 @@ public static class CustomRolesHelper
     /// Rebel part
     /// </summary>
     public static bool IsNonRebelCrewmate(this PlayerControl pc) => pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel);
-    public static bool IsRebelNeutral(this PlayerControl pc) => pc.GetCustomRole().IsNeutral() || pc.Is(CustomRoles.Rebel);
-    public static bool IsNonRebelMadmate(this PlayerControl pc) => pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Rebel);
-    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.IsRebelNeutral() && !pc.IsNonRebelMadmate();
+    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutralTeamV3();
     /// <summary>
     /// End Rebel part
     /// </summary>
