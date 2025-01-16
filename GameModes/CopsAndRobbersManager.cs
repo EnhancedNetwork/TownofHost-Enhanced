@@ -1109,7 +1109,7 @@ internal static class CopsAndRobbersManager
     }
     public static string GetHudText()
     {
-        return string.Format(GetString("TimeRemain"), RoundTime.ToString());
+        return string.Format(GetString("GameModeTimeRemain"), RoundTime.ToString());
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
