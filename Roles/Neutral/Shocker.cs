@@ -27,7 +27,7 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerShockInVents;
     private static OptionItem ShockerOutsideRadius;
     private static OptionItem ShockerCanShockHimself;
-    private static OptionItem ShockerImpostorVision;
+    private static OptionItem HasImpostorVision;
 
     private static List<Collider2D> markedRooms = new();
     private static List<Collider2D> shockedRooms = new();
@@ -53,7 +53,7 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]).SetValueFormat(OptionFormat.Multiplier);
         ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        ShockerImpostorVision = BooleanOptionItem.Create(Id + 20, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
+        HasImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         OverrideTasksData.Create(18, TabGroup.NeutralRoles, CustomRoles.Shocker);
     }
@@ -112,7 +112,7 @@ internal class Shocker : RoleBase
     {
         AURoleOptions.EngineerCooldown = AbilityLimit > 0 ? ShockerAbilityCooldown.GetFloat() : 300;
         AURoleOptions.EngineerInVentMaxTime = 1;
-        opt.SetVision(ShockerImpostorVision.GetBool());
+        opt.SetVision(HasImpostorVision.GetBool());
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
