@@ -1316,7 +1316,7 @@ class FixedUpdateInNormalGamePatch
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
                 else RoleText.enabled = false;
 
-                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster) && !__instance.Is(CustomRoles.Narc))
+                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster) && (!__instance.Is(CustomRoles.Narc) || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)))
                 {
                     RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                     RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
