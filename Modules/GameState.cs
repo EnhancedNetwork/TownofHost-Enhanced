@@ -306,6 +306,7 @@ public class PlayerState(byte playerId)
         Revenge,
         Execution,
         Fall,
+        Exorcised,
 
         // TOHE
         Gambled,

@@ -703,6 +703,7 @@ public enum CustomRoles
     EvilHacker,
     EvilMini,
     EvilTracker,
+    Exorcist,
     Fireworker,
     Gangster,
     Godfather,
