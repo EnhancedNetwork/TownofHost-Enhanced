@@ -194,7 +194,6 @@ internal static class CopsAndRobbersManager
         roleSettings[CustomRoles.Cop] = [CandR_NumCops, CandR_CaptureCooldown, CandR_CopAbilityTriggerChance];
 
         /*********** Robbers ***********/
-
         TextOptionItem.Create(Id + 20, "Robber", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.CandR)
             .SetColor(new Color32(255, 140, 0, byte.MaxValue));
@@ -284,14 +283,14 @@ internal static class CopsAndRobbersManager
         EnergyShield, // Protects from the next capture attempt.
         SmokeBomb, // Blinds the Cop when captured.
         Disguise, // Wear the same costume as a Cop for confusion.
-        Radar // Points towards closest captured player, if no captured player, it points towards a cop (colored arrows indicating cops or captured)
+        Radar // Points towards closest captured player, if no captured player, it points towards a Cop (colored arrows indicating Cops or captured)
     }
     private enum CopAbility
     {
         HotPursuit, // Speed boost for a set amount of time.
-        SpikeStrip, // Sets a trap that slows down the robber.
-        FlashBang, // Sets a trap that blinds the robber temporarily.
-        K9, // Points to the closest robber.
+        SpikeStrip, // Sets a trap that slows down the Robber.
+        FlashBang, // Sets a trap that blinds the Robber temporarily.
+        K9, // Points to the closest Robber.
         Scope // Increases the capture range.
     }
 
@@ -1110,7 +1109,7 @@ internal static class CopsAndRobbersManager
     }
     public static string GetHudText()
     {
-        return string.Format(GetString("FFATimeRemain"), RoundTime.ToString());
+        return string.Format(GetString("TimeRemain"), RoundTime.ToString());
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
@@ -1324,7 +1323,7 @@ internal static class CopsAndRobbersManager
                             removeTrap.Add(trap.Key); // removed the trap from trap location because it was triggered
                             break;
                         }
-                        // check for flash bang
+                        // check for Flash Bang
                         if (trap.Value is CopAbility.FlashBang && trapDistance <= CandR_FlashBangRadius.GetFloat())
                         {
                             flashTrigger[robberId] = now;
