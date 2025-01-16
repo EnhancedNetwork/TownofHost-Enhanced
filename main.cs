@@ -637,7 +637,6 @@ public class Main : BasePlugin
         ConsoleManager.DetachConsole();
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
-
         InitializeFileHash();
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
