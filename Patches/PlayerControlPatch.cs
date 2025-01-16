@@ -160,7 +160,7 @@ class CheckMurderPatch
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
             return false;
         }
-        // Target Is Dead
+        // Target is Dead
         if (!target.IsAlive())
         {
             Logger.Info("The target is in a dead state and the kill is canceled", "CheckMurder");
@@ -269,7 +269,7 @@ class CheckMurderPatch
             return false;
         }
 
-        // Madmate Spawn Mode Is First Kill
+        // Madmate Spawn Mode is First Kill
         if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate())
         {
             Main.MadmateNum++;
@@ -398,9 +398,17 @@ class MurderPlayerPatch
 
         if (isSucceeded && AmongUsClient.Instance.AmHost && GameStates.IsNormalGame)
         {
+            // AntiBlackOut protect is active
+            if (AntiBlackout.SkipTasks)
+            {
+                Logger.Info("Murder while AntiBlackOut protect, the kill was canceled and reseted", "MurderPlayer");
+                __instance.SetKillCooldown();
+                return false;
+            }
+            
             if (target.shapeshifting)
             {
-                // During shapeshift animation
+                // During Shapeshift Animation
                 // Delay 1s to account for animation time, plus +0.5s to account for lag with the client
                 _ = new LateTask(
                     () =>
@@ -564,7 +572,7 @@ public static class CheckShapeshiftPatch
             return false;
         }
 
-        // No called code if is invalid shapeshifting
+        // No called code if is invalid Shapeshifting
         if (!CheckInvalidShapeshifting(__instance, target, shouldAnimate))
         {
             __instance.RpcRejectShapeshift();
@@ -579,7 +587,7 @@ public static class CheckShapeshiftPatch
         var shapeshifterRoleClass = shapeshifter.GetRoleClass();
         if (shapeshifterRoleClass?.OnCheckShapeshift(shapeshifter, target, ref resetCooldown, ref shouldAnimate) == false)
         {
-            // role need specific reject shapeshift if player use desync shapeshift
+            // role need specific reject Shapeshift if player use desync Shapeshift
             if (shapeshifterRoleClass.CanDesyncShapeshift)
             {
                 shapeshifter.RpcSpecificRejectShapeshift(target, shouldAnimate);
