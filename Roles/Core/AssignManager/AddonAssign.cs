@@ -31,8 +31,12 @@ public static class AddonAssign
 
     public static void StartSelect()
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return;
-
+        switch (Options.CurrentGameMode)
+        {
+            case CustomGameMode.FFA:
+            case CustomGameMode.CandR:
+                return;
+        }
         AddonRolesList.Clear();
         foreach (var cr in CustomRolesHelper.AllRoles)
         {

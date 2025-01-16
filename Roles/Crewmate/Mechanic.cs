@@ -145,7 +145,7 @@ internal class Mechanic : RoleBase
         //var playerId = player.PlayerId;
 
         if (AbilityLimit <= 0 ||
-            AbilityLimit - UsesUsedWhenFixingLightsOrComms.GetFloat()<= 0)
+            AbilityLimit - UsesUsedWhenFixingLightsOrComms.GetFloat() <= 0)
             return;
 
         __instance.ActualSwitches = 0;

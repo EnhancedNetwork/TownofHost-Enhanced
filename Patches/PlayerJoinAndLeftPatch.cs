@@ -329,6 +329,10 @@ class OnPlayerLeftPatch
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
         {
+            if (Options.CurrentGameMode is CustomGameMode.CandR)
+            {
+                CopsAndRobbersManager.OnPlayerDisconnect(data.Character.PlayerId);
+            }
             if (data.Character != null) CustomNetObject.DespawnOnQuit(data.Character.PlayerId);
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
         }

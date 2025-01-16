@@ -173,7 +173,7 @@ internal static class FFAManager
     }
     public static string GetHudText()
     {
-        return string.Format(GetString("FFATimeRemain"), RoundTime.ToString());
+        return string.Format(GetString("GameModeTimeRemain"), RoundTime.ToString());
     }
     public static void OnPlayerAttack(PlayerControl killer, PlayerControl target)
     {

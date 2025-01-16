@@ -204,6 +204,12 @@ class CheckMurderPatch
             FFAManager.OnPlayerAttack(killer, target);
             return false;
         }
+        //C&R
+        if (Options.CurrentGameMode == CustomGameMode.CandR)
+        {
+            CopsAndRobbersManager.OnCopAttack(killer, target);
+            return false;
+        }
 
         // if player hacked by Glitch
         if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
@@ -631,25 +637,38 @@ public static class CheckShapeshiftPatch
             Logger.Info("Checking while AntiBlackOut protect, shapeshift was canceled", "CheckShapeshift");
             return false;
         }
-        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (Options.CurrentGameMode is CustomGameMode.CandR)
         {
-            instance.RpcGuardAndKill(instance);
-            instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
-            logger.Info($"Cancel shapeshifting because {target.GetRealName()} is protected by the game");
-            return false;
+            if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
+            {
+                if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) CopsAndRobbersManager.UnShapeShiftButton(instance);
+                instance.RpcResetAbilityCooldown(); // Just incase
+                logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
+                return false;
+            }
         }
-        if (Pelican.IsEaten(instance.PlayerId))
+        else
         {
-            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
-            return false;
-        }
+            if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+            {
+                instance.RpcGuardAndKill(instance);
+                instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
+                logger.Info($"Cancel shapeshifting because {target.GetRealName()} is protected by the game");
+                return false;
+            }
+            if (Pelican.IsEaten(instance.PlayerId))
+            {
+                logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is eaten by Pelican");
+                return false;
+            }
 
-        if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
-        {
-            if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
-            instance.RpcResetAbilityCooldown(); // Just incase
-            logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
-            return false;
+            if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
+            {
+                if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) instance.GetRoleClass().UnShapeShiftButton(instance);
+                instance.RpcResetAbilityCooldown(); // Just incase
+                logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
+                return false;
+            }
         }
         return true;
     }
@@ -675,7 +694,7 @@ class ShapeshiftPatch
             Logger.Info($"{__instance?.GetNameWithRole().RemoveHtmlTags()} : Cancel Shapeshift.Prefix", "ShapeshiftPatch");
             return;
         }
-
+        
         foreach (var state in Main.PlayerStates.Values)
         {
             if (state.RoleClass == null) continue;
@@ -731,7 +750,7 @@ class ReportDeadBodyPatch
             return false;
         }
         if (Options.DisableMeeting.GetBool()) return false;
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
+        if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.CandR) return false;
 
         if (!CanReport[__instance.PlayerId])
         {
@@ -877,12 +896,14 @@ class ReportDeadBodyPatch
                 try
                 {
                     playerStates.RoleClass?.OnReportDeadBody(player, target);
-
-                    foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                    if (playerStates.RoleClass?.BlockMoveInVent(playerStates.RoleClass._Player) ?? false)
                     {
-                        CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+                        {
+                            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+                        }
+                        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
                     }
-                    player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
 
                     if (playerStates.IsDead)
                     {
@@ -1338,8 +1359,7 @@ class FixedUpdateInNormalGamePatch
                         RoleText.text += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
                     }
                 }
-
-
+                
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                 {
                     RoleText.enabled = false;
@@ -1395,8 +1415,7 @@ class FixedUpdateInNormalGamePatch
                         Mark.Append("<color=#4fa1ff>✚</color>");
                     }
                 }
-
-
+                
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
 
@@ -1416,7 +1435,7 @@ class FixedUpdateInNormalGamePatch
                 {
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
                 }
-
+                
                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                     Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
 
@@ -1430,9 +1449,15 @@ class FixedUpdateInNormalGamePatch
                 }
 
 
-                if (Options.CurrentGameMode == CustomGameMode.FFA)
-                    Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
-
+                switch (Options.CurrentGameMode)
+                {
+                    case CustomGameMode.FFA:
+                        Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
+                        break;
+                    case CustomGameMode.CandR:
+                        Suffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, target));
+                        break;
+                }
                 /*if(main.AmDebugger.Value && main.BlockKilling.TryGetValue(target.PlayerId, out var isBlocked)) {
                     Mark = isBlocked ? "(true)" : "(false)";}*/
 
@@ -1612,7 +1637,7 @@ class CoEnterVentPatch
                 CustomRoleManager.BlockedVentsList[__instance.myPlayer.PlayerId].Remove(ventId);
             }
             playerRoleClass.LastBlockedMoveInVentVents.Clear();
-
+            
             var vent = ShipStatus.Instance.AllVents.First(v => v.Id == id);
             foreach (var nextvent in vent.NearbyVents.ToList())
             {
@@ -1669,14 +1694,20 @@ class CoExitVentPatch
         }
 
         if (!AmongUsClient.Instance.AmHost) return;
+        if (Options.CurrentGameMode == CustomGameMode.CandR)
+        {
+            CopsAndRobbersManager.OnRobberExitVent(player);
+        }
 
         player.GetRoleClass()?.OnExitVent(player, id);
-
-        foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+        if (player.GetRoleClass()?.BlockMoveInVent(player) ?? true)
         {
-            CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+            foreach (var ventId in player.GetRoleClass().LastBlockedMoveInVentVents)
+            {
+                CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
+            }
+            player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
         }
-        player.GetRoleClass().LastBlockedMoveInVentVents.Clear();
 
         _ = new LateTask(() => { player?.RpcSetVentInteraction(); }, 0.8f, $"Set vent interaction after exit vent {player?.PlayerId}", shoudLog: false);
     }
@@ -1864,7 +1895,7 @@ public static class PlayerControlMixupOutfitPatch
             return;
         }
 
-        // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
+        // if player is Desync Impostor and the vanilla sees player as Impostor, the vanilla process does not hide your name, so the other person's name is hidden
         if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
             || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer // Necromancer
             ) &&

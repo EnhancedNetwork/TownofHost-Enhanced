@@ -82,20 +82,26 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         opt.BlackOut(state.IsBlackOut);
 
         CustomRoles role = player.GetCustomRole();
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            if (FFAManager.FFALowerVisionList.ContainsKey(player.PlayerId))
-            {
-                opt.SetVision(true);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, FFAManager.FFA_LowerVision.GetFloat());
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, FFAManager.FFA_LowerVision.GetFloat());
-            }
-            else
-            {
-                opt.SetVision(true);
-                opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
-                opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
-            }
+            case CustomGameMode.FFA:
+                if (FFAManager.FFALowerVisionList.ContainsKey(player.PlayerId))
+                {
+                    opt.SetVision(true);
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, FFAManager.FFA_LowerVision.GetFloat());
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, FFAManager.FFA_LowerVision.GetFloat());
+                }
+                else
+                {
+                    opt.SetVision(true);
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
+                }
+                break;
+
+            case CustomGameMode.CandR:
+                CopsAndRobbersManager.ApplyGameOptions(ref opt, player);
+                break;
         }
 
         if (player.Is(Custom_Team.Impostor))
@@ -126,7 +132,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
 
-        if (Main.UnShapeShifter.Contains(player.PlayerId))
+        if (Main.UnShapeShifter.Contains(player.PlayerId) && Options.CurrentGameMode != CustomGameMode.CandR)
         {
             AURoleOptions.ShapeshifterDuration = 1f;
         }
