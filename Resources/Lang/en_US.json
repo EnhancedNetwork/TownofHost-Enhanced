@@ -4335,10 +4335,8 @@
   "Laborer": "Laborer",
   "LaborerInfo": "Kill <color=#8cffff>Crewmates</color> and see them lose",
   "LaborerInfoLong": "(Neutrals):\nThe Laborer can mark a target, and when someone kills the target, the Laborer will kill the target instead, Live till the end while making sure crewmates lose.",
-  "LaborerSkillCooldown": "Mark cooldown",
+  "LaborerSkillCooldown": "Mark Cooldown",
   "LaborerSkillLimitOpt": "Ability Uses",
-  "LaborerCanVent": "Can Vent",
-  "LaborerHasImpostorVision": "Has Impostor Vision",
   "LaborerSkillLimit": "Kill Limit",
 
   "Keymaster": "Keymaster",
