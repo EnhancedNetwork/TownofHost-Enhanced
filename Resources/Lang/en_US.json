@@ -2905,7 +2905,7 @@
   "KickBecauseDiffrentVersionOrMod": "<b>{0}</b> was kicked because they had a different version of the mod",
 
   "FFADisplayScore": "Ranking: {0} Score: {1}",
-  "FFATimeRemain": "<color=#00ffa5>Time Remaining:</color> {0} second(s)",
+  "TimeRemain": "<color=#00ffa5>Time Remaining:</color> <b>{0}</b>s",
 
   "GameOver": "Game Over",
   "TOHOOptions": "TOHO Options",
