@@ -2171,7 +2171,7 @@ public static class Utils
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Madmate)))
                         {
                             TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
                             TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
