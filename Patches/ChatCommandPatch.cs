@@ -3547,7 +3547,7 @@ internal class ChatCommands
                     target.SetRealKiller(player);
                     Main.PlayerStates[target.PlayerId].SetDead();
                     target.RpcExileV2();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(player, target, GameStates.IsMeeting);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(target, target, GameStates.IsMeeting);
                     Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
                 }
                 break;
