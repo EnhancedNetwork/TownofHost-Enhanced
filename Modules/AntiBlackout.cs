@@ -303,9 +303,10 @@ public static class AntiBlackout
             {
                 seer.RpcResetAbilityCooldown();
                 seer.ResetKillCooldown();
+                seer.SetKillCooldown();
 
-                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd) && kcd >= 2f)
-                    seer.SetKillCooldown(kcd - 2f);
+                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
+                    seer.SetKillCooldown(kcd + 1f);
             }
             else if (seer.HasGhostRole())
             {
@@ -315,9 +316,13 @@ public static class AntiBlackout
     }
     public static void ResetAfterMeeting()
     {
-        SkipTasks = false;
-        ExilePlayerId = -1;
         ResetAllCooldown();
+        // add 1 second delay
+        _ = new LateTask(() =>
+        {
+            SkipTasks = false;
+            ExilePlayerId = -1;
+        }, 1f, "Reset Blackout");
     }
     public static void Reset()
     {
