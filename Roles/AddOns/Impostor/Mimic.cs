@@ -1,4 +1,4 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 public class Mimic : IAddon

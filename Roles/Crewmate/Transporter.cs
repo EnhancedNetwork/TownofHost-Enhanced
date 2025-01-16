@@ -1,4 +1,4 @@
-﻿using TOHE.Modules;
+using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Utils;
 

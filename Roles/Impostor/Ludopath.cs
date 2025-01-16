@@ -1,4 +1,4 @@
-﻿namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles.Impostor;
 
 internal class Ludopath : RoleBase
 {

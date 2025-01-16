@@ -2,7 +2,7 @@ using AmongUs.Data;
 
 namespace TOHE;
 
-// ²Î¿¼£ºhttps://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/SNROnlySearch.cs
+// å‚è€ƒï¼šhttps://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/SNROnlySearch.cs
 public static class TOHEOnlySearch
 {
     public const string FilterText = "TOHE";

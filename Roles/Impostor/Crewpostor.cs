@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using static TOHE.Options;
 
@@ -55,7 +55,6 @@ internal class Crewpostor : RoleBase
             return false;
 
         return true;
-
     }
 
     private static void SendRPC(byte cpID, int tasksDone)

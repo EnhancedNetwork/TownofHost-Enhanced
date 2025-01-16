@@ -1,4 +1,4 @@
-﻿
+
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Vanilla;

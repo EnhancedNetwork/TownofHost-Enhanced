@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
@@ -86,7 +86,7 @@ internal class Ritualist : CovenManager
         int operate = 0; // 1:ID 2:猜测
         msg = msg.ToLower().TrimStart().TrimEnd();
         if (CheckCommond(ref msg, "id|guesslist|gl编号|玩家编号|玩家id|id列表|玩家列表|列表|所有id|全部id||編號|玩家編號")) operate = 1;
-        else if (CheckCommond(ref msg, "rt|rit|ritual|bloodritual", false)) operate = 2;
+        else if (CheckCommond(ref msg, "rt|rit|ritual|bloodritual|鲜血仪式|仪式|献祭|举行|附魔", false)) operate = 2;
         else return false;
 
         if (!pc.IsAlive())
