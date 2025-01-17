@@ -2276,7 +2276,7 @@ internal class ChatCommands
             case "/переименовать":
             case "/重命名":
             case "/命名为":
-                if (Options.PlayerCanSetName.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().NameCmd || TagManager.ReadPermission(player.FriendCode) >= 1)
+                if (Options.PlayerCanSetName.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().NameCmd || TagManager.GetPermissionLevel(player.FriendCode) >= 1)
                 {
                     if (GameStates.IsInGame)
                     {
@@ -2549,7 +2549,7 @@ internal class ChatCommands
             case "/айди":
             case "/编号":
             case "/玩家编号":
-                if ((Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2))
+                if ((Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 2))
                     && !Options.EnableVoteCommand.GetBool()) break;
 
                 string msgText = GetString("PlayerIdList");
@@ -2573,7 +2573,7 @@ internal class ChatCommands
                     break;
                 }
                 //checking if player is has necessary privellege or not
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2)
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 2)
                 {
                     Utils.SendMessage(GetString("midCommandNoAccess"), player.PlayerId);
                     break;
@@ -2601,7 +2601,7 @@ internal class ChatCommands
                 }
 
                 // Check if the player has the necessary privileges to use the command
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 5)
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 5)
                 {
                     Utils.SendMessage(GetString("BanCommandNoAccess"), player.PlayerId);
                     break;
@@ -2638,7 +2638,7 @@ internal class ChatCommands
                 }
 
                 // Prevent moderators from baning other moderators
-                if (Utils.IsPlayerModerator(bannedPlayer.FriendCode) || TagManager.ReadPermission(bannedPlayer.FriendCode) >= 2)
+                if (Utils.IsPlayerModerator(bannedPlayer.FriendCode) || TagManager.GetPermissionLevel(bannedPlayer.FriendCode) >= 2)
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
                     break;
@@ -2678,7 +2678,7 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("WarnCommandDisabled"), player.PlayerId);
                     break;
                 }
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2)
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 2)
                 {
                     Utils.SendMessage(GetString("WarnCommandNoAccess"), player.PlayerId);
                     break;
@@ -2703,7 +2703,7 @@ internal class ChatCommands
                 }
 
                 // Prevent moderators from warning other moderators
-                if (Utils.IsPlayerModerator(warnedPlayer.FriendCode) || TagManager.ReadPermission(warnedPlayer.FriendCode) >= 2)
+                if (Utils.IsPlayerModerator(warnedPlayer.FriendCode) || TagManager.GetPermissionLevel(warnedPlayer.FriendCode) >= 2)
                 {
                     Utils.SendMessage(GetString("WarnCommandWarnMod"), player.PlayerId);
                     break;
@@ -2748,7 +2748,7 @@ internal class ChatCommands
                 }
 
                 // Check if the player has the necessary privileges to use the command
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 4)
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 4)
                 {
                     Utils.SendMessage(GetString("KickCommandNoAccess"), player.PlayerId);
                     break;
@@ -2775,7 +2775,7 @@ internal class ChatCommands
                 }
 
                 // Prevent moderators from kicking other moderators
-                if (Utils.IsPlayerModerator(kickedPlayer.FriendCode) || TagManager.ReadPermission(kickedPlayer.FriendCode) >= 4)
+                if (Utils.IsPlayerModerator(kickedPlayer.FriendCode) || TagManager.GetPermissionLevel(kickedPlayer.FriendCode) >= 4)
                 {
                     Utils.SendMessage(GetString("KickCommandKickMod"), player.PlayerId);
                     break;
@@ -3072,7 +3072,7 @@ internal class ChatCommands
                     }
                     else
                     {
-                        var modTitle = (Utils.IsPlayerModerator(player.FriendCode) || TagManager.ReadPermission(player.FriendCode) >= 2) ? $"<color=#8bbee0>{GetString("MessageFromModerator")}" : $"<color=#ffff00>{GetString("MessageFromVIP")}";
+                        var modTitle = (Utils.IsPlayerModerator(player.FriendCode) || TagManager.GetPermissionLevel(player.FriendCode) >= 2) ? $"<color=#8bbee0>{GetString("MessageFromModerator")}" : $"<color=#ffff00>{GetString("MessageFromVIP")}";
                         if (args.Length > 1)
                             Utils.SendMessage(args.Skip(1).Join(delimiter: " "), title: $"{modTitle} ~ <size=1.25>{player.GetRealName(clientData: true)}</size></color>");
                         //string moderatorName3 = player.GetRealName().ToString();
@@ -3326,7 +3326,7 @@ internal class ChatCommands
                 }
                 else
                 {
-                    if (Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2))
+                    if (Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 2))
                     {
                         Utils.SendMessage(GetString("Message.MeCommandNoPermission"), player.PlayerId);
                         break;
@@ -3369,7 +3369,7 @@ internal class ChatCommands
                     break;
                 }
 
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 3)
+                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.GetPermissionLevel(player.FriendCode) < 3)
                 {
                     Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
 
