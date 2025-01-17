@@ -1,13 +1,6 @@
-﻿using AmongUs.GameOptions;
-using System;
-using System.Linq;
-using TOHE.Roles.AddOns.Common;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
-using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Translator;
-using static TOHE.Utils;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
