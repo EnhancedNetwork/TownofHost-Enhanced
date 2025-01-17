@@ -31,6 +31,7 @@ internal class Revenant : RoleBase
         target.RpcChangeRoleBasis(role);
         target.RpcSetCustomRole(role);
         target.GetRoleClass()?.OnAdd(target.PlayerId);
+        target.RemoveIncompatibleAddOns();
 
         target.Notify(string.Format(GetString("RevenantTargeted"), Utils.GetRoleName(role)));
 

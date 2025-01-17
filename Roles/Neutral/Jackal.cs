@@ -205,6 +205,7 @@ internal class Jackal : RoleBase
                 target.RpcChangeRoleBasis(CustomRoles.Sidekick);
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
+                target.RemoveIncompatibleAddOns();
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
@@ -227,6 +228,7 @@ internal class Jackal : RoleBase
                 AbilityLimit--;
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned Recruit to {target.GetNameWithRole()}", "Jackal");
                 target.RpcSetCustomRole(CustomRoles.Recruit);
+                target.RemoveIncompatibleAddOns();
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
@@ -253,6 +255,7 @@ internal class Jackal : RoleBase
                 {
                     target.RpcSetCustomRole(CustomRoles.Recruit);
                 }
+                target.RemoveIncompatibleAddOns();
                 AbilityLimit--;
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
@@ -397,6 +400,7 @@ internal class Jackal : RoleBase
                 newJackal.RpcChangeRoleBasis(CustomRoles.Jackal);
                 newJackal.RpcSetCustomRole(CustomRoles.Jackal);
                 newJackal.GetRoleClass()?.OnAdd(target.PlayerId);
+                newJackal.RemoveIncompatibleAddOns();
 
                 if (inMeeting)
                 {

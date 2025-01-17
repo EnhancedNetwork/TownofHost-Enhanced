@@ -153,6 +153,7 @@ public class Oiiai : IAddon
                 Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Neutrals assign.", "Oiiai");
             }
         }
+        killer.RemoveIncompatibleAddOns();
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         killer.Notify(GetString("LostRoleByOiiai"));

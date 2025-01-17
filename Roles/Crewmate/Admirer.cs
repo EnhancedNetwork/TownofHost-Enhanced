@@ -163,6 +163,7 @@ internal class Admirer : RoleBase
             AbilityLimit--;
             SendRPC(killer.PlayerId); //Sync skill
 
+            killer.RemoveIncompatibleAddOns();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             if (!DisableShieldAnimations.GetBool())

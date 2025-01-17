@@ -149,6 +149,7 @@ internal class Amnesiac : RoleBase
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
                 isSuccess = true;
             }
+            __instance.RemoveIncompatibleAddOns();
         }
         else
         {

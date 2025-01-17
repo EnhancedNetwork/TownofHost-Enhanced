@@ -23,6 +23,7 @@ internal class CopyCat : RoleBase
     private static OptionItem CopyTeamChangingAddon;
 
     private static float CurrentKillCooldown = new();
+    private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
 
     public override void SetupCustomOption()
     {
@@ -37,6 +38,7 @@ internal class CopyCat : RoleBase
     {
         playerIdList.Clear();
         CurrentKillCooldown = new();
+        OldAddons.Clear();
     }
 
     public override void Add(byte playerId)
@@ -44,6 +46,7 @@ internal class CopyCat : RoleBase
         if (!playerIdList.Contains(playerId))
             playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
+        OldAddons[playerId] = [];
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
@@ -80,10 +83,15 @@ internal class CopyCat : RoleBase
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
                     pc.RpcSetCustomRole(CustomRoles.CopyCat);
+                    foreach (var addon in OldAddons[pc.PlayerId])
+                    {
+                        pc.RpcSetCustomRole(addon);
+                    }
                 }
             }
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
+            OldAddons[pc.PlayerId].Clear();
         }
     }
 
@@ -150,6 +158,15 @@ internal class CopyCat : RoleBase
                 killer.RpcSetCustomRole(role);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
+                foreach (var addon in killer.GetCustomSubRoles())
+                {
+                    if (!CustomRolesHelper.CheckAddonConfilct(addon, killer))
+                    {
+                        OldAddons[killer.PlayerId].Add(addon);
+                        Main.PlayerStates[killer.PlayerId].RemoveSubRole(addon);
+                        Logger.Info($"{killer.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{killer.GetCustomRole().ToString()}");
+                    }
+                }
             }
             if (CopyTeamChangingAddon.GetBool())
             {

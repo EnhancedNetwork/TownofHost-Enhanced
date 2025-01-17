@@ -237,6 +237,7 @@ internal class DoubleAgent : RoleBase
                 player.RpcChangeRoleBasis(Role);
                 player.RpcSetCustomRole(Role);
                 player.GetRoleClass()?.Add(player.PlayerId);
+                player.RemoveIncompatibleAddOns();
                 player.MarkDirtySettings();
 
                 string RoleName = ColorString(GetRoleColor(player.GetCustomRole()), GetRoleName(player.GetCustomRole()));

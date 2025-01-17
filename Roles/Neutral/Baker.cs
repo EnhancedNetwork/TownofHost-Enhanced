@@ -318,6 +318,7 @@ internal class Baker : RoleBase
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
             player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+            player.RemoveIncompatibleAddOns();
 
             player.Notify(GetString("BakerToFamine"));
             player.RpcGuardAndKill(player);

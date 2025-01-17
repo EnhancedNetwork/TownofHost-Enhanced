@@ -117,6 +117,7 @@ internal class Imitator : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("RememberedImpostor")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
+        killer.RemoveIncompatibleAddOns();
 
         var killerRole = killer.GetCustomRole();
 

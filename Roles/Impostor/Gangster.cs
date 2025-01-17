@@ -136,6 +136,7 @@ internal class Gangster : RoleBase
 
             AbilityLimit--;
 
+            target.RemoveIncompatibleAddOns();
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
 

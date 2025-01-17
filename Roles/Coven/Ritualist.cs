@@ -253,6 +253,7 @@ internal class Ritualist : CovenManager
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("RitualistSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("BeRecruitedByRitualist")));
         }
+        target.RemoveIncompatibleAddOns();
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
