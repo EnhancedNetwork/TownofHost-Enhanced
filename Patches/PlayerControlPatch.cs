@@ -1328,9 +1328,9 @@ class FixedUpdateInNormalGamePatch
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Narc) && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
                 {
                     RoleText.enabled = true;
-                    BlankRT = ColorString(GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
+                    BlankRT = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
                     if (Sheriff.ShowShotLimit.GetBool()) 
-                        BlankRT += ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
+                        BlankRT += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
                     RoleText.text = $"<size=1.4>{BlankRT}</size>";
                 }
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
