@@ -66,6 +66,7 @@ internal class ChangeRoleSettings
             GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
             Main.clientIdList.Clear();
+            Main.AbilityUseLimit.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
