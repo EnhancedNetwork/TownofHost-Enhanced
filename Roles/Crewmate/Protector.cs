@@ -39,7 +39,7 @@ internal class Protector : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxShields.GetInt();
+        playerId.SetAbilityUseLimit(MaxShields.GetInt());
         TimeStamp = 0;
 
         if (!Main.ResetCamPlayerList.Contains(playerId))
@@ -61,18 +61,6 @@ internal class Protector : RoleBase
     }
     private bool ProtectorInProtect(byte playerId) => TimeStamp > Utils.GetTimeStamp();
 
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-            if (AbilityLimit >= 1)
-            {
-                AbilityLimit--;
-                TimeStamp = Utils.GetTimeStamp() + (long)ShieldDuration.GetFloat();
-                SendRPC(player.PlayerId);
-                player.Notify(GetString("ProtectorInProtect"));
-            }
-        return true;
-    }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (ProtectorInProtect(target.PlayerId))
