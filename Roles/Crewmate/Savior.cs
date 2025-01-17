@@ -63,7 +63,7 @@ internal class Savior : RoleBase
 
     public bool CheckKillButton(byte playerId)
            => !Main.PlayerStates[playerId].IsDead
-           && player.GetAbilityUseLimit() > 0;
+           && playerId.GetAbilityUseLimit() > 0;
 
     public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton(pc.PlayerId);
 
