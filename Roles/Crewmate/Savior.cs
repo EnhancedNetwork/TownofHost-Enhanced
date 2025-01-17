@@ -40,7 +40,7 @@ internal class Savior : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
 
         if (!Main.ResetCamPlayerList.Contains(playerId))
             Main.ResetCamPlayerList.Add(playerId);
@@ -50,9 +50,9 @@ internal class Savior : RoleBase
         if (killer == null || target == null) return false;
         if (!CheckKillButton(killer.PlayerId)) return false;
         if (ProtectList.Contains(target.PlayerId)) return false;
-        if (AbilityLimit <= 0) return false;
+        if (killer.GetAbilityUseLimit() <= 0) return false;
 
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
         ProtectList.Add(target.PlayerId);
         TempMarkProtected = target.PlayerId;
 
@@ -60,10 +60,6 @@ internal class Savior : RoleBase
 
         return true;
     }
-
-    public bool CheckKillButton(byte playerId)
-           => !Main.PlayerStates[playerId].IsDead
-           && AbilityLimit > 0;
 
     public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton(pc.PlayerId);
 
@@ -80,6 +76,6 @@ internal class Savior : RoleBase
     public override void AfterMeetingTasks()
     {
         ProtectList.Clear();
-        AbilityLimit = 1;
+        pc.SetAbilityUseLimit(1);
     }
 }
