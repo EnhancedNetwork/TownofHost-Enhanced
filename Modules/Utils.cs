@@ -2183,7 +2183,7 @@ public static class Utils
                         {
                             BlankRT = ColorString(GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
                             if (Sheriff.ShowShotLimit.GetBool()) 
-                                BlankRT += ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f) $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
+                                BlankRT += ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
                         }
                         // Same thing as Trickster but for Illusioned Coven
