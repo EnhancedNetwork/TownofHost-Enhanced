@@ -144,7 +144,7 @@ public abstract class RoleBase
     }
 
     /// <summary>
-    /// Set a specific kill Cooldown
+    /// Set a specific Kill Cooldown
     /// </summary>
     public virtual void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
 
@@ -159,7 +159,7 @@ public abstract class RoleBase
     /// </summary>
     public virtual bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount) => true;
     /// <summary>
-    /// Other player complete a Marked task
+    /// Other player complete a marked task
     /// </summary>
     public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
     { }
