@@ -1,9 +1,6 @@
-﻿using AmongUs.GameOptions;
-using System;
 using Hazel;
 using InnerNet;
 using System.Text;
-using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
