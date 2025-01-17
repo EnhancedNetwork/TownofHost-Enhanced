@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Roles.Core;
-using UnityEngine;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -27,7 +26,7 @@ internal class Knight : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
@@ -38,14 +37,10 @@ internal class Knight : RoleBase
     public override bool CanUseKillButton(PlayerControl pc)
         => !IsKilled(pc.PlayerId);
 
-    public override string GetProgressText(byte id, bool comms)
-        => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
-    private bool IsKilled(byte playerId) => AbilityLimit <= 0;
+    private static bool IsKilled(byte playerId) => playerId.GetAbilityUseLimit() <= 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
-        AbilityLimit--;
-        SendSkillRPC();
+        killer.RpcRemoveAbilityUse();
         Logger.Info($"{killer.GetNameWithRole()} : " + "Kill chance used", "Knight");
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
