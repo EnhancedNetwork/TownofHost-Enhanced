@@ -23,8 +23,8 @@ namespace TOHE
                 if (!Directory.Exists(@"TOHE-DATA/Tags"))
                     Directory.CreateDirectory(@"TOHE-DATA/Tags");
 
-                // Ensure subfolders (1-5) exist for permission levels
-                for (int i = 1; i <= 5; i++)
+                // Ensure subfolders (0-5) exist for permission levels
+                for (int i = 0; i <= 5; i++) // Changed to 0 through 5
                 {
                     string folderPath = @$"TOHE-DATA/Tags/{i}";
                     if (!Directory.Exists(folderPath))
@@ -56,7 +56,7 @@ namespace TOHE
 
         public static bool CheckFriendCode(string friendCode, bool log = false)
         {
-            // Check if the file exists in any of the permission folders (1-5)
+            // Check if the file exists in any of the permission folders (0-5)
             var folderPath = Directory.GetDirectories(TAGS_FILE_PATH)
                 .FirstOrDefault(dir => File.Exists($@"{dir}/{friendCode}.txt"));
 
