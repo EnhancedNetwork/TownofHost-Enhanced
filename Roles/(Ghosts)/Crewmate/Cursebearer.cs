@@ -36,7 +36,7 @@ internal class Cursebearer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
 
         foreach (var pc in Main.AllPlayerControls)
         {
@@ -54,10 +54,10 @@ internal class Cursebearer : RoleBase
     }
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit <= 0) return false;
+        if (killer.GetAbilityUseLimit() <= 0) return false;
         else
         {
-            AbilityLimit -= 1;
+            killer.RpcRemoveAbilityUse();
             target.RpcSetCustomRole(CustomRoles.Revealed);
             return true;
         }
