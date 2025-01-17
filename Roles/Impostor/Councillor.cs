@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
@@ -54,7 +54,7 @@ internal class Councillor : RoleBase
     public override void Add(byte playerId)
     {
         MurderLimitMeeting = MurderLimitPerMeeting.GetInt();
-        AbilityLimit = MurderLimitPerGame.GetInt();
+        playerId.SetAbilityUseLimit(MurderLimitPerGame.GetInt());
     }
     public override void AfterMeetingTasks()
     {
@@ -114,7 +114,7 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxMeeting"));
                     return true;
                 }
-                else if (AbilityLimit <= 0)
+                else if (pc.GetAbilityUseLimit() <= 0)
                 {
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxGame"));
                     return true;
@@ -245,8 +245,7 @@ internal class Councillor : RoleBase
                 string Name = dp.GetRealName();
 
                 MurderLimitMeeting--;
-                AbilityLimit--;
-                SendSkillRPC();
+                pc.RpcRemoveAbilityUse();
 
                 if (!GameStates.IsProceeding)
                     _ = new LateTask(() =>
@@ -284,7 +283,7 @@ internal class Councillor : RoleBase
         string result = string.Empty;
         for (int i = 0; i < mc.Count; i++)
         {
-            result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
+            result += mc[i];
         }
 
         if (int.TryParse(result, out int num))
@@ -293,15 +292,11 @@ internal class Councillor : RoleBase
         }
         else
         {
-            //并不是玩家编号，判断是否颜色
-            //byte color = GetColorFromMsg(msg);
-            //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
             id = byte.MaxValue;
             error = GetString("Councillor_MurderHelp");
             return false;
         }
 
-        //判断选择的玩家是否合理
         PlayerControl target = Utils.GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
@@ -382,6 +377,4 @@ internal class Councillor : RoleBase
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CouncillorOnClick(pva.TargetPlayerId/*, __instance*/)));
         }
     }
-
-    public override string GetProgressText(byte playerId, bool coooms) => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Councillor), $"({AbilityLimit})") ?? "Invalid";
 }
