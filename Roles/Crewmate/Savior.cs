@@ -79,7 +79,9 @@ internal class Savior : RoleBase
     }
     public override void AfterMeetingTasks()
     {
+        if (_Player == null) return;
+        
         ProtectList.Clear();
-        playerId.SetAbilityUseLimit(1);
+        _Player.SetAbilityUseLimit(1);
     }
 }
