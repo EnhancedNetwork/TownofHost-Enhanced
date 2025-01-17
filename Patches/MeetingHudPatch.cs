@@ -1147,10 +1147,17 @@ class MeetingHudStartPatch
 
             string BlankRT = string.Empty;
 
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster))
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster) && (!pc.Is(CustomRoles.Narc) || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)))
             {
                 BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                 BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
+            }
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Narc) && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+            {
+                BlankRT = ColorString(GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
+                if (Sheriff.ShowShotLimit.GetBool()) 
+                    BlankRT += ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f) $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
                 roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
             }
             if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsCovIllusioned(pc.PlayerId))
