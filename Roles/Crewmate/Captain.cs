@@ -2,7 +2,6 @@ using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
-
 namespace TOHE.Roles.Crewmate;
 
 internal class Captain : RoleBase
