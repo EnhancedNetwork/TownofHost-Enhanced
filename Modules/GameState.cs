@@ -433,7 +433,7 @@ public class PlayerState(byte playerId)
         Fall,
         FadedAway,
         Expired,
-        AllergicReaction,
+
 
         // TOHE
         Gambled,
