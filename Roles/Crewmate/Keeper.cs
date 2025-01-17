@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
@@ -21,7 +21,6 @@ internal class Keeper : RoleBase
     private static OptionItem KeeperUsesOpt;
 
     private static readonly HashSet<byte> keeperTarget = [];
-    private static readonly Dictionary<byte, int> keeperUses = [];
     private static readonly Dictionary<byte, bool> DidVote = [];
 
     public override void SetupCustomOption()
@@ -34,40 +33,30 @@ internal class Keeper : RoleBase
     public override void Init()
     {
         keeperTarget.Clear();
-        keeperUses.Clear();
         DidVote.Clear();
     }
 
     public override void Add(byte playerId)
     {
         DidVote.Add(playerId, false);
-        keeperUses[playerId] = 0;
+        playerId.SetAbilityUseLimit(0);
     }
     public override void Remove(byte playerId)
     {
         DidVote.Remove(playerId);
-        keeperUses.Remove(playerId);
     }
 
     public override string GetProgressText(byte playerId, bool comms)
     {
-        if (playerId == byte.MaxValue) return string.Empty;
-        if (!keeperUses.ContainsKey(playerId)) return string.Empty;
         var ProgressText = new StringBuilder();
-        var taskState8 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor8;
-        var TaskCompleteColor8 = Color.green;
-        var NonCompleteColor8 = Color.yellow;
-        var NormalColor8 = taskState8.IsTaskFinished ? TaskCompleteColor8 : NonCompleteColor8;
-        TextColor8 = comms ? Color.gray : NormalColor8;
-        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
-        Color TextColor81;
+        Color TextColor = Utils.GetRoleColor(CustomRoles.Keeper).ShadeColor(0.25f);
+
         var maxUses = KeeperUsesOpt.GetInt();
-        var usesLeft = Math.Max(maxUses - keeperUses[playerId], 0);
-        if (usesLeft < 1) TextColor81 = Color.red;
-        else TextColor81 = Utils.GetRoleColor(CustomRoles.Keeper);
-        ProgressText.Append(Utils.ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount})"));
-        ProgressText.Append(Utils.ColorString(TextColor81, $" <color=#ffffff>-</color> {usesLeft}"));
+        var usesLeft = Math.Max(maxUses - playerId.GetAbilityUseLimit(), 0);
+        if (usesLeft < 1) TextColor = Color.red;
+
+        ProgressText.Append(Utils.GetTaskCount(playerId, comms));
+        ProgressText.Append(Utils.ColorString(TextColor, Utils.ColorString(Color.white, " - ") + $"({usesLeft})"));
         return ProgressText.ToString();
     }
 
@@ -78,7 +67,6 @@ internal class Keeper : RoleBase
         if (type == 0)
         {
             writer.Write(keeperId);
-            writer.Write(keeperUses[keeperId]);
             writer.Write(targetId);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -92,13 +80,9 @@ internal class Keeper : RoleBase
             byte keeperId = reader.ReadByte();
             DidVote[keeperId] = true;
 
-            int uses = reader.ReadInt32();
-            keeperUses[keeperId] = uses;
-
             byte targetId = reader.ReadByte();
             if (!keeperTarget.Contains(targetId)) keeperTarget.Add(targetId);
         }
-
         else if (type == 1)
         {
             foreach (var pid in DidVote.Keys)
@@ -118,9 +102,9 @@ internal class Keeper : RoleBase
         if (DidVote[voter.PlayerId]) return true;
         DidVote[voter.PlayerId] = true;
         if (keeperTarget.Contains(target.PlayerId)) return true;
-        if (keeperUses[voter.PlayerId] >= KeeperUsesOpt.GetInt()) return true;
+        if (voter.GetAbilityUseLimit() >= KeeperUsesOpt.GetInt()) return true;
 
-        keeperUses[voter.PlayerId]++;
+        voter.RpcIncreaseAbilityUseLimitBy(1);
         keeperTarget.Add(target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} chosen as keeper target by {target.GetNameWithRole()}", "Keeper");
         SendRPC(type: 0, keeperId: voter.PlayerId, targetId: target.PlayerId); // add keeperUses, KeeperTarget and DidVote
