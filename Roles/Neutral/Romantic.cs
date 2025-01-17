@@ -307,6 +307,7 @@ internal class Romantic : RoleBase
                 pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");
         }
+        pc.RemoveIncompatibleAddOns();
     }
 }
 
