@@ -12,7 +12,7 @@ internal class Deputy : RoleBase
     private const int Id = 7800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem HandcuffCooldown;
@@ -39,26 +39,23 @@ internal class Deputy : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = HandcuffMax.GetInt();
+        playerId.SetAbilityUseLimit(HandcuffMax.GetInt());
         RoleblockedPlayers[playerId] = [];
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = HandcuffCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => !player.Data.IsDead && AbilityLimit >= 1;
+    public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() >= 1;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
+        if (killer.GetAbilityUseLimit() < 1) return false;
         if (killer == null || target == null) return false;
-
-        Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} : Limit {AbilityLimit}", "Deputy");
 
         if (target.PlayerId != _Player.PlayerId)
         {
             if (!RoleblockedPlayers[killer.PlayerId].Contains(target.PlayerId))
             {
                 RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId);
-                AbilityLimit--;
-                SendSkillRPC();
+                killer.RpcRemoveAbilityUse();
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
                 killer.SetKillCooldown();
@@ -113,7 +110,6 @@ internal class Deputy : RoleBase
                 RoleblockedPlayers[player].Remove(target);
         }
     }
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Deputy) : Color.gray, $"({AbilityLimit})");
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));
