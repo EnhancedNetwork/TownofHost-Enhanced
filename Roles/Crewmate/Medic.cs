@@ -7,7 +7,6 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
-
 namespace TOHE.Roles.Crewmate;
 
 internal class Medic : RoleBase
