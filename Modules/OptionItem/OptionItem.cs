@@ -327,10 +327,4 @@ public enum OptionFormat
     Health,
     Level,
 }
-public static class OptionExtensions
-{
-    public static bool IsInfinite(this IntegerOptionItem option)
-    {
-        return option.GetInt() == 0; // 0 is used to represent infinite
-    }
 }
