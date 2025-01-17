@@ -2039,7 +2039,7 @@
   "CovenRolesMinPlayer": "<color=#00a5ff>Minimum</color> amount of <color=#ac42f2>Coven</color>",
   "CovenRolesMaxPlayer": "<color=#00a5ff>Maximum</color> amount of <color=#ac42f2>Coven</color>",
   "%role%CanVent": "%role% can Vent",
-  "%role%HasImpVis": "%role% Has <color=#ff1919>Impostor</color> Vision",
+  "%role%HasImpVis": "%role% has <color=#ff1919>Impostor</color> Vision",
   "CovenHasImpVis": "<color=#ac42f2>Coven</color> Members have <color=#ff1919>Impostor</color> Vision",
   "CovenImpVisMode": "<color=#ff1919>Impostor</color> Vision Configuration",
   "CovenCanVent": "<color=#ac42f2>Coven</color> Members can Vent",
