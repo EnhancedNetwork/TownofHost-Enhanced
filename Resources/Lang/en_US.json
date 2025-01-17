@@ -3995,7 +3995,7 @@
 
   "Quizmaster": "Quizmaster",
   "QuizmasterInfo": "Quiz people to kill them in meetings",
-  "QuizmasterInfoLong": "(Neutrals):\nAs the Quizmaster, you can mark a player using your Kill button. In the next meeting, the marked player will have \"?!\" next to their name. The player will die if they answer the question wrong or doesn't answer. The player will live if the Quizmaster is killed/ejected in the same meeting.\nThe Quizmaster cannot mark multiple people in the same round",
+  "QuizmasterInfoLong": "(Neutrals):\nAs the Quizmaster, you can mark a player using your Kill button. In the next meeting, the marked player will have \"?!\" next to their name. The player will die if they answer the question wrong or doesn't answer. The player will live if the Quizmaster is killed/ejected in the same meeting.\nThe Quizmaster cannot mark multiple people in the same round.\nIf the Quizmaster can kill after tagging, they are considered a Neutral Killer. If not, they are considered Neutral Chaos and will steal the win if they're still alive at the end of the game.",
   "QuizmasterKillButtonText": "Quiz",
 
   "QuizmasterChat.MarkedBy": "You've been marked by the <color={QMCOLOR}><b>Quizmaster</b></color>\nTo survive you have to answer correct to this question:\n\n{QMQUESTION}",
