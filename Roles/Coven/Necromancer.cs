@@ -137,6 +137,7 @@ internal class Necromancer : CovenManager
         nm.RpcChangeRoleBasis(role);
         nm.RpcSetCustomRole(role);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
+        nm.RemoveIncompatibleAddOns();
         nm.SyncSettings();
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
         nm.RpcGuardAndKill(nm);
