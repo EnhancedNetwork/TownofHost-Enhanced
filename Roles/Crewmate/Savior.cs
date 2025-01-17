@@ -1,12 +1,4 @@
-﻿using AmongUs.GameOptions;
-using Hazel;
-using UnityEngine;
-using TOHE.Modules;
 using TOHE.Roles.Core;
-using static TOHE.Utils;
-using static TOHE.Translator;
-using System;
-
 
 namespace TOHE.Roles.Crewmate;
 
