@@ -51,7 +51,7 @@ namespace TOHE.Roles.Neutral
         public override void Add(byte playerId)
         {
             RepellantNum.TryAdd(playerId, 0);
-            AbilityLimit = RepellantMaxUses.GetInt();
+            playerId.SetAbilityUseLimit(RepellantMaxUses.GetInt());
         }
 
         public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -98,9 +98,9 @@ namespace TOHE.Roles.Neutral
 
         public override void OnEnterVent(PlayerControl pc, Vent AirConditioning)
         {
-            if (AbilityLimit >= 1)
+            if (pc.GetAbilityUseLimit() >= 1)
             {
-                AbilityLimit -= 1;
+                pc.RpcRemoveAbilityUse();
                 RepellantInProtect.Remove(pc.PlayerId);
                 RepellantInProtect.Add(pc.PlayerId, GetTimeStamp());
 
