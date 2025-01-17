@@ -17,11 +17,7 @@ internal class Randomizer : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
 
-    public static OptionItem BecomeBaitDelayNotify;
-    public static OptionItem BecomeBaitDelayMin;
-    public static OptionItem BecomeBaitDelayMax;
-    public static OptionItem BecomeTrapperBlockMoveTime;
-
+    
 
         private static OptionItem ChanceCrew;
         private static OptionItem ChanceImpostor;
