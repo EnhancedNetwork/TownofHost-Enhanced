@@ -1,6 +1,5 @@
 using Hazel;
 using TOHE.Modules.ChatManager;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
