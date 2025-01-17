@@ -180,6 +180,7 @@ internal class Berserker : RoleBase
         {
             killer.RpcSetCustomRole(CustomRoles.War);
             killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+            killer.RemoveIncompatibleAddOns();
 
             killer.Notify(GetString("BerserkerToWar"));
             Main.AllPlayerKillCooldown[killer.PlayerId] = WarKillCooldown.GetFloat();
