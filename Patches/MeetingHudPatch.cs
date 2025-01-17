@@ -660,7 +660,6 @@ class CheckForEndVotingPatch
             if (candidate.PlayerId == exiledplayer.PlayerId || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
         }
         if (TargetList == null || TargetList.Count == 0) return null;
-        var rand = IRandom.Instance;
         var target = TargetList.RandomElement();
         return target;
     }
@@ -710,8 +709,16 @@ class CastVotePatch
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
             CovenLeader.retrainPlayer.Clear();
-            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
-            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+
+            if (CovenLeader.List.Any())
+                foreach (var covenLeaderId in CovenLeader.List)
+                {
+                    var covenLeader = covenLeaderId.GetPlayer();
+                    if (covenLeader == null) continue;
+
+                    covenLeader.RpcRemoveAbilityUse();
+                }
+            
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         }
