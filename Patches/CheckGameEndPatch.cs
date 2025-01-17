@@ -387,6 +387,46 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                             break;
+
+                        case CustomRoles.Summoner:
+                            if (WinnerTeam == CustomWinner.Crewmate && pc.IsAlive()) // Ensure Summoner is alive and Crewmates have won
+                            {
+                                WinnerIds.Add(pc.PlayerId);
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Summoner);
+
+                                // Mark Summoner as having won
+                                Summoner.UpdateWinCondition(true);
+                                Logger.Info($"Summoner {pc.PlayerId} has won as part of the Crew victory.", "Summoner");
+                            }
+                            break;
+
+
+
+                        case CustomRoles.Summoned:
+                            if (Summoner.HasWon) // Ensure Summoner has won
+                            {
+                                if (Summoner.SummonedKillRequirement.GetInt() == 0) // No kill requirement
+                                {
+                                    WinnerIds.Add(pc.PlayerId);
+                                    AdditionalWinnerTeams.Add(AdditionalWinners.Summoned);
+                                    Logger.Info($"Summoned {pc.PlayerId} has won with Summoner. No kill requirement.", "Summoner");
+                                }
+                                else if (Main.PlayerStates[pc.PlayerId].RoleClass is Summoned summoned
+                                         && summoned.NumKills >= Summoner.SummonedKillRequirement.GetInt()) // Meets kill requirement
+                                {
+                                    WinnerIds.Add(pc.PlayerId);
+                                    AdditionalWinnerTeams.Add(AdditionalWinners.Summoned);
+                                    Logger.Info($"Summoned {pc.PlayerId} has won with Summoner after meeting kill requirement.", "Summoner");
+                                    Summoned.ResetKillCounts();
+                                }
+                            }
+                            break;
+
+
+
+
+
+
                     }
                 }
 
