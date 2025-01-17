@@ -5,7 +5,6 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
