@@ -52,6 +52,17 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
+    public static void RemoveIncompatibleAddOns(this PlayerControl player)
+    {
+        foreach (var addon in player.GetCustomSubRoles())
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
+                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+            }
+        }
+    }
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride)
     {
         player.StartCoroutine(player.CoSetRole(role, canOverride));
