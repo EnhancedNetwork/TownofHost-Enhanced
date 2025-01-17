@@ -142,7 +142,8 @@ internal class Admirer : RoleBase
             else goto AdmirerFailed;
 
             killer.RpcRemoveAbilityUse();
-
+            
+            killer.RemoveIncompatibleAddOns();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             if (!DisableShieldAnimations.GetBool())
