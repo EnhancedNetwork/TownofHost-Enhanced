@@ -31,7 +31,6 @@ public abstract class OptionItem
     public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
-
     public bool IsText { get; protected set; }
     public bool IsVanillaText { get; protected set; }
     public Dictionary<string, string> ReplacementDictionary
@@ -114,8 +113,6 @@ public abstract class OptionItem
 
             nameSettings.TryGetValue(id, out var setting);
             Logger.Error($"Duplicate from: {setting}", "OptionItem");
-
-
         }
     }
 
@@ -292,9 +289,7 @@ public abstract class OptionItem
     }
 
     public class UpdateValueEventArgs(int beforeValue, int currentValue) : EventArgs
-
     {
-
         public int CurrentValue { get; set; } = currentValue;
         public int BeforeValue { get; set; } = beforeValue;
     }
