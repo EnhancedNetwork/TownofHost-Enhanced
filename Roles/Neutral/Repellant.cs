@@ -1,9 +1,9 @@
 ﻿using AmongUs.GameOptions;
 using System;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral
 {
