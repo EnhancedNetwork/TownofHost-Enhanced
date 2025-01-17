@@ -223,7 +223,7 @@ public static class Utils
         // Global Kill Flash
         if (target.GetRoleClass().GlobalKillFlashCheck(killer, target, seer)) return true;
 
-        // if seer is alive
+        // if Seer is alive
         if (seer.IsAlive())
         {
             // Kill Flash as killer
@@ -2212,25 +2212,30 @@ public static class Utils
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
+                        string BlankRT = string.Empty;
+
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
-                            TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
+                            BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random Trickster role
+                            BlankRT += TaskState.GetTaskState(); // Random task count for revealed Trickster
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
                         }
                         // Same thing as Trickster but for Illusioned Coven
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
                         {
-                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId);
-                            TargetRoleText += TaskState.GetTaskState();
+                            BlankRT = Overseer.GetRandomRole(seer.PlayerId);
+                            BlankRT += TaskState.GetTaskState();
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
                         }
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
                         {
                             var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                            TargetRoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                            BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
                             if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                             {
-                                TargetRoleText += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
+                                BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
                             }
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
                         }
 
                         // ====== Target player name ======
