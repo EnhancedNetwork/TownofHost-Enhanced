@@ -483,11 +483,11 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
             //    break;
-            case CustomRPC.SetJailerExeLimit:
-                Jailer.ReceiveRPC(reader, setTarget: false);
-                break;
             case CustomRPC.SyncJailerData:
                 Jailer.ReceiveRPC(reader);
+                break;
+            case CustomRPC.SetCrewpostorTasksDone:
+                Crewpostor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncAdmiredList:
                 Admirer.ReceiveRPC(reader);
