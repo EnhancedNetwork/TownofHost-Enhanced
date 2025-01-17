@@ -18,8 +18,8 @@ internal class Sheriff : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
-    private static OptionItem ShotLimitOpt;
-    private static OptionItem ShowShotLimit;
+    public static OptionItem ShotLimitOpt;
+    public static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
     private static OptionItem MisfireOnAdmired;
