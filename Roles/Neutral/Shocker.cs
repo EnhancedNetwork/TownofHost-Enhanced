@@ -53,7 +53,7 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]).SetValueFormat(OptionFormat.Multiplier);
         ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        ShockerImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
+        HasImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         OverrideTasksData.Create(18, TabGroup.NeutralRoles, CustomRoles.Shocker);
     }
