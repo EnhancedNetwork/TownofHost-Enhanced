@@ -42,7 +42,7 @@ internal class Laborer : RoleBase
             Main.ResetCamPlayerList.Add(playerId);
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id.GetPlayer()) ? CurrentKillCooldown : 300f;
     public override bool CanUseKillButton(PlayerControl pc) => player.GetAbilityUseLimit() > 0;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
