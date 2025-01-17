@@ -1,10 +1,10 @@
-using System.Text;
 using System;
+using System.Text;
 using TMPro;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE;
 
@@ -26,7 +26,7 @@ class HudManagerPatch
 
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
-        //壁抜け
+        //Õúüµè£Òüæ
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             if ((!AmongUsClient.Instance.IsGameStarted || !GameStates.IsOnlineGame)
@@ -35,7 +35,7 @@ class HudManagerPatch
                 player.Collider.offset = new Vector2(0f, 127f);
             }
         }
-        //壁抜け解除
+        //Õúüµè£Òüæ×ğúÚÖñ
         if (player.Collider.offset.y == 127f)
         {
             if (!Input.GetKey(KeyCode.LeftControl) || (AmongUsClient.Instance.IsGameStarted && GameStates.IsOnlineGame))
@@ -221,7 +221,7 @@ class SetHudActivePatch
 
         if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
             __instance.ReportButton.ToggleVisible(false);
-        
+
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
             __instance.KillButton.ToggleVisible(false);
 
@@ -305,11 +305,11 @@ class TaskPanelBehaviourPatch
                         if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb.Length < 1 && !line.Contains('(')) continue;
                         sb.Append(line + "\r\n");
                     }
-                    
+
                     if (sb.Length > 1)
                     {
                         var text = sb.ToString().TrimEnd('\n').TrimEnd('\r');
-                        if (!Utils.HasTasks(player.Data, false) && sb.ToString().Count(s => (s == '\n')) >= 2)
+                        if (!Utils.HasTasks(player.Data, false) && sb.ToString().Count(s => (s == '\n')) >= 1)
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
                         AllText += $"\r\n\r\n<size=85%>{text}</size>";
                     }

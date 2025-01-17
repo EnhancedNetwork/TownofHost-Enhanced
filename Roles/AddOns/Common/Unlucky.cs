@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Unlucky : IAddon
 {
+    public CustomRoles Role => CustomRoles.Unlucky;
     private const int Id = 21000;
     public AddonTypes Type => AddonTypes.Harmful;
 
@@ -13,6 +14,7 @@ public class Unlucky : IAddon
     private static OptionItem UnluckyReportSuicideChance;
     private static OptionItem UnluckyOpenDoorSuicideChance;
 
+    [Obfuscation(Exclude = true)]
     public enum StateSuicide
     {
         TryKill,

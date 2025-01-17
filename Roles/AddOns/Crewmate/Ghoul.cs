@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
 
 public class Ghoul : IAddon
 {
+    public CustomRoles Role => CustomRoles.Ghoul;
     private const int Id = 21900;
     public AddonTypes Type => AddonTypes.Mixed;
 
@@ -30,7 +31,7 @@ public class Ghoul : IAddon
             IsEnable = false;
     }
 
-    public static void ApplyGameOptions(PlayerControl player) 
+    public static void ApplyGameOptions(PlayerControl player)
     {
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Ghoul) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId))
         {

@@ -1,7 +1,6 @@
 using InnerNet;
 using System;
 using System.IO;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -80,8 +79,12 @@ public static class BanManager
     {
         if (player == null) return "";
         string puid = player.ProductUserId;
+        return GetHashedPuid(puid);
+    }
+    public static string GetHashedPuid(string puid)
+    {
         using SHA256 sha256 = SHA256.Create();
-        
+
         // get sha-256 hash
         byte[] sha256Bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(puid));
         string sha256Hash = BitConverter.ToString(sha256Bytes).Replace("-", "").ToLower();
@@ -89,6 +92,7 @@ public static class BanManager
         // pick front 5 and last 4
         return string.Concat(sha256Hash.AsSpan(0, 5), sha256Hash.AsSpan(sha256Hash.Length - 4));
     }
+
     public static void AddBanPlayer(ClientData player)
     {
         if (!AmongUsClient.Instance.AmHost || player == null) return;
@@ -104,7 +108,7 @@ public static class BanManager
             else Logger.Info($"Failed to add player {player?.PlayerName.RemoveHtmlTags()}/{player?.FriendCode}/{player?.GetHashedPuid()} to ban list!", "AddBanPlayer");
         }
     }
-    
+
     public static bool CheckDenyNamePlayer(PlayerControl player, string name)
     {
         if (!AmongUsClient.Instance.AmHost || !Options.ApplyDenyNameList.GetBool()) return false;
@@ -225,9 +229,9 @@ public static class BanManager
             var splitUser = user["friendcode"].ToString().Split('#')[0].ToLower().Trim();
 
             if ((!string.IsNullOrEmpty(splitCode) && (splitCode == splitUser))
-                || (user["hashPUID"].ToString().ToLower().Trim() == hashedPuid.ToLower().Trim()))
+                || !hashedPuid.IsNullOrWhiteSpace() && (user["hashPUID"].ToString().ToLower().Trim() == hashedPuid.ToLower().Trim()))
             {
-                Logger.Warn($"friendcode : {code}, hashedPUID : {hashedPuid} banned by EAC reason : {user["reason"]}", "CheckEACList");
+                Logger.Warn($"friendcode : {code}, hashedPUID : {hashedPuid} banned by EAC reason : {user["friendcode"]} {user["reason"]}", "CheckEACList");
                 return true;
             }
         }

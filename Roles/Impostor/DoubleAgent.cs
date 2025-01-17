@@ -1,22 +1,21 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
-using static TOHE.Utils;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 internal class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.DoubleAgent;
     private const int Id = 29000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsEnable => HasEnabled;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -34,6 +33,7 @@ internal class DoubleAgent : RoleBase
     private static OptionItem ExplosionRadius;
     private static OptionItem ChangeRoleToOnLast;
 
+    [Obfuscation(Exclude = true)]
     private enum ChangeRolesSelectOnLast
     {
         Role_NoChange,
@@ -66,7 +66,6 @@ internal class DoubleAgent : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         CurrentBombedPlayers.Clear();
         CurrentBombedTime = -1;
         BombIsActive = false;
@@ -76,7 +75,6 @@ internal class DoubleAgent : RoleBase
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         if (Main.AllAlivePlayerControls.Count(player => player.Is(Custom_Team.Impostor)) > 1)
             StartedWithMoreThanOneImp = true;
@@ -120,7 +118,7 @@ internal class DoubleAgent : RoleBase
         }
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => false;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.AliveImpostorCount < 2;
 
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
@@ -130,6 +128,12 @@ internal class DoubleAgent : RoleBase
         {
             if (target.Is(Custom_Team.Impostor)) return false;
             if (voter == target) return false;
+
+            if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+            {
+                target = GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+            }
 
             CurrentBombedTime = -1;
             CurrentBombedPlayers.Add(target.PlayerId);
@@ -229,6 +233,8 @@ internal class DoubleAgent : RoleBase
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
 
                 Init();
+                player.GetRoleClass().OnRemove(player.PlayerId);
+                player.RpcChangeRoleBasis(Role);
                 player.RpcSetCustomRole(Role);
                 player.GetRoleClass()?.Add(player.PlayerId);
                 player.MarkDirtySettings();
@@ -266,7 +272,7 @@ internal class DoubleAgent : RoleBase
     // Set bomb mark on player.
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (seen == null ) return string.Empty;
+        if (seen == null) return string.Empty;
         if (CurrentBombedPlayers.Contains(seen.PlayerId)) return ColorString(Color.red, "Ⓑ"); // L Rizz :)
         return string.Empty;
     }
@@ -360,3 +366,4 @@ internal class DoubleAgent : RoleBase
 
 // FieryFlower was here ඞ
 // Drakos wasn't here, 100% not
+// Niko is here, what dog shxt has you guys code

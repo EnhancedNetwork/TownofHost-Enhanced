@@ -1,5 +1,6 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -9,9 +10,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Witness : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Witness;
     private const int Id = 10100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -28,14 +28,8 @@ internal class Witness : RoleBase
         WitnessTime = IntegerOptionItem.Create(Id + 11, "WitnessTime", new(1, 30, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Witness])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateLowLoadOthers);
@@ -54,7 +48,7 @@ internal class Witness : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown();
-        if (Main.AllKillers.ContainsKey(target.PlayerId))
+        if (Illusionist.IsNonCovIllusioned(target.PlayerId) || (Main.AllKillers.ContainsKey(target.PlayerId) && !Illusionist.IsCovIllusioned(target.PlayerId)))
             killer.Notify(GetString("WitnessFoundKiller"));
         else
             killer.Notify(GetString("WitnessFoundInnocent"));

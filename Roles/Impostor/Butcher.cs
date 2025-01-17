@@ -1,4 +1,4 @@
-﻿using TOHE.Modules;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -8,10 +8,9 @@ namespace TOHE.Roles.Impostor;
 internal class Butcher : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Butcher;
     private const int Id = 24300;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -24,16 +23,18 @@ internal class Butcher : RoleBase
     public override void Init()
     {
         MurderTargetLateTask = [];
-        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
-
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOthers);
         }
+    }
+
+    public override void Remove(byte playerId)
+    {
+        CustomRoleManager.OnFixedUpdateOthers.Remove(OnFixedUpdateOthers);
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(Translator.GetString("ButcherButtonText"));
@@ -91,7 +92,7 @@ internal class Butcher : RoleBase
     public override void AfterMeetingTasks() => MurderTargetLateTask = [];
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => MurderTargetLateTask.Clear();
 
-    public static void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
+    public void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
     {
         if (!target.IsAlive()) return;
         if (!MurderTargetLateTask.TryGetValue(target.PlayerId, out var data)) return;
@@ -106,7 +107,7 @@ internal class Butcher : RoleBase
                 Vector2 location = new(ops.x + ((float)(rd.Next(1, 200) - 100) / 100), ops.y + ((float)(rd.Next(1, 200) - 100) / 100));
                 target.RpcTeleport(location);
                 target.RpcMurderPlayer(target);
-                target.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()), true);
+                target.SetRealKiller(_Player, true);
                 MurderTargetLateTask[target.PlayerId] = (0, data.Item2 + 1, ops);
             }
             else MurderTargetLateTask.Remove(target.PlayerId);

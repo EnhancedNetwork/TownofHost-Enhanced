@@ -1,10 +1,11 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Prohibited : IAddon
 {
+    public CustomRoles Role => CustomRoles.Prohibited;
     private const int Id = 29900;
     public AddonTypes Type => AddonTypes.Harmful;
 

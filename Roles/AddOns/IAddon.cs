@@ -1,7 +1,8 @@
-﻿//Thanks EHR for https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/AddOns/IAddon.cs and everything related ;)
+//Thanks EHR for https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/AddOns/IAddon.cs and everything related ;)
 
 namespace TOHE.Roles.AddOns
 {
+    [Obfuscation(Exclude = true)]
     public enum AddonTypes
     {
         Impostor,
@@ -14,6 +15,7 @@ namespace TOHE.Roles.AddOns
     }
     public interface IAddon
     {
+        public CustomRoles Role { get; }
         public AddonTypes Type { get; }
         public void SetupCustomOption();
 

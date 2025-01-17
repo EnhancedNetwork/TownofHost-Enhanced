@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
@@ -9,15 +9,14 @@ namespace TOHE.Roles.Crewmate;
 internal class Randomizer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Randomizer;
     private const int Id = 7500;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
 
     
+
 
         private static OptionItem ChanceCrew;
         private static OptionItem ChanceImpostor;
@@ -129,6 +128,7 @@ internal class Randomizer : RoleBase
         {
             var pc = Utils.GetPlayerById(playerId);
             if (pc == null) return;
+
 
         var Fg = IRandom.Instance;
         int Randomizer = Fg.Next(1, 5);

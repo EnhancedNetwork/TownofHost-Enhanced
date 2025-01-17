@@ -1,15 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 internal class EvilGuesser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.EvilGuesser;
     private const int Id = 1300;
-
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -36,17 +33,6 @@ internal class EvilGuesser : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser])
             .SetColor(Color.green);
     }
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
-    }
-
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilGuesser), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.EvilGuesser) && EGTryHideMsg.GetBool();
 

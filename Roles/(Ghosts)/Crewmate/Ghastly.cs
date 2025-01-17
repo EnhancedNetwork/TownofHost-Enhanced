@@ -1,16 +1,19 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using UnityEngine;
-using TOHE.Roles.Double;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
 internal class Ghastly : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Ghastly;
     private const int Id = 22060;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ghastly);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -41,12 +44,40 @@ internal class Ghastly : RoleBase
         GhastlyKillAllies = BooleanOptionItem.Create(Id + 14, "GhastlyKillAllies", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Ghastly]);
     }
+
+    public override void Init()
+    {
+        KillerIsChosen = false;
+        killertarget = (byte.MaxValue, byte.MaxValue);
+        LastTime.Clear();
+    }
+
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxPossesions.GetInt();
 
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
+    }
+
+    public void SendRPC()
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.PlayerId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        writer.Write(KillerIsChosen);
+        writer.Write(killertarget.Item1);
+        writer.Write(killertarget.Item2);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        AbilityLimit = reader.ReadSingle();
+        KillerIsChosen = reader.ReadBoolean();
+        var item1 = reader.ReadByte();
+        var item2 = reader.ReadByte();
+        killertarget = (item1, item2);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -61,8 +92,10 @@ internal class Ghastly : RoleBase
             angel.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantPosses")));
             return true;
         }
+
         if (AbilityLimit <= 0)
         {
+            SendRPC();
             angel.Notify(GetString("GhastlyNoMorePossess"));
             return false;
         }
@@ -90,7 +123,6 @@ internal class Ghastly : RoleBase
         {
             Target = target.PlayerId;
             AbilityLimit--;
-            SendSkillRPC();
             LastTime.Add(killer, GetTimeStamp());
 
             KillerIsChosen = false;
@@ -109,11 +141,12 @@ internal class Ghastly : RoleBase
         }
 
         killertarget = (killer, Target);
+        SendRPC();
 
         return false;
     }
     private bool CheckConflicts(PlayerControl target) => target != null && (!GhastlyKillAllies.GetBool() || target.GetCountTypes() != _Player.GetCountTypes());
-    
+
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad) return;
@@ -126,16 +159,16 @@ internal class Ghastly : RoleBase
     }
     public void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!lowLoad && killertarget.Item1 == player.PlayerId 
+        if (!lowLoad && killertarget.Item1 == player.PlayerId
             && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= nowTime)
         {
-            _Player?.Notify(string.Format($"\n{ GetString("GhastlyExpired")}\n", player.GetRealName()));
+            _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", player.GetRealName()));
             TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
             LastTime.Remove(player.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);
+            SendRPC();
         }
-
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
@@ -147,13 +180,14 @@ internal class Ghastly : RoleBase
                 killer.Notify(GetString("GhastlyNotUrTarget"));
                 return true;
             }
-            else 
+            else
             {
                 _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
                 TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
                 LastTime.Remove(killer.PlayerId);
                 KillerIsChosen = false;
                 killertarget = (byte.MaxValue, byte.MaxValue);
+                SendRPC();
             }
         }
         return false;
@@ -188,6 +222,7 @@ internal class Ghastly : RoleBase
             LastTime.Remove(target.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);
+            SendRPC();
         }
     }
 

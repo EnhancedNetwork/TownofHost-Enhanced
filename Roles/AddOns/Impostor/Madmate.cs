@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -98,8 +98,9 @@ public static class Madmate
 
     public static bool CanBeMadmate(this PlayerControl pc, bool forAdmirer = false, bool forGangster = false)
     {
-        return pc != null && !pc.Is(CustomRoles.Madmate) && (pc.GetCustomRole().IsCrewmate() || (forAdmirer && pc.GetCustomRole().IsNeutral()))
+        return pc != null && !pc.Is(CustomRoles.Madmate) && (pc.GetCustomRole().IsCrewmate() || (forAdmirer && pc.GetCustomRole().IsNeutral() || forAdmirer && pc.GetCustomRole().IsCoven()))
         && !(pc.CheckCanBeMadmate(forGangster) ||
+            pc.Is(CustomRoles.ChiefOfPolice) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Lazy) ||
             pc.Is(CustomRoles.Loyal) ||

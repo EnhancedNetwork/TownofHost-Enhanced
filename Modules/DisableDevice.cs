@@ -4,7 +4,7 @@ using static TOHE.Utils;
 
 namespace TOHE;
 
-//参考元 : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
+//ÕÅé×ÇâÕàâ : https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Mode/SuperHostRoles/BlockTool.cs
 class DisableDevice
 {
     public static bool DoDisable => Options.DisableDevices.GetBool();
@@ -12,20 +12,20 @@ class DisableDevice
     private static int frame = 0;
     public static readonly Dictionary<string, Vector2> DevicePos = new()
     {
-        ["SkeldAdmin"] = new Vector2 (3.48f, -8.62f),
-        ["SkeldCamera"] = new Vector2 (-13.06f, -2.45f),
-        ["MiraHQAdmin"] = new Vector2 (21.02f, 19.09f),
-        ["MiraHQDoorLog"] = new Vector2 (16.22f, 5.82f),
-        ["PolusLeftAdmin"] = new Vector2 (22.80f, -21.52f),
-        ["PolusRightAdmin"] = new Vector2 (24.66f, -21.52f),
-        ["PolusCamera"] = new Vector2 (2.96f, -12.74f),
-        ["PolusVital"] = new Vector2 (26.70f, -15.94f),
-        ["DleksAdmin"] = new Vector2 (-3.48f, -8.62f),
-        ["DleksCamera"] = new Vector2 (13.06f, -2.45f),
-        ["AirshipCockpitAdmin"] = new Vector2 (-22.32f, 0.91f),
-        ["AirshipRecordsAdmin"] = new Vector2 (19.89f, 12.60f),
-        ["AirshipCamera"] = new Vector2 (8.10f, -9.63f),
-        ["AirshipVital"] = new Vector2 (25.24f, -7.94f),
+        ["SkeldAdmin"] = new Vector2(3.48f, -8.62f),
+        ["SkeldCamera"] = new Vector2(-13.06f, -2.45f),
+        ["MiraHQAdmin"] = new Vector2(21.02f, 19.09f),
+        ["MiraHQDoorLog"] = new Vector2(16.22f, 5.82f),
+        ["PolusLeftAdmin"] = new Vector2(22.80f, -21.52f),
+        ["PolusRightAdmin"] = new Vector2(24.66f, -21.52f),
+        ["PolusCamera"] = new Vector2(2.96f, -12.74f),
+        ["PolusVital"] = new Vector2(26.70f, -15.94f),
+        ["DleksAdmin"] = new Vector2(-3.48f, -8.62f),
+        ["DleksCamera"] = new Vector2(13.06f, -2.45f),
+        ["AirshipCockpitAdmin"] = new Vector2(-22.32f, 0.91f),
+        ["AirshipRecordsAdmin"] = new Vector2(19.89f, 12.60f),
+        ["AirshipCamera"] = new Vector2(8.10f, -9.63f),
+        ["AirshipVital"] = new Vector2(25.24f, -7.94f),
         ["FungleCamera"] = new Vector2(6.20f, 0.10f),
         ["FungleVital"] = new Vector2(-2.50f, -9.80f)
     };
@@ -60,6 +60,7 @@ class DisableDevice
                 bool ignore = (Options.DisableDevicesIgnoreImpostors.GetBool() && pc.Is(Custom_Team.Impostor)) ||
                         (Options.DisableDevicesIgnoreNeutrals.GetBool() && pc.Is(Custom_Team.Neutral)) ||
                         (Options.DisableDevicesIgnoreCrewmates.GetBool() && pc.Is(Custom_Team.Crewmate)) ||
+                        (Options.DisableDevicesIgnoreCoven.GetBool() && pc.Is(Custom_Team.Coven)) ||
                         (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
                 var mapId = Utils.GetActiveMapId();
@@ -157,6 +158,7 @@ public class RemoveDisableDevicesPatch
             (Options.DisableDevicesIgnoreImpostors.GetBool() && player.Is(Custom_Team.Impostor)) ||
             (Options.DisableDevicesIgnoreNeutrals.GetBool() && player.Is(Custom_Team.Neutral)) ||
             (Options.DisableDevicesIgnoreCrewmates.GetBool() && player.Is(Custom_Team.Crewmate)) ||
+            (Options.DisableDevicesIgnoreCoven.GetBool() && player.Is(Custom_Team.Coven)) ||
             (Options.DisableDevicesIgnoreAfterAnyoneDied.GetBool() && GameStates.AlreadyDied);
 
         var admins = UnityEngine.Object.FindObjectsOfType<MapConsole>(true);

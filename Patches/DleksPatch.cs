@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace TOHE.Patches;
 
@@ -51,6 +51,7 @@ class AllMapIconsPatch
 {
     // Vanilla players getting error when trying get dleks map icon
     [HarmonyPatch(nameof(GameStartManager.Start)), HarmonyPostfix]
+    [Obfuscation(Exclude = true)]
     public static void Postfix_AllMapIcons(GameStartManager __instance)
     {
         if (__instance == null) return;
@@ -103,7 +104,7 @@ public static class VentSetButtonsPatch
         if (GameStates.DleksIsActive && Main.IntroDestroyed)
         {
             enabled = false;
-            if (GameStates.IsMeeting) 
+            if (GameStates.IsMeeting)
                 ShowButtons = false;
         }
         return true;

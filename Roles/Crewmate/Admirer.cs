@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Admirer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Admirer;
     private const int Id = 24800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admired);
     public override bool IsDesyncRole => true;
@@ -41,7 +43,7 @@ internal class Admirer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit =  SkillLimit.GetInt();
+        AbilityLimit = SkillLimit.GetInt();
         AdmiredList[playerId] = [];
     }
     public override void Remove(byte playerId)
@@ -81,7 +83,7 @@ internal class Admirer : RoleBase
             else AdmiredList[playerId].Add(targetId);
         }
     }
-    
+
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? AdmireCooldown.GetFloat() : 300f;
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
 
@@ -97,7 +99,7 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (AbilityLimit< 1) return false;
+        if (AbilityLimit < 1) return false;
         if (CanBeAdmired(target, killer))
         {
             if (KnowTargetRole.GetBool())
@@ -107,7 +109,7 @@ internal class Admirer : RoleBase
             }
 
             if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
-                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious))
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Enchanted))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(CustomRoles.Admired);
@@ -120,6 +122,13 @@ internal class Admirer : RoleBase
                 target.RpcSetCustomRole(CustomRoles.Madmate);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Enchanted) && Ritualist.CanBeConverted(target))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Enchanted);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
@@ -162,18 +171,18 @@ internal class Admirer : RoleBase
             target.RpcGuardAndKill(killer);
             target.ResetKillCooldown();
             target.SetKillCooldown(forceAnime: true);
-            
+
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
-            
+
             return false;
         }
 
-        AdmirerFailed:
+    AdmirerFailed:
         SendRPC(killer.PlayerId); //Sync skill
-        
+
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
-        
+
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
         return false;
     }
@@ -208,7 +217,7 @@ internal class Admirer : RoleBase
         }
         else AdmiredList.Add(admirer.PlayerId, []);
 
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral())
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());

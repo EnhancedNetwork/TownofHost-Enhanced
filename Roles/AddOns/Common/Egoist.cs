@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Egoist : IAddon
 {
+    public CustomRoles Role => CustomRoles.Egoist;
     private const int Id = 23500;
     public AddonTypes Type => AddonTypes.Misc;
 

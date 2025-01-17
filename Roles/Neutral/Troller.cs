@@ -1,9 +1,9 @@
-﻿using AmongUs.GameOptions;
-using UnityEngine;
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -13,10 +13,11 @@ namespace TOHE.Roles.Neutral;
 internal class Troller : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Troller;
     private const int Id = 28700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Troller);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem TrollsPerRound;
@@ -25,6 +26,7 @@ internal class Troller : RoleBase
     private SystemTypes CurrentActiveSabotage = SystemTypes.Hallway;
     private List<Events> AllEvents = [];
 
+    [Obfuscation(Exclude = true)]
     enum Events
     {
         LowSpeed,

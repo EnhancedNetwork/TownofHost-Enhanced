@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -57,6 +57,7 @@ class ExileControllerWrapUpPatch
     }
     private static void CheckAndDoRandomSpawn()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap spawnMap = Utils.GetActiveMapName() switch
@@ -107,13 +108,13 @@ class ExileControllerWrapUpPatch
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
-        
+
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        
+
         foreach (var player in Main.AllPlayerControls)
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
@@ -157,7 +158,7 @@ class ExileControllerWrapUpPatch
                 {
                     var player = x.Key.GetPlayer();
                     var state = Main.PlayerStates[x.Key];
-                    
+
                     Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
@@ -171,7 +172,7 @@ class ExileControllerWrapUpPatch
                 });
 
                 Main.AfterMeetingDeathPlayers.Clear();
-                
+
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
@@ -183,6 +184,7 @@ class ExileControllerWrapUpPatch
                 if (GameStates.IsEnded) return;
 
                 AntiBlackout.ResetAfterMeeting();
+                Main.LastMeetingEnded = Utils.GetTimeStamp();
             }, 2f, "Reset Cooldown After Meeting");
         }
 
