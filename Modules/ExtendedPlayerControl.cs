@@ -1457,11 +1457,11 @@ static class ExtendedPlayerControl
 
         if (seer.Is(Custom_Team.Impostor))
         {
-            // Imp know Madmate
+            // Impostor know Madmate
             if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
                 return true;
 
-            // Ego-Imp know other Ego-Imp
+            // Egoist-Impostor know other Egoist-Impostor
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }
