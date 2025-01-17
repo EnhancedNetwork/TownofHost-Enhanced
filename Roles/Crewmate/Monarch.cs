@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
