@@ -1983,6 +1983,9 @@
   "Jackal_BecomeNewJackal": "Old Jackal Dead, You are now new Jackal!",
   "Jackal_OnNewJackalSelected": "Old Jackal Dead, Please help new Jackal {0} for now!",
   "Jackal_BossIsDead": "Opps, the Jackal boss is dead!",
+  "JackalCanRecruitNeutral": "Jackal can recruit/sidekick Neutrals",
+  "JackalCanRecruitCoven": "Jackal can recruit/sidekick Coven",
+  "JackalCanRecruitImpostor": "Jackal can recruit/sidekick Impostors",
 
   "CoronerArrowsPointingToDeadBody": "Arrows pointing to dead bodies",
   "CoronerLeaveDeadBodyUnreportable": "Bodies the <color=#8B0000>Coroner</color> uses can't be reported",
