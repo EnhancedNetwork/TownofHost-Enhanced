@@ -1,7 +1,5 @@
 ﻿using Hazel;
 using InnerNet;
-using System;
-using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -25,7 +23,6 @@ internal class Coroner : RoleBase
     private static OptionItem ArrowsPointingToDeadBody;
     private static OptionItem UseLimitOpt;
     private static OptionItem LeaveDeadBodyUnreportable;
-    private static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
     private static OptionItem InformKillerBeingTracked;
 
     public override void SetupCustomOption()
@@ -34,11 +31,11 @@ internal class Coroner : RoleBase
         ArrowsPointingToDeadBody = BooleanOptionItem.Create(Id + 10, "CoronerArrowsPointingToDeadBody", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
         LeaveDeadBodyUnreportable = BooleanOptionItem.Create(Id + 11, "CoronerLeaveDeadBodyUnreportable", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
         UseLimitOpt = IntegerOptionItem.Create(Id + 12, "AbilityUseLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
-        .SetValueFormat(OptionFormat.Times);
+            .SetValueFormat(OptionFormat.Times);
         CoronerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
-        .SetValueFormat(OptionFormat.Times);
-        InformKillerBeingTracked = BooleanOptionItem.Create(Id + 14, "CoronerInformKillerBeingTracked", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Coroner]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
+            .SetValueFormat(OptionFormat.Times);
+        InformKillerBeingTracked = BooleanOptionItem.Create(Id + 14, "CoronerInformKillerBeingTracked", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
     }
     public override void Init()
     {
@@ -46,8 +43,8 @@ internal class Coroner : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = UseLimitOpt.GetInt();
-        CoronerTargets.Add(playerId, []);
+        playerId.SetAbilityUseLimit(UseLimitOpt.GetInt());
+        CoronerTargets[playerId] = [];
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -65,33 +62,18 @@ internal class Coroner : RoleBase
         writer.WriteNetObject(_Player);
         writer.Write(playerId);
         writer.Write(operate);
-        writer.Write(AbilityLimit);
-        if (operate != 2) writer.Write(targetId);
+        writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte pid = reader.ReadByte();
         int opt = reader.ReadInt32();
-        float limit = reader.ReadSingle();
-        AbilityLimit = limit;
-        if (opt != 2)
-        {
-            byte tid = reader.ReadByte();
-            if (!CoronerTargets.ContainsKey(pid)) CoronerTargets[pid] = [];
-            CoronerTargets[pid].Add(tid);
-            if (opt == 1) Main.UnreportableBodies.Add(tid);
-        }
-    }
+        byte tid = reader.ReadByte();
 
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-        {
-            AbilityLimit += CoronerAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendRPCLimit(player.PlayerId, operate: 2);
-        }
-        return true;
+        if (!CoronerTargets.ContainsKey(pid)) CoronerTargets[pid] = [];
+        CoronerTargets[pid].Add(tid);
+        if (opt == 1) Main.UnreportableBodies.Add(tid);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.ReportButton.OverrideText(GetString("CoronerReportButtonText"));
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
@@ -122,13 +104,14 @@ internal class Coroner : RoleBase
 
         LocateArrow.Remove(pc.PlayerId, deadBody.Object.transform.position);
 
-        if (AbilityLimit >= 1)
+        if (pc.GetAbilityUseLimit() >= 1)
         {
             CoronerTargets[pc.PlayerId].Add(killer.PlayerId);
             TargetArrow.Add(pc.PlayerId, killer.PlayerId);
 
             pc.Notify(GetString("CoronerTrackRecorded"));
-            AbilityLimit -= 1;
+            pc.RpcRemoveAbilityUse();
+
             int operate = 0;
             if (LeaveDeadBodyUnreportable.GetBool())
             {
@@ -181,10 +164,9 @@ internal class Coroner : RoleBase
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Coroner)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
-        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Any())
+        if (seer.PlayerId != target.PlayerId || isForMeeting) return string.Empty;
+
+        if (CoronerTargets.TryGetValue(seer.PlayerId, out var Targets) && Targets.Any())
         {
             var arrows = "";
             foreach (var targetId in CoronerTargets[seer.PlayerId])
@@ -195,22 +177,5 @@ internal class Coroner : RoleBase
             return arrows;
         }
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
-    }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState12 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor12;
-        var TaskCompleteColor12 = Color.green;
-        var NonCompleteColor12 = Color.yellow;
-        var NormalColor12 = taskState12.IsTaskFinished ? TaskCompleteColor12 : NonCompleteColor12;
-        TextColor12 = comms ? Color.gray : NormalColor12;
-        string Completed12 = comms ? "?" : $"{taskState12.CompletedTasksCount}";
-        Color TextColor121;
-        if (AbilityLimit < 1) TextColor121 = Color.red;
-        else TextColor121 = Color.white;
-        ProgressText.Append(ColorString(TextColor12, $"({Completed12}/{taskState12.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor121, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
     }
 }
