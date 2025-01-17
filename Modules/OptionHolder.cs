@@ -141,6 +141,21 @@ public static class Options
         "CamouflageMode.Sarha"
     ];
 
+    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem FortuneTellerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem InspectorAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem MechanicAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem VentguardAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
