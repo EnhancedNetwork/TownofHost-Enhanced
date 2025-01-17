@@ -61,6 +61,8 @@ internal class Savior : RoleBase
         return true;
     }
 
+    public override bool CheckKillButton(byte playerId) => playerId.GetAbilityUseLimit() > 0;
+
     public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton(pc.PlayerId);
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
@@ -76,6 +78,6 @@ internal class Savior : RoleBase
     public override void AfterMeetingTasks()
     {
         ProtectList.Clear();
-        pc.SetAbilityUseLimit(1);
+        killer.SetAbilityUseLimit(1);
     }
 }
