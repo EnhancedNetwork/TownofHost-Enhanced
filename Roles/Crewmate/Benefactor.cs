@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text;
 using UnityEngine;
@@ -9,10 +9,9 @@ namespace TOHE.Roles.Crewmate;
 internal class Benefactor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Benefactor;
     private const int Id = 26400;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -37,19 +36,13 @@ internal class Benefactor : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         taskIndex.Clear();
         shieldedPlayers.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         taskIndex[playerId] = [];
         playerId.SetAbilityUseLimit(0);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
     }
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)
@@ -140,17 +133,15 @@ internal class Benefactor : RoleBase
             SendRPC(type: 1); //clear all shielded players
         }
     }
-
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        
-        if (!HasEnabled) return;
+
         if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;
-        
+
         byte playerId = player.PlayerId;
-        
+
         if (player.Is(CustomRoles.Benefactor))
         {
             var taskMarkPerRound = TaskMarkPerRoundOpt.GetInt();
@@ -175,10 +166,8 @@ internal class Benefactor : RoleBase
                 {
                     var benefactorPC = Utils.GetPlayerById(benefactorId);
                     if (benefactorPC == null) continue;
-
                     player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BenefactorTargetGotShield")));
                     player.RpcGuardAndKill();
-
                     long now = Utils.GetTimeStamp();
                     shieldedPlayers[playerId] = now;
                     taskIndex[benefactorId].Remove(task.Index);
@@ -215,9 +204,8 @@ internal class Benefactor : RoleBase
             shieldedPlayers.Remove(targetId);
             target?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BKProtectOut")));
             target?.RpcGuardAndKill();
-            
+
             SendRPC(type: 4, targetId: targetId);
         }
     }
 }
-

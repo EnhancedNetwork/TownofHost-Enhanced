@@ -1,14 +1,12 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Vanilla;
 
 internal class TrackerTOHE : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.TrackerTOHE;
     private const int Id = 6250;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles ThisRoleBase => CustomRoles.Tracker;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
@@ -29,15 +27,6 @@ internal class TrackerTOHE : RoleBase
         TrackDelay = IntegerOptionItem.Create(Id + 4, GeneralOption.TrackerBase_TrackingDelay, new(0, 10, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

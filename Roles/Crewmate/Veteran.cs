@@ -1,8 +1,8 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using System;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -12,10 +12,12 @@ namespace TOHE.Roles.Crewmate;
 internal class Veteran : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Veteran;
     private const int Id = 11350;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Veteran);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem VeteranSkillCooldown;
@@ -118,6 +120,7 @@ internal class Veteran : RoleBase
             VeteranInProtect.Remove(pc.PlayerId);
             VeteranInProtect.Add(pc.PlayerId, GetTimeStamp(DateTime.Now));
             pc.RpcRemoveAbilityUse();
+
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.RPCPlayCustomSound("Gunload");
             pc.Notify(GetString("AbilityInUse"), VeteranSkillDuration.GetFloat());

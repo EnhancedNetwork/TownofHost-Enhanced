@@ -1,17 +1,19 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
-using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Ventguard : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Ventguard;
     private const int Id = 30000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ventguard);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem MaxGuards;
@@ -99,6 +101,20 @@ internal class Ventguard : RoleBase
                 }
             }
             BlockedVents.Clear();
+        }
+        else if (BlockedVents.Any())
+        {
+            foreach (var ventId in BlockedVents)
+            {
+                foreach (var player in Main.AllPlayerControls)
+                {
+                    if (!player.IsAlive()) continue;
+                    if (player.NotUnlockVent(ventId)) continue;
+                    if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
+
+                    CustomRoleManager.BlockedVentsList[player.PlayerId].Add(ventId);
+                }
+            }
         }
     }
 }

@@ -1,20 +1,19 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Roles.Core;
-using static TOHE.Translator;
+using UnityEngine;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Keeper : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Keeper;
     private const int Id = 26500;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -29,24 +28,21 @@ internal class Keeper : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Keeper);
         KeeperUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxProtections", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Keeper])
             .SetValueFormat(OptionFormat.Times);
-      
+
     }
     public override void Init()
     {
-        playerIdList.Clear();
         keeperTarget.Clear();
         DidVote.Clear();
     }
 
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DidVote.Add(playerId, false);
         playerId.SetAbilityUseLimit(0);
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         DidVote.Remove(playerId);
     }
 
@@ -83,7 +79,7 @@ internal class Keeper : RoleBase
         {
             byte keeperId = reader.ReadByte();
             DidVote[keeperId] = true;
-            
+
             byte targetId = reader.ReadByte();
             if (!keeperTarget.Contains(targetId)) keeperTarget.Add(targetId);
         }

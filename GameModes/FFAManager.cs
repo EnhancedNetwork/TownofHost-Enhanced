@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -102,7 +102,7 @@ internal static class FFAManager
     public static void SetData()
     {
         if (Options.CurrentGameMode != CustomGameMode.FFA) return;
-        
+
         RoundTime = FFA_GameTime.GetInt() + 8;
         var now = Utils.GetTimeStamp() + 8;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)

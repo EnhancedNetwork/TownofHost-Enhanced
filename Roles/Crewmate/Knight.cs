@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;
@@ -6,6 +6,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Knight : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Knight;
     private const int Id = 10800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Knight);
     public override bool IsDesyncRole => true;
@@ -33,8 +34,9 @@ internal class Knight : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CheckCanUseVent(pc);
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsKilled(id) ? 300f : KillCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl pc) => !IsKilled(pc.PlayerId);
-    
+    public override bool CanUseKillButton(PlayerControl pc)
+        => !IsKilled(pc.PlayerId);
+
     private static bool IsKilled(byte playerId) => playerId.GetAbilityUseLimit() <= 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {

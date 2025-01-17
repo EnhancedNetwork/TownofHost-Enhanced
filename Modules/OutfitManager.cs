@@ -1,4 +1,4 @@
-﻿namespace TOHE.Modules;
+namespace TOHE.Modules;
 
 public static class OutfitManager
 {
@@ -80,11 +80,7 @@ public static class OutfitManager
 
             player.Data.SetOutfit(OutfitTypeSet, Outfit);
 
-            //Used instead of GameData.Instance.DirtyAllData();
-            foreach (var innerNetObject in GameData.Instance.AllPlayers)
-            {
-                innerNetObject.SetDirtyBit(uint.MaxValue);
-            }
+            player.Data.MarkDirty();
         }
         if (player.CheckCamoflague() && !force)
         {

@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -7,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Crusader : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Crusader;
     private const int Id = 10400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Crusader);
     public override bool IsDesyncRole => true;
@@ -49,10 +51,10 @@ internal class Crusader : RoleBase
 
         killer.RpcRemoveAbilityUse();
         killer.SetKillCooldown();
-        
+
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(killer);
-        
+
         return false;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)

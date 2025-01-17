@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 
@@ -8,6 +8,7 @@ namespace TOHE.Roles.Neutral;
 internal class SchrodingersCat : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.SchrodingersCat;
     private const int Id = 6900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.SchrodingersCat);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;

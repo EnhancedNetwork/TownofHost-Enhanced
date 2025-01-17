@@ -6,10 +6,8 @@ namespace TOHE.Roles.Impostor;
 internal class Consigliere : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Consigliere;
     private const int Id = 3100;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -30,13 +28,12 @@ internal class Consigliere : RoleBase
     public override void Init()
     {
         DivinationTarget.Clear();
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
         playerId.SetAbilityUseLimit(DivinationMaxCount.GetInt());
-        DivinationTarget.TryAdd(playerId, []);
-        PlayerIds.Add(playerId);
+        DivinationTarget[playerId] = [];
 
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -60,13 +57,13 @@ internal class Consigliere : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.GetAbilityUseLimit() > 0)
         {
             return killer.CheckDoubleTrigger(target, () => { SetDivination(killer, target); });
         }
-        else return true;  
+        else return true;
     }
 
     private static bool IsDivination(byte seerId, byte target) => DivinationTarget.TryGetValue(seerId, out var targets) && targets.Contains(target);

@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Roles.Coven;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
@@ -7,9 +8,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Investigator : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Investigator;
     private const int Id = 24900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -35,20 +35,17 @@ internal class Investigator : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         InvestigatedList.Clear();
         RoundInvestigateLimit.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         playerId.SetAbilityUseLimit(InvestigateMax.GetInt());
         RoundInvestigateLimit[playerId] = InvestigateRoundMax.GetInt();
         InvestigatedList[playerId] = [];
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         RoundInvestigateLimit.Remove(playerId);
         InvestigatedList.Remove(playerId);
     }
@@ -112,7 +109,8 @@ internal class Investigator : RoleBase
         if (!InvestigatedList.TryGetValue(seer.PlayerId, out var targetList)) return string.Empty;
         if (!targetList.Contains(target.PlayerId)) return string.Empty;
 
-        if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
+        if (Illusionist.IsCovIllusioned(target.PlayerId)) return "#8CFFFF";
+        if (Illusionist.IsNonCovIllusioned(target.PlayerId) || target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId)) return "#FF1919";
         else return "#8CFFFF";
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)

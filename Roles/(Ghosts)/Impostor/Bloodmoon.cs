@@ -1,7 +1,6 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using MS.Internal.Xml.XPath;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -14,6 +13,7 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 internal class Bloodmoon : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bloodmoon;
     private const int Id = 28100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bloodmoon);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -96,6 +96,7 @@ internal class Bloodmoon : RoleBase
         }
         return false;
     }
+
     private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || _Player == null) return;

@@ -1,20 +1,22 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Pacifist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pacifist;
     private const int Id = 9200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pacifist);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem PacifistCooldown;
@@ -52,7 +54,7 @@ internal class Pacifist : RoleBase
             abilityUse--;
 
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
-            
+
             Main.AllAlivePlayerControls.Where(x =>
             pc.Is(CustomRoles.Madmate)
                 ? (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate())
@@ -62,9 +64,9 @@ internal class Pacifist : RoleBase
                 x.RPCPlayCustomSound("Dove");
                 x.ResetKillCooldown();
                 x.SetKillCooldown();
-                
+
                 if (x.Is(CustomRoles.Mercenary))
-                    { Mercenary.ClearSuicideTimer(); }
+                { Mercenary.ClearSuicideTimer(); }
 
                 x.Notify(ColorString(GetRoleColor(CustomRoles.Pacifist), GetString("PacifistSkillNotify")));
             });

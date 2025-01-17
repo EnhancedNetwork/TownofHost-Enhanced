@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
@@ -9,10 +9,8 @@ namespace TOHE.Roles.Impostor;
 internal class Lightning : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Lightning;
     private const int Id = 24100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -35,14 +33,8 @@ internal class Lightning : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         GhostPlayer.Clear();
         RealKiller.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-
     }
     private static void SendRPC(byte playerId)
     {
@@ -72,10 +64,10 @@ internal class Lightning : RoleBase
         }
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
-    
+
     public static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
     private static bool IsGhost(byte id) => GhostPlayer.Contains(id);
-    
+
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null || !killer.Is(CustomRoles.Lightning)) return false;

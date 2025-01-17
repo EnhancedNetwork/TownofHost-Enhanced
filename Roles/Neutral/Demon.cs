@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class Demon : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Demon;
     private const int Id = 16200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Demon);
     public override bool IsDesyncRole => true;
@@ -112,7 +113,7 @@ internal class Demon : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (target.IsTransformedNeutralApocalypse()) return true;
-        if (killer == null || target == null) return true; 
+        if (killer == null || target == null) return true;
 
         if (DemonHealth.TryGetValue(target.PlayerId, out var Health) && Health - SelfDamage.GetInt() < 1)
         {

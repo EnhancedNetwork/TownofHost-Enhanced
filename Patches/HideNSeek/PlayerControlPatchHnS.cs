@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using static TOHE.Translator;
@@ -26,7 +26,7 @@ class CheckMurderInHidenSeekPatch
 
         // Is the target in a killable state?
         if (target.Data == null // Check if PlayerData is not null
-            // Check target status
+                                // Check target status
             || target.inVent
             || target.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || target.MyPhysics.Animations.IsPlayingEnterVentAnimation()

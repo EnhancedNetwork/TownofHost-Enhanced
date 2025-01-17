@@ -1,4 +1,4 @@
-﻿namespace TOHE.Patches;
+namespace TOHE.Patches;
 
 [HarmonyPatch(typeof(DeconSystem), nameof(DeconSystem.UpdateSystem))]
 public static class DeconSystemUpdateSystemPatch
@@ -8,7 +8,7 @@ public static class DeconSystemUpdateSystemPatch
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (Options.ChangeDecontaminationTime.GetBool())
-        {         
+        {
             // Temp decon time
             var deconTime = Utils.GetActiveMapName() switch
             {

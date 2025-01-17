@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -10,11 +10,12 @@ namespace TOHE.Roles.Neutral;
 internal class Cultist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Cultist;
     private const int Id = 14800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cultist);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
     private static OptionItem CharmCooldown;
@@ -23,8 +24,10 @@ internal class Cultist : RoleBase
     private static OptionItem KnowTargetRole;
     private static OptionItem TargetKnowOtherTarget;
     private static OptionItem CanCharmNeutral;
+    private static OptionItem CanCharmCoven;
     public static OptionItem CharmedCountMode;
 
+    [Obfuscation(Exclude = true)]
     private enum CharmedCountModeSelectList
     {
         Cultist_CharmedCountMode_None,
@@ -45,6 +48,7 @@ internal class Cultist : RoleBase
         TargetKnowOtherTarget = BooleanOptionItem.Create(Id + 14, "CultistTargetKnowOtherTarget", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
         CharmedCountMode = StringOptionItem.Create(Id + 17, "Cultist_CharmedCountMode", EnumHelper.GetAllNames<CharmedCountModeSelectList>(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
         CanCharmNeutral = BooleanOptionItem.Create(Id + 18, "CultistCanCharmNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
+        CanCharmCoven = BooleanOptionItem.Create(Id + 19, "CultistCanCharmCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Cultist]);
     }
     public override void Add(byte playerId)
     {
@@ -70,7 +74,7 @@ internal class Cultist : RoleBase
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
-            
+
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
@@ -100,9 +104,10 @@ internal class Cultist : RoleBase
     }
     public static bool CanBeCharmed(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || 
-            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())) && !pc.Is(CustomRoles.Charmed) 
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious) 
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
+            (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
+            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
@@ -111,7 +116,7 @@ internal class Cultist : RoleBase
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Cultist)) return true;
         if (seer.Is(CustomRoles.Cultist) && target.Is(CustomRoles.Charmed)) return true;
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && TargetKnowOtherTarget.GetBool()) return true;
-        
+
         return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

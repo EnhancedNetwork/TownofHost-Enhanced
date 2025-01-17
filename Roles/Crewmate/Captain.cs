@@ -1,4 +1,4 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -8,10 +8,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Captain : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Captain;
     private const int Id = 26300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -27,6 +25,7 @@ internal class Captain : RoleBase
     private static OptionItem CaptainCanTargetNE;
     private static OptionItem CaptainCanTargetNK;
     private static OptionItem CaptainCanTargetNA;
+    private static OptionItem CaptainCanTargetCoven;
 
     private static readonly Dictionary<byte, float> OriginalSpeed = [];
     private static readonly Dictionary<byte, List<byte>> CaptainVoteTargets = [];
@@ -47,19 +46,14 @@ internal class Captain : RoleBase
         CaptainCanTargetNE = BooleanOptionItem.Create(Id + 19, "CaptainCanTargetNE", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNK = BooleanOptionItem.Create(Id + 20, "CaptainCanTargetNK", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
         CaptainCanTargetNA = BooleanOptionItem.Create(Id + 21, "CaptainCanTargetNA", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
-        OverrideTasksData.Create(Id + 22, TabGroup.CrewmateRoles, CustomRoles.Captain);
+        CaptainCanTargetCoven = BooleanOptionItem.Create(Id + 22, "CaptainCanTargetCoven", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Captain]);
+        OverrideTasksData.Create(Id + 23, TabGroup.CrewmateRoles, CustomRoles.Captain);
     }
 
     public override void Init()
     {
-        playerIdList.Clear();
         OriginalSpeed.Clear();
         CaptainVoteTargets.Clear();
-    }
-
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
     public static void ReceiveRPCRevertAllSpeed()
     {
@@ -79,7 +73,8 @@ internal class Captain : RoleBase
                                                            (CaptainCanTargetNE.GetBool() && x.GetCustomRole().IsNE()) ||
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
                                                            (CaptainCanTargetNK.GetBool() && x.GetCustomRole().IsNeutralKillerTeam()) ||
-                                                           (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()))).ToList();
+                                                           (CaptainCanTargetNA.GetBool() && x.GetCustomRole().IsNA()) ||
+                                                           (CaptainCanTargetCoven.GetBool() && x.GetCustomRole().IsCovenTeam()))).ToList();
 
         Logger.Info($"Total Number of Potential Target {allTargets.Count}", "Total Captain Target");
         if (allTargets.Count == 0) return true;
@@ -136,7 +131,7 @@ internal class Captain : RoleBase
         for (int i = 0; i < CaptainVoteTargets[playerId].Count; i++)
         {
             var captainTarget = CaptainVoteTargets[playerId][i];
-            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue; 
+            if (captainTarget == byte.MaxValue || !GetPlayerById(captainTarget).IsAlive()) continue;
             var SelectedAddOn = SelectRandomAddon(captainTarget);
             if (SelectedAddOn == null) continue;
             Main.PlayerStates[captainTarget].RemoveSubRole((CustomRoles)SelectedAddOn);
@@ -180,4 +175,3 @@ internal class Captain : RoleBase
         }
     }
 }
-

@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using System.Text;
-using TOHE.Roles.Core;
 using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -11,10 +11,11 @@ namespace TOHE.Roles.Neutral;
 internal class Vulture : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vulture;
     private const int Id = 15600;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
@@ -48,7 +49,9 @@ internal class Vulture : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
+
         playerId.SetAbilityUseLimit(0);
         AbilityLeftInRound[playerId] = MaxEaten.GetInt();
         LastReport[playerId] = GetTimeStamp();
@@ -67,6 +70,7 @@ internal class Vulture : RoleBase
                     if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(player);
                     player.Notify(GetString("VultureCooldownUp"));
                 }
+                return;
             }, VultureReportCD.GetFloat() + 8f, "Vulture Cooldown Up In Start");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
         }
     }
@@ -76,6 +80,19 @@ internal class Vulture : RoleBase
         opt.SetVision(HasImpVision.GetBool());
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
+    }
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    {
+        if (lowLoad || !player.IsAlive()) return;
+
+        if (player.GetAbilityUseLimit() >= NumberOfReportsToWin.GetInt())
+        {
+            if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
+            {
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
+                CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
+            }
+        }
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
@@ -122,8 +139,8 @@ internal class Vulture : RoleBase
     {
         pc.RpcIncreaseAbilityUseLimitBy(1);
         AbilityLeftInRound[pc.PlayerId]--;
-
         Logger.Msg($"target is null? {target == null}", "VultureNull");
+
         if (target != null)
         {
             foreach (var apc in playerIdList)
@@ -131,19 +148,9 @@ internal class Vulture : RoleBase
                 LocateArrow.Remove(apc, target.GetDeadBody().transform.position);
             }
         }
-
         pc.Notify(GetString("VultureBodyReported"));
         Main.UnreportableBodies.Remove(target.PlayerId);
         Main.UnreportableBodies.Add(target.PlayerId);
-
-        if (pc.GetAbilityUseLimit() >= NumberOfReportsToWin.GetInt())
-        {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
-                CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
-            }
-        }
     }
     public override void AfterMeetingTasks()
     {
@@ -160,7 +167,7 @@ internal class Vulture : RoleBase
     {
         foreach (var apc in playerIdList)
         {
-            var player = GetPlayerById(apc);
+            var player = apc.GetPlayer();
             if (player == null) continue;
 
             _ = new LateTask(() =>
@@ -197,13 +204,11 @@ internal class Vulture : RoleBase
         hud.ReportButton.OverrideText(GetString("VultureEatButtonText"));
     }
     public override Sprite ReportButtonSprite => CustomButton.Get("Eat");
-
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();
         Color TextColor = GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f);
 
-        //ProgressText.Append(GetTaskCount(playerId, comms));
         ProgressText.Append(ColorString(TextColor, ColorString(Color.white, " - ") + $"({playerId.GetAbilityUseLimit()}/{NumberOfReportsToWin.GetInt()})"));
         return ProgressText.ToString();
     }

@@ -1,16 +1,17 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using static TOHE.MeetingHudStartPatch;
+using static TOHE.Translator;
 using static TOHE.Utils;
 using static TOHE.Options;
-using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Medium : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Medium;
     private const int Id = 8700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medium);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -42,7 +43,7 @@ internal class Medium : RoleBase
     {
         playerId.SetAbilityUseLimit(ContactLimitOpt.GetFloat());
     }
-    public void SendRPC(byte playerId, byte targetId = 0xff)
+    private void SendRPC(byte playerId, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -55,19 +56,22 @@ internal class Medium : RoleBase
         byte pid = reader.ReadByte();
         byte targetId = reader.ReadByte();
 
-        ContactPlayer[targetId] = pid;
+        ContactPlayer.Clear();
+        ContactPlayer.TryAdd(targetId, pid);
     }
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         ContactPlayer.Clear();
         if (target == null || target.Object == null || _Player == null) return;
 
-        if (_Player.GetAbilityUseLimit() > 0)
+        var medium = _Player;
+        if (medium.GetAbilityUseLimit() > 0)
         {
-            _Player.RpcRemoveAbilityUse();
-            ContactPlayer.TryAdd(target.PlayerId, _Player.PlayerId);
-            SendRPC(_Player.PlayerId, target.PlayerId);
-            Logger.Info($"Psychics Make Connections： {_Player.GetRealName} => {target.PlayerName}", "Medium");
+            medium.RpcRemoveAbilityUse();
+            ContactPlayer.TryAdd(target.PlayerId, medium.PlayerId);
+            SendRPC(medium.PlayerId, target.PlayerId);
+
+            Logger.Info($"Psychics Make Connections： {medium.GetRealName} => {target.PlayerName}", "Medium");
         }
     }
     public static bool MsMsg(PlayerControl pc, string msg)

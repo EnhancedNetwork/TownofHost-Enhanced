@@ -1,7 +1,7 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
-using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -11,6 +11,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Coroner : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Coroner;
     private const int Id = 7700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Coroner);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -22,7 +23,6 @@ internal class Coroner : RoleBase
     private static OptionItem ArrowsPointingToDeadBody;
     private static OptionItem UseLimitOpt;
     private static OptionItem LeaveDeadBodyUnreportable;
-    private static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
     private static OptionItem InformKillerBeingTracked;
 
     public override void SetupCustomOption()
@@ -31,11 +31,11 @@ internal class Coroner : RoleBase
         ArrowsPointingToDeadBody = BooleanOptionItem.Create(Id + 10, "CoronerArrowsPointingToDeadBody", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
         LeaveDeadBodyUnreportable = BooleanOptionItem.Create(Id + 11, "CoronerLeaveDeadBodyUnreportable", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
         UseLimitOpt = IntegerOptionItem.Create(Id + 12, "AbilityUseLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
-        .SetValueFormat(OptionFormat.Times);
+            .SetValueFormat(OptionFormat.Times);
         CoronerAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 13, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
-        .SetValueFormat(OptionFormat.Times);
-        InformKillerBeingTracked = BooleanOptionItem.Create(Id + 14, "CoronerInformKillerBeingTracked", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Coroner]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Coroner])
+            .SetValueFormat(OptionFormat.Times);
+        InformKillerBeingTracked = BooleanOptionItem.Create(Id + 14, "CoronerInformKillerBeingTracked", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Coroner]);
     }
     public override void Init()
     {

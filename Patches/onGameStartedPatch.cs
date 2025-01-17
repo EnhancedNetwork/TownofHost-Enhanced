@@ -1,15 +1,15 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
-using System;
 using InnerNet;
+using System;
 using System.Text;
-using UnityEngine;
-using TOHE.Patches;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -73,6 +73,7 @@ internal class ChangeRoleSettings
             Main.AllKillers.Clear();
             Main.OverDeadPlayerList.Clear();
             Main.UnShapeShifter.Clear();
+            Main.DeadPassedMeetingPlayers.Clear();
             Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
 
@@ -134,7 +135,7 @@ internal class ChangeRoleSettings
                     sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc != null).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
                     var msg = sb.ToString();
                     Utils.SendMessage(msg);
-                    Utils.ErrorEnd("Player Have Invalid Color");
+                    CriticalErrorManager.SetCreiticalError("Player Have Invalid Color", true);
                     Logger.Error(msg, "CoStartGame");
                 }
             }
@@ -174,7 +175,7 @@ internal class ChangeRoleSettings
 
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
-                    NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, pc.CurrentOutfit.ColorId, pc.CurrentOutfit.HatId, pc.CurrentOutfit.SkinId, pc.CurrentOutfit.VisorId, pc.CurrentOutfit.PetId, pc.CurrentOutfit.NamePlateId),
+                    NormalOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set(currentName, pc.Data.Outfits[PlayerOutfitType.Default].ColorId, pc.Data.Outfits[PlayerOutfitType.Default].HatId, pc.Data.Outfits[PlayerOutfitType.Default].SkinId, pc.Data.Outfits[PlayerOutfitType.Default].VisorId, pc.Data.Outfits[PlayerOutfitType.Default].PetId, pc.Data.Outfits[PlayerOutfitType.Default].NamePlateId),
                 };
 
                 if (GameStates.IsNormalGame)
@@ -184,7 +185,7 @@ internal class ChangeRoleSettings
 
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
-                
+
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
                 CustomRoleManager.DoNotUnlockVentsList[pc.PlayerId] = [];
@@ -226,6 +227,7 @@ internal class ChangeRoleSettings
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
             NameNotifyManager.Reset();
+            CustomNetObject.Reset();
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
@@ -242,7 +244,7 @@ internal class ChangeRoleSettings
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Change Role Setting Postfix");
+            CriticalErrorManager.SetCreiticalError("Change Role Setting Postfix", true, ex.ToString());
             Utils.ThrowException(ex);
         }
     }
@@ -510,7 +512,7 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            Utils.ErrorEnd("Select Role Prefix");
+            CriticalErrorManager.SetCreiticalError("Select Role Prefix", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }

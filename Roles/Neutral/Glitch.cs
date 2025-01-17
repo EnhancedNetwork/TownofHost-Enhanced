@@ -1,16 +1,17 @@
 using AmongUs.GameOptions;
-using System.Text;
-using static TOHE.Translator;
-using static TOHE.Options;
 using Hazel;
-using TOHE.Roles.Core;
 using InnerNet;
+using System.Text;
+using TOHE.Roles.Core;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Glitch : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Glitch;
     private const int Id = 16300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Glitch);
     public override bool IsDesyncRole => true;
@@ -42,7 +43,7 @@ internal class Glitch : RoleBase
 
     public override void SetupCustomOption()
     {
-        //Glitchは1人固定
+        //GlitchÒü»1õ║║Õø║Õ«Ü
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Glitch, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 1f), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
@@ -269,7 +270,7 @@ internal class Glitch : RoleBase
     }
     public static bool OnCheckMurderOthers(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || killer == null) return true; 
+        if (killer == target || killer == null) return true;
         if (hackedIdList.ContainsKey(killer.PlayerId))
         {
             killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));

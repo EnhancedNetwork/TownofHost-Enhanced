@@ -1,6 +1,5 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -8,12 +7,11 @@ namespace TOHE.Roles.Crewmate;
 internal class Bastion : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Bastion;
     private const int Id = 10200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem BombsClearAfterMeeting;
@@ -34,12 +32,10 @@ internal class Bastion : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         BombedVents.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         playerId.SetAbilityUseLimit(BastionMaxBombs.GetInt());
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -52,7 +48,7 @@ internal class Bastion : RoleBase
         if (!BombedVents.Contains(ventId)) return false;
 
         var pc = physics.myPlayer;
-        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId)) 
+        if (pc.Is(Custom_Team.Crewmate) && !pc.Is(CustomRoles.Bastion) && !pc.IsCrewVenter() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
         {
             Logger.Info("Crewmate enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
             return false;
@@ -60,6 +56,11 @@ internal class Bastion : RoleBase
         else if (pc.Is(CustomRoles.DoubleAgent))
         {
             Logger.Info("DoubleAgent enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
+            return false;
+        }
+        else if (pc.IsTransformedNeutralApocalypse())
+        {
+            Logger.Info("Horseman enter in bombed vent, bombed is cancel", "Bastion.OnCoEnterVentOther");
             return false;
         }
         else

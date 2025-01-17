@@ -17,29 +17,39 @@ class ChatBubbleSetNamePatch
 {
     public static void Postfix(ChatBubble __instance, [HarmonyArgument(1)] bool isDead, [HarmonyArgument(2)] bool voted)
     {
+        if (Main.DarkTheme.Value)
+        {
+            if (isDead)
+                __instance.Background.color = new(0.1f, 0.1f, 0.1f, 0.6f);
+            else
+                __instance.Background.color = new(0.1f, 0.1f, 0.1f, 1f);
+
+            __instance.TextArea.color = Color.white;
+        }
+
+        if (!GameStates.IsInGame) return;
+
         var seer = PlayerControl.LocalPlayer;
         var target = __instance.playerInfo.Object;
 
-        if (GameStates.IsInGame && !voted && seer.PlayerId == target.PlayerId)
+        if (seer.PlayerId == target.PlayerId)
+        {
             __instance.NameText.color = seer.GetRoleColor();
+            return;
+        }
 
+        // Dog shit
         var seerRoleClass = seer.GetRoleClass();
 
         // if based role is Shapeshifter and is Desync Shapeshifter
         if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
         {
-            // When target is impostor, set name color as white
             __instance.NameText.color = Color.white;
         }
-
-        if (Main.DarkTheme.Value)
+        if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer)
         {
-            if (isDead)
-                __instance.Background.color = new Color(0.0f, 0.0f, 0.0f, 0.6f);
-            else
-                __instance.Background.color = Color.black;
-
-            __instance.TextArea.color = Color.white;
+            // When target is impostor, set name color as white
+            __instance.NameText.color = Color.white;
         }
     }
 }

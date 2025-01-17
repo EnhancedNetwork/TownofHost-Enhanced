@@ -11,7 +11,7 @@ namespace TOHE;
 public static class Translator
 {
     public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = "Language";
+    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static void Init()
     {
@@ -41,11 +41,11 @@ public static class Translator
             {
                 // Read the JSON file content
                 using Stream resourceStream = assembly.GetManifestResourceStream(jsonFileName);
-                
+
                 if (resourceStream != null)
                 {
                     using StreamReader reader = new(resourceStream);
-                    
+
                     string jsonContent = reader.ReadToEnd();
                     // Deserialize the JSON into a dictionary
                     Dictionary<string, string> jsonDictionary = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonContent);
@@ -214,7 +214,7 @@ public static class Translator
             }
         return str;
     }
-    public static bool TryGetStrings(string strItem, out string[] s) 
+    public static bool TryGetStrings(string strItem, out string[] s)
     {
         // Basically if you wanna let the user infinitely expand a function to their liking
         // I need to test if this shit works lol, I plan a usecase for it in 2.1.0 (see: https://discord.com/channels/1094344790910455908/1251264307052675134)
@@ -318,7 +318,7 @@ public static class Translator
             {
                 List<string> textStrings = [];
                 using (StreamReader reader = new(path, Encoding.GetEncoding("UTF-8")))
-                { 
+                {
                     string line;
                     while ((line = reader.ReadLine()) != null)
                     {

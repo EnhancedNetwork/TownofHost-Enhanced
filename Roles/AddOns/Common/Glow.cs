@@ -1,10 +1,11 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Glow : IAddon
 {
+    public CustomRoles Role => CustomRoles.Glow;
     private const int Id = 22000;
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Experimental;
@@ -56,7 +57,8 @@ public class Glow : IAddon
         if (!Utils.IsActive(SystemTypes.Electrical)) return;
 
         if (!player.Is(CustomRoles.Glow))
-        {    HashSet<byte> affectedPlaters = [];
+        {
+            HashSet<byte> affectedPlaters = [];
             foreach (var allSets in InRadius.Values)
                 affectedPlaters.UnionWith(allSets);
 
@@ -76,24 +78,24 @@ public class Glow : IAddon
     public void OnFixedUpdateLowLoad(PlayerControl player)
     {
         if (!IsEnable || player == null || !player.Is(CustomRoles.Glow)) return;
-        if (!Utils.IsActive(SystemTypes.Electrical)) 
-        { 
+        if (!Utils.IsActive(SystemTypes.Electrical))
+        {
             InRadius[player.PlayerId].Clear();
             MarkedOnce[player.PlayerId] = false;
             return;
         }
         var prevList = InRadius[player.PlayerId];
         InRadius[player.PlayerId] = Main.AllAlivePlayerControls
-            .Where(target => target != null 
-                && !target.Is(CustomRoles.Glow) 
+            .Where(target => target != null
+                && !target.Is(CustomRoles.Glow)
                 && Utils.GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= GlowRadius.GetFloat())
             .Select(target => target.PlayerId)
             .ToHashSet();
 
-        if (!MarkedOnce[player.PlayerId] || (!prevList.SetEquals(InRadius[player.PlayerId]))) 
+        if (!MarkedOnce[player.PlayerId] || (!prevList.SetEquals(InRadius[player.PlayerId])))
         {
             MarkedOnce[player.PlayerId] = true;
-            Utils.MarkEveryoneDirtySettings(); 
+            Utils.MarkEveryoneDirtySettings();
         }
     }
 }

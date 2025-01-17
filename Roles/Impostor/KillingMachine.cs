@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -6,11 +6,8 @@ namespace TOHE.Roles.Impostor;
 internal class KillingMachine : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.KillingMachine;
     private const int Id = 23800;
-
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -23,15 +20,6 @@ internal class KillingMachine : RoleBase
         MNKillCooldown = FloatOptionItem.Create(Id + 5, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 10f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.KillingMachine])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
     }
 
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;

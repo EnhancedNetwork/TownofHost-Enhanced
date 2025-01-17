@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Modules;
 using UnityEngine;
 
@@ -7,10 +7,8 @@ namespace TOHE.Roles.Impostor;
 internal class SoulCatcher : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.SoulCatcher;
     private const int Id = 4600;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -28,15 +26,6 @@ internal class SoulCatcher : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.SoulCatcher])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
-    }
-
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterDuration = ShapeSoulCatcherShapeshiftDuration.GetFloat();

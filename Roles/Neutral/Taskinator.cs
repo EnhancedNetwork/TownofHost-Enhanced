@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 
@@ -7,6 +7,7 @@ namespace TOHE.Roles.Neutral;
 internal class Taskinator : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Taskinator;
     private const int Id = 13700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Taskinator);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -29,7 +30,7 @@ internal class Taskinator : RoleBase
 
     public override void Init()
     {
-        TaskIndex.Clear(); 
+        TaskIndex.Clear();
         maxTasksMarkedPerRound = TaskMarkPerRoundOpt.GetInt();
     }
     public override void Add(byte playerId)

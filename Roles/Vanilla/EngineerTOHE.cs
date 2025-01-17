@@ -1,4 +1,4 @@
-﻿
+
 using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Vanilla;
@@ -6,10 +6,8 @@ namespace TOHE.Roles.Vanilla;
 internal class EngineerTOHE : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.EngineerTOHE;
     private const int Id = 6100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
     //==================================================================\\
@@ -26,15 +24,6 @@ internal class EngineerTOHE : RoleBase
         InVentMaxTime = IntegerOptionItem.Create(Id + 3, GeneralOption.EngineerBase_InVentMaxTime, new(0, 250, 5), 15, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

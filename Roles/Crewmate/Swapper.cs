@@ -3,16 +3,18 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using static TOHE.CheckForEndVotingPatch;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Swapper : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Swapper;
     private const int Id = 12400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Swapper);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -51,12 +53,8 @@ internal class Swapper : RoleBase
     }
     public override bool OnCheckStartMeeting(PlayerControl reporter) => OptCanStartMeeting.GetBool();
 
-
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
-    
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Swapper), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
     public bool SwapMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -244,7 +242,17 @@ internal class Swapper : RoleBase
         if (tid1 == 253 || tid2 == 253 || tid1 == tid2) return;
 
         var target1 = tid1.GetPlayer();
+        if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+        {
+            target1 = VoodooMaster.Dolls[target1.PlayerId].Where(x => x.GetPlayer().IsAlive()).ToList().RandomElement().GetPlayer();
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+        }
         var target2 = tid2.GetPlayer();
+        if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target2.PlayerId].Count > 0)
+        {
+            target2 = VoodooMaster.Dolls[target2.PlayerId].Where(x => x.GetPlayer().IsAlive()).ToList().RandomElement().GetPlayer();
+            SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+        }
 
         if (target1 == null || target2 == null || !target1.IsAlive() || !target2.IsAlive()) return;
 
@@ -348,7 +356,7 @@ internal class Swapper : RoleBase
         Logger.Msg($"Click: ID {playerId}", "Swapper UI");
         var pc = playerId.GetPlayer();
         if (pc == null || !pc.IsAlive() || !GameStates.IsVoting) return;
-        
+
         if (AmongUsClient.Instance.AmHost) SwapMsg(PlayerControl.LocalPlayer, $"/sw {playerId}", true);
         else SendSwapRPC(playerId);
 
@@ -403,8 +411,9 @@ internal class Swapper : RoleBase
             renderer.sprite = CustomButton.Get("SwapNo");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { 
-                 SwapperOnClick(pva.TargetPlayerId, __instance); 
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
+            {
+                SwapperOnClick(pva.TargetPlayerId, __instance);
             }));
         }
     }

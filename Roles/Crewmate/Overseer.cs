@@ -1,9 +1,9 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using UnityEngine;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -13,9 +13,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Overseer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Overseer;
     private const int Id = 12200;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -87,15 +86,12 @@ internal class Overseer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         OverseerTimer.Clear();
         RandomRole.Clear();
         IsRevealed.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-
         foreach (var ar in Main.AllPlayerControls)
         {
             IsRevealed.Add((playerId, ar.PlayerId), false);
@@ -203,7 +199,7 @@ internal class Overseer : RoleBase
         else
         {
             var (farTarget, farTime) = data;
-            
+
             if (!farTarget.IsAlive())
             {
                 OverseerTimer.Remove(playerId);

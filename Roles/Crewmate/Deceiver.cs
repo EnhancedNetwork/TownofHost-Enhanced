@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
@@ -8,6 +8,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Deceiver : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Deceiver;
     private const int Id = 10500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Deceiver);
     public override bool IsDesyncRole => true;
@@ -79,9 +80,12 @@ internal class Deceiver : RoleBase
         var target = pc;
         if (killer == null) return false;
 
-        target.SetDeathReason(PlayerState.DeathReason.Misfire);
-        target.RpcMurderPlayer(target);
-        target.SetRealKiller(killer);
+        if (target.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner)
+        {
+            target.SetDeathReason(PlayerState.DeathReason.Misfire);
+            target.RpcMurderPlayer(target);
+            target.SetRealKiller(killer);
+        }
 
         Logger.Info($"The customer {target.GetRealName()} of {pc.GetRealName()}, a counterfeiter, commits suicide by using counterfeits", "Deceiver");
         return true;

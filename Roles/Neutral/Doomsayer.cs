@@ -1,15 +1,16 @@
-﻿using System.Text;
-using UnityEngine;
 using AmongUs.GameOptions;
+using System.Text;
 using TOHE.Roles.Core;
-using static TOHE.Utils;
+using UnityEngine;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Doomsayer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Doomsayer;
     private const int Id = 14100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doomsayer);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -20,6 +21,7 @@ internal class Doomsayer : RoleBase
     private static OptionItem DCanGuessImpostors;
     private static OptionItem DCanGuessCrewmates;
     private static OptionItem DCanGuessNeutrals;
+    private static OptionItem DCanGuessCoven;
     private static OptionItem DCanGuessAdt;
     private static OptionItem AdvancedSettings;
     private static OptionItem MaxNumberOfGuessesPerMeeting;
@@ -46,6 +48,8 @@ internal class Doomsayer : RoleBase
         DCanGuessCrewmates = BooleanOptionItem.Create(Id + 13, "DCanGuessCrewmates", true, TabGroup.NeutralRoles, true)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         DCanGuessNeutrals = BooleanOptionItem.Create(Id + 14, "DCanGuessNeutrals", true, TabGroup.NeutralRoles, true)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
+        DCanGuessCoven = BooleanOptionItem.Create(Id + 26, "DCanGuessCoven", true, TabGroup.NeutralRoles, true)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         DCanGuessAdt = BooleanOptionItem.Create(Id + 15, "DCanGuessAdt", false, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Doomsayer]);
@@ -76,12 +80,6 @@ internal class Doomsayer : RoleBase
         playerId.SetAbilityUseLimit(GuessesCount);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(ImpostorVision.GetBool());
-    private static (int, int) GuessedPlayerCount(byte doomsayerId)
-    {
-        int GuessesToWin = (int)doomsayerId.GetAbilityUseLimit(), AmountOfGuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();
-
-        return (GuessesToWin, AmountOfGuessesToWin);
-    }
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();
@@ -93,7 +91,7 @@ internal class Doomsayer : RoleBase
     }
     public static bool CheckCantGuess = CantGuess;
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.Doomsayer) && DoomsayerTryHideMsg.GetBool();
-    
+
     private void CheckCountGuess(PlayerControl doomsayer)
     {
         if (doomsayer.GetAbilityUseLimit() < DoomsayerAmountOfGuessesToWin.GetInt()) return;
@@ -105,7 +103,7 @@ internal class Doomsayer : RoleBase
             CustomWinnerHolder.WinnerIds.Add(doomsayer.PlayerId);
         }
     }
-    
+
     public override void OnReportDeadBody(PlayerControl goku, NetworkedPlayerInfo solos)
     {
         if (!AdvancedSettings.GetBool()) return;
@@ -116,8 +114,6 @@ internal class Doomsayer : RoleBase
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => seer.IsAlive() && target.IsAlive() ? ColorString(GetRoleColor(CustomRoles.Doomsayer), target.PlayerId.ToString()) + " " + pva.NameText.text : string.Empty;
 
 
     public static bool HideTabInGuesserUI(int TabId)
@@ -125,14 +121,15 @@ internal class Doomsayer : RoleBase
         if (!DCanGuessCrewmates.GetBool() && TabId == 0) return true;
         if (!DCanGuessImpostors.GetBool() && TabId == 1) return true;
         if (!DCanGuessNeutrals.GetBool() && TabId == 2) return true;
-        if (!DCanGuessAdt.GetBool() && TabId == 3) return true;
+        if (!DCanGuessCoven.GetBool() && TabId == 3) return true;
+        if (!DCanGuessAdt.GetBool() && TabId == 4) return true;
 
         return false;
     }
 
     public override bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide)
     {
-        if (CheckCantGuess)
+        if (CheckCantGuess || GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt())
         {
             guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
             return true;
@@ -149,6 +146,11 @@ internal class Doomsayer : RoleBase
             return true;
         }
         if (role.IsNeutral() && !DCanGuessNeutrals.GetBool())
+        {
+            guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
+            return true;
+        }
+        if (role.IsCoven() && !DCanGuessCoven.GetBool())
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
@@ -173,6 +175,7 @@ internal class Doomsayer : RoleBase
         {
             if (GuessesCountPerMeeting >= MaxNumberOfGuessesPerMeeting.GetInt() && guesser.PlayerId != target.PlayerId)
             {
+                CantGuess = true;
                 guesser.ShowInfoMessage(isUI, GetString("DoomsayerCantGuess"));
                 return true;
             }
