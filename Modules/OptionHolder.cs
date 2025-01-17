@@ -20,9 +20,7 @@ public enum CustomGameMode
 
 [HarmonyPatch]
 public static class Options
-
 {
-
     [HarmonyPatch(typeof(TranslationController), nameof(TranslationController.Initialize)), HarmonyPostfix]
     public static void OptionsLoadStart_Postfix()
     {
