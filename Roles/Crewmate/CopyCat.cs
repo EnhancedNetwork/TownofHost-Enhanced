@@ -158,7 +158,13 @@ internal class CopyCat : RoleBase
                 killer.RpcSetCustomRole(role, checkAddons: false);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
+                Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
+                CurrentAddons[killer.PlayerId] = [];
                 foreach (var addon in killer.GetCustomSubRoles())
+                {
+                    CurrentAddons[killer.PlayerId].Add(addon);
+                }
+                foreach (var addon in CurrentAddons[killer.PlayerId])
                 {
                     if (!CustomRolesHelper.CheckAddonConfilct(addon, killer))
                     {
