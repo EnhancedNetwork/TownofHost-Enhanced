@@ -30,7 +30,7 @@ public class GameSettingMenuPatch
 
         TabGroup[] ExludeList = Options.CurrentGameMode switch
         {
-            CustomGameMode.HidenSeekTOHE => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
+            CustomGameMode.HidenSeekTOHO => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
             CustomGameMode.FFA => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
             CustomGameMode.CandR => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
             _ => []
@@ -145,7 +145,7 @@ public class GameSettingMenuPatch
         var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
         SpriteRenderer.color = Color.white;
         //SpriteRenderer.material = null;
-        SpriteRenderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.PresetBox.png", 55f);
+        SpriteRenderer.sprite = Utils.LoadSprite("TOHO.Resources.Images.PresetBox.png", 55f);
 
         Color clr = new(-1, -1, -1);
         var PLabel = preset.GetComponentInChildren<TextMeshPro>();
@@ -245,9 +245,9 @@ public class GameSettingMenuPatch
         Object.Destroy(button.FindChild("Disabled").FindChild("Icon").GetComponent<SpriteRenderer>());
         Object.Destroy(button.transform.FindChild("Text").GetComponent<TextMeshPro>());
 
-        button.FindChild("Normal").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconActive.png", 100f);
-        button.FindChild("Hover").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconHover.png", 100f);
-        button.FindChild("Disabled").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIcon.png", 100f);
+        button.FindChild("Normal").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHO.Resources.Images.SearchIconActive.png", 100f);
+        button.FindChild("Hover").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHO.Resources.Images.SearchIconHover.png", 100f);
+        button.FindChild("Disabled").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHO.Resources.Images.SearchIcon.png", 100f);
 
         if (DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.Russian)
         {
