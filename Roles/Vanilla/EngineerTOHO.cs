@@ -17,12 +17,12 @@ internal class EngineerTOHE : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHE);
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.EngineerTOHO);
         VentUseCooldown = IntegerOptionItem.Create(Id + 2, GeneralOption.EngineerBase_VentCooldown, new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
         InVentMaxTime = IntegerOptionItem.Create(Id + 3, GeneralOption.EngineerBase_InVentMaxTime, new(0, 250, 5), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHE])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EngineerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
