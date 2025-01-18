@@ -152,7 +152,7 @@ public class RoleAssign
 
         //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
         //{
-        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
+        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHO, 100, optImpNum));
         //    Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
         //}
 
@@ -889,7 +889,7 @@ public class RoleAssign
         {
             while (FinalRolesList.Count < AllPlayers.Count)
             {
-                FinalRolesList.Add(CustomRoles.CrewmateTOHE);
+                FinalRolesList.Add(CustomRoles.CrewmateTOHO);
             }
         }
 
