@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+using MS.Internal.Xml.XPath;
+using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -32,6 +33,7 @@ internal class Necromancer : CovenManager
     private static float tempKillTimer = 0;
 
     private static readonly Dictionary<byte, List<CustomRoles>> UsedRoles = [];
+    private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
     private static float AbilityTimer;
     private static bool canUseAbility;
 
@@ -56,6 +58,7 @@ internal class Necromancer : CovenManager
         Killer = null;
         tempKillTimer = 0;
         UsedRoles.Clear();
+        OldAddons.Clear();
         canUseAbility = false;
         AbilityTimer = 0;
     }
@@ -63,6 +66,7 @@ internal class Necromancer : CovenManager
     {
         Timer = RevengeTime.GetInt();
         UsedRoles[playerId] = [];
+        OldAddons[playerId] = [];
     }
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -135,10 +139,18 @@ internal class Necromancer : CovenManager
         }
         var role = deadRoles.RandomElement();
         nm.RpcChangeRoleBasis(role);
-        nm.RpcSetCustomRole(role);
+        nm.RpcSetCustomRole(role, checkAddons: false);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
-        nm.RemoveIncompatibleAddOns();
         nm.SyncSettings();
+        foreach (var addon in nm.GetCustomSubRoles())
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, nm))
+            {
+                OldAddons[nm.PlayerId].Add(addon);
+                Main.PlayerStates[nm.PlayerId].RemoveSubRole(addon);
+                Logger.Info($"{nm.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{nm.GetCustomRole().ToString()}");
+            }
+        }
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
         nm.RpcGuardAndKill(nm);
         nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
@@ -158,6 +170,11 @@ internal class Necromancer : CovenManager
         if (nm.IsAlive())
             nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
         nm.RpcSetCustomRole(CustomRoles.Necromancer);
+        foreach (var addon in OldAddons[nm.PlayerId])
+        {
+            nm.RpcSetCustomRole(addon);
+        }
+        OldAddons[nm.PlayerId].Clear();
         nm.ResetKillCooldown();
         nm.SyncSettings();
         nm.RpcGuardAndKill(nm);
