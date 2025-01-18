@@ -55,7 +55,7 @@ internal class Lawyer : RoleBase
     }
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
-        CustomRoles.CrewmateTOHE,
+        CustomRoles.CrewmateTOHO,
         CustomRoles.Amnesiac,
         CustomRoles.Jester,
         CustomRoles.Opportunist,
@@ -66,7 +66,7 @@ internal class Lawyer : RoleBase
         CustomRoles.Doctor,
         CustomRoles.Maverick,
         CustomRoles.Follower,
-        CustomRoles.TrackerTOHE,
+        CustomRoles.TrackerTOHO,
         CustomRoles.Mechanic,
         CustomRoles.Refugee,
         CustomRoles.Sheriff,
