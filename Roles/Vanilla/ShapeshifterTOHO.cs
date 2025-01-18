@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.Vanilla;
 
-internal class ShapeshifterTOHE : RoleBase
+internal class ShapeshifterTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.ShapeshifterTOHO;
