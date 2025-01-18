@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.Vanilla;
 
-internal class TrackerTOHE : RoleBase
+internal class TrackerTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.TrackerTOHO;
