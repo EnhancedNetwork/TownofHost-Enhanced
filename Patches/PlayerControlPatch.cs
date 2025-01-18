@@ -1330,7 +1330,7 @@ class FixedUpdateInNormalGamePatch
                     RoleText.enabled = true;
                     BlankRT = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
                     if (Sheriff.ShowShotLimit.GetBool()) 
-                        BlankRT += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
+                        BlankRT += $" {Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})")}"; // Sheriff progress text
                     RoleText.text = $"<size=1.3>{BlankRT}</size>";
                 }
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
