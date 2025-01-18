@@ -565,7 +565,7 @@ internal class StartGameHostPatch
         foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             var targetRoleType = othersRole;
-            var targetCustomRole = RoleAssign.RoleResult.GetValueOrDefault(target.PlayerId, CustomRoles.CrewmateTOHE);
+            var targetCustomRole = RoleAssign.RoleResult.GetValueOrDefault(target.PlayerId, CustomRoles.CrewmateTOHO);
 
             if (targetCustomRole.GetVNRole() is CustomRoles.Noisemaker)
                 targetRoleType = RoleTypes.Noisemaker;
