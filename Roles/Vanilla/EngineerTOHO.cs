@@ -3,7 +3,7 @@ using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Vanilla;
 
-internal class EngineerTOHE : RoleBase
+internal class EngineerTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.EngineerTOHO;
