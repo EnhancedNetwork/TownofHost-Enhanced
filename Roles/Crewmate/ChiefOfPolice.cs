@@ -83,7 +83,6 @@ internal class ChiefOfPolice : RoleBase
                 target.RpcSetCustomRole(CustomRoles.Sheriff);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
                 
-                target.RemoveIncompatibleAddOns();
                 target.ResetKillCooldown();
                 target.SetKillCooldown(forceAnime: true);
 
@@ -119,7 +118,6 @@ internal class ChiefOfPolice : RoleBase
                     target.RpcSetCustomRole(CustomRoles.Sheriff);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
                     
-                    target.RemoveIncompatibleAddOns();
                     target.ResetKillCooldown();
                     target.SetKillCooldown(forceAnime: true);
 
@@ -150,7 +148,6 @@ internal class ChiefOfPolice : RoleBase
                     Logger.Info($"Giving addon {role} to {target.GetNameWithRole()}", "ChiefOfPolice");
                     target.RpcSetCustomRole(role);
                     target.RpcSetCustomRole(role);
-                    target.RemoveIncompatibleAddOns();
                 }
             }
         }
