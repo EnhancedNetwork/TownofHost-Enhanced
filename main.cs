@@ -659,17 +659,17 @@ public enum CustomRoles
     Shapeshifter,
 
     // Crewmate Vanilla Remakes
-    CrewmateTOHE,
-    EngineerTOHE,
-    GuardianAngelTOHE,
-    NoisemakerTOHE,
-    ScientistTOHE,
-    TrackerTOHE,
+    CrewmateTOHO,
+    EngineerTOHO,
+    GuardianAngelTOHO,
+    NoisemakerTOHO,
+    ScientistTOHO,
+    TrackerTOHO,
 
     // Impostor Vanilla Remakes
-    ImpostorTOHE,
-    PhantomTOHE,
-    ShapeshifterTOHE,
+    ImpostorTOHO,
+    PhantomTOHO,
+    ShapeshifterTOHO,
 
     // Impostor Ghost
     Bloodmoon,
