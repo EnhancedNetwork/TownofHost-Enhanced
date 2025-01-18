@@ -46,7 +46,7 @@ internal class DoubleAgent : RoleBase
     [
         0, // NoChange
         0, // Random
-        CustomRoles.ImpostorTOHE, // Team Crewmate
+        CustomRoles.ImpostorTOHO, // Team Crewmate
         CustomRoles.Traitor, // Team Neutral
         CustomRoles.Trickster, // Team Impostor as Crewmate
     ];
@@ -229,8 +229,8 @@ internal class DoubleAgent : RoleBase
                         }
                     }
                 }
-                // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                // If Role is ImpostorTOHO aka Admired Impostor opt give Admired Addon if player dose not already have it.
+                if (Role == CustomRoles.ImpostorTOHO && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
 
                 Init();
@@ -242,8 +242,8 @@ internal class DoubleAgent : RoleBase
                 player.MarkDirtySettings();
 
                 string RoleName = ColorString(GetRoleColor(player.GetCustomRole()), GetRoleName(player.GetCustomRole()));
-                if (Role == CustomRoles.ImpostorTOHE)
-                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                if (Role == CustomRoles.ImpostorTOHO)
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHO")}");
                 player.Notify(ColorString(GetRoleColor(player.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
             }
         }
