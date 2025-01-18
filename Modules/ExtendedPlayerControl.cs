@@ -20,7 +20,7 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true)
     {
         if (role < CustomRoles.NotAssigned)
         {
@@ -41,6 +41,7 @@ static class ExtendedPlayerControl
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+        if (checkAddons) player.RemoveIncompatibleAddOns();
     }
     public static void RpcSetCustomRole(byte PlayerId, CustomRoles role)
     {
