@@ -141,7 +141,6 @@ internal class SoulCollector : RoleBase
 
             sc.RpcSetCustomRole(CustomRoles.Death);
             sc.GetRoleClass()?.OnAdd(sc.PlayerId);
-            sc.RemoveIncompatibleAddOns();
 
             sc.Notify(GetString("SoulCollectorToDeath"));
             sc.RpcGuardAndKill(sc);
@@ -158,7 +157,6 @@ internal class SoulCollector : RoleBase
         {
             player.RpcSetCustomRole(CustomRoles.Death);
             player.GetRoleClass()?.OnAdd(player.PlayerId);
-            player.RemoveIncompatibleAddOns();
 
             player.Notify(GetString("SoulCollectorToDeath"));
             player.RpcGuardAndKill(player);
