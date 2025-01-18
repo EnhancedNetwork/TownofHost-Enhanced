@@ -1157,7 +1157,7 @@ class MeetingHudStartPatch
             {
                 BlankRT = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
                 if (Sheriff.ShowShotLimit.GetBool()) 
-                    BlankRT += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})"); // Sheriff progress text
+                    BlankRT += $" {Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})")}"; // Sheriff progress text
                 roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
             }
             if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsCovIllusioned(pc.PlayerId))
