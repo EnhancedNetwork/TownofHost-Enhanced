@@ -658,7 +658,7 @@ public static class CheckShapeshiftPatch
         }
         else
         {
-            if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+            if (!(instance.Is(CustomRoles.ShapeshifterTOHO) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
             {
                 instance.RpcGuardAndKill(instance);
                 instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
@@ -2092,14 +2092,14 @@ class PlayerControlLocalSetRolePatch
         {
             var modRole = role switch
             {
-                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
-                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
-                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
-                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHE,
-                RoleTypes.Phantom => CustomRoles.PhantomTOHE,
-                RoleTypes.Tracker => CustomRoles.TrackerTOHE,
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHO,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHO,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHO,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHO,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHO,
+                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHO,
+                RoleTypes.Phantom => CustomRoles.PhantomTOHO,
+                RoleTypes.Tracker => CustomRoles.TrackerTOHO,
                 _ => CustomRoles.NotAssigned,
             };
             if (modRole != CustomRoles.NotAssigned)
