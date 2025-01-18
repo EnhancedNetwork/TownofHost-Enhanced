@@ -191,7 +191,6 @@ internal class Executioner : RoleBase
         executioner.GetRoleClass()?.OnRemove(executionerId);
         executioner.RpcSetCustomRole(newCustomRole);
         executioner.GetRoleClass().OnAdd(executionerId);
-        executioner.RemoveIncompatibleAddOns();
 
         switch (newCustomRole)
         {
