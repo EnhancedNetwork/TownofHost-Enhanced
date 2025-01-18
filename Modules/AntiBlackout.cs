@@ -176,7 +176,7 @@ public static class AntiBlackout
     }
     public static void OnDisconnect(NetworkedPlayerInfo player)
     {
-        // Execution conditions: Client is the host, IsDead is overridden, player is already disconnected
+        // Execution conditions: Client is the Host, IsDead is overridden, player is already disconnected
         if (!AmongUsClient.Instance.AmHost || !IsCached || !player.Disconnected) return;
         isDeadCache[player.PlayerId] = (true, true);
         RevivePlayersAndSetDummyImp();
@@ -263,7 +263,7 @@ public static class AntiBlackout
 
         foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
         {
-            // skip host
+            // skip Host
             if (seerId == 0) continue;
 
             var seer = seerId.GetPlayer();
@@ -303,7 +303,6 @@ public static class AntiBlackout
             {
                 seer.RpcResetAbilityCooldown();
                 seer.ResetKillCooldown();
-                seer.SetKillCooldown();
 
                 if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
                     seer.SetKillCooldown(kcd + 1f);
