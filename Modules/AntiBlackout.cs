@@ -303,7 +303,6 @@ public static class AntiBlackout
             {
                 seer.RpcResetAbilityCooldown();
                 seer.ResetKillCooldown();
-                seer.SetKillCooldown();
 
                 if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
                     seer.SetKillCooldown(kcd + 1f);
