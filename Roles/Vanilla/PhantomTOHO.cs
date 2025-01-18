@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.Vanilla;
 
-internal class PhantomTOHE : RoleBase
+internal class PhantomTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.PhantomTOHO;
