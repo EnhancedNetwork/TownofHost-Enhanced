@@ -5,7 +5,7 @@ namespace TOHE.Roles.Vanilla;
 internal class PhantomTOHE : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.PhantomTOHE;
+    public override CustomRoles Role => CustomRoles.PhantomTOHO;
     private const int Id = 450;
     public override CustomRoles ThisRoleBase => CustomRoles.Phantom;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorVanilla;
