@@ -155,7 +155,7 @@ internal class CopyCat : RoleBase
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);
-                killer.RpcSetCustomRole(role);
+                killer.RpcSetCustomRole(role, checkAddons: false);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
                 foreach (var addon in killer.GetCustomSubRoles())

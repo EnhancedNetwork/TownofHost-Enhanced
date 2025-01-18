@@ -138,7 +138,6 @@ internal class Lawyer : RoleBase
                 lawyer.GetRoleClass()?.OnRemove(playerId);
                 lawyer.RpcSetCustomRole(changedRole);
                 lawyer.GetRoleClass()?.OnAdd(playerId);
-                lawyer.RemoveIncompatibleAddOns();
             }
         }
     }
@@ -228,7 +227,6 @@ internal class Lawyer : RoleBase
         lawyer.GetRoleClass()?.OnRemove(lawyer.PlayerId);
         lawyer.RpcSetCustomRole(newCustomRole);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
-        lawyer.RemoveIncompatibleAddOns();
 
         switch (newCustomRole)
         {
