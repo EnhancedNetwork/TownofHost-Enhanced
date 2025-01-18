@@ -1,7 +1,7 @@
 ﻿
 namespace TOHE.Roles.Vanilla;
 
-internal class ImpostorTOHE : RoleBase
+internal class ImpostorTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.ImpostorTOHO;
