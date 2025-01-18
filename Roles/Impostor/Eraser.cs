@@ -140,15 +140,15 @@ internal class Eraser : RoleBase
             ? role
             : roleType switch
             {
-                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
-                RoleTypes.Tracker => CustomRoles.TrackerTOHE,
-                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHE,
-                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
-                RoleTypes.Impostor when role.IsCrewmate() => CustomRoles.CrewmateTOHE,
-                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
-                RoleTypes.Phantom => CustomRoles.PhantomTOHE,
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHO,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHO,
+                RoleTypes.Tracker => CustomRoles.TrackerTOHO,
+                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHO,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHO,
+                RoleTypes.Impostor when role.IsCrewmate() => CustomRoles.CrewmateTOHO,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHO,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHO,
+                RoleTypes.Phantom => CustomRoles.PhantomTOHO,
                 _ => role,
             };
     }
