@@ -69,7 +69,6 @@ internal class Godfather : RoleBase
                 killer.RpcSetCustomRole(ChangeAddon);
             }
 
-            killer.RemoveIncompatibleAddOns();
             killer.RpcGuardAndKill();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
