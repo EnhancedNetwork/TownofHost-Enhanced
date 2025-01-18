@@ -43,7 +43,10 @@ public static class TagManager
     // Check for the friend's tag file in any folder (not just in the root directory)
     public static bool CheckFriendCode(string friendCode, bool log = false)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
@@ -60,7 +63,10 @@ public static class TagManager
 
     public static string ReadTagName(string friendCode)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
@@ -82,7 +88,10 @@ public static class TagManager
 
     public static string ReadTagColor(string friendCode)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
@@ -104,7 +113,10 @@ public static class TagManager
 
     public static int ReadPermission(string friendCode)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
@@ -127,7 +139,10 @@ public static class TagManager
 
     public static bool CanUseSayCommand(string friendCode)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
@@ -150,7 +165,10 @@ public static class TagManager
 
     public static bool CanUseEndCommand(string friendCode)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
@@ -173,7 +191,10 @@ public static class TagManager
 
     public static bool CanUseExecuteCommand(string friendCode)
     {
-        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH);
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+
         var filePath = folderPaths
             .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
             .FirstOrDefault(File.Exists);
