@@ -142,7 +142,13 @@ internal class Necromancer : CovenManager
         nm.RpcSetCustomRole(role, checkAddons: false);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
         nm.SyncSettings();
+        Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
+        CurrentAddons[nm.PlayerId] = [];
         foreach (var addon in nm.GetCustomSubRoles())
+        {
+            CurrentAddons[nm.PlayerId].Add(addon);
+        }
+        foreach (var addon in CurrentAddons[nm.PlayerId])
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, nm))
             {
