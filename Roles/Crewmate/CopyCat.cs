@@ -131,7 +131,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Sunnyboy => CustomRoles.Doctor,
                 CustomRoles.Councillor => CustomRoles.Judge,
                 CustomRoles.Taskinator => CustomRoles.Benefactor,
-                CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
+                CustomRoles.EvilTracker => CustomRoles.TrackerTOHO,
                 CustomRoles.AntiAdminer => CustomRoles.Telecommunication,
                 CustomRoles.Pursuer => CustomRoles.Deceiver,
                 CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
