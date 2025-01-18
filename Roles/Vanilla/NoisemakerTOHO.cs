@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.Vanilla;
 
-internal class NoisemakerTOHE : RoleBase
+internal class NoisemakerTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.NoisemakerTOHO;
