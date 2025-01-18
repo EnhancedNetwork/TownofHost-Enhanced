@@ -4,7 +4,7 @@ namespace TOHE.Roles.Vanilla;
 internal class CrewmateTOHE : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.CrewmateTOHE;
+    public override CustomRoles Role => CustomRoles.CrewmateTOHO;
     private const int Id = 6000;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
