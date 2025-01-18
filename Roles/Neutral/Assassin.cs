@@ -46,7 +46,7 @@ internal class Assassin : RoleBase
         if (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
         {
             killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ImpostorTOHE), GetString("AssassinImpostorNotify")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ImpostorTOHO), GetString("AssassinImpostorNotify")));
             //Utils.NotifyRoles(SpecifySeer: killer);
             Utils.MarkEveryoneDirtySettings();
             killer.SetAbilityUseLimit(0);
