@@ -2218,14 +2218,14 @@ public static class Utils
                         {
                             BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random Trickster role
                             BlankRT += TaskState.GetTaskState(); // Random task count for revealed Trickster
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
                         // Same thing as Trickster but for Illusioned Coven
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
                         {
                             BlankRT = Overseer.GetRandomRole(seer.PlayerId);
                             BlankRT += TaskState.GetTaskState();
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
                         {
@@ -2235,7 +2235,7 @@ public static class Utils
                             {
                                 BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
                             }
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>";
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
                         // ====== Target player name ======
