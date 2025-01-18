@@ -1,12 +1,11 @@
-﻿
-using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Vanilla;
 
 internal class ScientistTOHE : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.ScientistTOHE;
+    public override CustomRoles Role => CustomRoles.ScientistTOHO;
     private const int Id = 6200;
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
