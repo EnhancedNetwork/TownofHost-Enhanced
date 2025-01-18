@@ -17,7 +17,7 @@ internal class TrackerTOHE : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TrackerTOHE);
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TrackerTOHO);
         TrackCooldown = IntegerOptionItem.Create(Id + 2, GeneralOption.TrackerBase_TrackingCooldown, new(1, 120, 1), 15, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
