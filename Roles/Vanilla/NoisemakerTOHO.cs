@@ -1,5 +1,4 @@
-﻿
-using TOHE.Roles.Core;
+﻿using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Vanilla;
 
@@ -20,11 +19,11 @@ internal class NoisemakerTOHE : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.NoisemakerTOHE);
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.NoisemakerTOHO);
         ImpostorAlert = BooleanOptionItem.Create(Id + 2, GeneralOption.NoisemakerBase_ImpostorAlert, true, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.NoisemakerTOHE]);
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.NoisemakerTOHO]);
         AlertDuration = IntegerOptionItem.Create(Id + 3, GeneralOption.NoisemakerBase_AlertDuration, new(1, 20, 1), 10, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.NoisemakerTOHE])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.NoisemakerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
     }
 
