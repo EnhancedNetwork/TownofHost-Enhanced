@@ -82,10 +82,10 @@ internal class CopyCat : RoleBase
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
-                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat, checkAddons: false);
                     foreach (var addon in OldAddons[pc.PlayerId])
                     {
-                        pc.RpcSetCustomRole(addon);
+                        pc.RpcSetCustomRole(addon, checkAddons: false);
                     }
                 }
             }
@@ -164,7 +164,7 @@ internal class CopyCat : RoleBase
                     {
                         OldAddons[killer.PlayerId].Add(addon);
                         Main.PlayerStates[killer.PlayerId].RemoveSubRole(addon);
-                        Logger.Info($"{killer.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{killer.GetCustomRole().ToString()}");
+                        Logger.Info($"{killer.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", "CopyCat");
                     }
                 }
             }

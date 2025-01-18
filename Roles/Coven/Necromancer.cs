@@ -148,7 +148,7 @@ internal class Necromancer : CovenManager
             {
                 OldAddons[nm.PlayerId].Add(addon);
                 Main.PlayerStates[nm.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{nm.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{nm.GetCustomRole().ToString()}");
+                Logger.Info($"{nm.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", "Necromancer");
             }
         }
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
@@ -169,10 +169,10 @@ internal class Necromancer : CovenManager
         }
         if (nm.IsAlive())
             nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
-        nm.RpcSetCustomRole(CustomRoles.Necromancer);
+        nm.RpcSetCustomRole(CustomRoles.Necromancer, checkAddons: false);
         foreach (var addon in OldAddons[nm.PlayerId])
         {
-            nm.RpcSetCustomRole(addon);
+            nm.RpcSetCustomRole(addon, checkAddons: false);
         }
         OldAddons[nm.PlayerId].Clear();
         nm.ResetKillCooldown();
