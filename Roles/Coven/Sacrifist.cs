@@ -175,9 +175,7 @@ internal class Sacrifist : CovenManager
                 // Cant Fix Sabotage (not coding allat, just give them Fool)
                 case 3:
                     GetPlayerById(sacrifist).RpcSetCustomRole(CustomRoles.Fool);
-                    GetPlayerById(sacrifist).RemoveIncompatibleAddOns();
                     randPlayerPC.RpcSetCustomRole(CustomRoles.Fool);
-                    randPlayerPC.RemoveIncompatibleAddOns();
                     Logger.Info($"{pc.GetRealName()} Gave Fool to {randPlayerPC.GetRealName()} and self", "Sacrifist");
                     pc.Notify(GetString("SacrifistFoolDebuff"), 5f);
                     break;
