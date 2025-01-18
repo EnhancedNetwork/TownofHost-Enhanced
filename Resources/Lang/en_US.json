@@ -2671,7 +2671,7 @@
 
 
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no Mods other than TOHE are installed.",
-  "Warning.NoModHost": "TOHE is not installed on the Host",
+  "Warning.NoModHost": "TOHO is not installed on the Host",
   "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
   "Warning.AutoExitAtMismatchedVersion": "The Host has no or a different version of {0}\nYou will be kicked in {1}",
   "Warning.CanNotUseBepInExConsole": "The use of the Console is prohibited\nso your Console has been off",
