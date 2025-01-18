@@ -6,7 +6,7 @@ namespace TOHE.Roles.Vanilla;
 internal class EngineerTOHE : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.EngineerTOHE;
+    public override CustomRoles Role => CustomRoles.EngineerTOHO;
     private const int Id = 6100;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
