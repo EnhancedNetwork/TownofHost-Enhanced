@@ -2,7 +2,7 @@
 
 namespace TOHE.Roles.Vanilla;
 
-internal class ScientistTOHE : RoleBase
+internal class ScientistTOHO : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.ScientistTOHO;
