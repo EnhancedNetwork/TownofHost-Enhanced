@@ -705,7 +705,6 @@ class CastVotePatch
             voter.RpcChangeRoleBasis(CovenLeader.retrainPlayer[voter.PlayerId]);
             voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
             voter.GetRoleClass()?.OnAdd(voter.PlayerId);
-            voter.RemoveIncompatibleAddOns();
             SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
