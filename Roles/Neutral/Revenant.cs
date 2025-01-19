@@ -24,7 +24,7 @@ internal class Revenant : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         CustomRoles role = killer.GetCustomRole();
-        if (target.Is(CustomRoles.Narc)) role = CustomRoles.Sheriff;
+        if (killer.Is(CustomRoles.Narc)) role = CustomRoles.Sheriff;
 
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
