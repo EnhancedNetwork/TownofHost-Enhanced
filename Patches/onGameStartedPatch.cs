@@ -44,8 +44,8 @@ internal class ChangeRoleSettings
             }
             else if (GameStates.IsHideNSeek)
             {
-                Main.HideNSeekOptions.MaxImpostors = Options.MaxImpostorsHnS.GetInt();
-                Main.AliveImpostorCount = Main.HideNSeekOptions.MaxImpostors;
+                Main.HideNSeekOptions.NumImpostors = Options.MaxImpostorsHnS.GetInt();
+                Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
             Main.PlayerStates = [];
