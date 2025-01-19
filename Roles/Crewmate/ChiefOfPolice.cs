@@ -50,7 +50,7 @@ internal class ChiefOfPolice : RoleBase
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (seer.IsAnySubRole(x => x.IsConverted() || x is CustomRoles.Rebel) || target.IsAnySubRole(x => x.IsConverted() || x is CustomRoles.Rebel))
+        if (seer.IsAnySubRole(x => x.IsConverted()) || target.IsAnySubRole(x => x.IsConverted()))
             return false;
         if (seer.Is(CustomRoles.ChiefOfPolice) && target.Is(CustomRoles.Sheriff) && ChiefOfPoliceCanSeePolice.GetBool())
             return true;
