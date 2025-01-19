@@ -215,7 +215,6 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Lovers)
                 || (pc.Is(CustomRoles.Altruist) && !Rebel.CanWinAfterDeath.GetBool())
                 || (pc.Is(CustomRoles.Sheriff) && !Rebel.SheriffCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.ChiefOfPolice) && !Rebel.ChiefOfPoliceCanBeRebel.GetBool())
                 || (pc.Is(CustomRoles.Marshall) && !Rebel.MarshallCanBeRebel.GetBool())
                 || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
                 || (pc.Is(CustomRoles.Swapper) && !Rebel.SwapperCanBeRebel.GetBool())
