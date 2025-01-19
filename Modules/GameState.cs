@@ -345,7 +345,7 @@ public class PlayerState(byte playerId)
         Execution,
         Fall,
 
-        // TOHE
+        // TOHO
         Gambled,
         Eaten,
         Sacrifice,
