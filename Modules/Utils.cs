@@ -2043,7 +2043,7 @@ public static class Utils
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
-                    else if (seerRole.IsNA()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamApocalypse")); }
+                    else if (seerRole.IsNA()) { RoleText = ColorString(GetRoleColor(CustomRoles.Apocalypse), GetString("TeamApocalypse")); }
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
                     else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 

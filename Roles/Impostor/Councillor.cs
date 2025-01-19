@@ -186,7 +186,7 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
-                else if (target.Is(CustomRoles.Madmate) || target.IsNonRebelMadmate())
+                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {

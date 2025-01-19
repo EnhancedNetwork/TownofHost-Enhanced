@@ -50,7 +50,7 @@ internal class ChiefOfPolice : RoleBase
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (seer.IsAnySubRole(x => x.IsConverted()) || target.IsAnySubRole(x => x.IsConverted()))
+        if (seer.IsAnySubRole(x => x.IsConverted() || x is CustomRoles.Rebel) || target.IsAnySubRole(x => x.IsConverted() || x is CustomRoles.Rebel))
             return false;
         if (seer.Is(CustomRoles.ChiefOfPolice) && target.Is(CustomRoles.Sheriff) && ChiefOfPoliceCanSeePolice.GetBool())
             return true;
@@ -142,9 +142,9 @@ internal class ChiefOfPolice : RoleBase
         {
             if (PassConverted.GetBool())
             {
-                if (killer.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Egoist))
+                if (killer.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Egoist))
                 {
-                    var role = killer.GetCustomSubRoles().FirstOrDefault(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Egoist);
+                    var role = killer.GetCustomSubRoles().FirstOrDefault(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Rebel) && x is not CustomRoles.Egoist);
                     Logger.Info($"Giving addon {role} to {target.GetNameWithRole()}", "ChiefOfPolice");
                     target.RpcSetCustomRole(role);
                 }

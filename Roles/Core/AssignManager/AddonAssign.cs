@@ -197,7 +197,8 @@ public static class AddonAssign
     }
     public static void AssignRebel()
     {
-        if (CustomRoles.Rebel.IsEnable()) AddRebelToPlayer();
+        if (CustomRoles.Rebel.IsEnable() && Rebel.CheckRebelAssign())
+            AddRebelToPlayer();
     }
     private static void AddRebelToPlayer()
     {
