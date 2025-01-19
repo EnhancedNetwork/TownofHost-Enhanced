@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
 using System;
 using TMPro;

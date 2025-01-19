@@ -881,9 +881,9 @@ public static class Utils
 
         SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
-        SendMessage(string.Join("\n", covenb), PlayerId, GetString("CovenRoles"), ShouldSplit: true);
-        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -1608,7 +1608,7 @@ public static class Utils
 
         if (!(player.AmOwner || player.FriendCode.GetDevUser().HasTag()))
         {
-            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode))
+            if (!IsPlayerModerator(player.FriendCode) && !IsPlayerVIP(player.FriendCode) && !TagManager.CheckFriendCode(player.FriendCode, false))
             {
                 SetRealName();
                 return;
@@ -1636,6 +1636,7 @@ public static class Utils
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
         }
+
 
         var modtag = "";
         if (Options.ApplyVipList.GetValue() == 1 && player.FriendCode != PlayerControl.LocalPlayer.FriendCode)
@@ -1726,6 +1727,13 @@ public static class Utils
                 }
             }
         }
+        if (player.FriendCode != PlayerControl.LocalPlayer.FriendCode && TagManager.CheckFriendCode(player.FriendCode, false))
+        {
+            if ((TagManager.ReadTagColor(player.FriendCode) == " " || TagManager.ReadTagColor(player.FriendCode) == "") && (TagManager.ReadTagName(player.FriendCode) != "" && TagManager.ReadTagName(player.FriendCode) != " ")) modtag = $"{TagManager.ReadTagName(player.FriendCode)}";
+            else if (TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
+            else modtag = $"<color=#{TagManager.ReadTagColor(player.FriendCode)}>{TagManager.ReadTagName(player.FriendCode)}</color>";
+        }
+
         if (player.AmOwner)
         {
             name = Options.GetSuffixMode() switch

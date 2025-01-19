@@ -149,7 +149,7 @@ internal class Berserker : RoleBase
 
         if (BerserkerKillMax[killer.PlayerId] >= BerserkerBomberLevel.GetInt() && BerserkerThreeCanBomber.GetBool())
         {
-            Logger.Info("炸弹爆炸了", "Boom");
+            Logger.Info("Bomb exploded", "Boom");
             CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
             foreach (var player in Main.AllAlivePlayerControls)
             {

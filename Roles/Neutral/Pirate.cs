@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;

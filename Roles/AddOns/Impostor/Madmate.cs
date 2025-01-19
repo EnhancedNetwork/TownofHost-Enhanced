@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;

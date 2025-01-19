@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Translator;

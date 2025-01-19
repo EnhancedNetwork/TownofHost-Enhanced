@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using UnityEngine;
 using static TOHE.Options;

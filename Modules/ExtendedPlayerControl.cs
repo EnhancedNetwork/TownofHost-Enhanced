@@ -487,6 +487,11 @@ static class ExtendedPlayerControl
         if (!player.HasImpKillButton(considerVanillaShift: true)) return;
         if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
 
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info($"player {player.PlayerId} should reset cooldown ({(time >= 0f ? time : Main.AllPlayerKillCooldown[player.PlayerId])}) while AntiBlackout", "SetKillCooldown");
+        }
+
         player.SetKillTimer(CD: time);
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;

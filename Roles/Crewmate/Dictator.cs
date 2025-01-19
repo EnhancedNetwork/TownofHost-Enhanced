@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;

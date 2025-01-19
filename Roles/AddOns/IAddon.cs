@@ -1,4 +1,4 @@
-﻿//Thanks EHR for https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/AddOns/IAddon.cs and everything related ;)
+//Thanks EHR for https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/AddOns/IAddon.cs and everything related ;)
 
 namespace TOHE.Roles.AddOns
 {

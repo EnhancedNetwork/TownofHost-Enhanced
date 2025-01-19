@@ -1,4 +1,4 @@
-﻿
+
 namespace TOHE.Roles.AddOns.Common;
 
 public class Evader : IAddon

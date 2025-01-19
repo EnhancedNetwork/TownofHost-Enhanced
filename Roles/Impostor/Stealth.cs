@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
