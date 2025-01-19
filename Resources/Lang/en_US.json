@@ -4090,10 +4090,6 @@
   "LastMessageReplay": "Last System Message Replay",
   "Contributor": "Contributor",
 
-  "dbConnect.InitFailure": "Error while connecting to TOHO API, please check your network connection and retry login!",
-  "dbConnect.InitFailurePublic": "Error while connecting to TOHO API, this could be caused by your internet connection. And so Sponsor+ perks are not available, you may continue to play as usual without these.",
-  "dbConnect.nullFriendCode": "This build of TOHO is not available to users with no Friend Code!",
-
   "Quizmaster": "Quizmaster",
   "QuizmasterInfo": "Quiz people to kill them in meetings",
   "QuizmasterInfoLong": "(Neutrals):\nAs the Quizmaster, you can mark a player using your Kill button. In the next meeting, the marked player will have \"?!\" next to their name. The player will die if they answer the question wrong or doesn't answer. The player will live if the Quizmaster is killed/ejected in the same meeting.\nThe Quizmaster cannot mark multiple people in the same round",
