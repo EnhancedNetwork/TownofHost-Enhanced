@@ -3243,7 +3243,7 @@
   "CovenCanBeLoyal": "<color=#ac42f2>巫師集會</color>可以成為<color=#B71556>忠誠</color>",
   "TasklessCrewCanBeLazy": "沒有任務的<color=#8cffff>船員</color>可以成為<color=#A4DFFE>懶人</color>",
   "TaskBasedCrewCanBeLazy": "基於任務的<color=#8cffff>船員</color>職業可以成為<color=#A4DFFE>懶人</color>",
-  "SheriffCanBeMadmate": "<color=#f8cd46>警長</color>可以成為<color=#ff1919>叛徒</color>",
+  "SheriffCanBeMadmate": "<color=#ffb347>警長</color>可以成為<color=#ff1919>叛徒</color>",
   "MayorCanBeMadmate": "<color=#204d42>市長</color>可以成為<color=#ff1919>叛徒</color>",
   "NGuesserCanBeMadmate": "<color=#f0e68c>正義賭怪</color>可以成為<color=#ff1919>叛徒</color>",
   "SnitchCanBeMadmate": "<color=#b8fb4f>告密者</color>可以成為<color=#ff1919>叛徒</color>",
