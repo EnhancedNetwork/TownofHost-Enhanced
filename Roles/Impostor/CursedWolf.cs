@@ -16,7 +16,6 @@ internal class CursedWolf : RoleBase
     private static OptionItem GuardSpellTimes;
     private static OptionItem KillAttacker;
 
-
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.CursedWolf);
@@ -28,28 +27,24 @@ internal class CursedWolf : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = GuardSpellTimes.GetInt();
+        playerId.SetAbilityUseLimit(GuardSpellTimes.GetInt());
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer == target || AbilityLimit <= 0) return true;
+        if (killer == target || killer.GetAbilityUseLimit() <= 0) return true;
         if (killer.IsTransformedNeutralApocalypse()) return true;
 
         killer.RpcGuardAndKill(target);
         target.RpcGuardAndKill(target);
 
-        AbilityLimit -= 1;
-        SendSkillRPC();
+        killer.RpcRemoveAbilityUse();
 
         if (KillAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
         {
-            Logger.Info($"{target.GetNameWithRole()} Spell Count: {AbilityLimit}", "Cursed Wolf");
             killer.SetDeathReason(PlayerState.DeathReason.Curse);
             killer.RpcMurderPlayer(killer);
             killer.SetRealKiller(target);
         }
         return false;
     }
-
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedWolf), $"({AbilityLimit})");
 }

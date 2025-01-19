@@ -52,13 +52,16 @@ internal class Cultist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = CharmMax.GetInt();
+        playerId.SetAbilityUseLimit(CharmMax.GetInt());
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? CharmCooldown.GetFloat() + (CharmMax.GetInt() - AbilityLimit) * CharmCooldownIncrese.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
+    public override void SetKillCooldown(byte id)
+    {
+        var currentAbilityUse = id.GetAbilityUseLimit();
+        Main.AllPlayerKillCooldown[id] = currentAbilityUse >= 1 ? CharmCooldown.GetFloat() + (CharmMax.GetInt() - currentAbilityUse) * CharmCooldownIncrese.GetFloat() : 300f;
+    }
+    public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() >= 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
@@ -66,8 +69,7 @@ internal class Cultist : RoleBase
         }
         else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            AbilityLimit--;
-            SendSkillRPC();
+            killer.RpcRemoveAbilityUse();
             target.RpcSetCustomRole(CustomRoles.Charmed);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
@@ -82,12 +84,10 @@ internal class Cultist : RoleBase
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
+            Logger.Info(target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
             return false;
         }
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
         return false;
     }
     public static bool TargetKnowOtherTargets => TargetKnowOtherTarget.GetBool();
@@ -102,7 +102,6 @@ internal class Cultist : RoleBase
         }
         return false;
     }
-    public override string GetProgressText(byte playerid, bool cooms) => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Cultist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public static bool CanBeCharmed(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||

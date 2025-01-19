@@ -49,7 +49,7 @@ internal class Illusionist : CovenManager
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxIllusions.GetInt();
+        playerId.SetAbilityUseLimit(MaxIllusions.GetInt());
         IllusionedPlayers[playerId] = [];
         GetPlayerById(playerId)?.AddDoubleTrigger();
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
@@ -59,7 +59,6 @@ internal class Illusionist : CovenManager
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(player.PlayerId);
-        writer.Write(AbilityLimit);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -67,7 +66,6 @@ internal class Illusionist : CovenManager
     {
         byte playerId = reader.ReadByte();
 
-        AbilityLimit = reader.ReadSingle();
         IllusionedPlayers[playerId].Add(reader.ReadByte());
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -88,18 +86,18 @@ internal class Illusionist : CovenManager
     private void SetIllusioned(PlayerControl killer, PlayerControl target)
     {
         IllusionedPlayers[killer.PlayerId].Add(target.PlayerId);
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
         SendRPC(killer, target);
+
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IllusionCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.Illusionist).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+
     private static PlayerState.DeathReason ChangeRandomDeath()
     {
-        PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>().ToArray();
+        PlayerState.DeathReason[] deathReasons = [.. EnumHelper.GetAllValues<PlayerState.DeathReason>()];
         if (deathReasons.Length == 0 || !deathReasons.Contains(PlayerState.DeathReason.Kill)) deathReasons.AddItem(PlayerState.DeathReason.Kill);
         var random = IRandom.Instance;
         int randomIndex = random.Next(deathReasons.Length);

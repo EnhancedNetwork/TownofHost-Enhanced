@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
-using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -36,7 +35,7 @@ internal class Doppelganger : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxSteals.GetInt();
+        playerId.SetAbilityUseLimit(MaxSteals.GetInt());
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -51,12 +50,12 @@ internal class Doppelganger : RoleBase
             Logger.Info("Target was shapeshifting", "Doppelganger");
             return true;
         }
-        if (AbilityLimit < 1)
+        if (killer.GetAbilityUseLimit() < 1)
         {
             return true;
         }
 
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
 
         string kname = killer.GetRealName(isMeeting: true);
         string tname = target.GetRealName(isMeeting: true);
@@ -78,7 +77,6 @@ internal class Doppelganger : RoleBase
         Main.OvverideOutfit[killer.PlayerId] = (targetSkin, Main.PlayerStates[target.PlayerId].NormalOutfit.PlayerName);
         Logger.Info("Changed killer skin", "Doppelganger");
 
-        SendSkillRPC();
         RPC.SyncAllPlayerNames();
         Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
 
@@ -86,6 +84,4 @@ internal class Doppelganger : RoleBase
         killer.SetKillCooldown();
         return true;
     }
-
-    public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.Doppelganger).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }

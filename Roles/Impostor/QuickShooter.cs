@@ -4,7 +4,6 @@ using InnerNet;
 using System;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
@@ -38,7 +37,7 @@ internal class QuickShooter : RoleBase
 
     public override void Add(byte playerId)
     {
-        AbilityLimit = 0;
+       playerId.SetAbilityUseLimit(0);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -49,7 +48,7 @@ internal class QuickShooter : RoleBase
 
     public override void SetKillCooldown(byte id)
     {
-        Main.AllPlayerKillCooldown[id] = (Storaging || AbilityLimit < 1) ? KillCooldown.GetFloat() : 0.01f;
+        Main.AllPlayerKillCooldown[id] = (Storaging || id.GetAbilityUseLimit() < 1) ? KillCooldown.GetFloat() : 0.03f;
         Storaging = false;
     }
 
@@ -57,7 +56,6 @@ internal class QuickShooter : RoleBase
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);
-        writer.Write((byte)AbilityLimit);
 
         if (_Player == null) { timer = false; }
         writer.Write(timer);
@@ -68,7 +66,6 @@ internal class QuickShooter : RoleBase
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        AbilityLimit = reader.ReadByte();
         var shouldtime = reader.ReadBoolean();
         float timer = 0f;
         if (shouldtime)
@@ -89,8 +86,7 @@ internal class QuickShooter : RoleBase
 
         if (killTimer <= 0)
         {
-            AbilityLimit++;
-            SendRPC();
+            shapeshifter.RpcIncreaseAbilityUseLimitBy(1);
 
             resetCooldown = false;
             Storaging = true;
@@ -99,7 +95,6 @@ internal class QuickShooter : RoleBase
             shapeshifter.RpcResetAbilityCooldown();
 
             shapeshifter.Notify(Translator.GetString("QuickShooterStoraging"));
-            Logger.Info($"{Utils.GetPlayerById(shapeshifter.PlayerId)?.GetNameWithRole()} : shot limit: {AbilityLimit}", "QuickShooter");
         }
         else
         {
@@ -110,28 +105,22 @@ internal class QuickShooter : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        NewSL[_state.PlayerId] = Math.Clamp((int)AbilityLimit, 0, MeetingReserved.GetInt());
+        if (_Player == null) return;
 
-        AbilityLimit = NewSL[_state.PlayerId];
-        SendRPC();
+        NewSL[_Player.PlayerId] = Math.Clamp((int)_Player.GetAbilityUseLimit(), 0, MeetingReserved.GetInt());
+        _Player.SetAbilityUseLimit(NewSL[_state.PlayerId]);
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        AbilityLimit--;
-        AbilityLimit = Math.Max(AbilityLimit, 0);
-        SendRPC();
-
+        if (killer.GetAbilityUseLimit() > 0)
+        {
+            killer.RpcRemoveAbilityUse();
+        }
         return true;
     }
-
-    public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AbilityLimit > 0
-            ? Utils.GetRoleColor(CustomRoles.QuickShooter).ShadeColor(0.25f)
-            : Color.gray, $"({AbilityLimit})");
-
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton?.OverrideText(Translator.GetString("QuickShooterShapeshiftText"));
-        hud.AbilityButton?.SetUsesRemaining((int)AbilityLimit);
+        hud.AbilityButton?.SetUsesRemaining((int)playerId.GetAbilityUseLimit());
     }
 }
