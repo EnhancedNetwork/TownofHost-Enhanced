@@ -57,7 +57,7 @@ public class Main : BasePlugin
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = false;
+    public static readonly bool ShowUpdateButton = true;
 
     public static readonly bool ShowGitHubButton = true;
     public static readonly string GitHubInviteUrl = "https://github.com/TOHOptimized/TownofHost-Optimized";
