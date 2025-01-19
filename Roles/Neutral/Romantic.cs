@@ -251,16 +251,7 @@ internal class Romantic : RoleBase
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
         var killer = player.GetRealKiller();
-        if (player.IsNeutralKiller() || killer == null)
-        {
-            Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
-            pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
-            pc.GetRoleClass().OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
-            pc.ResetKillCooldown();
-            pc.SetKillCooldown();
-        }
-        else if (player.GetCustomRole().IsImpostorTeamV3())
+        if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died => Changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
@@ -270,7 +261,16 @@ internal class Romantic : RoleBase
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
-        else
+        else if (player.IsNeutralKiller() || killer == null)
+        {
+            Logger.Info($"Neutral Romantic Partner Died / No real killer for {player.GetRealName().RemoveHtmlTags()} => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
+            pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+            pc.GetRoleClass().OnAdd(pc.PlayerId);
+            Utils.NotifyRoles(ForceLoop: true);
+            pc.ResetKillCooldown();
+            pc.SetKillCooldown();
+        }
+        else 
         {
             _ = new LateTask(() =>
             {

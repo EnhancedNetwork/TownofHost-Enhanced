@@ -106,7 +106,7 @@ internal class CopyCat : RoleBase
             killer.SetKillCooldown();
             return false;
         }
-        if (CopyCrewVar.GetBool())
+        if (CopyCrewVar.GetBool() && !target.Is(CustomRoles.Rebel))
         {
             role = role switch
             {
@@ -142,7 +142,7 @@ internal class CopyCat : RoleBase
                 _ => role
             };
         }
-        if (role.IsCrewmate())
+        if (target.IsNonRebelCrewmate())
         {
             if (target.Is(CustomRoles.Rebel))
                 role = CustomRoles.Benefactor;

@@ -98,7 +98,7 @@ internal class Medium : RoleBase
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || pc == null) return false;
         if (!ContactPlayer.ContainsKey(pc.PlayerId)) return false;
-        if (OnlyReceiveMsgFromCrew.GetBool() && pc.Is(CustomRoles.Rebel) && !pc.GetCustomRole().IsCrewmate()) return false;
+        if (OnlyReceiveMsgFromCrew.GetBool() && !pc.IsNonRebelCrewmate()) return false;
         if (pc.IsAlive()) return false;
         msg = msg.ToLower().Trim();
         if (!CheckCommond(ref msg, "通灵|ms|mediumship|medium", false)) return false;
@@ -165,7 +165,7 @@ internal class Medium : RoleBase
             AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
 
         //For target
-        if (ContactPlayer.ContainsKey(pc.PlayerId) && (!OnlyReceiveMsgFromCrew.GetBool() || (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel))))
+        if (ContactPlayer.ContainsKey(pc.PlayerId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.IsNonRebelCrewmate()))
             AddMsg(string.Format(GetString("MediumNotifyTarget"), Main.AllPlayerNames[ContactPlayer[pc.PlayerId]]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
     }
 }
