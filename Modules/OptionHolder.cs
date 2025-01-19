@@ -266,7 +266,7 @@ public static class Options
     // ------------ Game Settings Tab ------------
 
     // Hide & Seek Setting
-    public static OptionItem NumImpostorsHnS;
+    public static OptionItem NaxImpostorsHnS;
 
     // Confirm Ejection
     public static OptionItem CEMode;
