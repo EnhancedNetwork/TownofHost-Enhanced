@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 

@@ -1,4 +1,4 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.AddOns.Common;

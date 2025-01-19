@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Crewmate;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 
 namespace TOHE.Patches;

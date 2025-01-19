@@ -1,4 +1,4 @@
-﻿
+
 namespace TOHE.Roles.Vanilla;
 
 internal class CrewmateTOHE : RoleBase

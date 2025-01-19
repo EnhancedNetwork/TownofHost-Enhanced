@@ -1,4 +1,4 @@
-﻿using static TOHE.Translator;
+using static TOHE.Translator;
 
 namespace TOHE;
 

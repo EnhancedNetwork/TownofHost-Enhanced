@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;

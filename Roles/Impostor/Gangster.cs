@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;

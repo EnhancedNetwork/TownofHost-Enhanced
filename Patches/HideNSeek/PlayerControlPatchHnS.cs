@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using TOHE.Modules;
 using static TOHE.Translator;
