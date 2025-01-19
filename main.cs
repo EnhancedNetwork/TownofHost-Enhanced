@@ -46,12 +46,12 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
-    public const string PluginVersion = "2025.0113.132.00000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.3.2";
+    public const string PluginVersion = "2025.0118.133.00000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.3.3";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
+    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 12
     public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 1
     public static readonly bool fullRelease = true; // Latest: V2.1.1
 
@@ -59,8 +59,8 @@ public class Main : BasePlugin
 
     public static readonly bool ShowUpdateButton = false;
 
-    public static readonly bool ShowGitHubButton = false;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly bool ShowGitHubButton = true;
+    public static readonly string GitHubInviteUrl = "https://github.com/TOHOptimized/TownofHost-Optimized";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/BWh9Vj5UJ2";
@@ -95,6 +95,8 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
+    public static ConfigEntry<bool> ShowPlayerInfoInLobby { get; private set; }
+
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> LongMode { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -525,6 +527,7 @@ public class Main : BasePlugin
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
+        ShowPlayerInfoInLobby = Config.Bind("Client Options", "ShowPlayerInfoInLobby", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         LongMode = Config.Bind("Client Options", "LongMode", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
@@ -708,6 +711,7 @@ public enum CustomRoles
     EvilHacker,
     EvilMini,
     EvilTracker,
+    Exorcist,
     Fireworker,
     Fury,
     Gangster,
