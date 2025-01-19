@@ -215,6 +215,7 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Lovers)
                 || (pc.Is(CustomRoles.Altruist) && !Rebel.CanWinAfterDeath.GetBool())
                 || (pc.Is(CustomRoles.Sheriff) && !Rebel.SheriffCanBeRebel.GetBool())
+                || (pc.Is(CustomRoles.ChiefOfPolice) && !Rebel.ChiefOfPoliceCanBeRebel.GetBool())
                 || (pc.Is(CustomRoles.Marshall) && !Rebel.MarshallCanBeRebel.GetBool())
                 || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
                 || (pc.Is(CustomRoles.Swapper) && !Rebel.SwapperCanBeRebel.GetBool())
@@ -231,11 +232,11 @@ public static class AddonAssign
         {
             var player = allPlayers.RandomElement();
             Main.PlayerStates[player.PlayerId].SetSubRole(CustomRoles.Rebel);
-            Logger.Info($"Rebel Assigned: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {CustomRoles.Rebel}", "RebelAssign");
+            Logger.Info($"Rebel Assigned: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {CustomRoles.Rebel}", "Assign Rebel");
             foreach (var addon in player.GetCustomSubRoles().Where(x => Rebel.RemoveTheseRoles(x)).ToArray())
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"Removed {addon} from {player?.Data?.PlayerName} because Rebel should not get these add-ons", "RebelAssign");
+                Logger.Info($"Removed {addon} from {player?.Data?.PlayerName} because Rebel should not get these add-ons", "Assign Rebel");
             }
         }
     }
