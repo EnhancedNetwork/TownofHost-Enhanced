@@ -65,7 +65,12 @@ internal class ChiefOfPolice : RoleBase
         bool suidice = false;
         bool isSuccess = false;
 
-        if (target.IsPlayerCrewmateTeam())
+        if (target.Is(CustomRoles.Narc))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantRecruitNarc")));
+            return false;
+        }
+        else if (target.IsPlayerCrewmateTeam())
         {
             if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
             {
@@ -93,11 +98,6 @@ internal class ChiefOfPolice : RoleBase
                 Utils.NotifyRoles(target);
                 isSuccess = true;
             }
-        }
-        else if (target.Is(CustomRoles.Narc))
-        {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantRecruitNarc")));
-            return false;
         }
         else
         {
