@@ -57,18 +57,6 @@ public class Rebel : IAddon
 
     public static int ExtraNNKSpotRebel
         => CheckRebelAssign() ? 0 : 1;
-
-    public static bool RemoveTheseRoles(CustomRoles role) => role is
-        CustomRoles.Ghoul or
-        CustomRoles.Bloodthirst or
-        CustomRoles.Torch or
-        CustomRoles.Madmate or
-        CustomRoles.Egoist or
-        CustomRoles.Rascal or
-        CustomRoles.Paranoia or
-        CustomRoles.Loyal or
-        CustomRoles.Hurried or
-        CustomRoles.Youtuber;
     ///-------------------------------------------------------------------------------------------------///
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
