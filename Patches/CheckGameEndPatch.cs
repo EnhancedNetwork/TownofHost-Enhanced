@@ -230,7 +230,7 @@ class GameEndCheckerForNormal
                 // Egoist (Crewmate)
                 if (WinnerTeam == CustomWinner.Crewmate)
                 {
-                    var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
+                    var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.IsNonRebelCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
 
                     if (egoistCrewArray.Length > 0)
                     {

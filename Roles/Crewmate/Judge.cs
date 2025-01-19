@@ -197,7 +197,6 @@ internal class Judge : RoleBase
                 }
                 else if (target.IsTransformedNeutralApocalypse()) judgeSuicide = true;
                 else if (target.Is(CustomRoles.Trickster)) judgeSuicide = true;
-                else if (target.Is(CustomRoles.Admired)) judgeSuicide = true;
                 else if (Medic.IsProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
@@ -208,7 +207,7 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("GuessGuardianTask"));
                     return true;
                 }
-                else if (pc.Is(CustomRoles.Rebel) || pc.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless)) judgeSuicide = false;
+                else if (pc.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Soulless)) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;
                 else if ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && CanTrialMadmate.GetBool()) judgeSuicide = false;
@@ -218,7 +217,7 @@ internal class Judge : RoleBase
                 else if (target.Is(CustomRoles.Enchanted) && CanTrialEnchanted.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsCrewKiller() && CanTrialCrewKilling.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNK() && CanTrialNeutralK.GetBool()) judgeSuicide = false;
-                else if ((target.GetCustomRole().IsNB() || target.Is(CustomRoles.Rebel)) && CanTrialNeutralB.GetBool()) judgeSuicide = false;
+                else if (target.IsNeutralBenign() && CanTrialNeutralB.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNE() && CanTrialNeutralE.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNC() && CanTrialNeutralC.GetBool()) judgeSuicide = false;
                 else if (target.GetCustomRole().IsNA() && CanTrialNeutralA.GetBool()) judgeSuicide = false;

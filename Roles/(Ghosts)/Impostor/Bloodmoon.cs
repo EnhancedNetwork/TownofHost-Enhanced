@@ -88,7 +88,7 @@ internal class Bloodmoon : RoleBase
         }
 
         if (AbilityLimit > 0
-            && (!target.Is(CustomRoles.CursedWolf) || CursedWolf.GuardSpellTimes.GetInt() < 0)
+            && !target.Is(CustomRoles.CursedWolf)
             && !target.IsTransformedNeutralApocalypse()
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))

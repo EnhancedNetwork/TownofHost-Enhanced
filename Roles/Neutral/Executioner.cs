@@ -106,7 +106,7 @@ internal class Executioner : RoleBase
             foreach (var target in Main.AllPlayerControls)
             {
                 if (playerId == target.PlayerId) continue;
-                else if (!CanTargetImpostor.GetBool() && target.GetCustomRole().IsImpostorTeamV3()) continue;
+                else if (!CanTargetImpostor.GetBool() && target.Is(Custom_Team.Impostor)) continue;
                 else if (!CanTargetNeutralApocalypse.GetBool() && target.GetCustomRole().IsNA()) continue;
                 else if (!CanTargetNeutralKiller.GetBool() && target.GetCustomRole().IsNK()) continue;
                 else if (!CanTargetNeutralBenign.GetBool() && target.IsNeutralBenign()) continue;

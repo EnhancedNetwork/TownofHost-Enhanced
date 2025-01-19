@@ -55,7 +55,7 @@ internal class NiceGuesser : RoleBase
         }
 
         // Nice Guesser Can't Guess Crewmates
-        if (target.Is(Custom_Team.Crewmate) && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Rebel) && !guesser.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))
+        if (target.Is(Custom_Team.Crewmate) && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Rebel) && !guesser.Is(CustomRoles.Madmate))
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessCrewRole"));
             return true;

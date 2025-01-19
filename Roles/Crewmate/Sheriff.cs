@@ -123,7 +123,7 @@ internal class Sheriff : RoleBase
         if ((CanBeKilledBySheriff(target) && !(SetNonCrewCanKill.GetBool() && killer.IsNonCrewSheriff() || SidekickSheriffCanGoBerserk.GetBool() && killer.Is(CustomRoles.Recruit)))
             || (SidekickSheriffCanGoBerserk.GetBool() && killer.Is(CustomRoles.Recruit))
             || (SetNonCrewCanKill.GetBool() && killer.IsNonCrewSheriff()
-                 && ((target.GetCustomRole().IsImpostor() && NonCrewCanKillImp.GetBool()) || (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Rebel) && NonCrewCanKillCrew.GetBool()) || ((target.GetCustomRole().IsNeutral() || target.Is(CustomRoles.Rebel)) && NonCrewCanKillNeutral.GetBool())))
+                 && ((target.GetCustomRole().IsImpostorTeamV3() && NonCrewCanKillImp.GetBool()) || (target.IsNonRebelCrewmate() && !target.Is(CustomRoles.Rebel) && NonCrewCanKillCrew.GetBool()) || (target.IsRebelNeutralV3() && NonCrewCanKillNeutral.GetBool())))
             )
         {
             killer.ResetKillCooldown();

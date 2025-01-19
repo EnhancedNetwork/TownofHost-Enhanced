@@ -112,7 +112,7 @@ internal class Hawk : RoleBase
             && AbilityLimit > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
             && !target.IsTransformedNeutralApocalypse()
-            && (!target.Is(CustomRoles.CursedWolf) || CursedWolf.GuardSpellTimes.GetInt() < 0)
+            && !target.Is(CustomRoles.CursedWolf)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
     public override string GetProgressText(byte playerId, bool coms)
