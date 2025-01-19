@@ -68,12 +68,17 @@ public static class Madmate
 
     public static void ApplyGameOptions(IGameOptions opt)
     {
-        bool lightsOut = Utils.IsActive(SystemTypes.Electrical);
-        float impVision = lightsOut ? Main.DefaultImpostorVision * 5 : Main.DefaultImpostorVision;
         if (MadmateHasImpostorVision.GetBool())
         {
-            opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
+            var impVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
+            if (Utils.IsActive(SystemTypes.Electrical))
+            {
+                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision * 5);
+            }
+            else
+            {
+                opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
+            }
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, impVision);
         }
     }
