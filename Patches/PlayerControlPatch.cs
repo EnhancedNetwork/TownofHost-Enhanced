@@ -392,6 +392,14 @@ class MurderPlayerPatch
 
         if (isSucceeded && AmongUsClient.Instance.AmHost && GameStates.IsNormalGame)
         {
+            // AntiBlackOut protect is active
+            if (AntiBlackout.SkipTasks)
+            {
+                Logger.Info("Murder while AntiBlackOut protect, the kill was canceled and reseted", "MurderPlayer");
+                __instance.SetKillCooldown();
+                return false;
+            }
+
             if (target.shapeshifting)
             {
                 // During shapeshift animation
