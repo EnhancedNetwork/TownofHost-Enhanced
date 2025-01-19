@@ -139,7 +139,7 @@ internal class Oracle : RoleBase
                     int random_number_1 = IRandom.Instance.Next(1, 100);
                     if (random_number_1 <= FailChance.GetInt())
                     {
-                        int random_number_2 = IRandom.Instance.Next(1, 3);
+                        int random_number_2 = IRandom.Instance.Next(1, 4);
                         text = text switch
                         {
                             "Crewmate" => random_number_2 switch
