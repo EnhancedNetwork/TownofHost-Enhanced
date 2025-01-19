@@ -1,4 +1,3 @@
-using MS.Internal.Xml.XPath;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
