@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Crewmate;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;

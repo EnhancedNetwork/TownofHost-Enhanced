@@ -132,7 +132,7 @@ class EndGamePatch
         if (GameStates.IsNormalGame)
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
-        //winnerListリセット
+        //winnerListÒâ¬Òé╗ÒââÒâê
         EndGameResult.CachedWinners = new Il2CppSystem.Collections.Generic.List<CachedPlayerData>();
         var winner = new List<PlayerControl>();
         foreach (var pc in Main.AllPlayerControls)
@@ -354,7 +354,7 @@ class SetEverythingUpPatch
 
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
-                        sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+                        sb.Append($"\nÒÇÇ ").Append(EndGamePatch.SummaryText[id.Item2]);
                     break;
                 }
             default: // Normal game

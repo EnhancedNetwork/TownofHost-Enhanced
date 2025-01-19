@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;

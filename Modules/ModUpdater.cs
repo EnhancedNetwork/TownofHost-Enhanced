@@ -158,7 +158,7 @@ public class ModUpdater
         Stream stream = res.Content.ReadAsStream();
         try
         {
-            //获取内容
+            //ÞÄÀÕÅûÕåàÕ«╣
             using StreamReader reader = new(stream);
             result = reader.ReadToEnd();
         }
@@ -259,7 +259,7 @@ public class ModUpdater
             {
                 DirectoryInfo di = new("TOH_DATA");
                 di.Delete(true);
-                Logger.Warn("Deleting old data：TOH_DATA", "NewVersionCheck");
+                Logger.Warn("Deleting old data´╝ÜTOH_DATA", "NewVersionCheck");
             }
         }
         catch (Exception ex)

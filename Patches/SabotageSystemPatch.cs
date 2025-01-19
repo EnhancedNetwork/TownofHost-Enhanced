@@ -6,7 +6,7 @@ using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
-//参考
+//ÕÅé×Çâ
 //https://github.com/Koke1024/Town-Of-Moss/blob/main/TownOfMoss/Patches/MeltDownBoost.cs
 
 public class SabotageSystemPatch

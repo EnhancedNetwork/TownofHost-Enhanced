@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;

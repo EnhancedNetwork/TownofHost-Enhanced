@@ -148,7 +148,7 @@ public abstract class OptionItem
     public OptionItem RegisterUpdateValueEvent(EventHandler<UpdateValueEventArgs> handler)
         => Do(i => UpdateValueEvent += handler);
 
-    // 置き換え辞書
+    // þ¢«ÒüìµÅøÒüêÞ¥×µø©
     public OptionItem AddReplacement((string key, string value) kvp)
         => Do(i =>
         {
