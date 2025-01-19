@@ -266,7 +266,7 @@ public static class Options
     // ------------ Game Settings Tab ------------
 
     // Hide & Seek Setting
-    public static OptionItem NaxImpostorsHnS;
+    public static OptionItem MaxImpostorsHnS;
 
     // Confirm Ejection
     public static OptionItem CEMode;
@@ -1296,8 +1296,8 @@ public static class Options
             .SetGameMode(CustomGameMode.HidenSeekTOHO)
             .SetColor(Color.red);
 
-        // Num impostors in Hide & Seek
-        NumImpostorsHnS = IntegerOptionItem.Create(60891, "NumImpostorsHnS", new(1, 3, 1), 1, TabGroup.ModSettings, false)
+        // Maximum Impostors in Hide & Seek
+        MaxImpostorsHnS = IntegerOptionItem.Create(60891, "MaxImpostorsHnS", new(1, 3, 1), 1, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetColor(Color.red)
             .SetGameMode(CustomGameMode.HidenSeekTOHO)
