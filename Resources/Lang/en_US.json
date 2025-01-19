@@ -3402,7 +3402,6 @@
   "RascalAppearAsMadmate": "Appear as <color=#ff1919>Madmate</color> on Ejection",
 
   "SheriffCanBeRebel": "<color=#ffb347>Sheriff</color> can become <color=#ffab1b>Rebel</color>",
-  "ChiefOfPoliceCanBeRebel": "<color=#ffb347>Chief of Police</color> can become <color=#ffab1b>Rebel</color>",
   "DictatorCanBeRebel": "<color=#df9b00>Dictator</color> can become <color=#ffab1b>Rebel</color>",
   "MarshallCanBeRebel": "<color=#5573AA>Marshall</color> can become <color=#ffab1b>Rebel</color>",
   "RetributionistCanBeRebel": "<color=#228B22>Retributionist</color> can become <color=#ff1919>Rebel</color>",
