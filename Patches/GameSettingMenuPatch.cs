@@ -145,7 +145,7 @@ public class GameSettingMenuPatch
         var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
         SpriteRenderer.color = Color.white;
         //SpriteRenderer.material = null;
-        SpriteRenderer.sprite = Utils.LoadSprite("TOHO.Resources.Images.PresetBox.png", 55f);
+        SpriteRenderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.PresetBox.png", 55f);
 
         Color clr = new(-1, -1, -1);
         var PLabel = preset.GetComponentInChildren<TextMeshPro>();
