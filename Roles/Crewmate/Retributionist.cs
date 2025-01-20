@@ -1,7 +1,6 @@
 using Hazel;
 using TOHE.Modules;
 using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -153,7 +152,7 @@ internal class Retributionist : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (target.Is(CustomRoles.CursedWolf))
+        else if (target.Is(CustomRoles.Jinx) || target.Is(CustomRoles.CursedWolf))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;

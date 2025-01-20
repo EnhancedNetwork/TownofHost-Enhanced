@@ -139,7 +139,7 @@ internal class Nemesis : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessSolsticer"));
             return true;
         }
-        else if (target.Is(CustomRoles.CursedWolf))
+        else if (target.Is(CustomRoles.Jinx) || target.Is(CustomRoles.CursedWolf))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;

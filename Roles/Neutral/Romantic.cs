@@ -270,7 +270,7 @@ internal class Romantic : RoleBase
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
-        else 
+        else
         {
             _ = new LateTask(() =>
             {
