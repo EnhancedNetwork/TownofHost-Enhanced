@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using System.Reflection.Metadata.Ecma335;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -37,6 +38,10 @@ internal class Doppelganger : RoleBase
     public override void Add(byte playerId)
     {
         AbilityLimit = MaxSteals.GetInt();
+
+        // Double Trigger
+        var pc = Utils.GetPlayerById(playerId);
+        pc.AddDoubleTrigger();
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -45,6 +50,11 @@ internal class Doppelganger : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (killer.CheckDoubleTrigger(target, () => {} ))
+        {
+            return true;
+        }
+
         if (killer == null || target == null || Camouflage.IsCamouflage || Camouflager.AbilityActivated || Utils.IsActive(SystemTypes.MushroomMixupSabotage)) return true;
         if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out bool isShapeshifitng) && isShapeshifitng)
         {
