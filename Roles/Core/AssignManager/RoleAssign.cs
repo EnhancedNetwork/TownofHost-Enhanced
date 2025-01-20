@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
 
