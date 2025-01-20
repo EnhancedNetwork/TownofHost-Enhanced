@@ -1,3 +1,5 @@
+using AmongUs.GameOptions;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Underdog : RoleBase
