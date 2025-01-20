@@ -46,8 +46,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
-    public const string PluginVersion = "2025.0118.133.00000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.3.3";
+    public const string PluginVersion = "2025.0125.140.01"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.4.0 Test 1";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -815,7 +815,6 @@ public enum CustomRoles
     President,
     Protector,
     Psychic,
-    Randomizer,
     Retributionist,
     Reverie,
     Savior,
@@ -996,6 +995,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Randomizer,
     Rebirth,
     Revealed,
     Mimic,

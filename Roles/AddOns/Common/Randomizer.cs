@@ -1,18 +1,16 @@
 ﻿using System;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Translator;
 
-namespace TOHE.Roles.Crewmate;
+namespace TOHE.Roles.AddOns.Common;
 
-internal class Randomizer : RoleBase
+internal class Randomizer : IAddon
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.Randomizer;
     private const int Id = 7500;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
+    public CustomRoles Role => CustomRoles.Randomizer;
+    public AddonTypes Type => AddonTypes.Misc;
     //==================================================================\\
 
     public static OptionItem BecomeBaitDelayNotify;
@@ -20,20 +18,20 @@ internal class Randomizer : RoleBase
     public static OptionItem BecomeBaitDelayMax;
     public static OptionItem BecomeTrapperBlockMoveTime;
 
-    public override void SetupCustomOption()
+    public void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Randomizer);
-        BecomeBaitDelayNotify = BooleanOptionItem.Create(Id + 10, "BecomeBaitDelayNotify", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
-        BecomeBaitDelayMin = FloatOptionItem.Create(Id + 11, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+        SetupAdtRoleOptions(Id, CustomRoles.Randomizer, canSetNum: true, teamSpawnOptions: true);
+        BecomeBaitDelayNotify = BooleanOptionItem.Create(Id + 10, "BecomeBaitDelayNotify", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
+        BecomeBaitDelayMin = FloatOptionItem.Create(Id + 11, "BaitDelayMin", new(0f, 5f, 1f), 0f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
-        BecomeBaitDelayMax = FloatOptionItem.Create(Id + 12, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+        BecomeBaitDelayMax = FloatOptionItem.Create(Id + 12, "BaitDelayMax", new(0f, 10f, 1f), 0f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
-        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+        BecomeTrapperBlockMoveTime = FloatOptionItem.Create(Id + 13, "BecomeTrapperBlockMoveTime", new(1f, 180f, 1f), 5f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    public static bool OnCheckMurder(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting || isSuicide) return;
+        if (inMeeting || isSuicide) return true;
 
         var Fg = IRandom.Instance;
         int Randomizer = Fg.Next(1, 5);
@@ -44,18 +42,18 @@ internal class Randomizer : RoleBase
             {
                 if (target.GetRealKiller() != null)
                 {
-                    if (!target.GetRealKiller().IsAlive()) return;
+                    if (!target.GetRealKiller().IsAlive()) return true;
                     killer = target.GetRealKiller();
                 }
             }
 
-            if (killer.PlayerId == target.PlayerId) return;
+            if (killer.PlayerId == target.PlayerId) return true;
 
             if (killer.Is(CustomRoles.KillingMachine)
-                || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
-                return;
+                || killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool())
+                return true;
 
-            if (!isSuicide || (target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith) || !killer.Is(CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || (killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool()))
+            if (!isSuicide || target.GetRealKiller()?.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Wraith || !killer.Is(CustomRoles.KillingMachine) || !killer.Is(CustomRoles.Oblivious) || killer.Is(CustomRoles.Oblivious) && !Oblivious.ObliviousBaitImmune.GetBool())
             {
                 killer.RPCPlayCustomSound("Congrats");
                 target.RPCPlayCustomSound("Congrats");
@@ -125,5 +123,12 @@ internal class Randomizer : RoleBase
                 }
             }
         }
+        return true;
     }
+    public void Init()
+    { }
+    public void Add(byte playerId, bool gameIsLoading = true)
+    { }
+    public void Remove(byte playerId)
+    { }
 }

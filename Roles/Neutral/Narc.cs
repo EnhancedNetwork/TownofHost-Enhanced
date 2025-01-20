@@ -6,7 +6,7 @@ namespace TOHE.Roles.Neutral;
 internal class Narc : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 31500;
+    private const int Id = 32800;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
 

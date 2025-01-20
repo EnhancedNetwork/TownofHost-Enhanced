@@ -115,7 +115,7 @@ public class ClientOptionItem
     {
         if (ToggleButton == null) return;
 
-        var color = (Config != null && Config.Value) ? new Color32(255, 192, 203, byte.MaxValue) : new Color32(77, 77, 77, byte.MaxValue);
+        var color = (Config != null && Config.Value) ? new Color32(180, 126, 222, byte.MaxValue) : new Color32(77, 77, 77, byte.MaxValue);
         ToggleButton.Background.color = color;
         ToggleButton.Rollover?.ChangeOutColor(color);
     }
