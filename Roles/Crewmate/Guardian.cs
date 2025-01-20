@@ -1,4 +1,4 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -6,10 +6,8 @@ namespace TOHE.Roles.Crewmate;
 internal class Guardian : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Guardian;
     private const int Id = 11700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
@@ -19,21 +17,18 @@ internal class Guardian : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Guardian);
         OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.Guardian);
     }
-
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
     public static bool CannotBeKilled(PlayerControl Guardian) => Guardian.Is(CustomRoles.Guardian) && Guardian.GetPlayerTaskState().IsTaskFinished;
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (CannotBeKilled(target))
+        {
+            killer.SetKillCooldown(5f, target, forceAnime: true);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Guardian), GetString("GuardianCantKilled")));
+
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
             return false;
+        }
 
         return true;
     }

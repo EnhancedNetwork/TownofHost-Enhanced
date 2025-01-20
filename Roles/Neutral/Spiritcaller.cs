@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Spiritcaller : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Spiritcaller;
     private const int Id = 25200;
     public static bool HasEnabled = CustomRoleManager.HasEnabled(CustomRoles.Spiritcaller);
     public override bool IsDesyncRole => true;

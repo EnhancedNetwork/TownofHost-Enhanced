@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Necroview : IAddon
 {
+    public CustomRoles Role => CustomRoles.Necroview;
     private const int Id = 19600;
     public AddonTypes Type => AddonTypes.Helpful;
 
@@ -43,6 +44,10 @@ public class Necroview : IAddon
             return Main.roleColors[CustomRoles.Bait];
         }
 
+        if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))
+        {
+            return Main.roleColors[CustomRoles.Coven];
+        }
         return Main.roleColors[CustomRoles.Knight];
     }
 }

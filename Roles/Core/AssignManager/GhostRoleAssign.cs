@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System.Text;
 
 namespace TOHE.Roles.Core.AssignManager;
@@ -19,14 +19,14 @@ public static class GhostRoleAssign
     private static readonly List<CustomRoles> ImpHauntedList = [];
     public static void GhostAssignPatch(PlayerControl player)
     {
-        if (GameStates.IsHideNSeek  
-            || Options.CurrentGameMode == CustomGameMode.FFA 
-            || player == null 
+        if (GameStates.IsHideNSeek
+            || Options.CurrentGameMode == CustomGameMode.FFA
+            || player == null
             || player.Data == null
-            || player.Data.Disconnected 
+            || player.Data.Disconnected
             || GhostGetPreviousRole.ContainsKey(player.PlayerId)) return;
 
-        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole)) 
+        if (forceRole.TryGetValue(player.PlayerId, out CustomRoles forcerole))
         {
             Logger.Info($" Debug set {player.GetRealName()}'s role to {forcerole}", "GhostAssignPatch");
             player.GetRoleClass()?.OnRemove(player.PlayerId);
@@ -40,7 +40,15 @@ public static class GhostRoleAssign
         var getplrRole = player.GetCustomRole();
 
         // Neutral Apocalypse can't get ghost roles
-        if (getplrRole.IsNA() || getplrRole.IsTNA()) return;
+        if (getplrRole.IsNA() || getplrRole.IsTNA() && !Main.PlayerStates[player.PlayerId].IsNecromancer) return;
+
+        // Coven Ghost Roles don't exist yet
+        if (getplrRole.IsCoven() && !Main.PlayerStates[player.PlayerId].IsNecromancer) return;
+        if (Main.PlayerStates[player.PlayerId].IsNecromancer)
+        {
+            GhostGetPreviousRole[player.PlayerId] = CustomRoles.Necromancer;
+            return;
+        }
 
         // Roles can win after death, should not get ghost roles
         if (getplrRole is CustomRoles.GM
@@ -76,7 +84,7 @@ public static class GhostRoleAssign
         CustomRoles ChosenRole = CustomRoles.NotAssigned;
 
         foreach (var ghostRole in getCount.Keys.Where(x => x.GetMode() > 0))
-        { 
+        {
             if (ghostRole.IsCrewmate())
             {
                 if (HauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
@@ -84,18 +92,18 @@ public static class GhostRoleAssign
 
                 if (HauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
                     continue;
-                    
-                if (ghostRole.GetChance()) HauntedList.Add(ghostRole); 
+
+                if (ghostRole.GetChance()) HauntedList.Add(ghostRole);
             }
             if (ghostRole.IsImpostor())
             {
                 if (ImpHauntedList.Contains(ghostRole) && getCount[ghostRole] <= 0)
-                        ImpHauntedList.Remove(ghostRole);
+                    ImpHauntedList.Remove(ghostRole);
 
                 if (ImpHauntedList.Contains(ghostRole) || getCount[ghostRole] <= 0)
-                        continue;
+                    continue;
 
-                if (ghostRole.GetChance()) ImpHauntedList.Add(ghostRole); 
+                if (ghostRole.GetChance()) ImpHauntedList.Add(ghostRole);
             }
         }
 
@@ -140,11 +148,11 @@ public static class GhostRoleAssign
         }
 
     }
-    public static void Init() 
+    public static void Init()
     {
         CrewCount = 0;
         ImpCount = 0;
-        getCount.Clear(); 
+        getCount.Clear();
         GhostGetPreviousRole.Clear();
     }
     public static void Add()
@@ -161,7 +169,8 @@ public static class GhostRoleAssign
     public static void CreateGAMessage(PlayerControl __instance)
     {
         Utils.NotifyRoles(SpecifyTarget: __instance);
-        _ = new LateTask(() => {
+        _ = new LateTask(() =>
+        {
 
             __instance.RpcResetAbilityCooldown();
 

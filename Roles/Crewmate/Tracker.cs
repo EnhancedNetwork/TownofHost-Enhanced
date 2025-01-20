@@ -1,4 +1,4 @@
-﻿/*
+/*
 using Hazel;
 using System;
 using UnityEngine;

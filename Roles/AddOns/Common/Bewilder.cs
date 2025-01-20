@@ -1,10 +1,11 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Bewilder : IAddon
 {
+    public CustomRoles Role => CustomRoles.Bewilder;
     private const int Id = 18900;
     public AddonTypes Type => AddonTypes.Helpful;
 
@@ -39,11 +40,11 @@ public class Bewilder : IAddon
             IsEnable = false;
     }
 
-    public static void ApplyVisionOptions(IGameOptions opt) 
-    { 
-        opt.SetVision(false); 
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat()); 
-        opt.SetFloat(FloatOptionNames.CrewLightMod, BewilderVision.GetFloat()); 
+    public static void ApplyVisionOptions(IGameOptions opt)
+    {
+        opt.SetVision(false);
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, BewilderVision.GetFloat());
+        opt.SetFloat(FloatOptionNames.CrewLightMod, BewilderVision.GetFloat());
     }
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {

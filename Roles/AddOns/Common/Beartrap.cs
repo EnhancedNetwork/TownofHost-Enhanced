@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Trapper : IAddon
 {
+    public CustomRoles Role => CustomRoles.Trapper;
     private const int Id = 18800;
     public AddonTypes Type => AddonTypes.Helpful;
 

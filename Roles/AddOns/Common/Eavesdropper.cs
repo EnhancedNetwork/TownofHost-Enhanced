@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Eavesdropper : IAddon
 {
+    public CustomRoles Role => CustomRoles.Eavesdropper;
     public const int Id = 30100;
     private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable = false;
@@ -44,7 +45,7 @@ public class Eavesdropper : IAddon
             {
                 // Get all specific msg
                 var eavesdropperMsg = MeetingHudStartPatch.msgToSend.Where(x => x.Item2 != 255).Select(x => x.Item1).ToList();
-                
+
                 // Check any data
                 if (eavesdropperMsg.Any())
                 {

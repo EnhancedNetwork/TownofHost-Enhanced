@@ -1,17 +1,18 @@
-﻿using System;
-using UnityEngine;
 using AmongUs.GameOptions;
+using System;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
-using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Virus : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Virus;
     private const int Id = 18300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Virus);
     public override bool IsDesyncRole => true;
@@ -32,6 +33,7 @@ internal class Virus : RoleBase
     private readonly HashSet<byte> InfectedPlayer = [];
     private readonly Dictionary<byte, string> VirusNotify = [];
 
+    [Obfuscation(Exclude = true)]
     private enum ContagiousCountModeSelectList
     {
         Virus_ContagiousCountMode_None,
@@ -106,16 +108,16 @@ internal class Virus : RoleBase
         if (!_Player.IsAlive() || !KillInfectedPlayerAfterMeeting.GetBool()) return;
 
         var virus = _Player;
-        if (exileIds.Contains(virus.PlayerId)) 
+        if (exileIds.Contains(virus.PlayerId))
         {
             InfectedPlayer.Clear();
             return;
-        } 
+        }
 
         var infectedIdList = new List<byte>();
         foreach (var infectedId in InfectedPlayer)
         {
-            var infected =  infectedId.GetPlayer();
+            var infected = infectedId.GetPlayer();
             if (virus.IsAlive() && infected != null)
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(infectedId))

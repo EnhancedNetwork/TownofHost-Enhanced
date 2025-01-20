@@ -4,6 +4,7 @@ using System.Text;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -13,9 +14,10 @@ namespace TOHE.Roles.Crewmate;
 internal class Inspector : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Inspector;
     private const int Id = 8300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -168,7 +170,29 @@ internal class Inspector : RoleBase
                 return true;
             }
             var target1 = GetPlayerById(targetId1);
+            // Voodoo Master Check 1
+            bool target1IsVM = false;
+            if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+            {
+                target1 = Utils.GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+                target1IsVM = true;
+            }
+            var target1Name = target1.GetRealName();
+            if (target1IsVM) target1Name = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
+
             var target2 = GetPlayerById(targetId2);
+            // Voodoo Master Check 1
+            bool target2IsVM = false;
+            if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
+            {
+                target2 = Utils.GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+                target2IsVM = true;
+            }
+            var target2Name = target2.GetRealName();
+            if (target2IsVM) target2Name = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
+
             if (target1 != null && target2 != null)
             {
                 Logger.Info($"{pc.GetNameWithRole()} checked {target1.GetNameWithRole()} and {target2.GetNameWithRole()}", "Inspector");
@@ -213,8 +237,19 @@ internal class Inspector : RoleBase
                 }
                 else
                 {
-                    if 
+                    if
                     (
+                        (
+                        ((target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId)))
+                        && (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId))
+                        )
+                        ||
+                        (
+                        (Illusionist.IsCovIllusioned(target1.PlayerId) || (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target1.GetCustomSubRoles().Count == 0)) || target1.Is(CustomRoles.Admired))
+                        &&
+                        (Illusionist.IsCovIllusioned(target2.PlayerId) || (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) || target2.Is(CustomRoles.Admired))
+                        )
+                        ||
                         (
                         (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) && !target1.Is(CustomRoles.Admired)
                         &&
@@ -225,12 +260,6 @@ internal class Inspector : RoleBase
                         (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2())) && !target1.Is(CustomRoles.Admired)
                         &&
                         (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) && !target2.Is(CustomRoles.Admired)
-                        )
-                        ||
-                        (
-                        ((target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target1.GetCustomSubRoles().Count == 0)) || target1.Is(CustomRoles.Admired))
-                        &&
-                        ((target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().All(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) || target2.Is(CustomRoles.Admired))
                         )
                     )
                     {
@@ -244,21 +273,21 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckFalse"), target1.GetRealName(), target2.GetRealName()), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckFalse"), target1Name, target2Name), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
                             Logger.Msg("Check attempt, result FALSE", "Inspector");
                         }, 0.2f, "Inspector Msg 6");
                     }
 
                     if (InspectCheckTargetKnow.GetBool())
                     {
-                        string textToSend = $"{target1.GetRealName()}";
+                        string textToSend = $"{target1Name}";
                         if (InspectCheckOtherTargetKnow.GetBool())
-                            textToSend += $" and {target2.GetRealName()}";
+                            textToSend += $" and {target2Name}";
                         textToSend += GetString("InspectCheckTargetMsg");
 
-                        string textToSend1 = $"{target2.GetRealName()}";
+                        string textToSend1 = $"{target2Name}";
                         if (InspectCheckOtherTargetKnow.GetBool())
-                            textToSend1 += $" and {target1.GetRealName()}";
+                            textToSend1 += $" and {target1Name}";
                         textToSend1 += GetString("InspectCheckTargetMsg");
                         _ = new LateTask(() =>
                         {
@@ -283,8 +312,8 @@ internal class Inspector : RoleBase
 
                             _ = new LateTask(() =>
                             {
-                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target2.GetRealName(), roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target1.GetRealName(), roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target2Name, roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target1Name, roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
                                 Logger.Msg($"check attempt, target1 notified target2 as {roleT2} and target2 notified target1 as {roleT1}", "Inspector");
                             }, 0.3f, "Inspector Msg 8");
                         }
@@ -423,9 +452,6 @@ internal class Inspector : RoleBase
         return ProgressText.ToString();
     }
 
-    public override string PVANameText(PlayerVoteArea pva, PlayerControl seer, PlayerControl target)
-        => ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + pva.NameText.text;
-    
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting ? ColorString(GetRoleColor(CustomRoles.Inspector), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
 }

@@ -1,10 +1,11 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Flash : IAddon
 {
+    public CustomRoles Role => CustomRoles.Flash;
     private const int Id = 26100;
     public AddonTypes Type => AddonTypes.Helpful;
 

@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pirate : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pirate;
     private const int Id = 15000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
     public override bool IsDesyncRole => true;
@@ -67,7 +68,7 @@ internal class Pirate : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string GetProgressText(byte playerId, bool comms)
             => ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({NumWin}/{SuccessfulDuelsToWin.GetInt()})");
-    
+
     public void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -128,7 +129,7 @@ internal class Pirate : RoleBase
     public override void OnCheckForEndVoting(PlayerState.DeathReason deathReason, params byte[] exileIds)
     {
         if (_Player == null || PirateTarget == byte.MaxValue) return;
-        
+
         var pirateId = _state.PlayerId;
         if (!DuelDone[pirateId]) return;
 

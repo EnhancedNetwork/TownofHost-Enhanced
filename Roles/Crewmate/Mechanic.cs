@@ -1,15 +1,16 @@
+using AmongUs.GameOptions;
 using System;
 using System.Text;
-using UnityEngine;
-using AmongUs.GameOptions;
-using static TOHE.Utils;
 using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Mechanic : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mechanic;
     private const int Id = 8500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Mechanic);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
@@ -58,7 +59,7 @@ internal class Mechanic : RoleBase
         {
             case SystemTypes.Reactor:
                 if (!FixesReactors.GetBool()) break;
-                if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 <= 0) break;
+                if (AbilityLimit <= 0 || AbilityLimit - UsesUsedWhenFixingReactorOrO2.GetFloat() <= 0) break;
                 if (amount is 64 or 65)
                 {
                     __instance.RpcUpdateSystem(SystemTypes.Reactor, 16);
@@ -69,7 +70,7 @@ internal class Mechanic : RoleBase
                 break;
             case SystemTypes.Laboratory:
                 if (!FixesReactors.GetBool()) break;
-                if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 <= 0) break;
+                if (AbilityLimit <= 0 || AbilityLimit - UsesUsedWhenFixingReactorOrO2.GetFloat() <= 0) break;
                 if (amount is 64 or 65)
                 {
                     __instance.RpcUpdateSystem(SystemTypes.Laboratory, 67);
@@ -80,7 +81,7 @@ internal class Mechanic : RoleBase
                 break;
             case SystemTypes.LifeSupp:
                 if (!FixesOxygens.GetBool()) break;
-                if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingReactorOrO2.GetFloat() - 1 <= 0) break;
+                if (AbilityLimit <= 0 || AbilityLimit - UsesUsedWhenFixingReactorOrO2.GetFloat() <= 0) break;
                 if (amount is 64 or 65)
                 {
                     __instance.RpcUpdateSystem(SystemTypes.LifeSupp, 67);
@@ -91,7 +92,7 @@ internal class Mechanic : RoleBase
                 break;
             case SystemTypes.Comms:
                 if (!FixesComms.GetBool()) break;
-                if (SkillLimit.GetFloat() > 0 && AbilityLimit + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 <= 0) break;
+                if (AbilityLimit <= 0 || AbilityLimit - UsesUsedWhenFixingLightsOrComms.GetFloat() <= 0) break;
                 if (amount is 64 or 65)
                 {
                     __instance.RpcUpdateSystem(SystemTypes.Comms, 16);
@@ -126,6 +127,12 @@ internal class Mechanic : RoleBase
                     UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 68, 70);
                     UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 83, 84);
                 }
+                else if (mapId == 5)
+                {
+                    // Fungle
+                    UpdateSystemPatch.CheckAndOpenDoorsRange(__instance, amount, 64, 71);
+                }
+
                 DoorsProgressing = false;
                 break;
         }
@@ -136,9 +143,9 @@ internal class Mechanic : RoleBase
         if (!FixesElectrical.GetBool()) return;
 
         //var playerId = player.PlayerId;
-        
-        if (SkillLimit.GetFloat() > 0 &&
-            AbilityLimit + UsesUsedWhenFixingLightsOrComms.GetFloat() - 1 <= 0)
+
+        if (AbilityLimit <= 0 ||
+            AbilityLimit - UsesUsedWhenFixingLightsOrComms.GetFloat() <= 0)
             return;
 
         __instance.ActualSwitches = 0;

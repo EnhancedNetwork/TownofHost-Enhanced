@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
@@ -6,11 +6,12 @@
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
 		<Description>Town Of Host Enhanced</Description>
 		<Authors>Moe</Authors>
-		<langVersion>12.0</langVersion>
+		<LangVersion>12.0</LangVersion>
 		<!--<AmongUs>C:\Program Files\Epic Games\AmongUs</AmongUs>-->
 		<Configurations>Debug;Release;Canary</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>True</Optimize>
+		<CodePage>65001</CodePage>
 	</PropertyGroup>
 
 	<ItemGroup>

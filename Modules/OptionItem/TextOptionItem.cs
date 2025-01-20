@@ -7,7 +7,7 @@ public class TextOptionItem : OptionItem
 
     // コンストラクタ
     public TextOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanilla)
-    : base(id, name, defaultValue, tab, isSingleValue, vanillaStr:vanilla)
+    : base(id, name, defaultValue, tab, isSingleValue, vanillaStr: vanilla)
     {
         IsText = true;
         IsHeader = true;

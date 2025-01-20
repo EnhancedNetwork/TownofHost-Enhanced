@@ -6,7 +6,7 @@ using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
-//参考
+//ÕÅé×Çâ
 //https://github.com/Koke1024/Town-Of-Moss/blob/main/TownOfMoss/Patches/MeltDownBoost.cs
 
 public class SabotageSystemPatch
@@ -128,7 +128,7 @@ public class SabotageSystemPatch
 
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
+                if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                 {
                     // Need for hiding player names if player is desync Impostor
                     Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
@@ -186,7 +186,7 @@ public class SabotageSystemPatch
 
                     foreach (var pc in Main.AllAlivePlayerControls)
                     {
-                        if (!pc.Is(Custom_Team.Impostor) && pc.HasDesyncRole())
+                        if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                         {
                             // Need for display player names if player is desync Impostor
                             Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);

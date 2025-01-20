@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -7,6 +7,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Knight : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Knight;
     private const int Id = 10800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Knight);
     public override bool IsDesyncRole => true;
@@ -39,12 +40,12 @@ internal class Knight : RoleBase
 
     public override string GetProgressText(byte id, bool comms)
         => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-    
+
     private bool IsKilled(byte playerId) => AbilityLimit <= 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
         AbilityLimit--;
-        SendSkillRPC(); 
+        SendSkillRPC();
         Logger.Info($"{killer.GetNameWithRole()} : " + "Kill chance used", "Knight");
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
