@@ -42,7 +42,7 @@ static class ExtendedPlayerControl
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
-        
+
     }
     public static void RpcSetCustomRole(byte PlayerId, CustomRoles role)
     {
