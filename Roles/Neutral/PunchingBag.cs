@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using static TOHE.Options;
 using static TOHE.Translator;

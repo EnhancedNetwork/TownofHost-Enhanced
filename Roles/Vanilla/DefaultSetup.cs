@@ -1,4 +1,4 @@
-﻿
+
 namespace TOHE;
 
 internal class DefaultSetup : RoleBase

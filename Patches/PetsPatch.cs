@@ -1,4 +1,4 @@
-﻿namespace TOHE;
+namespace TOHE;
 
 public static class PetsPatch
 {

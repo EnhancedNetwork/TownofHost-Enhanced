@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;

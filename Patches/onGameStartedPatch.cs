@@ -686,6 +686,18 @@ internal class SelectRolesPatch
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
 
+            foreach (var player in Main.AllPlayerControls)
+            {
+                if (!player.IsDisconnected() && TagManager.AssignGameMaster(player.FriendCode))
+                {
+                    Logger.Info($"Setting GM role for [{player.PlayerId}]{player.GetRealName()}", "SelectRolesPatch.HnS");
+                    player.RpcSetCustomRole(CustomRoles.GM);
+                    player.RpcSetRole(RoleTypes.Crewmate, false);
+                    player.Data.IsDead = true;
+                    Main.PlayerStates[player.PlayerId].SetDead();
+                }
+            }
+
             EAC.OriginalRoles = [];
 
             GameOptionsSender.AllSenders.Clear();

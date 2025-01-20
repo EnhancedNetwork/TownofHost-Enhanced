@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;

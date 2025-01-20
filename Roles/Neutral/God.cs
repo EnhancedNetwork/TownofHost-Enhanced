@@ -1,4 +1,4 @@
-﻿using static TOHE.MeetingHudStartPatch;
+using static TOHE.MeetingHudStartPatch;
 
 namespace TOHE.Roles.Neutral;
 

@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Crewmate;
@@ -27,13 +27,17 @@ public class Torch : IAddon
     public static void ApplyGameOptions(IGameOptions opt)
     {
         if (!Utils.IsActive(SystemTypes.Electrical))
+        {
             opt.SetVision(true);
-        opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat());
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat());
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat());
+        }
 
         if (Utils.IsActive(SystemTypes.Electrical) && !TorchAffectedByLights.GetBool())
+        {
             opt.SetVision(true);
-        opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat() * 5);
-        opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat() * 5);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat() * 5);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat() * 5);
+        }
     }
 }

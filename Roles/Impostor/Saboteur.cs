@@ -1,4 +1,4 @@
-﻿using static TOHE.Utils;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 

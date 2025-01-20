@@ -110,7 +110,7 @@ internal class Mini : RoleBase
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NiceMini);
                 CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
             }
-            // ↑ This code will show the mini winning player on the checkout screen, Tommy you shouldn't comment it out!
+            // â†‘ This code will show the mini winning player on the checkout screen, Tommy you shouldn't comment it out!
         } //Is there any need to check this 30 times a second?
 
         if (GameStates.IsMeeting && !CountMeetingTime.GetBool()) return;

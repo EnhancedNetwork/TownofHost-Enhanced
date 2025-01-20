@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using static TOHE.Translator;
 
 namespace TOHE.Modules;
