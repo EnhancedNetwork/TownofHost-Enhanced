@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -9,13 +10,14 @@ internal class Crewpostor : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Crewpostor;
     private const int Id = 5800;
+    private static readonly HashSet<byte> PlayerIds = [];
+    public static bool HasEnabled => PlayerIds.Any();
+
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
 
-    private static OptionItem CanKillAllies;
-    private static OptionItem KnowsAllies;
-    private static OptionItem AlliesKnowCrewpostor;
+    public static OptionItem CPAndAlliesKnowEachOther;
     private static OptionItem LungeKill;
     private static OptionItem KillAfterTask;
 
@@ -24,11 +26,7 @@ internal class Crewpostor : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
-        CanKillAllies = BooleanOptionItem.Create(Id + 2, GeneralOption.CanKillImpostors, true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        KnowsAllies = BooleanOptionItem.Create(Id + 3, "CrewpostorKnowsAllies", true, TabGroup.ImpostorRoles, false)
-            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        AlliesKnowCrewpostor = BooleanOptionItem.Create(Id + 4, "AlliesKnowCrewpostor", true, TabGroup.ImpostorRoles, false)
+        CPAndAlliesKnowEachOther = BooleanOptionItem.Create(Id + 4, "CPAndAlliesKnowEachOther", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         LungeKill = BooleanOptionItem.Create(Id + 5, "CrewpostorLungeKill", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
@@ -40,12 +38,12 @@ internal class Crewpostor : RoleBase
     public override void Init()
     {
         TasksDone = [];
-
+        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         TasksDone[playerId] = 0;
-
+        PlayerIds.Add(playerId);
     }
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
     {
@@ -85,17 +83,12 @@ internal class Crewpostor : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
+        opt.SetVision(true);
         AURoleOptions.EngineerCooldown = 0f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
 
     public override bool CanUseKillButton(PlayerControl pc) => false;
-
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target) ? Utils.GetRoleColorCode(CustomRoles.Crewpostor) : string.Empty;
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
-            || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer);
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
@@ -107,7 +100,11 @@ internal class Crewpostor : RoleBase
             TasksDone[player.PlayerId] = 0;
 
         SendRPC(player.PlayerId, TasksDone[player.PlayerId]);
-        List<PlayerControl> list = Main.AllAlivePlayerControls.Where(x => x.PlayerId != player.PlayerId && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) && (CanKillAllies.GetBool() || !x.GetCustomRole().IsImpostorTeam())).ToList();
+        List<PlayerControl> list = Main.AllAlivePlayerControls
+        .Where(x => x.PlayerId != player.PlayerId 
+        && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) 
+        && (CPAndAlliesKnowEachOther.GetBool() || !(x.CheckMMCanSeeImp() || (x.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool()))) 
+        && !(player.Is(CustomRoles.Narc) && x.Is(CustomRoles.Sheriff))).ToList();
 
         if (!list.Any())
         {

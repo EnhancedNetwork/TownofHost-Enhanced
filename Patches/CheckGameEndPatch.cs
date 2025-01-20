@@ -4,6 +4,7 @@ using Hazel;
 using System.Collections;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -113,7 +114,7 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Impostor:
                         if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
-                            || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
+                            || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))//why don't we use "pc.GetCustomRole().IsImpostorTeamV3() here?"
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -260,7 +261,7 @@ class GameEndCheckerForNormal
                         }
                     }
                 }
-
+                
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
@@ -445,7 +446,7 @@ class GameEndCheckerForNormal
                 if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor() || Utils.GetPlayerById(x).GetCustomRole().IsCoven()) && !Main.PlayerStates[x].IsNecromancer))
                 {
                     foreach (var pc in Main.AllPlayerControls)
-                        if (pc.GetCustomRole().IsNeutral() && !WinnerIds.Contains(pc.PlayerId) && !WinnerRoles.Contains(pc.GetCustomRole()))
+                        if (pc.GetCustomRole().IsNeutralTeamV3() && !WinnerIds.Contains(pc.PlayerId) && !WinnerRoles.Contains(pc.GetCustomRole()))
                             WinnerIds.Add(pc.PlayerId);
                 }
                 else if (!Options.NeutralWinTogether.GetBool() && Options.NeutralRoleWinTogether.GetBool())
@@ -453,7 +454,7 @@ class GameEndCheckerForNormal
                     foreach (var id in WinnerIds)
                     {
                         var pc = Utils.GetPlayerById(id);
-                        if (pc == null || !pc.GetCustomRole().IsNeutral() || Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
+                        if (pc == null || !pc.GetCustomRole().IsNeutralTeamV3() || Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
 
                         foreach (var tar in Main.AllPlayerControls)
                             if (!WinnerIds.Contains(tar.PlayerId) && tar.GetCustomRole() == pc.GetCustomRole())
@@ -468,6 +469,16 @@ class GameEndCheckerForNormal
                     {
                         WinnerIds.Remove(pc.PlayerId);
                         Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
+                    }
+                }
+
+                //Narc win condition check
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Narc)).ToArray())
+                {
+                    if (Narc.CheckWinCondition(WinnerTeam, reason) && !WinnerIds.Contains(pc.PlayerId))
+                    {
+                        WinnerIds.Add(pc.PlayerId);
+                        AdditionalWinnerTeams.Add(AdditionalWinners.Narc);
                     }
                 }
             }

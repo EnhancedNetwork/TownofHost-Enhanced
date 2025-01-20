@@ -229,8 +229,10 @@ internal class DoubleAgent : RoleBase
                     }
                 }
                 // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired) && !player.GetCustomSubRoles().Contains(CustomRoles.Narc))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+                if (Role == CustomRoles.Traitor && player.GetCustomSubRoles().Contains(CustomRoles.Narc))
+                    Role = CustomRoles.Parasite;
 
                 Init();
                 player.GetRoleClass().OnRemove(player.PlayerId);
@@ -240,8 +242,10 @@ internal class DoubleAgent : RoleBase
                 player.MarkDirtySettings();
 
                 string RoleName = ColorString(GetRoleColor(player.GetCustomRole()), GetRoleName(player.GetCustomRole()));
-                if (Role == CustomRoles.ImpostorTOHE)
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Narc))
                     RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                if (player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Narc), $"{GetString("Narc")} {GetRoleName(player.GetCustomRole())}");
                 player.Notify(ColorString(GetRoleColor(player.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
             }
         }

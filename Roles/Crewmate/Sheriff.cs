@@ -18,8 +18,8 @@ internal class Sheriff : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
-    private static OptionItem ShotLimitOpt;
-    private static OptionItem ShowShotLimit;
+    public static OptionItem ShotLimitOpt;
+    public static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
     private static OptionItem MisfireOnAdmired;
@@ -115,6 +115,11 @@ internal class Sheriff : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Narc))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantArrestNarc")));
+            return false;
+        }
         AbilityLimit--;
         Logger.Info($"{killer.GetNameWithRole()} : Number of kills left: {AbilityLimit}", "Sheriff");
         SendSkillRPC();
