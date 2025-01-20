@@ -19,19 +19,21 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true)
     {
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
             //  player.GetRoleClass()?.OnAdd(player.PlayerId);
             // Remember to manually add OnAdd if you are setting role mid game
+            if (checkAddons) player.RemoveIncompatibleAddOns();
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
             else Main.PlayerStates[player.PlayerId].SetSubRole(role);
+            if (checkAddons) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -40,6 +42,7 @@ static class ExtendedPlayerControl
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+
     }
     public static void RpcSetCustomRole(byte PlayerId, CustomRoles role)
     {
@@ -49,6 +52,17 @@ static class ExtendedPlayerControl
             writer.Write(PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+    }
+    public static void RemoveIncompatibleAddOns(this PlayerControl player)
+    {
+        foreach (var addon in player.GetCustomSubRoles())
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
+                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+            }
         }
     }
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride)
@@ -1304,7 +1318,8 @@ static class ExtendedPlayerControl
         else if (target.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) && !target.Is(CustomRoles.Trickster)) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target) /*&& !target.Is(CustomRoles.Trickster)*/) return true;
+        //↑↑I disabled the part that checks target is not trickster because I found it causing modded Overseers unable to see random role texts in meetings
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
