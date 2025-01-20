@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -56,6 +56,7 @@ internal class Godfather : RoleBase
         var ChangeAddon = godfather.Is(CustomRoles.Admired) ? CustomRoles.Admired : CustomRoles.Madmate;
         if (GodfatherTarget.Contains(target.PlayerId))
         {
+            if (!killer.IsAlive()) return;
             if (GodfatherChangeOpt.GetValue() == 0)
             {
                 killer.RpcChangeRoleBasis(ChangeRole);

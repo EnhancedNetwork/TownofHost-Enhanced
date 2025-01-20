@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;

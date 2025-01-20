@@ -1,4 +1,4 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;

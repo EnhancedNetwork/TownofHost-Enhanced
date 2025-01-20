@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using System.Text;
 
 namespace TOHE.Roles.Core.AssignManager;

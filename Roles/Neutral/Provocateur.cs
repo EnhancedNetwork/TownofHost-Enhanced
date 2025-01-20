@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Double;
+using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
 

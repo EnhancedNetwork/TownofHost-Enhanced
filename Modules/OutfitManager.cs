@@ -1,4 +1,4 @@
-﻿namespace TOHE.Modules;
+namespace TOHE.Modules;
 
 public static class OutfitManager
 {

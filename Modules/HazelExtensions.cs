@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using UnityEngine;
 
 //Thanks EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Modules/Extensions/HazelExtensions.cs

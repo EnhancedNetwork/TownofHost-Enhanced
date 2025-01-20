@@ -216,6 +216,13 @@ internal class MoonDancer : CovenManager
         foreach (var pc in BatonPassList[md.PlayerId])
         {
             var player = GetPlayerById(pc);
+
+            if (player == null)
+            {
+                BatonPassList[md.PlayerId].Remove(pc);
+                continue;
+            }
+
             var addon = addons.RandomElement();
             var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
             var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
