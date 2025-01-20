@@ -3,7 +3,6 @@ using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -88,8 +87,9 @@ internal class Bloodmoon : RoleBase
         }
 
         if (AbilityLimit > 0
+            && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
-            && !target.IsTransformedNeutralApocalypse()
+            && !target.IsNeutralApocalypse()
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {

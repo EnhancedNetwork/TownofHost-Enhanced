@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -111,7 +110,8 @@ internal class Hawk : RoleBase
         return target != null && Main.AllAlivePlayerControls.Length >= MinimumPlayersAliveToKill.GetInt()
             && AbilityLimit > 0
             && rnd.Next(100) >= KillerChanceMiss[target.PlayerId]
-            && !target.IsTransformedNeutralApocalypse()
+            && !target.IsNeutralApocalypse()
+            && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
             && (!target.Is(CustomRoles.NiceMini) || Mini.Age > 18);
     }
