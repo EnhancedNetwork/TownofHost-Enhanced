@@ -1318,19 +1318,11 @@ class FixedUpdateInNormalGamePatch
 
                 string BlankRT = string.Empty;
 
-                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster) && (!__instance.Is(CustomRoles.Narc) || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)))
+                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster))
                 {
                     RoleText.enabled = true; //have to make it return true otherwise modded Overseer won't be able to reveal Trickster's role,same for Illusionist's targets
                     BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
                     BlankRT += TaskState.GetTaskState(); // random task count for revealed trickster
-                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
-                }
-                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Narc) && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
-                {
-                    RoleText.enabled = true;
-                    BlankRT = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
-                    if (Sheriff.ShowShotLimit.GetBool()) 
-                        BlankRT += $" {Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})")}"; // Sheriff progress text
                     RoleText.text = $"<size=1.3>{BlankRT}</size>";
                 }
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
