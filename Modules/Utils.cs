@@ -2173,7 +2173,7 @@ public static class Utils
 
                         string BlankRT = string.Empty;
 
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Madmate)))
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
                         {
                             BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
                             BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
