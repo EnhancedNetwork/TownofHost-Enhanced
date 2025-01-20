@@ -214,3 +214,27 @@ public static class TagManager
         return false;
     }
 }
+
+public static bool AssignGameMaster(string friendCode)
+    {
+        var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS", "EXCLUSIVE_TAGS", "SPECIAL_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .ToList();
+        var filePath = folderPaths
+            .Select(folder => Path.Combine(folder, $"{friendCode}.txt"))
+            .FirstOrDefault(File.Exists);
+        if (filePath == null) return false;
+        string temp = "";
+        var searchTarget = "AssignGameMaster:";
+        foreach (var line in File.ReadLines(filePath))
+        {
+            if (line.Contains(searchTarget))
+            {
+                temp = line.Split("AssignGameMaster:").Skip(1).First().Trim().TrimEnd().ToLower();
+                break;
+            }
+        }
+        if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
+        return false;
+    }
+}
