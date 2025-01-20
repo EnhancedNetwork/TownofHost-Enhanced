@@ -228,38 +228,6 @@ internal class Lawyer : RoleBase
         lawyer.RpcSetCustomRole(newCustomRole);
         lawyer.GetRoleClass()?.OnAdd(lawyer.PlayerId);
 
-        switch (newCustomRole)
-        {
-            case CustomRoles.Amnesiac:
-                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Oblivious);
-                break;
-            case CustomRoles.Celebrity:
-                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Cyber);
-                break;
-            case CustomRoles.Dictator:
-                new[] { CustomRoles.Tiebreaker, CustomRoles.Paranoia, CustomRoles.Knighted, CustomRoles.VoidBallot, CustomRoles.Silent, CustomRoles.Influenced }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Mayor:
-                new[] { CustomRoles.Knighted, CustomRoles.VoidBallot }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Doctor:
-                new[] { CustomRoles.Autopsy, CustomRoles.Necroview }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Jester:
-                new[] { CustomRoles.Rebirth, CustomRoles.Susceptible }.Do(x => Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Opportunist when Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool():
-            case CustomRoles.Medic:
-                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Fragile);
-                break;
-            case CustomRoles.Mechanic:
-                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Fool);
-                break;
-            case CustomRoles.Refugee:
-                Main.PlayerStates[lawyer.PlayerId].RemoveSubRole(CustomRoles.Madmate);
-                break;
-        }
-
         if (inMeeting)
         {
             Utils.SendMessage(GetString("LawyerTargetDeadInMeeting"), sendTo: lawyer.PlayerId);

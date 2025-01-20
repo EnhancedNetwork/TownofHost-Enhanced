@@ -192,35 +192,6 @@ internal class Executioner : RoleBase
         executioner.RpcSetCustomRole(newCustomRole);
         executioner.GetRoleClass().OnAdd(executionerId);
 
-        switch (newCustomRole)
-        {
-            case CustomRoles.Amnesiac:
-                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Oblivious);
-                break;
-            case CustomRoles.Celebrity:
-                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Cyber);
-                break;
-            case CustomRoles.Dictator:
-                new[] { CustomRoles.Tiebreaker, CustomRoles.Paranoia, CustomRoles.Knighted, CustomRoles.VoidBallot, CustomRoles.Silent, CustomRoles.Influenced }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Mayor:
-                new[] { CustomRoles.Knighted, CustomRoles.VoidBallot }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Doctor:
-                new[] { CustomRoles.Autopsy, CustomRoles.Necroview }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Jester:
-                new[] { CustomRoles.Rebirth, CustomRoles.Susceptible }.Do(x => Main.PlayerStates[executionerId].RemoveSubRole(x));
-                break;
-            case CustomRoles.Opportunist when Opportunist.OppoImmuneToAttacksWhenTasksDone.GetBool():
-            case CustomRoles.Medic:
-                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Fragile);
-                break;
-            case CustomRoles.Refugee:
-                Main.PlayerStates[executionerId].RemoveSubRole(CustomRoles.Madmate);
-                break;
-        }
-
         Utils.NotifyRoles(SpecifySeer: executioner);
     }
 
