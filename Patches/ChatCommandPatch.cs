@@ -460,8 +460,8 @@ internal class ChatCommands
                         break;
                     }
                     var allAlivePlayers = Main.AllAlivePlayerControls;
-                    int impnum = allAlivePlayers.Count(pc => pc.IsNonNarcImp());
-                    int madnum = allAlivePlayers.Count(pc => pc.IsNonNarcMM() || pc.Is(CustomRoles.Madmate));
+                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                    int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
                     int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                     int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
                     int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
@@ -3446,7 +3446,7 @@ internal class ChatCommands
                     target.SetRealKiller(player);
                     Main.PlayerStates[target.PlayerId].SetDead();
                     target.RpcExileV2();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(player, target, GameStates.IsMeeting);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(target, target, GameStates.IsMeeting);
                     Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
                 }
                 break;
