@@ -67,6 +67,18 @@ public class RoleAssign
             case CustomGameMode.FFA:
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
+                    if (Main.EnableGM.Value && pc == PlayerControl.LocalPlayer)
+                    {
+                        RoleResult[pc.PlayerId] = CustomRoles.GM;
+                        continue;
+                    }
+
+                    if (TagManager.AssignGameMaster(pc.FriendCode))
+                    {
+                        RoleResult[pc.PlayerId] = CustomRoles.GM;
+                        Logger.Info($"Assign Game Master due to tag for [{pc.PlayerId}]{pc.GetRealName()}", "TagManager");
+                        continue;
+                    }
                     RoleResult[pc.PlayerId] = CustomRoles.Killer;
                 }
                 return;
@@ -220,6 +232,20 @@ public class RoleAssign
             AllPlayers.Remove(PlayerControl.LocalPlayer);
             SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
         }
+        foreach (var item in SetRoles)
+        {
+            PlayerControl playerControl = Utils.GetPlayerById(item.Key);
+            if (playerControl == null) continue;
+
+            if (TagManager.AssignGameMaster(playerControl.FriendCode))
+            {
+                Logger.Info($"Assign Game Master due to tag for [{item.Key}]{playerControl.GetRealName()}", "TagManager");
+                AllPlayers.Remove(playerControl);
+                SetRoles.Remove(playerControl.PlayerId);
+                RoleResult[playerControl.PlayerId] = CustomRoles.GM;
+            }
+        }
+
         // Pre-Assigned Roles By Host Are Selected First
         foreach (var item in SetRoles)
         {
