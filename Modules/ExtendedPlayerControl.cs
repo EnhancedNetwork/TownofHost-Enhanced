@@ -1304,7 +1304,8 @@ static class ExtendedPlayerControl
         else if (target.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) && !target.Is(CustomRoles.Trickster)) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target) /*&& !target.Is(CustomRoles.Trickster)*/) return true;
+        //↑↑I disabled the part that checks target is not trickster because I found it causing modded Overseers unable to see random role texts in meetings
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
