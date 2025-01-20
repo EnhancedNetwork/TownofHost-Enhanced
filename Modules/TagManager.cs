@@ -213,7 +213,6 @@ public static class TagManager
         if (new[] { "yes", "y", "true", "t", "1" }.Any(c => temp.Contains(c))) return true;
         return false;
     }
-}
 
 public static bool AssignGameMaster(string friendCode)
     {
