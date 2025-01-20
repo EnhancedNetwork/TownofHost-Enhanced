@@ -2179,13 +2179,6 @@ public static class Utils
                             BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
-                        {
-                            BlankRT = ColorString(GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
-                            if (Sheriff.ShowShotLimit.GetBool()) 
-                                BlankRT += $" {ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})")}"; // Sheriff progress text
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                        }
                         // Same thing as Trickster but for Illusioned Coven
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
                         {
