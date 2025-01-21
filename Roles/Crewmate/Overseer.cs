@@ -267,7 +267,7 @@ internal class Overseer : RoleBase
         //string roleName = GetRoleName(randomRole);
         string RoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
 
-        return $"<size={1.5}>{RoleText}</size>";
+        return RoleText;
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

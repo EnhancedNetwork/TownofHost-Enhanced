@@ -84,6 +84,7 @@ internal class Blackmailer : RoleBase
     }
     private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {
+        Logger.Info($"Blackmail: {blackmailer.GetRealName()} -> {target.GetRealName()}", "Blackmailer.DoBlackmaile");
         if (ForBlackmailer.ContainsKey(target.PlayerId))
         {
             return;

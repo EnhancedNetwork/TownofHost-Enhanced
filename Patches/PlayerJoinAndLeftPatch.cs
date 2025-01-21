@@ -75,8 +75,8 @@ class OnGameJoinedPatch
                     if (AURoleOptions.GuardianAngelCooldown == 0f)
                         AURoleOptions.GuardianAngelCooldown = Main.LastGuardianAngelCooldown.Value;
 
-                    // if custom game mode is HideNSeekTOHE in normal game, set standart
-                    if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE)
+                    // if custom game mode is HideNSeekTOHO in normal game, set standart
+                    if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHO)
                     {
                         // Select standart
                         Options.GameMode.SetValue(0);
@@ -87,10 +87,10 @@ class OnGameJoinedPatch
                 case GameModes.HideNSeek:
                     Logger.Info(" Is Hide & Seek", "Game Mode");
 
-                    // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHE
+                    // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHO
                     if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
                     {
-                        // Select HideNSeekTOHE
+                        // Select HideNSeekTOHO
                         Options.GameMode.SetValue(2);
                     }
                     break;

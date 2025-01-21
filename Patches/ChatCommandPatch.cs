@@ -63,7 +63,7 @@ internal class ChatCommands
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Judge jd && jd.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -390,7 +390,7 @@ internal class ChatCommands
                 //    {
                 //        break;
                 //    }
-                //    PlayerControl.LocalPlayer.RpcChangeRoleBasis(CustomRoles.PhantomTOHE);
+                //    PlayerControl.LocalPlayer.RpcChangeRoleBasis(CustomRoles.PhantomTOHO);
                 //    break;
 
                 case "/setplayers":
@@ -1670,12 +1670,12 @@ internal class ChatCommands
             "GM(遊戲大師)" or "管理员" or "管理" or "gm" or "GM" => GetString("GM"),
             
             // 原版职业
-            "船員" or "船员" or "白板" or "天选之子" => GetString("CrewmateTOHE"),
-            "工程師" or "工程师" => GetString("EngineerTOHE"),
-            "科學家" or "科学家" => GetString("ScientistTOHE"),
-            "守護天使" or "守护天使" => GetString("GuardianAngelTOHE"),
-            "偽裝者" or "内鬼" => GetString("ImpostorTOHE"),
-            "變形者" or "变形者" => GetString("ShapeshifterTOHE"),
+            "船員" or "船员" or "白板" or "天选之子" => GetString("CrewmateTOHO"),
+            "工程師" or "工程师" => GetString("EngineerTOHO"),
+            "科學家" or "科学家" => GetString("ScientistTOHO"),
+            "守護天使" or "守护天使" => GetString("GuardianAngelTOHO"),
+            "偽裝者" or "内鬼" => GetString("ImpostorTOHO"),
+            "變形者" or "变形者" => GetString("ShapeshifterTOHO"),
 
             // 隱藏職業 and 隐藏职业
             "陽光開朗大男孩" or "阳光开朗大男孩" => GetString("Sunnyboy"),
@@ -2114,8 +2114,8 @@ internal class ChatCommands
                         byte pid = playerId == 255 ? (byte)0 : playerId;
                         CustomRoles setrole = rl.GetCustomRoleTeam() switch
                         {
-                            Custom_Team.Impostor => CustomRoles.ImpostorTOHE,
-                            _ => CustomRoles.CrewmateTOHE
+                            Custom_Team.Impostor => CustomRoles.ImpostorTOHO,
+                            _ => CustomRoles.CrewmateTOHO
 
                         };
                         RoleAssign.SetRoles.Remove(pid);
@@ -2167,7 +2167,7 @@ internal class ChatCommands
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
+        if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
@@ -3547,7 +3547,7 @@ internal class ChatCommands
                     target.SetRealKiller(player);
                     Main.PlayerStates[target.PlayerId].SetDead();
                     target.RpcExileV2();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(player, target, GameStates.IsMeeting);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(target, target, GameStates.IsMeeting);
                     Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
                 }
                 break;

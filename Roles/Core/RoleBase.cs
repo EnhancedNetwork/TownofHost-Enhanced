@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -15,7 +15,6 @@ public abstract class RoleBase
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
-    public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
@@ -98,32 +97,32 @@ public abstract class RoleBase
     //this is a draft, it is not usable yet, Imma fix it in another PR
 
     /// <summary>
-    /// A generic method to set if someone (desync imps) should see each-other on the reveal screen. (they will also not be able to kill eachother)
+    /// A generic method to set if someone (desync Impostors) should see each-other on the reveal screen. (they will also not be able to kill eachother)
     /// </summary>
     public virtual void SetDesyncImpostorBuddies(ref Dictionary<PlayerControl, List<PlayerControl>> DesyncImpostorBuddy, PlayerControl caller)
     {
 
     }
     /// <summary>
-    /// A generic method to set if a impostor/SS base may use kill button.
+    /// A generic method to set if a impostor/Shapeshifter base may use Kill button.
     /// </summary>
     public virtual bool CanUseKillButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();
 
     /// <summary>
-    /// A generic method to set if a impostor/SS base may vent.
+    /// A generic method to set if a impostor/Shapeshifter base may Vent.
     /// </summary>
     public virtual bool CanUseImpostorVentButton(PlayerControl pc) => pc.Is(Custom_Team.Impostor) && pc.IsAlive();
 
     /// <summary>
-    /// A generic method to set if the role can use sabotage.
+    /// A generic method to set if the role can use Sabotage.
     /// </summary>
     public virtual bool CanUseSabotage(PlayerControl pc) => pc.Is(Custom_Team.Impostor);
     /// <summary>
-    /// When the player presses the sabotage button
+    /// When the player presses the Sabotage button
     /// </summary>
     public virtual bool OnSabotage(PlayerControl pc) => pc != null;
     /// <summary>
-    /// When player is enginner role base but should not move in vents
+    /// When player is Enginner role base but should not move in Vents
     /// </summary>
     public virtual bool BlockMoveInVent(PlayerControl pc) => false;
 
@@ -144,7 +143,7 @@ public abstract class RoleBase
     }
 
     /// <summary>
-    /// Set a specific kill cooldown
+    /// Set a specific Kill Cooldown
     /// </summary>
     public virtual void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Options.DefaultKillCooldown;
 
@@ -159,7 +158,7 @@ public abstract class RoleBase
     /// </summary>
     public virtual bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount) => true;
     /// <summary>
-    /// Other player complete A Marked task
+    /// Other player complete a marked task
     /// </summary>
     public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
     { }
@@ -174,36 +173,36 @@ public abstract class RoleBase
     public virtual bool OnCheckProtect(PlayerControl angel, PlayerControl target) => angel != null && target != null;
 
     /// <summary>
-    /// When role need force boot from vent
+    /// When role need force boot from Vent
     /// </summary>
     public virtual bool CheckBootFromVent(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions where the others roles starts playing an animation when entering a vent
+    /// A method for activating actions where the others roles starts playing an animation when entering a Vent
     /// </summary>
     public virtual bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId) => physics == null;
     /// <summary>
-    /// A method for activating actions where the role starts playing an animation when entering a vent
+    /// A method for activating actions where the role starts playing an animation when entering a Vent
     /// </summary>
     public virtual void OnCoEnterVent(PlayerPhysics physics, int ventId)
     { }
     /// <summary>
-    /// A method for activating actions when role is already in vent
+    /// A method for activating actions when role is already in Vent
     /// </summary>
     public virtual void OnEnterVent(PlayerControl pc, Vent vent)
     { }
     /// <summary>
-    /// A generic method to activate actions once (CustomRole)player exists vent.
+    /// A generic method to activate actions once (CustomRole)player exists Vent.
     /// </summary>
     public virtual void OnExitVent(PlayerControl pc, int ventId)
     { }
 
     /// <summary>
-    /// When role try fix any sabotage or open doors
+    /// When role try fix any Sabotage or open doors
     /// </summary>
     public virtual void UpdateSystem(ShipStatus __instance, SystemTypes systemType, byte amount, PlayerControl player)
     { }
     /// <summary>
-    /// When role try fix electrical
+    /// When role try fix Electrical
     /// </summary>
     public virtual void SwitchSystemUpdate(SwitchSystem __instance, byte amount, PlayerControl player)
     { }
@@ -249,21 +248,21 @@ public abstract class RoleBase
     public virtual bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
     /// <summary>
-    /// Shapeshift animation only from itself
+    /// Shapeshift Animation only from itself
     /// </summary>
     public virtual bool CanDesyncShapeshift => false;
 
     /// <summary>
-    /// Called when checking for shapeshift
-    /// Also can be used not activate shapeshift animate
+    /// Called when checking for Shapeshift
+    /// Also can be used not activate Shapeshift animate
     /// </summary>
     /// <param name="target">Transformation target</param>
-    /// <param name="animate">Whether to play the shapeshift animation</param>
-    /// <returns>return false for cancel the shapeshift transformation</returns>
+    /// <param name="animate">Whether to play the Shapeshift Animation</param>
+    /// <returns>return false for cancel the Shapeshift Transformation</returns>
     public virtual bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate) => true;
 
     /// <summary>
-    /// Called after check shapeshift
+    /// Called after check Shapeshift
     /// </summary>
     public virtual void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
     { }
@@ -271,10 +270,10 @@ public abstract class RoleBase
 
     // NOTE: when using UnShapeshift button, it will not be possible to revert to normal state because of complications.
     // So OnCheckShapeShift and OnShapeshift are pointless when using it.
-    // Last thing, while the button may say "shift" after resetability, the game still thinks you're shapeshifted and will work instantly as intended.
+    // Last thing, while the button may say "Shift" after resetability, the game still thinks you're Shapeshifted and will work instantly as intended.
 
     /// <summary>
-    /// A method which when implemented automatically makes the players always shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
+    /// A method which when implemented automatically makes the players always Shapeshifted (as themselves). Inside you can put functions to happen when "Un-Shapeshift" button is pressed.
     /// </summary>
     [Obfuscation(Exclude = true)]
     public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
@@ -299,7 +298,7 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When guesser need check guess (Check limit or Cannot guess а role/add-on)
+    /// When guesser need check guess (check limit or cannot guess а Role/Add-on)
     /// </summary>
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
@@ -441,8 +440,14 @@ public abstract class RoleBase
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
-    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
-
+    [Obfuscation(Exclude = true)]
+    public virtual string GetProgressText(byte playerId, bool comms)
+    {
+        var sb = new StringBuilder();
+        sb.Append(Utils.GetTaskCount(playerId, comms));
+        sb.Append(Utils.GetAbilityUseLimitDisplay(playerId, sb.Length <= 0));
+        return sb.ToString();
+    }
 
     // 
     // IMPORTANT note about otherIcons: 
@@ -460,23 +465,8 @@ public abstract class RoleBase
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
-
-    public void OnReceiveRPC(MessageReader reader)
-    {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-    }
-    public void SendSkillRPC()
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    {
-        OnReceiveRPC(reader); // Default implementation
-    }
+    { }
 
     [Obfuscation(Exclude = true)]
     public enum GeneralOption

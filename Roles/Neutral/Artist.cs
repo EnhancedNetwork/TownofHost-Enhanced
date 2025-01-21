@@ -1,11 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral
 {
@@ -56,7 +52,7 @@ namespace TOHE.Roles.Neutral
 
         public override void Add(byte playerId)
         {
-            AbilityLimit = AbilityUses.GetInt();
+            playerId.SetAbilityUseLimit(AbilityUses.GetInt());
             PlayerSkinsPainted[playerId] = new List<byte>();
             PlayerIds.Add(playerId);
             PaintingTarget[playerId] = new List<byte>();
@@ -81,7 +77,7 @@ namespace TOHE.Roles.Neutral
         {
             if (killer == null) return true;
             if (target == null) return true;
-            if (AbilityLimit <= 0) return true;
+            if (killer.GetAbilityUseLimit() <= 0) return true;
 
             if (PlayerSkinsPainted[killer.PlayerId].Contains(target.PlayerId))
             {
@@ -92,7 +88,7 @@ namespace TOHE.Roles.Neutral
             {
                 return killer.CheckDoubleTrigger(target, () =>
                 {
-                    AbilityLimit -= 1;
+                    killer.RpcRemoveAbilityUse();
                     SetSkin(target, PaintedOutfit);
                     PlayerSkinsPainted[killer.PlayerId].Add(target.PlayerId);
                     killer.SetKillCooldown(PaintCooldown.GetFloat());
@@ -180,10 +176,6 @@ namespace TOHE.Roles.Neutral
                 .EndRpc();
 
             sender.SendMessage();
-        }
-        public override string GetProgressText(byte playerId, bool comms)
-            => Utils.ColorString(CanPaint(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
-        private bool CanPaint(byte id) => AbilityLimit > 0;
+        }        
     }
 }

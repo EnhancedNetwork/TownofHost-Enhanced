@@ -23,7 +23,7 @@ using UnityEngine;
 [assembly: AssemblyVersion(TOHE.Main.PluginVersion)]
 namespace TOHE;
 
-[BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
+[BepInPlugin(PluginGuid, "TOHO", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
@@ -51,16 +51,16 @@ public class Main : BasePlugin
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 1
-    public static readonly bool fullRelease = true; // Latest: V2.1.1
+    public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 13
+    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 1
+    public static readonly bool fullRelease = true; // Latest: v2.1.1
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = false;
+    public static readonly bool ShowUpdateButton = true;
 
-    public static readonly bool ShowGitHubButton = false;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly bool ShowGitHubButton = true;
+    public static readonly string GitHubInviteUrl = "https://github.com/TOHOptimized/TownofHost-Optimized";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/BWh9Vj5UJ2";
@@ -153,6 +153,7 @@ public class Main : BasePlugin
     public static bool MeetingIsStarted = false;
     public static string LastSummaryMessage;
 
+    public static Dictionary<byte, float> AbilityUseLimit = [];
     public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> MurderedThisRound = [];
     public static readonly HashSet<byte> TasklessCrewmate = [];
@@ -634,9 +635,8 @@ public class Main : BasePlugin
 
         Harmony.PatchAll();
 
-        if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
-        else ConsoleManager.CreateConsole();
-
+        ConsoleManager.DetachConsole();
+        if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
         InitializeFileHash();
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
@@ -659,17 +659,17 @@ public enum CustomRoles
     Shapeshifter,
 
     // Crewmate Vanilla Remakes
-    CrewmateTOHE,
-    EngineerTOHE,
-    GuardianAngelTOHE,
-    NoisemakerTOHE,
-    ScientistTOHE,
-    TrackerTOHE,
+    CrewmateTOHO,
+    EngineerTOHO,
+    GuardianAngelTOHO,
+    NoisemakerTOHO,
+    ScientistTOHO,
+    TrackerTOHO,
 
     // Impostor Vanilla Remakes
-    ImpostorTOHE,
-    PhantomTOHE,
-    ShapeshifterTOHE,
+    ImpostorTOHO,
+    PhantomTOHO,
+    ShapeshifterTOHO,
 
     // Impostor Ghost
     Bloodmoon,

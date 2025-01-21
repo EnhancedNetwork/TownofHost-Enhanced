@@ -85,7 +85,7 @@ internal class SchrodingersCat : RoleBase
     {
         if (teammate.TryGetValue(seer.PlayerId, out var temmate) && target.PlayerId == temmate)
         {
-            if (target.GetCustomRole().IsCrewmate()) return Main.roleColors[CustomRoles.CrewmateTOHE];
+            if (target.GetCustomRole().IsCrewmate()) return Main.roleColors[CustomRoles.CrewmateTOHO];
             else return Main.roleColors[target.GetCustomRole()];
         }
         return string.Empty;

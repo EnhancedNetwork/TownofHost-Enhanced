@@ -1,9 +1,8 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -42,9 +41,9 @@ internal class Bloodmoon : RoleBase
         PlayerDie.Clear();
         LastTime.Clear();
     }
-    public override void Add(byte PlayerId)
+    public override void Add(byte playerId)
     {
-        AbilityLimit = CanKillNum.GetInt();
+        playerId.SetAbilityUseLimit(CanKillNum.GetInt());
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
@@ -59,19 +58,14 @@ internal class Bloodmoon : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(add);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        float Limit = reader.ReadSingle();
         bool add = reader.ReadBoolean();
         byte targetId = reader.ReadByte();
-
-
-        AbilityLimit = Limit;
 
         if (add)
             PlayerDie.Add(targetId, TimeTilDeath.GetInt());
@@ -86,7 +80,7 @@ internal class Bloodmoon : RoleBase
             return true;
         }
 
-        if (AbilityLimit > 0
+        if (killer.GetAbilityUseLimit() > 0
             && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
             && !target.IsNeutralApocalypse()
@@ -96,13 +90,11 @@ internal class Bloodmoon : RoleBase
             PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
             LastTime.Add(target.PlayerId, GetTimeStamp());
             killer.RpcResetAbilityCooldown();
-            AbilityLimit--;
+            killer.RpcRemoveAbilityUse();
             SendRPC(target.PlayerId, true);
         }
         return false;
     }
-    public override string GetProgressText(byte playerId, bool cooms)
-        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {

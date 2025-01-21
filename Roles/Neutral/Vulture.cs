@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
-using Hazel;
-using TOHE.Roles.Core;
+using System.Text;
 using UnityEngine;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -27,7 +27,6 @@ internal class Vulture : RoleBase
     private static OptionItem MaxEaten;
     private static OptionItem HasImpVision;
 
-    private static readonly Dictionary<byte, int> BodyReportCount = [];
     private static readonly Dictionary<byte, int> AbilityLeftInRound = [];
     private static readonly Dictionary<byte, long> LastReport = [];
 
@@ -45,7 +44,6 @@ internal class Vulture : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        BodyReportCount.Clear();
         AbilityLeftInRound.Clear();
         LastReport.Clear();
     }
@@ -54,7 +52,7 @@ internal class Vulture : RoleBase
         if (!playerIdList.Contains(playerId))
             playerIdList.Add(playerId);
 
-        BodyReportCount[playerId] = 0;
+        playerId.SetAbilityUseLimit(0);
         AbilityLeftInRound[playerId] = MaxEaten.GetInt();
         LastReport[playerId] = GetTimeStamp();
 
@@ -66,8 +64,11 @@ internal class Vulture : RoleBase
             {
                 if (GameStates.IsInTask)
                 {
-                    if (!DisableShieldAnimations.GetBool()) GetPlayerById(playerId).RpcGuardAndKill(GetPlayerById(playerId));
-                    GetPlayerById(playerId).Notify(GetString("VultureCooldownUp"));
+                    var player = playerId.GetPlayer();
+                    if (player == null) return;
+
+                    if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(player);
+                    player.Notify(GetString("VultureCooldownUp"));
                 }
                 return;
             }, VultureReportCD.GetFloat() + 8f, "Vulture Cooldown Up In Start");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
@@ -80,33 +81,12 @@ internal class Vulture : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-
-    private static void SendBodyRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncVultureBodyAmount, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(BodyReportCount[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public static void ReceiveBodyRPC(MessageReader reader)
-    {
-        byte playerId = reader.ReadByte();
-        int body = reader.ReadInt32();
-
-        if (!BodyReportCount.ContainsKey(playerId))
-        {
-            BodyReportCount.Add(playerId, body);
-        }
-        else
-            BodyReportCount[playerId] = body;
-    }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || !player.IsAlive()) return;
 
-        if (BodyReportCount[player.PlayerId] >= NumberOfReportsToWin.GetInt())
+        if (player.GetAbilityUseLimit() >= NumberOfReportsToWin.GetInt())
         {
-            BodyReportCount[player.PlayerId] = NumberOfReportsToWin.GetInt();
             if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
@@ -157,9 +137,10 @@ internal class Vulture : RoleBase
     }
     private static void OnEatDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
     {
-        BodyReportCount[pc.PlayerId]++;
+        pc.RpcIncreaseAbilityUseLimitBy(1);
         AbilityLeftInRound[pc.PlayerId]--;
         Logger.Msg($"target is null? {target == null}", "VultureNull");
+
         if (target != null)
         {
             foreach (var apc in playerIdList)
@@ -167,7 +148,6 @@ internal class Vulture : RoleBase
                 LocateArrow.Remove(apc, target.GetDeadBody().transform.position);
             }
         }
-        SendBodyRPC(pc.PlayerId);
         pc.Notify(GetString("VultureBodyReported"));
         Main.UnreportableBodies.Remove(target.PlayerId);
         Main.UnreportableBodies.Add(target.PlayerId);
@@ -177,21 +157,17 @@ internal class Vulture : RoleBase
         foreach (var apc in playerIdList)
         {
             var player = GetPlayerById(apc);
-            if (player == null) continue;
+            if (player == null || !player.IsAlive()) continue;
 
-            if (player.IsAlive())
-            {
-                AbilityLeftInRound[apc] = MaxEaten.GetInt();
-                LastReport[apc] = GetTimeStamp();
-            }
-            SendBodyRPC(player.PlayerId);
+            AbilityLeftInRound[apc] = MaxEaten.GetInt();
+            LastReport[apc] = GetTimeStamp();
         }
     }
     public override void NotifyAfterMeeting()
     {
         foreach (var apc in playerIdList)
         {
-            var player = GetPlayerById(apc);
+            var player = apc.GetPlayer();
             if (player == null) continue;
 
             _ = new LateTask(() =>
@@ -203,7 +179,6 @@ internal class Vulture : RoleBase
                 }
                 return;
             }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
-            SendBodyRPC(player.PlayerId);
         }
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
@@ -230,5 +205,11 @@ internal class Vulture : RoleBase
     }
     public override Sprite ReportButtonSprite => CustomButton.Get("Eat");
     public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f), $"({(BodyReportCount.TryGetValue(playerId, out var count1) ? count1 : 0)}/{NumberOfReportsToWin.GetInt()})");
+    {
+        var ProgressText = new StringBuilder();
+        Color TextColor = GetRoleColor(CustomRoles.Vulture).ShadeColor(0.25f);
+
+        ProgressText.Append(ColorString(TextColor, ColorString(Color.white, " - ") + $"({playerId.GetAbilityUseLimit()}/{NumberOfReportsToWin.GetInt()})"));
+        return ProgressText.ToString();
+    }
 }

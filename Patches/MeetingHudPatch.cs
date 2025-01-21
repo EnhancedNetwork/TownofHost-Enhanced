@@ -660,7 +660,6 @@ class CheckForEndVotingPatch
             if (candidate.PlayerId == exiledplayer.PlayerId || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
         }
         if (TargetList == null || TargetList.Count == 0) return null;
-        var rand = IRandom.Instance;
         var target = TargetList.RandomElement();
         return target;
     }
@@ -700,13 +699,26 @@ class CastVotePatch
         if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
+
+            Logger.Info($"Coven Leader Retraining [{voter.PlayerId}]{voter.GetNameWithRole()} => {CovenLeader.retrainPlayer[voter.PlayerId]}", "CastVotePatch");
+            voter.GetRoleClass()?.OnRemove(voter.PlayerId);
+            voter.RpcChangeRoleBasis(CovenLeader.retrainPlayer[voter.PlayerId]);
             voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
+            voter.GetRoleClass()?.OnAdd(voter.PlayerId);
             SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
             CovenLeader.retrainPlayer.Clear();
-            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
-            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+
+            if (CovenLeader.List.Any())
+                foreach (var covenLeaderId in CovenLeader.List)
+                {
+                    var covenLeader = covenLeaderId.GetPlayer();
+                    if (covenLeader == null) continue;
+
+                    covenLeader.RpcRemoveAbilityUse();
+                }
+            
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         }
@@ -1116,25 +1128,29 @@ class MeetingHudStartPatch
             var myRole = PlayerControl.LocalPlayer.GetRoleClass();
             var enable = true;
 
+            string BlankRT = string.Empty;
+
             if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster))
             {
-                roleTextMeeting.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
-                roleTextMeeting.text += TaskState.GetTaskState(); // Random task count for revealed trickster
-                //enable = false;
+                BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed Trickster
+                BlankRT += TaskState.GetTaskState(); // Random task count for revealed Trickster
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
             }
             if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsCovIllusioned(pc.PlayerId))
             {
-                roleTextMeeting.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
-                roleTextMeeting.text += TaskState.GetTaskState();
+                BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
+                BlankRT += TaskState.GetTaskState();
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
             }
             if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsNonCovIllusioned(pc.PlayerId))
             {
                 var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                roleTextMeeting.text = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
                 if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
                 {
-                    roleTextMeeting.text += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                    BlankRT += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
                 }
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
             }
 
             var suffixBuilder = new StringBuilder(32);

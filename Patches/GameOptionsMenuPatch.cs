@@ -687,7 +687,7 @@ public static class StringOptionPatch
                 var name = item.GetName();
                 if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
                 {
-                    var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
+                    var roleName = role.IsVanilla() ? role + "TOHO" : role.ToString();
                     var str = GetString($"{roleName}InfoLong");
                     int size = str.Length > 500 ? str.Length > 550 ? 65 : 70 : 100;
                     var infoLong = str[(str.IndexOf('\n') + 1)..str.Length];
@@ -716,13 +716,13 @@ public static class StringOptionPatch
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
-                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE && !GameStates.IsHideNSeek) //Hide & Seek
+                if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHO && !GameStates.IsHideNSeek) //Hide & Seek
                 {
                     Options.GameMode.SetValue(0);
                 }
-                else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHE && GameStates.IsHideNSeek)
+                else if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHO && GameStates.IsHideNSeek)
                 {
-                    Options.GameMode.SetValue(Options.GetGameModeInt(CustomGameMode.HidenSeekTOHE));
+                    Options.GameMode.SetValue(Options.GetGameModeInt(CustomGameMode.HidenSeekTOHO));
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }

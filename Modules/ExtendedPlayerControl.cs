@@ -20,19 +20,21 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role)
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true)
     {
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
             //  player.GetRoleClass()?.OnAdd(player.PlayerId);
             // Remember to manually add OnAdd if you are setting role mid game
+            if (checkAddons) player.RemoveIncompatibleAddOns();
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
             else Main.PlayerStates[player.PlayerId].SetSubRole(role);
+            if (checkAddons) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -50,6 +52,17 @@ static class ExtendedPlayerControl
             writer.Write(PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+    }
+    public static void RemoveIncompatibleAddOns(this PlayerControl player)
+    {
+        foreach (var addon in player.GetCustomSubRoles())
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
+                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+            }
         }
     }
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride)
@@ -493,6 +506,11 @@ static class ExtendedPlayerControl
 
         if (!player.HasImpKillButton(considerVanillaShift: true)) return;
         if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
+
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info($"player {player.PlayerId} should reset cooldown ({(time >= 0f ? time : Main.AllPlayerKillCooldown[player.PlayerId])}) while AntiBlackout", "SetKillCooldown");
+        }
 
         player.SetKillTimer(CD: time);
         if (target == null) target = player;
@@ -945,6 +963,47 @@ static class ExtendedPlayerControl
 
         return Main.PlayerStates.TryGetValue(player.PlayerId, out var State) ? State.countTypes : CountTypes.None;
     }
+
+    public static float GetAbilityUseLimit(this PlayerControl pc) => Main.AbilityUseLimit.GetValueOrDefault(pc.PlayerId, float.NaN);
+    public static float GetAbilityUseLimit(this byte playerId) => Main.AbilityUseLimit.GetValueOrDefault(playerId, float.NaN);
+
+    public static void RpcRemoveAbilityUse(this PlayerControl pc, bool log = true)
+    {
+        float current = pc.GetAbilityUseLimit();
+        if (float.IsNaN(current) || current <= 0f) return;
+        pc.SetAbilityUseLimit(current - 1, log: log);
+    }
+
+    public static void RpcIncreaseAbilityUseLimitBy(this PlayerControl pc, float get, bool log = true)
+    {
+        float current = pc.GetAbilityUseLimit();
+        if (float.IsNaN(current)) return;
+        pc.SetAbilityUseLimit(current + get, log: log);
+    }
+
+    public static void SetAbilityUseLimit(this PlayerControl pc, float limit, bool rpc = true, bool log = true) => pc.PlayerId.SetAbilityUseLimit(limit, rpc, log);
+
+    public static void SetAbilityUseLimit(this byte playerId, float limit, bool rpc = true, bool log = true)
+    {
+        limit = (float)Math.Round(limit, 1);
+
+        if (float.IsNaN(limit) || limit is < 0f or > 100f || (Main.AbilityUseLimit.TryGetValue(playerId, out var beforeLimit) && Math.Abs(beforeLimit - limit) < 0.01f)) return;
+
+        Main.AbilityUseLimit[playerId] = limit;
+
+        var player = playerId.GetPlayer();
+        if (AmongUsClient.Instance.AmHost && player.IsNonHostModdedClient() && rpc)
+        {
+            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAbilityUseLimit, SendOption.Reliable);
+            writer.Write(playerId);
+            writer.Write(limit);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+
+        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
+        if (log) Logger.Info($" {player.GetNameWithRole()} => {Math.Round(limit, 1)}", "SetAbilityUseLimit");
+    }
+    
     public static DeadBody GetDeadBody(this NetworkedPlayerInfo playerData)
     {
         return UnityEngine.Object.FindObjectsOfType<DeadBody>().FirstOrDefault(bead => bead.ParentId == playerData.PlayerId);
@@ -1077,7 +1136,7 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        if (GameStates.IsLobby) return false;
+        if (pc == null || GameStates.IsLobby) return false;
         if (Options.CurrentGameMode is CustomGameMode.CandR) //C&R
         {
 
@@ -1344,7 +1403,8 @@ static class ExtendedPlayerControl
         else if (target.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) && !target.Is(CustomRoles.Trickster)) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target) /*&& !target.Is(CustomRoles.Trickster)*/) return true;
+        //↑↑ I disabled the part that checks target is not Trickster because I found it causing modded Overseer unable to see random role texts in meetings
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
@@ -1411,11 +1471,11 @@ static class ExtendedPlayerControl
 
         if (seer.Is(Custom_Team.Impostor))
         {
-            // Imp know Madmate
+            // Impostor know Madmate
             if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
                 return true;
 
-            // Ego-Imp know other Ego-Imp
+            // Egoist-Impostor know other Egoist-Impostor
             else if (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool())
                 return true;
         }

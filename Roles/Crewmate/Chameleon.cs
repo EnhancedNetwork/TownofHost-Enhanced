@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -23,7 +22,6 @@ internal class Chameleon : RoleBase
     private static OptionItem ChameleonCooldown;
     private static OptionItem ChameleonDuration;
     private static OptionItem UseLimitOpt;
-    private static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
 
     private static readonly Dictionary<byte, int> ventedId = [];
     private static readonly Dictionary<byte, long> InvisCooldown = [];
@@ -39,8 +37,8 @@ internal class Chameleon : RoleBase
         UseLimitOpt = IntegerOptionItem.Create(Id + 5, "AbilityUseLimit", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
             .SetValueFormat(OptionFormat.Times);
         ChameleonAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 6, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false)
-        .SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
-        .SetValueFormat(OptionFormat.Times);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Chameleon])
+            .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()
     {
@@ -50,42 +48,26 @@ internal class Chameleon : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = UseLimitOpt.GetInt();
+        playerId.SetAbilityUseLimit(UseLimitOpt.GetInt());
     }
-    public void SendRPC(PlayerControl pc, bool isLimit = false)
+    public static void SendRPC(PlayerControl pc)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, isLimit ? -1 : pc.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, pc.GetClientId());
         writer.Write(pc.PlayerId);
-        writer.Write(isLimit);
-        if (isLimit)
-        {
-            writer.Write(AbilityLimit);
-        }
-        else
-        {
-            writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
-            writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        }
+        writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
+        writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC_Custom(MessageReader reader)
     {
-        byte pid = reader.ReadByte();
-        bool isLimit = reader.ReadBoolean();
-        if (isLimit)
-        {
-            float limit = reader.ReadSingle();
-            Main.PlayerStates[pid].RoleClass.AbilityLimit = limit;
-        }
-        else
-        {
-            InvisCooldown.Clear();
-            InvisDuration.Clear();
-            long cooldown = long.Parse(reader.ReadString());
-            long invis = long.Parse(reader.ReadString());
-            if (cooldown > 0) InvisCooldown.Add(pid, cooldown);
-            if (invis > 0) InvisDuration.Add(pid, invis);
-        }
+        byte playerId = reader.ReadByte();
+
+        InvisCooldown.Clear();
+        InvisDuration.Clear();
+        long cooldown = long.Parse(reader.ReadString());
+        long invis = long.Parse(reader.ReadString());
+        if (cooldown > 0) InvisCooldown.Add(playerId, cooldown);
+        if (invis > 0) InvisDuration.Add(playerId, invis);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -129,15 +111,6 @@ internal class Chameleon : RoleBase
             InvisCooldown.Add(chameleon.PlayerId, GetTimeStamp());
             SendRPC(chameleon);
         }
-    }
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-        {
-            AbilityLimit += ChameleonAbilityUseGainWithEachTaskCompleted.GetFloat();
-            SendRPC(player, isLimit: true);
-        }
-        return true;
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
@@ -197,7 +170,7 @@ internal class Chameleon : RoleBase
         {
             if (CanGoInvis(chameleonId))
             {
-                if (AbilityLimit >= 1)
+                if (chameleon.GetAbilityUseLimit() >= 1)
                 {
                     ventedId.Remove(chameleonId);
                     ventedId.Add(chameleonId, ventId);
@@ -208,8 +181,7 @@ internal class Chameleon : RoleBase
                     InvisDuration.Add(chameleonId, GetTimeStamp());
                     SendRPC(chameleon);
 
-                    AbilityLimit--;
-                    SendRPC(chameleon, isLimit: true);
+                    chameleon.RpcRemoveAbilityUse();
 
                     chameleon.Notify(GetString("ChameleonInvisState"), ChameleonDuration.GetFloat());
                 }
@@ -271,22 +243,4 @@ internal class Chameleon : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("invisible");
-
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState13 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor13;
-        var TaskCompleteColor13 = Color.green;
-        var NonCompleteColor13 = Color.yellow;
-        var NormalColor13 = taskState13.IsTaskFinished ? TaskCompleteColor13 : NonCompleteColor13;
-        TextColor13 = comms ? Color.gray : NormalColor13;
-        string Completed13 = comms ? "?" : $"{taskState13.CompletedTasksCount}";
-        Color TextColor131;
-        if (AbilityLimit < 1) TextColor131 = Color.red;
-        else TextColor131 = Color.white;
-        ProgressText.Append(ColorString(TextColor13, $"({Completed13}/{taskState13.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor131, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
-    }
 }

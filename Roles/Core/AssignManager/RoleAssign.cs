@@ -66,6 +66,17 @@ public class RoleAssign
             case CustomGameMode.FFA:
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                 {
+                    if (Main.EnableGM.Value && pc == PlayerControl.LocalPlayer)
+                    {
+                        RoleResult[pc.PlayerId] = CustomRoles.GM;
+                        continue;
+                    }
+                    if (TagManager.AssignGameMaster(pc.FriendCode))
+                    {
+                        RoleResult[pc.PlayerId] = CustomRoles.GM;
+                        Logger.Info($"Assign Game Master due to tag for [{pc.PlayerId}]{pc.GetRealName()}", "TagManager");
+                        continue;
+                    }
                     RoleResult[pc.PlayerId] = CustomRoles.Killer;
                 }
                 return;
@@ -152,7 +163,7 @@ public class RoleAssign
 
         //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
         //{
-        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHE, 100, optImpNum));
+        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHO, 100, optImpNum));
         //    Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
         //}
 
@@ -222,6 +233,18 @@ public class RoleAssign
             RoleResult[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
             SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
+        }
+        foreach (var item in SetRoles)
+        {
+            PlayerControl playerControl = Utils.GetPlayerById(item.Key);
+            if (playerControl == null) continue;
+            if (TagManager.AssignGameMaster(playerControl.FriendCode))
+            {
+                Logger.Info($"Assign Game Master due to tag for [{item.Key}]{playerControl.GetRealName()}", "TagManager");
+                AllPlayers.Remove(playerControl);
+                SetRoles.Remove(playerControl.PlayerId);
+                RoleResult[playerControl.PlayerId] = CustomRoles.GM;
+            }
         }
 
         AllPlayers.RemoveAll(x => ChatCommands.Spectators.Contains(x.PlayerId));
@@ -889,7 +912,7 @@ public class RoleAssign
         {
             while (FinalRolesList.Count < AllPlayers.Count)
             {
-                FinalRolesList.Add(CustomRoles.CrewmateTOHE);
+                FinalRolesList.Add(CustomRoles.CrewmateTOHO);
             }
         }
 

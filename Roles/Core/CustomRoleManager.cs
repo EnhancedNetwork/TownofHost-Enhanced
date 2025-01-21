@@ -115,7 +115,7 @@ public static class CustomRoleManager
 
         player.GetRoleClass()?.ApplyGameOptions(opt, player.PlayerId);
 
-        if (NoisemakerTOHE.HasEnabled) NoisemakerTOHE.ApplyGameOptionsForOthers(player);
+        if (NoisemakerTOHO.HasEnabled) NoisemakerTOHO.ApplyGameOptionsForOthers(player);
 
         if (DollMaster.HasEnabled && DollMaster.IsDoll(player.PlayerId))
         {

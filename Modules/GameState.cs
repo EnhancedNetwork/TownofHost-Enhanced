@@ -345,7 +345,7 @@ public class PlayerState(byte playerId)
         Execution,
         Fall,
 
-        // TOHE
+        // TOHO
         Gambled,
         Eaten,
         Sacrifice,
@@ -470,6 +470,12 @@ public class TaskState
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;
+
+        if (player.IsAlive() && Main.IntroDestroyed)
+        {
+            float add = GetSettingNameAndValueForRole(player.GetCustomRole(), "AbilityUseGainWithEachTaskCompleted");
+            if (Math.Abs(add - float.MaxValue) > 0.5f && add > 0) player.RpcIncreaseAbilityUseLimitBy(add);
+        }
 
         // Display only up to the adjusted task amount
         CompletedTasksCount = Math.Min(AllTasksCount, CompletedTasksCount);

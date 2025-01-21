@@ -2,10 +2,10 @@
 
 namespace TOHE.Roles.Vanilla;
 
-internal class TrackerTOHE : RoleBase
+internal class TrackerTOHO : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.TrackerTOHE;
+    public override CustomRoles Role => CustomRoles.TrackerTOHO;
     private const int Id = 6250;
     public override CustomRoles ThisRoleBase => CustomRoles.Tracker;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanilla;
@@ -17,15 +17,15 @@ internal class TrackerTOHE : RoleBase
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TrackerTOHE);
+        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TrackerTOHO);
         TrackCooldown = IntegerOptionItem.Create(Id + 2, GeneralOption.TrackerBase_TrackingCooldown, new(1, 120, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHE])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
         TrackDuration = IntegerOptionItem.Create(Id + 3, GeneralOption.TrackerBase_TrackingDuration, new(5, 120, 5), 30, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHE])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
         TrackDelay = IntegerOptionItem.Create(Id + 4, GeneralOption.TrackerBase_TrackingDelay, new(0, 10, 1), 1, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHE])
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.TrackerTOHO])
             .SetValueFormat(OptionFormat.Seconds);
     }
 

@@ -47,6 +47,7 @@ internal class PotionMaster : CovenManager
     public override void Init()
     {
         RevealList.Clear();
+        BarrierList.Clear();
         RevealLimit.Clear();
         BarrierLimit.Clear();
     }
@@ -55,7 +56,7 @@ internal class PotionMaster : CovenManager
         RevealList[playerId] = [];
         BarrierList[playerId] = [];
         RevealLimit[playerId] = RevealMaxCount.GetInt();
-        BarrierLimit[playerId] = RevealMaxCount.GetInt();
+        BarrierLimit[playerId] = BarrierMaxCount.GetInt();
         PotionMode = 0;
 
         var pc = Utils.GetPlayerById(playerId);
