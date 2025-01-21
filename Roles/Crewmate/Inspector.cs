@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
