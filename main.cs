@@ -997,7 +997,6 @@ public enum CustomRoles
     Mare,
     Randomizer,
     Rebirth,
-    Reliable,
     Revealed,
     Mimic,
     Mundane,
