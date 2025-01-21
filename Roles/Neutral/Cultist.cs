@@ -70,7 +70,7 @@ internal class Cultist : RoleBase
         else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.RpcRemoveAbilityUse();
-            target.RpcSetCustomRole(CustomRoles.Charmed);
+            target.RpcSetCustomRole(CustomRoles.Charmed, false);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
