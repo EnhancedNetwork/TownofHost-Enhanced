@@ -76,7 +76,7 @@ internal class CursedSoul : RoleBase
         {
             CurseLimit--;
             SendRPC();
-            target.RpcSetCustomRole(CustomRoles.Soulless);
+            target.RpcSetCustomRole(CustomRoles.Soulless, false);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
