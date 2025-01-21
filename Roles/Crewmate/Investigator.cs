@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules;
 using TOHE.Roles.Coven;
 using static TOHE.Options;
 
