@@ -1,4 +1,4 @@
-using Hazel;
+using TOHE.Modules;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
