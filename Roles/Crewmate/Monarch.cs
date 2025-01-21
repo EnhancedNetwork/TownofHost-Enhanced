@@ -58,7 +58,7 @@ internal class Monarch : RoleBase
         {
             AbilityLimit--;
             SendSkillRPC();
-            target.RpcSetCustomRole(CustomRoles.Knighted);
+            target.RpcSetCustomRole(CustomRoles.Knighted, false);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchKnightedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("KnightedByMonarch")));
