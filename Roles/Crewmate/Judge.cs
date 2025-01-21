@@ -1,6 +1,7 @@
 using Hazel;
 using System;
 using System.Text.RegularExpressions;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
