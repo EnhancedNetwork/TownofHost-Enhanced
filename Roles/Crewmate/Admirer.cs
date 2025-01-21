@@ -93,49 +93,49 @@ internal class Admirer : RoleBase
                 && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Enchanted))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Admired);
+                target.RpcSetCustomRole(CustomRoles.Admired, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(forAdmirer: true))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Madmate);
+                target.RpcSetCustomRole(CustomRoles.Madmate, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Enchanted) && Ritualist.CanBeConverted(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Enchanted);
+                target.RpcSetCustomRole(CustomRoles.Enchanted, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Recruit);
+                target.RpcSetCustomRole(CustomRoles.Recruit, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Charmed);
+                target.RpcSetCustomRole(CustomRoles.Charmed, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Infected);
+                target.RpcSetCustomRole(CustomRoles.Infected, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmirerAdmired")));
             }
             else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Contagious.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(CustomRoles.Contagious);
+                target.RpcSetCustomRole(CustomRoles.Contagious, false);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmirerAdmired")));
             }
