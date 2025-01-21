@@ -77,7 +77,7 @@ internal class Spiritcaller : RoleBase
             if (killer.GetAbilityUseLimit() < 1) return true;
 
             killer.RpcRemoveAbilityUse();
-            target.RpcSetCustomRole(CustomRoles.EvilSpirit);
+            target.RpcSetCustomRole(CustomRoles.EvilSpirit, false);
 
             Utils.SendMessage(GetString("SpiritcallerNoticeMessage"), target.PlayerId, GetString("SpiritcallerNoticeTitle"));
         }
