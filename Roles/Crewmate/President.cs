@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using static TOHE.Translator;
 
