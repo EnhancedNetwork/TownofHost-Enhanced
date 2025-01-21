@@ -1,11 +1,12 @@
 using AmongUs.GameOptions;
+using Hazel;
 using System.Text;
 using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using static TOHE.Options;
-using static TOHE.Translator;;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 
