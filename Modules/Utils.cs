@@ -693,11 +693,7 @@ public static class Utils
             {
                 ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
-                if (ProgressText.Length == 0)
-                {
-                    ProgressText.Append(GetTaskCount(playerId, comms));
-                }
-                else
+                if (ProgressText.Length > 0)
                 {
                     ProgressText.Insert(0, " ");
                 }
