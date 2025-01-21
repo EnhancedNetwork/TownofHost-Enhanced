@@ -81,7 +81,7 @@ internal class Spiritcaller : RoleBase
             AbilityLimit--;
             SendSkillRPC();
 
-            target.RpcSetCustomRole(CustomRoles.EvilSpirit);
+            target.RpcSetCustomRole(CustomRoles.EvilSpirit, false);
 
             var writer = CustomRpcSender.Create("SpiritCallerSendMessage", SendOption.None);
             writer.StartMessage(target.GetClientId());
