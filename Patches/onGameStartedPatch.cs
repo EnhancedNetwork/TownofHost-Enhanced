@@ -51,6 +51,8 @@ internal class ChangeRoleSettings
             Main.PlayerStates = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
+            AbilityUseManager.Initializate();
+            
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
@@ -66,7 +68,6 @@ internal class ChangeRoleSettings
             GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
             Main.clientIdList.Clear();
-            Main.AbilityUseLimit.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
