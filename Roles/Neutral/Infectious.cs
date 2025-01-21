@@ -68,7 +68,7 @@ internal class Infectious : RoleBase
         if (CanBeBitten(target))
         {
             BiteLimit--;
-            target.RpcSetCustomRole(CustomRoles.Infected);
+            target.RpcSetCustomRole(CustomRoles.Infected, false);
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
