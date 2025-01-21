@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
-using MonoMod.Utils;
 using System;
 using System.IO;
 using System.Security.Cryptography;
