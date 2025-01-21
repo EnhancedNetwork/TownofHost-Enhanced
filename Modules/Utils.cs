@@ -916,9 +916,9 @@ public static class Utils
 
         SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
-        SendMessage(string.Join("\n", covenb), PlayerId, GetString("CovenRoles"), ShouldSplit: true);
-        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -2190,25 +2190,30 @@ public static class Utils
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
+                        string BlankRT = string.Empty;
+
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
-                            TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
+                            BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
+                            BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
                         // Same thing as Trickster but for Illusioned Coven
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
                         {
-                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId);
-                            TargetRoleText += TaskState.GetTaskState();
+                            BlankRT = Overseer.GetRandomRole(seer.PlayerId);
+                            BlankRT += TaskState.GetTaskState();
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
                         {
                             var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                            TargetRoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                            BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
                             if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                             {
-                                TargetRoleText += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
+                                BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
                             }
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
                         // ====== Target player name ======

@@ -38,6 +38,9 @@ internal class Jackal : RoleBase
     public static OptionItem CanUseSabotageSK;
     private static OptionItem SidekickCanKillJackal;
     private static OptionItem SidekickCanKillSidekick;
+    private static OptionItem CanRecruitImpostor;
+    private static OptionItem CanRecruitNeutral;
+    private static OptionItem CanRecruitCoven;
 
     private bool hasConverted;
 
@@ -72,7 +75,7 @@ internal class Jackal : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
 
         CanRecruitSidekick = BooleanOptionItem.Create(Id + 30, "JackalCanRecruitSidekick", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
-        JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jackal]);
+        JackalCanKillSidekick = BooleanOptionItem.Create(Id + 15, "JackalCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickAssignMode = StringOptionItem.Create(Id + 34, "Jackal_SidekickAssignMode", EnumHelper.GetAllNames<SidekickAssignModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
                 .SetHidden(false);
         SidekickRecruitLimitOpt = IntegerOptionItem.Create(Id + 33, "JackalSidekickRecruitLimit", new(0, 15, 1), 1, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
@@ -91,6 +94,10 @@ internal class Jackal : RoleBase
         SidekickCanKillSidekick = BooleanOptionItem.Create(Id + 24, "Jackal_SidekickCanKillSidekick", false, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
         SidekickCountMode = StringOptionItem.Create(Id + 25, "Jackal_SidekickCountMode", EnumHelper.GetAllNames<SidekickCountModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick)
             .SetHidden(false);
+
+        CanRecruitImpostor = BooleanOptionItem.Create(Id + 40, "JackalCanRecruitImpostor", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        CanRecruitNeutral = BooleanOptionItem.Create(Id + 41, "JackalCanRecruitNeutral", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
+        CanRecruitCoven = BooleanOptionItem.Create(Id + 42, "JackalCanRecruitCoven", true, TabGroup.NeutralRoles, false).SetParent(CanRecruitSidekick);
     }
     public override void Init()
     {
@@ -170,7 +177,12 @@ internal class Jackal : RoleBase
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
-
+        if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
+            Logger.Info("Jackal can not recruit this target", "Jackal");
+            return true;
+        }
         if (target.Is(CustomRoles.Loyal)
             || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
         {
