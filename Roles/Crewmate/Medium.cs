@@ -1,6 +1,7 @@
 ﻿using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using TOHE.Modules;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 using static TOHE.Utils;
