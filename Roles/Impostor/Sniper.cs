@@ -1,7 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Modules;
+using System.Text;
 using UnityEngine;
+using TOHE.Modules;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
