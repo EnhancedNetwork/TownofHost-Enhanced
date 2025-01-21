@@ -153,7 +153,6 @@ public class Main : BasePlugin
     public static bool MeetingIsStarted = false;
     public static string LastSummaryMessage;
 
-    public static Dictionary<byte, float> AbilityUseLimit = [];
     public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> MurderedThisRound = [];
     public static readonly HashSet<byte> TasklessCrewmate = [];
