@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using System.Text;
 using UnityEngine;
 using TOHE.Modules;
