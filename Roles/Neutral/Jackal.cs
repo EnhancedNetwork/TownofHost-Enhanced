@@ -238,7 +238,7 @@ internal class Jackal : RoleBase
 
                 AbilityLimit--;
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned Recruit to {target.GetNameWithRole()}", "Jackal");
-                target.RpcSetCustomRole(CustomRoles.Recruit);
+                target.RpcSetCustomRole(CustomRoles.Recruit, false);
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
@@ -263,7 +263,7 @@ internal class Jackal : RoleBase
                 }
                 else
                 {
-                    target.RpcSetCustomRole(CustomRoles.Recruit);
+                    target.RpcSetCustomRole(CustomRoles.Recruit, false);
                 }
                 AbilityLimit--;
 

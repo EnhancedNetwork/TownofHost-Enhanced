@@ -79,7 +79,7 @@ public class Workhorse : IAddon
         if (!CustomRoles.Workhorse.IsEnable() || playerIdList.Count >= CustomRoles.Workhorse.GetCount()) return true;
         if (!IsAssignTarget(pc)) return true;
 
-        pc.RpcSetCustomRole(CustomRoles.Workhorse);
+        pc.RpcSetCustomRole(CustomRoles.Workhorse, false);
         var taskState = pc.GetPlayerTaskState();
         taskState.AllTasksCount += NumLongTasks + NumShortTasks;
         //taskState.CompletedTasksCount++; //Addition for this completion
