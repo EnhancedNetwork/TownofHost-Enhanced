@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TMPro;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;

@@ -5,6 +5,7 @@ using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using TOHE.Modules;
 
 namespace TOHE.Roles.Neutral;
 

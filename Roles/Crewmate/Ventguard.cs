@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Options;
+using TOHE.Modules;
 
 namespace TOHE.Roles.Crewmate;
 

@@ -5,6 +5,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.MeetingHudStartPatch;
+using TOHE.Modules;
 
 namespace TOHE.Roles.Neutral;
 

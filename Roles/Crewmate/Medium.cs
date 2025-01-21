@@ -5,6 +5,7 @@ using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 using static TOHE.Utils;
 using static TOHE.Options;
+using TOHE.Modules;
 
 namespace TOHE.Roles.Crewmate;
 

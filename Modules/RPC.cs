@@ -16,7 +16,7 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 185/255 USED
+public enum CustomRPC : byte // 184/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -106,7 +106,6 @@ public enum CustomRPC : byte // 185/255 USED
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
-    SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
@@ -594,9 +593,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
-                break;
-            case CustomRPC.SetCursedSoulCurseLimit:
-                CursedSoul.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);

@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using System.Collections;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
@@ -327,7 +328,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Sunnyboy);
                             break;
-                        case CustomRoles.Maverick when pc.IsAlive() && Main.PlayerStates[pc.PlayerId].RoleClass is Maverick mr && mr.NumKills >= Maverick.MinKillsForWin.GetInt():
+                        case CustomRoles.Maverick when pc.IsAlive() && pc.GetAbilityUseLimit() >= Maverick.MinKillsForWin.GetInt():
                             WinnerIds.Add(pc.PlayerId);
                             AdditionalWinnerTeams.Add(AdditionalWinners.Maverick);
                             break;

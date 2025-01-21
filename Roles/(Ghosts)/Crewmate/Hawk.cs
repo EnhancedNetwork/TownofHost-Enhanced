@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
