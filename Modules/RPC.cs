@@ -689,7 +689,7 @@ internal class PlayerPhysicsRPCHandlerPatch
 
         if (!Main.MeetingIsStarted)
         {
-            __instance.myPlayer.walkingToVent = true;
+            //__instance.myPlayer.walkingToVent = true;
             VentSystemDeterioratePatch.ForceUpadate = true;
         }
 
