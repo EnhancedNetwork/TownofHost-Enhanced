@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using UnityEngine;
 
 using static TOHE.Options;
 
@@ -13,6 +14,7 @@ internal class Pyromaniac : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pyromaniac");
 
     private static OptionItem KillCooldown;
     private static OptionItem DouseCooldown;
