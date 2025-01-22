@@ -28,11 +28,3 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Inspect code
-      uses: muno92/resharper_inspectcode@v1
-      with:
-        version: 2023.3
-        dotnetVersion: ${{ steps.setup-dotnet.outputs.dotnet-version }}
-        solutionPath: ./TOHE.sln
-        solutionWideAnalysis: false
-        failOnIssue: 0
