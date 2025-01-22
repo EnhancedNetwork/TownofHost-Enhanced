@@ -45,6 +45,7 @@ internal class SoulCatcher : RoleBase
 
             shapeshifter.RPCPlayCustomSound("Teleport");
             target.RPCPlayCustomSound("Teleport");
+            resetCooldown = true;
         }
         else
         {
