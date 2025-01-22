@@ -128,7 +128,15 @@ public static class Options
         "CamouflageMode.TommyXL",
         "CamouflageMode.Sarha"
     ];
-
+    [Obfuscation(Exclude = true)]
+    public enum QuickChatSpamMode
+    {
+        QuickChatSpam_Disabled,
+        QuickChatSpam_How2PlayNormal,
+        QuickChatSpam_How2PlayHidenSeek,
+        QuickChatSpam_Random20,
+        QuickChatSpam_EzHacked,
+    };
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
@@ -498,6 +506,7 @@ public static class Options
     public static OptionItem CovenCanGuessCoven;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
+    public static OptionItem UseQuickChatSpamCheat;
 
 
     // ------------ General Role Settings ------------
@@ -1337,6 +1346,8 @@ public static class Options
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
+
+        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false);
 
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
