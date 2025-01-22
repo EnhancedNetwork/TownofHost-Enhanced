@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Profiling;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -199,6 +200,11 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return true;
+        }
         if (CanEat(killer, target.PlayerId))
         {
             EatPlayer(killer, target);
