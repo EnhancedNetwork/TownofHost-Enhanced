@@ -22,12 +22,17 @@ jobs:
     - name: Create token.env file
       run: echo "Github Actions" > token.env
     - name: Setup .NET
+      id: setup-dotnet
       uses: actions/setup-dotnet@v4
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Resharper Anylysis
-      uses: glassechidna/resharper-action@master
+    - name: Inspect code
+      uses: muno92/resharper_inspectcode@v1
       with:
-        solution: TOHE.sln
+        dotnetVersion: ${{ steps.setup-dotnet.outputs.dotnet-version }}
+        solutionPath: ./TOHE.sln
+        solutionWideAnalysis: false
+        include: |
+          **.cs
