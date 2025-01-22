@@ -98,6 +98,11 @@ internal class Pirate : RoleBase
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantDuel")));
             return true;
         }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return true;
+        }
 
         if (target.Is(CustomRoles.Pestilence)) return true;
         if (PirateTarget != byte.MaxValue)
