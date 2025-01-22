@@ -7,6 +7,7 @@ using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -308,6 +309,14 @@ internal class Pirate : RoleBase
     public static void TryHideMsgForDuel()
     {
         ChatUpdatePatch.DoBlockChat = true;
+
+        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
+        {
+            ChatManager.SendQuickChatSpam();
+            ChatUpdatePatch.DoBlockChat = false;
+            return;
+        }
+
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;
