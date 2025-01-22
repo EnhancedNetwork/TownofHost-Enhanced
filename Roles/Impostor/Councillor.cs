@@ -1,4 +1,5 @@
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -113,6 +114,11 @@ internal class Councillor : RoleBase
                 if (MurderLimitMeeting <= 0)
                 {
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxMeeting"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Stubborn))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("StubbornNotify"));
                     return true;
                 }
                 else if (pc.GetAbilityUseLimit() <= 0)
