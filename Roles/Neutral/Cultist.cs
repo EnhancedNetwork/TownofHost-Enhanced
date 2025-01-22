@@ -68,7 +68,7 @@ internal class Cultist : RoleBase
         {
             AbilityLimit--;
             SendSkillRPC();
-            target.RpcSetCustomRole(CustomRoles.Charmed, false);
+            target.RpcSetCustomRole(CustomRoles.Charmed);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));

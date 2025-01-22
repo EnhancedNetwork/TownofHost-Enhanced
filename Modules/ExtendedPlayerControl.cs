@@ -19,7 +19,7 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true)
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true/*check role-addon*/, bool checkAAconflict = true/*check addon-addon*/)
     {
         if (role < CustomRoles.NotAssigned)
         {
@@ -32,8 +32,12 @@ static class ExtendedPlayerControl
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
+            else if (role.IsBetrayalAddonV2()) player.AddInSwitchAddons(player, role);
             else Main.PlayerStates[player.PlayerId].SetSubRole(role);
-            if (checkAddons) player.RemoveIncompatibleAddOns();
+
+            if (role.IsAddonAssignedMidGame()) checkAAconflict = false;
+
+            if (checkAAconflict) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {

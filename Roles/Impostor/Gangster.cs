@@ -112,7 +112,7 @@ internal class Gangster : RoleBase
                     }
                 }
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Ritualist Assign");
-                target.RpcSetCustomRole(convertedAddon, false);
+                target.RpcSetCustomRole(convertedAddon);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("BeRecruitedByGangster")));
             }

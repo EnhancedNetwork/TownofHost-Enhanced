@@ -233,7 +233,7 @@ internal class Ritualist : CovenManager
                 }
             }
             Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Ritualist Assign");
-            target.RpcSetCustomRole(convertedAddon, false);
+            target.RpcSetCustomRole(convertedAddon);
             killer.Notify(ColorString(GetRoleColor(convertedAddon), GetString("RitualistSuccessfullyRecruited")));
             target.Notify(ColorString(GetRoleColor(convertedAddon), GetString("BeRecruitedByRitualist")));
         }

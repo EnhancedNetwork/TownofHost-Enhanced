@@ -29,7 +29,7 @@ internal class Vigilante : RoleBase
         if (killer.Is(CustomRoles.Madmate)) return true;
         if (target.IsNonRebelCrewmate() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
         {
-            killer.RpcSetCustomRole(CustomRoles.Madmate, false);
+            killer.RpcSetCustomRole(CustomRoles.Madmate);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("VigilanteNotify")));
             //Utils.NotifyRoles(SpecifySeer: killer);
             Utils.MarkEveryoneDirtySettings();

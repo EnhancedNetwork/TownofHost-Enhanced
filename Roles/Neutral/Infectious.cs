@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Double;
 using UnityEngine;
-
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -68,7 +67,7 @@ internal class Infectious : RoleBase
         if (CanBeBitten(target))
         {
             BiteLimit--;
-            target.RpcSetCustomRole(CustomRoles.Infected, false);
+            target.RpcSetCustomRole(CustomRoles.Infected);
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);

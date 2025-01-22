@@ -140,7 +140,7 @@ internal class Admirer : RoleBase
                     }
                 }
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(convertedAddon, false);
+                target.RpcSetCustomRole(convertedAddon);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmirerAdmired")));
             }
