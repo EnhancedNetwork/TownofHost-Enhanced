@@ -78,8 +78,7 @@ internal class Pitfall : RoleBase
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
     }
 
-    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("PitfallButtonText"));
-    // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Set Trap");
+    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(GetString("PitfallButtonText"));
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
