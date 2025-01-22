@@ -27,3 +27,7 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Resharper Anylysis
+      uses: glassechidna/resharper-action@master
+      with:
+        solution: TOHE.sln
