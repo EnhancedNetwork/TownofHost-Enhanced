@@ -10,7 +10,7 @@ namespace TOHE;
 class RandomSpawn
 {
     [HarmonyPatch(typeof(CustomNetworkTransform), nameof(CustomNetworkTransform.SnapTo))]
-    [HarmonyPatch(new Type[] { typeof(Vector2), typeof(ushort) })]
+    [HarmonyPatch([typeof(Vector2), typeof(ushort)])]
     public class SnapToPatch
     {
         public static void Prefix(CustomNetworkTransform __instance, [HarmonyArgument(1)] ushort minSid)
