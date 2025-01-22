@@ -93,6 +93,11 @@ internal class Follower : RoleBase
         if (killer.PlayerId == target.PlayerId) return true;
         if (BetPlayer.TryGetValue(killer.PlayerId, out var tar) && tar == target.PlayerId) return false;
         if (killer.GetAbilityUseLimit() < 1) return false;
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
 
         killer.RpcRemoveAbilityUse();
 
