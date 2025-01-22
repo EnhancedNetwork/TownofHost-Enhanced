@@ -102,7 +102,7 @@ public class Oiiai : IAddon
         {
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
-            killer.RpcSetCustomRole(CustomRoles.Enchanted, false);
+            killer.RpcSetCustomRole(CustomRoles.Enchanted);
             killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");
         }
@@ -121,7 +121,7 @@ public class Oiiai : IAddon
         {
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-            killer.RpcSetCustomRole(CustomRoles.Recruit, false);
+            killer.RpcSetCustomRole(CustomRoles.Recruit);
             killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }

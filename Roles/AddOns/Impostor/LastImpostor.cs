@@ -42,7 +42,7 @@ public class LastImpostor : IAddon
         {
             if (CanBeLastImpostor(pc))
             {
-                pc.RpcSetCustomRole(CustomRoles.LastImpostor, false);
+                pc.RpcSetCustomRole(CustomRoles.LastImpostor);
                 AddMidGame(pc.PlayerId);
                 SetKillCooldown();
                 pc.SyncSettings();

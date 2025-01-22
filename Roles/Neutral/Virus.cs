@@ -95,7 +95,7 @@ internal class Virus : RoleBase
         }
         else
         {
-            reporter.RpcSetCustomRole(CustomRoles.Contagious, false);
+            reporter.RpcSetCustomRole(CustomRoles.Contagious);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
         }
 
