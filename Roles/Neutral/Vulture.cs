@@ -101,6 +101,11 @@ internal class Vulture : RoleBase
 
         if (reporter.Is(CustomRoles.Vulture))
         {
+            if (deadBody.Object.Is(CustomRoles.Stubborn))
+            {
+                reporter.Notify(Translator.GetString("StubbornNotify"));
+                return false;
+            }
             var reporterId = reporter.PlayerId;
             long now = GetTimeStamp();
             if ((AbilityLeftInRound[reporterId] > 0) && (now - LastReport[reporterId] > (long)VultureReportCD.GetFloat()))
