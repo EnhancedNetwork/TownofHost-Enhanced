@@ -20,7 +20,6 @@ internal class QuickShooter : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem MeetingReserved;
-    private static OptionItem ShapeshiftCooldown;
 
     private bool Storaging = false;
     private readonly Dictionary<byte, int> NewSL = [];
@@ -29,8 +28,6 @@ internal class QuickShooter : RoleBase
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.QuickShooter);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 35f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.QuickShooter])
-            .SetValueFormat(OptionFormat.Seconds);
-        ShapeshiftCooldown = FloatOptionItem.Create(Id + 12, "QuickShooterShapeshiftCooldown", new(0f, 180f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.QuickShooter])
             .SetValueFormat(OptionFormat.Seconds);
         MeetingReserved = IntegerOptionItem.Create(Id + 14, "MeetingReserved", new(0, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.QuickShooter])
             .SetValueFormat(OptionFormat.Pieces);
@@ -43,7 +40,7 @@ internal class QuickShooter : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = 0.01f;
         AURoleOptions.ShapeshifterDuration = 1f;
     }
 
@@ -77,13 +74,11 @@ internal class QuickShooter : RoleBase
         }
 
         if (pc.AmOwner && shouldtime)
-            DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, ShapeshiftCooldown.GetFloat());
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, 0.01f);
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
-    {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
-
+    public override void UnShapeShiftButton(PlayerControl shapeshifter) 
+    { 
         var killTimer = shapeshifter.GetKillTimer();
         Logger.Info($"Kill Timer: {killTimer}", "QuickShooter");
 
@@ -92,11 +87,9 @@ internal class QuickShooter : RoleBase
             AbilityLimit++;
             SendRPC();
 
-            resetCooldown = false;
             Storaging = true;
             shapeshifter.ResetKillCooldown();
             shapeshifter.SetKillCooldown();
-            shapeshifter.RpcResetAbilityCooldown();
 
             shapeshifter.Notify(Translator.GetString("QuickShooterStoraging"));
             Logger.Info($"{Utils.GetPlayerById(shapeshifter.PlayerId)?.GetNameWithRole()} : shot limit: {AbilityLimit}", "QuickShooter");
@@ -106,7 +99,6 @@ internal class QuickShooter : RoleBase
             shapeshifter.Notify(Translator.GetString("QuickShooterFailed"));
             SendRPC(true);
         }
-        return false;
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
