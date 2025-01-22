@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
@@ -90,12 +91,18 @@ internal class Oracle : RoleBase
             return true;
         }
 
+
         AbilityLimit -= 1;
         SendRPC(player.PlayerId);
 
         if (player.PlayerId == target.PlayerId)
         {
             SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            return true;
+        }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            SendMessage(GetString("StubbornNotify") + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return true;
         }
 

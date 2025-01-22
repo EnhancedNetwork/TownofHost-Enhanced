@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Text;
 using TOHE.Roles.Core;
@@ -7,6 +8,7 @@ using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -100,6 +102,11 @@ internal class Medium : RoleBase
         if (!ContactPlayer.ContainsKey(pc.PlayerId)) return false;
         if (OnlyReceiveMsgFromCrew.GetBool() && !pc.GetCustomRole().IsCrewmate()) return false;
         if (pc.IsAlive()) return false;
+        if (pc.Is(CustomRoles.Stubborn))
+        {
+            GetPlayerById(ContactPlayer[pc.PlayerId]).Notify(GetString("StubbornNotify"));
+            return false;
+        }
         msg = msg.ToLower().Trim();
         if (!CheckCommond(ref msg, "通灵|ms|mediumship|medium", false)) return false;
 

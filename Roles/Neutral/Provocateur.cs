@@ -37,6 +37,11 @@ internal class Provocateur : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantBoom")));
             return false;
         }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
         target.SetDeathReason(PlayerState.DeathReason.PissedOff);
         killer.RpcMurderPlayer(target);
         killer.RpcMurderPlayer(killer);

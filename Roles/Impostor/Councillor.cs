@@ -1,4 +1,5 @@
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
@@ -164,6 +165,11 @@ internal class Councillor : RoleBase
                 else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
                 {
                     pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Stubborn))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("StubbornNotify"));
                     return true;
                 }
                 else if (Medic.IsProtected(target.PlayerId) && !Medic.GuesserIgnoreShield.GetBool())

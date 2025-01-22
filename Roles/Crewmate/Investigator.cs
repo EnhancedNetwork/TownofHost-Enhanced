@@ -116,6 +116,11 @@ internal class Investigator : RoleBase
         if (!RoundInvestigateLimit.ContainsKey(killer.PlayerId)) RoundInvestigateLimit[killer.PlayerId] = InvestigateRoundMax.GetInt();
 
         if (MaxInvestigateLimit[killer.PlayerId] < 1 || RoundInvestigateLimit[killer.PlayerId] < 1) return false;
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(Translator.GetString("StubbornNotify"));
+            return true;
+        }
 
         MaxInvestigateLimit[killer.PlayerId]--;
         RoundInvestigateLimit[killer.PlayerId]--;

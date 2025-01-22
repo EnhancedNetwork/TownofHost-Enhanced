@@ -21,6 +21,11 @@ public class Swift : IAddon
     { }
     public static bool OnCheckMurder(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(Translator.GetString("StubbornNotify"));
+            return true;
+        }
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(killer);
 

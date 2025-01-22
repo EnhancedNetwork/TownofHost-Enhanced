@@ -91,7 +91,7 @@
   "ImpCanGuessImp": "<color=#ff1919>Impostors</color> can Guess <color=#ff1919>Impostor</color> Roles",
   "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "CovenCanGuessCoven": "<color=#ac42f2>Coven</color> Can Guess <color=#ac42f2>Coven</color> Roles",
-  "GuessImmune": "Sorry, but target is immune to being guessed!",
+  "GuessImmune": "Sorry, but that role is immune to being guessed!",
 
 
   "GM": "Game Master",
@@ -4156,5 +4156,10 @@
   "ChiefOfPoliceKillButtonText": "Recruitment",
   "PolicPreventRecruitNonKiller": "Prevent recruit players without Kill button",
   "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non-Killer or non-<color=#8cffff>Crewmate</color>",
-  "PolicPassConverted": "Can pass Converted Add-on to <color=#ffb347>Sheriff</color>"
+  "PolicPassConverted": "Can pass Converted Add-on to <color=#ffb347>Sheriff</color>",
+
+  "StubbornNotify": "Your target is Stubborn and your ability did not work!",
+  "StubbornNotify2": "One of your targets is Stubborn and your ability did not work!",
+  "StubbornGuessRebound": "You tried to guess Rebound, but you were too stubborn to die!",
+  "GuessStubborn": "Stubborn is too stubborn to be guessed!"
 }

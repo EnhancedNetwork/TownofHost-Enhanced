@@ -124,17 +124,17 @@ internal class Coroner : RoleBase
 
         if (AbilityLimit >= 1)
         {
+            if (deadBody.Object.Is(CustomRoles.Stubborn))
+            {
+                pc.Notify(GetString("StubbornNotify"));
+                return false; // not sure why this even needs to be a bool
+            }
             CoronerTargets[pc.PlayerId].Add(killer.PlayerId);
             TargetArrow.Add(pc.PlayerId, killer.PlayerId);
 
             pc.Notify(GetString("CoronerTrackRecorded"));
             AbilityLimit -= 1;
             int operate = 0;
-            if (LeaveDeadBodyUnreportable.GetBool())
-            {
-                Main.UnreportableBodies.Add(deadBody.PlayerId);
-                operate = 1;
-            }
             SendRPCLimit(pc.PlayerId, operate, targetId: deadBody.PlayerId);
 
             if (InformKillerBeingTracked.GetBool())

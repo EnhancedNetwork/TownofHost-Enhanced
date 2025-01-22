@@ -88,6 +88,11 @@ internal class Poisoner : CovenManager
     private static void SetPoisoned(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return;
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return;
+        }
         RoleblockedPlayers[killer.PlayerId].Add(target.PlayerId);
         killer.ResetKillCooldown();
         killer.SetKillCooldown();

@@ -7,6 +7,7 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using UnityEngine;
+using UnityEngine.Profiling;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -191,6 +192,11 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return true;
+        }
         if (CanEat(killer, target.PlayerId))
         {
             EatPlayer(killer, target);
