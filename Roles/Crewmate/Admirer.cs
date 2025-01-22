@@ -159,6 +159,7 @@ internal class Admirer : RoleBase
             target.SetKillCooldown(forceAnime: true);
 
             Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
+            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
 
             return false;
         }
@@ -168,6 +169,7 @@ internal class Admirer : RoleBase
 
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
 
+        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
         return false;
     }
 

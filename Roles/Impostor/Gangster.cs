@@ -1,4 +1,4 @@
-using TOHE.Roles.AddOns.Crewmate;
+﻿using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -128,12 +128,14 @@ internal class Gangster : RoleBase
             target.ResetKillCooldown();
             target.SetKillCooldown(forceAnime: true);
 
+            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次招募机会", "Gangster");
             SendSkillRPC();
             return false;
         }
 
     GangsterFailed:
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
+        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次招募机会", "Gangster");
         SendSkillRPC();
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
