@@ -53,9 +53,9 @@ internal class Deceiver : RoleBase
 
         killer.RpcRemoveAbilityUse();
 
-        if (target.Is(CustomRoles.KillingMachine))
+        if (target.Is(CustomRoles.KillingMachine) || target.Is(CustomRoles.Stubborn))
         {
-            Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Deceiver");
+            Logger.Info($"target is {target.GetCustomRole().ToString()}, ability used count reduced, but target will not die", "Deceiver");
             return false;
         }
 
