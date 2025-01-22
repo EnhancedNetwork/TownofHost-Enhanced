@@ -97,4 +97,5 @@ internal class Jester : RoleBase
         else if (isMeetingHud)
             name += string.Format(Translator.GetString("JesterMeetingLoose"), MeetingsNeededForWin.GetInt() + 1);
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("JesterVent");
 }
