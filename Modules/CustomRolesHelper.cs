@@ -408,19 +408,6 @@ public static class CustomRolesHelper
             CustomRoles.Swift;
     }
 
-    public static bool IsBad(this PlayerControl pc) //gets all players that keep the game going
-    {
-        var pc_role = pc.GetCustomRole();
-        return (!pc.Is(CustomRoles.Admired) && 
-               (pc.IsNonNarcImpV3() || pc_role.IsNK() || pc_role.IsNA() || pc_role.IsCoven())) ||
-               pc.Is(CustomRoles.Infected) ||
-               pc.Is(CustomRoles.Enchanted) ||
-               (pc.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1) ||
-               (pc.Is(CustomRoles.Charmed) && Cultist.CharmedCountMode.GetInt() == 1) || 
-               (pc.Is(CustomRoles.Recruit) && Jackal.SidekickCountMode.GetInt() == 1) || 
-               (pc.Is(CustomRoles.Contagious) && Virus.ContagiousCountMode.GetInt() == 1);
-    }
-
     public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
