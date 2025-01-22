@@ -87,6 +87,11 @@ internal class Illusionist : CovenManager
     }
     private void SetIllusioned(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornImmune"));
+            return;
+        }
         IllusionedPlayers[killer.PlayerId].Add(target.PlayerId);
         AbilityLimit--;
         SendRPC(killer, target);
