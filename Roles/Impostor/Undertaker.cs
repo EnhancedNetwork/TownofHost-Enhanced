@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
-using UnityEngine.Profiling;
 
 namespace TOHE.Roles.Impostor;
 
