@@ -147,7 +147,7 @@ internal class RiftMaker : RoleBase
             MarkedLocation.Remove(MarkedLocation.First(x => x.Key != Lastadded).Key);
         }
 
-        MarkedLocation.Add(shapeshifter.GetCustomPosition(), new(shapeshifter.GetCustomPosition(), [_state.PlayerId], _state.PlayerId));
+        MarkedLocation.Add(shapeshifter.GetCustomPosition(), new(shapeshifter.GetCustomPosition(), [.. Main.AllPlayerControls.Where(x => (x.PlayerId == _state.PlayerId) || !x.IsAlive()).Select(x => x.PlayerId)], _state.PlayerId));
         Lastadded = shapeshifter.GetCustomPosition();
         if (MarkedLocation.Count == 2) LastTP[shapeshifterId] = Utils.GetTimeStamp();
         shapeshifter.Notify(GetString("RiftCreated"));
