@@ -42,7 +42,8 @@ internal class Apprentice : RoleBase
     private static void SendRPC(byte playerId, byte targetId)
     {
         MessageWriter writer = 
-        AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ApprenticeRPC, SendOption.Reliable, -1);
+        AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetConsigliere, SendOption.Reliable, -1);
+        //Consigliere's RPC for Apprentice XD
         writer.Write(playerId);
         writer.Write(RevealCount[playerId]);
         writer.Write(targetId);
