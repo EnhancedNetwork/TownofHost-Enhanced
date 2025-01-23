@@ -3726,7 +3726,7 @@
   "PlagueBearerToPestilence": "You have turned into Pestilence!!",
   "GuessPestilence": "You just tried to guess Pestilence!\n\nSorry, Pestilence killed you.",
   "PestilenceTransform": "<align=\"center\"><size=150%>A <b>Plague</b> has consumed the Crew, transforming the <color=#e5f6b4><b>Plaguebearer</b></color> into <color=#343136><b>Pestilence</b></color>, Horseman of the Apocalypse!</size></align>",
-  "RomanticBetCooldown": "Pick Partner Cooldown",
+  "RomanticBetCooldown": "Romance Cooldown",
   "RomanticProtectCooldown": "Protect Cooldown",
   "RomanticBetPlayer": "You picked your partner",
   "RomanticBetOnYou": "The Romantic chose you as their Partner!",
@@ -3740,7 +3740,7 @@
   "RomanticProtectDuration": "Protect Duration",
   "RomanticKnowTargetRole": "<color=#ff1493>Romantic</color> knows their target's role",
   "RomanticBetTargetKnowRomantic": "Target knows who the <color=#ff1493>Romantic</color> is",
-  "RomanticPartnerButtonText": "Pick Partner",
+  "RomanticPartnerButtonText": "Romance",
   "RomanticProtectButtonText": "Protect",
 
   "GuessMasterMisguess": "<b>{0}</b> misguessed",
