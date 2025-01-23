@@ -2911,6 +2911,8 @@
   "KickBecauseDiffrentVersionOrMod": "<b>{0}</b> was kicked because they had a different version of the mod",
 
   "FFADisplayScore": "Ranking: {0} Score: {1}",
+  "ShowChatInGame": "Show Chat in-game <color=#ff0000>(may cause black screen)</color>",
+  "GameTime": "Maximum Game Length",
   "GameModeTimeRemain": "<color=#00ffa5>Time Remaining:</color> <b>{0}</b>s",
 
   "GameOver": "Game Over",
@@ -3966,7 +3968,6 @@
   "ModeFFA": "Gamemode: FFA",
   "ModeDescribe.FFA": "In the FFA (Free For All) Gamemode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
   "KillerInfoLong": "In the FFA (Free For All) Gamemode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
-  "FFA_GameTime": "Maximum Game Length",
   "FFA_KCD": "Kill Cooldown",
   "FFA_DisableVentingWhenTwoPlayersAlive": "Prevent Venting when only 2 players are alive",
   "FFA_EnableRandomAbilities": "Enable Random Events",
@@ -4065,8 +4066,6 @@
 "C&R_RobberInReleaseCooldown": "Your release Cooldown is not finished",
 "C&R_ReleaseCooldownForCaptured": "Release Cooldown for captured player",
 "C&R_ReleaseCooldownForRobber": "Release Cooldown for Robber",
-"CandR_GameTime": "Maximum Game Length",
-"C&R_ShowChatInGame": "Show Chat in-game <color=#ff0000>(may cause black screen)</color>",
 
   "Hide&SeekTOHO": "Hide & Seek",
   "MenuTitle.Hide&Seek": "Hide & Seek Settings",
