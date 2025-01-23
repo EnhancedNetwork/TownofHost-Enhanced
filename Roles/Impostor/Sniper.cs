@@ -285,8 +285,11 @@ internal class Sniper : RoleBase
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();
-        Color TextColor = Color.yellow;
-        ProgressText.Append(Utils.ColorString(TextColor, $"({playerId.GetAbilityUseLimit()})"));
+        
+        var abilityLimit = playerId.GetAbilityUseLimit();
+        Color TextColor = abilityLimit > 0 ? Color.yellow : Color.gray;
+
+        ProgressText.Append(Utils.ColorString(TextColor, $"({abilityLimit})"));
         return ProgressText.ToString();
     }
     public static bool TryGetSniper(byte targetId, ref PlayerControl sniper)
