@@ -35,7 +35,7 @@ public static class AbilityUseManager
     {
         limit = (float)Math.Round(limit, 1);
 
-        if (float.IsNaN(limit) || limit is < 0f or > 100f || AbilityUseLimit.TryGetValue(playerId, out var beforeLimit) && Math.Abs(beforeLimit - limit) < 0.01f) return;
+        if (float.IsNaN(limit) || limit is < 0f or > 1000f || AbilityUseLimit.TryGetValue(playerId, out var beforeLimit) && Math.Abs(beforeLimit - limit) < 0.01f) return;
 
         AbilityUseLimit[playerId] = limit;
 
