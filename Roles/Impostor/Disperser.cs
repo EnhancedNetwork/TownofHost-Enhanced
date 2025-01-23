@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Modules;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -14,6 +15,11 @@ internal class Disperser : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
+    public override void SetAbilityButtonText(HudManager hud, byte id)
+    {
+    hud.AbilityButton.buttonLabelText.text = GetString("DisperserButtonText");
+    }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Disperse");
 
     private static OptionItem DisperserShapeshiftCooldown;
 
