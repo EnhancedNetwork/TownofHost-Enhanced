@@ -1,4 +1,3 @@
-using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using Hazel;
 using System;
@@ -2143,7 +2142,7 @@ internal class ChatCommands
             GhostRoleAssign.forceRole.Remove(pid);
             RoleAssign.SetRoles.Remove(pid);
             RoleAssign.SetRoles.Add(pid, result);
-            Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), ), playerId);
+            Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected")), playerId);
         }
             if ((isDev || isUp) && GameStates.IsLobby)
                 {
