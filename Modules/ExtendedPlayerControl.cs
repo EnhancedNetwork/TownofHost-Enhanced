@@ -19,7 +19,7 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role,  bool checkAddons = true/*check role-addon*/, bool checkAAconflict = true/*check addon-addon*/)
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true/*check role-addon*/, bool checkAAconflict = true/*check addon-addon*/)
     {
         if (role < CustomRoles.NotAssigned)
         {

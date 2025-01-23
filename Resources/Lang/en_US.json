@@ -812,7 +812,7 @@
   "StealthInfoLong": "(Impostors):\nWhen the Stealth kills, players in the same room are blinded for a short time.",
   "PenguinInfoLong": "(Impostors):\nAs the Penguin, you can restrain the target by pressing the Kill button and drag it around.\nWhile dragging, the target dies by pressing the Kill button again or after a certain period.\nPress the Kill button twice for a direct kill.",
   "ParasiteInfoLong": "(Madmates):\nAs the Parasite, you are an Impostor that does not know the other Impostors.\n\nYou may Kill, Vent, Sabotage, whatever.\nJust know that you are an Impostor.",
-  "DisperserInfoLong": "(Impostors):\nDisperser can use Shapeshift to teleport all players to random Vents.",
+  "DisperserInfoLong": "(Impostors):\nDisperser can use Shapeshift button to teleport all players to random Vents.",
   "InhibitorInfoLong": "(Impostors):\nAs the Inhibitor, you can only kill when there is not a Critical Sabotage active.\n\nIf Light or Comms Sabotage is active, then you can kill.",
   "SaboteurInfoLong": "(Impostors):\nAs the Saboteur, you can only kill when there is a Critical sabotage active.\n\nIf Reactor or O2 Sabotage is active, then you can kill.",
   "CouncillorInfoLong": "(Impostors):\nAs the Councillor, you can kill players during a meeting like a Judge.\nWhen killing in a meeting, those kills will appear as a trial from a Judge.\n\nThe kill command is /tl [player id]\nYou can see the player's id before the player's name, or use the /id command to view the id of all players.\nDepending on the settings, Councillor will suicide when he judge his teammates.\nConverted Councillor can judge freely.",
