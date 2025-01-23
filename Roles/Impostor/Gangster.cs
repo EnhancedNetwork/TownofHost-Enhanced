@@ -77,15 +77,15 @@ internal class Gangster : RoleBase
 
         if (CanRecruit(killer.PlayerId))
         {
-            if (!killer.GetCustomSubRoles().Find(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless, out var convertedAddon)
+            if (!killer.GetCustomSubRoles().Find(x => x.IsBetrayalAddonV2(), out var convertedAddon)
                 && target.CanBeMadmate(forGangster: true)
                 && CanBeGansterRecruit(target))
             {
                 convertedAddon = CustomRoles.Madmate;
             }
-            else if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless))
+            else if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2()))
             {
-                foreach (var subRole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless))
+                foreach (var subRole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
                 {
                     switch (subRole)
                     {
