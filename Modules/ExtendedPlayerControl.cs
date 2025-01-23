@@ -33,7 +33,6 @@ static class ExtendedPlayerControl
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
 
             if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
-            else if (role.IsBetrayalAddonV2()) player.AddInSwitchAddons(player, role);
             else Main.PlayerStates[player.PlayerId].SetSubRole(role);
 
             if (role.IsAddonAssignedMidGame()) checkAAconflict = false;
