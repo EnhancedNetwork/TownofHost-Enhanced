@@ -384,6 +384,17 @@ public static class CustomRolesHelper
             or CustomRoles.Enchanted;
     }
 
+    public static bool IsBetrayalAddonV2(this CustomRoles role)
+        => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
+            || role is CustomRoles.Admired;
+
+    public static bool IsAddonAssignedMidGame(this CustomRoles role)
+        => role.IsBetrayalAddonV2() 
+        || role is CustomRoles.Knighted 
+                or CustomRoles.Cleansed 
+                or CustomRoles.Workhorse 
+                or CustomRoles.LastImpostor;
+
     public static bool IsImpOnlyAddon(this CustomRoles role)
     {
         return role is CustomRoles.Mare or
