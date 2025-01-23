@@ -103,7 +103,7 @@ internal class Gangster : RoleBase
                         case CustomRoles.Charmed when Cultist.CanBeCharmed(target):
                             convertedAddon = CustomRoles.Charmed;
                             break;
-                        case CustomRoles.Infected when target.CanBeInfected():
+                        case CustomRoles.Infected when Infectious.CanBeBitten(target):
                             convertedAddon = CustomRoles.Infected;
                             break;
                         case CustomRoles.Contagious when target.CanBeInfected():
