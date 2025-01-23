@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using Hazel;
 using System;
@@ -2014,15 +2015,69 @@ internal class ChatCommands
         }
 
         role = FixRoleNameInput(role).ToLower().Trim().Replace(" ", string.Empty);
+        var result = CustomRoles.NotAssigned;
 
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
-            var roleName = GetString(rl.ToString());
-            if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
+
+            if (Options.CrossLanguageGetRole.GetBool())
             {
-                string devMark = "";
-                if ((isDev || isUp) && GameStates.IsLobby)
+                if (!CrossLangRoleNames.ContainsKey(rl))
+                    continue;
+                else
+                {
+                    if (!CrossLangRoleNames[rl].Contains(role))
+                        continue;
+                    else
+                    {
+                        result = rl;
+                        break;
+                    }
+                }
+
+            }
+            else
+            {
+                var roleName = GetString(rl.ToString());
+                if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
+                {
+                    result = rl;
+                    break;
+                }
+            }
+        }
+
+        if (result == CustomRoles.NotAssigned)
+        {
+            Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+            return;
+        }
+
+        bool shouldDevAssign = isDev || isUp;
+
+        if (CustomRolesHelper.IsAdditionRole(result) || result is CustomRoles.GM or CustomRoles.Mini || result.IsGhostRole() && !isDev
+            || result.GetCount() < 1 || result.GetMode() == 0)
+        {
+            shouldDevAssign = false;
+        }
+
+        byte pid = playerId == 255 ? (byte)0 : playerId;
+        if (isUp)
+        {
+            if (result.IsGhostRole() || !shouldDevAssign)
+            {
+                Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), GetString(result.ToString())), playerId);
+                return;
+            }
+
+            GhostRoleAssign.forceRole.Remove(pid);
+            RoleAssign.SetRoles.Remove(pid);
+            RoleAssign.SetRoles.Add(pid, result);
+            Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), ), playerId);
+
+        }
+            if ((isDev || isUp) && GameStates.IsLobby)
                 {
                     devMark = "▲";
                     if (CustomRolesHelper.IsAdditionRole(rl) || rl is CustomRoles.GM or CustomRoles.Mini || rl.IsGhostRole()) devMark = "";
@@ -2075,8 +2130,6 @@ internal class ChatCommands
                 // Show role settings
                 Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
                 return;
-            }
-        }
         if (isUp) Utils.SendMessage(GetString("Message.YTPlanCanNotFindRoleThePlayerEnter"), playerId);
         else Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
         return;
