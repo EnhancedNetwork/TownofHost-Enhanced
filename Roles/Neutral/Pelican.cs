@@ -60,7 +60,6 @@ internal class Pelican : RoleBase
     }
     private void SyncEatenList()
     {
-        SendRPC(byte.MaxValue);
         foreach (var el in eatenList)
             SendRPC(el.Key);
     }
@@ -80,19 +79,14 @@ internal class Pelican : RoleBase
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
-        if (playerId == byte.MaxValue)
-        {
-            eatenList.Clear();
-        }
-        else
-        {
-            int eatenNum = reader.ReadInt32();
-            eatenList.Remove(playerId);
-            HashSet<byte> list = [];
-            for (int i = 0; i < eatenNum; i++)
-                list.Add(reader.ReadByte());
-            eatenList.Add(playerId, list);
-        }
+        
+        eatenList[playerId].Clear();
+        
+        int eatenNum = reader.ReadInt32();
+        HashSet<byte> list = [];
+        for (int i = 0; i < eatenNum; i++)
+            list.Add(reader.ReadByte());
+        eatenList[playerId] = list;
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
