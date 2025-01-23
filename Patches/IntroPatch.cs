@@ -972,13 +972,13 @@ class IntroCutsceneDestroyPatch
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
+                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             bool shouldAntiBlackOut = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
+                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             try
