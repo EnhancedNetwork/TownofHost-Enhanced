@@ -67,7 +67,7 @@ internal class Oracle : RoleBase
         }
         if (target.Is(CustomRoles.Stubborn))
         {
-            SendMessage(GetString("StubbornNotify") + "\n\n" + string.Format(GetString("OracleCheckLimit"), AbilityLimit), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            SendMessage(GetString("StubbornNotify") + "\n\n" + string.Format(GetString("OracleCheckLimit"), abilityUse), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return true;
         }
 
