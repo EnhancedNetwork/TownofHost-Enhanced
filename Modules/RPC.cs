@@ -117,7 +117,6 @@ public enum CustomRPC : byte // 185/255 USED
     SetImitateLimit,
     DictatorRPC,
     Necronomicon,
-    ApprenticeRPC,
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
@@ -651,9 +650,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Necronomicon:
                 CovenManager.ReceiveNecroRPC(reader);
-                break;
-            case CustomRPC.ApprenticeRPC:
-                Apprentice.ReceiveRPC(reader);
                 break;
         }
     }
