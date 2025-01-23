@@ -1598,7 +1598,11 @@ internal class ChatCommands
                     Utils.SendMessage(string.Format(GetString("StartCommandStarted"), PlayerControl.LocalPlayer.name));
                     Logger.Info("Game Starting", "ChatCommand");
                     break;
-
+                case "/spam":
+                    canceled = true;
+                    ChatManager.SendQuickChatSpam();
+                    ChatManager.SendPreviousMessagesToAll();
+                    break;
                 default:
                     Main.isChatCommand = false;
                     break;

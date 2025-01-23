@@ -2,6 +2,7 @@ using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -60,6 +61,13 @@ internal class President : RoleBase
     public static void TryHideMsgForPresident()
     {
         ChatUpdatePatch.DoBlockChat = true;
+
+        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
+        {
+            ChatManager.SendQuickChatSpam();
+            ChatUpdatePatch.DoBlockChat = false;
+            return;
+        }
 
         var rd = IRandom.Instance;
         string msg;

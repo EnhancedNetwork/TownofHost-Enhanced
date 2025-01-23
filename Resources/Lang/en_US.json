@@ -4138,6 +4138,13 @@
 
   "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
 
+  "UseQuickChatSpamCheat": "Use Quick Chat Spam for commands",
+  "QuickChatSpam_Disabled": "Disabled",
+  "QuickChatSpam_How2PlayNormal": "How2Play Normal",
+  "QuickChatSpam_How2PlayHidenSeek": "How2Play HnS",
+  "QuickChatSpam_Random20": "Random Strings",
+  "QuickChatSpam_EzHacked": "Ducked Ezly",
+
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can recruit <color=#ff1919>Impostor</color>",
   "PolicCanNeutral": "Can recruit <color=#7f8c8d>Neutral</color>",
