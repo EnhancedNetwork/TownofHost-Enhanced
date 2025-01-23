@@ -241,7 +241,6 @@ public static class Options
     public static OptionItem RemovePetsAtDeadPlayers;
 
     public static OptionItem CheatResponses;
-    public static OptionItem CrossLanguageGetRole;
     public static OptionItem NewHideMsg;
 
     public static OptionItem AutoDisplayKillLog;
@@ -1241,9 +1240,6 @@ public static class Options
             .HideInCandR();
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
-            .SetHeader(true);
-
-        CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
 
         AutoDisplayKillLog = BooleanOptionItem.Create(60270, "AutoDisplayKillLog", true, TabGroup.SystemSettings, false)
