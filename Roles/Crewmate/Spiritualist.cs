@@ -1,5 +1,4 @@
 using Hazel;
-using MS.Internal.Xml.XPath;
 using static TOHE.Options;
 using static TOHE.Translator;
 
