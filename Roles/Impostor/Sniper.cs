@@ -118,7 +118,6 @@ internal class Sniper : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = /*!AlwaysShowShapeshiftAnimations.GetBool() ? 1f :*/ Options.DefaultShapeshiftCooldown.GetFloat();
-        //AURoleOptions.ShapeshifterDuration = 1f;
     }
     public override bool CanUseKillButton(PlayerControl pc)
     {
