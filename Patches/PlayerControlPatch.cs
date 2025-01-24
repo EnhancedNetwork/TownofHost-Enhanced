@@ -1364,10 +1364,10 @@ class FixedUpdateInNormalGamePatch
             }
             if (GameStates.IsInGame)
             {
-                var needUpdateNameLocal = Main.LowLoadUpdateName.GetValueOrDefault(PlayerControl.LocalPlayer.PlayerId, false);
-                var needUpdateNameTarget = Main.LowLoadUpdateName.GetValueOrDefault(__instance.PlayerId, false);
+                //var needUpdateNameLocal = Main.LowLoadUpdateName.GetValueOrDefault(PlayerControl.LocalPlayer.PlayerId, false);
+                var needUpdateNameTarget = Main.LowLoadUpdateName.GetValueOrDefault(__instance.PlayerId, true);
 
-                if (needUpdateNameLocal || needUpdateNameTarget)
+                if (needUpdateNameTarget)
                 {
                     var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
                     RoleText.text = RoleTextData.Item1;
@@ -1561,13 +1561,10 @@ class FixedUpdateInNormalGamePatch
                     }
 
                     // Non-host modded client always upadate name
-                    if (AmongUsClient.Instance.AmHost)
+                    if (AmongUsClient.Instance.AmHost && Options.LowLoadDelayUpdateNames.GetBool())
                     {
-                        if (needUpdateNameLocal)
-                            Main.LowLoadUpdateName[seer.PlayerId] = false;
-
                         if (needUpdateNameTarget)
-                            Main.LowLoadUpdateName[target.PlayerId] = false;
+                            Main.LowLoadUpdateName[__instance.PlayerId] = false;
                     }
                 }
             }
