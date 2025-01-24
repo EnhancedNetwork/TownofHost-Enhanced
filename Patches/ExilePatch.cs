@@ -187,7 +187,7 @@ class ExileControllerWrapUpPatch
 
                 AntiBlackout.ResetAfterMeeting();
                 Main.LastMeetingEnded = Utils.GetTimeStamp();
-            }, 1.9f, "Reset Cooldown After Meeting");
+            }, 1.5f, "Reset Cooldown After Meeting");
         }
 
         //This should happen shortly after the Exile Controller wrap up finished for clients
