@@ -278,47 +278,47 @@ public static class GuessManager
                     return true;
                 }
 
-                // Guesser (add-on) Cant Guess Addons
+                // Guesser (Add-on) can't Guess Add-ons
                 if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                     return true;
                 }
 
-                // Guesser Mode Can/Cant Guess Addons
+                // Guesser Mode can/can't Guess Add-ons
                 if (Options.GuesserMode.GetBool())
                 {
                     if (role.IsAdditionRole() && !Options.CanGuessAddons.GetBool())
                     {
-                        // Impostors Cant Guess Addons
+                        // Impostors can't Guess Add-ons
                         if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
 
-                        // Crewmates Cant Guess Addons
+                        // Crewmates can't Guess Add-ons
                         if (Options.CrewmatesCanGuess.GetBool() && pc.Is(Custom_Team.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
 
-                        // Coven Cant Guess Addons
+                        // Coven can't Guess Add-ons
                         if (Options.CovenCanGuess.GetBool() && pc.Is(Custom_Team.Coven) && !pc.Is(CustomRoles.Guesser))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
 
-                        // Neutrals Cant Guess Addons
+                        // Neutrals can't Guess Add-ons
                         if ((Options.NeutralKillersCanGuess.GetBool() || Options.PassiveNeutralsCanGuess.GetBool()) && pc.Is(Custom_Team.Neutral) && !(pc.Is(CustomRoles.Doomsayer) || pc.Is(CustomRoles.Guesser)))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
                     }
-                    if (role.IsImpostor() && !Options.ImpCanGuessImp.GetBool())
+                    if (role.IsImpostorTeamV3() && !Options.ImpCanGuessImp.GetBool())
                     {
                         if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
@@ -1145,7 +1145,7 @@ public static class GuessManager
         }
     }
 
-    // Modded non-host client guess role/add-on
+    // Modded non-host client guess Role/Add-on
     private static void SendRPC(int playerId, CustomRoles role)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (int)CustomRPC.Guess, SendOption.Reliable, -1);
