@@ -612,6 +612,8 @@ public static class CheckShapeshiftPatch
         AmongUsClient.Instance.SendOrDisconnect(writer);
         writer.Recycle();
 
+        UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
+
         yield return new WaitForSeconds(0.12f);
 
         var writer2 = MessageWriter.Get(SendOption.Reliable);
@@ -839,6 +841,13 @@ class ReportDeadBodyPatch
             {
                 var playerRoleClass = __instance.GetRoleClass();
 
+                // If a button report is made during sabotage, it should be cancelled.
+                // Some role may need to cancel this? NoCheckStartMeeting instead.
+                if (Utils.AnySabotageIsActive() && !Utils.IsActive(SystemTypes.MushroomMixupSabotage))
+                {
+                    Logger.Info("The button has been canceled because the sabotage is active", "ReportDeadBody");
+                    return false;
+                }
                 if (playerRoleClass.OnCheckStartMeeting(__instance) == false)
                 {
                     Logger.Info($"Player has role class: {playerRoleClass} - the start of the meeting has been cancelled", "ReportDeadBody");
@@ -923,9 +932,20 @@ class ReportDeadBodyPatch
 
         AfterReportTasks(__instance, target);
 
-        // InnerSloth added CheckTaskCompletion() => CheckEndGameViaTasks() in report dead body.
-        // This is patched in CheckGameEndPatch
-        return true;
+        MeetingRoomManager.Instance.AssignSelf(__instance, target);
+        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
+
+        // Delay Start Meeting to allow other tasks stop and playerinfo finished
+        // Other tasks should stop with Main.MeetingIsStarted bool
+        // GameStates.InTasks already check this
+        _ = new LateTask(() =>
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                __instance.RpcStartMeeting(target);
+            }
+        }, 0.12f, "StartMeeting");
+        return false;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
     {
