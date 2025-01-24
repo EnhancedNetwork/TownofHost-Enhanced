@@ -62,7 +62,7 @@ static class ExtendedPlayerControl
     {
         foreach (var addon in player.GetCustomSubRoles())
         {
-            if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, player) && player.ShouldBeRemoved(addon))
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
                 Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
