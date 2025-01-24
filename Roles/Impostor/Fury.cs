@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -53,35 +53,30 @@ internal class Fury : RoleBase
         AURoleOptions.ShapeshifterCooldown = AbilityCooldown.GetFloat();
         AURoleOptions.ShapeshifterDuration = 1f;
     }
-    public override bool OnCheckShapeshift(PlayerControl player, PlayerControl targetSS, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl player)
     {
-        if (player.PlayerId == targetSS.PlayerId) return true;
+        player.SetKillCooldown(RageKillCooldown.GetFloat());
+        player.Notify(GetString("FuryInRage"), RageDuration.GetFloat());
+        foreach (var target in Main.AllPlayerControls)
         {
-            player.SetKillCooldown(RageKillCooldown.GetFloat());
-            player.Notify(GetString("FuryInRage"), RageDuration.GetFloat());
-            foreach (var target in Main.AllPlayerControls)
-            {
-                if (NotifyRageActive.GetBool()) target.KillFlash();
-                if (NotifyRageActive.GetBool()) target.Notify(GetString("SeerFuryInRage"), 5f);
-            }
+            if (NotifyRageActive.GetBool()) target.KillFlash();
+            if (NotifyRageActive.GetBool()) target.Notify(GetString("SeerFuryInRage"), 5f);
+        }
             player.MarkDirtySettings();
             var tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
             Main.AllPlayerSpeed[player.PlayerId] = SpeedInRage.GetFloat();
             var tmpKillCooldown = Main.AllPlayerKillCooldown[player.PlayerId];
             Main.AllPlayerKillCooldown[player.PlayerId] = RageKillCooldown.GetFloat();
 
-
-            _ = new LateTask(() =>
-            {
-                Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - SpeedInRage.GetFloat() + tmpSpeed;
-                Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] - RageKillCooldown.GetFloat() + tmpKillCooldown;
-                player.MarkDirtySettings();
-            }, RageDuration.GetFloat());
-            return false;
-        }
+        _ = new LateTask(() =>
+        {
+            Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - SpeedInRage.GetFloat() + tmpSpeed;
+            Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] - RageKillCooldown.GetFloat() + tmpKillCooldown;
+            player.MarkDirtySettings();
+        }, RageDuration.GetFloat());
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.AbilityButton.OverrideText(Translator.GetString("FuryShapeshiftText"));
+        hud.AbilityButton.OverrideText(GetString("FuryShapeshiftText"));
     }
 }
