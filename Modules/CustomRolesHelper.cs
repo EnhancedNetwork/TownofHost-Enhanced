@@ -431,7 +431,7 @@ public static class CustomRolesHelper
             CustomRoles.Swift;
     }
 
-    public static bool IsBad(this PlayerControl pc) //gets all players that keep the game going
+    public static bool CheckPlayerIsBad(this PlayerControl pc) //gets all players that keep the game going
     {
         var pc_role = pc.GetCustomRole();
         return (!pc.Is(CustomRoles.Admired) && 
