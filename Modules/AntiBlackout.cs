@@ -127,9 +127,13 @@ public static class AntiBlackout
         {
             if (seer.IsModded()) continue;
             var seerHasKillButton = seer.HasImpKillButton();
+            var seerIsAlive = seer.IsAlive();
             foreach (var target in Main.AllPlayerControls)
             {
-                if (seer.PlayerId == target.PlayerId && seer.IsAlive() && seerHasKillButton) continue;
+                if (seer.PlayerId == target.PlayerId && seerIsAlive && seerHasKillButton) continue;
+
+                if (!seerIsAlive)
+                    seerHasKillButton = false;
 
                 RoleTypes targetRoleType = !seerHasKillButton && target.PlayerId == dummyImp.PlayerId
                     ? RoleTypes.Impostor : RoleTypes.Crewmate;
@@ -277,8 +281,9 @@ public static class AntiBlackout
             if (seer.IsModded()) continue;
 
             var isSelf = seerId == targetId;
+            var isDead = target.Data.IsDead;
             var changedRoleType = roletype;
-            if (target.Data.IsDead)
+            if (isDead)
             {
                 if (isSelf)
                 {
@@ -296,7 +301,7 @@ public static class AntiBlackout
                 }
             }
 
-            if (seerId == targetId && seer.HasImpKillButton() && !target.Data.IsDead) continue;
+            if (!isDead && seerId == targetId && seer.HasImpKillButton()) continue;
             target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
     }
