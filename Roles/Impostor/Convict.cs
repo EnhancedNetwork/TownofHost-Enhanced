@@ -35,7 +35,12 @@ internal class Convict : RoleBase
     public override void AfterMeetingTasks()
     { 
         var convict = _Player;
-        if (convict.GetPlayerTaskState().IsTaskFinished && convict.IsAlive())
+        var taskstate = convict.GetPlayerTaskState();
+
+        int completed = taskstate.CompletedTasksCount;//total number of Convict's tasks
+        int required = convict.Is(CustomRoles.LastImpostor) ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
+ 
+        if (convict.IsAlive() && completed >= required)
         {
             convict.RpcChangeRoleBasis(CustomRoles.Refugee);
             convict.RpcSetCustomRole(CustomRoles.Refugee);
