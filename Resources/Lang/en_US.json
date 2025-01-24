@@ -1939,6 +1939,7 @@
     "BastionMaxBombs": "(Initial) Maximum bombs",
     "VentBombSuccess": "Bomb has been planted",
     "LowLoadMode": "Low Load Mode",
+    "LowLoad_DelayUpdateNames": "Update Names Only When Necessary",
     "ShowLobbyCode": "Show lobby code in Discord status",
     "BKProtectDuration": "Protection Duration",
     "FollowerMaxBetTimes": "Maximum Number of Follows",
@@ -4420,5 +4421,5 @@
     "GamblerInfoLong": "As the Gambler, you have a 50/50 chance to either kill your killer or lose your role and die. Single use.",
     "Bankrupt": "Bankrupt",
     "BankruptInfo": "You have lost your role",
-    "BankruptInfoLong": "The Bankrupt is a utility role. The Bankrupt is a neutral with no win condition."
+    "BankruptInfoLong": "As the Bankrupt, you are a Neutral with no win condition.\nBankrupt is a utility role."
 }
