@@ -47,13 +47,7 @@ namespace TOHE.Modules
                 subPlayerInfo.DespawnOnDestroy = false;
 
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
-                playerOutfit.PlayerName = "<size=14><br></size>" + sprite;
-                playerOutfit.ColorId = 255;
-                playerOutfit.HatId = "";
-                playerOutfit.SkinId = "";
-                playerOutfit.PetId = "";
-                playerOutfit.VisorId = "";
-                playerOutfit.NamePlateId = "";
+                playerOutfit.Set("<size=14><br></size>" + sprite, 255, "", "", "", "", "");
 
                 playerControl.RawSetName(sprite);
                 subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
@@ -248,13 +242,7 @@ namespace TOHE.Modules
                     subPlayerInfo.DespawnOnDestroy = false;
 
                     NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
-                    playerOutfit.PlayerName = "<size=14><br></size>" + Sprite;
-                    playerOutfit.ColorId = 255;
-                    playerOutfit.HatId = "";
-                    playerOutfit.SkinId = "";
-                    playerOutfit.PetId = "";
-                    playerOutfit.VisorId = "";
-                    playerOutfit.NamePlateId = "";
+                    playerOutfit.Set("<size=14><br></size>" + Sprite, 255, "", "", "", "", "");
 
                     subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
 
@@ -411,13 +399,7 @@ namespace TOHE.Modules
                 subPlayerInfo.DespawnOnDestroy = false;
 
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
-                playerOutfit.PlayerName = "<size=14><br></size>" + Sprite;
-                playerOutfit.ColorId = 255;
-                playerOutfit.HatId = "";
-                playerOutfit.SkinId = "";
-                playerOutfit.PetId = "";
-                playerOutfit.VisorId = "";
-                playerOutfit.NamePlateId = "";
+                playerOutfit.Set("<size=14><br></size>" + Sprite, 255, "", "", "", "", "");
 
                 subPlayerInfo.Outfits[PlayerOutfitType.Default] = playerOutfit;
 

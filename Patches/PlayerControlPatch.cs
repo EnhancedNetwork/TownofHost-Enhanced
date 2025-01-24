@@ -562,6 +562,7 @@ public static class CheckShapeshiftPatch
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
     public static IEnumerator CoPerformUnShapeShifter(PlayerControl player)
     {
+        if (GameStates.IsMeeting) yield break;
         if (player.AmOwner)
         {
             // Host is Unshapeshifter, make button into unshapeshift state
@@ -583,12 +584,15 @@ public static class CheckShapeshiftPatch
         subPlayerInfo.Outfits.Clear();
         subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
         subPlayerInfo.Puid = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer.Data.Puid : "";
-        subPlayerInfo.PlayerLevel = 250;
+        subPlayerInfo.PlayerLevel = 249;
         subPlayerInfo.Tasks.Clear();
         subPlayerInfo.Role = PlayerControl.LocalPlayer.Data.Role;
         subPlayerInfo.DespawnOnDestroy = false;
 
-        var outfit = player.Data.Outfits[PlayerOutfitType.Default];
+        var outfit = new NetworkedPlayerInfo.PlayerOutfit();
+        var target = player.Data.Outfits[PlayerOutfitType.Default];
+        outfit.Set(Main.LastNotifyNames[(player.PlayerId, player.PlayerId)] ?? player.GetRealName() ?? player.GetRealName(clientData: true),
+            target.ColorId, target.HatId, target.SkinId, target.VisorId, target.PetId, target.NamePlateId);
         subPlayerInfo.SetOutfit(PlayerOutfitType.Default, outfit);
 
         var writer = MessageWriter.Get(SendOption.Reliable);
@@ -613,8 +617,9 @@ public static class CheckShapeshiftPatch
         writer.Recycle();
 
         UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
+        player.RawSetOutfit(player.Data.Outfits[PlayerOutfitType.Default], PlayerOutfitType.Shapeshifted);
 
-        yield return new WaitForSeconds(0.12f);
+        yield return new WaitForSeconds(0.06f);
 
         var writer2 = MessageWriter.Get(SendOption.Reliable);
         writer2.StartMessage(6);
@@ -629,7 +634,6 @@ public static class CheckShapeshiftPatch
         writer2.EndMessage();
         AmongUsClient.Instance.SendOrDisconnect(writer2);
         writer2.Recycle();
-
         yield break;
     }
 
