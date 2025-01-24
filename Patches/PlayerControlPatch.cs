@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using Sentry;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -328,6 +329,24 @@ class CheckMurderPatch
                     case CustomRoles.Lucky:
                         if (!Lucky.OnCheckMurder(killer, target))
                             return false;
+                        break;
+
+                    case CustomRoles.Gambler:
+                        if (!Gambler.OnCheckMurder(killer, target))
+                        {
+                            target.RpcMurderPlayer(killer);
+                            Main.PlayerStates[target.PlayerId].RemoveSubRole(CustomRoles.Gambler);
+                            return false;
+                        }
+                        else
+                        {
+                            target.RpcSetCustomRole(CustomRoles.Useless);
+                            var AllSubRoles2 = Main.PlayerStates[target.PlayerId].SubRoles.ToList();
+                            foreach (var role in AllSubRoles2)
+                            {
+                                AllSubRoles2.Remove(role);
+                            }
+                        }
                         break;
 
                     case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:
