@@ -126,9 +126,13 @@ public static class AntiBlackout
         foreach (var seer in Main.AllPlayerControls)
         {
             if (seer.IsModded()) continue;
+            var seerHasKillButton = seer.HasImpKillButton();
             foreach (var target in Main.AllPlayerControls)
             {
-                RoleTypes targetRoleType = target.PlayerId == dummyImp.PlayerId ? RoleTypes.Impostor : RoleTypes.Crewmate;
+                if (seer.PlayerId == target.PlayerId && seer.IsAlive() && seerHasKillButton) continue;
+
+                RoleTypes targetRoleType = !seerHasKillButton && target.PlayerId == dummyImp.PlayerId
+                    ? RoleTypes.Impostor : RoleTypes.Crewmate;
 
                 target.RpcSetRoleDesync(targetRoleType, seer.GetClientId());
             }
@@ -151,7 +155,7 @@ public static class AntiBlackout
         if (doSend)
         {
             SendGameData();
-            _ = new LateTask(() => RestoreIsDeadByExile(), 0.3f, "AntiBlackOut_RestoreIsDeadByExile");
+            _ = new LateTask(RestoreIsDeadByExile, 0.3f, "AntiBlackOut_RestoreIsDeadByExile");
         }
     }
 
@@ -292,6 +296,7 @@ public static class AntiBlackout
                 }
             }
 
+            if (seerId == targetId && seer.HasImpKillButton() && !target.Data.IsDead) continue;
             target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
     }
@@ -299,16 +304,7 @@ public static class AntiBlackout
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            if (seer.IsAlive())
-            {
-                seer.ResetKillCooldown();
-
-                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
-                    seer.SetKillCooldown(kcd >= 2f ? kcd - 2f : kcd);
-
-                seer.RpcResetAbilityCooldown();
-            }
-            else if (seer.HasGhostRole())
+            if (seer.HasGhostRole())
             {
                 seer.RpcResetAbilityCooldown();
             }
