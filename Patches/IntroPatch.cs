@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using Hazel;
-using InnerNet;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -811,44 +809,7 @@ class IntroCutsceneDestroyPatch
                             return;
                         }
 
-                        if (!UnShapeshifter.AmOwner)
-                        {
-                            var sstarget = PlayerControl.LocalPlayer;
-                            UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
-                            UnShapeshifter.RejectShapeshift();
-
-                            var writer = MessageWriter.Get(SendOption.Reliable);
-                            writer.StartMessage(6);
-                            writer.Write(AmongUsClient.Instance.GameId);
-                            writer.WritePacked(UnShapeshifter.OwnerId);
-
-                            writer.StartMessage(2);
-                            writer.WritePacked(UnShapeshifter.NetId);
-                            writer.Write((byte)RpcCalls.Shapeshift);
-                            writer.WriteNetObject(sstarget);
-                            writer.Write(false);
-                            writer.EndMessage();
-
-                            writer.StartMessage(2);
-                            writer.WritePacked(UnShapeshifter.NetId);
-                            writer.Write((byte)RpcCalls.RejectShapeshift);
-                            writer.EndMessage();
-
-                            writer.EndMessage();
-                            AmongUsClient.Instance.SendOrDisconnect(writer);
-                            writer.Recycle();
-
-                            UnShapeshifter.ResetPlayerOutfit(force: true);
-                        }
-                        else
-                        {
-                            // Host is Unshapeshifter, make button into unshapeshift state
-                            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
-                            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
-                            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
-                            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
-                            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
-                        }
+                        UnShapeshifter.StartCoroutine(CheckShapeshiftPatch.CoPerformUnShapeShifter(UnShapeshifter).WrapToIl2Cpp());
 
                         Main.CheckShapeshift[x] = false;
                     });
