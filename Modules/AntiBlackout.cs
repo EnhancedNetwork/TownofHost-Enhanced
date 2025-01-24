@@ -132,7 +132,7 @@ public static class AntiBlackout
             {
                 if (seer.PlayerId == target.PlayerId && seerIsAlive && seerHasKillButton) continue;
 
-                if (!seerIsAlive)
+                if (!seerIsAlive && seerHasKillButton)
                     seerHasKillButton = false;
 
                 RoleTypes targetRoleType = !seerHasKillButton && target.PlayerId == dummyImp.PlayerId
