@@ -1,9 +1,10 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using System;
-using System.Text;
 using UnityEngine;
+using TOHE.Modules;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -22,24 +23,23 @@ internal class Lighter : RoleBase
     private static OptionItem LighterSkillCooldown;
     private static OptionItem LighterSkillDuration;
     private static OptionItem LighterSkillMaxOfUseage;
-    private static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
 
     private long Timer;
 
     public override void SetupCustomOption()
     {
-        Options.SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Lighter, 1);
-        LighterSkillCooldown = FloatOptionItem.Create(Id + 10, "LighterSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])
+        SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Lighter, 1);
+        LighterSkillCooldown = FloatOptionItem.Create(Id + 10, "LighterSkillCooldown", new(1f, 180f, 1f), 25f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Seconds);
-        LighterSkillDuration = FloatOptionItem.Create(Id + 11, "LighterSkillDuration", new(1f, 180f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])
+        LighterSkillDuration = FloatOptionItem.Create(Id + 11, "LighterSkillDuration", new(1f, 180f, 1f), 10f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Seconds);
-        LighterVisionNormal = FloatOptionItem.Create(Id + 12, "LighterVisionNormal", new(0f, 5f, 0.05f), 1.35f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])
+        LighterVisionNormal = FloatOptionItem.Create(Id + 12, "LighterVisionNormal", new(0f, 5f, 0.05f), 1.35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Multiplier);
-        LighterVisionOnLightsOut = FloatOptionItem.Create(Id + 13, "LighterVisionOnLightsOut", new(0f, 5f, 0.05f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])
+        LighterVisionOnLightsOut = FloatOptionItem.Create(Id + 13, "LighterVisionOnLightsOut", new(0f, 5f, 0.05f), 0.5f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Multiplier);
-        LighterSkillMaxOfUseage = IntegerOptionItem.Create(Id + 14, "AbilityUseLimit", new(0, 180, 1), 4, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])
+        LighterSkillMaxOfUseage = IntegerOptionItem.Create(Id + 14, "AbilityUseLimit", new(0, 180, 1), 4, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Times);
-        LighterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Lighter])
+        LighterAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 15, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.1f), 1f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Lighter])
             .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()
@@ -49,7 +49,7 @@ internal class Lighter : RoleBase
     public override void Add(byte playerId)
     {
         Timer = 0;
-        AbilityLimit = LighterSkillMaxOfUseage.GetInt();
+        playerId.SetAbilityUseLimit(LighterSkillMaxOfUseage.GetInt());
     }
     public override void Remove(byte playerId)
     {
@@ -60,7 +60,7 @@ internal class Lighter : RoleBase
         if (!lowLoad && Timer != 0 && Timer + LighterSkillDuration.GetInt() < nowTime)
         {
             Timer = 0;
-            if (!Options.DisableShieldAnimations.GetBool())
+            if (!DisableShieldAnimations.GetBool())
             {
                 player.RpcGuardAndKill();
             }
@@ -68,52 +68,27 @@ internal class Lighter : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
-            player.Notify(string.Format(GetString("AbilityExpired"), Math.Round(AbilityLimit, 1)));
+            player.Notify(string.Format(GetString("AbilityExpired"), Math.Round(player.GetAbilityUseLimit(), 1)));
             player.MarkDirtySettings();
         }
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (AbilityLimit >= 1)
+        if (pc.GetAbilityUseLimit() >= 1)
         {
             Timer = GetTimeStamp();
-            if (!Options.DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
+            if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
             pc.Notify(GetString("AbilityInUse"), LighterSkillDuration.GetFloat());
-            AbilityLimit--;
+            pc.RpcRemoveAbilityUse();
             pc.MarkDirtySettings();
         }
         else
         {
             pc.Notify(GetString("OutOfAbilityUsesDoMoreTasks"));
         }
-
-        SendSkillRPC();
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => Timer = 0;
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState14 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor14;
-        var TaskCompleteColor14 = Color.green;
-        var NonCompleteColor14 = Color.yellow;
-        var NormalColor14 = taskState14.IsTaskFinished ? TaskCompleteColor14 : NonCompleteColor14;
-        TextColor14 = comms ? Color.gray : NormalColor14;
-        string Completed14 = comms ? "?" : $"{taskState14.CompletedTasksCount}";
-        Color TextColor141;
-        if (AbilityLimit < 1) TextColor141 = Color.red;
-        else TextColor141 = Color.white;
-        ProgressText.Append(ColorString(TextColor14, $"({Completed14}/{taskState14.AllTasksCount})"));
-        ProgressText.Append(ColorString(TextColor141, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
-    }
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (player.IsAlive())
-            AbilityLimit += LighterAbilityUseGainWithEachTaskCompleted.GetFloat();
 
-        return true;
-    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerInVentMaxTime = 1;

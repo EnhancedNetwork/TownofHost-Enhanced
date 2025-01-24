@@ -1,15 +1,18 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
+using System.Text;
 using System.Text.RegularExpressions;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
-
 namespace TOHE.Roles.Neutral;
+
 internal class Pirate : RoleBase
 {
     //===========================SETUP================================\\
@@ -29,7 +32,6 @@ internal class Pirate : RoleBase
 
     private static byte PirateTarget;
     private static int pirateChose, targetChose;
-    public static int NumWin = 0;
 
     public override void SetupCustomOption()
     {
@@ -48,17 +50,17 @@ internal class Pirate : RoleBase
         DuelDone.Clear();
         pirateChose = -1;
         targetChose = -1;
-        NumWin = 0;
     }
     public override void Add(byte playerId)
     {
         DuelDone[playerId] = false;
+        playerId.SetAbilityUseLimit(0);
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (!HasEnabled || PirateTarget == byte.MaxValue) return;
+        if (PirateTarget == byte.MaxValue) return;
 
-        var tpc = GetPlayerById(PirateTarget);
+        var tpc = PirateTarget.GetPlayer();
         if (!tpc.IsAlive()) return;
 
         MeetingHudStartPatch.AddMsg(GetString("PirateMeetingMsg"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Pirate), GetString("PirateTitle")));
@@ -67,31 +69,26 @@ internal class Pirate : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = DuelCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string GetProgressText(byte playerId, bool comms)
-            => ColorString(GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f), $"({NumWin}/{SuccessfulDuelsToWin.GetInt()})");
+    {
+        var ProgressText = new StringBuilder();
+        Color TextColor = GetRoleColor(CustomRoles.Pirate).ShadeColor(0.25f);
 
-    public void SendRPC(int operate, byte target = byte.MaxValue, int points = -1)
+        ProgressText.Append(ColorString(TextColor, $"({playerId.GetAbilityUseLimit()}/{SuccessfulDuelsToWin.GetInt()})"));
+        return ProgressText.ToString();
+    }
+
+    private void SendRPC(byte target = byte.MaxValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(operate);
         writer.Write(target);
-        if (operate == 1)
-        {
-            writer.Write(points);
-        }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        int operate = reader.ReadInt32();
         byte target = reader.ReadByte();
+
         PirateTarget = target;
-        if (operate == 1)
-        {
-            int points = reader.ReadInt32();
-            NumWin = points;
-        }
     }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -99,6 +96,11 @@ internal class Pirate : RoleBase
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
             killer.Notify(ColorString(GetRoleColor(CustomRoles.Gangster), GetString("CantDuel")));
+            return true;
+        }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
             return true;
         }
 
@@ -109,11 +111,15 @@ internal class Pirate : RoleBase
             return false;
         }
         Logger.Msg($"{killer.GetNameWithRole()} chose a target {target.GetNameWithRole()}", "Pirate");
+        
         PirateTarget = target.PlayerId;
-        SendRPC(operate: 0, target: target.PlayerId, points: -1);
+        SendRPC(target: target.PlayerId);
+
         DuelDone[PirateTarget] = false;
+
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         else killer.SetKillCooldown();
+
         return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
@@ -138,7 +144,7 @@ internal class Pirate : RoleBase
         {
             if (targetChose == pirateChose)
             {
-                NumWin++;
+                _Player.RpcIncreaseAbilityUseLimitBy(1);
                 if (pirateTarget.IsAlive())
                 {
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
@@ -157,9 +163,8 @@ internal class Pirate : RoleBase
         if (_Player == null) return;
         var pirateId = _state.PlayerId;
 
-        if (NumWin >= SuccessfulDuelsToWin.GetInt())
+        if (_Player.GetAbilityUseLimit() >= SuccessfulDuelsToWin.GetInt())
         {
-            NumWin = SuccessfulDuelsToWin.GetInt();
             if (!CustomWinnerHolder.CheckForConvertedWinner(pirateId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pirate);
@@ -170,13 +175,13 @@ internal class Pirate : RoleBase
         DuelDone.Clear();
         PirateTarget = byte.MaxValue;
 
-        SendRPC(operate: 1, target: byte.MaxValue, points: NumWin);
+        SendRPC(target: byte.MaxValue);
         foreach (byte playerId in Main.PlayerStates.Values.Where(x => x.MainRole == CustomRoles.Pirate).Select(x => x.PlayerId)) { DuelDone[playerId] = false; }
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         PirateTarget = byte.MaxValue;
-        SendRPC(operate: 1, target: byte.MaxValue, points: NumWin);
+        SendRPC(target: byte.MaxValue);
     }
     public static bool DuelCheckMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -309,6 +314,14 @@ internal class Pirate : RoleBase
     public static void TryHideMsgForDuel()
     {
         ChatUpdatePatch.DoBlockChat = true;
+
+        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
+        {
+            ChatManager.SendQuickChatSpam();
+            ChatUpdatePatch.DoBlockChat = false;
+            return;
+        }
+
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;

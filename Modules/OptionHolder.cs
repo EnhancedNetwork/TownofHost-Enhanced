@@ -15,7 +15,7 @@ public enum CustomGameMode
     FFA = 0x02,
     CandR = 0x03,
 
-    HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other Gamemodes
+    HidenSeekTOHO = 0x08, // HidenSeekTOHO must be after other Gamemodes
     All = int.MaxValue
 }
 
@@ -51,7 +51,7 @@ public static class Options
         {
             1 => CustomGameMode.FFA,
             2 => CustomGameMode.CandR,
-            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other Gamemodes
+            3 => CustomGameMode.HidenSeekTOHO, // HidenSeekTOHO must be after other Gamemodes
             _ => CustomGameMode.Standard
         };
     public static int GetGameModeInt(CustomGameMode mode)
@@ -59,7 +59,7 @@ public static class Options
         {
             CustomGameMode.FFA => 1,
             CustomGameMode.CandR => 2,
-            CustomGameMode.HidenSeekTOHE => 3, // HidenSeekTOHE must be after other Gamemodes
+            CustomGameMode.HidenSeekTOHO => 3, // HidenSeekTOHO must be after other Gamemodes
             _ => 0
         };
 
@@ -70,7 +70,7 @@ public static class Options
         "C&R",
 
 
-        "Hide&SeekTOHE", // HidenSeekTOHE must be after other Gamemodes
+        "Hide&SeekTOHO", // HidenSeekTOHO must be after other Gamemodes
     ];
 
 
@@ -140,7 +140,31 @@ public static class Options
         "CamouflageMode.TommyXL",
         "CamouflageMode.Sarha"
     ];
+    [Obfuscation(Exclude = true)]
+    public enum QuickChatSpamMode
+    {
+        QuickChatSpam_Disabled,
+        QuickChatSpam_How2PlayNormal,
+        QuickChatSpam_How2PlayHidenSeek,
+        QuickChatSpam_Random20,
+        QuickChatSpam_EzHacked,
+    };
 
+    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem FortuneTellerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem InspectorAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem MechanicAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem VentguardAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
@@ -251,7 +275,7 @@ public static class Options
     // ------------ Game Settings Tab ------------
 
     // Hide & Seek Setting
-    public static OptionItem NumImpostorsHnS;
+    public static OptionItem MaxImpostorsHnS;
 
     // Confirm Ejection
     public static OptionItem CEMode;
@@ -391,6 +415,7 @@ public static class Options
     public static OptionItem LadderDeathChance;
 
     public static OptionItem FixFirstKillCooldown;
+    public static OptionItem ChangeFirstKillCooldown;
     public static OptionItem FixKillCooldownValue;
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem ShowShieldedPlayerToAll;
@@ -512,6 +537,7 @@ public static class Options
     public static OptionItem CovenCanGuessCoven;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
+    public static OptionItem UseQuickChatSpamCheat;
 
 
     // ------------ General Role Settings ------------
@@ -1278,14 +1304,14 @@ public static class Options
 
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
-            .SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetGameMode(CustomGameMode.HidenSeekTOHO)
             .SetColor(Color.red);
 
-        // Num impostors in Hide & Seek
-        NumImpostorsHnS = IntegerOptionItem.Create(60891, "NumImpostorsHnS", new(1, 3, 1), 1, TabGroup.ModSettings, false)
+        // Maximum Impostors in Hide & Seek
+        MaxImpostorsHnS = IntegerOptionItem.Create(60891, "MaxImpostorsHnS", new(1, 3, 1), 1, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetColor(Color.red)
-            .SetGameMode(CustomGameMode.HidenSeekTOHE)
+            .SetGameMode(CustomGameMode.HidenSeekTOHO)
             .SetValueFormat(OptionFormat.Players);
 
 
@@ -1362,6 +1388,8 @@ public static class Options
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
+
+        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false);
 
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
@@ -1932,13 +1960,15 @@ public static class Options
         LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
 
-        // 修正首刀时间
+        // Reset Kill Cooldown
         FixFirstKillCooldown = BooleanOptionItem.Create(60770, "FixFirstKillCooldown", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+        ChangeFirstKillCooldown = BooleanOptionItem.Create(60772, "ChangeFirstKillCooldown", true, TabGroup.ModSettings, false)
+            .SetParent(FixFirstKillCooldown);
         FixKillCooldownValue = FloatOptionItem.Create(60771, "FixKillCooldownValue", new(0f, 180f, 2.5f), 15f, TabGroup.ModSettings, false)
             .SetValueFormat(OptionFormat.Seconds)
-            .SetParent(FixFirstKillCooldown);
+            .SetParent(ChangeFirstKillCooldown);
         // First dead shield
         ShieldPersonDiedFirst = BooleanOptionItem.Create(60780, "ShieldPersonDiedFirst", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)

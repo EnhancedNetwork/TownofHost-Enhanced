@@ -223,7 +223,7 @@ public static class Utils
         // Global Kill Flash
         if (target.GetRoleClass().GlobalKillFlashCheck(killer, target, seer)) return true;
 
-        // if seer is alive
+        // if Seer is alive
         if (seer.IsAlive())
         {
             // Kill Flash as killer
@@ -710,29 +710,7 @@ public static class Utils
                 default:
                     ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
-                    if (ProgressText.Length == 0)
-                    {
-                        var taskState = Main.PlayerStates?[playerId].TaskState;
-                        if (taskState.hasTasks)
-                        {
-                            Color TextColor;
-                            var info = GetPlayerInfoById(playerId);
-                            var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f);
-                            var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
-
-                            if (Workhorse.IsThisRole(playerId))
-                                NonCompleteColor = Workhorse.RoleColor;
-
-                            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-                            if (Main.PlayerStates.TryGetValue(playerId, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
-                                NormalColor = Color.red;
-
-                            TextColor = comms ? Color.gray : NormalColor;
-                            string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-                            ProgressText.Append(ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})"));
-                        }
-                    }
-                    else
+                    if (ProgressText.Length > 0)
                     {
                         ProgressText.Insert(0, " ");
                     }
@@ -745,6 +723,59 @@ public static class Utils
             ThrowException(error);
             Logger.Error($"PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}", "GetProgressText(byte playerId, bool comms = false)");
             return "Error2";
+        }
+    }
+    public static string GetAbilityUseLimitDisplay(byte playerId, bool displayOnlyUseAbility, bool usingAbility = false)
+    {
+        try
+        {
+            float limit = playerId.GetAbilityUseLimit();
+            if (float.IsNaN(limit)) return string.Empty;
+            Color TextColor;
+            if (limit < 1) TextColor = displayOnlyUseAbility ? Color.gray : Color.red;
+            else if (usingAbility) TextColor = Color.green;
+            else TextColor = GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.25f);
+            return (displayOnlyUseAbility ? string.Empty : ColorString(Color.white, " - ")) + ColorString(TextColor, $"({Math.Round(limit, 1)})");
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    public static string GetTaskCount(byte playerId, bool comms)
+    {
+        try
+        {
+            if (playerId == 0 && Main.EnableGM.Value) return string.Empty;
+
+            var taskState = Main.PlayerStates[playerId].TaskState;
+            if (!taskState.hasTasks) return string.Empty;
+
+            var info = GetPlayerInfoById(playerId);
+            var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.5f);
+            var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
+
+            if (Workhorse.IsThisRole(playerId))
+                NonCompleteColor = Workhorse.RoleColor;
+
+            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+            if (Main.PlayerStates.TryGetValue(playerId, out var ps))
+            {
+                NormalColor = ps.MainRole switch
+                {
+                    CustomRoles.Crewpostor => Color.red,
+                    _ => NormalColor
+                };
+            }
+
+            Color TextColor = comms ? Color.gray : NormalColor;
+            string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
+            return ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})");
+        }
+        catch
+        {
+            return string.Empty;
         }
     }
     public static void ShowActiveSettingsHelp(byte PlayerId = byte.MaxValue)
@@ -899,9 +930,9 @@ public static class Utils
 
         SendMessage(string.Join("\n", impsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("ImpostorRoles")), ShouldSplit: true);
         SendMessage(string.Join("\n", crewsb), PlayerId, ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("CrewmateRoles")), ShouldSplit: true);
-        SendMessage(string.Join("\n", neutralsb), PlayerId, GetString("NeutralRoles"), ShouldSplit: true);
-        SendMessage(string.Join("\n", covenb), PlayerId, GetString("CovenRoles"), ShouldSplit: true);
-        SendMessage(string.Join("\n", addonsb), PlayerId, GetString("AddonRoles"), ShouldSplit: true);
+        SendMessage(string.Join("\n", neutralsb), PlayerId, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("NeutralRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", covenb), PlayerId, ColorString(GetRoleColor(CustomRoles.Coven), GetString("CovenRoles")), ShouldSplit: true);
+        SendMessage(string.Join("\n", addonsb), PlayerId, ColorString(new Color32(255, 154, 206, byte.MaxValue), GetString("AddonRoles")), ShouldSplit: true);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool command = false)
     {
@@ -2177,25 +2208,30 @@ public static class Utils
                         string TargetRoleText = KnowRoleTarget
                                 ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
 
+                        string BlankRT = string.Empty;
+
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
                         {
-                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
-                            TargetRoleText += TaskState.GetTaskState(); // Random task count for revealed trickster
+                            BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random Trickster role
+                            BlankRT += TaskState.GetTaskState(); // Random task count for revealed Trickster
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
                         // Same thing as Trickster but for Illusioned Coven
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
                         {
-                            TargetRoleText = Overseer.GetRandomRole(seer.PlayerId);
-                            TargetRoleText += TaskState.GetTaskState();
+                            BlankRT = Overseer.GetRandomRole(seer.PlayerId);
+                            BlankRT += TaskState.GetTaskState();
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
                         {
                             var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                            TargetRoleText = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                            BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
                             if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                             {
-                                TargetRoleText += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
+                                BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
                             }
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
                         // ====== Target player name ======
@@ -2707,6 +2743,49 @@ public static class Utils
         float G = (color.g + Weight) / (Darkness + 1);
         float B = (color.b + Weight) / (Darkness + 1);
         return new Color(R, G, B, color.a);
+    }
+
+    public static float GetSettingNameAndValueForRole(CustomRoles role, string settingName)
+    {
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
+        var types = Assembly.GetExecutingAssembly().GetTypes();
+        var field = types.SelectMany(x => x.GetFields(flags)).FirstOrDefault(x => x.Name == $"{role}{settingName}");
+        if (field == null)
+        {
+            FieldInfo tempField = null;
+            foreach (var x in types)
+            {
+                bool any = false;
+                foreach (var f in x.GetFields(flags))
+                {
+                    if (f.Name.Contains(settingName))
+                    {
+                        any = true;
+                        tempField = f;
+                        break;
+                    }
+                }
+
+                if (any && x.Name == $"{role}")
+                {
+                    field = tempField;
+                    break;
+                }
+            }
+        }
+
+        float add;
+        if (field == null)
+        {
+            add = float.MaxValue;
+        }
+        else
+        {
+            if (field.GetValue(null) is OptionItem optionItem) add = optionItem.GetFloat();
+            else add = float.MaxValue;
+        }
+
+        return add;
     }
 
     public static void SetChatVisibleForEveryone()

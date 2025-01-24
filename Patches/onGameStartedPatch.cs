@@ -44,13 +44,15 @@ internal class ChangeRoleSettings
             }
             else if (GameStates.IsHideNSeek)
             {
-                Main.HideNSeekOptions.NumImpostors = Options.NumImpostorsHnS.GetInt();
+                Main.HideNSeekOptions.NumImpostors = Options.MaxImpostorsHnS.GetInt();
                 Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
             Main.PlayerStates = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
+            AbilityUseManager.Initializate();
+            
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
@@ -564,7 +566,7 @@ internal class StartGameHostPatch
         foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             var targetRoleType = othersRole;
-            var targetCustomRole = RoleAssign.RoleResult.GetValueOrDefault(target.PlayerId, CustomRoles.CrewmateTOHE);
+            var targetCustomRole = RoleAssign.RoleResult.GetValueOrDefault(target.PlayerId, CustomRoles.CrewmateTOHO);
 
             if (targetCustomRole.GetVNRole() is CustomRoles.Noisemaker)
                 targetRoleType = RoleTypes.Noisemaker;
@@ -699,6 +701,18 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.RpcSetRole(RoleTypes.Crewmate, false);
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+            }
+
+            foreach (var player in Main.AllPlayerControls)
+            {
+                if (!player.IsDisconnected() && TagManager.AssignGameMaster(player.FriendCode))
+                {
+                    Logger.Info($"Setting GM role for [{player.PlayerId}]{player.GetRealName()}", "SelectRolesPatch.HnS");
+                    player.RpcSetCustomRole(CustomRoles.GM);
+                    player.RpcSetRole(RoleTypes.Crewmate, false);
+                    player.Data.IsDead = true;
+                    Main.PlayerStates[player.PlayerId].SetDead();
+                }
             }
 
             EAC.OriginalRoles = [];

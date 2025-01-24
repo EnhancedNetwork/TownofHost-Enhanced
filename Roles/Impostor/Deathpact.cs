@@ -237,7 +237,7 @@ internal class Deathpact : RoleBase
         {
             foreach (var otherPlayerInPact in deathpact.Value.Where(a => a.PlayerId != seer.PlayerId).ToArray())
             {
-                arrows.Append(ColorString(GetRoleColor(CustomRoles.CrewmateTOHE), TargetArrow.GetArrows(seer, otherPlayerInPact.PlayerId)));
+                arrows.Append(ColorString(GetRoleColor(CustomRoles.CrewmateTOHO), TargetArrow.GetArrows(seer, otherPlayerInPact.PlayerId)));
             }
         }
 

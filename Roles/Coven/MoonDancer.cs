@@ -113,7 +113,7 @@ internal class MoonDancer : CovenManager
             }
         }
 
-        return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsBlasted(pc, id) && !IsBlasted(id);
+        return target != null && target.CanBeTeleported() && !target.Is(CustomRoles.Stubborn) && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsBlasted(pc, id) && !IsBlasted(id);
     }
     private static bool IsBlasted(PlayerControl pc, byte id) => BlastedOffList.ContainsKey(pc.PlayerId) && BlastedOffList[pc.PlayerId].Contains(id);
     public static bool IsBlasted(byte id)
@@ -187,6 +187,11 @@ internal class MoonDancer : CovenManager
                 return true;
             }
         }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
         if (target.GetCustomRole().IsCovenTeam())
         {
             BatonPassList[killer.PlayerId].Add(target.PlayerId);
@@ -216,6 +221,13 @@ internal class MoonDancer : CovenManager
         foreach (var pc in BatonPassList[md.PlayerId])
         {
             var player = GetPlayerById(pc);
+
+            if (player == null)
+            {
+                BatonPassList[md.PlayerId].Remove(pc);
+                continue;
+            }
+            
             var addon = addons.RandomElement();
             var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
             var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();

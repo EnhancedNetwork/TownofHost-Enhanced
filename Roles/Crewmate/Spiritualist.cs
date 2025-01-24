@@ -68,6 +68,11 @@ internal class Spiritualist : RoleBase
         if (SpiritualistTarget != byte.MaxValue)
             RemoveTarget(SpiritualistTarget);
 
+            if (target.Object.Is(CustomRoles.Stubborn))
+        {
+            Logger.Info($"{target.Object.GetRealName()} is Stubborn, so Spiritualist can't target them.", "Spritualist");
+            return;
+        }
         SpiritualistTarget = target.PlayerId;
     }
 

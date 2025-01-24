@@ -1,5 +1,4 @@
-﻿using Hazel;
-using UnityEngine;
+using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -19,6 +18,7 @@ internal class CovenLeader : CovenManager
     private static OptionItem RetrainCooldown;
     public static OptionItem MaxRetrains;
 
+    public static readonly HashSet<byte> List = [];
     public static readonly Dictionary<byte, CustomRoles> retrainPlayer = [];
 
     public override void SetupCustomOption()
@@ -32,19 +32,19 @@ internal class CovenLeader : CovenManager
     public override void Init()
     {
         retrainPlayer.Clear();
+        List.Clear();
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxRetrains.GetInt();
+        List.Add(playerId);
+        playerId.SetAbilityUseLimit(MaxRetrains.GetInt());
     }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
+    public override void Remove(byte playerId)
     {
-        AbilityLimit = reader.ReadSingle();
+        List.Remove(playerId);
     }
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
-    public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.CovenLeader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+
     public override void SetKillCooldown(byte id) => RetrainCooldown.GetFloat();
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -58,7 +58,7 @@ internal class CovenLeader : CovenManager
             }
             else return true;
         }
-        if (AbilityLimit <= 0)
+        if (killer.GetAbilityUseLimit() <= 0)
         {
             killer.Notify(GetString("CovenLeaderNoRetrain"));
             return false;
@@ -71,7 +71,7 @@ internal class CovenLeader : CovenManager
         var roleList = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable() && !role.RoleExist(countDead: true)))).ToList();
         retrainPlayer[target.PlayerId] = roleList.RandomElement();
         // if every enabled coven role is already in the game then use one of them anyways
-        if (retrainPlayer[target.PlayerId] == CustomRoles.Crewmate || retrainPlayer[target.PlayerId] == CustomRoles.CrewmateTOHE)
+        if (retrainPlayer[target.PlayerId] == CustomRoles.Crewmate || retrainPlayer[target.PlayerId] == CustomRoles.CrewmateTOHO)
             retrainPlayer[target.PlayerId] = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable()))).ToList().RandomElement();
         foreach (byte cov in retrainPlayer.Keys)
         {

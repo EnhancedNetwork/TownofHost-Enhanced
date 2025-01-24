@@ -1,4 +1,5 @@
-﻿using static TOHE.Translator;
+using TOHE.Modules;
+using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
@@ -30,7 +31,7 @@ internal class Assassin : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
 
         playerIdList.Add(playerId);
 
@@ -41,15 +42,15 @@ internal class Assassin : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
+        if (killer.GetAbilityUseLimit() < 1) return false;
         if (killer.Is(CustomRoles.Madmate)) return true;
         if (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
         {
             killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ImpostorTOHE), GetString("AssassinImpostorNotify")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ImpostorTOHO), GetString("AssassinImpostorNotify")));
             //Utils.NotifyRoles(SpecifySeer: killer);
             Utils.MarkEveryoneDirtySettings();
-            AbilityLimit = 0;
+            killer.SetAbilityUseLimit(0);
         }
         if (target.GetCustomRole().IsImpostor() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
         {
@@ -57,14 +58,14 @@ internal class Assassin : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("AssassinSheriffNotify")));
             //Utils.NotifyRoles(SpecifySeer: killer);
             Utils.MarkEveryoneDirtySettings();
-            AbilityLimit = 0;
+            killer.SetAbilityUseLimit(0);
         }
         if (target.GetCustomRole().IsNeutral() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Assassin), GetString("AssassinNeutralNotify")));
             //Utils.NotifyRoles(SpecifySeer: killer);
             Utils.MarkEveryoneDirtySettings();
-            AbilityLimit = 0;
+            killer.SetAbilityUseLimit(0);
         }
         return true;
     }

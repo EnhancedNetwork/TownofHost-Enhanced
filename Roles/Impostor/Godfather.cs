@@ -52,20 +52,36 @@ internal class Godfather : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         var godfather = _Player;
-        var ChangeRole = godfather.Is(CustomRoles.Admired) ? CustomRoles.Sheriff : CustomRoles.Refugee;
-        var ChangeAddon = godfather.Is(CustomRoles.Admired) ? CustomRoles.Admired : CustomRoles.Madmate;
+        List <CustomRoles> BTAddonList = godfather.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()).ToList();
+
+        var ChangeRole = CustomRoles.Refugee;
+        foreach (var addon in BTAddonList)
+        {
+            ChangeRole = addon switch
+            {
+                CustomRoles.Admired => CustomRoles.Sheriff,
+                CustomRoles.Recruit => CustomRoles.Sidekick,
+                _ => CustomRoles.Refugee
+            };
+        }
+        var ChangeAddon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.Madmate;
+        
         if (GodfatherTarget.Contains(target.PlayerId))
         {
+            if (!killer.IsAlive()) return;
             if (GodfatherChangeOpt.GetValue() == 0)
             {
                 killer.RpcChangeRoleBasis(ChangeRole);
                 killer.GetRoleClass()?.OnRemove(killer.PlayerId);
                 killer.RpcSetCustomRole(ChangeRole);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+                if (ChangeRole is CustomRoles.Refugee 
+                    && (ChangeAddon is not CustomRoles.Madmate || godfather.Is(CustomRoles.Madmate)))
+                    killer.RpcSetCustomRole(ChangeAddon);
             }
             else
             {
-                killer.RpcSetCustomRole(ChangeAddon);
+                killer.RpcSetCustomRole(ChangeAddon, false);
             }
 
             killer.RpcGuardAndKill();

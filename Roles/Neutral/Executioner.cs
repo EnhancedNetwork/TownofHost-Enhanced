@@ -53,7 +53,7 @@ internal class Executioner : RoleBase
     [
         CustomRoles.Amnesiac,
         CustomRoles.Maverick,
-        CustomRoles.CrewmateTOHE,
+        CustomRoles.CrewmateTOHO,
         CustomRoles.Celebrity,
         CustomRoles.Bodyguard,
         CustomRoles.Dictator,
@@ -63,7 +63,7 @@ internal class Executioner : RoleBase
         CustomRoles.Opportunist,
         CustomRoles.Pursuer,
         CustomRoles.Refugee,
-        CustomRoles.TrackerTOHE,
+        CustomRoles.TrackerTOHO,
         CustomRoles.Sheriff,
         CustomRoles.Deputy,
         CustomRoles.Medic,

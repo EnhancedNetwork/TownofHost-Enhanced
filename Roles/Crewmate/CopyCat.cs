@@ -23,6 +23,7 @@ internal class CopyCat : RoleBase
     private static OptionItem CopyTeamChangingAddon;
 
     private static float CurrentKillCooldown = new();
+    private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
 
     public override void SetupCustomOption()
     {
@@ -37,6 +38,7 @@ internal class CopyCat : RoleBase
     {
         playerIdList.Clear();
         CurrentKillCooldown = new();
+        OldAddons.Clear();
     }
 
     public override void Add(byte playerId)
@@ -44,10 +46,11 @@ internal class CopyCat : RoleBase
         if (!playerIdList.Contains(playerId))
             playerIdList.Add(playerId);
         CurrentKillCooldown = KillCooldown.GetFloat();
+        OldAddons[playerId] = [];
     }
     public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
     {
-        // Copy cat role wont be removed for now i guess
+        // Copycat role wont be removed for now i guess
         // playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
@@ -79,11 +82,16 @@ internal class CopyCat : RoleBase
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
-                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat, checkAddons: false);
+                    foreach (var addon in OldAddons[pc.PlayerId])
+                    {
+                        pc.RpcSetCustomRole(addon, checkAddons: false);
+                    }
                 }
             }
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
+            OldAddons[pc.PlayerId].Clear();
         }
     }
 
@@ -99,6 +107,11 @@ internal class CopyCat : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         CustomRoles role = target.GetCustomRole();
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
         if (BlackList(role))
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
@@ -123,7 +136,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Sunnyboy => CustomRoles.Doctor,
                 CustomRoles.Councillor => CustomRoles.Judge,
                 CustomRoles.Taskinator => CustomRoles.Benefactor,
-                CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
+                CustomRoles.EvilTracker => CustomRoles.TrackerTOHO,
                 CustomRoles.AntiAdminer => CustomRoles.Telecommunication,
                 CustomRoles.Pursuer => CustomRoles.Deceiver,
                 CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
@@ -147,20 +160,35 @@ internal class CopyCat : RoleBase
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);
-                killer.RpcSetCustomRole(role);
+                killer.RpcSetCustomRole(role, checkAddons: false);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
+                Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
+                CurrentAddons[killer.PlayerId] = [];
+                foreach (var addon in killer.GetCustomSubRoles())
+                {
+                    CurrentAddons[killer.PlayerId].Add(addon);
+                }
+                foreach (var addon in CurrentAddons[killer.PlayerId])
+                {
+                    if (!CustomRolesHelper.CheckAddonConfilct(addon, killer))
+                    {
+                        OldAddons[killer.PlayerId].Add(addon);
+                        Main.PlayerStates[killer.PlayerId].RemoveSubRole(addon);
+                        Logger.Info($"{killer.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", "CopyCat");
+                    }
+                }
             }
             if (CopyTeamChangingAddon.GetBool())
             {
-                if (target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal)) killer.RpcSetCustomRole(CustomRoles.Madmate);
-                if (target.Is(CustomRoles.Charmed)) killer.RpcSetCustomRole(CustomRoles.Charmed);
-                if (target.Is(CustomRoles.Infected)) killer.RpcSetCustomRole(CustomRoles.Infected);
-                if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit);
-                if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
-                if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
-                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
-                if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted);
+                if (target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal)) killer.RpcSetCustomRole(CustomRoles.Madmate, false);
+                if (target.Is(CustomRoles.Charmed)) killer.RpcSetCustomRole(CustomRoles.Charmed, false);
+                if (target.Is(CustomRoles.Infected)) killer.RpcSetCustomRole(CustomRoles.Infected, false);
+                if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit, false);
+                if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious, false);
+                if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless, false);
+                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired, false);
+                if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted, false);
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));

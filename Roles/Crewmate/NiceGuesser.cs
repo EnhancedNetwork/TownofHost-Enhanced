@@ -47,15 +47,15 @@ internal class NiceGuesser : RoleBase
             return true;
         }
 
-        // Nice Guesser Can't Guess Addons
+        // Nice Guesser can't Guess Add-ons
         if (role.IsAdditionRole() && !GGCanGuessAdt.GetBool())
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessAdtRole"));
             return true;
         }
 
-        // Nice Guesser Can't Guess Impostors
-        if (target.Is(Custom_Team.Crewmate) && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate))
+        // Nice Guesser can't Guess Crewmates
+        if (role.IsCrewmate() && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate))
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessCrewRole"));
             return true;

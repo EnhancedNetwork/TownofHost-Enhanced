@@ -4,10 +4,10 @@ using static TOHE.Options;
 
 namespace TOHE.Roles._Ghosts_.Crewmate;
 
-internal class GuardianAngelTOHE : RoleBase
+internal class GuardianAngelTOHO : RoleBase
 {
     //===========================SETUP================================\\
-    public override CustomRoles Role => CustomRoles.GuardianAngelTOHE;
+    public override CustomRoles Role => CustomRoles.GuardianAngelTOHO;
     private const int Id = 20900;
 
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -21,12 +21,12 @@ internal class GuardianAngelTOHE : RoleBase
     private readonly Dictionary<byte, long> PlayerShield = [];
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHE);
-        AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.GuardianAngelBase_ProtectCooldown, new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.GuardianAngelTOHO);
+        AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.GuardianAngelBase_ProtectCooldown, new(2.5f, 120f, 2.5f), 35f, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHO])
             .SetValueFormat(OptionFormat.Seconds);
-        ProtectDur = IntegerOptionItem.Create(Id + 11, GeneralOption.GuardianAngelBase_ProtectionDuration, new(1, 120, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE])
+        ProtectDur = IntegerOptionItem.Create(Id + 11, GeneralOption.GuardianAngelBase_ProtectionDuration, new(1, 120, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHO])
             .SetValueFormat(OptionFormat.Seconds);
-        ImpVis = BooleanOptionItem.Create(Id + 12, GeneralOption.GuardianAngelBase_ImpostorsCanSeeProtect, true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHE]);
+        ImpVis = BooleanOptionItem.Create(Id + 12, GeneralOption.GuardianAngelBase_ImpostorsCanSeeProtect, true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.GuardianAngelTOHO]);
     }
     public override void Init()
     {

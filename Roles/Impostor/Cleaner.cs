@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
@@ -26,7 +26,7 @@ internal class Cleaner : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Cleaner])
             .SetValueFormat(OptionFormat.Seconds);
     }
-
+    
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
@@ -35,8 +35,13 @@ internal class Cleaner : RoleBase
 
         if (reporter.Is(CustomRoles.Cleaner))
         {
+            if (deadBody.Object.Is(CustomRoles.Stubborn))
+            {
+                reporter.Notify(Translator.GetString("StubbornNotify"));
+                return false;
+            }
             Main.UnreportableBodies.Add(deadBody.PlayerId);
-
+            
             reporter.Notify(Translator.GetString("CleanerCleanBody"));
             reporter.SetKillCooldownV3(KillCooldownAfterCleaning.GetFloat(), forceAnime: true);
 

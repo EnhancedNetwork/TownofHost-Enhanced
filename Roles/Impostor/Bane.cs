@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -18,6 +18,10 @@ internal class Bane : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("BaneButtonText"));
+    }
 
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem MaxTrapCount;
@@ -72,7 +76,6 @@ internal class Bane : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
-        AURoleOptions.ShapeshifterDuration = 1f;
     }
 
     public override void AfterMeetingTasks()
@@ -80,10 +83,8 @@ internal class Bane : RoleBase
         Traps.Clear();
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
-
         // Remove inactive traps so there is room for new traps
         Traps = Traps.Where(a => a.IsActive).ToHashSet();
 
@@ -108,8 +109,6 @@ internal class Bane : RoleBase
         }
 
         shapeshifter.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
-
-        return false;
     }
 
     private void OnFixedUpdateOthers(PlayerControl player)

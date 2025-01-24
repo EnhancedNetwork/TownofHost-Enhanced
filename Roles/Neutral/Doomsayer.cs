@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
+using System.Text;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -18,13 +18,6 @@ internal class Doomsayer : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
 
-    private readonly HashSet<CustomRoles> GuessedRoles = [];
-    private readonly Dictionary<byte, int> GuessingToWin = [];
-
-    private int GuessesCount = 0;
-    private int GuessesCountPerMeeting = 0;
-    private static bool CantGuess = false;
-
     private static OptionItem DoomsayerAmountOfGuessesToWin;
     private static OptionItem DCanGuessImpostors;
     private static OptionItem DCanGuessCrewmates;
@@ -38,6 +31,12 @@ internal class Doomsayer : RoleBase
     private static OptionItem MisguessRolePrevGuessRoleUntilNextMeeting;
     private static OptionItem DoomsayerTryHideMsg;
     private static OptionItem ImpostorVision;
+
+    private readonly HashSet<CustomRoles> GuessedRoles = [];
+
+    private int GuessesCount = 0;
+    private int GuessesCountPerMeeting = 0;
+    private static bool CantGuess = false;
 
     public override void SetupCustomOption()
     {
@@ -79,43 +78,25 @@ internal class Doomsayer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        GuessingToWin.TryAdd(playerId, GuessesCount);
-    }
-    public void SendRPC(PlayerControl player)
-    {
-        MessageWriter writer;
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(player.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        byte DoomsayerId = reader.ReadByte();
-        GuessingToWin[DoomsayerId]++;
+        playerId.SetAbilityUseLimit(GuessesCount);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(ImpostorVision.GetBool());
-    private (int, int) GuessedPlayerCount(byte doomsayerId)
-    {
-        int GuessesToWin = GuessingToWin[doomsayerId], AmountOfGuessesToWin = DoomsayerAmountOfGuessesToWin.GetInt();
-
-        return (GuessesToWin, AmountOfGuessesToWin);
-    }
     public override string GetProgressText(byte playerId, bool comms)
     {
-        var (GuessingToWin, AmountOfGuessesToWin) = GuessedPlayerCount(playerId);
-        return ColorString(GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f), $"({GuessingToWin}/{AmountOfGuessesToWin})");
+        var ProgressText = new StringBuilder();
+        Color TextColor = GetRoleColor(CustomRoles.Doomsayer).ShadeColor(0.25f);
 
+        //ProgressText.Append(GetTaskCount(playerId, comms));
+        ProgressText.Append(ColorString(TextColor, ColorString(Color.white, " - ") + $"({playerId.GetAbilityUseLimit()}/{DoomsayerAmountOfGuessesToWin.GetInt()})"));
+        return ProgressText.ToString();
     }
-
     public static bool CheckCantGuess = CantGuess;
     public static bool NeedHideMsg(PlayerControl pc) => pc.Is(CustomRoles.Doomsayer) && DoomsayerTryHideMsg.GetBool();
 
     private void CheckCountGuess(PlayerControl doomsayer)
     {
-        if (!(GuessingToWin[doomsayer.PlayerId] >= DoomsayerAmountOfGuessesToWin.GetInt())) return;
+        if (doomsayer.GetAbilityUseLimit() < DoomsayerAmountOfGuessesToWin.GetInt()) return;
 
-        GuessingToWin[doomsayer.PlayerId] = DoomsayerAmountOfGuessesToWin.GetInt();
         GuessesCount = DoomsayerAmountOfGuessesToWin.GetInt();
         if (!CustomWinnerHolder.CheckForConvertedWinner(doomsayer.PlayerId))
         {
@@ -220,13 +201,12 @@ internal class Doomsayer : RoleBase
                 }
                 else
                 {
-                    GuessingToWin[guesser.PlayerId]++;
-                    SendRPC(guesser);
+                    guesser.RpcIncreaseAbilityUseLimitBy(1);
                     GuessedRoles.Add(role);
 
                     _ = new LateTask(() =>
                     {
-                        SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), GuessingToWin[guesser.PlayerId]), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
+                        SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), guesser.GetAbilityUseLimit()), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
                     }, 0.7f, "Doomsayer Guess Msg 1");
                 }
 
@@ -254,8 +234,7 @@ internal class Doomsayer : RoleBase
     {
         if (guesser.Is(CustomRoles.Doomsayer) && guesser.PlayerId != playerMisGuessed.PlayerId)
         {
-            GuessingToWin[guesser.PlayerId]++;
-            SendRPC(guesser);
+            guesser.RpcIncreaseAbilityUseLimitBy(1);
 
             if (!GuessedRoles.Contains(role))
                 GuessedRoles.Add(role);
@@ -264,7 +243,7 @@ internal class Doomsayer : RoleBase
 
             _ = new LateTask(() =>
             {
-                SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), GuessingToWin[guesser.PlayerId]), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
+                SendMessage(string.Format(GetString("DoomsayerGuessCountMsg"), guesser.GetAbilityUseLimit()), guesser.PlayerId, ColorString(GetRoleColor(CustomRoles.Doomsayer), GetString("DoomsayerGuessCountTitle")));
             }, 0.7f, "Doomsayer Guess Msg 2");
         }
     }

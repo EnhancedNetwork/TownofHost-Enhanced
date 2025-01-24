@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -32,27 +32,24 @@ internal class Crusader : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = SkillLimitOpt.GetInt();
+        playerId.SetAbilityUseLimit(SkillLimitOpt.GetInt());
         CurrentKillCooldown = SkillCooldown.GetFloat();
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id.GetPlayer()) ? CurrentKillCooldown : 300f;
 
-    public override bool CanUseKillButton(PlayerControl pc) => AbilityLimit > 0;
+    public override bool CanUseKillButton(PlayerControl pc) => pc.GetAbilityUseLimit() > 0;
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
 
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Crusader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (ForCrusade.Contains(target.PlayerId) || AbilityLimit <= 0) return false;
+        if (ForCrusade.Contains(target.PlayerId) || killer.GetAbilityUseLimit() <= 0) return false;
 
         ForCrusade.Remove(target.PlayerId);
         ForCrusade.Add(target.PlayerId);
-        AbilityLimit--;
-        SendSkillRPC();
 
+        killer.RpcRemoveAbilityUse();
         killer.SetKillCooldown();
 
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);

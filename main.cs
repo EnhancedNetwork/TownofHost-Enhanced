@@ -4,7 +4,6 @@ using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Il2CppInterop.Runtime.Injection;
-using MonoMod.Utils;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -23,7 +22,7 @@ using UnityEngine;
 [assembly: AssemblyVersion(TOHE.Main.PluginVersion)]
 namespace TOHE;
 
-[BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
+[BepInPlugin(PluginGuid, "TOHO", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
@@ -46,21 +45,21 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
-    public const string PluginVersion = "2025.0118.133.00000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.3.3";
+    public const string PluginVersion = "2025.0125.140.01"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.4.0 Test 1";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 1
-    public static readonly bool fullRelease = true; // Latest: V2.1.1
+    public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 13
+    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 1
+    public static readonly bool fullRelease = true; // Latest: v2.1.1
 
     public static bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = false;
+    public static readonly bool ShowUpdateButton = true;
 
-    public static readonly bool ShowGitHubButton = false;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly bool ShowGitHubButton = true;
+    public static readonly string GitHubInviteUrl = "https://github.com/TOHOptimized/TownofHost-Optimized";
 
     public static readonly bool ShowDiscordButton = true;
     public static readonly string DiscordInviteUrl = "https://discord.gg/BWh9Vj5UJ2";
@@ -249,6 +248,10 @@ public class Main : BasePlugin
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
     public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
+
+    public static StringNames[] how2playN = [StringNames.HowToPlayText1, StringNames.HowToPlayText2, StringNames.HowToPlayText41, StringNames.HowToPlayText42, StringNames.HowToPlayText43, StringNames.HowToPlayText44, StringNames.HowToPlayText5, StringNames.HowToPlayText6, StringNames.HowToPlayText7, StringNames.HowToPlayText81, StringNames.HowToPlayText82];
+    public static StringNames[] how2playHnS = [StringNames.HideSeekHowToPlayCaptionOne, StringNames.HideSeekHowToPlayCaptionTwo, StringNames.HideSeekHowToPlayCaptionThree, StringNames.HideSeekHowToPlayPageOne, StringNames.HideSeekHowToPlaySubtextOne, StringNames.HideSeekHowToPlayCrewmateInfoOne, StringNames.HideSeekHowToPlayCrewmateInfoTwo, StringNames.HideSeekHowToPlayFlashlightConsoles, StringNames.HideSeekHowToPlayImpostorInfoOne, StringNames.HideSeekHowToPlayFinalHide, StringNames.HideSeekHowToPlayFlashlightDefault];
+    public static StringNames[] how2playEzHacked = [StringNames.ErrorAuthNonceFailure, StringNames.ErrorBanned, StringNames.ErrorBannedNoCode, StringNames.ErrorClientTimeout, StringNames.ErrorClientTimeoutConsole, StringNames.ErrorCommunications, StringNames.ErrorCrossPlatformCommunication, StringNames.ErrorDuplicateConnection, StringNames.ErrorFullGame, StringNames.ErrorHacking, StringNames.ErrorInactivity, StringNames.ErrorIntentionalLeaving, StringNames.ErrorInvalidName, StringNames.ErrorKicked, StringNames.ErrorKickedNoCode, StringNames.ErrorLobbyFailedGettingBlockedUsers];
     public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
         ? TName_Snacks_CN.RandomElement()
         : TName_Snacks_EN.RandomElement();
@@ -634,9 +637,8 @@ public class Main : BasePlugin
 
         Harmony.PatchAll();
 
-        if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
-        else ConsoleManager.CreateConsole();
-
+        ConsoleManager.DetachConsole();
+        if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
         InitializeFileHash();
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
@@ -659,17 +661,17 @@ public enum CustomRoles
     Shapeshifter,
 
     // Crewmate Vanilla Remakes
-    CrewmateTOHE,
-    EngineerTOHE,
-    GuardianAngelTOHE,
-    NoisemakerTOHE,
-    ScientistTOHE,
-    TrackerTOHE,
+    CrewmateTOHO,
+    EngineerTOHO,
+    GuardianAngelTOHO,
+    NoisemakerTOHO,
+    ScientistTOHO,
+    TrackerTOHO,
 
     // Impostor Vanilla Remakes
-    ImpostorTOHE,
-    PhantomTOHE,
-    ShapeshifterTOHE,
+    ImpostorTOHO,
+    PhantomTOHO,
+    ShapeshifterTOHO,
 
     // Impostor Ghost
     Bloodmoon,
@@ -815,7 +817,6 @@ public enum CustomRoles
     President,
     Protector,
     Psychic,
-    Randomizer,
     Retributionist,
     Reverie,
     Savior,
@@ -911,6 +912,7 @@ public enum CustomRoles
     Terrorist,
     Traitor,
     Troller,
+    Bankrupt,
     Vaporizer,
     Vector,
     VengefulRomantic,
@@ -980,6 +982,7 @@ public enum CustomRoles
     Flash,
     Fool,
     Fragile,
+    Gambler,
     Ghoul,
     Glow,
     Gravestone,
@@ -996,6 +999,7 @@ public enum CustomRoles
     Lucky,
     Madmate,
     Mare,
+    Randomizer,
     Rebirth,
     Revealed,
     Mimic,

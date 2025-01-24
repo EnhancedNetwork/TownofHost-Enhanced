@@ -116,6 +116,11 @@ internal class EvilTracker : RoleBase
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (target.Is(Custom_Team.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            shapeshifter.Notify(Translator.GetString("StubbornNotify"));
+            return false;
+        }
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 

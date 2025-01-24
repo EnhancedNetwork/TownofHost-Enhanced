@@ -278,7 +278,7 @@ internal class ControllerManagerUpdatePatch
             if (GameStates.IsLobby && GetKeysDown(KeyCode.LeftControl, KeyCode.LeftShift, KeyCode.Return, KeyCode.Delete))
             {
                 OptionItem.AllOptions.ToArray().Where(x => x.Id > 0).Do(x => x.SetValueNoRpc(x.DefaultValue));
-                Logger.SendInGame(GetString("RestTOHESetting"));
+                Logger.SendInGame(GetString("RestTOHOSetting"));
             }
 
             // Host kill self

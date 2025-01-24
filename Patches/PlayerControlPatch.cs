@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using Sentry;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -160,7 +161,7 @@ class CheckMurderPatch
             Logger.Info("The target is in an unkillable state and the kill is canceled", "CheckMurder");
             return false;
         }
-        // Target Is Dead
+        // Target is Dead
         if (!target.IsAlive())
         {
             Logger.Info("The target is in a dead state and the kill is canceled", "CheckMurder");
@@ -269,12 +270,13 @@ class CheckMurderPatch
             return false;
         }
 
-        // Madmate Spawn Mode Is First Kill
+        // Madmate Spawn Mode is First Kill
         if (Madmate.MadmateSpawnMode.GetInt() == 1 && Main.MadmateNum < CustomRoles.Madmate.GetCount() && target.CanBeMadmate())
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);
             ExtendedPlayerControl.RpcSetCustomRole(target.PlayerId, CustomRoles.Madmate);
+            target.RemoveIncompatibleAddOns();
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BecomeMadmateCuzMadmateMode")));
             killer.SetKillCooldown();
             killer.RpcGuardAndKill(target);
@@ -327,6 +329,24 @@ class CheckMurderPatch
                     case CustomRoles.Lucky:
                         if (!Lucky.OnCheckMurder(killer, target))
                             return false;
+                        break;
+
+                    case CustomRoles.Gambler:
+                        if (!Gambler.OnCheckMurder(killer, target))
+                        {
+                            target.RpcMurderPlayer(killer);
+                            Main.PlayerStates[target.PlayerId].RemoveSubRole(CustomRoles.Gambler);
+                            return false;
+                        }
+                        else
+                        {
+                            target.RpcSetCustomRole(CustomRoles.Bankrupt);
+                            var AllSubRoles2 = Main.PlayerStates[target.PlayerId].SubRoles.ToList();
+                            foreach (var role in AllSubRoles2)
+                            {
+                                AllSubRoles2.Remove(role);
+                            }
+                        }
                         break;
 
                     case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:
@@ -398,9 +418,17 @@ class MurderPlayerPatch
 
         if (isSucceeded && AmongUsClient.Instance.AmHost && GameStates.IsNormalGame)
         {
+            // AntiBlackOut protect is active
+            if (AntiBlackout.SkipTasks)
+            {
+                Logger.Info("Murder while AntiBlackOut protect, the kill was canceled and reseted", "MurderPlayer");
+                __instance.SetKillCooldown();
+                return false;
+            }
+            
             if (target.shapeshifting)
             {
-                // During shapeshift animation
+                // During Shapeshift Animation
                 // Delay 1s to account for animation time, plus +0.5s to account for lag with the client
                 _ = new LateTask(
                     () =>
@@ -515,8 +543,7 @@ class MurderPlayerPatch
             Utils.SyncAllSettings();
         }
 
-        Utils.NotifyRoles(SpecifySeer: killer);
-        Utils.NotifyRoles(SpecifySeer: target);
+        Utils.NotifyRoles();
     }
     public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
@@ -564,7 +591,7 @@ public static class CheckShapeshiftPatch
             return false;
         }
 
-        // No called code if is invalid shapeshifting
+        // No called code if is invalid Shapeshifting
         if (!CheckInvalidShapeshifting(__instance, target, shouldAnimate))
         {
             __instance.RpcRejectShapeshift();
@@ -579,7 +606,7 @@ public static class CheckShapeshiftPatch
         var shapeshifterRoleClass = shapeshifter.GetRoleClass();
         if (shapeshifterRoleClass?.OnCheckShapeshift(shapeshifter, target, ref resetCooldown, ref shouldAnimate) == false)
         {
-            // role need specific reject shapeshift if player use desync shapeshift
+            // role need specific reject Shapeshift if player use desync Shapeshift
             if (shapeshifterRoleClass.CanDesyncShapeshift)
             {
                 shapeshifter.RpcSpecificRejectShapeshift(target, shouldAnimate);
@@ -649,7 +676,7 @@ public static class CheckShapeshiftPatch
         }
         else
         {
-            if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+            if (!(instance.Is(CustomRoles.ShapeshifterTOHO) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
             {
                 instance.RpcGuardAndKill(instance);
                 instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
@@ -1340,24 +1367,32 @@ class FixedUpdateInNormalGamePatch
                 else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
                 else RoleText.enabled = false;
 
+                string BlankRT = string.Empty;
+
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster))
                 {
-                    RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
-                    RoleText.text += TaskState.GetTaskState(); // random task count for revealed trickster
+                    RoleText.enabled = true; //have to make it return true otherwise modded Overseer won't be able to reveal Trickster's role, same for Illusionist's targets
+                    BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed Trickster
+                    BlankRT += TaskState.GetTaskState(); // random task count for revealed Trickster
+                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
                 }
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
                 {
-                    RoleText.text = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
-                    RoleText.text += TaskState.GetTaskState();
+                    RoleText.enabled = true;
+                    BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
+                    BlankRT += TaskState.GetTaskState();
+                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
                 }
                 if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsNonCovIllusioned(__instance.PlayerId))
                 {
+                    RoleText.enabled = true;
                     var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                    RoleText.text = Utils.ColorString(Utils.GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                    BlankRT = Utils.ColorString(Utils.GetRoleColor(randomRole), GetString(randomRole.ToString()));
                     if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                     {
-                        RoleText.text += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                        BlankRT += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
                     }
+                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
                 }
                 
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
@@ -2075,14 +2110,14 @@ class PlayerControlLocalSetRolePatch
         {
             var modRole = role switch
             {
-                RoleTypes.Crewmate => CustomRoles.CrewmateTOHE,
-                RoleTypes.Impostor => CustomRoles.ImpostorTOHE,
-                RoleTypes.Scientist => CustomRoles.ScientistTOHE,
-                RoleTypes.Engineer => CustomRoles.EngineerTOHE,
-                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHE,
-                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHE,
-                RoleTypes.Phantom => CustomRoles.PhantomTOHE,
-                RoleTypes.Tracker => CustomRoles.TrackerTOHE,
+                RoleTypes.Crewmate => CustomRoles.CrewmateTOHO,
+                RoleTypes.Impostor => CustomRoles.ImpostorTOHO,
+                RoleTypes.Scientist => CustomRoles.ScientistTOHO,
+                RoleTypes.Engineer => CustomRoles.EngineerTOHO,
+                RoleTypes.Shapeshifter => CustomRoles.ShapeshifterTOHO,
+                RoleTypes.Noisemaker => CustomRoles.NoisemakerTOHO,
+                RoleTypes.Phantom => CustomRoles.PhantomTOHO,
+                RoleTypes.Tracker => CustomRoles.TrackerTOHO,
                 _ => CustomRoles.NotAssigned,
             };
             if (modRole != CustomRoles.NotAssigned)

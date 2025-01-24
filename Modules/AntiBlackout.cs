@@ -176,7 +176,7 @@ public static class AntiBlackout
     }
     public static void OnDisconnect(NetworkedPlayerInfo player)
     {
-        // Execution conditions: Client is the host, IsDead is overridden, player is already disconnected
+        // Execution conditions: Client is the Host, IsDead is overridden, player is already disconnected
         if (!AmongUsClient.Instance.AmHost || !IsCached || !player.Disconnected) return;
         isDeadCache[player.PlayerId] = (true, true);
         RevivePlayersAndSetDummyImp();
@@ -263,7 +263,7 @@ public static class AntiBlackout
 
         foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
         {
-            // skip host
+            // skip Host
             if (seerId == 0) continue;
 
             var seer = seerId.GetPlayer();
@@ -301,11 +301,12 @@ public static class AntiBlackout
         {
             if (seer.IsAlive())
             {
-                seer.RpcResetAbilityCooldown();
                 seer.ResetKillCooldown();
 
-                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd) && kcd >= 2f)
-                    seer.SetKillCooldown(kcd - 2f);
+                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
+                    seer.SetKillCooldown(kcd >= 2f ? kcd - 2f : kcd);
+
+                seer.RpcResetAbilityCooldown();
             }
             else if (seer.HasGhostRole())
             {
@@ -315,9 +316,13 @@ public static class AntiBlackout
     }
     public static void ResetAfterMeeting()
     {
-        SkipTasks = false;
-        ExilePlayerId = -1;
         ResetAllCooldown();
+        // add 1 second delay
+        _ = new LateTask(() =>
+        {
+            SkipTasks = false;
+            ExilePlayerId = -1;
+        }, 1f, "Reset Blackout");
     }
     public static void Reset()
     {

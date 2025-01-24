@@ -34,6 +34,11 @@ internal class Innocent : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
         TargetIsKilled = true;
         target.RpcMurderPlayer(killer);
         return false;
