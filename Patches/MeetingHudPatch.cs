@@ -464,7 +464,7 @@ class CheckForEndVotingPatch
             else if (pc_role.IsCoven() && pc != exiledPlayer.Object)
                 covennum++;
 
-            if (pc != exiledPlayer.Object && pc.IsBad())
+            if (pc != exiledPlayer.Object && pc.CheckPlayerIsBad())
                 badnum++; //counts everything that keeps the game going
         }
         switch (Options.CEMode.GetInt())
