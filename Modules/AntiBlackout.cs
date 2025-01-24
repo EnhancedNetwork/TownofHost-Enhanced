@@ -127,9 +127,13 @@ public static class AntiBlackout
         {
             if (seer.IsModded()) continue;
             var seerHasKillButton = seer.HasImpKillButton();
+            var seerIsAlive = seer.IsAlive();
             foreach (var target in Main.AllPlayerControls)
             {
-                if (seer.PlayerId == target.PlayerId && seer.IsAlive() && seerHasKillButton) continue;
+                if (seer.PlayerId == target.PlayerId && seerIsAlive && seerHasKillButton) continue;
+
+                if (!seerIsAlive)
+                    seerHasKillButton = false;
 
                 RoleTypes targetRoleType = !seerHasKillButton && target.PlayerId == dummyImp.PlayerId
                     ? RoleTypes.Impostor : RoleTypes.Crewmate;
