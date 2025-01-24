@@ -416,7 +416,8 @@ public static class CustomRolesHelper
         || role is CustomRoles.Knighted 
                 or CustomRoles.Cleansed 
                 or CustomRoles.Workhorse 
-                or CustomRoles.LastImpostor;
+                or CustomRoles.LastImpostor
+                or CustomRoles.Lovers;
 
     public static bool ShouldBeRemoved(this PlayerControl player, CustomRoles addon)
     {
