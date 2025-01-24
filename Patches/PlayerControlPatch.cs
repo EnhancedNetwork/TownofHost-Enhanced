@@ -873,6 +873,23 @@ class ReportDeadBodyPatch
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
 
+            foreach (var unshapeshifterIds in Main.UnShapeShifter)
+            {
+                var unshapeshifter = Utils.GetPlayerById(unshapeshifterIds);
+
+                if (unshapeshifter.AmOwner) continue;
+
+                unshapeshifter.Shapeshift(unshapeshifter, false);
+
+                MessageWriter unshapeshiftwriter = AmongUsClient.Instance.StartRpcImmediately(unshapeshifter.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, unshapeshifter.OwnerId);
+                unshapeshiftwriter.WriteNetObject(unshapeshifter);
+                unshapeshiftwriter.Write(false);
+                AmongUsClient.Instance.FinishRpcImmediately(unshapeshiftwriter);
+
+                // Normally unshape shifter will reset its outfit on meeting start itself
+                // But sometimes it may fail. we just need to make sure it resets.
+            }
+
             foreach (var playerStates in Main.PlayerStates.Values.ToArray())
             {
                 try
