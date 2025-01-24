@@ -32,15 +32,6 @@ internal class Convict : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
 
-    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
-    {
-        if (completedTaskCount == totalTaskCount && player.IsAlive())
-        {
-            player.RpcGuardAndKill(player);
-            player.Notify(string.Format(GetString("ConvictRoleChange"), Utils.GetRoleName(CustomRoles.Refugee)));
-        }
-        return true;
-    }
     public override void AfterMeetingTasks()
     { 
         var convict = _Player;
@@ -50,7 +41,7 @@ internal class Convict : RoleBase
             convict.RpcSetCustomRole(CustomRoles.Refugee);
             convict.SyncSettings();
             convict.SetKillCooldown();
-            AddMsg(string.Format(GetString("ConvictToRefugeeMsg"), Utils.GetRoleName(CustomRoles.Refugee)), convict.PlayerId);
+            convict.Notify(string.Format(GetString("ConvictToRefugeeMsg"), CustomRoles.Refugee.ToString()));
         }
     }
 }
