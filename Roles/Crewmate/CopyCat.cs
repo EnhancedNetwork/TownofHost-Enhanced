@@ -107,6 +107,11 @@ internal class CopyCat : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         CustomRoles role = target.GetCustomRole();
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
         if (BlackList(role))
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
@@ -176,14 +181,14 @@ internal class CopyCat : RoleBase
             }
             if (CopyTeamChangingAddon.GetBool())
             {
-                if (target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal)) killer.RpcSetCustomRole(CustomRoles.Madmate);
-                if (target.Is(CustomRoles.Charmed)) killer.RpcSetCustomRole(CustomRoles.Charmed);
-                if (target.Is(CustomRoles.Infected)) killer.RpcSetCustomRole(CustomRoles.Infected);
-                if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit);
-                if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
-                if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
-                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
-                if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted);
+                if (target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal)) killer.RpcSetCustomRole(CustomRoles.Madmate, false);
+                if (target.Is(CustomRoles.Charmed)) killer.RpcSetCustomRole(CustomRoles.Charmed, false);
+                if (target.Is(CustomRoles.Infected)) killer.RpcSetCustomRole(CustomRoles.Infected, false);
+                if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit, false);
+                if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious, false);
+                if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless, false);
+                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired, false);
+                if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted, false);
             }
             killer.RpcGuardAndKill(killer);
             killer.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));

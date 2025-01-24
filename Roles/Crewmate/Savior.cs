@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;

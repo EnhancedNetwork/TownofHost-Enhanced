@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -114,5 +115,5 @@ internal class Deputy : RoleBase
     {
         hud.KillButton.OverrideText(GetString("DeputyHandcuffText"));
     }
-    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Deputy");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Handcuff");
 }

@@ -1,5 +1,6 @@
 ﻿using Hazel;
 using InnerNet;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -106,6 +107,11 @@ internal class Coroner : RoleBase
 
         if (pc.GetAbilityUseLimit() >= 1)
         {
+        if (deadBody.Object.Is(CustomRoles.Stubborn))
+            {
+                pc.Notify(GetString("StubbornNotify"));
+                return false;
+            }
             CoronerTargets[pc.PlayerId].Add(killer.PlayerId);
             TargetArrow.Add(pc.PlayerId, killer.PlayerId);
 
@@ -113,11 +119,6 @@ internal class Coroner : RoleBase
             pc.RpcRemoveAbilityUse();
 
             int operate = 0;
-            if (LeaveDeadBodyUnreportable.GetBool())
-            {
-                Main.UnreportableBodies.Add(deadBody.PlayerId);
-                operate = 1;
-            }
             SendRPCLimit(pc.PlayerId, operate, targetId: deadBody.PlayerId);
 
             if (InformKillerBeingTracked.GetBool())

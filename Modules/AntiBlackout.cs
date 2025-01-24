@@ -301,11 +301,12 @@ public static class AntiBlackout
         {
             if (seer.IsAlive())
             {
-                seer.RpcResetAbilityCooldown();
                 seer.ResetKillCooldown();
 
                 if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
-                    seer.SetKillCooldown(kcd + 1f);
+                    seer.SetKillCooldown(kcd >= 2f ? kcd - 2f : kcd);
+
+                seer.RpcResetAbilityCooldown();
             }
             else if (seer.HasGhostRole())
             {

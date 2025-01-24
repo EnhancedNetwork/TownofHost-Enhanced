@@ -103,7 +103,8 @@ internal class Medusa : CovenManager
             killer.RpcMurderPlayer(target);
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            Main.UnreportableBodies.Add(target.PlayerId);
+            if (!target.Is(CustomRoles.Stubborn)) Main.UnreportableBodies.Add(target.PlayerId);
+            else killer.Notify(GetString("StubbornNotify"));
             return false;
         }
         else

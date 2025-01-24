@@ -20,7 +20,8 @@ internal static class FFAManager
     public static int RoundTime;
 
     //Options
-    public static OptionItem FFA_GameTime;
+    public static OptionItem GameTime;
+    public static OptionItem ShowChatInGame;
     public static OptionItem FFA_KCD;
     public static OptionItem FFA_LowerVision;
     public static OptionItem FFA_IncreasedSpeed;
@@ -36,46 +37,53 @@ internal static class FFAManager
 
     public static void SetupCustomOption()
     {
-        FFA_GameTime = IntegerOptionItem.Create(67_223_001, "FFA_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
+        GameTime = IntegerOptionItem.Create(67_223_001, "GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
-            .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
-        FFA_KCD = FloatOptionItem.Create(67_223_002, "FFA_KCD", new(1f, 60f, 1f), 10f, TabGroup.ModSettings, false)
+        ShowChatInGame = BooleanOptionItem.Create(67_233_02, "ShowChatInGame", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.FFA);
+
+        /*********** Killers ***********/
+        TextOptionItem.Create(67_233_03, "Killer", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.FFA)
+            .SetColor(new Color32(0, 255, 165, byte.MaxValue));
+
+        FFA_KCD = FloatOptionItem.Create(67_223_004, "FFA_KCD", new(1f, 60f, 1f), 10f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        FFA_DisableVentingWhenTwoPlayersAlive = BooleanOptionItem.Create(67_223_003, "FFA_DisableVentingWhenTwoPlayersAlive", true, TabGroup.ModSettings, false)
+        FFA_DisableVentingWhenTwoPlayersAlive = BooleanOptionItem.Create(67_223_005, "FFA_DisableVentingWhenTwoPlayersAlive", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue));
-        FFA_DisableVentingWhenKCDIsUp = BooleanOptionItem.Create(67_223_004, "FFA_DisableVentingWhenKCDIsUp", true, TabGroup.ModSettings, false)
+        FFA_DisableVentingWhenKCDIsUp = BooleanOptionItem.Create(67_223_006, "FFA_DisableVentingWhenKCDIsUp", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue));
-        FFA_EnableRandomAbilities = BooleanOptionItem.Create(67_223_005, "FFA_EnableRandomAbilities", true, TabGroup.ModSettings, false)
+        FFA_EnableRandomAbilities = BooleanOptionItem.Create(67_223_007, "FFA_EnableRandomAbilities", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue));
-        FFA_ShieldDuration = FloatOptionItem.Create(67_223_006, "FFA_ShieldDuration", new(1f, 70f, 1f), 7f, TabGroup.ModSettings, false)
+        FFA_ShieldDuration = FloatOptionItem.Create(67_223_008, "FFA_ShieldDuration", new(1f, 70f, 1f), 7f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        FFA_IncreasedSpeed = FloatOptionItem.Create(67_223_007, "FFA_IncreasedSpeed", new(0.1f, 5f, 0.1f), 1.5f, TabGroup.ModSettings, false)
+        FFA_IncreasedSpeed = FloatOptionItem.Create(67_223_009, "FFA_IncreasedSpeed", new(0.1f, 5f, 0.1f), 1.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier);
-        FFA_DecreasedSpeed = FloatOptionItem.Create(67_223_008, "FFA_DecreasedSpeed", new(0.1f, 5f, 0.1f), 1f, TabGroup.ModSettings, false)
+        FFA_DecreasedSpeed = FloatOptionItem.Create(67_223_0010, "FFA_DecreasedSpeed", new(0.1f, 5f, 0.1f), 1f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier);
-        FFA_ModifiedSpeedDuration = FloatOptionItem.Create(67_223_009, "FFA_ModifiedSpeedDuration", new(1f, 60f, 1f), 10f, TabGroup.ModSettings, false).SetGameMode(CustomGameMode.FFA).SetColor(new Color32(0, 255, 165, byte.MaxValue))
+        FFA_ModifiedSpeedDuration = FloatOptionItem.Create(67_223_0011, "FFA_ModifiedSpeedDuration", new(1f, 60f, 1f), 10f, TabGroup.ModSettings, false).SetGameMode(CustomGameMode.FFA).SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        FFA_LowerVision = FloatOptionItem.Create(67_223_010, "FFA_LowerVision", new(0f, 1f, 0.05f), 0.5f, TabGroup.ModSettings, false).SetGameMode(CustomGameMode.FFA).SetColor(new Color32(0, 255, 165, byte.MaxValue))
+        FFA_LowerVision = FloatOptionItem.Create(67_223_012, "FFA_LowerVision", new(0f, 1f, 0.05f), 0.5f, TabGroup.ModSettings, false).SetGameMode(CustomGameMode.FFA).SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Multiplier);
-        FFA_ModifiedVisionDuration = FloatOptionItem.Create(67_223_011, "FFA_ModifiedVisionDuration", new(1f, 70f, 1f), 5f, TabGroup.ModSettings, false).SetGameMode(CustomGameMode.FFA).SetColor(new Color32(0, 255, 165, byte.MaxValue))
+        FFA_ModifiedVisionDuration = FloatOptionItem.Create(67_223_013, "FFA_ModifiedVisionDuration", new(1f, 70f, 1f), 5f, TabGroup.ModSettings, false).SetGameMode(CustomGameMode.FFA).SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds);
-        FFA_EnableRandomTwists = BooleanOptionItem.Create(67_223_012, "FFA_EnableRandomTwists", true, TabGroup.ModSettings, false)
+        FFA_EnableRandomTwists = BooleanOptionItem.Create(67_223_014, "FFA_EnableRandomTwists", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue));
-        FFA_ShieldIsOneTimeUse = BooleanOptionItem.Create(67_223_013, "FFA_ShieldIsOneTimeUse", true, TabGroup.ModSettings, false)
+        FFA_ShieldIsOneTimeUse = BooleanOptionItem.Create(67_223_015, "FFA_ShieldIsOneTimeUse", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue));
     }
@@ -103,7 +111,7 @@ internal static class FFAManager
     {
         if (Options.CurrentGameMode != CustomGameMode.FFA) return;
 
-        RoundTime = FFA_GameTime.GetInt() + 8;
+        RoundTime = GameTime.GetInt() + 8;
         var now = Utils.GetTimeStamp() + 8;
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
         {

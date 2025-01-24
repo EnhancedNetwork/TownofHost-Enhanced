@@ -933,7 +933,7 @@ class IntroCutsceneDestroyPatch
 
                                 if (Main.AllPlayerKillCooldown.TryGetValue(pc.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
                                 {
-                                    pc.SetKillCooldown(Options.FixKillCooldownValue.GetFloat() - 2f);
+                                    pc.SetKillCooldown(Options.ChangeFirstKillCooldown.GetBool() ? Options.FixKillCooldownValue.GetFloat() - 2f : killTimer - 2f);
                                 }
                             }
                         }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
@@ -971,13 +971,14 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => true,
-                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
+                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             bool shouldAntiBlackOut = Options.CurrentGameMode switch
             {
-                CustomGameMode.CandR => CopsAndRobbersManager.CandR_ShowChatInGame.GetBool(),
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
+                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             try

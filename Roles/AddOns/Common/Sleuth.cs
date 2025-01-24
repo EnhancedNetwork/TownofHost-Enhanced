@@ -1,4 +1,5 @@
-﻿namespace TOHE.Roles.AddOns.Common;
+
+namespace TOHE.Roles.AddOns.Common;
 
 public class Sleuth : IAddon
 {
@@ -33,6 +34,11 @@ public class Sleuth : IAddon
     {
         if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && deadBody.Object != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
         {
+            if (deadBody.Object.Is(CustomRoles.Stubborn))
+            {
+                Utils.SendMessage(Translator.GetString("StubbornNotify"), reporter.PlayerId);
+                return;
+            }
             string msg;
             msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false));
             if (SleuthCanKnowKillerRole.GetBool())

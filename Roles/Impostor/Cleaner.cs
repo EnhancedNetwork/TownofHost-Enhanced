@@ -35,6 +35,11 @@ internal class Cleaner : RoleBase
 
         if (reporter.Is(CustomRoles.Cleaner))
         {
+            if (deadBody.Object.Is(CustomRoles.Stubborn))
+            {
+                reporter.Notify(Translator.GetString("StubbornNotify"));
+                return false;
+            }
             Main.UnreportableBodies.Add(deadBody.PlayerId);
             
             reporter.Notify(Translator.GetString("CleanerCleanBody"));

@@ -1,4 +1,5 @@
-﻿using static TOHE.Translator;
+using TOHE.Modules;
+using static TOHE.Translator;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;

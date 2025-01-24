@@ -710,11 +710,7 @@ public static class Utils
                 default:
                     ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
-                    if (ProgressText.Length == 0)
-                    {
-                        ProgressText.Append(GetTaskCount(playerId, comms));
-                    }
-                    else
+                    if (ProgressText.Length > 0)
                     {
                         ProgressText.Insert(0, " ");
                     }
@@ -736,7 +732,7 @@ public static class Utils
             float limit = playerId.GetAbilityUseLimit();
             if (float.IsNaN(limit)) return string.Empty;
             Color TextColor;
-            if (limit < 1) TextColor = Color.red;
+            if (limit < 1) TextColor = displayOnlyUseAbility ? Color.gray : Color.red;
             else if (usingAbility) TextColor = Color.green;
             else TextColor = GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.25f);
             return (displayOnlyUseAbility ? string.Empty : ColorString(Color.white, " - ")) + ColorString(TextColor, $"({Math.Round(limit, 1)})");

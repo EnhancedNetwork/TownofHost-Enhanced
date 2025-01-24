@@ -31,6 +31,11 @@ internal class Scavenger : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            target.Notify(Translator.GetString("StubbornNotify"));
+            return true;
+        }
         target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
         KilledPlayersId.Add(target.PlayerId);
 

@@ -2,6 +2,7 @@
 using InnerNet;
 using System.Text;
 using UnityEngine;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 using static TOHE.Utils;

@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -10,7 +11,7 @@ internal class Jackal : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Jackal;
     private const int Id = 16700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jackal);
     public static readonly HashSet<byte> Playerids = [];
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -185,7 +186,7 @@ internal class Jackal : RoleBase
         if (target.Is(CustomRoles.Loyal)
             || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
         {
-            // Loyal or Only Recruit & can not get addon
+            // Loyal or only Recruit can not get Add-on
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
             return true;
         }
@@ -237,7 +238,7 @@ internal class Jackal : RoleBase
 
                 killer.RpcRemoveAbilityUse();
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned Recruit to {target.GetNameWithRole()}", "Jackal");
-                target.RpcSetCustomRole(CustomRoles.Recruit);
+                target.RpcSetCustomRole(CustomRoles.Recruit, false);
 
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
@@ -262,7 +263,7 @@ internal class Jackal : RoleBase
                 }
                 else
                 {
-                    target.RpcSetCustomRole(CustomRoles.Recruit);
+                    target.RpcSetCustomRole(CustomRoles.Recruit, false);
                 }
                 killer.RpcRemoveAbilityUse();
 

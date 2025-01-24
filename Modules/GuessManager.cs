@@ -250,7 +250,12 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessRainbow"));
                     return true;
                 }
-                if (role is CustomRoles.LastImpostor or CustomRoles.Mare or CustomRoles.Cyber or CustomRoles.Flash or CustomRoles.Glow or CustomRoles.Sloth)
+                if (role == CustomRoles.Stubborn && target.Is(CustomRoles.Stubborn))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("GuessStubborn"));
+                    return true;
+                }
+                if (role is CustomRoles.LastImpostor or CustomRoles.Mare or CustomRoles.Cyber or CustomRoles.Flash or CustomRoles.Glow or CustomRoles.Sloth or CustomRoles.Statue or CustomRoles.Spurt)
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessObviousAddon"));
                     return true;
@@ -273,47 +278,47 @@ public static class GuessManager
                     return true;
                 }
 
-                // Guesser (add-on) Cant Guess Addons
+                // Guesser (Add-on) can't Guess Add-ons
                 if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                     return true;
                 }
 
-                // Guesser Mode Can/Cant Guess Addons
+                // Guesser Mode can/can't Guess Add-ons
                 if (Options.GuesserMode.GetBool())
                 {
                     if (role.IsAdditionRole() && !Options.CanGuessAddons.GetBool())
                     {
-                        // Impostors Cant Guess Addons
+                        // Impostors can't Guess Add-ons
                         if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
 
-                        // Crewmates Cant Guess Addons
+                        // Crewmates can't Guess Add-ons
                         if (Options.CrewmatesCanGuess.GetBool() && pc.Is(Custom_Team.Crewmate) && !(pc.Is(CustomRoles.NiceGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
 
-                        // Coven Cant Guess Addons
+                        // Coven can't Guess Add-ons
                         if (Options.CovenCanGuess.GetBool() && pc.Is(Custom_Team.Coven) && !pc.Is(CustomRoles.Guesser))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
 
-                        // Neutrals Cant Guess Addons
+                        // Neutrals can't Guess Add-ons
                         if ((Options.NeutralKillersCanGuess.GetBool() || Options.PassiveNeutralsCanGuess.GetBool()) && pc.Is(Custom_Team.Neutral) && !(pc.Is(CustomRoles.Doomsayer) || pc.Is(CustomRoles.Guesser)))
                         {
                             pc.ShowInfoMessage(isUI, GetString("GuessAdtRole"));
                             return true;
                         }
                     }
-                    if (role.IsImpostor() && !Options.ImpCanGuessImp.GetBool())
+                    if (role.IsImpostorTeamV3() && !Options.ImpCanGuessImp.GetBool())
                     {
                         if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
@@ -391,8 +396,17 @@ public static class GuessManager
 
                 if (target.Is(role) && target.Is(CustomRoles.Rebound))
                 {
-                    guesserSuicide = true;
-                    Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser suicide because rebound", "GuessManager");
+                    if (target.Is(CustomRoles.Stubborn))
+                    {
+                        pc.ShowInfoMessage(isUI, GetString("StubbornGuessRebound"));
+                        Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser supposed to suicide because rebound but too Stubborn", "GuessManager");
+                        return true;
+                    }
+                    else 
+                    {
+                        guesserSuicide = true;
+                        Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser suicide because rebound", "GuessManager");
+                    }
                 }
 
                 Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} guessed => {target.GetNameWithRole().RemoveHtmlTags()}", "Guesser");
@@ -586,36 +600,43 @@ public static class GuessManager
     public static void TryHideMsg()
     {
         ChatUpdatePatch.DoBlockChat = true;
-        var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
-        var rd = IRandom.Instance;
-        string msg;
-        string[] command = ["bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审"];
-        for (int i = 0; i < 20; i++)
+        if (ChatManager.quickChatSpamMode != Options.QuickChatSpamMode.QuickChatSpam_Disabled)
         {
-            msg = "/";
-            if (rd.Next(1, 100) < 20)
+            ChatManager.SendQuickChatSpam();
+        }
+        else
+        {
+            var roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToArray();
+            var rd = IRandom.Instance;
+            string msg;
+            string[] command = ["bet", "bt", "guess", "gs", "shoot", "st", "赌", "猜", "审判", "tl", "判", "审"];
+            for (int i = 0; i < 20; i++)
             {
-                msg += "id";
+               msg = "/";
+                if (rd.Next(1, 100) < 20)
+                {
+                    msg += "id";
+                }
+                else
+                {
+                    msg += command[rd.Next(0, command.Length - 1)];
+                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                    msg += rd.Next(0, 15).ToString();
+                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                    CustomRoles role = roles.RandomElement();
+                    msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
+                    msg += Utils.GetRoleName(role);
+                }
+                var player = Main.AllAlivePlayerControls.RandomElement();
+                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
+                writer.StartMessage(-1);
+                writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
+                    .Write(msg)
+                    .EndRpc();
+                writer.EndMessage();
+                writer.SendMessage();
             }
-            else
-            {
-                msg += command[rd.Next(0, command.Length - 1)];
-                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                msg += rd.Next(0, 15).ToString();
-                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                CustomRoles role = roles.RandomElement();
-                msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                msg += Utils.GetRoleName(role);
-            }
-            var player = Main.AllAlivePlayerControls.RandomElement();
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
-            var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
-            writer.StartMessage(-1);
-            writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
-                .EndRpc();
-            writer.EndMessage();
-            writer.SendMessage();
         }
         ChatUpdatePatch.DoBlockChat = false;
     }
@@ -1124,7 +1145,7 @@ public static class GuessManager
         }
     }
 
-    // Modded non-host client guess role/add-on
+    // Modded non-host client guess Role/Add-on
     private static void SendRPC(int playerId, CustomRoles role)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (int)CustomRPC.Guess, SendOption.Reliable, -1);

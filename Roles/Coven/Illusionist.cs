@@ -1,8 +1,8 @@
 using Hazel;
 using InnerNet;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -84,6 +84,11 @@ internal class Illusionist : CovenManager
     }
     private void SetIllusioned(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornImmune"));
+            return;
+        }
         IllusionedPlayers[killer.PlayerId].Add(target.PlayerId);
         killer.RpcRemoveAbilityUse();
         SendRPC(killer, target);

@@ -1,12 +1,14 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System.Text;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
-using UnityEngine;
+using static TOHE.Utils;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -48,13 +50,16 @@ internal class Pelican : RoleBase
 
         Count = 0;
     }
+    public override void Add(byte playerId)
+    {
+        eatenList[playerId] = [];
+    }
     public override void Remove(byte playerId)
     {
-        ReturnEatenPlayerBack(Utils.GetPlayerById(playerId));
+        ReturnEatenPlayerBack(playerId.GetPlayer());
     }
     private void SyncEatenList()
     {
-        SendRPC(byte.MaxValue);
         foreach (var el in eatenList)
             SendRPC(el.Key);
     }
@@ -74,25 +79,20 @@ internal class Pelican : RoleBase
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         byte playerId = reader.ReadByte();
-        if (playerId == byte.MaxValue)
-        {
-            eatenList.Clear();
-        }
-        else
-        {
-            int eatenNum = reader.ReadInt32();
-            eatenList.Remove(playerId);
-            HashSet<byte> list = [];
-            for (int i = 0; i < eatenNum; i++)
-                list.Add(reader.ReadByte());
-            eatenList.Add(playerId, list);
-        }
+        
+        eatenList[playerId].Clear();
+        
+        int eatenNum = reader.ReadInt32();
+        HashSet<byte> list = [];
+        for (int i = 0; i < eatenNum; i++)
+            list.Add(reader.ReadByte());
+        eatenList[playerId] = list;
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    private static bool IsEaten(PlayerControl pc, byte id) => eatenList.ContainsKey(pc.PlayerId) && eatenList[pc.PlayerId].Contains(id);
+    private static bool IsEaten(PlayerControl pc, byte id) => eatenList.TryGetValue(pc.PlayerId, out var list) && list.Contains(id);
     public static bool IsEaten(byte id)
     {
         foreach (var el in eatenList)
@@ -104,9 +104,9 @@ internal class Pelican : RoleBase
     {
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
 
-        var target = Utils.GetPlayerById(id);
+        var target = id.GetPlayer();
 
-        var penguins = Utils.GetRoleBasesByType<Penguin>()?.ToList();
+        var penguins = GetRoleBasesByType<Penguin>()?.ToList();
         if (penguins != null)
         {
             if (penguins.Any(pg => target.PlayerId == pg.AbductVictim?.PlayerId))
@@ -119,7 +119,7 @@ internal class Pelican : RoleBase
     }
     public static Vector2 GetBlackRoomPSForPelican()
     {
-        return Utils.GetActiveMapId() switch
+        return GetActiveMapId() switch
         {
             0 => new Vector2(-27f, 3.3f), // The Skeld
             1 => new Vector2(-11.4f, 8.2f), // MIRA HQ
@@ -135,22 +135,24 @@ internal class Pelican : RoleBase
     public override string GetProgressText(byte playerId, bool coooms)
     {
         var eatenNum = 0;
-        if (eatenList.ContainsKey(playerId))
-            eatenNum = eatenList[playerId].Count;
-        return Utils.ColorString(eatenNum < 1 ? Color.gray : Utils.GetRoleColor(CustomRoles.Pelican), $"({eatenNum})");
+        var ProgressText = new StringBuilder();
+
+        if (eatenList.TryGetValue(playerId, out var list))
+            eatenNum = list.Count;
+
+        ProgressText.Append(ColorString(eatenNum < 1 ? Color.gray : GetRoleColor(CustomRoles.Pelican), $"({eatenNum})"));
+        return ProgressText.ToString();
     }
     private void EatPlayer(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            pc.Notify(ColorString(GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
             return;
         }
 
-        if (!eatenList.ContainsKey(pc.PlayerId)) eatenList.Add(pc.PlayerId, []);
         eatenList[pc.PlayerId].Add(target.PlayerId);
-
         SyncEatenList();
 
         originalSpeed.Remove(target.PlayerId);
@@ -161,8 +163,8 @@ internal class Pelican : RoleBase
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
 
-        Utils.NotifyRoles(SpecifySeer: pc);
-        Utils.NotifyRoles(SpecifySeer: target);
+        NotifyRoles(SpecifySeer: pc);
+        NotifyRoles(SpecifySeer: target);
 
         Logger.Info($"{pc.GetRealName()} eat player => {target.GetRealName()}", "Pelican");
     }
@@ -173,8 +175,8 @@ internal class Pelican : RoleBase
         {
             foreach (var tar in pc.Value)
             {
-                var target = Utils.GetPlayerById(tar);
-                var killer = Utils.GetPlayerById(pc.Key);
+                var target = tar.GetPlayer();
+                var killer = pc.Key.GetPlayer();
                 if (killer == null || target == null) continue;
                 Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
                 ReportDeadBodyPatch.CanReport[tar] = true;
@@ -185,12 +187,17 @@ internal class Pelican : RoleBase
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
             }
+            eatenList[pc.Key].Clear();
         }
-        eatenList.Clear();
         SyncEatenList();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return true;
+        }
         if (CanEat(killer, target.PlayerId))
         {
             EatPlayer(killer, target);
@@ -223,7 +230,7 @@ internal class Pelican : RoleBase
     private void ReturnEatenPlayerBack(PlayerControl pelican)
     {
         var pelicanId = pelican.PlayerId;
-        if (!eatenList.ContainsKey(pelicanId)) return;
+        if (!eatenList.TryGetValue(pelicanId, out var list)) return;
 
         GameEndCheckerForNormal.ShouldNotCheck = true;
 
@@ -235,10 +242,10 @@ internal class Pelican : RoleBase
             else
                 teleportPosition = pelican.GetCustomPosition();
 
-            foreach (var tar in eatenList[pelicanId])
+            foreach (var tar in list)
             {
-                var target = Utils.GetPlayerById(tar);
-                var player = Utils.GetPlayerById(pelicanId);
+                var target = tar.GetPlayer();
+                var player = pelicanId.GetPlayer();
                 if (player == null || target == null) continue;
 
                 target.RpcTeleport(teleportPosition);
@@ -252,13 +259,13 @@ internal class Pelican : RoleBase
 
                 Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");
             }
-            eatenList.Remove(pelicanId);
+            eatenList[pelicanId].Clear();
             SyncEatenList();
-            Utils.NotifyRoles();
+            NotifyRoles();
         }
         catch (System.Exception error)
         {
-            Utils.ThrowException(error);
+            ThrowException(error);
         }
 
         GameEndCheckerForNormal.ShouldNotCheck = false;
@@ -282,11 +289,11 @@ internal class Pelican : RoleBase
                 if (!target.IsAlive()) continue;
 
                 var pos = GetBlackRoomPSForPelican();
-                var dis = Utils.GetDistance(pos, target.GetCustomPosition());
+                var dis = GetDistance(pos, target.GetCustomPosition());
                 if (dis < 1f) continue;
 
                 target.RpcTeleport(pos, sendInfoInLogs: false);
-                //Utils.NotifyRoles(SpecifySeer: target, ForceLoop: false);
+                //NotifyRoles(SpecifySeer: target, ForceLoop: false);
             }
         }
     }

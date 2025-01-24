@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;

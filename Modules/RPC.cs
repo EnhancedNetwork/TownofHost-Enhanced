@@ -107,7 +107,6 @@ public enum CustomRPC : byte // 185/255 USED
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
-    SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
@@ -600,9 +599,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCursedSoulCurseLimit:
-                CursedSoul.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);
                 break;
@@ -693,7 +689,7 @@ internal class PlayerPhysicsRPCHandlerPatch
 
         if (!Main.MeetingIsStarted)
         {
-            __instance.myPlayer.walkingToVent = true;
+            //__instance.myPlayer.walkingToVent = true;
             VentSystemDeterioratePatch.ForceUpadate = true;
         }
 

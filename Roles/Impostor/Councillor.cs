@@ -1,6 +1,7 @@
 using Hazel;
 using System;
 using System.Text.RegularExpressions;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -112,6 +113,11 @@ internal class Councillor : RoleBase
                 if (MurderLimitMeeting <= 0)
                 {
                     pc.ShowInfoMessage(isUI, GetString("CouncillorMurderMaxMeeting"));
+                    return true;
+                }
+                else if (target.Is(CustomRoles.Stubborn))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("StubbornNotify"));
                     return true;
                 }
                 else if (pc.GetAbilityUseLimit() <= 0)

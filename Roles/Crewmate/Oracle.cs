@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using static TOHE.Options;
@@ -61,6 +62,11 @@ internal class Oracle : RoleBase
         if (player.PlayerId == target.PlayerId)
         {
             SendMessage(GetString("OracleCheckSelfMsg") + "\n\n" + string.Format(GetString("OracleCheckLimit"), abilityUse), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
+            return true;
+        }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            SendMessage(GetString("StubbornNotify") + "\n\n" + string.Format(GetString("OracleCheckLimit"), abilityUse), player.PlayerId, ColorString(GetRoleColor(CustomRoles.Oracle), GetString("OracleCheckMsgTitle")));
             return true;
         }
 

@@ -57,6 +57,7 @@ public static class GhostRoleAssign
             or CustomRoles.Retributionist
             or CustomRoles.NiceMini
             or CustomRoles.Romantic
+            or CustomRoles.Jester
             or CustomRoles.Follower
             or CustomRoles.Specter
             or CustomRoles.Sunnyboy
@@ -66,6 +67,8 @@ public static class GhostRoleAssign
             or CustomRoles.Lawyer
             or CustomRoles.Provocateur
             or CustomRoles.Virus
+            or CustomRoles.Jackal
+            or CustomRoles.Sidekick
             or CustomRoles.PlagueDoctor) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();

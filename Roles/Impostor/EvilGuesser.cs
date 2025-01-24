@@ -53,15 +53,15 @@ internal class EvilGuesser : RoleBase
             return true;
         }
 
-        // Evil Guesser Can't Guess Addons
+        // Evil Guesser can't Guess Add-ons
         if (role.IsAdditionRole() && !EGCanGuessAdt.GetBool())
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessAdtRole"));
             return true;
         }
 
-        // Evil Guesser Can't Guess Impostors
-        if (role.IsImpostor() && !EGCanGuessImp.GetBool())
+        // Evil Guesser can't Guess Impostors
+        if (role.IsImpostorTeamV3() && !EGCanGuessImp.GetBool())
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessImpRole"));
             return true;

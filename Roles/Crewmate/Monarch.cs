@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using static TOHE.Options;
@@ -56,7 +57,7 @@ internal class Monarch : RoleBase
         if (CanBeKnighted(target))
         {
             killer.RpcRemoveAbilityUse();
-            target.RpcSetCustomRole(CustomRoles.Knighted);
+            target.RpcSetCustomRole(CustomRoles.Knighted, false);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchKnightedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("KnightedByMonarch")));

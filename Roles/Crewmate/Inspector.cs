@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
@@ -10,6 +11,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
+
 internal class Inspector : RoleBase
 {
     //===========================SETUP================================\\
@@ -154,6 +156,12 @@ internal class Inspector : RoleBase
             var target2Name = target2.GetRealName();
             if (target2IsVM) target2Name = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
 
+            if (target1.Is(CustomRoles.Stubborn) || target2.Is(CustomRoles.Stubborn))
+            {
+                pc.ShowInfoMessage(isUI, GetString("StubbornNotify2"));
+                return true;
+            }
+
             if (target1 != null && target2 != null)
             {
                 Logger.Info($"{pc.GetNameWithRole()} checked {target1.GetNameWithRole()} and {target2.GetNameWithRole()}", "Inspector");
@@ -265,11 +273,13 @@ internal class Inspector : RoleBase
                             if (target1.Is(CustomRoles.Admired)) roleT1 = "Crewmate";
                             else if (target1.GetCustomRole().IsImpostorTeamV2() || target1.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT1 = "Impostor";
                             else if (target1.GetCustomRole().IsNeutralTeamV2() || target1.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT1 = "Neutral";
+                            else if (target1.GetCustomRole().IsCovenTeam() || target1.IsAnySubRole(role => role.IsCovenTeam())) roleT1 = "Coven";
                             else if (target1.GetCustomRole().IsCrewmateTeamV2() && (target1.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target1.GetCustomSubRoles().Count == 0))) roleT1 = "Crewmate";
 
                             if (target2.Is(CustomRoles.Admired)) roleT2 = "Crewmate";
                             else if (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT2 = "Impostor";
                             else if (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT2 = "Neutral";
+                            else if (target2.GetCustomRole().IsCovenTeam() || target2.IsAnySubRole(role => role.IsCovenTeam())) roleT2 = "Coven";
                             else if ((target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0))) roleT2 = "Crewmate";
 
                             _ = new LateTask(() =>
@@ -362,7 +372,12 @@ internal class Inspector : RoleBase
     }
     private static void TryHideMsgForCompare()
     {
-        ChatUpdatePatch.DoBlockChat = true;
+        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
+        {
+            ChatManager.SendQuickChatSpam();
+            ChatUpdatePatch.DoBlockChat = false;
+            return;
+        }
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
         string msg;

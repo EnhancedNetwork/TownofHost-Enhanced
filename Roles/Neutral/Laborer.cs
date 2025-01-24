@@ -1,4 +1,5 @@
 ﻿using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Translator;
 

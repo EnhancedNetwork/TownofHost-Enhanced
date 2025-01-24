@@ -49,6 +49,9 @@ internal static class CopsAndRobbersManager
     private static int numRobbers;
     public static int RoundTime;
 
+    private static OptionItem GameTime;
+    public static OptionItem ShowChatInGame;
+
     public static OptionItem CandR_NumCops;
     private static OptionItem CandR_CaptureCooldown;
     private static OptionItem CandR_TeleportCaptureToRandomLoc;
@@ -83,18 +86,15 @@ internal static class CopsAndRobbersManager
     private static OptionItem CandR_RadarChance;
     private static OptionItem CandR_ReleaseCooldownForCaptured;
     private static OptionItem CandR_ReleaseCooldownForRobber;
-    private static OptionItem CandR_GameTime;
-    public static OptionItem CandR_ShowChatInGame;
-
 
     public static void SetupCustomOption()
     {
-        CandR_GameTime = IntegerOptionItem.Create(Id, "CandR_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
+        GameTime = IntegerOptionItem.Create(Id, "GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR)
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
 
-        CandR_ShowChatInGame = CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 1, "C&R_ShowChatInGame", false, TabGroup.ModSettings, false)
+        ShowChatInGame = CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 1, "ShowChatInGame", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR);
 
         /*********** Cops ***********/
@@ -378,7 +378,7 @@ internal static class CopsAndRobbersManager
     {
         if (Options.CurrentGameMode != CustomGameMode.CandR) return;
 
-        RoundTime = CandR_GameTime.GetInt() + 8;
+        RoundTime = GameTime.GetInt() + 8;
         var now = Utils.GetTimeStamp() + 8;
         foreach (byte robber in robbers)
         {

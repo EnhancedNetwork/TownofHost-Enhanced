@@ -45,6 +45,10 @@ internal class Blackmailer : RoleBase
             }
         }
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("BlackmailerButtonText"));
+    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();

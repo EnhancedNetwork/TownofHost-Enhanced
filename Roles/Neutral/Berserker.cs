@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
+using System.Text;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -39,8 +39,6 @@ internal class Berserker : RoleBase
     private static OptionItem BerserkerCanVent;
     public static OptionItem WarCanVent;
 
-    public static readonly Dictionary<byte, int> BerserkerKillMax = [];
-
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Berserker, 1, zeroOne: false);
@@ -73,66 +71,56 @@ internal class Berserker : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         BerserkerCanKillTeamate = BooleanOptionItem.Create(Id + 19, "BerserkerCanKillTeamate", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
     }
-    public override void Init()
-    {
-        BerserkerKillMax.Clear();
-    }
     public override void Add(byte playerId)
     {
         Main.AllPlayerKillCooldown[playerId] = BerserkerKillCooldown.GetFloat();
-        BerserkerKillMax[playerId] = 0;
-    }
-    public override void Remove(byte playerId)
-    {
-        BerserkerKillMax.Remove(playerId);
-    }
-    private void SendRPC(PlayerControl player)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(player);
-        writer.WritePacked(BerserkerKillMax[_Player.PlayerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        var killCount = reader.ReadPackedInt32();
-
-        BerserkerKillMax[_Player.PlayerId] = killCount;
+        playerId.SetAbilityUseLimit(0);
     }
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target);
+
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
-    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker).ShadeColor(0.25f), BerserkerKillMax.TryGetValue(playerId, out var x) ? $"({x}/{BerserkerMax.GetInt()})" : "Invalid");
+
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var ProgressText = new StringBuilder();
+        Color TextColor = Utils.GetRoleColor(CustomRoles.Berserker).ShadeColor(0.25f);
+
+        ProgressText.Append(Utils.ColorString(TextColor, $"({playerId.GetAbilityUseLimit()}/{BerserkerMax.GetInt()})"));
+        return ProgressText.ToString();
+    }
     public override bool CanUseImpostorVentButton(PlayerControl pc) => BerserkerCanVent.GetBool();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
         => opt.SetVision(BerserkerHasImpostorVision.GetBool());
-    public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
+    public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.IsNeutralApocalypse() && !BerserkerCanKillTeamate.GetBool()) return false;
 
         bool noScav = true;
-        if (BerserkerKillMax[killer.PlayerId] < BerserkerMax.GetInt())
+        var abilityUse = killer.GetAbilityUseLimit();
+        if (abilityUse < BerserkerMax.GetInt())
         {
-            BerserkerKillMax[killer.PlayerId]++;
-            killer.Notify(string.Format(GetString("BerserkerLevelChanged"), BerserkerKillMax[killer.PlayerId]));
-            Logger.Info($"Increased the lvl to {BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
+            killer.RpcIncreaseAbilityUseLimitBy(1);
+            abilityUse++;
+
+            killer.Notify(string.Format(GetString("BerserkerLevelChanged"), abilityUse));
+            Logger.Info($"Increased the lvl to {abilityUse}", "CULTIVATOR");
         }
         else
         {
             killer.Notify(GetString("BerserkerMaxReached"));
-            Logger.Info($"Max level reached lvl =  {BerserkerKillMax[killer.PlayerId]}", "CULTIVATOR");
-
+            Logger.Info($"Max level reached lvl =  {abilityUse}", "CULTIVATOR");
         }
 
-        if (BerserkerKillMax[killer.PlayerId] >= BerserkerKillCooldownLevel.GetInt() && BerserkerOneCanKillCooldown.GetBool())
+        if (abilityUse >= BerserkerKillCooldownLevel.GetInt() && BerserkerOneCanKillCooldown.GetBool())
         {
             Main.AllPlayerKillCooldown[killer.PlayerId] = BerserkerOneKillCooldown.GetFloat();
             killer.SetKillCooldown();
         }
 
-        if (BerserkerKillMax[killer.PlayerId] >= BerserkerScavengerLevel.GetInt() && BerserkerTwoCanScavenger.GetBool())
+        if (abilityUse >= BerserkerScavengerLevel.GetInt() && BerserkerTwoCanScavenger.GetBool())
         {
             killer.RpcTeleport(target.GetCustomPosition());
             RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
@@ -147,9 +135,9 @@ internal class Berserker : RoleBase
             noScav = false;
         }
 
-        if (BerserkerKillMax[killer.PlayerId] >= BerserkerBomberLevel.GetInt() && BerserkerThreeCanBomber.GetBool())
+        if (abilityUse >= BerserkerBomberLevel.GetInt() && BerserkerThreeCanBomber.GetBool())
         {
-            Logger.Info("炸弹爆炸了", "Boom");
+            Logger.Info("Bomb exploded", "Boom");
             CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
             foreach (var player in Main.AllAlivePlayerControls)
             {
@@ -176,7 +164,7 @@ internal class Berserker : RoleBase
                 }
             }
         }
-        if (BerserkerKillMax[killer.PlayerId] >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool() && !killer.Is(CustomRoles.War))
+        if (abilityUse >= BerserkerImmortalLevel.GetInt() && BerserkerFourCanNotKill.GetBool() && !killer.Is(CustomRoles.War))
         {
             killer.RpcSetCustomRole(CustomRoles.War);
             killer.GetRoleClass()?.OnAdd(killer.PlayerId);
@@ -185,7 +173,6 @@ internal class Berserker : RoleBase
             Main.AllPlayerKillCooldown[killer.PlayerId] = WarKillCooldown.GetFloat();
         }
 
-        SendRPC(killer);
         return noScav;
     }
 }
@@ -211,17 +198,5 @@ internal class War : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         return CustomRoles.Berserker.GetStaticRoleClass().OnCheckMurderAsKiller(killer, target);
-    }
-
-    public override void Remove(byte playerId)
-    {
-        Berserker.BerserkerKillMax.Remove(playerId);
-    }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        var killCount = reader.ReadPackedInt32();
-
-        Berserker.BerserkerKillMax[_Player.PlayerId] = killCount;
     }
 }

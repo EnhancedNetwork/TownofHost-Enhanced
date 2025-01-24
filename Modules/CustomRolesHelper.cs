@@ -407,6 +407,26 @@ public static class CustomRolesHelper
             or CustomRoles.Enchanted;
     }
 
+    public static bool IsBetrayalAddonV2(this CustomRoles role)
+        => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
+            || role is CustomRoles.Admired;
+
+    public static bool IsAddonAssignedMidGame(this CustomRoles role)
+        => role.IsBetrayalAddonV2() 
+        || role is CustomRoles.Knighted 
+                or CustomRoles.Cleansed 
+                or CustomRoles.Workhorse 
+                or CustomRoles.LastImpostor;
+
+    public static bool ShouldBeRemoved(this PlayerControl player, CustomRoles addon)
+    {
+        var plrRole = player.GetCustomRole();
+        return !addon.IsAddonAssignedMidGame()
+            || (addon == CustomRoles.LastImpostor && !plrRole.IsImpostorTeamV3())
+            || (addon == CustomRoles.Workhorse && (!plrRole.IsCrewmate() || plrRole.IsTasklessCrewmate()))
+            || (addon == CustomRoles.Knighted && plrRole.IsNotKnightable());
+    }
+
     public static bool IsImpOnlyAddon(this CustomRoles role)
     {
         return role is CustomRoles.Mare or
@@ -891,7 +911,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Gangster)
                     || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.NiceMini)
-                    || pc.Is(CustomRoles.GuardianAngelTOHO))
+                    || pc.Is(CustomRoles.GuardianAngelTOHO)
+                    || pc.Is(CustomRoles.Godfather))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;

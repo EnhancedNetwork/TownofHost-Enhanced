@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using TOHE.Modules;
 using static TOHE.Utils;
 using static TOHE.Options;
 

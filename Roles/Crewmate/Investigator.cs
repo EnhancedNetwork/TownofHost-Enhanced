@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules;
 using TOHE.Roles.Coven;
 using static TOHE.Options;
 
@@ -87,6 +88,11 @@ internal class Investigator : RoleBase
         if (killer == null || target == null) return false;
 
         if (killer.GetAbilityUseLimit() < 1 || RoundInvestigateLimit[killer.PlayerId] < 1) return false;
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(Translator.GetString("StubbornNotify"));
+            return true;
+        }
 
         killer.RpcRemoveAbilityUse();
         RoundInvestigateLimit[killer.PlayerId]--;
