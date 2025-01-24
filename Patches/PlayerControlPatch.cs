@@ -340,7 +340,7 @@ class CheckMurderPatch
                         }
                         else
                         {
-                            target.RpcSetCustomRole(CustomRoles.Useless);
+                            target.RpcSetCustomRole(CustomRoles.Bankrupt);
                             var AllSubRoles2 = Main.PlayerStates[target.PlayerId].SubRoles.ToList();
                             foreach (var role in AllSubRoles2)
                             {

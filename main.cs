@@ -910,7 +910,7 @@ public enum CustomRoles
     Terrorist,
     Traitor,
     Troller,
-    Useless,
+    Bankrupt,
     Vaporizer,
     Vector,
     VengefulRomantic,
