@@ -277,8 +277,9 @@ public static class AntiBlackout
             if (seer.IsModded()) continue;
 
             var isSelf = seerId == targetId;
+            var isDead = target.Data.IsDead;
             var changedRoleType = roletype;
-            if (target.Data.IsDead)
+            if (isDead)
             {
                 if (isSelf)
                 {
@@ -296,7 +297,7 @@ public static class AntiBlackout
                 }
             }
 
-            if (seerId == targetId && seer.HasImpKillButton() && !target.Data.IsDead) continue;
+            if (!isDead && seerId == targetId && seer.HasImpKillButton()) continue;
 
             target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
