@@ -4322,7 +4322,7 @@
 
     "Assassin": "Assassin",
     "AssassinInfo": "Choose your own team by killing",
-    "AssassinInfoLong": "(Neutrals):\nAfter you kill for the first time, certain things will happen:\nIf you kill a Crewmate, you become an Impostor.\nIf you kill a Neutral, you become a Neutral Killer.\nIf you kill an Impostor, you become a Sheriff.",
+    "AssassinInfoLong": "(Neutrals):\nAs the Assassin, after you kill for the first time, certain things will happen:\nIf you kill a Crewmate, you become an Impostor.\nIf you kill a Neutral, you become a Neutral Killer.\nIf you kill an Impostor, you become a Sheriff.",
     "AssassinImpostorNotify": "You have become an Impostor",
     "AssassinSheriffNotify": "You have become a Sheriff",
     "AssassinNeutralNotify": "You have become a Neutral Killer",
@@ -4341,21 +4341,21 @@
 
     "Vaporizer": "Vaporizer",
     "VaporizerInfo": "Leave no trace with your kills",
-    "VaporizerInfoLong": "(Neutrals):\nThe Vaporizer's kills will not leave dead bodies. Additionaly, vaporized players will have the 'Vaporized' death reason.",
+    "VaporizerInfoLong": "(Neutrals):\nAs the Vaporizer, your kills will not leave dead bodies. Additionaly, vaporized players will have the 'Vaporized' death reason.",
     "WinnerRoleText.Vaporizer": "Vaporizer Wins!",
     "VaporizedTarget": "You have been Vaporized and will leave no body.",
     "DeathReason.Vaporized": "Vaporized",
 
     "Laborer": "Laborer",
     "LaborerInfo": "Kill <color=#8cffff>Crewmates</color> and see them lose",
-    "LaborerInfoLong": "(Neutrals):\nThe Laborer can mark a target, and when someone kills the target, the Laborer will kill the target instead, Live till the end while making sure Crewmates lose.",
+    "LaborerInfoLong": "(Neutrals):\nAs the Laborer, you can mark a target, and when someone kills the target, the Laborer will kill the target instead, Live till the end while making sure Crewmates lose.",
     "LaborerSkillCooldown": "Mark Cooldown",
     "LaborerSkillLimitOpt": "Ability Uses",
     "LaborerSkillLimit": "Kill Limit",
 
     "Keymaster": "Keymaster",
     "KeymasterInfo": "Unlock your focus",
-    "KeymasterInfoLong": "(Neutrals):\nThe Keymaster has 2 stages.\n\nStage 1:\nThe Keymaster must mark every living player with a key by using their Kill button. To gain a key, the Keymaster has to simply enter a Vent.\nAfter marking a player with a key, the Keymaster needs to Vent again to gain a new key.\n\nStage 2:\nWhen the last needed player gets marked, the Keymaster gains a random shown colored key for a set duration of time. Additionally, the Keymaster their body color will switch repeatedly. The goal is to vent whenever the player's body color is equal to the key's color.\n\nThe Keymaster either wins when timing it correctly, or loses when timing it incorrectly.\nThey only have one chance!\n(Higher Difficulty = Faster color swaps)\n\nExtra:\nAfter beating both stages, by default, the Keymaster wins along with the other winners. They can also solo win depending on settings.",
+    "KeymasterInfoLong": "(Neutrals):\nAs the Keymaster, you have 2 stages.\n\nStage 1:\nThe Keymaster must mark every living player with a key by using their Kill button. To gain a key, the Keymaster has to simply enter a Vent.\nAfter marking a player with a key, the Keymaster needs to Vent again to gain a new key.\n\nStage 2:\nWhen the last needed player gets marked, the Keymaster gains a random shown colored key for a set duration of time. Additionally, the Keymaster their body color will switch repeatedly. The goal is to vent whenever the player's body color is equal to the key's color.\n\nThe Keymaster either wins when timing it correctly, or loses when timing it incorrectly.\nThey only have one chance!\n(Higher Difficulty = Faster color swaps)\n\nExtra:\nAfter beating both stages, by default, the Keymaster wins along with the other winners. They can also solo win depending on settings.",
     "KeymasterGiveKeyCooldown": "Give Key Cooldown",
     "KeymasterColoredKeyNotiDuration": "Colored Key Notification Time",
     "KeymasterStage2Difficulty": "Stage 2 Difficulty",
@@ -4375,7 +4375,7 @@
 
     "Savior": "Savior",
     "SaviorInfo": "Choose a player to protect every round",
-    "SaviorInfoLong": "(Crewmates):\nThe Savior can choose a player to protect every round. After a meeting, the player will no longer be protected.",
+    "SaviorInfoLong": "(Crewmates):\nAs the Savior, you can choose a player to protect every round. After a meeting, the player will no longer be protected.",
     "SaviorResetCooldown": "Kill Cooldown reset after breaking shield",
 
     "Cursebearer": "Cursebearer",
@@ -4386,7 +4386,7 @@
 
     "Agent": "Agent",
     "AgentInfo": "Add members to your team with each kill",
-    "AgentInfoLong": "(Impostor):\nWhen the Agent's kills are reported, the reporter will become a Madmate.",
+    "AgentInfoLong": "(Impostor):\nAs the Agent, when your kills are reported, the reporter will become a Madmate.",
     "AgentKillCooldown": "Kill Cooldown",
 
     "Bane": "Bane",
@@ -4403,13 +4403,13 @@
 
     "Narc": "Narc",
     "NarcInfo": "Find the <color=#ff1919>Impostors</color> and kill them",
-    "NarcInfoLong": "(Neutrals):\nThe Narc's main objective is to reveal the Impostors. By using its Kill button, the Narc can check if the player is a Crewmate or Impostor. If the Narc reveals a Crewmate or Neutral, the Narc will turn into an Amnesiac, and the target will not die. If the Narc reveals an Impostor, they will kill the Impostor and leave no body behind and add the death reason 'Arrested'. If the Narc reveals all the Impostors it wins alone.\nNote: If killing the last Impostor triggers another win, the Narc will not win.",
+    "NarcInfoLong": "(Neutrals):\nAs the Narc, your main objective is to reveal the Impostors. By using its Kill button, the Narc can check if the player is a Crewmate or Impostor. If the Narc reveals a Crewmate or Neutral, the Narc will turn into an Amnesiac, and the target will not die. If the Narc reveals an Impostor, they will kill the Impostor and leave no body behind and add the death reason 'Arrested'. If the Narc reveals all the Impostors it wins alone.\nNote: If killing the last Impostor triggers another win, the Narc will not win.",
     "WinnerRoleText.Narc": "Narc Wins!",
     "DeathReason.Arrested": "Arrested",
 
     "Artist": "Artist",
     "ArtistInfo": "Paint players to victory",
-    "ArtistInfoLong": "(Neutrals):\nThe Artist can single click on a player to paint them gray, similair to Devourer. Double click to kill normally.",
+    "ArtistInfoLong": "(Neutrals):\nAs the Artist, you can single click on a player to paint them gray, similair to Devourer. Double click to kill normally.",
     "ArtistPaintedSkin": "Painted Target",
     "ArtistPaintCooldown": "Paint Cooldown",
     "ArtistAbilityUses": "Maximum Paint Uses",
