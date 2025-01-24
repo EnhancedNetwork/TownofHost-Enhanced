@@ -50,7 +50,7 @@ public class Main : BasePlugin
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 13
+    public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 14
     public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 1
     public static readonly bool fullRelease = true; // Latest: v2.1.1
 
@@ -171,6 +171,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
     public static readonly HashSet<byte> UnShapeShifter = [];
     public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
+    public static readonly Dictionary<byte, bool> LowLoadUpdateName = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 
