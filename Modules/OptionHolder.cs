@@ -1190,7 +1190,7 @@ public static class Options
             .SetHeader(true)
             .SetColor(Color.green);
         LowLoadDelayUpdateNames = BooleanOptionItem.Create(60231, "LowLoad_DelayUpdateNames", false, TabGroup.SystemSettings, false)
-            .SetParent(AutoPlayAgain);
+            .SetParent(LowLoadMode);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
