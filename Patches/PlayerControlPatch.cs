@@ -1364,7 +1364,6 @@ class FixedUpdateInNormalGamePatch
             }
             if (GameStates.IsInGame)
             {
-                //var needUpdateNameLocal = Main.LowLoadUpdateName.GetValueOrDefault(PlayerControl.LocalPlayer.PlayerId, false);
                 var needUpdateNameTarget = Main.LowLoadUpdateName.GetValueOrDefault(__instance.PlayerId, true);
 
                 if (needUpdateNameTarget)
@@ -1560,11 +1559,10 @@ class FixedUpdateInNormalGamePatch
                         target.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
                     }
 
-                    // Non-host modded client always upadate name
-                    if (AmongUsClient.Instance.AmHost && Options.LowLoadDelayUpdateNames.GetBool())
+                    // For non-host modded client need always upadate name
+                    if (AmongUsClient.Instance.AmHost && needUpdateNameTarget && Options.LowLoadDelayUpdateNames.GetBool())
                     {
-                        if (needUpdateNameTarget)
-                            Main.LowLoadUpdateName[__instance.PlayerId] = false;
+                        Main.LowLoadUpdateName[__instance.PlayerId] = false;
                     }
                 }
             }
