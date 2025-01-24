@@ -41,7 +41,7 @@ public static class DevManager
             /*TOHO DEVS BELOW*/
 
             // Lime
-            new(code: "latevoice#4590", color: "#00ff00", tag: "The entire circus", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Lime"),
+            new(code: "megadrain#4429", color: "#00ff00", tag: "The entire circus", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Lime"),
 
             // Ape
             new(code: "simianpair#1270", color: "#0e2f44", tag: "Executive", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Ape"),
