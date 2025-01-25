@@ -4424,7 +4424,7 @@
 
   "Astral": "Astral",
   "AstralInfo": "Do your tasks to win, but with a risk",
-  "AstralInfoLong": "The Astral can unshapeshift to turn into a crewmate ghost. The ghost can see everyone's roles, however they must complete a certain amount of tasks to return back to their original form. If someone calls a meeting when they are in Ghost form, they will die permanently. They can kill after completing their tasks.",
+  "AstralInfoLong": "The Astral can vent to turn into a crewmate ghost. The ghost can see everyone's roles, however they must complete a certain amount of tasks to return back to their original form. If someone calls a meeting when they are in Ghost form, they will die permanently. They can kill after completing their tasks.",
   "AstralShapeshiftText": "Ascend",
   "Phantasm": "Phantasm",
   "PhantasmInfo": "Do your tasks and fast",
