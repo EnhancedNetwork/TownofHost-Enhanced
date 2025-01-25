@@ -73,7 +73,8 @@ internal class Keymaster : RoleBase
         playerIdList.Remove(playerId);
         KeyedList.Remove(playerId);
     }
-    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(GetString("KeymasterButtonText"));
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+        => hud.KillButton.OverrideText(GetString("KeymasterButtonText"));
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = GiveKeyCooldown.GetFloat();
