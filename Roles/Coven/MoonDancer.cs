@@ -115,7 +115,7 @@ internal class MoonDancer : CovenManager
 
         return target != null && target.CanBeTeleported() && !target.Is(CustomRoles.Stubborn) && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsBlasted(pc, id) && !IsBlasted(id);
     }
-    private static bool IsBlasted(PlayerControl pc, byte id) => BlastedOffList.ContainsKey(pc.PlayerId) && BlastedOffList[pc.PlayerId].Contains(id);
+    private static bool IsBlasted(PlayerControl pc, byte id) => BlastedOffList.TryGetValue(pc.PlayerId, out var list) && list.Contains(id);
     public static bool IsBlasted(byte id)
     {
         foreach (var bl in BlastedOffList)
