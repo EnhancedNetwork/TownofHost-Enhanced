@@ -1040,7 +1040,7 @@
   "RadarInfoLong": "(Add-ons):\nAs Radar, you have arrows pointing towards the closest person at all times.",
   "DiseasedInfoLong": "(Add-ons):\nWhen someone tries to use the Kill button on you, their Cooldown will be increased by a configurable amount of time.",
   "AntidoteInfoLong": "(Add-ons):\nWhen someone tries to use the Kill button on you, their Cooldown will be decreased by a configurable amount of time.",
-  "StubbornInfoLong": "(Add-ons):\nWith the Stubborn Add-on, Eraser can't erase your role, Cleanser can't cleanse you, Bandit can't steal from you, and Monarch can't knight you.\nAdditionally, you can't gain any new Add-ons from the Merchant.",
+  "StubbornInfoLong": "(Add-ons):\nWith the Stubborn Add-on, the following roles can not use their ability on you: Eraser, Cleanser, Bandit, Monarch, Merchant, Councillor, Evil Tracker, Oracle, Investigator, Inspector, Medium, Spiritualist, Follower, Pirate, Provocateur, Innocent, Copycat, Imitator, Amnesiac, Sleuth, Mortician, Coroner.\nScavenger, Pelican, Moon Dancer, Swift will kill them normally. They can't become unreportable unless they have the add-on Disregarded. \nLastly, they will not die to Rebound.\nThe add-on can not be guessed.",
   "SwiftInfoLong": "(Add-ons):\nAs the Swift, you will not make any movement when you kill.\nNote: Swift also ignores Bait",
   "UnluckyInfoLong": "(Add-ons):\nAs Unlucky, when you Complete Tasks, Kill, Venting, or open a Door, you have a chance to die.",
   "SpurtInfoLong": "(Add-ons):\nWhen you start walking, you gain an enormous speed boost, which swiftly deteriorates, until you have to rest still for a while to rejuvenate your speed.",
