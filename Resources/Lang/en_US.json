@@ -4428,5 +4428,14 @@
   "AstralShapeshiftText": "Ascend",
   "Phantasm": "Phantasm",
   "PhantasmInfo": "Do your tasks and fast",
-  "PhantasmInfoLong": "The transformed version of Astral."
+  "PhantasmInfoLong": "The transformed version of Astral.",
+
+  "Investor": "Investor",
+  "InvestorInfo": "Complete tasks to shorten your kill cooldown",
+  "InvestorInfoLong": "As the Investor, when you compete a task, your future kill cooldown reduces a certain amount set by the host. By venting, you can turn into an Impostor called Rich. The Rich has a set cooldown that is reduced by the number of tasks you have done.",
+  "InvestorKillCooldown": "Initial kill cooldown",
+  "InvestorTaskReduction": "Kill cooldown reduction per task",
+  "Rich": "Rich",
+  "RichInfo": "Lower kill cooldown from your investments",
+  "RichInfoLong": "This is the role Investor becomes when they vent."
 }

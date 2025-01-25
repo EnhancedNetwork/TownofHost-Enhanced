@@ -268,5 +268,7 @@
   "Bankrupt": "#000000",
   "Gambler": "#3006bd",
   "Phantasm": "#473913",
-  "Astral": "#291347"
+  "Astral": "#291347",
+  "Investor": "#a84a32",
+  "Rich": "#97a832"
 }
