@@ -4357,6 +4357,7 @@
     "Keymaster": "Keymaster",
     "KeymasterInfo": "Unlock your focus",
     "KeymasterInfoLong": "(Neutrals):\nAs the Keymaster, you have 2 stages.\n\nStage 1:\nThe Keymaster must mark every living player with a key by using their Kill button. To gain a key, the Keymaster has to simply enter a Vent.\nAfter marking a player with a key, the Keymaster needs to Vent again to gain a new key.\n\nStage 2:\nWhen the last needed player gets marked, the Keymaster gains a random shown colored key for a set duration of time. Additionally, the Keymaster their body color will switch repeatedly. The goal is to vent whenever the player's body color is equal to the key's color.\n\nThe Keymaster either wins when timing it correctly, or loses when timing it incorrectly.\nThey only have one chance!\n(Higher Difficulty = Faster color swaps)\n\nExtra:\nAfter beating both stages, by default, the Keymaster wins along with the other winners. They can also solo win depending on settings.",
+    "KeymasterButtonText": "Mark",
     "KeymasterGiveKeyCooldown": "Give Key Cooldown",
     "KeymasterColoredKeyNotiDuration": "Colored Key Notification Time",
     "KeymasterStage2Difficulty": "Stage 2 Difficulty",
