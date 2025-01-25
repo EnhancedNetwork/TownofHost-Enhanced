@@ -2072,7 +2072,7 @@
     "RitualistRitualMax": "You've already used the maximum amount of Blood Rituals for this meeting.",
     "RitualistEnchantedKnowsCoven": "<color=#ac42f2>Enchanted</color> knows <color=#ac42f2>Coven</color>",
     "RitualistEnchantedKnowsEnchanted": "<color=#ac42f2>Enchanted</color> knows <color=#ac42f2>Enchanted</color>",
-    "RitualistCommandHelp": "Instructions: /rt [Player ID] [Role Name] \nExample: /rt 3 Bait \nYou can see the player IDs before everyone's names \n or use the /id command to list the player ID's",
+    "RitualistCommandHelp": "Instructions: /rt [Player ID] [Role Name] \nExample: /rt 3 Bait \nYou can see the player ID's before everyone's names \n or use the /id command to list the player ID's",
     "RitualistConvertNotif": "Your role has been guessed by the {0} and you are now apart of the Coven!",
     "RitualistGuessAddon": "Did you seriously think it would be that easy? You can't do a Ritual solely based on Add-ons.",
     "RitualistSuccessfullyRecruited": "You successfully recruited a player",
