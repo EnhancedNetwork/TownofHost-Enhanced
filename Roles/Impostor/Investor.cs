@@ -45,6 +45,7 @@ internal class Investor : RoleBase
     }
     public override void OnEnterVent(PlayerControl player, Vent vent)
     {
+        player.MyPhysics.RpcBootFromVent(vent.Id);
         player.RpcChangeRoleBasis(CustomRoles.Rich);
         player.RpcSetCustomRole(CustomRoles.Rich, true);
     }

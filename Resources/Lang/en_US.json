@@ -4417,25 +4417,30 @@
 
   "Gambler": "Gambler",
   "GamblerInfo": "Kill your killer or go bust!",
-  "GamblerInfoLong": "As the Gambler, you have a 50/50 chance to either kill your killer or lose your role and die. Single use.",
+  "GamblerInfoLong": "(Add-ons):\nAs the Gambler, you have a 50/50 chance to either kill your killer or lose your role and die. Single use.",
   "Bankrupt": "Bankrupt",
   "BankruptInfo": "You have lost your role",
-  "BankruptInfoLong": "The Bankrupt is a utility role. The Bankrupt is a neutral with no win condition.",
+  "BankruptInfoLong": "(Neutrals):\nThe Bankrupt is a utility role. The Bankrupt is a neutral with no win condition.",
 
   "Astral": "Astral",
   "AstralInfo": "Do your tasks to win, but with a risk",
-  "AstralInfoLong": "The Astral can vent to turn into a crewmate ghost. The ghost can see everyone's roles, however they must complete a certain amount of tasks to return back to their original form. If someone calls a meeting when they are in Ghost form, they will die permanently. They can kill after completing their tasks.",
+  "AstralInfoLong": "(Crewmates):\nThe Astral can vent to turn into a crewmate ghost. The ghost can see everyone's roles, however they must complete a certain amount of tasks to return back to their original form. If someone calls a meeting when they are in Ghost form, they will die permanently. They can kill after completing their tasks.",
   "AstralShapeshiftText": "Ascend",
   "Phantasm": "Phantasm",
-  "PhantasmInfo": "Do your tasks and fast",
-  "PhantasmInfoLong": "The transformed version of Astral.",
+  "PhantasmInfo": "You used to be Astral, but now you can kill",
+  "PhantasmInfoLong": "(Crewmates):\nThe transformed version of Astral.",
 
   "Investor": "Investor",
   "InvestorInfo": "Complete tasks to shorten your kill cooldown",
-  "InvestorInfoLong": "As the Investor, when you compete a task, your future kill cooldown reduces a certain amount set by the host. By venting, you can turn into an Impostor called Rich. The Rich has a set cooldown that is reduced by the number of tasks you have done.",
+  "InvestorInfoLong": "(Madmates):\nAs the Investor, when you compete a task, your future kill cooldown reduces a certain amount set by the host. By venting, you can turn into an Impostor called Rich. The Rich has a set cooldown that is reduced by the number of tasks you have done.",
   "InvestorKillCooldown": "Initial kill cooldown",
   "InvestorTaskReduction": "Kill cooldown reduction per task",
   "Rich": "Rich",
   "RichInfo": "Lower kill cooldown from your investments",
-  "RichInfoLong": "This is the role Investor becomes when they vent."
+  "RichInfoLong": "(Madmates):\nThis is the role Investor becomes when they vent.",
+
+  "Slayer": "Slayer",
+  "SlayerInfo": "Do tasks to kill in bursts",
+  "SlayerInfoLong": "(Neutrals):\nWhen the Slayer completes a task, all other players around them will be killed.",
+  "WinnerRoleText.Slayer": "Slayer Wins!"
 }

@@ -906,6 +906,7 @@ public enum CustomRoles
     Shocker,
     Shroud,
     Sidekick,
+    Slayer,
     Solsticer,
     SoulCollector,
     Specter,
@@ -1123,6 +1124,7 @@ public enum CustomWinner
     Keymaster = CustomRoles.Keymaster,
     Narc = CustomRoles.Narc,
     Artist = CustomRoles.Artist,
+    Slayer = CustomRoles.Slayer,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
