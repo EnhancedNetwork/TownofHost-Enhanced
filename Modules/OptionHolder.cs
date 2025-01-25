@@ -1189,7 +1189,7 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
-        LowLoadDelayUpdateNames = BooleanOptionItem.Create(60231, "LowLoad_DelayUpdateNames", false, TabGroup.SystemSettings, false)
+        LowLoadDelayUpdateNames = BooleanOptionItem.Create(60231, "LowLoad_DelayUpdateNames", true, TabGroup.SystemSettings, false)
             .SetParent(LowLoadMode);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
