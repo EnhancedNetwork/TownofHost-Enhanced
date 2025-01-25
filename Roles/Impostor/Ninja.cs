@@ -48,7 +48,7 @@ internal class Ninja : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write(MarkedPlayer.ContainsKey(playerId) ? MarkedPlayer[playerId] : byte.MaxValue);
+        writer.Write(MarkedPlayer.GetValueOrDefault(playerId, byte.MaxValue));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
@@ -109,14 +109,13 @@ internal class Ninja : RoleBase
         }
 
         // Ninja not marked player
-        if (!MarkedPlayer.ContainsKey(shapeshifter.PlayerId))
+        if (!MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
         {
             resetCooldown = false;
             return false;
         }
-
         // Check and kill marked player
-        if (MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
+        else
         {
             var marketTarget = Utils.GetPlayerById(targetId);
 

@@ -68,8 +68,8 @@ internal class Virus : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
-        if (VirusNotify.ContainsKey(pc.PlayerId))
-            AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
+        if (VirusNotify.TryGetValue(pc.PlayerId, out var notify))
+            AddMsg(notify, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
     }
     public override void MeetingHudClear() => VirusNotify.Clear();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());

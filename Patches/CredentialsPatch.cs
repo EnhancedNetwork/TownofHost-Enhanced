@@ -17,7 +17,7 @@ class PingTrackerUpdatePatch
     {
         try
         {
-            Instance ??= __instance;
+            Instance = __instance;
 
             DelayUpdate--;
 
@@ -29,7 +29,7 @@ class PingTrackerUpdatePatch
                 return false;
             }
 
-            DelayUpdate = 500;
+            DelayUpdate = 1000;
 
             ChangeText(__instance);
             sb.Clear();

@@ -68,11 +68,9 @@ public enum CustomRPC : byte // 185/255 USED
     SyncPuppet,
     SyncKami,
     SetKillOrSpell,
-    SetKillOrHex,
     SetKillOrCurse,
     SetDousedPlayer,
     DoSpell,
-    DoHex,
     DoCurse,
     SniperSync,
     SetLoversPlayers,
@@ -389,9 +387,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
                 break;
-            case CustomRPC.SetKillOrHex:
-                HexMaster.ReceiveRPC(reader, false);
-                break;
             case CustomRPC.ShowChat:
                 var clientId = reader.ReadPackedUInt32();
                 var show = reader.ReadBoolean();
@@ -414,9 +409,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.DoSpell:
                 Witch.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.DoHex:
-                HexMaster.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.SniperSync:
                 Sniper.ReceiveRPC(reader);

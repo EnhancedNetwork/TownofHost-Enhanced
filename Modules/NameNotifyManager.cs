@@ -19,7 +19,7 @@ public static class NameNotifyManager
         Notice.Add(pc.PlayerId, new(text, Utils.TimeStamp + (long)time));
 
         SendRPC(pc.PlayerId);
-        Utils.NotifyRoles(SpecifySeer: pc, SpecifyTarget: pc);
+        Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
 
         if (sendInLog) Logger.Info($"New name notify for {pc.GetNameWithRole().RemoveHtmlTags()}: {text} ({time}s)", "Name Notify");
     }
@@ -27,10 +27,10 @@ public static class NameNotifyManager
     {
         if (!GameStates.IsInTask)
         {
-            if (Notice.Any()) Notice.Clear();
+            Reset();
             return;
         }
-        if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].TimeStamp < Utils.GetTimeStamp())
+        if (Notice.TryGetValue(player.PlayerId, out var notifies) && notifies.TimeStamp < Utils.GetTimeStamp())
         {
             Notice.Remove(player.PlayerId);
             Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);
@@ -39,22 +39,22 @@ public static class NameNotifyManager
     public static bool GetNameNotify(PlayerControl player, out string name)
     {
         name = string.Empty;
-        if (!Notice.TryGetValue(player.PlayerId, out (string Text, long TimeStamp) value)) return false;
-        name = value.Text;
+        if (!Notice.TryGetValue(player.PlayerId, out var notifies)) return false;
+        name = notifies.Text;
         return true;
     }
     private static void SendRPC(byte playerId)
     {
         var player = playerId.GetPlayer();
-        if (player == null || !AmongUsClient.Instance.AmHost || !player.IsNonHostModdedClient()) return;
+        if (!AmongUsClient.Instance.AmHost || !player.IsNonHostModdedClient()) return;
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncNameNotify, SendOption.Reliable, player.GetClientId());
         writer.Write(playerId);
-        if (Notice.ContainsKey(playerId))
+        if (Notice.TryGetValue(playerId, out var notifies))
         {
             writer.Write(true);
-            writer.Write(Notice[playerId].Text);
-            writer.Write(Notice[playerId].TimeStamp - Utils.GetTimeStamp());
+            writer.Write(notifies.Text);
+            writer.Write(notifies.TimeStamp - Utils.TimeStamp);
         }
         else writer.Write(false);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

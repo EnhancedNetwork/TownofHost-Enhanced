@@ -153,8 +153,8 @@ internal class Enigma : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (MsgToSend.ContainsKey(pc.PlayerId))
-            AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), MsgToSendTitle[pc.PlayerId]));
+        if (MsgToSend.TryGetValue(pc.PlayerId, out var message))
+            AddMsg(message, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), MsgToSendTitle[pc.PlayerId]));
     }
     public override void MeetingHudClear() => MsgToSend.Clear();
     private abstract class EnigmaClue

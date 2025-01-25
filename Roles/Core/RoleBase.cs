@@ -11,7 +11,7 @@ public abstract class RoleBase
     public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
+    public PlayerControl _Player => _state != null ? _state.PlayerId.GetPlayer() ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 

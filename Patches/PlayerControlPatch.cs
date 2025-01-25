@@ -490,8 +490,7 @@ class MurderPlayerPatch
             }
         }
 
-        if (Main.AllKillers.ContainsKey(killer.PlayerId))
-            Main.AllKillers.Remove(killer.PlayerId);
+        Main.AllKillers.Remove(killer.PlayerId);
 
         killer.SetKillTimer();
 
@@ -823,7 +822,7 @@ class ReportDeadBodyPatch
 
         foreach (var kvp in Main.PlayerStates)
         {
-            var pc = Utils.GetPlayerById(kvp.Key);
+            var pc = kvp.Key.GetPlayer();
             kvp.Value.LastRoom = pc.GetPlainShipRoom();
         }
 
@@ -876,8 +875,10 @@ class ReportDeadBodyPatch
                     }
                 }
 
+                var targetObject = target.Object;
+
                 // if Bait is killed, check the setting condition
-                if (!(target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
+                if (!(targetObject.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
                 {
                     // Comms Camouflage
                     if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
@@ -890,26 +891,24 @@ class ReportDeadBodyPatch
                     return false;
                 }
 
-                if (target.Object.Is(CustomRoles.Unreportable)) return false;
-
-
-                // Oblivious try report body
-                var tpc = Utils.GetPlayerById(target.PlayerId);
-                if (__instance.Is(CustomRoles.Oblivious))
+                if (targetObject != null)
                 {
-                    if (!tpc.Is(CustomRoles.Bait) || (tpc.Is(CustomRoles.Bait) && Oblivious.ObliviousBaitImmune.GetBool())) /* && (target?.Object != null)*/
+                    if (targetObject.Is(CustomRoles.Unreportable)) return false;
+
+                    // Oblivious try report body
+                    if (__instance.Is(CustomRoles.Oblivious))
                     {
-                        return false;
+                        if (!targetObject.Is(CustomRoles.Bait) || (targetObject.Is(CustomRoles.Bait) && Oblivious.ObliviousBaitImmune.GetBool())) /* && (target?.Object != null)*/
+                        {
+                            return false;
+                        }
                     }
                 }
 
-                var tar = Utils.GetPlayerById(target.PlayerId);
-
-                if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
+                if (__instance.Is(CustomRoles.Unlucky) && (targetObject == null || !targetObject.Is(CustomRoles.Bait)))
                 {
                     if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody))
                         return false;
-
                 }
             }
 
@@ -971,7 +970,7 @@ class ReportDeadBodyPatch
 
             foreach (var unshapeshifterIds in Main.UnShapeShifter)
             {
-                var unshapeshifter = Utils.GetPlayerById(unshapeshifterIds);
+                var unshapeshifter = unshapeshifterIds.GetPlayer();
 
                 if (unshapeshifter == null) { Main.UnShapeShifter.Remove(unshapeshifterIds); continue; }
 
@@ -1251,14 +1250,16 @@ class FixedUpdateInNormalGamePatch
             KillTimerManager.FixedUpdate(player);
             CovenManager.NecronomiconCheck();
 
+            var nowTime = Utils.TimeStamp;
+
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
-                if (!player.Data.IsDead)
-                    min.OnFixedUpdates(player);
+                if (!player.Data.Disconnected)
+                    min.OnFixedUpdates(player, nowTime);
             }
 
-            if (!GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
+            if (player.Is(CustomRoles.Spurt) && !GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
                 player.MarkDirtySettings();
@@ -1267,19 +1268,19 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
-                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime);
 
                 player.OnFixedAddonUpdate(lowLoad);
 
-                if (Main.AllPlayerSpeed.ContainsKey(player.PlayerId) && !lowLoad)
+                if (!lowLoad && Main.AllPlayerSpeed.TryGetValue(player.PlayerId, out var speed))
                 {
                     if (!Main.LastAllPlayerSpeed.ContainsKey(player.PlayerId))
                     {
-                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                        Main.LastAllPlayerSpeed[player.PlayerId] = speed;
                     }
-                    else if (!Main.LastAllPlayerSpeed[player.PlayerId].Equals(Main.AllPlayerSpeed[player.PlayerId]))
+                    else if (!Main.LastAllPlayerSpeed[player.PlayerId].Equals(speed))
                     {
-                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                        Main.LastAllPlayerSpeed[player.PlayerId] = speed;
                         player.SyncSpeed();
                     }
                 }
@@ -1307,12 +1308,12 @@ class FixedUpdateInNormalGamePatch
                         if (Rainbow.IsEnabled && Main.IntroDestroyed)
                             Rainbow.OnFixedUpdate();
 
-                        if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        if (Main.UnShapeShifter.Any(x => x.GetPlayer()?.CurrentOutfitType != PlayerOutfitType.Shapeshifted)
                             && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
                         {
                             foreach (var UnShapeshifterId in Main.UnShapeShifter)
                             {
-                                var UnShapeshifter = Utils.GetPlayerById(UnShapeshifterId);
+                                var UnShapeshifter = UnShapeshifterId.GetPlayer();
                                 if (UnShapeshifter == null)
                                 {
                                     Main.UnShapeShifter.Remove(UnShapeshifterId);
@@ -1345,7 +1346,6 @@ class FixedUpdateInNormalGamePatch
 
                         if (pc.Is(CustomRoles.Poisoner))
                             Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
-
                     }
             }
         }
@@ -1587,7 +1587,6 @@ class FixedUpdateInNormalGamePatch
         }
         return Task.CompletedTask;
     }
-    //FIXME: 役職クラス化のタイミングで、このメソッドは移動予定
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
     {
         if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
@@ -1601,35 +1600,32 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
 
-                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
+                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.Is(CustomRoles.Lovers) && partnerPlayer.IsAlive())
                     {
-                        if (partnerPlayer.Is(CustomRoles.Lovers))
-                        {
-                            partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+                        partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
 
-                            if (isExiled)
+                        if (isExiled)
+                        {
+                            if (Main.PlayersDiedInMeeting.Contains(deathId))
                             {
-                                if (Main.PlayersDiedInMeeting.Contains(deathId))
+                                partnerPlayer.Data.IsDead = true;
+                                partnerPlayer.RpcExileV2();
+                                Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
+                                if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                                 {
-                                    partnerPlayer.Data.IsDead = true;
-                                    partnerPlayer.RpcExileV2();
-                                    Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-                                    if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
-                                    {
-                                        MeetingHud.Instance?.CheckForEndVoting();
-                                    }
-                                    MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
-                                    _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
+                                    MeetingHud.Instance?.CheckForEndVoting();
                                 }
-                                else
-                                {
-                                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
-                                }
+                                MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
+                                _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
                             }
                             else
                             {
-                                partnerPlayer.RpcMurderPlayer(partnerPlayer);
+                                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
                             }
+                        }
+                        else
+                        {
+                            partnerPlayer.RpcMurderPlayer(partnerPlayer);
                         }
                     }
                 }

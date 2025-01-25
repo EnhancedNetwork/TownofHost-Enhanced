@@ -65,7 +65,7 @@ static class ExtendedPlayerControl
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"{player.GetCustomRole()}");
             }
         }
     }
@@ -1310,7 +1310,7 @@ static class ExtendedPlayerControl
         => (seer.Is(CustomRoles.Visionary))
         && !target.Data.IsDead;
 
-    private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
+    //private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;

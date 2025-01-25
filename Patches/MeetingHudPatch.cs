@@ -697,17 +697,17 @@ class CastVotePatch
 
 
         // Coven Leader Retraining
-        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.TryGetValue(voter.PlayerId, out var retrainRole) && retrainRole.IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
 
-            Logger.Info($"Coven Leader Retraining [{voter.PlayerId}]{voter.GetNameWithRole()} => {CovenLeader.retrainPlayer[voter.PlayerId]}", "CastVotePatch");
+            Logger.Info($"Coven Leader Retraining [{voter.PlayerId}]{voter.GetNameWithRole()} => {retrainRole}", "CastVotePatch");
             voter.GetRoleClass()?.OnRemove(voter.PlayerId);
-            voter.RpcChangeRoleBasis(CovenLeader.retrainPlayer[voter.PlayerId]);
-            voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
+            voter.RpcChangeRoleBasis(retrainRole);
+            voter.RpcSetCustomRole(retrainRole);
             voter.GetRoleClass()?.OnAdd(voter.PlayerId);
-            SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
-            SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
+            SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), retrainRole.ToColoredString()), CL.PlayerId);
+            SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), retrainRole.ToColoredString()), voter.PlayerId);
 
             CovenLeader.retrainPlayer.Clear();
             CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
@@ -715,10 +715,10 @@ class CastVotePatch
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         }
-        else if (CustomRoles.CovenLeader.RoleExist() && target != voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        else if (CustomRoles.CovenLeader.RoleExist() && target != voter && CovenLeader.retrainPlayer.TryGetValue(voter.PlayerId, out var retrainRole2) && retrainRole2.IsCoven())
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
-            SendMessage(string.Format(GetString("CovenLeaderDeclineRetrain"), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
+            SendMessage(string.Format(GetString("CovenLeaderDeclineRetrain"), retrainRole2.ToColoredString()), CL.PlayerId);
             SendMessage(string.Format(GetString("RetrainDeclineOffer"), CustomRoles.CovenLeader.ToColoredString()), voter.PlayerId);
             CovenLeader.retrainPlayer.Clear();
             __instance.RpcClearVoteDelay(voter.GetClientId());
@@ -1005,8 +1005,8 @@ class MeetingHudStartPatch
             }
 
             // Sleuth notify msg
-            if (Sleuth.SleuthNotify.ContainsKey(pc.PlayerId))
-                AddMsg(Sleuth.SleuthNotify[pc.PlayerId], pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Sleuth), GetString("SleuthNoticeTitle")));
+            if (Sleuth.SleuthNotify.TryGetValue(pc.PlayerId, out var sleuthNotify))
+                AddMsg(sleuthNotify, pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Sleuth), GetString("SleuthNoticeTitle")));
 
             // Check Mimic kill
             if (pc.Is(CustomRoles.Mimic) && !pc.IsAlive())

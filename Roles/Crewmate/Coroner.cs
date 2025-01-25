@@ -184,10 +184,10 @@ internal class Coroner : RoleBase
         if (!seer.Is(CustomRoles.Coroner)) return "";
         if (target != null && seer.PlayerId != target.PlayerId) return "";
         if (GameStates.IsMeeting) return "";
-        if (CoronerTargets.ContainsKey(seer.PlayerId) && CoronerTargets[seer.PlayerId].Any())
+        if (CoronerTargets.TryGetValue(seer.PlayerId, out var targets) && targets.Any())
         {
             var arrows = "";
-            foreach (var targetId in CoronerTargets[seer.PlayerId])
+            foreach (var targetId in targets)
             {
                 var arrow = TargetArrow.GetArrows(seer, targetId);
                 arrows += ColorString(seer.GetRoleColor(), arrow);

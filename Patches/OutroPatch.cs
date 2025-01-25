@@ -189,7 +189,7 @@ class SetEverythingUpPatch
     public static void Postfix(EndGameManager __instance)
     {
         if (GameStates.IsHideNSeek) return;
-        if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return;
+        if (!GameStates.IsModHost) return;
         //#######################################
         //      ==Victory faction display==
         //#######################################

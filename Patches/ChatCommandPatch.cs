@@ -2061,9 +2061,9 @@ internal class ChatCommands
                 var title = devMark + $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
                 var Conf = new StringBuilder();
                 string rlHex = Utils.GetRoleColorCode(rl);
-                if (Options.CustomRoleSpawnChances.ContainsKey(rl))
+                if (Options.CustomRoleSpawnChances.TryGetValue(rl, out var spawnRate))
                 {
-                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref Conf);
+                    Utils.ShowChildrenSettings(spawnRate, ref Conf);
                     var cleared = Conf.ToString();
                     var Setting = $"<color={rlHex}>{GetString(rl.ToString())} {GetString("Settings:")}</color>\n";
                     Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");

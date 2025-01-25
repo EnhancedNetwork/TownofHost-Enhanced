@@ -74,7 +74,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             opt.SetVision(true);
         else
         {
-            CovenImpVisOptions.TryGetValue(GetPlayerById(playerId).GetCustomRole(), out var option);
+            CovenImpVisOptions.TryGetValue(playerId.GetPlayer().GetCustomRole(), out var option);
             opt.SetVision(option.GetBool());
         }
     }
@@ -92,12 +92,12 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     }
     public static void GiveNecronomicon()
     {
-        var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven() && pc.IsAlive()).ToList();
+        var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven()).ToList();
         if (pcList.Any())
         {
             byte rp = pcList.RandomElement().PlayerId;
             necroHolder = rp;
-            GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
+            necroHolder.GetPlayer().Notify(GetString("NecronomiconNotification"));
             SendRPC(necroHolder);
         }
     }
@@ -124,7 +124,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             necroVotes.Clear();
             return;
         }
-        Dictionary<byte, int> voteCount = new Dictionary<byte, int>();
+        Dictionary<byte, int> voteCount = [];
         byte currentResult = byte.MinValue;
         byte lastResult = byte.MinValue;
         foreach (byte voter in necroVotes.Keys)
@@ -165,7 +165,10 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 
     public static void NecronomiconCheck()
     {
-        if (GetPlayerById(necroHolder) == null || necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive() || !GetPlayerById(necroHolder).IsPlayerCoven())
+        if (necroHolder == byte.MaxValue) return;
+
+        var necroHolderPlayer = necroHolder.GetPlayer();
+        if (!necroHolderPlayer.IsAlive() || !necroHolderPlayer.IsPlayerCoven())
         {
             GiveNecronomicon();
         }

@@ -43,7 +43,7 @@ internal class TimeManager : RoleBase
 
     private static int AdditionalTime(byte id)
     {
-        var pc = Utils.GetPlayerById(id);
+        var pc = id.GetPlayer();
         return playerIdList.Contains(id) && pc.IsAlive() ? IncreaseMeetingTime.GetInt() * pc.GetPlayerTaskState().CompletedTasksCount : 0;
     }
     public static int TotalIncreasedMeetingTime()
@@ -51,7 +51,8 @@ internal class TimeManager : RoleBase
         int sec = 0;
         foreach (var playerId in playerIdList)
         {
-            if (Utils.GetPlayerById(playerId).Is(CustomRoles.Madmate) || Utils.GetPlayerById(playerId).Is(CustomRoles.Enchanted)) sec -= AdditionalTime(playerId);
+            var player = playerId.GetPlayer();
+            if (player.Is(CustomRoles.Madmate) || player.Is(CustomRoles.Enchanted)) sec -= AdditionalTime(playerId);
             else sec += AdditionalTime(playerId);
         }
         Logger.Info($"{sec}second", "TimeManager.TotalIncreasedMeetingTime");

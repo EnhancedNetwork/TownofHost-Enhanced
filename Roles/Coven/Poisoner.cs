@@ -142,8 +142,8 @@ internal class Poisoner : CovenManager
     {
         foreach (var targetId in PoisonedPlayers.Keys)
         {
-            var target = GetPlayerById(targetId);
-            var poisoner = GetPlayerById(PoisonedPlayers[targetId].PoisonerId);
+            var target = targetId.GetPlayer();
+            var poisoner = PoisonedPlayers[targetId].PoisonerId.GetPlayer();
             KillPoisoned(poisoner, target);
         }
         PoisonedPlayers.Clear();

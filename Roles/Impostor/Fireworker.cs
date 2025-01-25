@@ -98,10 +98,10 @@ internal class Fireworker : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc)
     {
-        if (!state.ContainsKey(pc.PlayerId) || !pc.IsAlive()) return false;
+        if (!state.TryGetValue(pc.PlayerId, out var fireworkState) || !pc.IsAlive()) return false;
 
         var canUse = false;
-        if ((state[pc.PlayerId] & FireworkerState.CanUseKill) != 0)
+        if ((fireworkState & FireworkerState.CanUseKill) != 0)
         {
             canUse = true;
         }
@@ -179,16 +179,16 @@ internal class Fireworker : RoleBase
         string retText = string.Empty;
         var seerId = seer.PlayerId;
         if (seer == null || !seer.IsAlive()) return retText;
-        if (!state.ContainsKey(seerId)) return retText;
+        if (!state.TryGetValue(seerId, out var fireworkState)) return retText;
 
-        if (state[seer.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
+        if (fireworkState == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
         {
             Logger.Info("Ready to blow up", "Fireworker");
-            state[seerId] = FireworkerState.ReadyFire;
+            state[seerId] = fireworkState = FireworkerState.ReadyFire;
             SendRPC(seerId);
             Utils.NotifyRoles(SpecifySeer: seer);
         }
-        switch (state[seerId])
+        switch (fireworkState)
         {
             case FireworkerState.Initial:
             case FireworkerState.SettingFireworker:

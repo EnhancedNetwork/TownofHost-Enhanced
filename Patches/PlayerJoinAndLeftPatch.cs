@@ -285,9 +285,9 @@ public static class OnPlayerJoinedPatch
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                 && !BanManager.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
-                if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
+                if (Main.PlayerQuitTimes.TryGetValue(client.GetHashedPuid(), out var quitTimes))
                 {
-                    if (Main.PlayerQuitTimes[client.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
+                    if (quitTimes >= Options.QuitTimesTillTempBan.GetInt())
                     {
                         if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
                             BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
