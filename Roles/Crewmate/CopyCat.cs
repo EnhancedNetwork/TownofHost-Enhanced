@@ -106,7 +106,7 @@ internal class CopyCat : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        CustomRoles role = target.GetCustomRole();
+        CustomRoles role = target.Is(CustomRoles.Narc) ? CustomRoles.Sheriff : target.GetCustomRole();
         if (BlackList(role))
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
@@ -151,10 +151,8 @@ internal class CopyCat : RoleBase
                 _ => role
             };
         }
-        if (target.IsNarcCrew())
+        if (role.IsCrewmate())
         {
-            if (target.Is(CustomRoles.Narc))
-                role = CustomRoles.Sheriff;
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);
