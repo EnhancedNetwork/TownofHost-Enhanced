@@ -75,7 +75,7 @@ internal class Keymaster : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
         => hud.KillButton.OverrideText(GetString("KeymasterButtonText"));
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = GiveKeyCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
