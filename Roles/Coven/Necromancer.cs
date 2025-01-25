@@ -74,9 +74,7 @@ internal class Necromancer : CovenManager
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (IsRevenge) return true;
-        if (killer.GetCustomRole().IsCovenTeam()) return true;
-        if (!HasNecronomicon(target)) return true;
+        if (IsRevenge || killer.GetCustomRole().IsCovenTeam() || !HasNecronomicon(target)) return true;
         if ((killer.Is(CustomRoles.Retributionist) || killer.Is(CustomRoles.Nemesis)) && !killer.IsAlive()) return true;
 
         _ = new LateTask(target.RpcRandomVentTeleport, 0.01f, "Random Vent Teleport - Necromancer");
@@ -141,19 +139,13 @@ internal class Necromancer : CovenManager
         nm.RpcSetCustomRole(role, checkAddons: false);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
         nm.SyncSettings();
-        Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
-        CurrentAddons[nm.PlayerId] = [];
-        foreach (var addon in nm.GetCustomSubRoles())
-        {
-            CurrentAddons[nm.PlayerId].Add(addon);
-        }
-        foreach (var addon in CurrentAddons[nm.PlayerId])
+        foreach (var addon in nm.GetCustomSubRoles().ToArray())
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, nm))
             {
                 OldAddons[nm.PlayerId].Add(addon);
                 Main.PlayerStates[nm.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{nm.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", "Necromancer");
+                Logger.Info($"{nm.GetNameWithRole()} had incompatible addon {addon}, removing addon", "Necromancer");
             }
         }
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
