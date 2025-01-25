@@ -29,7 +29,7 @@ class PingTrackerUpdatePatch
                 return false;
             }
 
-            DelayUpdate = 1000;
+            DelayUpdate = GameStates.IsLobby ? 500 : 1000;
 
             ChangeText(__instance);
             sb.Clear();
