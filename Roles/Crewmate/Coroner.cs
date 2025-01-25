@@ -167,7 +167,7 @@ internal class Coroner : RoleBase
     {
         if (seer.PlayerId != target.PlayerId || isForMeeting) return string.Empty;
 
-        if (CoronerTargets.TryGetValue(seer.PlayerId, out var Targets) && Targets.Any())
+        if (CoronerTargets.TryGetValue(seer.PlayerId, out var targets) && targets.Any())
         {
             var arrows = "";
             foreach (var targetId in targets)
