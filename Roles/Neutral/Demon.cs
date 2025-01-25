@@ -91,10 +91,10 @@ internal class Demon : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !killer.Is(CustomRoles.Demon) || target.Is(CustomRoles.Demon) || !PlayerHealth.ContainsKey(target.PlayerId)) return false;
+        if (killer == null || target == null || !killer.Is(CustomRoles.Demon) || target.Is(CustomRoles.Demon) || !PlayerHealth.TryGetValue(target.PlayerId, out var damage)) return false;
         killer.SetKillCooldown();
 
-        if (PlayerHealth[target.PlayerId] - Damage.GetInt() < 1)
+        if (damage - Damage.GetInt() < 1)
         {
             PlayerHealth.Remove(target.PlayerId);
             killer.RpcMurderPlayer(target);
