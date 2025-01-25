@@ -135,8 +135,6 @@ internal class HexMaster : CovenManager
         CurrentHexedPlayerTime = nowTime;
         MarkEveryoneDirtySettings();
 
-
-        SendRPC(false, CurrentHexedPlayer, LastHexedPlayer);
         Logger.Msg($"{player.GetNameWithRole()} passed hex to {target.GetNameWithRole()}", "Hex Master Pass");
     }
     private static void ResetHex()
