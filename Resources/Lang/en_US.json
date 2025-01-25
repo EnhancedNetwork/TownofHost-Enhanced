@@ -4420,8 +4420,8 @@
 
     "Gambler": "Gambler",
     "GamblerInfo": "Kill your killer or go bust!",
-    "GamblerInfoLong": "As the Gambler, you have a 50/50 chance to either kill your killer or lose your role and die. Single use.",
+    "GamblerInfoLong": "(Add-ons):\nAs the Gambler, you have a 50/50 chance to either kill your killer or lose your role and die. Single use.",
     "Bankrupt": "Bankrupt",
     "BankruptInfo": "You have lost your role",
-    "BankruptInfoLong": "As the Bankrupt, you are a Neutral with no win condition.\nBankrupt is a utility role."
+    "BankruptInfoLong": "(Neutrals):\nAs the Bankrupt, you are a Neutral with no win condition.\nBankrupt is a utility role."
 }
