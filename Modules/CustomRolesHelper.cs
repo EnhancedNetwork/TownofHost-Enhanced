@@ -393,17 +393,7 @@ public static class CustomRolesHelper
         || role is CustomRoles.Knighted 
                 or CustomRoles.Cleansed 
                 or CustomRoles.Workhorse 
-                or CustomRoles.LastImpostor
-                or CustomRoles.Lovers;
-
-    public static bool ShouldBeRemoved(this PlayerControl player, CustomRoles addon)
-    {
-        var plrRole = player.GetCustomRole();
-        return !addon.IsAddonAssignedMidGame()
-            || (addon == CustomRoles.LastImpostor && !plrRole.IsImpostorTeamV3())
-            || (addon == CustomRoles.Workhorse && (!plrRole.IsCrewmate() || plrRole.IsTasklessCrewmate()))
-            || (addon == CustomRoles.Knighted && plrRole.IsNotKnightable());
-    }
+                or CustomRoles.LastImpostor;
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
     {
