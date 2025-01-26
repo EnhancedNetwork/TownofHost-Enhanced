@@ -2193,6 +2193,12 @@ public static class Utils
                             }
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Rebel))
+                        {
+                            BlankRT = ColorString(GetRoleColor(CustomRoles.Taskinator), GetString(CustomRoles.Taskinator.ToString())); // Taskinator
+                            BlankRT += $" {ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({Taskinator.maxTasksMarkedPerRound})")}"; // Taskinator progress text
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
+                        }
 
                         // ====== Target player name ======
 

@@ -23,7 +23,7 @@ internal class Taskinator : RoleBase
     private static readonly Dictionary<byte, List<int>> taskIndex = [];
     private static readonly Dictionary<byte, int> TaskMarkPerRound = [];
 
-    private static int maxTasksMarkedPerRound = new();
+    public static int maxTasksMarkedPerRound = new();
 
     public override void SetupCustomOption()
     {
