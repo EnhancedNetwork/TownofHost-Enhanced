@@ -987,6 +987,7 @@ public enum CustomRoles
     Flash,
     Fool,
     Fragile,
+    FragileHunter,
     Gambler,
     Ghoul,
     Glow,
@@ -1125,6 +1126,7 @@ public enum CustomWinner
     Narc = CustomRoles.Narc,
     Artist = CustomRoles.Artist,
     Slayer = CustomRoles.Slayer,
+    FragileHunter = CustomRoles.FragileHunter,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

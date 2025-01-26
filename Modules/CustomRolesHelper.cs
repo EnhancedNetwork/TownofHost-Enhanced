@@ -680,6 +680,11 @@ public static class CustomRolesHelper
                     return false;
                 break;
 
+            case CustomRoles.FragileHunter:
+                if (!pc.CanUseKillButton())
+                    return false;
+                break;
+
             case CustomRoles.Underclocked:
                 if (!pc.CanUseKillButton())
                     return false;
@@ -732,6 +737,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Diviner)
                     || pc.Is(CustomRoles.Veteran)
                     || pc.Is(CustomRoles.Guardian)
+                    || pc.Is(CustomRoles.FragileHunter)
                     || pc.Is(CustomRoles.Medic)
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.Jinx)
@@ -1461,6 +1467,7 @@ public static class CustomRolesHelper
             CustomRoles.Pickpocket => CustomWinner.Pickpocket,
             CustomRoles.Traitor => CustomWinner.Traitor,
             CustomRoles.Vulture => CustomWinner.Vulture,
+            CustomRoles.FragileHunter => CustomWinner.FragileHunter,
             CustomRoles.Apocalypse => CustomWinner.Apocalypse,
             CustomRoles.Spiritcaller => CustomWinner.Spiritcaller,
             CustomRoles.Glitch => CustomWinner.Glitch,
