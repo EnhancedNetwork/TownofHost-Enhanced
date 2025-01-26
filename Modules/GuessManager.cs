@@ -325,7 +325,7 @@ public static class GuessManager
                             return true;
                         }
                     }
-                    if (role.IsImpostor() && !Options.ImpCanGuessImp.GetBool())
+                    if ((role.IsImpostor() || role.IsMadmate()) && !Options.ImpCanGuessImp.GetBool())
                     {
                         if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {

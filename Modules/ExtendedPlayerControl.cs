@@ -19,14 +19,15 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role,  bool checkAddons = true/*check role-addon*/, bool checkAAconflict = true/*check addon-addon*/)
+    // checkAddons disable checks in MainRole Set, checkAAconflict disable checks in SubRole Set
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true, bool checkAAconflict = true)
     {
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
             //  player.GetRoleClass()?.OnAdd(player.PlayerId);
             // Remember to manually add OnAdd if you are setting role mid game
-            if (checkAddons) player.RemoveIncompatibleAddOns();
+            if (checkAddons && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
@@ -34,9 +35,7 @@ static class ExtendedPlayerControl
 
             Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
 
-            if (role.IsAddonAssignedMidGame()) checkAAconflict = false;
-
-            if (checkAAconflict) player.RemoveIncompatibleAddOns();
+            if (checkAAconflict && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -59,7 +58,11 @@ static class ExtendedPlayerControl
     }
     public static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
-        foreach (var addon in player.GetCustomSubRoles())
+        List<CustomRoles> roles = new(player.GetCustomSubRoles());
+        roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
+        roles.Shuffle();
+
+        foreach (var addon in roles)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
             {
@@ -525,7 +528,7 @@ static class ExtendedPlayerControl
                 gc.KCDTimer = (int)(time / 2);
             }
         }
-        else if (forceAnime || !player.IsModded() || !Options.DisableShieldAnimations.GetBool())
+        else if (forceAnime || !player.IsModded())
         {
             player.SyncSettings();
             player.RpcGuardAndKill(target, fromSetKCD: true);
@@ -567,7 +570,7 @@ static class ExtendedPlayerControl
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
-        if (forceAnime || !player.IsModded() || !Options.DisableShieldAnimations.GetBool())
+        if (forceAnime || !player.IsModded())
         {
             player.SyncSettings();
             player.RpcGuardAndKill(target, fromSetKCD: true);
@@ -1248,7 +1251,14 @@ static class ExtendedPlayerControl
         ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
-        reporter.RpcStartMeeting(target);
+
+        _ = new LateTask(() =>
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                reporter.RpcStartMeeting(target);
+            }
+        }, 0.12f, "No Check StartMeeting");
     }
     public static bool IsHost(this InnerNetObject innerObject) => innerObject.OwnerId == AmongUsClient.Instance.HostId;
     public static bool IsHost(this byte playerId) => playerId.GetPlayer()?.OwnerId == AmongUsClient.Instance.HostId;

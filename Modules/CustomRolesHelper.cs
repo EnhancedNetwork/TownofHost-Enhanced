@@ -408,15 +408,16 @@ public static class CustomRolesHelper
     }
 
     public static bool IsBetrayalAddonV2(this CustomRoles role)
-        => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
+        => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal)
             || role is CustomRoles.Admired;
 
     public static bool IsAddonAssignedMidGame(this CustomRoles role)
-        => role.IsBetrayalAddonV2() 
-        || role is CustomRoles.Knighted 
-                or CustomRoles.Cleansed 
-                or CustomRoles.Workhorse 
-                or CustomRoles.LastImpostor;
+        => role.IsBetrayalAddonV2()
+        || role is CustomRoles.Knighted
+                or CustomRoles.Cleansed
+                or CustomRoles.Workhorse
+                or CustomRoles.LastImpostor
+                or CustomRoles.Lovers;
 
     public static bool CheckPlayerIsBad(this PlayerControl pc) //gets all players that keep the game going
     {
