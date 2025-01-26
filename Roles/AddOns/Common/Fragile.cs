@@ -49,6 +49,31 @@ public class Fragile : IAddon
             }
             target.SetRealKiller(killer);
             killer.ResetKillCooldown();
+            if (killer.Is(CustomRoles.FragileHunter))
+            {
+                if (!CustomWinnerHolder.CheckForConvertedWinner(killer.PlayerId))
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.FragileHunter);
+                    CustomWinnerHolder.WinnerIds.Add(killer.PlayerId);
+                }
+                RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    if (pc.PlayerId != killer.PlayerId)
+                    {
+                        var deathReason = pc.PlayerId == killer.PlayerId ?
+                            PlayerState.DeathReason.Overtired : PlayerState.DeathReason.Shattered;
+
+                        pc.SetDeathReason(deathReason);
+                        pc.RpcMurderPlayer(pc);
+                        pc.SetRealKiller(killer);
+                    }
+                }
+            }
+            else
+            {
+                Main.PlayerStates[killer.PlayerId].RemoveSubRole(CustomRoles.FragileHunter);
+            }
             return true;
         }
 

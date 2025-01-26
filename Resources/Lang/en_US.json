@@ -4442,5 +4442,10 @@
   "Slayer": "Slayer",
   "SlayerInfo": "Do tasks to kill in bursts",
   "SlayerInfoLong": "(Neutrals):\nWhen the Slayer completes a task, all other players around them will be killed.",
-  "WinnerRoleText.Slayer": "Slayer Wins!"
+  "WinnerRoleText.Slayer": "Slayer Wins!",
+
+  "FragileHunter": "Fragile Hunter",
+  "FragileHunterInfo": "Kill the fragile!",
+  "FragileHunterInfoLong": "With this addon, if you kill the Fragile, you automatically win the game.",
+  "WinnerRoleText.FragileHunter": "The Fragile was hunted!"
 }
