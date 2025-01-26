@@ -48,6 +48,9 @@ public static class DevManager
 
             // Dailyhare
             new(code: "noshsame#8116", color: "#011efe", tag: "Bait Killer", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Dailyhare"),
+
+            // PEPPERcula
+            new(code: "motorlace#4741", color: "#DFB722", tag: "❖ Exclusive Tester ❖", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "PEPPERcula"),
             
             /*TOHO DEVS ABOVE*/
             /*TESTERS BELOW*/
