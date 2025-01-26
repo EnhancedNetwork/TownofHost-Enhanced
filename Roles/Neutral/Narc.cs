@@ -1,6 +1,5 @@
-﻿using TOHE.Roles.Core;
 using static TOHE.Options;
-using static TOHE.Translator;
+
 namespace TOHE.Roles.Neutral;
 
 internal class Narc : RoleBase

@@ -61,7 +61,7 @@ internal class EvilGuesser : RoleBase
         }
 
         // Evil Guesser can't Guess Impostors
-        if (role.IsImpostorTeamV3() && !EGCanGuessImp.GetBool())
+        if ((role.IsImpostor() || role.IsMadmate()) && !EGCanGuessImp.GetBool())
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessImpRole"));
             return true;

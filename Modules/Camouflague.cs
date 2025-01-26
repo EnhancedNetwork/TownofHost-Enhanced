@@ -1,6 +1,8 @@
 using AmongUs.Data;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -137,7 +139,7 @@ public static class Camouflage
                 break;
         }
     }
-    public static void CheckCamouflage()
+    public static void CheckCamouflage(bool force)
     {
         if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
 
@@ -147,16 +149,40 @@ public static class Camouflage
 
         if (oldIsCamouflage != IsCamouflage)
         {
-            foreach (var pc in Main.AllPlayerControls)
+            if (force)
             {
-                RpcSetSkin(pc);
-
-                if (!IsCamouflage && !pc.IsAlive())
+                foreach (var pc in Main.AllPlayerControls)
                 {
-                    pc.RpcRemovePet();
+                    RpcSetSkin(pc);
+
+                    if (!IsCamouflage && !pc.IsAlive())
+                    {
+                        pc.RpcRemovePet();
+                    }
                 }
             }
-            Utils.NotifyRoles(NoCache: true);
+            else
+            {
+                ShipStatus.Instance.StartCoroutine(CoSetCamouflage().WrapToIl2Cpp());
+            }
+        }
+    }
+    private static System.Collections.IEnumerator CoSetCamouflage()
+    {
+        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        yield return null;
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            RpcSetSkin(pc);
+
+            if (!IsCamouflage && !pc.IsAlive())
+            {
+                pc.RpcRemovePet();
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.1f);
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)

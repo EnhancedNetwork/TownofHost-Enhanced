@@ -79,7 +79,7 @@ public static class CustomRolesHelper
         if (player == null) return false;
         if (Options.CurrentGameMode is CustomGameMode.CandR && player.Is(CustomRoles.Cop)) return true;
         var customRole = player.GetCustomRole();
-        return customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
+        return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
     }
     //This is a overall check for vanilla clients to see if they are imp basis 
     public static bool IsGhostRole(this CustomRoles role)
@@ -417,7 +417,8 @@ public static class CustomRolesHelper
         || role is CustomRoles.Knighted 
                 or CustomRoles.Cleansed 
                 or CustomRoles.Workhorse 
-                or CustomRoles.LastImpostor;
+                or CustomRoles.LastImpostor
+                or CustomRoles.Lovers;
 
     public static bool ShouldBeRemoved(this PlayerControl player, CustomRoles addon)
     {

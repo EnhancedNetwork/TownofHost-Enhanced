@@ -126,9 +126,13 @@ public static class AntiBlackout
         foreach (var seer in Main.AllPlayerControls)
         {
             if (seer.IsModded()) continue;
+            var seerIsAliveAndHasKillButton = seer.HasImpKillButton() && seer.IsAlive();
             foreach (var target in Main.AllPlayerControls)
             {
-                RoleTypes targetRoleType = target.PlayerId == dummyImp.PlayerId ? RoleTypes.Impostor : RoleTypes.Crewmate;
+                if (seer.PlayerId == target.PlayerId && seerIsAliveAndHasKillButton) continue;
+                
+                RoleTypes targetRoleType = !seerIsAliveAndHasKillButton && target.PlayerId == dummyImp.PlayerId
+                    ? RoleTypes.Impostor : RoleTypes.Crewmate;
 
                 target.RpcSetRoleDesync(targetRoleType, seer.GetClientId());
             }
@@ -151,7 +155,7 @@ public static class AntiBlackout
         if (doSend)
         {
             SendGameData();
-            _ = new LateTask(() => RestoreIsDeadByExile(), 0.3f, "AntiBlackOut_RestoreIsDeadByExile");
+            _ = new LateTask(RestoreIsDeadByExile, 0.3f, "AntiBlackOut_RestoreIsDeadByExile");
         }
     }
 
@@ -273,8 +277,9 @@ public static class AntiBlackout
             if (seer.IsModded()) continue;
 
             var isSelf = seerId == targetId;
+            var isDead = target.Data.IsDead;
             var changedRoleType = roletype;
-            if (target.Data.IsDead)
+            if (isDead)
             {
                 if (isSelf)
                 {
@@ -292,6 +297,7 @@ public static class AntiBlackout
                 }
             }
 
+            if (!isDead && seerId == targetId && seer.HasImpKillButton()) continue;
             target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
         }
     }
@@ -299,16 +305,7 @@ public static class AntiBlackout
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            if (seer.IsAlive())
-            {
-                seer.ResetKillCooldown();
-
-                if (Main.AllPlayerKillCooldown.TryGetValue(seer.PlayerId, out var kcd))
-                    seer.SetKillCooldown(kcd >= 2f ? kcd - 2f : kcd);
-
-                seer.RpcResetAbilityCooldown();
-            }
-            else if (seer.HasGhostRole())
+            if (seer.HasGhostRole())
             {
                 seer.RpcResetAbilityCooldown();
             }

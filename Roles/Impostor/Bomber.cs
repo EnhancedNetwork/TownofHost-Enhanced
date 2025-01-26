@@ -15,8 +15,6 @@ internal class Bomber : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
-
     public static OptionItem BomberRadius;
     public static OptionItem BomberCanKill;
     public static OptionItem BomberKillCD;
@@ -99,4 +97,5 @@ internal class Bomber : RoleBase
     {
         hud.AbilityButton.OverrideText(Translator.GetString("BomberShapeshiftText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
 }

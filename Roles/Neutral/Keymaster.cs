@@ -1,9 +1,6 @@
-﻿using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using System.Text;
-using TOHE.Modules;
-using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -52,7 +49,7 @@ internal class Keymaster : RoleBase
     public override void Init()
     {
         playerIdList.Clear();
-        LastColorChange = Utils.GetTimeStamp();
+        LastColorChange = GetTimeStamp();
         KeyColor = 10;
         KeyID = 10;
         ColID = 10;
@@ -76,6 +73,9 @@ internal class Keymaster : RoleBase
         playerIdList.Remove(playerId);
         KeyedList.Remove(playerId);
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+        => hud.KillButton.OverrideText(GetString("KeymasterButtonText"));
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = GiveKeyCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -86,7 +86,7 @@ internal class Keymaster : RoleBase
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(Utils.GetPlayerById(playerIdList.First())); // setKeyedPlayer
+        writer.WriteNetObject(GetPlayerById(playerIdList.First())); // setKeyedPlayer
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

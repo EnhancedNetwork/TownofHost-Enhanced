@@ -169,14 +169,14 @@ internal class Admirer : RoleBase
     public static bool CheckKnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (!KnowTargetRole.GetBool()) return false;
-        if (AdmiredList.ContainsKey(seer.PlayerId))
+        if (AdmiredList.TryGetValue(seer.PlayerId, out var seerList))
         {
-            if (AdmiredList[seer.PlayerId].Contains(target.PlayerId)) return true;
+            if (seerList.Contains(target.PlayerId)) return true;
             return false;
         }
-        else if (AdmiredList.ContainsKey(target.PlayerId))
+        else if (AdmiredList.TryGetValue(target.PlayerId, out var targetList))
         {
-            if (AdmiredList[target.PlayerId].Contains(seer.PlayerId)) return true;
+            if (targetList.Contains(seer.PlayerId)) return true;
             return false;
         }
         else return false;
@@ -184,9 +184,9 @@ internal class Admirer : RoleBase
 
     public static bool CanBeAdmired(PlayerControl pc, PlayerControl admirer)
     {
-        if (AdmiredList.ContainsKey(admirer.PlayerId))
+        if (AdmiredList.TryGetValue(admirer.PlayerId, out var list))
         {
-            if (AdmiredList[admirer.PlayerId].Contains(pc.PlayerId))
+            if (list.Contains(pc.PlayerId))
                 return false;
         }
         else AdmiredList.Add(admirer.PlayerId, []);
