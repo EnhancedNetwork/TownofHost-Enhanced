@@ -824,9 +824,15 @@ class IntroCutsceneDestroyPatch
 
         Main.IntroDestroyed = true;
 
-        // Set roleAssigned as false for override role for modded players
-        // For override role for vanilla clients we use "Data.Disconnected" while assign
-        Main.AllPlayerControls.Do(pc => pc.roleAssigned = false);
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            // Set roleAssigned as false for override role for modded players
+            // For override role for vanilla clients we use "Data.Disconnected" while assign
+            pc.roleAssigned = false;
+
+            // Update name for all after intro
+            Main.LowLoadUpdateName[pc.PlayerId] = true;
+        }
 
         if (!GameStates.AirshipIsActive)
         {
@@ -864,12 +870,17 @@ class IntroCutsceneDestroyPatch
                 }
             }
 
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
+            foreach (var player in Main.AllPlayerControls)
             {
-                PlayerControl.LocalPlayer.RpcExile();
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+                if (player.Is(CustomRoles.GM))
+                {
+                    player.RpcExile();
+                    Main.PlayerStates[player.PlayerId].SetDead();
+                }
             }
-            else if (GhostRoleAssign.forceRole.Any())
+
+            
+            if (GhostRoleAssign.forceRole.Any()) // Incase user has /up access
             {
                 // Needs to be delayed for the game to load it properly
                 _ = new LateTask(() =>

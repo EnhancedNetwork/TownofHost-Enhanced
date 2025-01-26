@@ -20,6 +20,7 @@ public static class CustomRolesHelper
     {
         // Vanilla roles
         if (role.IsVanilla()) return role;
+        if (role is CustomRoles.GM) return CustomRoles.Crewmate;
 
         // Role base
         if (role.GetStaticRoleClass() is not DefaultSetup) return role.GetStaticRoleClass().ThisRoleBase;
@@ -393,7 +394,8 @@ public static class CustomRolesHelper
         || role is CustomRoles.Knighted
                 or CustomRoles.Cleansed
                 or CustomRoles.Workhorse
-                or CustomRoles.LastImpostor;
+                or CustomRoles.LastImpostor
+                or CustomRoles.Lovers;
 
     public static bool IsImpOnlyAddon(this CustomRoles role)
     {
