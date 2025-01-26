@@ -18,6 +18,7 @@ internal class TaskManager : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
 
+    private static OptionItem CanCompleteTaskAfterDeath;
     private static OptionItem CanGetHelpfulAddons;
     private static OptionItem CanGetHarmfulAddons;
     private static OptionItem CanGetMixedAddons;
@@ -29,9 +30,11 @@ internal class TaskManager : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
+        CanCompleteTaskAfterDeath = BooleanOptionItem.Create(Id + 2, "TaskManager_OptionCanCompleteTaskAfterDeath", false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
         CanGetHelpfulAddons = BooleanOptionItem.Create(Id + 3, "TaskManager_OptionCanGetHelpfulAddons", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
-        CanGetHarmfulAddons = BooleanOptionItem.Create(Id + 4, "TaskManager_OptionCanGetHarmfulAddons", true, TabGroup.CrewmateRoles, false)
+        CanGetHarmfulAddons = BooleanOptionItem.Create(Id + 4, "TaskManager_OptionCanGetHarmfulAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
         CanGetMixedAddons = BooleanOptionItem.Create(Id + 5, "TaskManager_OptionCanGetMixedAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
@@ -61,7 +64,7 @@ internal class TaskManager : RoleBase
     }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
-        if (!taskManager.IsAlive()) return true;
+        if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
         
         var randomPlayer = Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
         var allNotCompletedTasks = new List<NetworkedPlayerInfo.TaskInfo>();
