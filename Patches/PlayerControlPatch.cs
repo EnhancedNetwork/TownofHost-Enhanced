@@ -1803,6 +1803,14 @@ class PlayerControlCompleteTaskPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
+            var playerIsOverridden = false;
+            if (TaskManager.Target.TryGetValue(player.PlayerId, out var taskManagerId))
+            {
+                // ovveride player
+                player = taskManagerId.GetPlayer();
+                playerIsOverridden = true;
+            }
+
             var roleClass = player.GetRoleClass();
             // Check task complete for role
             if (roleClass != null)
@@ -1815,6 +1823,12 @@ class PlayerControlCompleteTaskPatch
 
             if (playerTask != null)
                 CustomRoleManager.OthersCompleteThisTask(player, playerTask);
+
+            if (playerIsOverridden)
+            {
+                player = __instance;
+                TaskManager.Target[player.PlayerId] = byte.MaxValue;
+            }
 
             var playerSubRoles = player.GetCustomSubRoles();
 
