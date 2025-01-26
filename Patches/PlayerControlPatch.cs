@@ -1321,9 +1321,9 @@ class FixedUpdateInNormalGamePatch
                 RoleText.color = RoleTextData.Item2;
                 if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
 
-                if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
-                else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
-                else RoleText.enabled = false;
+                    if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
+                    else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
+                    else RoleText.enabled = false;
 
                     string BlankRT = string.Empty;
 
