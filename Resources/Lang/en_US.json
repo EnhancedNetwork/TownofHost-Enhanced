@@ -1413,6 +1413,7 @@
     "ApplyBanList": "Apply BanList",
     "RemovePetsAtDeadPlayers": "Remove pets at dead players",
     "KillFlashDuration": "Kill-Flash Duration",
+    "NonCrewRandomCommonTasks": "Assign Random Common Tasks to non-Crewmates",
     "ConfirmEjectionsMode": "Confirm Ejections Mode",
     "ConfirmEjections.None": "None",
     "ConfirmEjections.Team": "Team",
