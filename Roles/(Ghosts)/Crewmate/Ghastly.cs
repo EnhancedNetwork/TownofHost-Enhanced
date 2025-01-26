@@ -98,8 +98,7 @@ internal class Ghastly : RoleBase
             return false;
         }
 
-        var killer = killertarget.Item1;
-        var Target = killertarget.Item2;
+        var (killer, Target) = killertarget;
 
         if (!KillerIsChosen && !CheckConflicts(target))
         {
@@ -148,20 +147,22 @@ internal class Ghastly : RoleBase
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad) return;
-        var speed = Main.AllPlayerSpeed[player.PlayerId];
+        var speed = Main.AllPlayerSpeed.GetValueOrDefault(player.PlayerId, 1f);
         if (speed != GhastlySpeed.GetFloat())
         {
             Main.AllPlayerSpeed[player.PlayerId] = GhastlySpeed.GetFloat();
             player.MarkDirtySettings();
         }
     }
-    public void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
+    private void OnFixUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (!lowLoad && killertarget.Item1 == player.PlayerId
-            && LastTime.TryGetValue(player.PlayerId, out var now) && now + PossessDur.GetInt() <= nowTime)
+        if (lowLoad) return;
+
+        var (killerId, targetId) = killertarget;
+        if (killerId == player.PlayerId && LastTime.TryGetValue(player.PlayerId, out var lastTime) && lastTime + PossessDur.GetInt() <= nowTime)
         {
             _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", player.GetRealName()));
-            TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
+            TargetArrow.Remove(killerId, targetId);
             LastTime.Remove(player.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);
@@ -170,10 +171,10 @@ internal class Ghastly : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        var tuple = killertarget;
-        if (tuple.Item1 == killer.PlayerId && tuple.Item2 != byte.MaxValue)
+        var (KillerId, TragetId) = killertarget;
+        if (KillerId == killer.PlayerId && TragetId != byte.MaxValue)
         {
-            if (tuple.Item2 != target.PlayerId)
+            if (TragetId != target.PlayerId)
             {
                 killer.Notify(GetString("GhastlyNotUrTarget"));
                 return true;
@@ -181,7 +182,7 @@ internal class Ghastly : RoleBase
             else
             {
                 _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", killer.GetRealName()));
-                TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
+                TargetArrow.Remove(KillerId, TragetId);
                 LastTime.Remove(killer.PlayerId);
                 KillerIsChosen = false;
                 killertarget = (byte.MaxValue, byte.MaxValue);
@@ -195,12 +196,12 @@ internal class Ghastly : RoleBase
     {
         if (isForMeeting || (seer != seen && seer.IsAlive())) return string.Empty;
 
-        var (killer, target) = killertarget;
+        var (killerId, targetId) = killertarget;
 
-        if (killer == seen.PlayerId && target != byte.MaxValue)
+        if (killerId == seen.PlayerId && targetId != byte.MaxValue)
         {
-            var arrows = TargetArrow.GetArrows(killer.GetPlayer(), target);
-            var tar = target.GetPlayer().GetRealName();
+            var arrows = TargetArrow.GetArrows(seen, targetId);
+            var tar = targetId.GetPlayer().GetRealName();
             if (tar == null) return string.Empty;
 
             var colorstring = ColorString(GetRoleColor(CustomRoles.Ghastly), "<alpha=#88>" + tar + arrows);
@@ -212,11 +213,11 @@ internal class Ghastly : RoleBase
     {
         if (inMeeting) return;
 
-        var tuple = killertarget;
-        if (target.PlayerId == tuple.Item1 || target.PlayerId == tuple.Item2)
+        var (killerId, targetId) = killertarget;
+        if (target.PlayerId == killerId || target.PlayerId == targetId)
         {
-            _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", GetPlayerById(killertarget.Item1)));
-            TargetArrow.Remove(killertarget.Item1, killertarget.Item2);
+            _Player?.Notify(string.Format($"\n{GetString("GhastlyExpired")}\n", GetPlayerById(killerId)));
+            TargetArrow.Remove(killerId, targetId);
             LastTime.Remove(target.PlayerId);
             KillerIsChosen = false;
             killertarget = (byte.MaxValue, byte.MaxValue);

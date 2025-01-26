@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
-using Sentry;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -20,6 +20,7 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using IEnumerator = System.Collections.IEnumerator;
 
 namespace TOHE;
 
@@ -95,6 +96,7 @@ class CheckMurderPatch
 
         if (CheckForInvalidMurdering(killer, target, true) == false)
         {
+            killer.RpcMurderPlayer(target, error: true);
             return false;
         }
 
@@ -121,6 +123,7 @@ class CheckMurderPatch
         if (CustomRoleManager.OnCheckMurder(ref killer, ref target, ref __state) == false)
         {
             Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
+            killer.RpcMurderPlayer(target, didSucceed: false);
             return false;
         }
 
@@ -171,6 +174,12 @@ class CheckMurderPatch
         if (MeetingHud.Instance != null)
         {
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
+            return false;
+        }
+        // Meeting is awaiting start
+        if (Main.MeetingIsStarted)
+        {
+            Logger.Info("Meeting is awaiting start, the kill was canceled", "CheckMurder");
             return false;
         }
         // AntiBlackOut protect is active
@@ -275,8 +284,6 @@ class CheckMurderPatch
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);
-            ExtendedPlayerControl.RpcSetCustomRole(target.PlayerId, CustomRoles.Madmate);
-            target.RemoveIncompatibleAddOns();
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BecomeMadmateCuzMadmateMode")));
             killer.SetKillCooldown();
             killer.RpcGuardAndKill(target);
@@ -513,8 +520,7 @@ class MurderPlayerPatch
             }
         }
 
-        if (Main.AllKillers.ContainsKey(killer.PlayerId))
-            Main.AllKillers.Remove(killer.PlayerId);
+        Main.AllKillers.Remove(killer.PlayerId);
 
         killer.SetKillTimer();
 
@@ -583,6 +589,70 @@ class RpcMurderPlayerPatch
 public static class CheckShapeshiftPatch
 {
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
+    public static IEnumerator CoPerformUnShapeShifter(PlayerControl player)
+    {
+        if (GameStates.IsMeeting) yield break;
+        if (player.AmOwner)
+        {
+            // Host is Unshapeshifter, make button into Unshapeshift state
+            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+            yield break;
+        }
+        yield return null;
+        NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
+        subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
+        subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
+        subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
+        subPlayerInfo.name = "UnShapeShifter Dummy";
+        subPlayerInfo.Outfits.Clear();
+        subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
+        subPlayerInfo.Puid = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer.Data.Puid : "";
+        subPlayerInfo.PlayerLevel = 249;
+        subPlayerInfo.Tasks.Clear();
+        subPlayerInfo.Role = PlayerControl.LocalPlayer.Data.Role;
+        subPlayerInfo.DespawnOnDestroy = false;
+        var outfit = new NetworkedPlayerInfo.PlayerOutfit();
+        var target = player.Data.Outfits[PlayerOutfitType.Default];
+        outfit.Set(Main.LastNotifyNames[(player.PlayerId, player.PlayerId)] ?? player.GetRealName() ?? player.GetRealName(clientData: true),
+            target.ColorId, target.HatId, target.SkinId, target.VisorId, target.PetId, target.NamePlateId);
+        subPlayerInfo.SetOutfit(PlayerOutfitType.Default, outfit);
+        var writer = MessageWriter.Get(SendOption.Reliable);
+        writer.StartMessage(6);
+        writer.Write(AmongUsClient.Instance.GameId);
+        writer.WritePacked(player.OwnerId);
+        writer.StartMessage(1);
+        writer.WritePacked(subPlayerInfo.NetId);
+        subPlayerInfo.Serialize(writer, false);
+        writer.EndMessage();
+        writer.StartMessage(2);
+        writer.WritePacked(player.NetId);
+        writer.Write((byte)RpcCalls.Shapeshift);
+        writer.WritePacked(PlayerControl.LocalPlayer.NetId);
+        writer.Write(false);
+        writer.EndMessage();
+        writer.EndMessage();
+        AmongUsClient.Instance.SendOrDisconnect(writer);
+        writer.Recycle();
+        UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
+        player.RawSetOutfit(player.Data.Outfits[PlayerOutfitType.Default], PlayerOutfitType.Shapeshifted);
+        yield return new WaitForSeconds(0.06f);
+        var writer2 = MessageWriter.Get(SendOption.Reliable);
+        writer2.StartMessage(6);
+        writer2.Write(AmongUsClient.Instance.GameId);
+        writer2.WritePacked(player.OwnerId);
+        writer2.StartMessage(1);
+        writer2.WritePacked(PlayerControl.LocalPlayer.NetId);
+        PlayerControl.LocalPlayer.Data.Serialize(writer, false);
+        writer2.EndMessage();
+        writer2.EndMessage();
+        AmongUsClient.Instance.SendOrDisconnect(writer2);
+        writer2.Recycle();
+        yield break;
+    }
 
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
@@ -790,7 +860,7 @@ class ReportDeadBodyPatch
 
         foreach (var kvp in Main.PlayerStates)
         {
-            var pc = Utils.GetPlayerById(kvp.Key);
+            var pc = kvp.Key.GetPlayer();
             kvp.Value.LastRoom = pc.GetPlainShipRoom();
         }
 
@@ -812,6 +882,13 @@ class ReportDeadBodyPatch
             {
                 var playerRoleClass = __instance.GetRoleClass();
 
+                // If a button report is made during Sabotage, it should be cancelled.
+                // Some role may need to cancel this? NoCheckStartMeeting instead.
+                if (Utils.AnySabotageIsActive() && !Utils.IsActive(SystemTypes.MushroomMixupSabotage))
+                {
+                    Logger.Info("The button has been canceled because the sabotage is active", "ReportDeadBody");
+                    return false;
+                }
                 if (playerRoleClass.OnCheckStartMeeting(__instance) == false)
                 {
                     Logger.Info($"Player has role class: {playerRoleClass} - the start of the meeting has been cancelled", "ReportDeadBody");
@@ -836,8 +913,10 @@ class ReportDeadBodyPatch
                     }
                 }
 
+                var targetObject = target.Object;
+
                 // if Bait is killed, check the setting condition
-                if (!(target.Object.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
+                if (!(targetObject.Is(CustomRoles.Bait) && Bait.BaitCanBeReportedUnderAllConditions.GetBool()))
                 {
                     // Comms Camouflage
                     if (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive) return false;
@@ -850,22 +929,21 @@ class ReportDeadBodyPatch
                     return false;
                 }
 
-                if (target.Object.Is(CustomRoles.Unreportable)) return false;
-
-
-                // Oblivious try report body
-                var tpc = Utils.GetPlayerById(target.PlayerId);
-                if (__instance.Is(CustomRoles.Oblivious))
+                if (targetObject != null)
                 {
-                    if (!tpc.Is(CustomRoles.Bait) || (tpc.Is(CustomRoles.Bait) && Oblivious.ObliviousBaitImmune.GetBool())) /* && (target?.Object != null)*/
+                    if (targetObject.Is(CustomRoles.Unreportable)) return false;
+
+                    // Oblivious try report body
+                    if (__instance.Is(CustomRoles.Oblivious))
                     {
-                        return false;
+                        if (!targetObject.Is(CustomRoles.Bait) || (targetObject.Is(CustomRoles.Bait) && Oblivious.ObliviousBaitImmune.GetBool())) /* && (target?.Object != null)*/
+                        {
+                            return false;
+                        }
                     }
                 }
 
-                var tar = Utils.GetPlayerById(target.PlayerId);
-
-                if (__instance.Is(CustomRoles.Unlucky) && (target?.Object == null || !target.Object.Is(CustomRoles.Bait)))
+                if (__instance.Is(CustomRoles.Unlucky) && (targetObject == null || !targetObject.Is(CustomRoles.Bait)))
                 {
                     if (Unlucky.SuicideRand(__instance, Unlucky.StateSuicide.ReportDeadBody))
                         return false;
@@ -896,9 +974,19 @@ class ReportDeadBodyPatch
 
         AfterReportTasks(__instance, target);
 
-        // InnerSloth added CheckTaskCompletion() => CheckEndGameViaTasks() in report dead body.
-        // This is patched in CheckGameEndPatch
-        return true;
+        MeetingRoomManager.Instance.AssignSelf(__instance, target);
+        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
+        // Delay Start Meeting to allow other tasks stop and playerinfo finished
+        // Other tasks should stop with Main.MeetingIsStarted bool
+        // GameStates.InTasks already check this
+        _ = new LateTask(() =>
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                __instance.RpcStartMeeting(target);
+            }
+        }, 0.12f, "StartMeeting");
+        return false;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)
     {
@@ -917,6 +1005,20 @@ class ReportDeadBodyPatch
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
+
+            foreach (var unshapeshifterIds in Main.UnShapeShifter)
+            {
+                var unshapeshifter = unshapeshifterIds.GetPlayer();
+                if (unshapeshifter == null) { Main.UnShapeShifter.Remove(unshapeshifterIds); continue; }
+                unshapeshifter.Shapeshift(unshapeshifter, false);
+                if (unshapeshifter.AmOwner) continue;
+                MessageWriter unshapeshiftwriter = AmongUsClient.Instance.StartRpcImmediately(unshapeshifter.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, unshapeshifter.OwnerId);
+                unshapeshiftwriter.WriteNetObject(unshapeshifter);
+                unshapeshiftwriter.Write(false);
+                AmongUsClient.Instance.FinishRpcImmediately(unshapeshiftwriter);
+                // Normally unshape shifter will reset its outfit on meeting start itself
+                // But sometimes it may fail. we just need to make sure it resets.
+            }
 
             foreach (var playerStates in Main.PlayerStates.Values.ToArray())
             {
@@ -1184,14 +1286,16 @@ class FixedUpdateInNormalGamePatch
             KillTimerManager.FixedUpdate(player);
             CovenManager.NecronomiconCheck();
 
+            var nowTime = Utils.TimeStamp;
+
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
-                if (!player.Data.IsDead)
-                    min.OnFixedUpdates(player);
+                if (!player.Data.Disconnected)
+                    min.OnFixedUpdates(player, nowTime);
             }
 
-            if (!GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
+            if (player.Is(CustomRoles.Spurt) && !GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
                 player.MarkDirtySettings();
@@ -1200,19 +1304,19 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
-                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime);
 
                 player.OnFixedAddonUpdate(lowLoad);
 
-                if (Main.AllPlayerSpeed.ContainsKey(player.PlayerId) && !lowLoad)
+                if (!lowLoad && Main.AllPlayerSpeed.TryGetValue(player.PlayerId, out var speed))
                 {
                     if (!Main.LastAllPlayerSpeed.ContainsKey(player.PlayerId))
                     {
-                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                        Main.LastAllPlayerSpeed[player.PlayerId] = speed;
                     }
-                    else if (!Main.LastAllPlayerSpeed[player.PlayerId].Equals(Main.AllPlayerSpeed[player.PlayerId]))
+                    else if (!Main.LastAllPlayerSpeed[player.PlayerId].Equals(speed))
                     {
-                        Main.LastAllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId];
+                        Main.LastAllPlayerSpeed[player.PlayerId] = speed;
                         player.SyncSpeed();
                     }
                 }
@@ -1240,12 +1344,12 @@ class FixedUpdateInNormalGamePatch
                         if (Rainbow.IsEnabled && Main.IntroDestroyed)
                             Rainbow.OnFixedUpdate();
 
-                        if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
+                        if (Main.UnShapeShifter.Any(x => x.GetPlayer()?.CurrentOutfitType != PlayerOutfitType.Shapeshifted)
                             && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
                         {
                             foreach (var UnShapeshifterId in Main.UnShapeShifter)
                             {
-                                var UnShapeshifter = Utils.GetPlayerById(UnShapeshifterId);
+                                var UnShapeshifter = UnShapeshifterId.GetPlayer();
                                 if (UnShapeshifter == null)
                                 {
                                     Main.UnShapeShifter.Remove(UnShapeshifterId);
@@ -1253,45 +1357,7 @@ class FixedUpdateInNormalGamePatch
                                 }
                                 if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
 
-
-                                if (!UnShapeshifter.AmOwner)
-                                {
-                                    var sstarget = PlayerControl.LocalPlayer;
-                                    UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
-                                    UnShapeshifter.RejectShapeshift();
-
-                                    var writer = MessageWriter.Get(SendOption.Reliable);
-                                    writer.StartMessage(6);
-                                    writer.Write(AmongUsClient.Instance.GameId);
-                                    writer.WritePacked(UnShapeshifter.OwnerId);
-
-                                    writer.StartMessage(2);
-                                    writer.WritePacked(UnShapeshifter.NetId);
-                                    writer.Write((byte)RpcCalls.Shapeshift);
-                                    writer.WriteNetObject(sstarget);
-                                    writer.Write(false);
-                                    writer.EndMessage();
-
-                                    writer.StartMessage(2);
-                                    writer.WritePacked(UnShapeshifter.NetId);
-                                    writer.Write((byte)RpcCalls.RejectShapeshift);
-                                    writer.EndMessage();
-
-                                    writer.EndMessage();
-                                    AmongUsClient.Instance.SendOrDisconnect(writer);
-                                    writer.Recycle();
-
-                                    UnShapeshifter.ResetPlayerOutfit(setNamePlate: true);
-                                }
-                                else
-                                {
-                                    // Host is Unshapeshifter, make button into unshapeshift state
-                                    PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
-                                    var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
-                                    PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
-                                    PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
-                                    DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
-                                }
+                                UnShapeshifter.StartCoroutine(CheckShapeshiftPatch.CoPerformUnShapeShifter(UnShapeshifter).WrapToIl2Cpp());
 
                                 Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
                                 Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
@@ -1300,7 +1366,6 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
             }
-
 
             if (!lowLoad)
             {
@@ -1358,48 +1423,52 @@ class FixedUpdateInNormalGamePatch
             }
             if (GameStates.IsInGame)
             {
-                var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
-                RoleText.text = RoleTextData.Item1;
-                RoleText.color = RoleTextData.Item2;
-                if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
+                var needUpdateNameTarget = Main.LowLoadUpdateName.GetValueOrDefault(__instance.PlayerId, true);
+                
+                if (needUpdateNameTarget)
+                {
+                    var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
+                    RoleText.text = RoleTextData.Item1;
+                    RoleText.color = RoleTextData.Item2;
+                    if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
 
                 if (__instance.AmOwner || Options.CurrentGameMode == CustomGameMode.FFA) RoleText.enabled = true;
-                else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
-                else RoleText.enabled = false;
+                    else if (ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, __instance)) RoleText.enabled = true;
+                    else RoleText.enabled = false;
 
                 string BlankRT = string.Empty;
 
-                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster))
-                {
-                    RoleText.enabled = true; //have to make it return true otherwise modded Overseer won't be able to reveal Trickster's role, same for Illusionist's targets
-                    BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed Trickster
-                    BlankRT += TaskState.GetTaskState(); // random task count for revealed Trickster
-                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
-                }
-                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
-                {
-                    RoleText.enabled = true;
-                    BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
-                    BlankRT += TaskState.GetTaskState();
-                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
-                }
-                if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsNonCovIllusioned(__instance.PlayerId))
-                {
-                    RoleText.enabled = true;
-                    var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                    BlankRT = Utils.ColorString(Utils.GetRoleColor(randomRole), GetString(randomRole.ToString()));
-                    if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
+                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster))
                     {
-                        BlankRT += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                        RoleText.enabled = true; //have to make it return true otherwise modded Overseer won't be able to reveal Trickster's role, same for Illusionist's targets
+                        BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed Trickster
+                        BlankRT += TaskState.GetTaskState(); // random task count for revealed Trickster
+                        RoleText.text = $"<size=1.3>{BlankRT}</size>";
                     }
-                    RoleText.text = $"<size=1.3>{BlankRT}</size>";
-                }
+                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsCovIllusioned(__instance.PlayerId))
+                    {
+                        RoleText.enabled = true;
+                        BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
+                        BlankRT += TaskState.GetTaskState();
+                        RoleText.text = $"<size=1.3>{BlankRT}</size>";
+                    }
+                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && Illusionist.IsNonCovIllusioned(__instance.PlayerId))
+                    {
+                        RoleText.enabled = true;
+                        var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                        BlankRT = Utils.ColorString(Utils.GetRoleColor(randomRole), GetString(randomRole.ToString()));
+                        if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
+                        {
+                            BlankRT += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                        }
+                        RoleText.text = $"<size=1.3>{BlankRT}</size>";
+                    }
                 
                 if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
-                {
-                    RoleText.enabled = false;
-                    if (!__instance.AmOwner) __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
-                }
+                    {
+                        RoleText.enabled = false;
+                        if (!__instance.AmOwner) __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
+                    }
 
                 if (Main.VisibleTasksCount)
                     RoleText.text += Utils.GetProgressText(__instance);
@@ -1437,19 +1506,19 @@ class FixedUpdateInNormalGamePatch
                 var seerRole = seer.GetCustomRole();
 
                 // Add protected player icon from ShieldPersonDiedFirst
-                if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
-                {
-                    if (Options.ShowShieldedPlayerToAll.GetBool())
+                    if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
                     {
-                        RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
-                        Mark.Append("<color=#4fa1ff>✚</color>");
+                        if (Options.ShowShieldedPlayerToAll.GetBool())
+                        {
+                            RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
+                            Mark.Append("<color=#4fa1ff>✚</color>");
+                        }
+                        else if (seer == target)
+                        {
+                            RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
+                            Mark.Append("<color=#4fa1ff>✚</color>");
+                        }
                     }
-                    else if (seer == target)
-                    {
-                        RealName = "<color=#4fa1ff><u></color>" + RealName + "</u>";
-                        Mark.Append("<color=#4fa1ff>✚</color>");
-                    }
-                }
                 
                 Mark.Append(seerRoleClass?.GetMark(seer, target, false));
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
@@ -1531,26 +1600,33 @@ class FixedUpdateInNormalGamePatch
                     float colorBlind = -0.2f;
 
                     if (NameNotifyManager.Notice.TryGetValue(seer.PlayerId, out var notify) && notify.Text.Contains('\n'))
-                    {
-                        int count = notify.Text.Count(x => x == '\n');
-                        for (int i = 0; i < count; i++)
                         {
-                            offset += 0.1f;
-                            colorBlind -= 0.1f;
+                            int count = notify.Text.Count(x => x == '\n');
+                            for (int i = 0; i < count; i++)
+                            {
+                                offset += 0.1f;
+                                colorBlind -= 0.1f;
+                            }
                         }
+
+                        if (Suffix.ToString() != string.Empty)
+                        {
+                            // If the name is on two lines, the job title text needs to be moved up.
+                            offset += 0.15f;
+                            colorBlind -= 0.2f;
+                        }
+
+                        if (!seer.IsAlive() && !target.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
+
+                        RoleText.transform.SetLocalY(offset);
+                        target.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
                     }
 
-                    if (Suffix.ToString() != string.Empty)
+                    // For non-host modded client need always upadate name
+                    if (AmongUsClient.Instance.AmHost && needUpdateNameTarget && Options.LowLoadDelayUpdateNames.GetBool())
                     {
-                        // If the name is on two lines, the job title text needs to be moved up.
-                        offset += 0.15f;
-                        colorBlind -= 0.2f;
+                        Main.LowLoadUpdateName[__instance.PlayerId] = false;
                     }
-
-                    if (!seer.IsAlive() && !target.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
-
-                    RoleText.transform.SetLocalY(offset);
-                    target.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
                 }
             }
             else
@@ -1561,7 +1637,6 @@ class FixedUpdateInNormalGamePatch
         }
         return Task.CompletedTask;
     }
-    //FIXME: 役職クラス化のタイミングで、このメソッドは移動予定
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
     {
         if (Options.LoverSuicide.GetBool() && Main.isLoversDead == false)
@@ -1575,35 +1650,32 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (loversPlayer.PlayerId == partnerPlayer.PlayerId) continue;
 
-                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.IsAlive())
+                    if (partnerPlayer.PlayerId != deathId && partnerPlayer.Is(CustomRoles.Lovers) && partnerPlayer.IsAlive())
                     {
-                        if (partnerPlayer.Is(CustomRoles.Lovers))
-                        {
-                            partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+                        partnerPlayer.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
 
                             if (isExiled)
+                        {
+                            if (Main.PlayersDiedInMeeting.Contains(deathId))
                             {
-                                if (Main.PlayersDiedInMeeting.Contains(deathId))
+                                partnerPlayer.Data.IsDead = true;
+                                partnerPlayer.RpcExileV2();
+                                Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
+                                if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                                 {
-                                    partnerPlayer.Data.IsDead = true;
-                                    partnerPlayer.RpcExileV2();
-                                    Main.PlayerStates[partnerPlayer.PlayerId].SetDead();
-                                    if (MeetingHud.Instance?.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
-                                    {
-                                        MeetingHud.Instance?.CheckForEndVoting();
-                                    }
-                                    MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
-                                    _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
+                                    MeetingHud.Instance?.CheckForEndVoting();
                                 }
-                                else
-                                {
-                                    CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
-                                }
+                                MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
+                                _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
                             }
                             else
                             {
-                                partnerPlayer.RpcMurderPlayer(partnerPlayer);
+                                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.FollowingSuicide, partnerPlayer.PlayerId);
                             }
+                        }
+                        else
+                        {
+                            partnerPlayer.RpcMurderPlayer(partnerPlayer);
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
@@ -91,7 +92,7 @@ internal class Laborer : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        hud.ReportButton.OverrideText(GetString("ReportButtonText"));
-        hud.KillButton.OverrideText(GetString("LaborerKillButtonText"));
+        hud.KillButton.OverrideText(GetString("LaborerButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 }

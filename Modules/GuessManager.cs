@@ -185,7 +185,7 @@ public static class GuessManager
                 pc.ShowInfoMessage(isUI, error);
                 return true;
             }
-            var target = Utils.GetPlayerById(targetId);
+            var target = targetId.GetPlayer();
 
             Logger.Msg($" {pc.PlayerId}", "Guesser - pc.PlayerId");
             Logger.Msg($" {target.PlayerId}", "Guesser - target.PlayerId");
@@ -196,7 +196,7 @@ public static class GuessManager
 
                 if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
                 {
-                    target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                    target = VoodooMaster.Dolls[target.PlayerId].Where(x => x.GetPlayer().IsAlive()).ToList().RandomElement().GetPlayer();
                     _ = new LateTask(() =>
                     {
                         Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
@@ -318,7 +318,7 @@ public static class GuessManager
                             return true;
                         }
                     }
-                    if (role.IsImpostorTeamV3() && !Options.ImpCanGuessImp.GetBool())
+                    if ((role.IsImpostor() || role.IsMadmate()) && !Options.ImpCanGuessImp.GetBool())
                     {
                         if (Options.ImpostorsCanGuess.GetBool() && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !(pc.Is(CustomRoles.EvilGuesser) || pc.Is(CustomRoles.Guesser)))
                         {
@@ -488,7 +488,7 @@ public static class GuessManager
             {
                 if (playerVoteArea.VotedFor != pc.PlayerId) continue;
                 playerVoteArea.UnsetVote();
-                var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+                var voteAreaPlayer = playerVoteArea.TargetPlayerId.GetPlayer();
                 if (!voteAreaPlayer.AmOwner) continue;
                 meetingHud.ClearVote();
             }
@@ -544,7 +544,7 @@ public static class GuessManager
         {
             if (playerVoteArea.VotedFor != pc.PlayerId) continue;
             playerVoteArea.UnsetVote();
-            var voteAreaPlayer = Utils.GetPlayerById(playerVoteArea.TargetPlayerId);
+            var voteAreaPlayer = playerVoteArea.TargetPlayerId.GetPlayer();
             if (!voteAreaPlayer.AmOwner) continue;
             meetingHud.ClearVote();
         }
@@ -560,7 +560,7 @@ public static class GuessManager
         string result = string.Empty;
         for (int i = 0; i < mc.Count; i++)
         {
-            result += mc[i];//匹配结果是完整的数字，此处可以不做拼接的
+            result += mc[i];
         }
 
         if (int.TryParse(result, out int num))
@@ -569,17 +569,14 @@ public static class GuessManager
         }
         else
         {
-            //并不是玩家编号，判断是否颜色
             //byte color = GetColorFromMsg(msg);
-            //好吧我不知道怎么取某位玩家的颜色，等会了的时候再来把这里补上
             id = byte.MaxValue;
             error = GetString("GuessHelp");
             role = new();
             return false;
         }
 
-        //判断选择的玩家是否合理
-        PlayerControl target = Utils.GetPlayerById(id);
+        PlayerControl target = id.GetPlayer();
         if (target == null || target.Data.IsDead)
         {
             error = GetString("GuessNull");
@@ -693,7 +690,7 @@ public static class GuessManager
     {
         foreach (var pva in __instance.playerStates.ToArray())
         {
-            var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+            var pc = pva.TargetPlayerId.GetPlayer();
             if (pc == null || !pc.IsAlive()) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
@@ -741,7 +738,7 @@ public static class GuessManager
     public static TextMeshPro textTemplate;
     static void GuesserOnClick(byte playerId, MeetingHud __instance)
     {
-        var pc = Utils.GetPlayerById(playerId);
+        var pc = playerId.GetPlayer();
         if (pc == null || !pc.IsAlive() || guesserUI != null || !GameStates.IsVoting) return;
 
         try

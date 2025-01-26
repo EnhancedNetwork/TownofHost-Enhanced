@@ -242,7 +242,7 @@ internal class Pelican : RoleBase
             else
                 teleportPosition = pelican.GetCustomPosition();
 
-            foreach (var tar in list)
+            foreach (var tar in list.ToArray())
             {
                 var target = tar.GetPlayer();
                 var player = pelicanId.GetPlayer();

@@ -307,9 +307,9 @@ public static class Utils
 
         string mode = GetChance(role.GetMode());
         if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
-        else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
+        else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var spawnRate))
         {
-            mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
+            mode = GetChance(spawnRate.GetFloat());
 
         }
 
@@ -490,8 +490,8 @@ public static class Utils
         {
             if (targetSubRoles.Any())
             {
-                var seer = GetPlayerById(seerId);
-                var target = GetPlayerById(targetId);
+                var seer = seerId.GetPlayer();
+                var target = targetId.GetPlayer();
 
                 if (seer == null || target == null) return (RoleText, RoleColor);
 
@@ -673,7 +673,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty;
+            if (!GameStates.IsModHost) return string.Empty;
             var taskState = pc.GetPlayerTaskState();
             var Comms = false;
             if (taskState.hasTasks)
@@ -694,7 +694,7 @@ public static class Utils
     {
         try
         {
-            if (!Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId)) return string.Empty;
+            if (!GameStates.IsModHost) return string.Empty;
             var ProgressText = new StringBuilder();
             var role = Main.PlayerStates[playerId].MainRole;
 
@@ -908,9 +908,9 @@ public static class Utils
             if (role.IsEnable())
             {
                 if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
-                else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
+                else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var spawnRate))
                 {
-                    mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
+                    mode = GetChance(spawnRate.GetFloat());
 
                 }
                 var roleDisplay = $"{GetRoleName(role)}: {mode} x{role.GetCount()}";
@@ -1499,14 +1499,14 @@ public static class Utils
 
         return [.. result];
     }
-    private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
+    //private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
 
 
     public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "")
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
         bool isfirst = true;
-        if (text.Length > 1200 && !GetPlayerById(sendTo).IsModded())
+        if (text.Length > 1200 && !sendTo.GetPlayer().IsModded())
         {
             foreach (var txt in text.SplitMessage())
             {
@@ -1819,7 +1819,7 @@ public static class Utils
     public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
-        var PlayerList = PlayerIdList?.ToList().Select(x => GetPlayerById(x)).ToList();
+        var PlayerList = PlayerIdList?.ToList().Select(x => x.GetPlayer()).ToList();
 
         return PlayerList != null && PlayerList.Any() ? PlayerList : null;
     }
@@ -1963,7 +1963,7 @@ public static class Utils
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (GameStates.IsMeeting)
+        if (MeetingHud.Instance)
         {
             // When the meeting window is active and game is not ended
             if (!GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
@@ -2000,6 +2000,8 @@ public static class Utils
         {
             // Do nothing when the seer is not present in the game
             if (seer == null) continue;
+
+            Main.LowLoadUpdateName[seer.PlayerId] = true;
 
             // Only non-modded players or player left
             if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
@@ -2164,6 +2166,9 @@ public static class Utils
 
                     if (seer != target && seer != DollMaster.DollMasterTarget)
                         target = DollMaster.SwapPlayerInfo(realTarget); // If a player is possessed by the Dollmaster swap each other's controllers.
+
+                    Main.LowLoadUpdateName[target.PlayerId] = true;
+                    Main.LowLoadUpdateName[realTarget.PlayerId] = true;
 
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
@@ -2579,7 +2584,7 @@ public static class Utils
         //  DeadVote = 252;
 
         string name = "invalid";
-        var player = GetPlayerById(num);
+        var player = num.GetPlayer();
         var playerCount = Main.AllPlayerControls.Length;
         if (num < playerCount && player != null) name = player?.GetNameWithRole();
         if (num == 252) name = "Dead";

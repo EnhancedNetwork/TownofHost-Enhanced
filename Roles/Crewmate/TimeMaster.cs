@@ -73,8 +73,8 @@ internal class TimeMaster : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (TimeMasterInProtect.ContainsKey(target.PlayerId) && killer.PlayerId != target.PlayerId)
-            if (TimeMasterInProtect[target.PlayerId] + TimeMasterSkillDuration.GetInt() >= GetTimeStamp(DateTime.UtcNow))
+        if (TimeMasterInProtect.TryGetValue(target.PlayerId, out var timer) && killer.PlayerId != target.PlayerId)
+            if (timer + TimeMasterSkillDuration.GetInt() >= GetTimeStamp(DateTime.UtcNow))
             {
                 foreach (var player in Main.AllPlayerControls)
                 {

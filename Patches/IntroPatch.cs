@@ -901,9 +901,15 @@ class IntroCutsceneDestroyPatch
 
         Main.IntroDestroyed = true;
 
-        // Set roleAssigned as false for override role for modded players
-        // For override role for vanilla clients we use "Data.Disconnected" while assign
-        Main.AllPlayerControls.Do(pc => pc.roleAssigned = false);
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            // Set roleAssigned as false for override role for modded players
+            // For override role for vanilla clients we use "Data.Disconnected" while assign
+            pc.roleAssigned = false;
+
+            // Update name for all after intro
+            Main.LowLoadUpdateName[pc.PlayerId] = true;
+        }
 
         if (!GameStates.AirshipIsActive)
         {

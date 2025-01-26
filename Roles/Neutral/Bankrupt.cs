@@ -1,4 +1,4 @@
-﻿namespace TOHE.Roles.Neutral;
+namespace TOHE.Roles.Neutral;
 
 internal class Bankrupt : RoleBase
 {

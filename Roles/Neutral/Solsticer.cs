@@ -299,7 +299,7 @@ internal class Solsticer : RoleBase
     {
         if (seer.Is(CustomRoles.SchrodingersCat))
         {
-            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
+            if (SchrodingersCat.teammate.TryGetValue(seer.PlayerId, out var seerTemmateTargetId) && target.PlayerId == seerTemmateTargetId)
             {
                 if (target.GetCustomRole().IsCrewmate()) return "#8CFFFF";
                 else return Main.roleColors[target.GetCustomRole()];
@@ -307,7 +307,7 @@ internal class Solsticer : RoleBase
         }
         if (target.Is(CustomRoles.SchrodingersCat))
         {
-            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
+            if (SchrodingersCat.teammate.TryGetValue(target.PlayerId, out var targetTemmateTargetId) && seer.PlayerId == targetTemmateTargetId)
             {
                 if (seer.GetCustomRole().IsCrewmate()) return "#8CFFFF";
                 else return Main.roleColors[seer.GetCustomRole()];

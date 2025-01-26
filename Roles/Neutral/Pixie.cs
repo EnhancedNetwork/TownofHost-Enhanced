@@ -70,7 +70,7 @@ internal class Pixie : RoleBase
     {
         hud.KillButton.OverrideText(GetString("PixieButtonText"));
     }
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
@@ -133,19 +133,19 @@ internal class Pixie : RoleBase
     public override void OnPlayerExiled(PlayerControl pc, NetworkedPlayerInfo exiled)
     {
         byte pixieId = pc.PlayerId;
-        if (PixieTargets.ContainsKey(pixieId))
+        if (PixieTargets.TryGetValue(pixieId, out var targets))
         {
             if (exiled != null)
             {
-                if (PixieTargets[pixieId].Count <= 0) return;
+                if (targets.Count == 0) return;
                 if (pixieId.GetAbilityUseLimit() >= PixiePointsToWin.GetInt()) return;
 
-                if (PixieTargets[pixieId].Contains(exiled.PlayerId))
+                if (targets.Contains(exiled.PlayerId))
                 {
                     pc.RpcIncreaseAbilityUseLimitBy(1);
                 }
                 else if (PixieSuicideOpt.GetBool()
-                    && PixieTargets[pixieId].Any(eid => eid.GetPlayer()?.IsAlive() == true))
+                    && targets.Any(eid => Utils.GetPlayerById(eid)?.IsAlive() == true))
                 {
                     pc.SetRealKiller(pc);
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pixieId);

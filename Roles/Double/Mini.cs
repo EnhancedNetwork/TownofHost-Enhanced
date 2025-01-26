@@ -97,13 +97,13 @@ internal class Mini : RoleBase
         }
         return true;
     }
-    public void OnFixedUpdates(PlayerControl player)
+    public void OnFixedUpdates(PlayerControl player, long nowTime)
     {
         if (!GameStates.IsInGame) return;
         if (Age >= 18) return;
 
-        //Check if nice mini is dead
-        if (!player.IsAlive() && player.Is(CustomRoles.NiceMini))
+        //Check if Nice Mini is dead
+        if (player.Is(CustomRoles.NiceMini) && !player.IsAlive())
         {
             if (CustomWinnerHolder.WinnerTeam == CustomWinner.Default && !CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
             {
@@ -115,8 +115,8 @@ internal class Mini : RoleBase
 
         if (GameStates.IsMeeting && !CountMeetingTime.GetBool()) return;
 
-        if (LastFixedUpdate == GetTimeStamp()) return;
-        LastFixedUpdate = GetTimeStamp();
+        if (LastFixedUpdate == nowTime) return;
+        LastFixedUpdate = nowTime;
         GrowUpTime++;
 
         if (GrowUpTime >= GrowUpDuration.GetInt() / 18)

@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Modules;
+using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Options;
 
@@ -60,6 +61,7 @@ internal class Ventguard : RoleBase
     {
         hud.AbilityButton.OverrideText(GetString("VentguardVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Block");
 
     public override void OnEnterVent(PlayerControl ventguard, Vent vent)
     {
