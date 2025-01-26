@@ -1804,11 +1804,20 @@ class PlayerControlCompleteTaskPatch
         if (AmongUsClient.Instance.AmHost)
         {
             var playerIsOverridden = false;
-            if (TaskManager.Target.TryGetValue(player.PlayerId, out var taskManagerId))
+            if (TaskManager.GetTaskManager(player.PlayerId, out byte taskManagerId))
             {
-                // ovveride player
-                player = taskManagerId.GetPlayer();
-                playerIsOverridden = true;
+                var taskManager = taskManagerId.GetPlayer();
+                // check if task manager die after complete task
+                if (taskManager.IsAlive())
+                {
+                    // ovveride player
+                    player = taskManagerId.GetPlayer();
+                    playerIsOverridden = true;
+                }
+                else
+                {
+                    TaskManager.ClearData(player.PlayerId);
+                }
             }
 
             var roleClass = player.GetRoleClass();
@@ -1827,7 +1836,7 @@ class PlayerControlCompleteTaskPatch
             if (playerIsOverridden)
             {
                 player = __instance;
-                TaskManager.Target[player.PlayerId] = byte.MaxValue;
+                TaskManager.ClearData(player.PlayerId);
             }
 
             var playerSubRoles = player.GetCustomSubRoles();

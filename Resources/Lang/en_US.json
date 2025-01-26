@@ -3558,9 +3558,9 @@
   "AdmiredPlayer": "Player admired",
   "AdmirerInvalidTarget": "Target cannot be admired",
 
-  "TaskManager_OptionCanGetHelpfulAddons": "Can Get Helpful Addons",
-  "TaskManager_OptionCanGetHarmfulAddons": "Can Get Harmful Addons",
-  "TaskManager_OptionCanGetMixedAddons": "Can Get Mixed Addons",
+  "TaskManager_OptionCanGetHelpfulAddons": "Can Get <color=#8cffff>Helpful</color> Add-ons",
+  "TaskManager_OptionCanGetHarmfulAddons": "Can Get <color=#ff1919>Harmful</color> Add-ons",
+  "TaskManager_OptionCanGetMixedAddons": "Can Get <color=#32a87f>Mixed</color> Add-ons",
   "TaskManager_OptionCanSeeAllCompletedTasks": "Can See All Completed Tasks",
   "TaskManager_FailGetAddon": "Fail get random add-on and complete random tasks",
   "TaskManager_YouGetAddon": "All players completed their tasks, so you get random add-on",

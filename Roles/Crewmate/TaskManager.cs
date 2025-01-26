@@ -24,7 +24,7 @@ internal class TaskManager : RoleBase
     private static OptionItem CanSeeAllCompletedTasks;
 
     private static List<CustomRoles> Addons = [];
-    public static readonly Dictionary<int, byte> Target = [];
+    private static readonly Dictionary<int, byte> Target = [];
 
     public override void SetupCustomOption()
     {
@@ -33,7 +33,7 @@ internal class TaskManager : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
         CanGetHarmfulAddons = BooleanOptionItem.Create(Id + 4, "TaskManager_OptionCanGetHarmfulAddons", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
-        CanGetMixedAddons = BooleanOptionItem.Create(Id + 5, "TaskManager_OptionCanGetMixedAddons", true, TabGroup.CrewmateRoles, false)
+        CanGetMixedAddons = BooleanOptionItem.Create(Id + 5, "TaskManager_OptionCanGetMixedAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
         CanSeeAllCompletedTasks = BooleanOptionItem.Create(Id + 6, "TaskManager_OptionCanSeeAllCompletedTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
@@ -61,6 +61,8 @@ internal class TaskManager : RoleBase
     }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
+        if (!taskManager.IsAlive()) return true;
+        
         var randomPlayer = Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
         var allNotCompletedTasks = new List<NetworkedPlayerInfo.TaskInfo>();
 
@@ -85,6 +87,15 @@ internal class TaskManager : RoleBase
             taskManager.Notify(GetString("TaskManager_YouGetAddon"));
         }
         return true;
+    }
+    public static bool GetTaskManager(byte targetId, out byte taskManager)
+    {
+        taskManager = Target.GetValueOrDefault(targetId, byte.MaxValue);
+        return taskManager != byte.MaxValue;
+    }
+    public static void ClearData(byte targetId)
+    {
+        Target[targetId] = byte.MaxValue;
     }
     public override string GetProgressText(byte PlayerId, bool comms)
     {
