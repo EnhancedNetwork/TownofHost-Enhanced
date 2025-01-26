@@ -171,6 +171,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
     public static readonly HashSet<byte> UnShapeShifter = [];
     public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
+    public static readonly Dictionary<byte, bool> LowLoadUpdateName = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 

@@ -208,6 +208,7 @@ public static class Options
 
     //public static OptionItem ShowLobbyCode;
     public static OptionItem LowLoadMode;
+    public static OptionItem LowLoadDelayUpdateNames;
     public static OptionItem EndWhenPlayerBug;
     public static OptionItem HideExileChat;
     public static OptionItem RemovePetsAtDeadPlayers;
@@ -1191,6 +1192,8 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
+        LowLoadDelayUpdateNames = BooleanOptionItem.Create(60231, "LowLoad_DelayUpdateNames", true, TabGroup.SystemSettings, false)
+            .SetParent(LowLoadMode);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)

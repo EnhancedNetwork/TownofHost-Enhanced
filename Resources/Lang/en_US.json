@@ -1919,6 +1919,7 @@
   "BastionMaxBombs": "(Initial) Maximum bombs",
   "VentBombSuccess": "Bomb has been planted",
   "LowLoadMode": "Low Load Mode",
+  "LowLoad_DelayUpdateNames": "Update Names Only When Necessary",
   "ShowLobbyCode": "Show lobby code in Discord status",
   "BKProtectDuration": "Protection Duration",
   "FollowerMaxBetTimes": "Maximum Number of Follows",
