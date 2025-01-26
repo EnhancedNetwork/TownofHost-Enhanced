@@ -1524,13 +1524,6 @@ class FixedUpdateInNormalGamePatch
                         Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
                     }
 
-                    if (target.Is(CustomRoles.Narc) 
-                        && seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice)
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), "★"));
-
-                    if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), "★"));
-
 
                     if (Options.CurrentGameMode == CustomGameMode.FFA)
                         Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
