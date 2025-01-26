@@ -811,6 +811,7 @@ public static class Options
         NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(0, 15, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
         RemoveIncompatibleAddOnsMidGame = BooleanOptionItem.Create(60034, "RemoveIncompatibleAddOnsMidGame", true, TabGroup.Addons, false)
+            .SetGameMode(CustomGameMode.Standard);
         #endregion
 
         yield return null;
