@@ -80,14 +80,17 @@ internal class TaskManager : RoleBase
             randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
             randomPlayer.Notify(GetString("TaskManager_CompletedRandomTaskForPlayer"));
         }
-        else if (Addons.Count == 0)
+        else if (taskManager.IsAlive())
         {
-            taskManager.Notify(GetString("TaskManager_FailGetAddon"));
-        }
-        else
-        {
-            taskManager.RpcSetCustomRole(Addons.RandomElement());
-            taskManager.Notify(GetString("TaskManager_YouGetAddon"));
+            if (Addons.Count == 0)
+            {
+                taskManager.Notify(GetString("TaskManager_FailGetAddon"));
+            }
+            else
+            {
+                taskManager.RpcSetCustomRole(Addons.RandomElement());
+                taskManager.Notify(GetString("TaskManager_YouGetAddon"));
+            }
         }
         return true;
     }
