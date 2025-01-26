@@ -89,6 +89,7 @@ public static class Translator
         {
             if (File.Exists(@$"./{LANGUAGE_FOLDER_NAME}/{lang}.dat"))
             {
+                Logger.Info($"Loading custom translation file from: {lang}.dat", "Translator");
                 if (!ActualRoleNames.ContainsKey(lang))
                     ActualRoleNames.Add(lang, []);
                 foreach (var role in CustomRolesHelper.AllRoles)
@@ -196,6 +197,12 @@ public static class Translator
         {
             RealName = GetString($"{role}");
         }
+    }
+    public static string GetActualRoleName(this CustomRoles role)
+    {
+        return ActualRoleNames.TryGetValue(TranslationController.Instance.currentLanguage.languageID, out var RoleList) && RoleList.TryGetValue(role, out var RoleString)
+            ? RoleString
+            : GetString($"{role}");
     }
     public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)
     {
@@ -443,7 +450,7 @@ public static class Translator
         {
             foreach (var lang in EnumHelper.GetAllValues<SupportedLangs>())
             {
-                var name = GetString($"{role}", lang).ToLower().Trim().Replace(" ", string.Empty);
+                var name = GetString($"{item.Key}", lang).ToLower().Trim().Replace(" ", string.Empty);
                 if (!CrossLangRoleNames[item.Key].Contains(name))
                 {
                     CrossLangRoleNames[item.Key].Add(name);
