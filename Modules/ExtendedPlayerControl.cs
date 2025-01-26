@@ -265,10 +265,10 @@ static class ExtendedPlayerControl
 
         if (loggerRoleMap)
         {
-            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var seer in Main.AllPlayerControls)
             {
                 var seerData = seer.Data;
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var target in Main.AllPlayerControls)
                 {
                     var targetData = target.Data;
                     var (roleType, customRole) = seer.GetRoleMap(targetData.PlayerId);
@@ -670,7 +670,7 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcSetVentInteraction(this PlayerControl player)
     {
-        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>(), player);
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>(), player);
     }
     public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
     {
@@ -1258,7 +1258,7 @@ static class ExtendedPlayerControl
         SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
-        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
+        FastDestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
 
         _ = new LateTask(() =>
         {

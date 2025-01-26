@@ -205,10 +205,11 @@ public class Main : BasePlugin
     {
         get
         {
-            int count = PlayerControl.AllPlayerControls.Count;
+            var allPlayers = PlayerControl.AllPlayerControls;
+            int count = allPlayers.Count;
             var result = new PlayerControl[count];
             int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
+            foreach (var pc in allPlayers.GetFastEnumerator())
             {
                 if (pc == null || pc.PlayerId == 255) continue;
                 result[i++] = pc;
@@ -225,10 +226,11 @@ public class Main : BasePlugin
     {
         get
         {
-            int count = PlayerControl.AllPlayerControls.Count;
+            var allPlayers = PlayerControl.AllPlayerControls;
+            int count = allPlayers.Count;
             var result = new PlayerControl[count];
             int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
+            foreach (var pc in allPlayers.GetFastEnumerator())
             {
                 if (pc == null || pc.PlayerId == 255 || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
                 result[i++] = pc;
@@ -253,7 +255,7 @@ public class Main : BasePlugin
     public static StringNames[] how2playN = [StringNames.HowToPlayText1, StringNames.HowToPlayText2, StringNames.HowToPlayText41, StringNames.HowToPlayText42, StringNames.HowToPlayText43, StringNames.HowToPlayText44, StringNames.HowToPlayText5, StringNames.HowToPlayText6, StringNames.HowToPlayText7, StringNames.HowToPlayText81, StringNames.HowToPlayText82];
     public static StringNames[] how2playHnS = [StringNames.HideSeekHowToPlayCaptionOne, StringNames.HideSeekHowToPlayCaptionTwo, StringNames.HideSeekHowToPlayCaptionThree, StringNames.HideSeekHowToPlayPageOne, StringNames.HideSeekHowToPlaySubtextOne, StringNames.HideSeekHowToPlayCrewmateInfoOne, StringNames.HideSeekHowToPlayCrewmateInfoTwo, StringNames.HideSeekHowToPlayFlashlightConsoles, StringNames.HideSeekHowToPlayImpostorInfoOne, StringNames.HideSeekHowToPlayFinalHide, StringNames.HideSeekHowToPlayFlashlightDefault];
     public static StringNames[] how2playEzHacked = [StringNames.ErrorAuthNonceFailure, StringNames.ErrorBanned, StringNames.ErrorBannedNoCode, StringNames.ErrorClientTimeout, StringNames.ErrorClientTimeoutConsole, StringNames.ErrorCommunications, StringNames.ErrorCrossPlatformCommunication, StringNames.ErrorDuplicateConnection, StringNames.ErrorFullGame, StringNames.ErrorHacking, StringNames.ErrorInactivity, StringNames.ErrorIntentionalLeaving, StringNames.ErrorInvalidName, StringNames.ErrorKicked, StringNames.ErrorKickedNoCode, StringNames.ErrorLobbyFailedGettingBlockedUsers];
-    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
+    public static string Get_TName_Snacks => FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
         ? TName_Snacks_CN.RandomElement()
         : TName_Snacks_EN.RandomElement();
 

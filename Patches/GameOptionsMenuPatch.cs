@@ -618,7 +618,7 @@ public static class StringOptionPatch
             var item = OptionItem.AllOptions[index];
             var name = item.GetName();
             var name1 = name;
-            var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
+            var language = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             //Logger.Info($" Language: {language}", "StringOption.Initialize");
 
             if (EnumHelper.GetAllValues<CustomRoles>().Find(x => GetString($"{x}") == name1.RemoveHtmlTags(), out var role))

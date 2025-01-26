@@ -39,7 +39,7 @@ class CanUseVentPatch
 
         // Determine if vent is available based on custom role
         // always true for engineer-based roles
-        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.Cast<IUsable>()));
+        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.CastFast<IUsable>()));
 
         canUse = couldUse;
         // Not available if custom roles are not available
@@ -51,7 +51,7 @@ class CanUseVentPatch
         // Mod's own processing up to this point
         // Replace vanilla processing from here
 
-        IUsable usableVent = __instance.Cast<IUsable>();
+        IUsable usableVent = __instance.CastFast<IUsable>();
         // Distance between vent and player
         float actualDistance = float.MaxValue;
 

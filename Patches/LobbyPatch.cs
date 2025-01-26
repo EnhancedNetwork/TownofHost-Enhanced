@@ -106,7 +106,7 @@ public static class HostInfoPanelUpdatePatch
 
                 string htmlStringRgb = ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[__instance.player.ColorId]);
                 string hostName = Main.HostRealName;
-                string youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
+                string youLabel = FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
 
                 // Set text in host info panel
                 HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">({youLabel})";

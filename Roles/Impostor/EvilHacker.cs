@@ -108,7 +108,7 @@ internal class EvilHacker : RoleBase
                 builder.Append(ImpostorMark);
             }
 
-            builder.Append(DestroyableSingleton<TranslationController>.Instance.GetString(entry.Room));
+            builder.Append(FastDestroyableSingleton<TranslationController>.Instance.GetString(entry.Room));
             builder.Append(": ");
             builder.Append(entry.TotalPlayers);
 
@@ -211,7 +211,7 @@ internal class EvilHacker : RoleBase
         {
             return string.Empty;
         }
-        var roomNames = activeNotifies.Select(notify => DestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
+        var roomNames = activeNotifies.Select(notify => FastDestroyableSingleton<TranslationController>.Instance.GetString(notify.Room));
         return Utils.ColorString(Color.green, $"{Translator.GetString("EvilHackerMurderNotify")}: {string.Join(", ", roomNames)}");
     }
 

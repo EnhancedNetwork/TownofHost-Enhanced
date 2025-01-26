@@ -78,7 +78,7 @@ internal class QuickShooter : RoleBase
         }
 
         if (pc.AmOwner && shouldtime)
-            DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, 0.01f);
+            FastDestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, 0.01f);
     }
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)

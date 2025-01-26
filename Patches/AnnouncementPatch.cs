@@ -65,7 +65,7 @@ public class ModNews
                 yield break;
             }
             downloaded = true;
-            ModNewsURL += TranslationController.Instance.currentLanguage.languageID switch
+            ModNewsURL += FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
             {
                 SupportedLangs.German => "de_DE.json",
                 SupportedLangs.Latam => "es_419.json",
@@ -122,7 +122,7 @@ public class ModNews
 
     private static void LoadModNewsFromResources()
     {
-        string filename = TranslationController.Instance.currentLanguage.languageID switch
+        string filename = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
         {
             SupportedLangs.German => "de_DE.json",
             SupportedLangs.Latam => "es_419.json",

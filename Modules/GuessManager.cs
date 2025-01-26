@@ -448,7 +448,7 @@ public static class GuessManager
             pc.RpcExileV2();
             Main.PlayerStates[pc.PlayerId].SetDead();
             var meetingHud = MeetingHud.Instance;
-            var hudManager = DestroyableSingleton<HudManager>.Instance;
+            var hudManager = FastDestroyableSingleton<HudManager>.Instance;
             SoundManager.Instance.PlaySound(pc.KillSfx, false, 0.8f);
             if (!Options.DisableKillAnimationOnGuess.GetBool()) hudManager.KillOverlay.ShowKillAnimation(pc.Data, pc.Data);
             if (amOwner)
@@ -503,7 +503,7 @@ public static class GuessManager
     {
         var amOwner = pc.AmOwner;
         var meetingHud = MeetingHud.Instance;
-        var hudManager = DestroyableSingleton<HudManager>.Instance;
+        var hudManager = FastDestroyableSingleton<HudManager>.Instance;
         SoundManager.Instance.PlaySound(pc.KillSfx, false, 0.8f);
         hudManager.KillOverlay.ShowKillAnimation(pc.Data, pc.Data);
         if (amOwner)
@@ -612,7 +612,7 @@ public static class GuessManager
                     msg += Utils.GetRoleName(role);
                 }
                 var player = Main.AllAlivePlayerControls.RandomElement();
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
                 var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
                 writer.StartMessage(-1);
                 writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)

@@ -370,7 +370,7 @@ internal class EAC
     public static Dictionary<byte, CustomRoles> OriginalRoles = [];
     public static void LogAllRoles()
     {
-        foreach (var pc in Main.AllPlayerControls.ToArray())
+        foreach (var pc in Main.AllPlayerControls)
         {
             try
             {

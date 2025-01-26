@@ -481,7 +481,7 @@ internal class StartGameHostPatch
             try
             {
                 if (!AmongUsClient.Instance.IsGameOver)
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+                    FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             }
             catch { }
 

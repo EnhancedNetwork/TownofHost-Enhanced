@@ -92,11 +92,11 @@ public class dbConnect
             // Show waring message
             if (GameStates.IsLobby || GameStates.IsInGame)
             {
-                DestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailurePublic"));
+                FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(GetString("dbConnect.InitFailurePublic"));
             }
             else
             {
-                DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailurePublic"));
+                FastDestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailurePublic"));
             }
         }
         else
@@ -112,7 +112,7 @@ public class dbConnect
 
             DataManager.Player.Account.LoginStatus = EOSManager.AccountLoginStatus.Offline;
             DataManager.Player.Save();
-            DestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
+            FastDestroyableSingleton<DisconnectPopup>.Instance.ShowCustom(GetString("dbConnect.InitFailure"));
         }
     }
 

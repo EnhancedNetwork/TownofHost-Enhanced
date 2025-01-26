@@ -172,7 +172,7 @@ public static class Translator
     //}
     public static void GetActualRoleName(this CustomRoles role, out string RealName)
     {
-        var currentlang = TranslationController.Instance.currentLanguage.languageID;
+        var currentlang = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
         {
             if (RoleList.TryGetValue(role, out var RoleString))
@@ -196,14 +196,14 @@ public static class Translator
             string nameToFind = s;
             if (Enum.TryParse(nameToFind, out StringNames text))
             {
-                return DestroyableSingleton<TranslationController>.Instance.GetString(text);
+                return FastDestroyableSingleton<TranslationController>.Instance.GetString(text);
             }
             else
             {
                 return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
             }
         }
-        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+        var langId = TranslationController.InstanceExists ? FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
         string str = GetString(s, langId, showInvalid);
@@ -219,7 +219,7 @@ public static class Translator
         // Basically if you wanna let the user infinitely expand a function to their liking
         // I need to test if this shit works lol, I plan a usecase for it in 2.1.0 (see: https://discord.com/channels/1094344790910455908/1251264307052675134)
 
-        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+        var langId = TranslationController.InstanceExists ? FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
         s = [""];
 
@@ -285,10 +285,10 @@ public static class Translator
         return res;
     }
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => FastDestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
     public static string GetRoleString(string str, bool forUser = true)
     {
-        var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;
+        var CurrentLanguage = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         var lang = forUser ? CurrentLanguage : SupportedLangs.English;
         if (Main.ForceOwnLanguageRoleName.Value)
             lang = GetUserTrueLang();
@@ -304,7 +304,7 @@ public static class Translator
             if (name.StartsWith("zh_CHT")) return SupportedLangs.TChinese;
             if (name.StartsWith("zh")) return SupportedLangs.SChinese;
             if (name.StartsWith("ru")) return SupportedLangs.Russian;
-            return TranslationController.Instance.currentLanguage.languageID;
+            return FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         }
         catch
         {
@@ -396,7 +396,7 @@ public static class Translator
     {
         LoadLangs();
         var sb = new StringBuilder();
-        var lang = TranslationController.Instance.currentLanguage.languageID;
+        var lang = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         foreach (var title in translateMaps)
         {
             if (!title.Value.TryGetValue((int)lang, out var text)) text = "";

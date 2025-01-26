@@ -1,7 +1,7 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Generator.Extensions;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Data;
@@ -95,7 +95,7 @@ public static class Utils
             case SystemTypes.Electrical:
                 {
                     if (mapName is MapNames.Fungle) return false; // if The Fungle return false
-                    var SwitchSystem = ShipStatus.Instance.Systems[type].TryCast<SwitchSystem>();
+                    var SwitchSystem = ShipStatus.Instance.Systems[type].CastFast<SwitchSystem>();
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
@@ -103,45 +103,45 @@ public static class Utils
                     if (mapName is MapNames.Polus) return false; // if Polus return false
                     else
                     {
-                        var ReactorSystemType = ShipStatus.Instance.Systems[type].TryCast<ReactorSystemType>();
+                        var ReactorSystemType = ShipStatus.Instance.Systems[type].CastFast<ReactorSystemType>();
                         return ReactorSystemType != null && ReactorSystemType.IsActive;
                     }
                 }
             case SystemTypes.Laboratory:
                 {
                     if (mapName is not MapNames.Polus) return false; // Only Polus
-                    var ReactorSystemType = ShipStatus.Instance.Systems[type].TryCast<ReactorSystemType>();
+                    var ReactorSystemType = ShipStatus.Instance.Systems[type].CastFast<ReactorSystemType>();
                     return ReactorSystemType != null && ReactorSystemType.IsActive;
                 }
             case SystemTypes.HeliSabotage:
                 {
                     if (mapName is not MapNames.Airship) return false; // Only Airhip
-                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<HeliSabotageSystem>();
+                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].CastFast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
             case SystemTypes.LifeSupp:
                 {
                     if (mapName is MapNames.Polus or MapNames.Airship or MapNames.Fungle) return false; // Only Skeld & Dleks & Mira HQ
-                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].TryCast<LifeSuppSystemType>();
+                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].CastFast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
             case SystemTypes.Comms:
                 {
                     if (mapName is MapNames.Mira or MapNames.Fungle) // Only Mira HQ & The Fungle
                     {
-                        var HqHudSystemType = ShipStatus.Instance.Systems[type].TryCast<HqHudSystemType>();
+                        var HqHudSystemType = ShipStatus.Instance.Systems[type].CastFast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
                     }
                     else
                     {
-                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].TryCast<HudOverrideSystemType>();
+                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].CastFast<HudOverrideSystemType>();
                         return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
                     }
                 }
             case SystemTypes.MushroomMixupSabotage:
                 {
                     if (mapName is not MapNames.Fungle) return false; // Only The Fungle
-                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].CastFast<MushroomMixupSabotageSystem>();
                     return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
@@ -187,7 +187,6 @@ public static class Utils
             return;
         }
     }
-    //誰かが死亡したときのメソッド
     public static void SetVisionV2(this IGameOptions opt)
     {
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.CrewLightMod));
@@ -427,12 +426,14 @@ public static class Utils
     public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)
     {
-        if (Main.roleColors.TryGetValue(role, out var hexColor))
-        {
-            _ = ColorUtility.TryParseHtmlString(hexColor, out var color);
-            return color;
-        }
-        return Color.white;
+        string hexColor = Main.roleColors.GetValueOrDefault(role, "#ffffff");
+        _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
+        return c;
+    }
+
+    public static string GetRoleColorCode(CustomRoles role)
+    {
+        return Main.roleColors.GetValueOrDefault(role, "#ffffff");
     }
     public static Color GetTeamColor(PlayerControl player)
     {
@@ -457,11 +458,6 @@ public static class Utils
 
         _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
         return c;
-    }
-    public static string GetRoleColorCode(CustomRoles role)
-    {
-        if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
-        return hexColor;
     }
     public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
     {
@@ -1030,7 +1026,7 @@ public static class Utils
 
     public static string GetRegionName(IRegionInfo region = null)
     {
-        region ??= ServerManager.Instance.CurrentRegion;
+        region ??= FastDestroyableSingleton<ServerManager>.Instance.CurrentRegion;
 
         string name = region.Name;
 
@@ -1134,240 +1130,34 @@ public static class Utils
         text = text.ToLowerInvariant();
         text = text.Replace("色", string.Empty);
         int color;
-        try { color = int.Parse(text); } catch { color = -1; }
-        switch (text)
-        {
-            case "0":
-            case "红":
-            case "紅":
-            case "red":
-            case "Red":
-            case "vermelho":
-            case "Vermelho":
-            case "крас":
-            case "Крас":
-            case "красн":
-            case "Красн":
-            case "красный":
-            case "Красный":
-                color = 0; break;
-            case "1":
-            case "蓝":
-            case "藍":
-            case "深蓝":
-            case "blue":
-            case "Blue":
-            case "azul":
-            case "Azul":
-            case "син":
-            case "Син":
-            case "синий":
-            case "Синий":
-                color = 1; break;
-            case "2":
-            case "绿":
-            case "綠":
-            case "深绿":
-            case "green":
-            case "Green":
-            case "verde-escuro":
-            case "Verde-Escuro":
-            case "Зел":
-            case "зел":
-            case "Зелёный":
-            case "Зеленый":
-            case "зелёный":
-            case "зеленый":
-                color = 2; break;
-            case "3":
-            case "粉红":
-            case "pink":
-            case "Pink":
-            case "rosa":
-            case "Rosa":
-            case "Роз":
-            case "роз":
-            case "Розовый":
-            case "розовый":
-                color = 3; break;
-            case "4":
-            case "橘":
-            case "orange":
-            case "Orange":
-            case "laranja":
-            case "Laranja":
-            case "оранж":
-            case "Оранж":
-            case "оранжевый":
-            case "Оранжевый":
-                color = 4; break;
-            case "5":
-            case "黄":
-            case "黃":
-            case "yellow":
-            case "Yellow":
-            case "amarelo":
-            case "Amarelo":
-            case "Жёлт":
-            case "Желт":
-            case "жёлт":
-            case "желт":
-            case "Жёлтый":
-            case "Желтый":
-            case "жёлтый":
-            case "желтый":
-                color = 5; break;
-            case "6":
-            case "黑":
-            case "black":
-            case "Black":
-            case "preto":
-            case "Preto":
-            case "Чёрн":
-            case "Черн":
-            case "Чёрный":
-            case "Черный":
-            case "чёрный":
-            case "черный":
-                color = 6; break;
-            case "7":
-            case "白":
-            case "white":
-            case "White":
-            case "branco":
-            case "Branco":
-            case "Белый":
-            case "белый":
-                color = 7; break;
-            case "8":
-            case "紫":
-            case "purple":
-            case "Purple":
-            case "roxo":
-            case "Roxo":
-            case "Фиол":
-            case "фиол":
-            case "Фиолетовый":
-            case "фиолетовый":
-                color = 8; break;
-            case "9":
-            case "棕":
-            case "brown":
-            case "Brown":
-            case "marrom":
-            case "Marrom":
-            case "Корич":
-            case "корич":
-            case "Коричневый":
-            case "коричевый":
-                color = 9; break;
-            case "10":
-            case "青":
-            case "cyan":
-            case "Cyan":
-            case "ciano":
-            case "Ciano":
-            case "Голуб":
-            case "голуб":
-            case "Голубой":
-            case "голубой":
-                color = 10; break;
-            case "11":
-            case "黄绿":
-            case "黃綠":
-            case "浅绿":
-            case "lime":
-            case "Lime":
-            case "verde-claro":
-            case "Verde-Claro":
-            case "Лайм":
-            case "лайм":
-            case "Лаймовый":
-            case "лаймовый":
-                color = 11; break;
-            case "12":
-            case "红褐":
-            case "紅褐":
-            case "深红":
-            case "maroon":
-            case "Maroon":
-            case "bordô":
-            case "Bordô":
-            case "vinho":
-            case "Vinho":
-            case "Борд":
-            case "борд":
-            case "Бордовый":
-            case "бордовый":
-                color = 12; break;
-            case "13":
-            case "玫红":
-            case "玫紅":
-            case "浅粉":
-            case "rose":
-            case "Rose":
-            case "rosa-claro":
-            case "Rosa-Claro":
-            case "Светло роз":
-            case "светло роз":
-            case "Светло розовый":
-            case "светло розовый":
-            case "Сирень":
-            case "сирень":
-            case "Сиреневый":
-            case "сиреневый":
-                color = 13; break;
-            case "14":
-            case "焦黄":
-            case "焦黃":
-            case "淡黄":
-            case "banana":
-            case "Banana":
-            case "Банан":
-            case "банан":
-            case "Банановый":
-            case "банановый":
-                color = 14; break;
-            case "15":
-            case "灰":
-            case "gray":
-            case "Gray":
-            case "cinza":
-            case "Cinza":
-            case "grey":
-            case "Grey":
-            case "Сер":
-            case "сер":
-            case "Серый":
-            case "серый":
-                color = 15; break;
-            case "16":
-            case "茶":
-            case "tan":
-            case "Tan":
-            case "bege":
-            case "Bege":
-            case "Загар":
-            case "загар":
-            case "Загаровый":
-            case "загаровый":
-                color = 16; break;
-            case "17":
-            case "珊瑚":
-            case "coral":
-            case "Coral":
-            case "salmão":
-            case "Salmão":
-            case "Корал":
-            case "корал":
-            case "Коралл":
-            case "коралл":
-            case "Коралловый":
-            case "коралловый":
-                color = 17; break;
 
-            case "18": case "隐藏": case "?": color = 18; break;
-        }
+        try { color = int.Parse(text); }
+        catch { color = -1; }
+
+        color = text switch
+        {
+            "0" or "红" or "紅" or "red" or "Red" or "крас" or "Крас" or "красн" or "Красн" or "красный" or "Красный" or "Vermelho" or "vermelho" => 0,
+            "1" or "蓝" or "藍" or "深蓝" or "blue" or "Blue" or "син" or "Син" or "синий" or "Синий" or "Azul" or "azul" => 1,
+            "2" or "绿" or "綠" or "深绿" or "green" or "Green" or "Зел" or "зел" or "Зелёный" or "Зеленый" or "зелёный" or "зеленый" or "Verde" or "verde" or "Verde-Escuro" or "verde-escuro" => 2,
+            "3" or "粉红" or "pink" or "Pink" or "Роз" or "роз" or "Розовый" or "розовый" or "Rosa" or "rosa" => 3,
+            "4" or "橘" or "orange" or "Orange" or "оранж" or "Оранж" or "оранжевый" or "Оранжевый" or "Laranja" or "laranja" => 4,
+            "5" or "黄" or "黃" or "yellow" or "Yellow" or "Жёлт" or "Желт" or "жёлт" or "желт" or "Жёлтый" or "Желтый" or "жёлтый" or "желтый" or "Amarelo" or "amarelo" => 5,
+            "6" or "黑" or "black" or "Black" or "Чёрный" or "Черный" or "чёрный" or "черный" or "Preto" or "preto" => 6,
+            "7" or "白" or "white" or "White" or "Белый" or "белый" or "Branco" or "branco" => 7,
+            "8" or "紫" or "purple" or "Purple" or "Фиол" or "фиол" or "Фиолетовый" or "фиолетовый" or "Roxo" or "roxo" => 8,
+            "9" or "棕" or "brown" or "Brown" or "Корич" or "корич" or "Коричневый" or "коричевый" or "Marrom" or "marrom" => 9,
+            "10" or "青" or "cyan" or "Cyan" or "Голуб" or "голуб" or "Голубой" or "голубой" or "Ciano" or "ciano" => 10,
+            "11" or "黄绿" or "黃綠" or "浅绿" or "lime" or "Lime" or "Лайм" or "лайм" or "Лаймовый" or "лаймовый" or "Lima" or "lima" or "Verde-Claro" or "verde-claro" => 11,
+            "12" or "红褐" or "紅褐" or "深红" or "maroon" or "Maroon" or "Борд" or "борд" or "Бордовый" or "бордовый" or "Bordô" or "bordô" or "Vinho" or "vinho" => 12,
+            "13" or "玫红" or "玫紅" or "浅粉" or "rose" or "Rose" or "Светло роз" or "светло роз" or "Светло розовый" or "светло розовый" or "Сирень" or "сирень" or "Сиреневый" or "сиреневый" or "Rosê" or "rosê" or "rosinha" or "Rosinha" or "Rosa-Claro" or "rosa-claro" => 13,
+            "14" or "焦黄" or "焦黃" or "淡黄" or "banana" or "Banana" or "Банан" or "банан" or "Банановый" or "банановый" or "Amarelo-Claro" or "amarelo-claro" => 14,
+            "15" or "灰" or "gray" or "Gray" or "Сер" or "сер" or "Серый" or "серый" or "Cinza" or "cinza" => 15,
+            "16" or "茶" or "tan" or "Tan" or "Загар" or "загар" or "Загаровый" or "загаровый" or "bege" or "bege" or "Creme" or "creme" => 16,
+            "17" or "珊瑚" or "coral" or "Coral" or "Корал" or "корал" or "Коралл" or "коралл" or "Коралловый" or "коралловый" => 17,
+            "18" or "隐藏" or "?" or "Fortegreen" or "fortegreen" or "Фортегрин" or "фортегрин" => 18,
+            _ => color
+        };
+
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
     }
 
@@ -1824,7 +1614,20 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
+    public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
+    {
+        var count = 0;
+        PlayerControl[] aapc = Main.AllAlivePlayerControls;
 
+        foreach (PlayerControl seer in aapc)
+        {
+            foreach (PlayerControl target in aapc)
+            {
+                NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
+                if (count++ % speed == 0) yield return null;
+            }
+        }
+    }
     // During intro scene to set team name and role info for non-modded clients and skip the rest.
     // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
     // If not a Desync Role remove team display
@@ -2330,7 +2133,7 @@ public static class Utils
     }
     public static void SetAllVentInteractions()
     {
-        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>());
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>());
     }
     public static void CheckAndSetVentInteractions()
     {
@@ -2484,7 +2287,7 @@ public static class Utils
             // Will be synced by ShipStatus patch, SetAllVentInteractions
         }
     }
-    public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
+    public static string ToColoredString(this CustomRoles role) => ColorString(GetRoleColor(role), GetString($"{role}"));
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;
@@ -2554,7 +2357,7 @@ public static class Utils
         file.CopyTo(@filename);
 
         if (PlayerControl.LocalPlayer != null)
-            HudManager.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
+            FastDestroyableSingleton<HudManager>.Instance?.Chat?.AddChat(PlayerControl.LocalPlayer, string.Format(GetString("Message.DumpfileSaved"), $"TOHE - v{Main.PluginVersion}-{t}.log"));
 
         SendMessage(string.Format(GetString("Message.DumpcmdUsed"), PlayerControl.LocalPlayer.GetNameWithRole()));
 
@@ -2628,7 +2431,7 @@ public static class Utils
 
     public static void FlashColor(Color color, float duration = 1f)
     {
-        var hud = DestroyableSingleton<HudManager>.Instance;
+        var hud = FastDestroyableSingleton<HudManager>.Instance;
         if (hud.FullScreen == null) return;
         var obj = hud.transform.FindChild("FlashColor_FullScreen")?.gameObject;
         if (obj == null)
@@ -2639,7 +2442,7 @@ public static class Utils
         hud.StartCoroutine(Effects.Lerp(duration, new Action<float>((t) =>
         {
             obj.SetActive(t != 1f);
-            obj.GetComponent<SpriteRenderer>().color = new(color.r, color.g, color.b, Mathf.Clamp01((-2f * Mathf.Abs(t - 0.5f) + 1) * color.a / 2)); //アルファ値を0→目標→0に変化させる
+            obj.GetComponent<SpriteRenderer>().color = new(color.r, color.g, color.b, Mathf.Clamp01((-2f * Mathf.Abs(t - 0.5f) + 1) * color.a / 2));
         })));
     }
 
@@ -2660,15 +2463,21 @@ public static class Utils
         }
         return null;
     }
-    public static Texture2D LoadTextureFromResources(string path)
+    private static unsafe Texture2D LoadTextureFromResources(string path)
     {
         try
         {
-            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(path);
-            var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-            using MemoryStream ms = new();
-            stream.CopyTo(ms);
-            ImageConversion.LoadImage(texture, ms.ToArray(), false);
+            Texture2D texture = new(2, 2, TextureFormat.ARGB32, true);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Stream stream = assembly.GetManifestResourceStream(path);
+            var length = stream.Length;
+            var byteTexture = new Il2CppStructArray<byte>(length);
+            stream.Read(new Span<byte>(IntPtr.Add(byteTexture.Pointer, IntPtr.Size * 4).ToPointer(), (int)length));
+            if (path.Contains("HorseHats"))
+            {
+                byteTexture = new Il2CppStructArray<byte>(byteTexture.Reverse().ToArray());
+            }
+            ImageConversion.LoadImage(texture, byteTexture, false);
             return texture;
         }
         catch
@@ -2679,14 +2488,12 @@ public static class Utils
     }
     public static string ColorString(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}</color>";
     public static string ColorStringWithoutEnding(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}";
-    /// <summary>
-    /// Darkness:１の比率で黒色と元の色を混ぜる。マイナスだと白色と混ぜる。
-    /// </summary>
+
     public static Color ShadeColor(this Color color, float Darkness = 0)
     {
-        bool IsDarker = Darkness >= 0; //黒と混ぜる
+        bool IsDarker = Darkness >= 0;
         if (!IsDarker) Darkness = -Darkness;
-        float Weight = IsDarker ? 0 : Darkness; //黒/白の比率
+        float Weight = IsDarker ? 0 : Darkness;
         float R = (color.r + Weight) / (Darkness + 1);
         float G = (color.g + Weight) / (Darkness + 1);
         float B = (color.b + Weight) / (Darkness + 1);
@@ -2709,7 +2516,7 @@ public static class Utils
 
         if (player.IsHost())
         {
-            HudManager.Instance.Chat.SetVisible(true);
+            FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(true);
             return;
         }
 

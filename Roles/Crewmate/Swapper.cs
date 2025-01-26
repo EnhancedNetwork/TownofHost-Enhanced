@@ -394,7 +394,7 @@ internal class Swapper : RoleBase
             {
                 Vote.Clear();
                 VoteTwo.Clear();
-                foreach (var pc in Main.AllAlivePlayerControls.ToArray())
+                foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (!pc.Is(CustomRoles.Swapper) || !pc.IsAlive()) continue;
 

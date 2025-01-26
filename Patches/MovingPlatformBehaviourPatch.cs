@@ -15,7 +15,7 @@ public static class MovingPlatformBehaviourPatch
         if (isDisabled)
         {
             __instance.transform.localPosition = __instance.DisabledPosition;
-            ShipStatus.Instance.Cast<AirshipStatus>().outOfOrderPlat.SetActive(true);
+            ShipStatus.Instance.CastFast<AirshipStatus>().outOfOrderPlat.SetActive(true);
         }
     }
     [HarmonyPatch(nameof(MovingPlatformBehaviour.IsDirty), MethodType.Getter), HarmonyPrefix]

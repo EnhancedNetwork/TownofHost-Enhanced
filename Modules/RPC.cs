@@ -349,7 +349,7 @@ internal class RPCHandlerPatch
                 if (title != "")
                     message = $"{title}\n{message}";
 
-                HudManager.Instance.ShowPopUp(message);
+                FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(message);
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
@@ -392,7 +392,7 @@ internal class RPCHandlerPatch
                 var show = reader.ReadBoolean();
                 if (AmongUsClient.Instance.ClientId == clientId)
                 {
-                    HudManager.Instance.Chat.SetVisible(show);
+                    FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(show);
                 }
                 break;
             case CustomRPC.SetDrawPlayer:
@@ -911,13 +911,13 @@ internal static class RPC
                     SoundManager.Instance.PlaySound(PlayerControl.LocalPlayer.KillSfx, false, 1f);
                     break;
                 case Sounds.TaskComplete:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
+                    SoundManager.Instance.PlaySound(FastDestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
                     break;
                 case Sounds.TaskUpdateSound:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 1f);
+                    SoundManager.Instance.PlaySound(FastDestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 1f);
                     break;
                 case Sounds.ImpTransform:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
+                    SoundManager.Instance.PlaySound(FastDestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
                     break;
                 case Sounds.SabotageSound:
                     SoundManager.Instance.PlaySound(ShipStatus.Instance.SabotageSound, false, 0.8f);
@@ -945,8 +945,8 @@ internal static class RPC
         }
 
         if (!AmongUsClient.Instance.IsGameOver)
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-        //    HudManager.Instance.Chat.SetVisible(true);
+            FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        //    FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(true);
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }

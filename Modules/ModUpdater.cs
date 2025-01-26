@@ -70,7 +70,7 @@ public class ModUpdater
     const string MiniRegionInstallResource = "TOHE.Resources.Mini.RegionInstall.dll";
     private static void CheckCustomRegions()
     {
-        var regions = ServerManager.Instance.AvailableRegions;
+        var regions = FastDestroyableSingleton<ServerManager>.Instance.AvailableRegions;
         var hasCustomRegions = false;
         var forceUpdate = false;
 

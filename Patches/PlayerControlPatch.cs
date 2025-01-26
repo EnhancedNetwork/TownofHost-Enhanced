@@ -577,7 +577,7 @@ public static class CheckShapeshiftPatch
             var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
             PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
             PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
-            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+            FastDestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
             yield break;
         }
 
@@ -944,7 +944,7 @@ class ReportDeadBodyPatch
         AfterReportTasks(__instance, target);
 
         MeetingRoomManager.Instance.AssignSelf(__instance, target);
-        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
+        FastDestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
 
         // Delay Start Meeting to allow other tasks stop and playerinfo finished
         // Other tasks should stop with Main.MeetingIsStarted bool
@@ -1162,7 +1162,7 @@ class FixedUpdateInNormalGamePatch
             //try
             //{
             //    // ChatUpdatePatch doesn't work when host chat is hidden
-            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !DestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
+            //    if (AmongUsClient.Instance.AmHost && player.AmOwner && !FastDestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
             //    {
             //        ChatUpdatePatch.Postfix(ChatUpdatePatch.Instance);
             //    }
@@ -1366,7 +1366,7 @@ class FixedUpdateInNormalGamePatch
             {
                 var players = __instance.GetPlayersInAbilityRangeSorted(false);
                 PlayerControl closest = !players.Any() ? null : players[0];
-                HudManager.Instance.KillButton.SetTarget(closest);
+                FastDestroyableSingleton<HudManager>.Instance.KillButton.SetTarget(closest);
             }
         }
 
@@ -1635,7 +1635,7 @@ class FixedUpdateInNormalGamePatch
                                     MeetingHud.Instance?.CheckForEndVoting();
                                 }
                                 MurderPlayerPatch.AfterPlayerDeathTasks(partnerPlayer, partnerPlayer, true);
-                                _ = new LateTask(() => HudManager.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
+                                _ = new LateTask(() => FastDestroyableSingleton<HudManager>.Instance?.SetHudActive(false), 0.3f, "SetHudActive in LoversSuicide", shoudLog: false);
                             }
                             else
                             {

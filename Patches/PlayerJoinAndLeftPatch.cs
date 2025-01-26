@@ -67,7 +67,7 @@ class OnGameJoinedPatch
                     if (Main.NormalOptions.KillCooldown == 0f)
                         Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                    AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                    AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
 
                     if (AURoleOptions.ShapeshifterCooldown == 0f)
                         AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
@@ -269,7 +269,7 @@ public static class OnPlayerJoinedPatch
                 Logger.Info(msg, "Other Platform Kick"); ;
             }
         }
-        if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
+        if (FastDestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, true);
             Logger.Info($"Ban Player => {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
@@ -423,7 +423,7 @@ class OnPlayerLeftPatch
                     msg = GetString("Message.HostLeftGameInLobby");
 
                 player.SetName(title);
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
                 player.SetName(name);
 
                 //On Become Host is called before OnPlayerLeft, so this is safe to use
@@ -462,7 +462,7 @@ class OnPlayerLeftPatch
                         var name = player?.Data?.PlayerName;
                         var msg = string.Format(GetString("Message.HostLeftGameNewHostIsNotMod"), AmongUsClient.Instance.GetHost().Character?.GetRealName() ?? "null");
                         player.SetName(title);
-                        DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                        FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
                         player.SetName(name);
                     }
                 }, 0.5f, "On Host Disconnected");

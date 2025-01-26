@@ -143,6 +143,6 @@ internal class Stealth : RoleBase
         {
             return string.Empty;
         }
-        return string.Format(Translator.GetString("StealthDarkened"), DestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
+        return string.Format(Translator.GetString("StealthDarkened"), FastDestroyableSingleton<TranslationController>.Instance.GetString(darkenedRoom.Value));
     }
 }

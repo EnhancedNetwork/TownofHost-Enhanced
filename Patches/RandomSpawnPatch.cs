@@ -118,7 +118,7 @@ class RandomSpawn
                 PlayerControl.LocalPlayer.SetKinematic(true);
                 PlayerControl.LocalPlayer.NetTransform.SetPaused(true);
                 AirshipSpawn(PlayerControl.LocalPlayer);
-                DestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
+                FastDestroyableSingleton<HudManager>.Instance.PlayerCam.SnapToTarget();
                 __instance.StopAllCoroutines();
                 __instance.StartCoroutine(__instance.CoSpawnAt(PlayerControl.LocalPlayer, spawnPoint));
                 return false;

@@ -28,9 +28,9 @@ class CoShowIntroPatch
 
             StartGameHostPatch.RpcSetDisconnected(disconnected: false);
 
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+            FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
 
-            foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var pc in Main.AllPlayerControls)
             {
                 pc.SetCustomIntro();
             }
@@ -46,7 +46,7 @@ class CoShowIntroPatch
                 ShipStatus.Instance.Begin();
 
                 GameOptionsSender.AllSenders.Clear();
-                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var pc in Main.AllPlayerControls)
                 {
                     GameOptionsSender.AllSenders.Add(new PlayerGameOptionsSender(pc));
                 }
@@ -503,7 +503,7 @@ class BeginCrewmatePatch
             case CustomRoles.Workaholic:
             case CustomRoles.Snitch:
             case CustomRoles.TaskManager:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = FastDestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
                 break;
 
             case CustomRoles.Opportunist:
@@ -526,7 +526,7 @@ class BeginCrewmatePatch
 
             case CustomRoles.Pixie:
             case CustomRoles.Seeker:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = FastDestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                 break;
 
             case CustomRoles.GM:
@@ -534,7 +534,7 @@ class BeginCrewmatePatch
                 __instance.TeamTitle.color = Utils.GetRoleColor(role);
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
                 __instance.ImpostorText.gameObject.SetActive(true);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = FastDestroyableSingleton<HudManager>.Instance.TaskCompleteSound;
                 __instance.ImpostorText.text = GetString("SubText.GM");
                 break;
 
@@ -771,7 +771,7 @@ class IntroCutsceneDestroyPatch
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
 
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var target in Main.AllPlayerControls)
                 {
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
@@ -785,7 +785,7 @@ class IntroCutsceneDestroyPatch
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
 
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator().Where(x => !x.IsPlayerCoven()))
+                foreach (var target in Main.AllPlayerControls.Where(x => !x.IsPlayerCoven()).ToArray())
                 {
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
@@ -848,7 +848,7 @@ class IntroCutsceneDestroyPatch
         {
             if (GameStates.IsNormalGame && !GameStates.AirshipIsActive)
             {
-                foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var pc in Main.AllPlayerControls)
                 {
                     pc.RpcResetAbilityCooldown();
 
@@ -905,9 +905,9 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
-        }
 
-        Utils.DoNotifyRoles(NoCache: true);
+            Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+        }
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

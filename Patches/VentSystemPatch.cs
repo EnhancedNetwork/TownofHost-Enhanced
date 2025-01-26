@@ -48,7 +48,7 @@ static class VentSystemDeterioratePatch
                 LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
             }
 
-            ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
+            ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>

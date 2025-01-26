@@ -47,7 +47,7 @@ public unsafe class Il2CppListEnumerable<T> : IEnumerable<T>, IEnumerator<T> whe
         _elemSize = IntPtr.Size;
         _offset = 4 * IntPtr.Size;
 
-        var constructor = typeof(T).GetConstructor(new[] { typeof(IntPtr) });
+        var constructor = typeof(T).GetConstructor([typeof(IntPtr)]);
         var ptr = Expression.Parameter(typeof(IntPtr));
         var create = Expression.New(constructor!, ptr);
         var lambda = Expression.Lambda<Func<IntPtr, T>>(create, ptr);

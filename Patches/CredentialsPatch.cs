@@ -89,7 +89,7 @@ class PingTrackerUpdatePatch
     }
     private static Vector3 GetPingPosition()
     {
-        var settingButtonTransformPosition = DestroyableSingleton<HudManager>.Instance.SettingsButton.transform.localPosition;
+        var settingButtonTransformPosition = FastDestroyableSingleton<HudManager>.Instance.SettingsButton.transform.localPosition;
         var offset_x = settingButtonTransformPosition.x - 1.58f;
         var offset_y = settingButtonTransformPosition.y + 3.2f;
         Vector3 position;
@@ -99,7 +99,7 @@ class PingTrackerUpdatePatch
         }
         if (AmongUsClient.Instance.IsGameStarted)
         {
-            if (DestroyableSingleton<HudManager>.Instance && !HudManager.Instance.Chat.isActiveAndEnabled)
+            if (!FastDestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
             {
                 offset_x += 0.7f; // Additional offsets for chat button if present
             }
@@ -124,7 +124,7 @@ class PingTrackerUpdatePatch
 
         if (Main.ShowTextOverlay.Value || Main.ShowFPS.Value)
         {
-            var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
+            var language = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             __instance.text.outlineWidth = language switch
             {
                 SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.25f,

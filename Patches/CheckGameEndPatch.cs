@@ -591,7 +591,7 @@ class GameEndCheckerForNormal
 
             if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
-            var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
+            var allAlivePlayerList = Main.AllAlivePlayerControls;
             int dual = 0, impCount = 0, crewCount = 0, covenCount = 0;
 
             foreach (var pc in allAlivePlayerList)
