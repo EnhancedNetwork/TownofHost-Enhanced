@@ -20,25 +20,23 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true/*check role-addon*/, bool checkAAconflict = true/*check addon-addon*/)
+    // checkAddons disable checks in MainRole Set, checkAAconflict disable checks in SubRole Set
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true, bool checkAAconflict = true)
     {
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
             //  player.GetRoleClass()?.OnAdd(player.PlayerId);
             // Remember to manually add OnAdd if you are setting role mid game
-            if (checkAddons) player.RemoveIncompatibleAddOns();
+            if (checkAddons && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
             
-            if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
-            else Main.PlayerStates[player.PlayerId].SetSubRole(role);
+            Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
             
-            if (role.IsAddonAssignedMidGame()) checkAAconflict = false;
-
-            if (checkAAconflict) player.RemoveIncompatibleAddOns();
+            if (checkAAconflict && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -60,7 +58,10 @@ static class ExtendedPlayerControl
     }
     public static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
-        foreach (var addon in player.GetCustomSubRoles())
+        List<CustomRoles> roles = new(player.GetCustomSubRoles());
+        roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
+        roles.Shuffle();
+        foreach (var addon in roles)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player) && player.ShouldBeRemoved(addon))
             {
