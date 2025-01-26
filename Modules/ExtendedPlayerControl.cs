@@ -452,16 +452,26 @@ static class ExtendedPlayerControl
     /// <summary>
     /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
     /// </summary>
-    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
+    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target, bool error = false)
     {
-        // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
-        if (DollMaster.SwapPlayerInfo(target) != target)
+         if (!error)
         {
-            DollMaster.CheckMurderAsPossessed(killer, target);
-            return;
-        }
+            // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
+            if (DollMaster.SwapPlayerInfo(target) != target)
+            {
+                DollMaster.CheckMurderAsPossessed(killer, target);
+                return;
+            }
 
         killer.RpcMurderPlayer(target, true);
+        }
+        else
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.OwnerId);
+            messageWriter.WriteNetObject(target);
+            messageWriter.Write((int)MurderResultFlags.FailedError);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
     }
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool forTechnician = false, bool fromSetKCD = false)
     {
