@@ -70,8 +70,7 @@ internal class TaskManager : RoleBase
 
         if (randomPlayer != null)
         {
-            var allNotCompletedTasks = new List<NetworkedPlayerInfo.TaskInfo>();
-            allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
+            var allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
 
             if (allNotCompletedTasks.Any())
             {
