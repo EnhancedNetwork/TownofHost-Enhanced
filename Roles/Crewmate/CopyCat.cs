@@ -1,6 +1,5 @@
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
-using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
