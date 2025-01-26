@@ -66,18 +66,17 @@ internal class TaskManager : RoleBase
     {
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
         
+        List<NetworkedPlayerInfo.TaskInfo> allNotCompletedTasks = [];
         var randomPlayer = Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
 
         if (randomPlayer != null)
-        {
-            var allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
+            allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
 
-            if (allNotCompletedTasks.Any())
-            {
-                Target[randomPlayer.PlayerId] = taskManager.PlayerId;
-                randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
-                randomPlayer.Notify(GetString("TaskManager_CompletedRandomTaskForPlayer"));
-            }
+        if (allNotCompletedTasks.Any())
+        {
+            Target[randomPlayer.PlayerId] = taskManager.PlayerId;
+            randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
+            randomPlayer.Notify(GetString("TaskManager_CompletedRandomTaskForPlayer"));
         }
         else if (taskManager.IsAlive())
         {
