@@ -96,6 +96,7 @@ class CheckMurderPatch
 
         if (CheckForInvalidMurdering(killer, target, true) == false)
         {
+            killer.RpcMurderPlayer(target, error: true);
             return false;
         }
 
@@ -122,6 +123,7 @@ class CheckMurderPatch
         if (CustomRoleManager.OnCheckMurder(ref killer, ref target, ref __state) == false)
         {
             Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
+            killer.RpcMurderPlayer(target, didSucceed: false);
             return false;
         }
 
@@ -172,6 +174,12 @@ class CheckMurderPatch
         if (MeetingHud.Instance != null)
         {
             Logger.Info("In the meeting, the kill was canceled", "CheckMurder");
+            return false;
+        }
+        // Meeting is awaiting start
+        if (Main.MeetingIsStarted)
+        {
+            Logger.Info("Meeting is awaiting start, the kill was canceled", "CheckMurder");
             return false;
         }
         // AntiBlackOut protect is active
