@@ -1694,6 +1694,7 @@
   "NameDisplayAddons": "Display Add-Ons next to the role name",
   "YourAddon": "Your Add-ons:",
   "NoLimitAddonsNumMax": "Maximum Add-ons Per Player",
+  "RemoveIncompatibleAddOnsMidGame": "Remove Incompatible Addons for role assigned mid game",
   "LoverSpawnChances": "Spawn Chance of <color=#ff9ace>Lovers</color>",
   "AdditionRolesSpawnRate": "Spawn Chance",
   "TorchVision": "<color=#eee5be>Torch</color> Vision",
