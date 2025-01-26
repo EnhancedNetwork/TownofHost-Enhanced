@@ -19,25 +19,23 @@ namespace TOHE;
 
 static class ExtendedPlayerControl
 {
-    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true/*check role-addon*/, bool checkAAconflict = true/*check addon-addon*/)
+    // checkAddons disable checks in MainRole Set, checkAAconflict disable checks in SubRole Set
+    public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true, bool checkAAconflict = true)
     {
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
             //  player.GetRoleClass()?.OnAdd(player.PlayerId);
             // Remember to manually add OnAdd if you are setting role mid game
-            if (checkAddons) player.RemoveIncompatibleAddOns();
+            if (checkAddons && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
 
-            if (role == CustomRoles.Cleansed) Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
-            else Main.PlayerStates[player.PlayerId].SetSubRole(role);
+            Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
 
-            if (role.IsAddonAssignedMidGame()) checkAAconflict = false;
-
-            if (checkAAconflict) player.RemoveIncompatibleAddOns();
+            if (checkAAconflict && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -60,7 +58,11 @@ static class ExtendedPlayerControl
     }
     public static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
-        foreach (var addon in player.GetCustomSubRoles())
+        List<CustomRoles> roles = new(player.GetCustomSubRoles());
+        roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
+        roles.Shuffle();
+
+        foreach (var addon in roles)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player))
             {
@@ -451,16 +453,26 @@ static class ExtendedPlayerControl
     /// <summary>
     /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
     /// </summary>
-    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
+    public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target, bool error = false)
     {
-        // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
-        if (DollMaster.SwapPlayerInfo(target) != target)
+        if (!error)
         {
-            DollMaster.CheckMurderAsPossessed(killer, target);
-            return;
-        }
+            // If Target is Dollmaster or Possessed Player run Dollmasters kill check instead.
+            if (DollMaster.SwapPlayerInfo(target) != target)
+            {
+                DollMaster.CheckMurderAsPossessed(killer, target);
+                return;
+            }
 
-        killer.RpcMurderPlayer(target, true);
+            killer.RpcMurderPlayer(target, true);
+        }
+        else
+        {
+            MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.OwnerId);
+            messageWriter.WriteNetObject(target);
+            messageWriter.Write((int)MurderResultFlags.FailedError);
+            AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        }
     }
     public static void RpcGuardAndKill(this PlayerControl killer, PlayerControl target = null, bool forObserver = false, bool fromSetKCD = false)
     {
@@ -1247,7 +1259,14 @@ static class ExtendedPlayerControl
         ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
-        reporter.RpcStartMeeting(target);
+
+        _ = new LateTask(() =>
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                reporter.RpcStartMeeting(target);
+            }
+        }, 0.12f, "No Check StartMeeting");
     }
     public static bool IsHost(this InnerNetObject innerObject) => innerObject.OwnerId == AmongUsClient.Instance.HostId;
     public static bool IsHost(this byte playerId) => playerId.GetPlayer()?.OwnerId == AmongUsClient.Instance.HostId;
@@ -1351,7 +1370,7 @@ static class ExtendedPlayerControl
         if (target == null) target = seer;
 
         if (seer.PlayerId == target.PlayerId) return true;
-        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.IsHost() && Main.GodMode.Value)) return true;
+        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
