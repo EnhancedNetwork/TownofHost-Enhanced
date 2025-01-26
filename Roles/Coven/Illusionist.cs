@@ -147,7 +147,7 @@ internal class Illusionist : CovenManager
         if (_Player == null) return string.Empty;
         if ((IsCovIllusioned(target.PlayerId) || IsNonCovIllusioned(target.PlayerId)) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.Illusionist), "ø");
+            return CustomRoles.Illusionist.GetColoredTextByRole("ø");
         }
         return string.Empty;
     }

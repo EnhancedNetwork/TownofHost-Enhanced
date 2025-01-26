@@ -151,7 +151,7 @@ internal class Pitfall : RoleBase
 
             trap.PlayersTrapped.Add(player.PlayerId);
 
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pitfall), GetString("PitfallTrap")));
+            player.Notify(CustomRoles.Pitfall.GetColoredTextByRole(GetString("PitfallTrap")));
         }
     }
 

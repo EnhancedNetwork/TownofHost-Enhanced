@@ -203,8 +203,6 @@ internal class Witch : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        seen ??= seer;
-
         if (isForMeeting && IsSpelled(seen.PlayerId))
         {
             return Utils.ColorString(Palette.ImpostorRed, "ÔÇá");

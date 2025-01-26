@@ -73,14 +73,14 @@ internal class SoulCollector : RoleBase
         => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => TargetId == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠") : string.Empty;
+        => TargetId == seen.PlayerId ? CustomRoles.SoulCollector.GetColoredTextByRole("♠") : string.Empty;
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
+            return CustomRoles.SoulCollector.GetColoredTextByRole("♠");
         }
         return string.Empty;
     }

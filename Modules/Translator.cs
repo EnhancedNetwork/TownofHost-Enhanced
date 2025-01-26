@@ -89,10 +89,10 @@ public static class Translator
                 foreach (var role in CustomRolesHelper.AllRoles)
                 {
                     if (ActualRoleNames[lang].ContainsKey(role))
-                        ActualRoleNames[lang][role] = GetString($"{role}", lang);
+                        ActualRoleNames[lang][role] = GetString(role.ToString(), lang);
                     else
                     {
-                        ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
+                        ActualRoleNames[lang].Add(role, GetString(role.ToString(), lang));
                     }
                 }
                 UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
@@ -179,14 +179,14 @@ public static class Translator
                 RealName = RoleString;
             else
             {
-                RealName = GetString($"{role}");
+                RealName = GetString(role.ToString());
                 Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
             }
             return;
         }
         else
         {
-            RealName = GetString($"{role}");
+            RealName = GetString(role.ToString());
         }
     }
     public static string GetString(string s, Dictionary<string, string> replacementDic = null, bool console = false, bool showInvalid = true, bool vanilla = false)

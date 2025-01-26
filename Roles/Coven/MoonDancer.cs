@@ -128,7 +128,7 @@ internal class MoonDancer : CovenManager
         if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            pc.Notify(CustomRoles.NiceMini.GetColoredTextByRole(GetString("CantEat")));
             return;
         }
 
@@ -210,7 +210,7 @@ internal class MoonDancer : CovenManager
             DistributeAddOns(GetPlayerById(md));
         }
     }
-    private void DistributeAddOns(PlayerControl md)
+    private static void DistributeAddOns(PlayerControl md)
     {
         var rd = IRandom.Instance;
         foreach (var pc in BatonPassList[md.PlayerId])

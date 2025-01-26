@@ -170,7 +170,7 @@ internal class Altruist : RoleBase
         if (RevivedPlayerId == byte.MaxValue || isForMeeting || seer.PlayerId != target.PlayerId) return string.Empty;
         if (seer.Is(Custom_Team.Impostor) || seer.IsNeutralKiller() || seer.IsNeutralApocalypse())
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Altruist), TargetArrow.GetArrows(seer));
+            return CustomRoles.Altruist.GetColoredTextByRole(TargetArrow.GetArrows(seer));
         }
         return string.Empty;
     }

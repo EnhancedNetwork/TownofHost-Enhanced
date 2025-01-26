@@ -55,12 +55,10 @@ internal class Retributionist : RoleBase
             return true;
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        seen ??= seer;
-
         if (!seer.IsAlive() && seen.IsAlive())
-            return ColorString(GetRoleColor(CustomRoles.Retributionist), " " + seen.PlayerId.ToString()) + " ";
+            return CustomRoles.Retributionist.GetColoredTextByRole($" {seen.Data.PlayerId} ");
 
         return string.Empty;
     }

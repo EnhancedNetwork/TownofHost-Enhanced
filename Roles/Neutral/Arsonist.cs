@@ -183,10 +183,10 @@ internal class Arsonist : RoleBase
         if (seen == null) return string.Empty;
 
         if (IsDousedPlayer(seer, seen))
-            return ColorString(GetRoleColor(CustomRoles.Arsonist), "▲");
+            return CustomRoles.Arsonist.GetColoredTextByRole("▲");
 
         if (!isForMeeting && ArsonistTimer.TryGetValue(seer.PlayerId, out var ar_kvp) && ar_kvp.Item1 == seen)
-            return ColorString(GetRoleColor(CustomRoles.Arsonist), "△");
+            return CustomRoles.Arsonist.GetColoredTextByRole("△");
 
         return string.Empty;
     }

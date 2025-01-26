@@ -224,7 +224,7 @@ public class GameSettingMenuPatch
 
         var GameSettingsLabel = __instance.GameSettingsButton.transform.parent.parent.FindChild("GameSettingsLabel").GetComponent<TextMeshPro>();
         GameSettingsLabel.DestroyTranslator();
-        GameSettingsLabel.text = GetString($"{Options.CurrentGameMode}");
+        GameSettingsLabel.text = GetString(Options.CurrentGameMode.ToString());
 
         var FreeChatField = FastDestroyableSingleton<ChatController>.Instance.freeChatField;
         var TextField = Object.Instantiate(FreeChatField, ParentLeftPanel.parent);
@@ -280,7 +280,7 @@ public class GameSettingMenuPatch
             HiddenBySearch.Do(x => x.SetHidden(false));
             string text = textField.textArea.text.Trim().ToLower();
             var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode)
-            && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
+            && !GetString(x.Name).ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
             var SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
             if (!SearchWinners.Any() || !ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var settingsTab) || settingsTab == null)
@@ -416,7 +416,7 @@ public class GameSettingMenuPatch
         return false;
     }
     [HarmonyPatch(nameof(GameSettingMenu.Close)), HarmonyPostfix]
-    private static void ClosePostfix(GameSettingMenu __instance)
+    private static void ClosePostfix()
     {
         foreach (var button in ModSettingsButtons.Values)
             Object.Destroy(button);

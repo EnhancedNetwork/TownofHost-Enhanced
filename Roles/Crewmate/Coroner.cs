@@ -181,18 +181,17 @@ internal class Coroner : RoleBase
 
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
-        if (!seer.Is(CustomRoles.Coroner)) return "";
-        if (target != null && seer.PlayerId != target.PlayerId) return "";
-        if (GameStates.IsMeeting) return "";
+        if (seer.PlayerId != target.PlayerId || isForMeeting) return string.Empty;
+
         if (CoronerTargets.TryGetValue(seer.PlayerId, out var targets) && targets.Any())
         {
-            var arrows = "";
+            var arrows = new StringBuilder();
             foreach (var targetId in targets)
             {
                 var arrow = TargetArrow.GetArrows(seer, targetId);
-                arrows += ColorString(seer.GetRoleColor(), arrow);
+                arrows.Append(ColorString(seer.GetRoleColor(), arrow));
             }
-            return arrows;
+            return arrows.ToString();
         }
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
     }

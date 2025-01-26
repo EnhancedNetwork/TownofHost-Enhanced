@@ -139,7 +139,7 @@ internal class Demon : RoleBase
         Logger.Info($"{killer.GetRealName()} try kill {target.GetRealName()} but get damage {SelfDamage.GetInt()}", "Demon");
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Demon) || !seer.IsAlive()) return string.Empty;
 

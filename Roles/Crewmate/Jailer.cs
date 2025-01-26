@@ -174,7 +174,8 @@ internal class Jailer : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting)
     {
-        return seer.PlayerId != seen.PlayerId && JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && seen.PlayerId == targetID ? ColorString(GetRoleColor(CustomRoles.Jailer), "⊠") : string.Empty;
+        return seer.PlayerId != seen.PlayerId && JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && seen.PlayerId == targetID 
+            ? CustomRoles.Jailer.GetColoredTextByRole("⊠") : string.Empty;
     }
 
     private static bool CanBeExecuted(CustomRoles role)

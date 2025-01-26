@@ -34,7 +34,6 @@ internal class Alchemist : RoleBase
     public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
     private static byte PotionID = 10;
-    private static string PlayerName = string.Empty;
     private static bool VisionPotionActive = false;
     private static bool FixNextSabo = false;
     private static bool IsProtected = false;
@@ -63,7 +62,6 @@ internal class Alchemist : RoleBase
     {
         BloodthirstList.Clear();
         PotionID = 10;
-        PlayerName = string.Empty;
         ventedId.Clear();
         InvisTime.Clear();
         FixNextSabo = false;
@@ -71,8 +69,6 @@ internal class Alchemist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerName = Utils.GetPlayerById(playerId).GetRealName();
-
         if (AmongUsClient.Instance.AmHost)
         {
             AddBloodlus();
@@ -387,7 +383,7 @@ internal class Alchemist : RoleBase
         var str = new StringBuilder();
         if (IsInvis(seer.PlayerId))
         {
-            var remainTime = InvisTime[seer.PlayerId] + (long)InvisDuration.GetFloat() - Utils.GetTimeStamp();
+            var remainTime = InvisTime[seer.PlayerId] + (long)InvisDuration.GetFloat() - Utils.TimeStamp;
             str.Append(string.Format(GetString("ChameleonInvisStateCountdown"), remainTime + 1));
         }
         else
@@ -430,7 +426,7 @@ internal class Alchemist : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
-        var player = Utils.GetPlayerById(playerId);
+        var player = playerId.GetPlayer();
         if (player == null || !GameStates.IsInTask) return string.Empty;
 
         var str = new StringBuilder();

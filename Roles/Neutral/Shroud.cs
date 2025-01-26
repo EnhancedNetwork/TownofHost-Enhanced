@@ -85,7 +85,7 @@ internal class Shroud : RoleBase
         if (ShroudList.ContainsKey(target.PlayerId)) return false;
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantShroud")));
+            killer.Notify(CustomRoles.NiceMini.GetColoredTextByRole(GetString("CantShroud")));
             return false;
         }
 
@@ -170,7 +170,7 @@ internal class Shroud : RoleBase
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isMeeting = false)
-        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shroud), "◈") : string.Empty;
+        => isMeeting && ShroudList.ContainsKey(target.PlayerId) ? CustomRoles.Shroud.GetColoredTextByRole("◈") : string.Empty;
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

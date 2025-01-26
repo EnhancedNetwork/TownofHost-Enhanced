@@ -65,13 +65,13 @@ internal class VoodooMaster : CovenManager
     public override void SetAbilityButtonText(HudManager hud, byte playerId) =>
         hud.KillButton.OverrideText(GetString("ShamanButtonText"));
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    => IsDoll(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.VoodooMaster), "✂") : string.Empty;
+        => IsDoll(seer.PlayerId, seen.PlayerId) ? CustomRoles.VoodooMaster.GetColoredTextByRole("✂") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (IsDoll(_Player.PlayerId, target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.VoodooMaster), "✂");
+            return CustomRoles.VoodooMaster.GetColoredTextByRole("✂");
         }
         return string.Empty;
     }

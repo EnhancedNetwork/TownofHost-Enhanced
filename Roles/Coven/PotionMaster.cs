@@ -122,7 +122,7 @@ internal class PotionMaster : CovenManager
     }
 
     public static bool IsReveal(byte seer, byte target) => RevealList[seer].Contains(target);
-    private void SetRitual(PlayerControl killer, PlayerControl target)
+    private static void SetRitual(PlayerControl killer, PlayerControl target)
     {
         switch (PotionMode)
         {
@@ -240,17 +240,17 @@ internal class PotionMaster : CovenManager
         hud.KillButton.OverrideText(GetString("PotionMasterKillButtonText"));
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    => BarrierList[seer.PlayerId].Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.PotionMaster), "✚") : string.Empty;
+        => IsBarriered(seer.PlayerId, seen.PlayerId) ? CustomRoles.PotionMaster.GetColoredTextByRole("✚") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (IsBarriered(seer.PlayerId, target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.PotionMaster), "✚");
+            return CustomRoles.PotionMaster.GetColoredTextByRole("✚");
         }
         return string.Empty;
     }
-    public static bool IsBarriered(byte pc, byte target) => BarrierList.TryGetValue(pc, out var protectList) && protectList.Contains(target);
+    private static bool IsBarriered(byte pc, byte target) => BarrierList.TryGetValue(pc, out var protectList) && protectList.Contains(target);
 
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target);

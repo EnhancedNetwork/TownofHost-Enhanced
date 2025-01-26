@@ -77,7 +77,7 @@ internal class Ninja : RoleBase
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantMark")));
+            killer.Notify(CustomRoles.Gangster.GetColoredTextByRole(GetString("CantMark")));
             return true;
         }
 

@@ -7,7 +7,6 @@ using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -76,14 +75,13 @@ public enum CustomRPC : byte // 185/255 USED
     SetLoversPlayers,
     SendFireworkerState,
     SetCurrentDousingTarget,
+    SetEvilTrackerTarget,
+    SyncRevolutionistData,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
-    SetEvilTrackerTarget,
-    SetDrawPlayer,
     SetCrewpostorTasksDone,
-    SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
@@ -395,8 +393,12 @@ internal class RPCHandlerPatch
                     FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(show);
                 }
                 break;
-            case CustomRPC.SetDrawPlayer:
-                Revolutionist.ReceiveDrawPlayerRPC(reader);
+            case CustomRPC.SyncRevolutionistData:
+                var setDraw = reader.ReadBoolean();
+                if (setDraw)
+                    Revolutionist.ReceiveDrawPlayerRPC(reader);
+                else
+                    Revolutionist.ReceiveCountdown(reader);
                 break;
             case CustomRPC.SetOverseerRevealedPlayer:
                 Overseer.ReceiveSetRevealedPlayerRPC(reader);
@@ -454,9 +456,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetDousedPlayer:
                 Arsonist.ReceiveSetDousedPlayerRPC(reader);
-                break;
-            case CustomRPC.SetCurrentDrawTarget:
-                Revolutionist.ReceiveSetCurrentDrawTarget(reader);
                 break;
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);

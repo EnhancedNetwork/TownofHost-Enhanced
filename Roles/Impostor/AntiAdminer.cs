@@ -26,6 +26,8 @@ internal class AntiAdminer : RoleBase
     private static bool IsVitalWatch;
     private static bool IsDoorLogWatch;
     private static bool IsCameraWatch;
+    private static string ColoredMark;
+    private static Color RoleColor;
 
     public override void SetupCustomOption()
     {
@@ -38,6 +40,11 @@ internal class AntiAdminer : RoleBase
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
+    }
+    public override void Add(byte playerId)
+    {
+        RoleColor = GetRoleColor(CustomRoles.AntiAdminer);
+        ColoredMark = ColorString(RoleColor, "⚠");
     }
 
     private static int Count = 0;
@@ -137,10 +144,10 @@ internal class AntiAdminer : RoleBase
         if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 
         StringBuilder sb = new();
-        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("AdminWarning")));
-        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("VitalsWarning")));
-        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("DoorlogWarning")));
-        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), "⚠")).Append(ColorString(GetRoleColor(CustomRoles.AntiAdminer), GetString("CameraWarning")));
+        if (IsAdminWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("CameraWarning")));
 
         return sb.ToString();
     }

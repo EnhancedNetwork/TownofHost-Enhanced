@@ -171,7 +171,7 @@ internal class President : RoleBase
                 if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral()) continue;
                 if (!ImpsSeePresident.GetBool() && (tar.GetCustomRole().IsImpostor() || tar.Is(CustomRoles.Crewpostor))) continue;
                 if (!CovenSeePresident.GetBool() && tar.GetCustomRole().IsCoven()) continue;
-                Utils.SendMessage(string.Format(GetString("PresidentRevealed"), pc.GetRealName()), tar.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.President), GetString("PresidentRevealTitle")));
+                Utils.SendMessage(string.Format(GetString("PresidentRevealed"), pc.GetRealName()), tar.PlayerId, CustomRoles.President.GetColoredTextByRole(GetString("PresidentRevealTitle")));
             }
             SendRPC(pc.PlayerId, isEnd: false);
         }

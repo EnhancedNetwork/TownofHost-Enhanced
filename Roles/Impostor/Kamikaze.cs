@@ -44,13 +44,13 @@ internal class Kamikaze : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => KamikazedList.Contains(seen.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), "∇") : string.Empty;
+        => KamikazedList.Contains(seen.PlayerId) ? CustomRoles.Kamikaze.GetColoredTextByRole("∇") : string.Empty;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Kamikaze), GetString("KamikazeHostage")));
+            killer.Notify(CustomRoles.Kamikaze.GetColoredTextByRole(GetString("KamikazeHostage")));
             return false;
         }
 

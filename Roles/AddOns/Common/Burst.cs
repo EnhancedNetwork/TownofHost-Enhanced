@@ -52,7 +52,7 @@ public class Burst : IAddon
         BurstBodies.Add(target.PlayerId);
         if (killer.PlayerId != target.PlayerId && !killer.IsTransformedNeutralApocalypse())
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
+            killer.Notify(CustomRoles.Burst.GetColoredTextByRole(GetString("BurstNotify")));
             _ = new LateTask(() =>
             {
                 if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
@@ -65,7 +65,7 @@ public class Burst : IAddon
                 {
                     RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
                     killer.SetKillCooldown(time: Main.AllPlayerKillCooldown[killer.PlayerId] - BurstKillDelay.GetFloat(), forceAnime: true);
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstFailed")));
+                    killer.Notify(CustomRoles.Burst.GetColoredTextByRole(GetString("BurstFailed")));
                 }
                 BurstBodies.Remove(target.PlayerId);
             }, BurstKillDelay.GetFloat(), "Burst Suicide");

@@ -126,7 +126,7 @@ internal class Spiritcaller : RoleBase
     {
         if (SpiritCauseVisionTime.GetFloat() > 0 || SpiritFreezeTime.GetFloat() > 0)
         {
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Spiritcaller), GetString("HauntedByEvilSpirit")));
+            target.Notify(CustomRoles.Spiritcaller.GetColoredTextByRole(GetString("HauntedByEvilSpirit")));
         }
 
         if (SpiritCauseVisionTime.GetFloat() > 0 && !PlayersHaunted.ContainsKey(target.PlayerId))

@@ -60,13 +60,13 @@ internal class Deputy : RoleBase
                 AbilityLimit--;
                 SendSkillRPC();
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyHandcuffedPlayer")));
+                killer.Notify(CustomRoles.Deputy.GetColoredTextByRole(GetString("DeputyHandcuffedPlayer")));
                 killer.SetKillCooldown();
             }
             else
             {
                 // Target already have a handcuff
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("DeputyInvalidTarget")));
+                killer.Notify(CustomRoles.Deputy.GetColoredTextByRole(GetString("DeputyInvalidTarget")));
             }
         }
 
@@ -76,7 +76,7 @@ internal class Deputy : RoleBase
     {
         if (!IsRoleblocked(killer.PlayerId) && killer.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false; // I was told these roles should be roleblock immune
         if (killer == null) return false;
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
+        killer.Notify(CustomRoles.Deputy.GetColoredTextByRole(GetString("HandcuffedByDeputy")));
         killer.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat(), forceAnime: !DisableShieldAnimations.GetBool());
         killer.ResetKillCooldown();
 

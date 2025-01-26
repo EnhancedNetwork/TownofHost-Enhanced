@@ -236,17 +236,17 @@ internal class Medic : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
 
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (WhoCanSeeProtectOpt.GetInt() is 0 or 1)
         {
             if (seer.PlayerId == target.PlayerId && (IsProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)))
             {
-                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+                return CustomRoles.Medic.GetColoredTextByRole("✚");
             }
             else if (seer.PlayerId != target.PlayerId && (IsProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
             {
-                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+                return CustomRoles.Medic.GetColoredTextByRole("✚");
             }
         }
         return string.Empty;
@@ -259,12 +259,12 @@ internal class Medic : RoleBase
             // The seer sees protect on himself
             if (seer.PlayerId == target.PlayerId && (IsProtect(seer.PlayerId) || TempMarkProtected.Contains(seer.PlayerId)) && (WhoCanSeeProtectOpt.GetInt() is 0 or 2))
             {
-                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+                return CustomRoles.Medic.GetColoredTextByRole("✚");
             }
             else if (seer.PlayerId != target.PlayerId && !seer.IsAlive() && (IsProtect(target.PlayerId) || TempMarkProtected.Contains(target.PlayerId)))
             {
                 // Dead players see protect
-                return ColorString(GetRoleColor(CustomRoles.Medic), "✚");
+                return CustomRoles.Medic.GetColoredTextByRole("✚");
             }
         }
         return string.Empty;

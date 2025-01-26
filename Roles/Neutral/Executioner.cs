@@ -248,7 +248,7 @@ internal class Executioner : RoleBase
     {
         if ((!seer.IsAlive() || seer.Is(CustomRoles.Executioner)) && IsTarget(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦");
+            return CustomRoles.Executioner.GetColoredTextByRole("♦");
         }
         return string.Empty;
     }

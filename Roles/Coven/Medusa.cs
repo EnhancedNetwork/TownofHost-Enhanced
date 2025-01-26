@@ -148,13 +148,14 @@ internal class Medusa : CovenManager
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, StoneVision.GetFloat());
         }
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false) => IsStoned(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Medusa), "♻") : string.Empty;
+    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+        => IsStoned(seer.PlayerId, seen.PlayerId) ? CustomRoles.Medusa.GetColoredTextByRole("♻") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (IsStoned(seer.PlayerId, target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.Medusa), "♻");
+            return CustomRoles.Medusa.GetColoredTextByRole("♻");
         }
         return string.Empty;
     }

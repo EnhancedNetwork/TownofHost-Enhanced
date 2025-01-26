@@ -163,9 +163,8 @@ internal class Lightning : RoleBase
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
-    {
-        return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
-    }
+        => (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target)
+            ? CustomRoles.Lightning.GetColoredTextByRole("■") : string.Empty;
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

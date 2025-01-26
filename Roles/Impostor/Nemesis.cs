@@ -175,7 +175,7 @@ internal class Nemesis : RoleBase
             }
             target.SetRealKiller(pc);
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("NemesisKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), GetString("NemesisRevengeTitle")), true); }, 0.6f, "Nemesis Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("NemesisKillSucceed"), Name), 255, CustomRoles.Nemesis.GetColoredTextByRole(GetString("NemesisRevengeTitle")), true); }, 0.6f, "Nemesis Kill");
         }, 0.2f, "Nemesis Start Kill");
         return true;
     }
@@ -221,10 +221,8 @@ internal class Nemesis : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        seen ??= seer;
-
         if (!seer.IsAlive() && seen.IsAlive())
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), " " + seen.PlayerId.ToString()) + " ";
+            return CustomRoles.Nemesis.GetColoredTextByRole($" {seen.Data.PlayerId} ");
 
         return string.Empty;
     }

@@ -144,7 +144,7 @@ internal class Pelican : RoleBase
         if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            pc.Notify(CustomRoles.NiceMini.GetColoredTextByRole(GetString("CantEat")));
             return;
         }
 

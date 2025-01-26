@@ -270,12 +270,9 @@ internal class Overseer : RoleBase
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    {
-        if (OverseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen)
-            return $"<color={GetRoleColorCode(CustomRoles.Overseer)}>○</color>";
+        => OverseerTimer.TryGetValue(seer.PlayerId, out var fa_kvp) && fa_kvp.Item1 == seen
+            ? CustomRoles.Overseer.GetColoredTextByRole("○") : string.Empty;
 
-        return string.Empty;
-    }
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));

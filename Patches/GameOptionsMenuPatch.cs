@@ -621,7 +621,7 @@ public static class StringOptionPatch
             var language = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             //Logger.Info($" Language: {language}", "StringOption.Initialize");
 
-            if (EnumHelper.GetAllValues<CustomRoles>().Find(x => GetString($"{x}") == name1.RemoveHtmlTags(), out var role))
+            if (EnumHelper.GetAllValues<CustomRoles>().Find(x => GetString(x.ToString()) == name1.RemoveHtmlTags(), out var role))
             {
                 name = $"<size=3.5>{name}</size>";
                 __instance.TitleText.fontWeight = FontWeight.Black;
@@ -661,7 +661,7 @@ public static class StringOptionPatch
             {
                 var item = OptionItem.AllOptions[index];
                 var name = item.GetName();
-                if (Enum.GetValues<CustomRoles>().Find(x => GetString($"{x}") == name.RemoveHtmlTags(), out var role))
+                if (Enum.GetValues<CustomRoles>().Find(x => GetString(x.ToString()) == name.RemoveHtmlTags(), out var role))
                 {
                     var roleName = role.IsVanilla() ? role + "TOHE" : role.ToString();
                     var str = GetString($"{roleName}InfoLong");

@@ -32,24 +32,22 @@ internal class Revolutionist : RoleBase
     private static readonly Dictionary<byte, long> RevolutionistLastTime = [];
     private static readonly Dictionary<byte, int> RevolutionistCountdown = [];
 
-    private static byte CurrentDrawTarget = byte.MaxValue;
-
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(15200, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
-        RevolutionistDrawTime = FloatOptionItem.Create(15202, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Revolutionist);
+        RevolutionistDrawTime = FloatOptionItem.Create(Id + 2, "RevolutionistDrawTime", new(0f, 10f, 1f), 3f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistCooldown = FloatOptionItem.Create(15203, "RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
+        RevolutionistCooldown = FloatOptionItem.Create(Id + 3, "RevolutionistCooldown", new(5f, 100f, 1f), 10f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
-        RevolutionistDrawCount = IntegerOptionItem.Create(15204, "RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
+        RevolutionistDrawCount = IntegerOptionItem.Create(Id + 4, "RevolutionistDrawCount", new(1, 14, 1), 6, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Players);
-        RevolutionistKillProbability = IntegerOptionItem.Create(15205, "RevolutionistKillProbability", new(0, 100, 5), 15, TabGroup.NeutralRoles, false)
+        RevolutionistKillProbability = IntegerOptionItem.Create(Id + 5, "RevolutionistKillProbability", new(0, 100, 5), 15, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Percent);
-        RevolutionistVentCountDown = FloatOptionItem.Create(15206, "RevolutionistVentCountDown", new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
+        RevolutionistVentCountDown = FloatOptionItem.Create(Id + 6, "RevolutionistVentCountDown", new(1f, 180f, 1f), 15f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Revolutionist])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -60,7 +58,6 @@ internal class Revolutionist : RoleBase
         RevolutionistStart.Clear();
         RevolutionistLastTime.Clear();
         RevolutionistCountdown.Clear();
-        CurrentDrawTarget = byte.MaxValue;
     }
     public override void Add(byte playerId)
     {
@@ -105,10 +102,12 @@ internal class Revolutionist : RoleBase
         hud.KillButton.OverrideText(GetString("RevolutionistDrawButtonText"));
         hud.ImpostorVentButton.buttonLabelText.text = GetString("RevolutionistVentButtonText");
     }
-    private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
+    private static void SetDrawPlayerRPC(PlayerControl revolutionist, PlayerControl target, bool isDrawed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
+        if (!revolutionist.IsNonHostModdedClient()) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRevolutionistData, SendOption.Reliable, -1);
+        writer.Write(true);
+        writer.Write(revolutionist.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDrawed);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -121,28 +120,30 @@ internal class Revolutionist : RoleBase
         IsDraw[(RevolutionistId, DrawId)] = drawed;
     }
 
-    private static void SetCurrentDrawTargetRPC(byte arsonistId, byte targetId)
+    private static void SetCountdownRPC(bool clear, PlayerControl revolutionist, int countdown)
     {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
-        {
-            CurrentDrawTarget = targetId;
-        }
-        else
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
+        if (!revolutionist.IsNonHostModdedClient()) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRevolutionistData, SendOption.Reliable, -1);
+        writer.Write(false);
+        writer.Write(clear);
+        writer.Write(revolutionist.PlayerId);
+        writer.WritePacked(countdown);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveSetCurrentDrawTarget(MessageReader reader)
+    public static void ReceiveCountdown(MessageReader reader)
     {
-        byte RevolutionistId = reader.ReadByte();
-        byte doTargetId = reader.ReadByte();
-        if (PlayerControl.LocalPlayer.PlayerId == RevolutionistId)
-            CurrentDrawTarget = doTargetId;
+        bool clear = reader.ReadBoolean();
+        byte revolutionistId = reader.ReadByte();
+        int countdown = reader.ReadPackedInt32();
+
+        if (clear)
+        {
+            RevolutionistCountdown.Clear();
+            return;
+        }
+
+        RevolutionistCountdown[revolutionistId] = countdown;
     }
-    public static void ResetCurrentDrawTarget(byte arsonistId) => SetCurrentDrawTargetRPC(arsonistId, 255);
     public static bool IsDrawPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null && target == null && IsDraw == null) return false;
@@ -176,16 +177,16 @@ internal class Revolutionist : RoleBase
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
         if (IsDrawPlayer(seer, target))
-            return $"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>●</color>";
+            return CustomRoles.Revolutionist.GetColoredTextByRole("●");
 
         if (RevolutionistTimer.TryGetValue(seer.PlayerId, out var re_kvp) && re_kvp.Item1 == target)
-            return $"<color={GetRoleColorCode(CustomRoles.Revolutionist)}>○</color>";
+            return CustomRoles.Revolutionist.GetColoredTextByRole("○");
 
         return string.Empty;
     }
 
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-        => !isForMeeting ? ColorString(GetRoleColor(CustomRoles.Revolutionist), string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.TryGetValue(seer.PlayerId, out var x) ? x : 10)) : string.Empty;
+        => !isForMeeting ? CustomRoles.Revolutionist.GetColoredTextByRole(string.Format(GetString("EnterVentWinCountDown"), RevolutionistCountdown.GetValueOrDefault(seer.PlayerId, 10))) : string.Empty;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -194,7 +195,6 @@ internal class Revolutionist : RoleBase
         {
             RevolutionistTimer.TryAdd(killer.PlayerId, (target, 0f));
             NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
-            SetCurrentDrawTargetRPC(killer.PlayerId, target.PlayerId);
             killer.RpcSetVentInteraction();
         }
         return false;
@@ -215,7 +215,6 @@ internal class Revolutionist : RoleBase
             {
                 RevolutionistTimer.Remove(playerId);
                 NotifyRoles(SpecifySeer: player);
-                ResetCurrentDrawTarget(playerId);
             }
             else
             {
@@ -233,7 +232,6 @@ internal class Revolutionist : RoleBase
                     IsDraw[(playerId, rvTargetId)] = true;
                     SetDrawPlayerRPC(player, rv_target, true);
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
-                    ResetCurrentDrawTarget(playerId);
                     if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
                     {
                         rvTargetId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
@@ -255,7 +253,6 @@ internal class Revolutionist : RoleBase
                     {
                         RevolutionistTimer.Remove(playerId);
                         NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
-                        ResetCurrentDrawTarget(playerId);
                         Logger.Info($"Canceled: {player.GetNameWithRole()}", "Revolutionist");
                     }
                 }
@@ -276,6 +273,7 @@ internal class Revolutionist : RoleBase
                     int time = (int)(lastTime - startTime);
                     int countdown = RevolutionistVentCountDown.GetInt() - time;
                     RevolutionistCountdown.Clear();
+                    SetCountdownRPC(true, player, 0);
 
                     if (countdown <= 0)
                     {
@@ -296,7 +294,8 @@ internal class Revolutionist : RoleBase
                     }
                     else
                     {
-                        RevolutionistCountdown.TryAdd(playerId, countdown);
+                        RevolutionistCountdown[playerId] = countdown;
+                        SetCountdownRPC(false, player, countdown);
                         NotifyRoles(SpecifySeer: player, ForceLoop: false);
                     }
                 }

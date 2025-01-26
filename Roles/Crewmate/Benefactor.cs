@@ -172,7 +172,7 @@ internal class Benefactor : RoleBase
                     var benefactorPC = Utils.GetPlayerById(benefactorId);
                     if (benefactorPC == null) continue;
 
-                    player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BenefactorTargetGotShield")));
+                    player.Notify(CustomRoles.Benefactor.GetColoredTextByRole(GetString("BenefactorTargetGotShield")));
                     player.RpcGuardAndKill();
 
                     long now = Utils.GetTimeStamp();
@@ -209,7 +209,7 @@ internal class Benefactor : RoleBase
             var target = targetId.GetPlayer();
 
             shieldedPlayers.Remove(targetId);
-            target?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Benefactor), GetString("BKProtectOut")));
+            target?.Notify(CustomRoles.Benefactor.GetColoredTextByRole(GetString("BKProtectOut")));
             target?.RpcGuardAndKill();
 
             SendRPC(type: 4, targetId: targetId);

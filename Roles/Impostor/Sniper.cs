@@ -325,10 +325,9 @@ internal class Sniper : RoleBase
         }
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
-        seen ??= seer;
         var sniper = Utils.GetPlayerById(PlayerIdList.First());
         if (!(sniper == seer) || !(sniper == seen)) return string.Empty;
 
@@ -336,7 +335,6 @@ internal class Sniper : RoleBase
 
         if (AimAssist)
         {
-            //エイムアシスト中のスナイパー
             if (0.5f < AimTime[seerId] && (!AimAssistOneshot || AimTime[seerId] < 1.0f))
             {
                 if (GetSnipeTargets(Utils.GetPlayerById(seerId)).Any())
@@ -351,10 +349,8 @@ internal class Sniper : RoleBase
     {
         if (isForMeeting) return string.Empty;
 
-        //各スナイパーから
         foreach (var sniper in PlayerIdList)
         {
-            //射撃音が聞こえるプレイヤー
             var snList = shotNotify[sniper];
             if (snList.Any() && snList.Contains(seer.PlayerId))
             {

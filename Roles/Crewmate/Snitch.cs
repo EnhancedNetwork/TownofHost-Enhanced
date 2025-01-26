@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using System.Text;
 using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
@@ -200,7 +201,7 @@ internal class Snitch : RoleBase
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seen == seer) return string.Empty;
+        if (seen.PlayerId == seer.PlayerId) return string.Empty;
 
         return IsSnitchTarget(seen) && IsComplete[seer.PlayerId] ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
     }
@@ -209,13 +210,13 @@ internal class Snitch : RoleBase
         if (!EnableTargetArrow || isForMeeting || seer.Is(CustomRoles.Madmate)) return string.Empty;
         if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
 
-        var arrows = "";
+        var arrows = new StringBuilder();
         foreach (var targetId in TargetList)
         {
             var arrow = TargetArrow.GetArrows(seer, targetId);
-            arrows += CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow;
+            arrows.Append(CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow);
         }
-        return arrows;
+        return arrows.ToString();
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)

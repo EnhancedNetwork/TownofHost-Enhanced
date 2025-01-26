@@ -21,6 +21,6 @@ internal class Lookout : RoleBase
     {
         if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
 
-        return ColorString(GetRoleColor(CustomRoles.Lookout), $" {seen.Data.PlayerId}");
+        return CustomRoles.Lookout.GetColoredTextByRole($" {seen.Data.PlayerId}");
     }
 }

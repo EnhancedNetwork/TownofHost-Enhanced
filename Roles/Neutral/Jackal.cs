@@ -180,7 +180,7 @@ internal class Jackal : RoleBase
         }
         if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
+            killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("Jackal_RecruitFailed")));
             Logger.Info("Jackal can not recruit this target", "Jackal");
             return true;
         }
@@ -188,7 +188,7 @@ internal class Jackal : RoleBase
             || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
         {
             // Loyal or Only Recruit & can not get addon
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
+            killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("Jackal_RecruitFailed")));
             return true;
         }
 
@@ -218,8 +218,8 @@ internal class Jackal : RoleBase
                 target.RpcSetCustomRole(CustomRoles.Sidekick);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("BeRecruitedByJackal")));
 
                 Utils.NotifyRoles(killer, target, true);
                 Utils.NotifyRoles(target, killer, true);
@@ -232,7 +232,7 @@ internal class Jackal : RoleBase
             case 2: // Only Recruit
                 if (target.GetCustomRole().IsNeutral() && target.HasImpKillButton() || target.Is(CustomRoles.Lawyer))
                 {
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
+                    killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("Jackal_RecruitFailed")));
                     return true;
                 }
 
@@ -240,8 +240,8 @@ internal class Jackal : RoleBase
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned Recruit to {target.GetNameWithRole()}", "Jackal");
                 target.RpcSetCustomRole(CustomRoles.Recruit);
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("BeRecruitedByJackal")));
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -267,8 +267,8 @@ internal class Jackal : RoleBase
                 }
                 AbilityLimit--;
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("BeRecruitedByJackal")));
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -306,8 +306,8 @@ internal class Jackal : RoleBase
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("BeRecruitedByJackal")));
 
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
@@ -339,8 +339,8 @@ internal class Jackal : RoleBase
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("BeRecruitedByJackal")));
 
                 if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(target);
                 target.RpcGuardAndKill(killer);
@@ -420,13 +420,13 @@ internal class Jackal : RoleBase
                     }
                 }
 
-                newJackal.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BecomeNewJackal")));
+                newJackal.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("Jackal_BecomeNewJackal")));
                 newJackal.ResetKillCooldown();
                 target.SetKillCooldown(forceAnime: true);
 
                 foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
                 {
-                    player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
+                    player.Notify(CustomRoles.Jackal.GetColoredTextByRole(string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
                 }
                 Utils.NotifyRoles();
 
@@ -443,7 +443,7 @@ internal class Jackal : RoleBase
             Logger.Info("Opps, Jackal boss is dead!", "Jackal");
             foreach (var player in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Recruit) || x.Is(CustomRoles.Sidekick)))
             {
-                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_BossIsDead")));
+                player.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("Jackal_BossIsDead")));
             }
             Utils.NotifyRoles();
             hasConverted = true;

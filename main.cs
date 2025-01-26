@@ -33,10 +33,10 @@ public class Main : BasePlugin
     // == Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
-    public static readonly string ModName = "TOHE";
-    public static readonly string ForkId = "TOHE";
-    public static readonly string ModColor = "#ffc0cb";
-    public static readonly bool AllowPublicRoom = true;
+    public const string ModName = "TOHE";
+    public const string ForkId = "TOHE";
+    public const string ModColor = "#ffc0cb";
+    public const bool AllowPublicRoom = true;
 
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";
@@ -55,21 +55,21 @@ public class Main : BasePlugin
     public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
-    public static bool hasAccess = true;
+    public const bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = true;
+    public const bool ShowUpdateButton = true;
 
-    public static readonly bool ShowGitHubButton = true;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public const bool ShowGitHubButton = true;
+    public const string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
 
-    public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
+    public const bool ShowDiscordButton = true;
+    public const string DiscordInviteUrl = "https://discord.gg/tohe";
 
-    public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
+    public const bool ShowWebsiteButton = true;
+    public const string WebsiteInviteUrl = "https://weareten.ca/";
 
-    public static readonly bool ShowDonationButton = true;
-    public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
+    public const bool ShowDonationButton = true;
+    public const string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -77,7 +77,7 @@ public class Main : BasePlugin
     public static bool hasArgumentException = false;
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
-    public static bool AlreadyShowMsgBox = false;
+    public const bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public Coroutines coroutines;
     public Dispatcher dispatcher;
@@ -110,8 +110,6 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> AutoRehost { get; private set; }
 
-    public static Dictionary<int, PlayerVersion> playerVersion = [];
-    public static BAUPlayersData BAUPlayers = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
@@ -128,6 +126,8 @@ public class Main : BasePlugin
 
     public static OptionBackupData RealOptionsData;
 
+    public static BAUPlayersData BAUPlayers = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = [];
     public static Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
     public static readonly Dictionary<int, string> AllClientRealNames = [];
@@ -501,7 +501,7 @@ public class Main : BasePlugin
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
     }
 
-    private void InitializeFileHash()
+    private static void InitializeFileHash()
     {
         var file = Assembly.GetExecutingAssembly();
         using var stream = file.Location != null ? File.OpenRead(file.Location) : null;

@@ -120,12 +120,12 @@ internal class Shocker : RoleBase
             return;
         if (isShocking)
         {
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerIsShocking")));
+            pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerIsShocking")));
             return;
         }
         AbilityLimit--;
         SendSkillRPC();
-        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityActivate")));
+        pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerAbilityActivate")));
         isShocking = true;
         shockedRooms = new List<Collider2D>(markedRooms);
         markedRooms.Clear();
@@ -133,7 +133,7 @@ internal class Shocker : RoleBase
         {
             shockedRooms.Clear();
             isShocking = false;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityDeactivate")));
+            pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerAbilityDeactivate")));
         }, ShockerAbilityDuration.GetValue(), "Shocker Is Shocking");
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
@@ -150,7 +150,7 @@ internal class Shocker : RoleBase
             PlainShipRoom room = player.GetPlainShipRoom();
             markedRooms.Add(room.roomArea);
             Logger.Info($"Player {player.PlayerId} is in a room {room.RoomId} {room.name}", "Shocker");
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerRoomMarked")));
+            player.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerRoomMarked")));
         }
         else
         {
@@ -161,7 +161,7 @@ internal class Shocker : RoleBase
             collider2D.isTrigger = true;
             markedRooms.Add(collider2D);
             customRooms.Add(collider2D);
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerRoomMarked")));
+            player.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerRoomMarked")));
         }
         return true;
     }

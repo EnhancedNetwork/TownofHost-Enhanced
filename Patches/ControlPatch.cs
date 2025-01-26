@@ -84,7 +84,7 @@ internal class ControllerManagerUpdatePatch
                     List<string> addDes = [];
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
                     {
-                        addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                        addDes.Add(GetString(subRole.ToString()) + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                     }
 
                     addonInfoIndex++;

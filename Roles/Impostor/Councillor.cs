@@ -62,7 +62,7 @@ internal class Councillor : RoleBase
     }
 
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
-        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), target.PlayerId.ToString()) + " " + TargetPlayerName : string.Empty;
+        => IsForMeeting && seer.IsAlive() && target.IsAlive() ? CustomRoles.Councillor.GetColoredTextByRole($"{target.Data.PlayerId} ") + TargetPlayerName : string.Empty;
 
     public bool MurderMsg(PlayerControl pc, string msg, bool isUI = false)
     {
@@ -127,7 +127,7 @@ internal class Councillor : RoleBase
 
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), CustomRoles.Jailer.GetColoredTextByRole(GetString("JailerTitle")));
                     return true;
                 }
                 if (pc.PlayerId == target.PlayerId)
@@ -262,11 +262,11 @@ internal class Councillor : RoleBase
                         {
                             if (!MakeEvilJudgeClear.GetBool())
                             {
-                                Utils.SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Judge), GetString("Judge_TrialKillTitle")), true);
+                                Utils.SendMessage(string.Format(GetString("Judge_TrialKill"), Name), 255, CustomRoles.Judge.GetColoredTextByRole(GetString("Judge_TrialKillTitle")), true);
                             }
                             else
                             {
-                                Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Councillor), GetString("Councillor_MurderKillTitle")), true);
+                                Utils.SendMessage(string.Format(GetString("Councillor_MurderKill"), Name), 255, CustomRoles.Councillor.GetColoredTextByRole(GetString("Councillor_MurderKillTitle")), true);
                             }
                         }, 0.6f, "Guess Msg");
 

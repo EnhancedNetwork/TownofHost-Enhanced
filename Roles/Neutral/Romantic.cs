@@ -131,7 +131,7 @@ internal class Romantic : RoleBase
         if (killer.PlayerId == target.PlayerId) return true;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         //if (BetPlayer.TryGetValue(killer.PlayerId, out var tar) && tar == target.PlayerId) return false;
@@ -158,7 +158,7 @@ internal class Romantic : RoleBase
             killer.Notify(GetString("RomanticBetPlayer"));
 
             if (BetTargetKnowRomantic.GetBool())
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
+                target.Notify(CustomRoles.Romantic.GetColoredTextByRole(GetString("RomanticBetOnYou")));
 
             Utils.NotifyRoles();
 
@@ -196,10 +196,10 @@ internal class Romantic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seer == seen) return string.Empty;
+        if (seer.PlayerId == seen.PlayerId) return string.Empty;
 
         return BetPlayer.ContainsValue(seen.PlayerId)
-            ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;
+            ? CustomRoles.Romantic.GetColoredTextByRole("♥") : string.Empty;
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
@@ -208,15 +208,15 @@ internal class Romantic : RoleBase
         {
             if (seer == target && seer.IsAlive() && BetPlayer.ContainsValue(seer.PlayerId))
             {
-                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+                return CustomRoles.Romantic.GetColoredTextByRole("♥");
             }
             else if (seer != target && seer.IsAlive() && BetPlayer.ContainsKey(target.PlayerId) && BetPlayer.ContainsValue(seer.PlayerId))
             {
-                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+                return CustomRoles.Romantic.GetColoredTextByRole("♥");
             }
             else if (seer != target && !seer.IsAlive() && BetPlayer.ContainsValue(target.PlayerId))
             {
-                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+                return CustomRoles.Romantic.GetColoredTextByRole("♥");
             }
         }
         return string.Empty;

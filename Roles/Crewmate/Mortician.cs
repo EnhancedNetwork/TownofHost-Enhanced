@@ -69,7 +69,7 @@ internal class Mortician : RoleBase
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (msgToSend.TryGetValue(pc.PlayerId, out var message))
-            AddMsg(message, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
+            AddMsg(message, pc.PlayerId, CustomRoles.Mortician.GetColoredTextByRole(GetString("MorticianCheckTitle")));
     }
     public override void MeetingHudClear() => msgToSend.Clear();
 }

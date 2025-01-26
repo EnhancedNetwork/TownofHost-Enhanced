@@ -143,7 +143,7 @@ internal class Berserker : RoleBase
             target.SetRealKiller(killer);
 
             killer.SetKillCooldownV2();
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker), GetString("KilledByBerserker")));
+            target.Notify(CustomRoles.Berserker.GetColoredTextByRole(GetString("KilledByBerserker")));
             noScav = false;
         }
 

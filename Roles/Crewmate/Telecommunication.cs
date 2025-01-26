@@ -23,6 +23,8 @@ internal class Telecommunication : RoleBase
     private static bool IsVitalWatch;
     private static bool IsDoorLogWatch;
     private static bool IsCameraWatch;
+    private static string ColoredMark;
+    private static Color RoleColor;
 
     public override void SetupCustomOption()
     {
@@ -37,7 +39,11 @@ internal class Telecommunication : RoleBase
         IsDoorLogWatch = false;
         IsCameraWatch = false;
     }
-
+    public override void Add(byte playerId)
+    {
+        RoleColor = GetRoleColor(CustomRoles.Telecommunication);
+        ColoredMark = ColorString(RoleColor, "★");
+    }
     public static bool CanUseVent() => CanVent.GetBool();
 
     private static int Count = 0;
@@ -144,10 +150,10 @@ internal class Telecommunication : RoleBase
         if (seer.PlayerId != seen.PlayerId || isForMeeting) return string.Empty;
 
         StringBuilder sb = new();
-        if (IsAdminWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("AdminWarning")));
-        if (IsVitalWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("VitalsWarning")));
-        if (IsDoorLogWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("DoorlogWarning")));
-        if (IsCameraWatch) sb.Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), "★")).Append(ColorString(GetRoleColor(CustomRoles.Telecommunication), GetString("CameraWarning")));
+        if (IsAdminWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("AdminWarning")));
+        if (IsVitalWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("VitalsWarning")));
+        if (IsDoorLogWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("DoorlogWarning")));
+        if (IsCameraWatch) sb.Append(ColoredMark).Append(ColorString(RoleColor, GetString("CameraWarning")));
 
         return sb.ToString();
     }

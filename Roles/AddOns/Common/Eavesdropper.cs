@@ -51,7 +51,7 @@ public class Eavesdropper : IAddon
                 {
                     // Get random message and send Eavesdropper
                     var randomMsg = eavesdropperMsg.RandomElement();
-                    MeetingHudStartPatch.AddMsg(randomMsg, eavesdropperId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eavesdropper), Translator.GetString("EavesdropperMsgTitle")));
+                    MeetingHudStartPatch.AddMsg(randomMsg, eavesdropperId, CustomRoles.Eavesdropper.GetColoredTextByRole(Translator.GetString("EavesdropperMsgTitle")));
                 }
             }
         }

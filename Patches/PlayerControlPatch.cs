@@ -280,7 +280,7 @@ class CheckMurderPatch
         {
             Main.MadmateNum++;
             target.RpcSetCustomRole(CustomRoles.Madmate);
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BecomeMadmateCuzMadmateMode")));
+            target.Notify(CustomRoles.Madmate.GetColoredTextByRole(GetString("BecomeMadmateCuzMadmateMode")));
             killer.SetKillCooldown();
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
@@ -1467,7 +1467,7 @@ class FixedUpdateInNormalGamePatch
                             FFAManager.GetNameNotify(target, ref RealName);
 
                         if (Pelican.IsEaten(seer.PlayerId))
-                            RealName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"));
+                            RealName = CustomRoles.Pelican.GetColoredTextByRole(GetString("EatenByPelican"));
 
                         if (Deathpact.IsInActiveDeathpact(seer))
                             RealName = Deathpact.GetDeathpactString(seer);
@@ -1508,23 +1508,23 @@ class FixedUpdateInNormalGamePatch
                     if (seerRole.IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
                     {
                         if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
-                            Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), "★"));
+                            Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                     }
                     if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
                     {
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
+                        Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                     }
 
                     if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
+                        Mark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
                     if (target.Is(CustomRoles.Lovers) && seer.Is(CustomRoles.Lovers))
                     {
-                        Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
+                        Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
                     }
                     else if (target.Is(CustomRoles.Lovers) && seer.Data.IsDead)
                     {
-                        Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
+                        Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
                     }
 
 
@@ -1554,7 +1554,7 @@ class FixedUpdateInNormalGamePatch
                         RealName = $"<size=0%>{RealName}</size> ";
 
                     string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target)
-                        ? $"\n<size=1.7>『{Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))}』</size>" : string.Empty;
+                        ? $"\n<size=1.7>『{CustomRoles.Doctor.GetColoredTextByRole(Utils.GetVitalText(target.PlayerId))}』</size>" : string.Empty;
 
                     // code from EHR (Endless Host Roles by: Gurge44)
                     var currentText = target.cosmetics.nameText.text;

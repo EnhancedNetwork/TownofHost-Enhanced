@@ -127,17 +127,17 @@ internal class Baker : RoleBase
         }
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         StringBuilder sb = new();
         if (BarrierList[seer.PlayerId].Contains(seen.PlayerId))
         {
-            sb.Append(ColorString(GetRoleColor(CustomRoles.Baker), "●") + ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
+            sb.Append(CustomRoles.Baker.GetColoredTextByRole("●") + CustomRoles.Medic.GetColoredTextByRole("✚"));
             return sb.ToString();
         }
         else if (HasBread(seer.PlayerId, seen.PlayerId))
         {
-            sb.Append(ColorString(GetRoleColor(CustomRoles.Baker), "●"));
+            sb.Append(CustomRoles.Baker.GetColoredTextByRole("●"));
             return sb.ToString();
         }
         return string.Empty;
@@ -147,7 +147,7 @@ internal class Baker : RoleBase
         if (!_Player) return string.Empty;
         if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.Baker), "●");
+            return CustomRoles.Baker.GetColoredTextByRole("●");
         }
         return string.Empty;
     }
@@ -351,7 +351,7 @@ internal class Famine : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => false;
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("FamineKillButtonText"));
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => FamineList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>⁂</color>" : string.Empty;
+        => FamineList[seer.PlayerId].Contains(seen.PlayerId) ? seer.GetCustomRole().GetColoredTextByRole("⁂") : string.Empty;
 
     private static void SendRPC(PlayerControl player, PlayerControl target)
     {

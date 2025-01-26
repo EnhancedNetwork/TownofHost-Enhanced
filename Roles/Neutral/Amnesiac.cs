@@ -108,7 +108,7 @@ internal class Amnesiac : RoleBase
         {
             if (targetPlayerStates.MainRole == CustomRoles.Amnesiac)
             {
-                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
+                __instance.Notify(CustomRoles.Amnesiac.GetColoredTextByRole(GetString("RememberedAmnesiac")));
             }
 
             if (targetPlayerStates.MainRole.IsGhostRole())
@@ -125,12 +125,12 @@ internal class Amnesiac : RoleBase
                     __instance.SetKillCooldown();
 
                     role.GetActualRoleName(out var rolename);
-                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                    __instance.Notify(CustomRoles.Amnesiac.GetColoredTextByRole(string.Format(GetString("AmnesiacRemembered"), rolename)));
                     isSuccess = true;
                 }
                 else
                 {
-                    __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
+                    __instance.Notify(CustomRoles.Amnesiac.GetColoredTextByRole(GetString("RememberedAmnesiac")));
                 }
             }
             else
@@ -146,13 +146,13 @@ internal class Amnesiac : RoleBase
                 __instance.SetKillCooldown();
 
                 role.GetActualRoleName(out var rolename);
-                __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                __instance.Notify(CustomRoles.Amnesiac.GetColoredTextByRole(string.Format(GetString("AmnesiacRemembered"), rolename)));
                 isSuccess = true;
             }
         }
         else
         {
-            __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedAmnesiac")));
+            __instance.Notify(CustomRoles.Amnesiac.GetColoredTextByRole(GetString("RememberedAmnesiac")));
         }
 
         if (!isSuccess)

@@ -10,14 +10,13 @@ internal class MakePublicPatch
 {
     public static bool Prefix(/*GameStartManager __instance*/)
     {
-        // 定数設定による公開ルームブロック
-        if (!Main.AllowPublicRoom)
-        {
-            var message = GetString("DisabledByProgram");
-            Logger.Info(message, "MakePublicPatch");
-            Logger.SendInGame(message);
-            return false;
-        }
+        //if (!Main.AllowPublicRoom)
+        //{
+        //    var message = GetString("DisabledByProgram");
+        //    Logger.Info(message, "MakePublicPatch");
+        //    Logger.SendInGame(message);
+        //    return false;
+        //}
         if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported)
         {
             var message = "";

@@ -660,7 +660,6 @@ class CheckForEndVotingPatch
             if (candidate.PlayerId == exiledplayer.PlayerId || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
         }
         if (TargetList == null || TargetList.Count == 0) return null;
-        var rand = IRandom.Instance;
         var target = TargetList.RandomElement();
         return target;
     }
@@ -1259,7 +1258,7 @@ class MeetingHudStartPatch
             if (seer.GetCustomRole().IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
             {
                 if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
-                    sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
+                    sb.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
             }
 
 
@@ -1288,12 +1287,12 @@ class MeetingHudStartPatch
                     case CustomRoles.Lovers:
                         if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
                         {
-                            sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
+                            sb.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
                             //isLover = true;
                         }
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
-                        sb.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                        sb.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
                         break;
                 }
             }

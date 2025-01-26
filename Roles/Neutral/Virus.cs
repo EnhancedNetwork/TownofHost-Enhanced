@@ -69,7 +69,7 @@ internal class Virus : RoleBase
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
         if (VirusNotify.TryGetValue(pc.PlayerId, out var notify))
-            AddMsg(notify, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
+            AddMsg(notify, pc.PlayerId, CustomRoles.Virus.GetColoredTextByRole(GetString("VirusNoticeTitle")));
     }
     public override void MeetingHudClear() => VirusNotify.Clear();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());

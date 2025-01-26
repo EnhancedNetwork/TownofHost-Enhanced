@@ -108,7 +108,7 @@ internal class Merchant : RoleBase
 
         if (addons.Count == 0)
         {
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
+            player.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantAddonSellFail")));
             Logger.Info("No addons to sell.", "Merchant");
             return true;
         }
@@ -164,8 +164,8 @@ internal class Merchant : RoleBase
             PlayerControl target = AllAlivePlayer.RandomElement();
 
             target.RpcSetCustomRole(addon);
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSell")));
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonDelivered")));
+            target.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantAddonSell")));
+            player.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantAddonDelivered")));
 
             target.AddInSwitchAddons(target, addon);
 
@@ -173,7 +173,7 @@ internal class Merchant : RoleBase
         }
         else
         {
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
+            player.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantAddonSellFail")));
             Logger.Info("All Alive Player Count = 0", "Merchant");
             return true;
         }
@@ -213,11 +213,11 @@ internal class Merchant : RoleBase
 
     private static void NotifyBribery(PlayerControl killer, PlayerControl target)
     {
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("BribedByMerchant")));
+        killer.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("BribedByMerchant")));
 
         if (OptionNotifyBribery.GetBool())
         {
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantKillAttemptBribed")));
+            target.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantKillAttemptBribed")));
         }
     }
 }

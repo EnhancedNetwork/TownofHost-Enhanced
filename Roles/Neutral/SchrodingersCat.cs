@@ -72,11 +72,11 @@ internal class SchrodingersCat : RoleBase
     {
         if (seer != target && seer.IsAlive() && teammate.ContainsKey(seer.PlayerId) && teammate.ContainsValue(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat), " ☜");
+            return CustomRoles.SchrodingersCat.GetColoredTextByRole(" ☜");
         }
         else if (seer != target && !seer.IsAlive() && teammate.ContainsValue(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat), " ☜");
+            return CustomRoles.SchrodingersCat.GetColoredTextByRole(" ☜");
         }
         return string.Empty;
     }
