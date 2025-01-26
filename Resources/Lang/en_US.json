@@ -4450,7 +4450,7 @@
     "WinnerRoleText.Slayer": "Slayer Wins!",
 
     "FragileHunter": "Fragile Hunter",
-    "FragileHunterInfo": "Kill the Fragile!",
+    "FragileHunterInfo": "Kill the <color=#d3d3Dd3>Fragile</color>!",
     "FragileHunterInfoLong": "(Add-ons):\nAs the Fragile Hunter, if you kill the Fragile, you automatically win the game.",
     "WinnerRoleText.FragileHunter": "The Fragile was hunted!"
 }
