@@ -1913,7 +1913,7 @@ public static class Utils
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (GameStates.IsMeeting)
+        if (MeetingHud.Instance)
         {
             // When the meeting window is active and game is not ended
             if (!GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
