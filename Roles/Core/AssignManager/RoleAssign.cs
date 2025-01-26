@@ -232,17 +232,22 @@ public class RoleAssign
             AllPlayers.Remove(PlayerControl.LocalPlayer);
             SetRoles.Remove(PlayerControl.LocalPlayer.PlayerId);
         }
-        foreach (var item in SetRoles)
+        foreach (var player in AllPlayers)
         {
-            PlayerControl playerControl = Utils.GetPlayerById(item.Key);
-            if (playerControl == null) continue;
+            if (player == null) continue;
 
-            if (TagManager.AssignGameMaster(playerControl.FriendCode))
+            if (TagManager.AssignGameMaster(player.FriendCode))
             {
-                Logger.Info($"Assign Game Master due to tag for [{item.Key}]{playerControl.GetRealName()}", "TagManager");
-                AllPlayers.Remove(playerControl);
-                SetRoles.Remove(playerControl.PlayerId);
-                RoleResult[playerControl.PlayerId] = CustomRoles.GM;
+                Logger.Info($"Assign Game Master due to tag for [{player.PlayerId}]{player.GetRealName()}", "TagManager");
+                SetRoles.Remove(player.PlayerId);
+                RoleResult[player.PlayerId] = CustomRoles.GM;
+            }
+        }
+        foreach (var player in Main.AllPlayerControls)
+        {
+            if (RoleResult[player.PlayerId] == CustomRoles.GM)
+            {
+                AllPlayers.Remove(player);
             }
         }
 
