@@ -1248,13 +1248,15 @@ class FixedUpdateInNormalGamePatch
             }
             else // We are not in lobby
             {
-                if (localplayer)
+                if (localplayer && CustomNetObject.AllObjects.Count > 0)
                     CustomNetObject.FixedUpdate();
             }
 
             DoubleTrigger.OnFixedUpdate(player);
             KillTimerManager.FixedUpdate(player);
-            CovenManager.NecronomiconCheck();
+
+            if (!lowLoad)
+                CovenManager.NecronomiconCheck();
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
