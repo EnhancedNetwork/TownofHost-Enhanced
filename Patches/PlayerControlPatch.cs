@@ -71,18 +71,12 @@ class CheckProtectPatch
 class CheckMurderPatch
 {
     public static Dictionary<byte, float> TimeSinceLastKill = [];
-    public static void Update()
+    public static void Update(byte playerId)
     {
-        foreach (var pc in Main.AllAlivePlayerControls)
+        if (TimeSinceLastKill.ContainsKey(playerId))
         {
-            if (pc == null) continue;
-            var i = pc.PlayerId;
-
-            if (TimeSinceLastKill.ContainsKey(i))
-            {
-                TimeSinceLastKill[i] += Time.deltaTime;
-                if (15f < TimeSinceLastKill[i]) TimeSinceLastKill.Remove(i);
-            }
+            TimeSinceLastKill[playerId] += Time.deltaTime;
+            if (15f < TimeSinceLastKill[playerId]) TimeSinceLastKill.Remove(playerId);
         }
     }
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state = false)
@@ -1092,9 +1086,12 @@ class FixedUpdateInNormalGamePatch
 
     public static async void Postfix(PlayerControl __instance)
     {
+        if (__instance == null || __instance.PlayerId == 255) return;
+        
+        CheckMurderPatch.Update(__instance.PlayerId);
+
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
