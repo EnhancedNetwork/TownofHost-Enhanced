@@ -1248,15 +1248,24 @@ class FixedUpdateInNormalGamePatch
             }
             else // We are not in lobby
             {
-                if (localplayer && CustomNetObject.AllObjects.Count > 0)
-                    CustomNetObject.FixedUpdate();
+                if (localplayer)
+                {
+                    if (CustomNetObject.AllObjects.Count > 0)
+                        CustomNetObject.FixedUpdate();
+
+                    if (!lowLoad)
+                        CovenManager.NecronomiconCheck();
+                }
+
+                DoubleTrigger.OnFixedUpdate(player);
+                KillTimerManager.FixedUpdate(player);
+
+                if (player.Is(CustomRoles.Spurt) && !GameStates.IsInTask && !GameStates.IsMeeting && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
+                {
+                    Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
+                    player.MarkDirtySettings();
+                }
             }
-
-            DoubleTrigger.OnFixedUpdate(player);
-            KillTimerManager.FixedUpdate(player);
-
-            if (!lowLoad)
-                CovenManager.NecronomiconCheck();
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
@@ -1264,13 +1273,6 @@ class FixedUpdateInNormalGamePatch
                 if (!player.Data.IsDead)
                     min.OnFixedUpdates(player);
             }
-
-            if (!GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
-            {
-                Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
-                player.MarkDirtySettings();
-            }
-
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
