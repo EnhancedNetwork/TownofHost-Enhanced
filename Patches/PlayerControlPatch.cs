@@ -1251,28 +1251,32 @@ class FixedUpdateInNormalGamePatch
             else // We are not in lobby
             {
                 if (localplayer)
-                    CustomNetObject.FixedUpdate();
-            }
+                {
+                    if (CustomNetObject.AllObjects.Count > 0)
+                        CustomNetObject.FixedUpdate();
 
-            DoubleTrigger.OnFixedUpdate(player);
-            KillTimerManager.FixedUpdate(player);
-            CovenManager.NecronomiconCheck();
+                    if (!lowLoad)
+                        CovenManager.NecronomiconCheck();
+                }
+
+                DoubleTrigger.OnFixedUpdate(player);
+                KillTimerManager.FixedUpdate(player);
+
+                if (!lowLoad && player.Is(CustomRoles.Spurt) && !GameStates.IsInTask && !GameStates.IsMeeting && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
+                {
+                    Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
+                    player.MarkDirtySettings();
+                }
+            }
 
             var nowTime = Utils.TimeStamp;
 
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
-                if (!player.Data.Disconnected)
+                if (!player.Data.IsDead)
                     min.OnFixedUpdates(player, nowTime);
             }
-
-            if (player.Is(CustomRoles.Spurt) && !GameStates.IsLobby && !GameStates.IsInTask && !GameStates.IsMeeting && !Mathf.Approximately(Main.AllPlayerSpeed[player.PlayerId], Spurt.StartingSpeed[player.PlayerId])) // fix ludicrous bug
-            {
-                Main.AllPlayerSpeed[player.PlayerId] = Spurt.StartingSpeed[player.PlayerId];
-                player.MarkDirtySettings();
-            }
-
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
