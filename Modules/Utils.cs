@@ -479,7 +479,7 @@ public static class Utils
             }
         }
 
-        RoleText.Append(GetRoleName(targetMainRole));
+        RoleText.Clear().Append(GetRoleName(targetMainRole));
         RoleColor = GetRoleColor(targetMainRole);
 
         try
@@ -1900,7 +1900,7 @@ public static class Utils
                         else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
                         else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
-                        SelfName.Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
+                        SelfName.Clear().Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
                     }
 
                     if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
