@@ -55,7 +55,7 @@ internal class Pursuer : RoleBase
 
         pc.RpcRemoveAbilityUse();
 
-        if (target.Is(CustomRoles.KillingMachine) || target.Is(CustomRoles.Stubborn))
+        if (target.Is(CustomRoles.KillingMachine) || target.Is(CustomRoles.Massacre) || target.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"target is {target.GetCustomRole().ToString()}, ability used count reduced, but target will not die", "Pursuer");
             return false;

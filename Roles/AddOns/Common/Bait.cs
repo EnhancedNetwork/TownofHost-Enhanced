@@ -77,6 +77,7 @@ public class Bait : IAddon
 
         if (killer.Is(CustomRoles.KillingMachine)
             || killer.Is(CustomRoles.Swooper)
+            || target.Is(CustomRoles.Massacre)
             || killer.Is(CustomRoles.Wraith)
             || killer.Is(CustomRoles.Cleaner)
             || (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !Bait.BaitCanBeReportedUnderAllConditions.GetBool())

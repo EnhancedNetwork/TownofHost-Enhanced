@@ -69,7 +69,7 @@ public class Oiiai : IAddon
     {
         if (killer == null || target == null) return;
         if (killer.PlayerId == target.PlayerId) return;
-        if (killer.Is(CustomRoles.KillingMachine) || killer.IsTransformedNeutralApocalypse()) return;
+        if (killer.Is(CustomRoles.KillingMachine) || target.Is(CustomRoles.Massacre) || killer.IsTransformedNeutralApocalypse()) return;
         if ((killer.Is(CustomRoles.Ghoul) || killer.Is(CustomRoles.Burst)) && !killer.IsAlive()) return;
         if (!target.Is(CustomRoles.Oiiai)) return;
         if (!CanGetOiiaied(killer)) return;

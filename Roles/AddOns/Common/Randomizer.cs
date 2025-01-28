@@ -49,7 +49,7 @@ internal class Randomizer : IAddon
 
             if (killer.PlayerId == target.PlayerId) return true;
 
-            if (killer.Is(CustomRoles.KillingMachine)
+            if (killer.Is(CustomRoles.KillingMachine) || target.Is(CustomRoles.Massacre)
                 || killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool())
                 return true;
 

@@ -857,6 +857,7 @@ public enum CustomRoles
     Berserker,
     BloodKnight,
     Collector,
+    Contaminator,
     Cultist,
     CursedSoul,
     DarkFairy,
@@ -881,6 +882,7 @@ public enum CustomRoles
     Laborer,
     Lawyer,
     Maverick,
+    Massacre,
     Narc,
     Opportunist,
     Pelican,
@@ -1128,6 +1130,8 @@ public enum CustomWinner
     Artist = CustomRoles.Artist,
     Slayer = CustomRoles.Slayer,
     FragileHunter = CustomRoles.FragileHunter,
+    Contaminator = CustomRoles.Contaminator,
+    Massacre = CustomRoles.Massacre,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
