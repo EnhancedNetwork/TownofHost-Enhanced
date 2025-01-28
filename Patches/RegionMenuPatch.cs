@@ -27,7 +27,7 @@ public static class RegionMenuPatch
         float totalWidth = (columnCount - 1) * buttonSpacingSide;
         float totalHeight = (buttonsPerColumn - 1) * buttonSpacing;
 
-        Vector3 startPosition = new Vector3(-totalWidth / 2, totalHeight / 2, 0f);
+        Vector3 startPosition = new(-totalWidth / 2, totalHeight / 2, 0f);
 
         for (int i = 0; i < buttons.Count; i++)
         {

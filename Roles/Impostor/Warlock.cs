@@ -180,8 +180,8 @@ internal class Warlock : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        bool shapeshifting = Main.CheckShapeshift.TryGetValue(playerId, out bool ss) && ss;
-        bool curse = IsCurseAndKill.TryGetValue(playerId, out bool wcs) && wcs;
+        bool shapeshifting = Main.CheckShapeshift.GetValueOrDefault(playerId, false);
+        bool curse = IsCurseAndKill.GetValueOrDefault(playerId, false);
 
         if (!shapeshifting && !curse)
         {
@@ -193,5 +193,5 @@ internal class Warlock : RoleBase
     }
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting ? CustomButton.Get("Curse") : null;
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting && IsCurseAndKill.TryGetValue(player.PlayerId, out bool curse) && curse ? CustomButton.Get("CurseKill") : null;
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting && IsCurseAndKill.GetValueOrDefault(player.PlayerId, false) ? CustomButton.Get("CurseKill") : null;
 }

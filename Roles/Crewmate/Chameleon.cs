@@ -63,8 +63,8 @@ internal class Chameleon : RoleBase
         }
         else
         {
-            writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
-            writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
+            writer.Write(InvisCooldown.GetValueOrDefault(pc.PlayerId, -1).ToString());
+            writer.Write(InvisDuration.GetValueOrDefault(pc.PlayerId, -1).ToString());
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -106,7 +106,7 @@ internal class Chameleon : RoleBase
             var chameleon = GetPlayerById(chameleonId);
             if (chameleon == null) return;
 
-            chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
+            chameleon?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(chameleonId, Main.LastEnteredVent[chameleonId].Id));
             InvisDuration.Remove(chameleonId);
             ventedId.Remove(chameleonId);
             SendRPC(chameleon);
@@ -162,8 +162,7 @@ internal class Chameleon : RoleBase
 
             if (remainTime < 0 || !chameleon.IsAlive())
             {
-                chameleon?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(chameleonId, out var id) ? id : Main.LastEnteredVent[chameleonId].Id);
-
+                chameleon?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(chameleonId, Main.LastEnteredVent[chameleonId].Id));
                 ventedId.Remove(chameleonId);
 
                 InvisCooldown.Remove(chameleonId);
@@ -262,7 +261,7 @@ internal class Chameleon : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (!IsInvis(killer.PlayerId)) return true;
-        target?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(target.PlayerId, out var id) ? id : Main.LastEnteredVent[target.PlayerId].Id);
+        target?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(target.PlayerId, Main.LastEnteredVent[target.PlayerId].Id));
         return true;
     }
     public override void SetAbilityButtonText(HudManager hud, byte id)

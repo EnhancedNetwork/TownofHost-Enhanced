@@ -102,6 +102,6 @@ internal class Vector : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(GetString("VectorVentButtonText"));
-        hud.AbilityButton.SetUsesRemaining(VectorVentNumWin.GetInt() - (VectorVentCount.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var mx) ? mx : 0));
+        hud.AbilityButton.SetUsesRemaining(VectorVentNumWin.GetInt() - VectorVentCount.GetValueOrDefault(PlayerControl.LocalPlayer.PlayerId, 0));
     }
 }

@@ -320,27 +320,27 @@ internal class Pirate : RoleBase
 
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
-        string msg;
+        var msg = new System.Text.StringBuilder();
         string[] command = ["duel", "rps"];
         for (int i = 0; i < 20; i++)
         {
-            msg = "/";
+            msg.Clear().Append('/');
             if (rd.Next(1, 100) < 20)
             {
-                msg += "id";
+                msg.Append("id");
             }
             else
             {
-                msg += command[rd.Next(0, command.Length - 1)];
-                msg += " ";
-                msg += rd.Next(0, 3).ToString();
+                msg.Append(command[rd.Next(0, command.Length - 1)]);
+                msg.Append(' ');
+                msg.Append(rd.Next(0, 3));
             }
             var player = Main.AllAlivePlayerControls.RandomElement();
-            FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg.ToString());
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
             writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
+                .Write(msg.ToString())
                 .EndRpc();
             writer.EndMessage();
             writer.SendMessage();

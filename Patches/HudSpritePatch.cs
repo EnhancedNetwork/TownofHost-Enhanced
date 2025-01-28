@@ -32,7 +32,7 @@ public static class HudSpritePatch
             return;
         }
 
-        bool shapeshifting = Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
+        bool shapeshifting = Main.CheckShapeshift.GetValueOrDefault(player.PlayerId, false);
 
         if (!Kill) Kill = __instance.KillButton.graphic.sprite;
         if (!Ability) Ability = __instance.AbilityButton.graphic.sprite;

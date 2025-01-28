@@ -61,7 +61,7 @@ internal class Amnesiac : RoleBase
         AURoleOptions.EngineerCooldown = VentCoolDown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = VentDuration.GetFloat();
     }
-    public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.TryGetValue(pc.PlayerId, out var canUse) && canUse;
+    public static bool PreviousAmnesiacCanVent(PlayerControl pc) => CanUseVent.GetValueOrDefault(pc.PlayerId, false);
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.ReportButton.OverrideText(GetString("RememberButtonText"));

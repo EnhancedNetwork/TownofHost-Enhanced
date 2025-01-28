@@ -74,7 +74,7 @@ internal class YinYanger : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting) return;
-        if (Yanged.TryGetValue(target.PlayerId, out _))
+        if (Yanged.ContainsKey(target.PlayerId))
             Yanged[target.PlayerId] = new();
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)

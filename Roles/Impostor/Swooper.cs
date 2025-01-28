@@ -139,7 +139,7 @@ internal class Swooper : RoleBase
 
             if (remainTime < 0 || !swooper.IsAlive())
             {
-                swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
+                swooper?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(swooperId, Main.LastEnteredVent[swooperId].Id));
 
                 ventedId.Remove(swooperId);
 
@@ -184,7 +184,7 @@ internal class Swooper : RoleBase
             var swooper = Utils.GetPlayerById(swooperId);
             if (swooper == null) continue;
 
-            swooper?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(swooperId, out var id) ? id : Main.LastEnteredVent[swooperId].Id);
+            swooper?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(swooperId, Main.LastEnteredVent[swooperId].Id));
             InvisDuration.Remove(swooperId);
             ventedId.Remove(swooperId);
             SendRPC(swooper);

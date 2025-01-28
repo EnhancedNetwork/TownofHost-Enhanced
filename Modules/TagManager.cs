@@ -136,7 +136,7 @@ public static class TagManager
                 break;
             }
         }
-        int.TryParse(temp, out int result);
+        _ = int.TryParse(temp, out int result);
         return result;
     }
 

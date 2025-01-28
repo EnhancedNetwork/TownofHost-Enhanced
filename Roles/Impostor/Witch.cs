@@ -117,7 +117,7 @@ internal class Witch : RoleBase
         }
     }
 
-    private static bool IsSpellMode(byte playerId) => SpellMode.TryGetValue(playerId, out var isSpellMode) && isSpellMode;
+    private static bool IsSpellMode(byte playerId) => SpellMode.GetValueOrDefault(playerId, false);
 
     private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
 

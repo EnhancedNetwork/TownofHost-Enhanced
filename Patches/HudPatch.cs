@@ -95,13 +95,14 @@ class HudManagerPatch
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
-                        LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
-
-                        LowerInfoText.text += "\n" + Spurt.GetSuffix(player, true, isformeeting: Main.MeetingIsStarted);
+                        var text = new StringBuilder();
+                        text.Append(roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty);
+                        text.Append("\n" + Spurt.GetSuffix(player, true, isformeeting: Main.MeetingIsStarted));
+                        LowerInfoText.text = text.ToString();
                         break;
                 }
 
-                LowerInfoText.enabled = LowerInfoText.text != "" && LowerInfoText.text != string.Empty;
+                LowerInfoText.enabled = LowerInfoText.text.Length > 0;
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
                 {

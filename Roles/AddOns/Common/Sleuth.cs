@@ -33,15 +33,14 @@ public class Sleuth : IAddon
     {
         if (reporter.Is(CustomRoles.Sleuth) && deadBody != null && deadBody.Object != null && !deadBody.Object.IsAlive() && reporter.PlayerId != deadBody.PlayerId)
         {
-            string msg;
-            msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false));
+            var msg = new System.Text.StringBuilder(string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false)));
             if (SleuthCanKnowKillerRole.GetBool())
             {
                 var realKiller = deadBody.Object.GetRealKiller();
-                if (realKiller == null) msg += "；" + Translator.GetString("SleuthNoticeKillerNotFound");
-                else msg += "；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
+                if (realKiller == null) msg.Append("；" + Translator.GetString("SleuthNoticeKillerNotFound"));
+                else msg.Append("；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false)));
             }
-            SleuthNotify.Add(reporter.PlayerId, msg);
+            SleuthNotify.Add(reporter.PlayerId, msg.ToString());
         }
     }
 }

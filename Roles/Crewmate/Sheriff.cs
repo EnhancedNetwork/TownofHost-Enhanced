@@ -174,7 +174,7 @@ internal class Sheriff : RoleBase
             _ => cRole.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => CanKillAdmired,
-                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())) && CanKillAdmired,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool()) && CanKillAdmired,
                 Custom_Team.Coven => CanKillCoven.GetBool() && CanKillAdmired,
                 _ => CanKill,
             }

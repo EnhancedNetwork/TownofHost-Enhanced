@@ -258,9 +258,7 @@ namespace TOHE.Modules.ChatManager
                 }
                 else
                 {
-                    var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault();
-                    if (firstAlivePlayer == null) firstAlivePlayer = PlayerControl.LocalPlayer;
-
+                    var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault() ?? PlayerControl.LocalPlayer;
                     var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
                     var name = firstAlivePlayer?.Data?.PlayerName;
                     string spamMsg = GetString("ExileSpamMsg");

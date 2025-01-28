@@ -61,7 +61,7 @@ internal class Ninja : RoleBase
             MarkedPlayer.Add(playerId, targetId);
     }
 
-    private static bool Shapeshifting(byte id) => Main.CheckShapeshift.TryGetValue(id, out bool shapeshifting) && shapeshifting;
+    private static bool Shapeshifting(byte id) => Main.CheckShapeshift.GetValueOrDefault(id, false);
 
     public override void SetKillCooldown(byte id)
         => Main.AllPlayerKillCooldown[id] = Shapeshifting(id) ? DefaultKillCooldown : MarkCooldown.GetFloat();

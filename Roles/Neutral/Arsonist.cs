@@ -270,15 +270,14 @@ internal class Arsonist : RoleBase
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt == null ? false : ArsonistCanIgniteAnytimeOpt.GetBool();
+    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt != null && ArsonistCanIgniteAnytimeOpt.GetBool();
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 
     public static bool IsDousedPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null || target == null || IsDoused == null) return false;
-        IsDoused.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDoused);
-        return isDoused;
+        return IsDoused.GetValueOrDefault((arsonist.PlayerId, target.PlayerId), false);
     }
 
     public static bool IsDouseDone(PlayerControl player)
@@ -297,7 +296,7 @@ internal class Arsonist : RoleBase
             if (pc.PlayerId == playerId) continue;
 
             all++;
-            if (IsDoused.TryGetValue((playerId, pc.PlayerId), out var isDoused) && isDoused)
+            if (IsDoused.GetValueOrDefault((playerId, pc.PlayerId), false))
                 doused++;
         }
 

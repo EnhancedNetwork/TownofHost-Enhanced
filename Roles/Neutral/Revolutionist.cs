@@ -147,8 +147,7 @@ internal class Revolutionist : RoleBase
     public static bool IsDrawPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null && target == null && IsDraw == null) return false;
-        IsDraw.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDraw);
-        return isDraw;
+        return IsDraw.GetValueOrDefault((arsonist.PlayerId, target.PlayerId), false);
     }
     public static bool IsDrawDone(PlayerControl player)
     {
@@ -166,7 +165,7 @@ internal class Revolutionist : RoleBase
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            if (IsDraw.TryGetValue((playerId, pc.PlayerId), out var isDraw) && isDraw)
+            if (IsDraw.GetValueOrDefault((playerId, pc.PlayerId), false))
             {
                 winnerList.Add(pc);
                 draw++;

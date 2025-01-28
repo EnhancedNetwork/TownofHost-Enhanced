@@ -1597,7 +1597,7 @@ public static class Utils
     }
 
     public static bool CheckCamoflague(this PlayerControl PC) => Camouflage.IsCamouflage || Camouflager.AbilityActivated || IsActive(SystemTypes.MushroomMixupSabotage)
-        || (Main.CheckShapeshift.TryGetValue(PC.PlayerId, out bool isShapeshifitng) && isShapeshifitng);
+        || Main.CheckShapeshift.GetValueOrDefault(PC.PlayerId, false);
 
     public static PlayerControl GetPlayerById(int PlayerId)
     {
@@ -1892,7 +1892,7 @@ public static class Utils
                         IsDisplayInfo = true;
                         var SeerRoleInfo = seer.GetRoleInfo();
                         string RoleText = string.Empty;
-                        string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                        const string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
 
                         if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                         else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
@@ -1925,7 +1925,7 @@ public static class Utils
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                 {
-                    var oldName = SelfName;
+                    string oldName = SelfName.ToString();
                     SelfName.Clear().Append($"<size=0%>{oldName}</size>");
                 }
 
@@ -2156,7 +2156,7 @@ public static class Utils
                         // Camouflage
                         if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
                         {
-                            var oldName = TargetPlayerName;
+                            var oldName = TargetPlayerName.ToString();
                             TargetPlayerName.Clear().Append($"<size=0%>{oldName}</size>");
                         }
 
@@ -2372,7 +2372,7 @@ public static class Utils
         CustomNetObject.AfterMeetingTasks();
 
         // Empty Deden bug support Empty vent after meeting
-        var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.TryCast<VentilationSystem>() : null;
+        var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.CastFast<VentilationSystem>() : null;
         if (ventilationSystem != null)
         {
             ventilationSystem.PlayersInsideVents.Clear();

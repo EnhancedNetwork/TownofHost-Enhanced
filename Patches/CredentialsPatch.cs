@@ -141,34 +141,35 @@ class PingTrackerUpdatePatch
 class VersionShowerStartPatch
 {
     static TextMeshPro SpecialEventText;
+    private static readonly StringBuilder sb = new();
     private static void Postfix(VersionShower __instance)
     {
-        Main.credentialsText = $"<size=70%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
+        sb.Clear().Append($"<size=70%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>");
         var buildtype = "";
 
 #if RELEASE
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+            sb.Append($"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
             buildtype = "Release";
 #endif
 
 #if CANARY
-        Main.credentialsText += $"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
-        Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+        sb.Append($"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)");
+        sb.Append($"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
         buildtype = "Canary";
 #endif
 
 #if DEBUG
-        Main.credentialsText += $"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
-        Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+        sb.Append($"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)");
+        sb.Append($"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
         buildtype = "Debug";
 #endif
         Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 
         if (Main.IsAprilFools)
-            Main.credentialsText = $"<color=#00bfff>Town Of Host</color> v11.45.14";
+            sb.Clear().Append($"<color=#00bfff>Town Of Host</color> v11.45.14");
 
         var credentials = Object.Instantiate(__instance.text);
-        credentials.text = Main.credentialsText;
+        credentials.text = Main.credentialsText = sb.ToString();
         credentials.alignment = TextAlignmentOptions.Right;
         credentials.transform.position = new Vector3(1f, 2.67f, -2f);
         credentials.fontSize = credentials.fontSizeMax = credentials.fontSizeMin = 2f;

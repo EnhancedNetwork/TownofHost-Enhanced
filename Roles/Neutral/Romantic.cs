@@ -83,8 +83,8 @@ internal class Romantic : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(playerId);
-        writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : 1);
-        writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
+        writer.Write(BetTimes.GetValueOrDefault(playerId, 1).ToString());
+        writer.Write(BetPlayer.GetValueOrDefault(playerId, byte.MaxValue).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -363,7 +363,7 @@ internal class VengefulRomantic : RoleBase
         writer.WriteNetObject(_Player); //SyncVengefulRomanticTarget
         writer.Write(playerId);
         //writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
-        writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
+        writer.Write(VengefulTarget.GetValueOrDefault(playerId, byte.MaxValue));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)

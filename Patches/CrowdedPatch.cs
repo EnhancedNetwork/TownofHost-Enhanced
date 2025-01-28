@@ -347,12 +347,8 @@ internal static class Crowded
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class AbstractPagingBehaviour : MonoBehaviour
+public class AbstractPagingBehaviour(IntPtr ptr) : MonoBehaviour(ptr)
 {
-    public AbstractPagingBehaviour(IntPtr ptr) : base(ptr)
-    {
-    }
-
     public const string PAGE_INDEX_GAME_OBJECT_NAME = "CrowdedMod_PageIndex";
 
     private int _page;
@@ -397,12 +393,8 @@ public class AbstractPagingBehaviour : MonoBehaviour
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
+public class MeetingHudPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
 {
-    public MeetingHudPagingBehaviour(IntPtr ptr) : base(ptr)
-    {
-    }
-
     internal MeetingHud meetingHud = null!;
 
     [HideFromIl2Cpp]
@@ -452,12 +444,8 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
+public class ShapeShifterPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
 {
-    public ShapeShifterPagingBehaviour(IntPtr ptr) : base(ptr)
-    {
-    }
-
     public ShapeshifterMinigame shapeshifterMinigame = null!;
     [HideFromIl2Cpp]
     public IEnumerable<ShapeshifterPanel> Targets => shapeshifterMinigame.potentialVictims.ToArray();
@@ -509,14 +497,12 @@ public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
 
-public class VitalsPagingBehaviour : AbstractPagingBehaviour
+public class VitalsPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
 {
-    public VitalsPagingBehaviour(IntPtr ptr) : base(ptr) { }
-
     public VitalsMinigame vitalsMinigame = null!;
 
     [HideFromIl2Cpp]
-    public IEnumerable<VitalsPanel> Targets => vitalsMinigame.vitals.ToArray();
+    public IEnumerable<VitalsPanel> Targets => [.. vitalsMinigame.vitals];
     public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
     private TextMeshPro PageText = null!;
 

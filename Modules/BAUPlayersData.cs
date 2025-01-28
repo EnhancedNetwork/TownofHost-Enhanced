@@ -3,7 +3,7 @@ namespace TOHE.Modules;
 
 public class BAUPlayersData
 {
-    private readonly Dictionary<NetworkedPlayerInfo, string> _players = new Dictionary<NetworkedPlayerInfo, string>();
+    private readonly Dictionary<NetworkedPlayerInfo, string> _players = [];
 
     public string this[NetworkedPlayerInfo key]
     {

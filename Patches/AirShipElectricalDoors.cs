@@ -41,17 +41,17 @@ class ElectricalDoorsInitializePatch
     public static void Postfix(/*ElectricalDoors __instance*/)
     {
         if (!GameStates.IsInGame) return;
-        var closedoors = "";
+        var closedoors = new System.Text.StringBuilder();
         bool isFirst = true;
         foreach (var num in AirshipElectricalDoors.GetClosedDoors())
         {
             if (isFirst)
             {
                 isFirst = false;
-                closedoors += num.ToString();
+                closedoors.Append(num);
             }
             else
-                closedoors += $", {num}";
+                closedoors.Append(", " + num);
         }
         Logger.Info($"ClosedDoors:{closedoors}", "ElectricalDoors Initialize");
     }

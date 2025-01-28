@@ -401,7 +401,7 @@ internal class EAC
 
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
-            if (!player.HasImpKillButton(true))
+            if (!player.HasImpKillButton())
             {
                 WarnHost();
                 Report(player, "Bad Sabotage A : Non Imp");

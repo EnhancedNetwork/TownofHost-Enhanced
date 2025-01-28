@@ -153,7 +153,7 @@ internal static class FFAManager
     public static string GetDisplayScore(byte playerId)
     {
         int rank = GetRankOfScore(playerId);
-        string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "0";
+        string score = KBScore.GetValueOrDefault(playerId, 0).ToString();
         string text = string.Format(GetString("FFADisplayScore"), rank.ToString(), score);
         Color color = Utils.GetRoleColor(CustomRoles.Killer);
         return Utils.ColorString(color, text);

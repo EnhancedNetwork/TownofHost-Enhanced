@@ -67,7 +67,7 @@ class CanUseVentPatch
         // Check vent cleaning
         if (ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType))
         {
-            VentilationSystem ventilationSystem = systemType.TryCast<VentilationSystem>();
+            VentilationSystem ventilationSystem = systemType.CastFast<VentilationSystem>();
             // If someone is cleaning a vent, you can't get into that vent
             if (ventilationSystem != null && ventilationSystem.IsVentCurrentlyBeingCleaned(__instance.Id))
             {

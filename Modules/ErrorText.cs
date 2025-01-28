@@ -89,11 +89,11 @@ public class ErrorText : MonoBehaviour
     }
     public void UpdateText()
     {
-        string text = "";
+        var text = new System.Text.StringBuilder();
         int maxLevel = 0;
         foreach (var err in AllErrors.ToArray())
         {
-            text += $"{err}: {err.Message}\n";
+            text.Append($"{err}: {err.Message}\n");
             if (maxLevel < err.ErrorLevel) maxLevel = err.ErrorLevel;
         }
         if (maxLevel == 0)
@@ -103,14 +103,14 @@ public class ErrorText : MonoBehaviour
         else
         {
             if (!HnSFlag)
-                text += $"{GetString($"ErrorLevel{maxLevel}")}";
+                text.Append($"{GetString($"ErrorLevel{maxLevel}")}");
             if (CheatDetected)
-                text = SBDetected ? GetString("EAC.CheatDetected.HighLevel") : GetString("EAC.CheatDetected.LowLevel");
+                text.Clear().Append(SBDetected ? GetString("EAC.CheatDetected.HighLevel") : GetString("EAC.CheatDetected.LowLevel"));
             Text.enabled = true;
         }
         if (GameStates.IsInGame && maxLevel != 3 && !CheatDetected)
-            text += $"\n{GetString("TerminateCommand")}: Shift+L+Enter";
-        Text.text = text;
+            text.Append($"\n{GetString("TerminateCommand")}: Shift+L+Enter");
+        Text.text = text.ToString();
     }
     public void Clear()
     {

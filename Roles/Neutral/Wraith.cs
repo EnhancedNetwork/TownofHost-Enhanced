@@ -52,8 +52,8 @@ internal class Wraith : RoleBase
         if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.WriteNetObject(_Player);//SetWraithTimer
-        writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
+        writer.Write(InvisTime.GetValueOrDefault(pc.PlayerId, -1).ToString());
+        writer.Write(lastTime.GetValueOrDefault(pc.PlayerId, -1).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -77,7 +77,7 @@ internal class Wraith : RoleBase
             var wraith = Utils.GetPlayerById(wraithId);
             if (wraith == null) continue;
 
-            wraith?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(wraithId, out var id) ? id : Main.LastEnteredVent[wraithId].Id);
+            wraith?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(wraithId, Main.LastEnteredVent[wraithId].Id));
             InvisTime.Remove(wraithId);
             ventedId.Remove(wraithId);
             SendRPC(wraith);
@@ -125,7 +125,7 @@ internal class Wraith : RoleBase
                 if (remainTime < 0 || !pc.IsAlive())
                 {
                     lastTime.Add(pc.PlayerId, nowTime);
-                    pc?.MyPhysics?.RpcBootFromVent(ventedId.TryGetValue(pc.PlayerId, out var id) ? id : Main.LastEnteredVent[pc.PlayerId].Id);
+                    pc?.MyPhysics?.RpcBootFromVent(ventedId.GetValueOrDefault(pc.PlayerId, Main.LastEnteredVent[pc.PlayerId].Id));
                     ventedId.Remove(pc.PlayerId);
                     pc.Notify(GetString("WraithInvisStateOut"));
                     SendRPC(pc);

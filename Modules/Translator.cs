@@ -25,10 +25,9 @@ public static class Translator
         try
         {
             // Get the directory containing the JSON files (e.g., TOHE.Resources.Lang)
-            string jsonDirectory = "TOHE.Resources.Lang";
             // Get the assembly containing the resources
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
+            var assembly = Assembly.GetExecutingAssembly();
+            string[] jsonFileNames = GetJsonFileNames(assembly, "TOHE.Resources.Lang");
 
             translateMaps = [];
 
@@ -76,10 +75,9 @@ public static class Translator
         {
             Logger.Error($"Error: {ex}", "Translator");
         }
-        //カスタム翻訳ファイルの読み込み
+
         if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
 
-        // 翻訳テンプレートの作成
         CreateTemplateFile();
 
         //Load vanilla role names into CrossLangRoleNames
@@ -414,7 +412,7 @@ public static class Translator
         var lang = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         foreach (var title in translateMaps)
         {
-            if (!title.Value.TryGetValue((int)lang, out var text)) text = "";
+            var text = title.Value.GetValueOrDefault((int)lang, "");
             sb.Append($"{title.Key}:{text.Replace("\n", "\\n").Replace("\r", "\\r")}\n");
         }
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());

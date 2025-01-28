@@ -205,7 +205,7 @@ class SetEverythingUpPatch
         WinnerText.text = "";
 
         string CustomWinnerText = "";
-        string AdditionalWinnerText = "";
+        var AdditionalWinnerText = new StringBuilder();
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
         if (Options.CurrentGameMode == CustomGameMode.FFA)
@@ -298,11 +298,11 @@ class SetEverythingUpPatch
         foreach (var additionalWinners in CustomWinnerHolder.AdditionalWinnerTeams)
         {
             var addWinnerRole = (CustomRoles)additionalWinners;
-            AdditionalWinnerText += "+" + Utils.ColorString(Utils.GetRoleColor(addWinnerRole), GetAdditionalWinnerRoleName(addWinnerRole));
+            AdditionalWinnerText.Append("+" + Utils.ColorString(Utils.GetRoleColor(addWinnerRole), GetAdditionalWinnerRoleName(addWinnerRole)));
         }
         if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
         {
-            if (AdditionalWinnerText == "") WinnerText.text = $"<size=100%><color={CustomWinnerColor}>{CustomWinnerText}</color></size>";
+            if (AdditionalWinnerText.Length == 0) WinnerText.text = $"<size=100%><color={CustomWinnerColor}>{CustomWinnerText}</color></size>";
             else WinnerText.text = $"<size=100%><color={CustomWinnerColor}>{CustomWinnerText}</color></size>\n<size=75%>{AdditionalWinnerText}</size>";
         }
 
@@ -354,7 +354,7 @@ class SetEverythingUpPatch
 
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
-                        sb.Append($"\nÒÇÇ ").Append(EndGamePatch.SummaryText[id.Item2]);
+                        sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
                     break;
                 }
             default: // Normal game

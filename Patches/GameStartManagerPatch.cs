@@ -264,9 +264,9 @@ public class GameStartManagerPatch
                     invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
 
                     Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-                    var msg = GetString("Error.InvalidColor");
-                    msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-                    Utils.SendMessage(msg);
+                    var msg = new System.Text.StringBuilder(GetString("Error.InvalidColor"));
+                    msg.Append("\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}")));
+                    Utils.SendMessage(msg.ToString());
                 }
 
                 GameStartManagerBeginGamePatch.DoTasksForBeginGame();
@@ -302,9 +302,9 @@ public class GameStartManagerBeginGamePatch
         if (invalidColor.Any())
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-            var msg = GetString("Error.InvalidColor");
-            msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-            Utils.SendMessage(msg);
+            var msg = new System.Text.StringBuilder(GetString("Error.InvalidColor"));
+            msg.Append("\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}")));
+            Utils.SendMessage(msg.ToString());
             return false;
         }
 

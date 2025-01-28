@@ -100,10 +100,10 @@ internal class Retributionist : RoleBase
 
         if (msg == "/ret")
         {
-            string text = GetString("PlayerIdList");
+            var text = new System.Text.StringBuilder(GetString("PlayerIdList"));
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName();
-            SendMessage(text, pc.PlayerId);
+                text.Append("\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName());
+            SendMessage(text.ToString(), pc.PlayerId);
             return true;
         }
 

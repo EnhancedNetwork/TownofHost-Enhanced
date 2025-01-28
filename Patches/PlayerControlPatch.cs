@@ -427,7 +427,7 @@ class MurderPlayerPatch
             }
             else
             {
-                if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out var shapeshifting) && shapeshifting)
+                if (Main.CheckShapeshift.GetValueOrDefault(target.PlayerId, false))
                 {
                     //Shapeshift revert
                     target.RpcShapeshift(target, false);
@@ -1911,8 +1911,8 @@ class PlayerControlCheckNamePatch
             if (Options.DisableEmojiName.GetBool()) name = Regex.Replace(name, @"\p{Cs}", string.Empty);
             if (Regex.Replace(Regex.Replace(name, @"\s", string.Empty), @"[\x01-\x1F,\x7F]", string.Empty).Length < 1) name = Main.Get_TName_Snacks;
         }
-        Main.AllPlayerNames.Remove(__instance.PlayerId);
-        Main.AllPlayerNames.TryAdd(__instance.PlayerId, name);
+
+        Main.AllPlayerNames[__instance.PlayerId] = name;
 
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerName: {playerName} => {name}", "Name player");
 
@@ -1943,7 +1943,6 @@ class RpcSetColorPatch
         Logger.Info($"PlayerId: {__instance.PlayerId} - playerColor: {bodyColor}", "RpcSetColor");
         if (bodyColor == 255) return;
 
-        Main.PlayerColors.Remove(__instance.PlayerId);
         Main.PlayerColors[__instance.PlayerId] = Palette.PlayerColors[bodyColor];
     }
 }

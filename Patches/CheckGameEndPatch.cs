@@ -799,7 +799,7 @@ public abstract class GameEndPredicate
         var systems = ShipStatus.Instance.Systems;
         LifeSuppSystemType LifeSupp;
         if (systems.ContainsKey(SystemTypes.LifeSupp) && // Confirmation of the existence of sabotage
-            (LifeSupp = systems[SystemTypes.LifeSupp].TryCast<LifeSuppSystemType>()) != null && // Castable Confirmation
+            (LifeSupp = systems[SystemTypes.LifeSupp].CastFast<LifeSuppSystemType>()) != null && // Castable Confirmation
             LifeSupp.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
@@ -816,7 +816,7 @@ public abstract class GameEndPredicate
 
         ICriticalSabotage critical;
         if (sys != null && // Confirmation of the existence of sabotage
-            (critical = sys.TryCast<ICriticalSabotage>()) != null && // Castable Confirmation
+            (critical = sys.CastFast<ICriticalSabotage>()) != null && // Castable Confirmation
             critical.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);

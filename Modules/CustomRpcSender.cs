@@ -27,8 +27,8 @@ public class CustomRpcSender
     private State currentState = State.BeforeInit;
 
     //0~: targetClientId (GameDataTo)
-    //-1: 全プレイヤー (GameData)
-    //-2: 未設定
+    //-1: All players (GameData)
+    //-2: Not set
     private int currentRpcTarget;
 
     private CustomRpcSender() { }

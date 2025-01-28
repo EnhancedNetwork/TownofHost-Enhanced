@@ -88,10 +88,10 @@ internal class Nemesis : RoleBase
 
         if (msg == "/rv")
         {
-            string text = GetString("PlayerIdList");
+            var text = new System.Text.StringBuilder(GetString("PlayerIdList"));
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName();
-            Utils.SendMessage(text, pc.PlayerId);
+                text.Append("\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName());
+            Utils.SendMessage(text.ToString(), pc.PlayerId);
             return true;
         }
 

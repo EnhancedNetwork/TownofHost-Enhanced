@@ -117,12 +117,12 @@ internal class Huntsman : RoleBase
         if (isForMeeting || IsDead) return string.Empty;
 
         var targetId = player.PlayerId;
-        string output = string.Empty;
+        var output = new System.Text.StringBuilder();
         byte item = 0;
         foreach (var playerId in Targets)
         {
-            if (item != 0) output += ", ";
-            output += Utils.GetPlayerById(playerId).GetRealName();
+            if (item != 0) output.Append(", ");
+            output.Append(playerId.GetPlayer().GetRealName());
             item++;
         }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;

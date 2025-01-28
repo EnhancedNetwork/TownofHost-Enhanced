@@ -152,7 +152,7 @@ public class dbConnect
             Logger.Info("No api token provided in token.env", "db.Connect");
             if (!string.IsNullOrEmpty(Main.FileHash) && Main.FileHash.Length >= 16)
             {
-                string prefix = Main.FileHash.Substring(0, 8);
+                string prefix = Main.FileHash[..8];
                 string suffix = Main.FileHash.Substring(Main.FileHash.Length - 8, 8);
                 apiToken = $"hash{prefix}{suffix}";
             }
@@ -282,7 +282,7 @@ public class dbConnect
             yield break;
         }
 
-        string[] apiUrls = { ApiUrl, FallBackUrl };
+        string[] apiUrls = [ApiUrl, FallBackUrl];
         int maxAttempts = !InitOnce ? 4 : 2;
         int attempt = 0;
         bool success = false;
@@ -331,21 +331,21 @@ public class dbConnect
         }
     }
 
-    private static bool CanAccessDev(string friendCode)
-    {
-        if (!UserType.ContainsKey(friendCode))
-        {
-            Logger.Error($"no user found, with friendcode {friendCode}", "CanAccessDev");
-            return false;
-        }
+    //private static bool CanAccessDev(string friendCode)
+    //{
+    //    if (!UserType.ContainsKey(friendCode))
+    //    {
+    //        Logger.Error($"no user found, with friendcode {friendCode}", "CanAccessDev");
+    //        return false;
+    //    }
 
-        if (UserType[friendCode] == "s_bo" || UserType[friendCode] == "s_it" || UserType[friendCode].StartsWith("t_"))
-        {
-            Logger.Error($"Error : Dev access denied to user {friendCode}, type =  {UserType[friendCode]}", "CanAccessDev");
-            return false;
-        }
-        return true;
-    }
+    //    if (UserType[friendCode] == "s_bo" || UserType[friendCode] == "s_it" || UserType[friendCode].StartsWith("t_"))
+    //    {
+    //        Logger.Error($"Error : Dev access denied to user {friendCode}, type =  {UserType[friendCode]}", "CanAccessDev");
+    //        return false;
+    //    }
+    //    return true;
+    //}
 
     [Obfuscation(Exclude = true)]
     private enum FailedConnectReason

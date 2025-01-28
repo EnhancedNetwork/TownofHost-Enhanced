@@ -280,19 +280,19 @@ internal class Inspector : RoleBase
 
                     if (InspectCheckTargetKnow.GetBool())
                     {
-                        string textToSend = $"{target1Name}";
+                        var textToSend = new StringBuilder(target1Name);
                         if (InspectCheckOtherTargetKnow.GetBool())
-                            textToSend += $" and {target2Name}";
-                        textToSend += GetString("InspectCheckTargetMsg");
+                            textToSend.Append($" and {target2Name}");
+                        textToSend.Append(GetString("InspectCheckTargetMsg"));
 
-                        string textToSend1 = $"{target2Name}";
+                        var textToSend1 = new StringBuilder(target2Name);
                         if (InspectCheckOtherTargetKnow.GetBool())
-                            textToSend1 += $" and {target1Name}";
-                        textToSend1 += GetString("InspectCheckTargetMsg");
+                            textToSend1.Append($" and {target1Name}");
+                        textToSend1.Append(GetString("InspectCheckTargetMsg"));
                         _ = new LateTask(() =>
                         {
-                            SendMessage(textToSend, target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                            SendMessage(textToSend1, target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            SendMessage(textToSend.ToString(), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            SendMessage(textToSend1.ToString(), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
                             Logger.Msg("Check attempt, target1 notified", "Inspector");
                             Logger.Msg("Check attempt, target2 notified", "Inspector");
                         }, 0.2f, "Inspector Msg 7");
@@ -410,30 +410,30 @@ internal class Inspector : RoleBase
         }
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
-        string msg;
+        var msg = new StringBuilder();
         string[] command = ["cmp", "compare", "比较"];
         for (int i = 0; i < 20; i++)
         {
-            msg = "/";
+            msg.Clear().Append('/');
             if (rd.Next(1, 100) < 20)
             {
-                msg += "id";
+                msg.Append("id");
             }
             else
             {
-                msg += command[rd.Next(0, command.Length - 1)];
-                msg += " ";
-                msg += rd.Next(0, 15).ToString();
-                msg += " ";
-                msg += rd.Next(0, 15).ToString();
+                msg.Append(command[rd.Next(0, command.Length - 1)]);
+                msg.Append(' ');
+                msg.Append(rd.Next(0, 15));
+                msg.Append(' ');
+                msg.Append(rd.Next(0, 15));
 
             }
             var player = Main.AllAlivePlayerControls.RandomElement();
-            FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg.ToString());
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
             writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
+                .Write(msg.ToString())
                 .EndRpc();
             writer.EndMessage();
             writer.SendMessage();

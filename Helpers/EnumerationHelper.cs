@@ -81,7 +81,7 @@ public unsafe class Il2CppListEnumerable<T> : IEnumerable<T>, IEnumerator<T> whe
         _index = -1;
     }
 
-    public System.Collections.Generic.IEnumerator<T> GetEnumerator()
+    public IEnumerator<T> GetEnumerator()
     {
         return this;
     }

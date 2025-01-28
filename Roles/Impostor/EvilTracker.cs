@@ -103,10 +103,10 @@ internal class EvilTracker : RoleBase
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash && killer.PlayerId != seer.PlayerId;
 
     private static bool CanTarget(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
+        => !Main.PlayerStates[playerId].IsDead && CanSetTarget.GetValueOrDefault(playerId, false);
 
     private static byte GetTargetId(byte playerId)
-        => Target.TryGetValue(playerId, out var targetId) ? targetId : byte.MaxValue;
+        => Target.GetValueOrDefault(playerId, byte.MaxValue);
 
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
