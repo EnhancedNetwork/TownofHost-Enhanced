@@ -57,7 +57,7 @@ internal class Godfather : RoleBase
         
         var ChangeRole = BTAddonList.Any() ? BTAddonList.FirstOrDefault() switch
         {
-            CustomRoles.Admired => CustomRoles.Sheriff,
+            CustomRoles.Admired or CustomRoles.Narc => CustomRoles.Sheriff,
             CustomRoles.Recruit => CustomRoles.Sidekick,
             _ => CustomRoles.Refugee
         } 
@@ -75,6 +75,8 @@ internal class Godfather : RoleBase
                 if (ChangeRole is CustomRoles.Refugee 
                     && (ChangeAddon is not CustomRoles.Madmate || godfather.Is(CustomRoles.Madmate)))//Can Godfather become Madmate?
                     killer.RpcSetCustomRole(ChangeAddon);
+                if (ChangeRole is CustomRoles.Sheriff && ChangeAddon is CustomRoles.Narc)
+                    killer.RpcSetCustomRole(CustomRoles.Admired);
             }
             else
             {
