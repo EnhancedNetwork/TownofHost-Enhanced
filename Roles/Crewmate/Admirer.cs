@@ -117,27 +117,16 @@ internal class Admirer : RoleBase
             {
                 foreach (var subRole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
                 {
-                    switch (subRole)
+                    convertedAddon = subRole switch
                     {
-                        case CustomRoles.Madmate when target.CanBeMadmate(forAdmirer: true):
-                            convertedAddon = CustomRoles.Madmate;
-                            break;
-                        case CustomRoles.Enchanted when Ritualist.CanBeConverted(target):
-                            convertedAddon = CustomRoles.Enchanted;
-                            break;
-                        case CustomRoles.Recruit when Jackal.CanBeSidekick(target):
-                            convertedAddon = CustomRoles.Recruit;
-                            break;
-                        case CustomRoles.Charmed when Cultist.CanBeCharmed(target):
-                            convertedAddon = CustomRoles.Charmed;
-                            break;
-                        case CustomRoles.Infected when target.CanBeInfected():
-                            convertedAddon = CustomRoles.Infected;
-                            break;
-                        case CustomRoles.Contagious when target.CanBeInfected():
-                            convertedAddon = CustomRoles.Contagious;
-                            break;
-                    }
+                        CustomRoles.Madmate when target.CanBeMadmate(forAdmirer: true) => CustomRoles.Madmate,
+                        CustomRoles.Enchanted when Ritualist.CanBeConverted(target) => CustomRoles.Enchanted,
+                        CustomRoles.Recruit when Jackal.CanBeSidekick(target) => CustomRoles.Recruit,
+                        CustomRoles.Charmed when Cultist.CanBeCharmed(target) => CustomRoles.Charmed,
+                        CustomRoles.Infected when target.CanBeInfected() => CustomRoles.Infected,
+                        CustomRoles.Contagious when target.CanBeInfected() => CustomRoles.Contagious,
+                        _ => CustomRoles.Admired,
+                    };
                 }
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(convertedAddon);
