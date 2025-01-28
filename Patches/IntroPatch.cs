@@ -870,12 +870,17 @@ class IntroCutsceneDestroyPatch
                 }
             }
 
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
+            foreach (var player in Main.AllPlayerControls)
             {
-                PlayerControl.LocalPlayer.RpcExile();
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+                if (player.Is(CustomRoles.GM))
+                {
+                    player.RpcExile();
+                    Main.PlayerStates[player.PlayerId].SetDead();
+                }
             }
-            else if (GhostRoleAssign.forceRole.Any())
+
+            
+            if (GhostRoleAssign.forceRole.Any()) // Incase user has /up access
             {
                 // Needs to be delayed for the game to load it properly
                 _ = new LateTask(() =>
