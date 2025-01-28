@@ -63,7 +63,6 @@ internal class Godfather : RoleBase
         } 
         : CustomRoles.Refugee;
         var ChangeAddon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.Madmate;
-
         if (GodfatherTarget.Contains(target.PlayerId))
         {
             if (!killer.IsAlive()) return;
