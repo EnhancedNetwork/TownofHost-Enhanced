@@ -1394,6 +1394,7 @@
   "ApplyBanList": "Apply BanList",
   "RemovePetsAtDeadPlayers": "Remove pets at dead players",
   "KillFlashDuration": "Kill-Flash Duration",
+  "NonCrewRandomCommonTasks": "Assign Random Common Tasks to Non-Crews",
   "ConfirmEjectionsMode": "Confirm Ejections Mode",
   "ConfirmEjections.None": "None",
   "ConfirmEjections.Team": "Team",
@@ -4147,6 +4148,7 @@
   "QuickChatSpam_How2PlayHidenSeek": "How2Play HnS",
   "QuickChatSpam_Random20": "Random Strings",
   "QuickChatSpam_EzHacked": "Ducked Ezly",
+  "CrossLanguageGetRole": "Get role names from different languages for commands",
 
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can recruit <color=#ff1919>Impostor</color>",
