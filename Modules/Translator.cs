@@ -412,7 +412,7 @@ public static class Translator
         var lang = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         foreach (var title in translateMaps)
         {
-            var text = title.Value.GetValueOrDefault((int)lang, "");
+            var text = title.Value.GetValueOrDefault((int)lang, string.Empty);
             sb.Append($"{title.Key}:{text.Replace("\n", "\\n").Replace("\r", "\\r")}\n");
         }
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());

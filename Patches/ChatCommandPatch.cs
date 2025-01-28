@@ -1,10 +1,7 @@
-using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using Hazel;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
@@ -104,7 +101,7 @@ internal class ChatCommands
                     foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key).ToArray())
                     {
                         var pc = Utils.GetClientById(kvp.Key)?.Character;
-                        version_text.Append($"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName(clientData: true) ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
+                        version_text.Clear().Append($"{kvp.Key}/{(pc?.PlayerId != null ? pc.PlayerId.ToString() : "null")}:{pc?.GetRealName(clientData: true) ?? "null"}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
                     }
                     if (version_text.Length > 0)
                     {
@@ -116,7 +113,7 @@ internal class ChatCommands
                 catch (Exception e)
                 {
                     Logger.Error(e.Message, "/version");
-                    version_text.Append("Error while getting version : " + e.Message);
+                    version_text.Clear().Append("Error while getting version : " + e.Message);
                     if (version_text.Length > 0)
                     {
                         player.SetName(title);
