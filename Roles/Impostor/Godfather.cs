@@ -72,6 +72,9 @@ internal class Godfather : RoleBase
                 killer.GetRoleClass()?.OnRemove(killer.PlayerId);
                 killer.RpcSetCustomRole(ChangeRole);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+                if (ChangeRole is CustomRoles.Refugee 
+                    && (ChangeAddon is not CustomRoles.Madmate || godfather.Is(CustomRoles.Madmate)))//Can Godfather become Madmate?
+                    killer.RpcSetCustomRole(ChangeAddon);
             }
             else
             {
