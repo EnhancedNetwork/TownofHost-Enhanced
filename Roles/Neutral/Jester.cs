@@ -58,7 +58,7 @@ internal class Jester : RoleBase
     public override bool HideVote(PlayerVoteArea votedPlayer) => HideJesterVote.GetBool();
     public override bool OnCheckStartMeeting(PlayerControl reporter) => CanUseMeetingButton.GetBool();
 
-    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref System.Text.StringBuilder name)
     {
         if (MeetingsNeededForWin.GetInt() <= Main.MeetingsPassed)
         {
@@ -66,7 +66,7 @@ internal class Jester : RoleBase
             {
                 if (RevealJesterUponEjection.GetBool())
                 {
-                    name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                    name.Clear().Append(string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true)));
                     DecidedWinner = true;
                 }
             }
@@ -95,6 +95,6 @@ internal class Jester : RoleBase
             }
         }
         else if (isMeetingHud)
-            name += string.Format(Translator.GetString("JesterMeetingLoose"), MeetingsNeededForWin.GetInt() + 1);
+            name.Append(string.Format(Translator.GetString("JesterMeetingLoose"), MeetingsNeededForWin.GetInt() + 1));
     }
 }

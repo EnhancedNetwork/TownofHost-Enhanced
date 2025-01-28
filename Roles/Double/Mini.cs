@@ -190,7 +190,7 @@ internal class Mini : RoleBase
         return false;
     }
 
-    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref System.Text.StringBuilder name)
     {
         var mini = GetPlayerById(exiled.PlayerId);
         if (mini != null && mini.Is(CustomRoles.NiceMini) && Age < 18)
@@ -199,7 +199,7 @@ internal class Mini : RoleBase
             {
                 if (isMeetingHud)
                 {
-                    name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                    name.Clear().Append(string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true)));
                 }
                 else
                 {

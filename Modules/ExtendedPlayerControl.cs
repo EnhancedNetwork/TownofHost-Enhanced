@@ -1286,9 +1286,8 @@ static class ExtendedPlayerControl
     ///<returns>GetPlayersInAbilityRangeSortedの戻り値から条件に合わないプレイヤーを除外したもの。</returns>
     public static List<PlayerControl> GetPlayersInAbilityRangeSorted(this PlayerControl player, Predicate<PlayerControl> predicate, bool ignoreColliders = false)
     {
-        var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
+        var rangePlayersIL = player.Data.Role.GetPlayersInAbilityRangeSorted(RoleBehaviour.GetTempPlayerList(), ignoreColliders);;
         List<PlayerControl> rangePlayers = [];
-        player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
         foreach (var pc in rangePlayersIL.GetFastEnumerator())
         {
             if (predicate(pc)) rangePlayers.Add(pc);

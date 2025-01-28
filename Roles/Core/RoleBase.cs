@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -311,13 +312,13 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile role
     /// </summary>
-    public virtual void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref StringBuilder name)
     { }
 
     /// <summary>
     /// Check exile target
     /// </summary>
-    public virtual void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref StringBuilder name)
     { }
 
     /// <summary>

@@ -101,10 +101,10 @@ class ExileControllerWrapUpPatch
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
             var exiledRoleClass = exiled.PlayerId.GetRoleClassById();
-            var emptyString = string.Empty;
+            var emptyStringBuilder = new System.Text.StringBuilder();
 
-            exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
-            CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString));
+            exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyStringBuilder);
+            CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyStringBuilder));
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
