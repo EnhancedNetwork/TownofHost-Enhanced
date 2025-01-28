@@ -51,7 +51,8 @@ class OnGameJoinedPatch
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
-            RoleAssign.SetRoles = [];
+            Main.CachedPlayerControl.Clear();
+            RoleAssign.SetRoles.Clear();
             GhostRoleAssign.forceRole = [];
             EAC.DeNum = new();
             Main.AllPlayerNames.Clear();

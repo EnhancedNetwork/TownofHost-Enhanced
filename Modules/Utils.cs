@@ -1601,7 +1601,9 @@ public static class Utils
 
     public static PlayerControl GetPlayerById(int PlayerId)
     {
-        return Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId) ?? null;
+        if (Main.CachedPlayerControl.TryGetValue((byte)PlayerId, out var player) && player != null) return player;
+        player = Main.AllPlayerControls.FirstOrDefault(pc => pc.PlayerId == PlayerId) ?? null;
+        return Main.CachedPlayerControl[(byte)PlayerId] = player;
     }
     public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
     public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
@@ -2543,7 +2545,7 @@ public static class Utils
         })));
     }
 
-    public static Dictionary<string, Sprite> CachedSprites = [];
+    private readonly static Dictionary<string, Sprite> CachedSprites = [];
     public static Sprite LoadSprite(string path, float pixelsPerUnit = 1f)
     {
         try

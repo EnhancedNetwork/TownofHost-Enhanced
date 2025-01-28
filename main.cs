@@ -128,7 +128,7 @@ public class Main : BasePlugin
 
     public static BAUPlayersData BAUPlayers = new();
     public static Dictionary<int, PlayerVersion> playerVersion = [];
-    public static Dictionary<byte, PlayerState> PlayerStates = [];
+    public static readonly Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
     public static readonly Dictionary<int, string> AllClientRealNames = [];
     public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles = [];
@@ -172,6 +172,7 @@ public class Main : BasePlugin
     public static readonly HashSet<byte> UnShapeShifter = [];
     public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
     public static readonly Dictionary<byte, bool> LowLoadUpdateName = [];
+    public static readonly Dictionary<byte, PlayerControl> CachedPlayerControl = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 

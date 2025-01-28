@@ -48,8 +48,8 @@ internal class ChangeRoleSettings
                 Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
-            Main.PlayerStates = [];
-            RoleAssign.RoleResult = [];
+            Main.PlayerStates.Clear();
+            RoleAssign.RoleResult.Clear();
             KillTimerManager.Initializate();
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
@@ -66,6 +66,7 @@ internal class ChangeRoleSettings
             GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
             Main.clientIdList.Clear();
+            Main.CachedPlayerControl.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();

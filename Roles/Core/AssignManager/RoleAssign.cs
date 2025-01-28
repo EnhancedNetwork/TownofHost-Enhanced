@@ -7,8 +7,8 @@ namespace TOHE.Roles.Core.AssignManager;
 
 public class RoleAssign
 {
-    public static Dictionary<byte, CustomRoles> SetRoles = [];
-    public static Dictionary<byte, CustomRoles> RoleResult = [];
+    public static readonly Dictionary<byte, CustomRoles> SetRoles = [];
+    public static readonly Dictionary<byte, CustomRoles> RoleResult = [];
     public static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     [Obfuscation(Exclude = true)]
