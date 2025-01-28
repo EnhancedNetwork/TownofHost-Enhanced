@@ -55,16 +55,13 @@ internal class Godfather : RoleBase
         List <CustomRoles> BTAddonList = godfather.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()).ToList();
         //this list will only contain 1 element,or just be an empty list...
         
-        var ChangeRole = CustomRoles.Refugee;
-        foreach (var addon in BTAddonList)
+        var ChangeRole = BTAddonList.Any() ? BTAddonList.FirstOrDefault() switch
         {
-            ChangeRole = addon switch
-            {
-                CustomRoles.Admired => CustomRoles.Sheriff,
-                CustomRoles.Recruit => CustomRoles.Sidekick,
-                _ => CustomRoles.Refugee
-            };
-        }
+            CustomRoles.Admired => CustomRoles.Sheriff,
+            CustomRoles.Recruit => CustomRoles.Sidekick,
+            _ => CustomRoles.Refugee
+        } 
+        : CustomRoles.Refugee;
         var ChangeAddon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.Madmate;
 
         if (GodfatherTarget.Contains(target.PlayerId))
