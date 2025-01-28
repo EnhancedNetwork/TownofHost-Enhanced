@@ -52,9 +52,17 @@ internal class Godfather : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         var godfather = _Player;
-        bool iscrew = godfather.Is(CustomRoles.Admired) || godfather.Is(CustomRoles.Narc);
-        var ChangeRole = iscrew ? CustomRoles.Sheriff : CustomRoles.Refugee;
-        var ChangeAddon = iscrew ? CustomRoles.Admired : CustomRoles.Madmate;
+        List <CustomRoles> BTAddonList = godfather.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()).ToList();
+        //this list will only contain 1 element,or just be an empty list...
+        
+        var ChangeRole = BTAddonList.Any() ? BTAddonList.FirstOrDefault() switch
+        {
+            CustomRoles.Admired => CustomRoles.Sheriff,
+            CustomRoles.Recruit => CustomRoles.Sidekick,
+            _ => CustomRoles.Refugee
+        } 
+        : CustomRoles.Refugee;
+        var ChangeAddon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.Madmate;
         if (GodfatherTarget.Contains(target.PlayerId))
         {
             if (!killer.IsAlive()) return;
