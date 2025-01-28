@@ -2095,9 +2095,9 @@ internal class ChatCommands
             }
 
             GhostRoleAssign.forceRole.Remove(pid);
-            RoleAssign.SetRoles.Remove(pid);
-            RoleAssign.SetRoles.Add(pid, result);
-            Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), Translator.GetActualRoleName(result), playerId));
+            RoleAssign.SetRoles[pid] = result;
+
+            Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), Translator.GetActualRoleName(result)), playerId);
             return;
         }
 
@@ -2111,15 +2111,13 @@ internal class ChatCommands
                     _ => CustomRoles.CrewmateTOHE
 
                 };
-                RoleAssign.SetRoles.Remove(pid);
-                RoleAssign.SetRoles.Add(pid, setrole);
+                RoleAssign.SetRoles[pid] = setrole;
                 GhostRoleAssign.forceRole[pid] = result;
             }
             else
             {
                 GhostRoleAssign.forceRole.Remove(pid);
-                RoleAssign.SetRoles.Remove(pid);
-                RoleAssign.SetRoles.Add(pid, result);
+                RoleAssign.SetRoles[pid] = result;
             }
         }
 
