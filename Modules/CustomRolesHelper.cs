@@ -20,6 +20,7 @@ public static class CustomRolesHelper
     {
         // Vanilla roles
         if (role.IsVanilla()) return role;
+        if (role is CustomRoles.GM) return CustomRoles.Crewmate;
 
         // Role base
         if (role.GetStaticRoleClass() is not DefaultSetup) return role.GetStaticRoleClass().ThisRoleBase;

@@ -214,6 +214,7 @@ public static class Options
     public static OptionItem RemovePetsAtDeadPlayers;
 
     public static OptionItem CheatResponses;
+    public static OptionItem CrossLanguageGetRole;
     public static OptionItem NewHideMsg;
 
     public static OptionItem AutoDisplayKillLog;
@@ -395,6 +396,7 @@ public static class Options
     public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
+    public static OptionItem NonCrewRandomCommonTasks;
 
     // Ghost
     public static OptionItem GhostIgnoreTasks;
@@ -1349,7 +1351,11 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
-        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false);
+        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
+            .SetColor(Color.cyan); ;
+
+        CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.ModSettings, false)
+            .SetColor(Color.cyan);
 
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
@@ -1948,6 +1954,10 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
+
+        NonCrewRandomCommonTasks = BooleanOptionItem.Create(60791, "NonCrewRandomCommonTasks", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定
         TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
