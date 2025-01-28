@@ -196,6 +196,7 @@ internal class FortuneTeller : RoleBase
 
             if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+            else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
 
             text = GetTargetRoleList(completeRoleList.FirstOrDefault(x => x.Contains(targetRole)));
 
