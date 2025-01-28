@@ -1900,7 +1900,7 @@ public static class Utils
                         else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
                         else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
-                        SelfName.Clear().Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
+                        SelfName.Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
                     }
 
                     if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
@@ -1940,14 +1940,14 @@ public static class Utils
                         SelfName.Clear().Append($"<size={fontSize}>{SelfTaskText}</size>\r\n{FFAName}");
                         break;
                     default:
+                        var oldSelfName = SelfName.ToString();
                         if (!IsDisplayInfo)
                         {
-                            SelfName.Clear().Append(SelfRoleName.Append($"\r\n{SelfName}"));
+                            SelfName.Clear().Append(SelfRoleName + "\r\n" + oldSelfName);
                         }
                         else
                         {
-                            var oldSelfName = SelfName;
-                            SelfName.Clear().Append($"<size=425%>\n \n</size>{SelfRoleName}\r\n{oldSelfName}");
+                            SelfName.Clear().Append("<size=425%>\n \n</size>" + SelfRoleName + "\r\n" + oldSelfName);
                         }
                         break;
                 }
