@@ -2024,11 +2024,22 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, DeathReason reason)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
         // Skip Tasks while Anti Blackout but not for real exiled
         if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != __instance.PlayerId) return;
+
+        // Fix bug when player was dead due RpcExile while camera uses
+        if (reason is DeathReason.Exile)
+        {
+            var securityCameraSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.TryCast<SecurityCameraSystemType>() : null;
+            if (securityCameraSystem != null)
+            {
+                securityCameraSystem.PlayersUsing.Remove(__instance.PlayerId);
+                securityCameraSystem.IsDirty = true;
+            }
+        }
 
         __instance.RpcRemovePet();
     }
