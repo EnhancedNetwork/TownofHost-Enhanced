@@ -52,15 +52,15 @@ internal class Godfather : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         var godfather = _Player;
-        List <CustomRoles> BTAddonList = godfather.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()).ToList();
+        List<CustomRoles> BTAddonList = godfather.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()).ToList();
         //this list will only contain 1 element,or just be an empty list...
-        
+
         var ChangeRole = BTAddonList.Any() ? BTAddonList.FirstOrDefault() switch
         {
             CustomRoles.Admired => CustomRoles.Sheriff,
             CustomRoles.Recruit => CustomRoles.Sidekick,
             _ => CustomRoles.Refugee
-        } 
+        }
         : CustomRoles.Refugee;
         var ChangeAddon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.Madmate;
         if (GodfatherTarget.Contains(target.PlayerId))
@@ -72,7 +72,7 @@ internal class Godfather : RoleBase
                 killer.GetRoleClass()?.OnRemove(killer.PlayerId);
                 killer.RpcSetCustomRole(ChangeRole);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-                if (ChangeRole is CustomRoles.Refugee 
+                if (ChangeRole is CustomRoles.Refugee
                     && (ChangeAddon is not CustomRoles.Madmate || godfather.Is(CustomRoles.Madmate)))//Can Godfather become Madmate?
                     killer.RpcSetCustomRole(ChangeAddon);
             }
