@@ -64,15 +64,14 @@ public class RoleAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+                foreach (PlayerControl pc in Main.AllPlayerControls)
                 {
-                    if (Main.EnableGM.Value && pc == PlayerControl.LocalPlayer)
+                    if (Main.EnableGM.Value && pc.IsHost())
                     {
                         RoleResult[pc.PlayerId] = CustomRoles.GM;
                         continue;
                     }
-
-                    if (TagManager.AssignGameMaster(pc.FriendCode))
+                    else if (TagManager.AssignGameMaster(pc.FriendCode))
                     {
                         RoleResult[pc.PlayerId] = CustomRoles.GM;
                         Logger.Info($"Assign Game Master due to tag for [{pc.PlayerId}]{pc.GetRealName()}", "TagManager");
