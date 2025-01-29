@@ -1249,7 +1249,7 @@ class FixedUpdateInNormalGamePatch
                     }
                 }
 
-                if (KickPlayerPatch.AttemptedKickPlayerList.Any())
+                if (KickPlayerPatch.AttemptedKickPlayerList.Count > 0)
                 {
                     foreach (var item in KickPlayerPatch.AttemptedKickPlayerList)
                     {
@@ -1311,26 +1311,19 @@ class FixedUpdateInNormalGamePatch
                 if (!lowLoad)
                 {
                     if (Main.RefixCooldownDelay <= 0)
-                        foreach (var pc in Main.AllPlayerControls)
-                        {
-                            if (pc.Is(CustomRoles.Vampire) || pc.Is(CustomRoles.Warlock) || pc.Is(CustomRoles.Ninja))
-                                Main.AllPlayerKillCooldown[pc.PlayerId] = Options.DefaultKillCooldown * 2;
+                    {
+                        if (player.Is(CustomRoles.Vampire) || player.Is(CustomRoles.Warlock) || player.Is(CustomRoles.Ninja))
+                            Main.AllPlayerKillCooldown[playerId] = Options.DefaultKillCooldown * 2;
 
-                            if (pc.Is(CustomRoles.Poisoner))
-                                Main.AllPlayerKillCooldown[pc.PlayerId] = Poisoner.KillCooldown.GetFloat() * 2;
-                        }
+                        else if (player.Is(CustomRoles.Poisoner))
+                            Main.AllPlayerKillCooldown[playerId] = Poisoner.KillCooldown.GetFloat() * 2;
+                    }
 
                     //Mini's count down needs to be done outside if intask if we are counting meeting time
                     if (player.GetRoleClass() is Mini min)
                     {
                         if (!playerData.Disconnected)
                             min.OnFixedUpdates(player, nowTime);
-                    }
-
-                    if (!isInTask && !isMeeting && player.Is(CustomRoles.Spurt) && !Mathf.Approximately(Main.AllPlayerSpeed[playerId], Spurt.StartingSpeed[playerId])) // fix ludicrous bug
-                    {
-                        Main.AllPlayerSpeed[playerId] = Spurt.StartingSpeed[playerId];
-                        player.MarkDirtySettings();
                     }
                 }
 

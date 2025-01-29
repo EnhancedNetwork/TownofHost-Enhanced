@@ -37,16 +37,16 @@ internal class Spurt : IAddon
     { }
     public void Add(byte playerId, bool gameIsLoading = true)
     {
-        foreach ((PlayerControl pc, float speed) in Main.AllAlivePlayerControls.Zip(Main.AllPlayerSpeed.Values))
-        {
-            if (pc.Is(CustomRoles.Spurt))
-            {
-                LastPos[pc.PlayerId] = pc.GetCustomPosition();
-                LastNum[pc.PlayerId] = 0;
-                LastUpdate[pc.PlayerId] = Utils.TimeStamp;
-                StartingSpeed[pc.PlayerId] = speed;
-            }
-        }
+        var player = playerId.GetPlayer();
+        if (player == null) return;
+
+        LastPos[playerId] = player.GetCustomPosition();
+        LastNum[playerId] = 0;
+        LastUpdate[playerId] = Utils.TimeStamp;
+        StartingSpeed[playerId] = Main.AllPlayerSpeed.GetValueOrDefault(playerId, 1f);
+
+        Main.AllPlayerSpeed[playerId] = StartingSpeed[playerId];
+        playerId.GetPlayer()?.MarkDirtySettings();
     }
     public void Remove(byte playerId)
     {
