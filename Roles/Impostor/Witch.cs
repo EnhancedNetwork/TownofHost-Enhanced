@@ -207,7 +207,7 @@ internal class Witch : RoleBase
 
         if (isForMeeting && IsSpelled(seen.PlayerId))
         {
-            return Utils.ColorString(Palette.ImpostorRed, "ÔÇá");
+            return Utils.ColorString(Palette.ImpostorRed, "†");
         }
         return string.Empty;
     }

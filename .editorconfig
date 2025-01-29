@@ -1,4 +1,10 @@
-﻿[*.cs]
+root = true
+ 
+[*]
+charset = utf-8
+end_of_line = crlf
+
+[*.cs]
 
 # CA2211: Non-constant fields should not be visible
 dotnet_diagnostic.CA2211.severity = none
@@ -99,6 +105,7 @@ csharp_style_inlined_variable_declaration = true:suggestion
 csharp_style_deconstructed_variable_declaration = true:suggestion
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
+csharp_prefer_system_threading_lock = true:suggestion
 
 [*.vb]
 #### 命名样式 ####

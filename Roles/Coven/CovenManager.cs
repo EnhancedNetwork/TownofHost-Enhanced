@@ -124,7 +124,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             necroVotes.Clear();
             return;
         }
-        Dictionary<byte, int> voteCount = new Dictionary<byte, int>();
+        Dictionary<byte, int> voteCount = [];
         byte currentResult = byte.MinValue;
         byte lastResult = byte.MinValue;
         foreach (byte voter in necroVotes.Keys)
@@ -165,7 +165,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 
     public static void NecronomiconCheck()
     {
-        if (GetPlayerById(necroHolder) == null || necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive() || !GetPlayerById(necroHolder).IsPlayerCoven())
+        if (necroHolder == byte.MaxValue || !GetPlayerById(necroHolder).IsAlive() || !GetPlayerById(necroHolder).IsPlayerCoven())
         {
             GiveNecronomicon();
         }
