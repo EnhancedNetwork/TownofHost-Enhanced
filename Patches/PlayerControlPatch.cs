@@ -1086,7 +1086,7 @@ class FixedUpdateInNormalGamePatch
     public static readonly Dictionary<byte, TMPro.TextMeshPro> RoleTextCache = [];
     private static int LevelKickBufferTime = 20;
 
-    public static void Postfix(PlayerControl __instance)
+    public static async void Postfix(PlayerControl __instance)
     {
         if (__instance == null || __instance.PlayerId == 255) return;
 
@@ -1113,7 +1113,7 @@ class FixedUpdateInNormalGamePatch
 
         try
         {
-            DoPostfix(__instance).Wait();
+            await DoPostfix(__instance);
         }
         catch (Exception ex)
         {
