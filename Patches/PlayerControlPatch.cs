@@ -90,7 +90,7 @@ class CheckMurderPatch
 
         if (CheckForInvalidMurdering(killer, target, true) == false)
         {
-            killer.RpcMurderPlayer(target, error: true);
+            killer.RpcMurderPlayer(target, didSucceed: false);
             return false;
         }
 
@@ -543,7 +543,7 @@ class RpcMurderPlayerPatch
             return false;
         }
 
-        MurderResultFlags murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError;
+        MurderResultFlags murderResultFlags = didSucceed ? MurderResultFlags.Succeeded : MurderResultFlags.FailedError | MurderResultFlags.DecisionByHost;
         if (AmongUsClient.Instance.AmClient)
         {
             __instance.MurderPlayer(target, murderResultFlags);
@@ -554,7 +554,7 @@ class RpcMurderPlayerPatch
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
 
         return false;
-        // There is no need to include DecisionByHost. DecisionByHost will make client check protection locally and cause confusion.
+        // There is no need to include DecisionByHost in Succeeded kill attempt. DecisionByHost will make client check protection locally and cause confusion.
     }
 }
 
