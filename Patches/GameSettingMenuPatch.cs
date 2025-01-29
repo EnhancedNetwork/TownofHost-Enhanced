@@ -226,7 +226,7 @@ public class GameSettingMenuPatch
         GameSettingsLabel.DestroyTranslator();
         GameSettingsLabel.text = GetString(Options.CurrentGameMode.ToString());
 
-        var FreeChatField = FastDestroyableSingleton<ChatController>.Instance.freeChatField;
+        var FreeChatField = DestroyableSingleton<ChatController>.Instance.freeChatField;
         var TextField = Object.Instantiate(FreeChatField, ParentLeftPanel.parent);
         TextField.transform.localScale = new Vector3(0.3f, 0.59f, 1);
         TextField.transform.localPosition = new Vector3(-2.07f, -2.57f, -5f);
