@@ -4,15 +4,58 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-public static class OptionShower
+public class OptionShower : MonoBehaviour
 {
     public static int currentPage = 0;
     public static List<string> pages = [];
     private static byte DelayInUpdate = 0;
-    static OptionShower()
-    {
 
+    public static void Create(TMPro.TextMeshPro baseText)
+    {
+        if (Instance != null) Object.Destroy(Instance.gameObject);
+
+        var Text = Instantiate(baseText);
+
+        Instance = Text;
+        var instance = Instance.gameObject.AddComponent<OptionShower>();
+        instance.name = "TOHEOptionShower";
+
+        Text.enabled = true;
+        Text.text = "";
+        Text.color = Color.white;
+        Text.outlineColor = Color.black;
+        Text.alignment = TMPro.TextAlignmentOptions.TopLeft;
     }
+
+    public static TMPro.TextMeshPro Instance;
+    public Camera Camera;
+    public Vector3 TextOffset = new(0.32f, 0f, 0f);
+
+    public void Update()
+    {
+        if (PlayerControl.LocalPlayer == null)
+        {
+            Instance.text = "test";
+            return;
+        }
+
+        if (Camera == null) Camera = !HudManager.InstanceExists ? Camera.main : HudManager.Instance.PlayerCam.GetComponent<Camera>();
+
+        if (Camera != null)
+        {
+            transform.position = AspectPosition.ComputeWorldPosition(Camera, AspectPosition.EdgeAlignments.LeftTop, TextOffset);
+        }
+
+        UpdateText();
+    }
+
+    public void UpdateText()
+    {
+        if (!Instance.enabled) return;
+
+        Instance.text = GetTextNoFresh();
+    }
+
     public static string GetTextNoFresh()
     {
         try
