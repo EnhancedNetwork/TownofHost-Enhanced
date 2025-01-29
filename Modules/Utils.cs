@@ -491,7 +491,7 @@ public static class Utils
 
                 if (seer == null || target == null) return (RoleText.ToString(), RoleColor);
 
-                var oldRoleText = RoleText;
+                var oldRoleText = RoleText.ToString();
 
                 // if player last imp
                 if (LastImpostor.currentId == targetId)
@@ -512,7 +512,7 @@ public static class Utils
                     }
                     static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString(str);
 
-                    oldRoleText = RoleText;
+                    oldRoleText = RoleText.ToString();
                     // if the player is playing on a console platform
                     if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
@@ -525,7 +525,7 @@ public static class Utils
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
                         {
-                            oldRoleText = RoleText;
+                            oldRoleText = RoleText.ToString();
                             RoleText.Clear().Append(ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname(subRole.ToString())}) " : $"{Getname(subRole.ToString())} ", withoutEnding: true) + oldRoleText);
                         }
                     }
@@ -533,7 +533,10 @@ public static class Utils
                     else
                     {
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
+                        {
+                            oldRoleText = RoleText.ToString();
                             RoleText.Clear().Append(ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname(subRole.ToString())}) " : $"{Getname(subRole.ToString())} ") + oldRoleText);
+                        }
                     }
                 }
 
@@ -551,7 +554,7 @@ public static class Utils
                             case CustomRoles.Admired:
                             case CustomRoles.Enchanted:
                                 RoleColor = GetRoleColor(subRole);
-                                oldRoleText = RoleText;
+                                oldRoleText = RoleText.ToString();
                                 RoleText.Clear().Append(GetRoleString($"{subRole}-") + oldRoleText);
                                 break;
 
