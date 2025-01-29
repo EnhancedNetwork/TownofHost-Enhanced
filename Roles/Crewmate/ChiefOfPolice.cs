@@ -1,5 +1,6 @@
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -97,7 +98,11 @@ internal class ChiefOfPolice : RoleBase
         }
         else
         {
-            if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
+            if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam() || target.IsNeutralApocalypse())
+            {
+                suidice = true;
+            }
+            if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini) || target.Is(CustomRoles.Loyal))
             {
                 suidice = true;
             }

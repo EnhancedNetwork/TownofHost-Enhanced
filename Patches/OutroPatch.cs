@@ -229,7 +229,7 @@ class SetEverythingUpPatch
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
             }
         }
-        if (AmongUsClient.Instance.AmHost && Main.PlayerStates[0].MainRole == CustomRoles.GM)
+        if (AmongUsClient.Instance.AmHost && Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].MainRole == CustomRoles.GM)
         {
             __instance.WinText.text = GetString("GameOver");
             __instance.WinText.color = Utils.GetRoleColor(CustomRoles.GM);
@@ -354,7 +354,7 @@ class SetEverythingUpPatch
 
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
-                        sb.Append($"\nÒÇÇ ").Append(EndGamePatch.SummaryText[id.Item2]);
+                        sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
                     break;
                 }
             default: // Normal game

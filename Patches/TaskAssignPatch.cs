@@ -223,7 +223,7 @@ class RpcSetTasksPatch
         {
             if (__instance.Object != null)
             {
-                if (__instance.Object.GetCustomRole().IsCrewmateTeamV2() && !__instance.Object.GetCustomSubRoles().Any(x => !x.IsCrewmateTeamV2()))
+                if (__instance.Object.IsPlayerCrewmateTeam() || !Options.NonCrewRandomCommonTasks.GetBool())
                 {
                     foreach (var id in decidedCommonTasks)
                         TasksList.Add(id);

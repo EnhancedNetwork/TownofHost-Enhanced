@@ -77,7 +77,7 @@ internal class Psychic : RoleBase
     {
         if (target == null || seer == null) return false;
         var targetRole = target.GetCustomRole();
-        if (seer.Is(CustomRoles.Madmate)) return targetRole.IsNK() || targetRole.IsNE() || targetRole.IsCrewKiller();
+        if (seer.Is(CustomRoles.Madmate)) return targetRole.IsNeutral() || targetRole.IsCrewKiller();
         else return RedPlayer != null && RedPlayer.Contains(target.PlayerId);
     }
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)

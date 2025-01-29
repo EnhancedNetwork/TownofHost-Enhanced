@@ -43,7 +43,8 @@ public static class TagManager
     public static bool CheckFriendCode(string friendCode, bool log = false)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -63,7 +64,8 @@ public static class TagManager
     public static string ReadTagName(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -88,7 +90,8 @@ public static class TagManager
     public static string ReadTagColor(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -113,7 +116,8 @@ public static class TagManager
     public static int ReadPermission(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -139,7 +143,8 @@ public static class TagManager
     public static bool CanUseSayCommand(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -165,7 +170,8 @@ public static class TagManager
     public static bool CanUseEndCommand(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -191,7 +197,8 @@ public static class TagManager
     public static bool CanUseExecuteCommand(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
@@ -217,7 +224,8 @@ public static class TagManager
     public static bool AssignGameMaster(string friendCode)
     {
         var folderPaths = Directory.GetDirectories(TAGS_FILE_PATH)
-            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))  // Ignore specific folders
+            .Where(folder => !new[] { "MOD_TAGS", "VIP_TAGS", "SPONSOR_TAGS" }.Contains(Path.GetFileName(folder)))
+            .Concat([TAGS_FILE_PATH])
             .ToList();
 
         var filePath = folderPaths
