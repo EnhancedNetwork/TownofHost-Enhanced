@@ -4,7 +4,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.AddOns;
 using static TOHE.Options;
 using static TOHE.Utils;
-using static TOHE.Translator;
+using static TOHE.Translator; 
 
 namespace TOHE.Roles.Crewmate;
 
@@ -141,10 +141,12 @@ internal class TaskManager : RoleBase
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (VisualTasksCompleted.Count > 0)
-            MeetingHudStartPatch.AddMsg(string.Format(GetString("TaskManager_ListCompletedVisualTasksMessage"), GetString(VisualTasksCompleted.Select(task => task.Value).ToString())), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("TaskManager_ListCompletedVisualTasksMessage"), GetVisualTaskList()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
         else
             MeetingHudStartPatch.AddMsg(GetString("TaskManager_NoOneCompletedVisualTasksMessage"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
     }
+    private static string GetVisualTaskList() => string.Join(", ", VisualTasksCompleted.Values.Select(str => GetString(str)));
+
     public override string GetProgressText(byte PlayerId, bool comms)
     {
         if (!CanSeeAllCompletedTasks.GetBool()) return string.Empty;
