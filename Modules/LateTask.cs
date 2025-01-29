@@ -33,25 +33,23 @@ class LateTask
     }
     public static void Update(float deltaTime)
     {
-        var TasksToRemove = new List<LateTask>();
         foreach (var task in Tasks.ToArray())
         {
             try
             {
                 if (task.Run(deltaTime))
                 {
-                    if (task.name != "")
-                        if (task.shouldLog)
-                            Logger.Info($"\"{task.name}\" is finished", "LateTask");
-                    TasksToRemove.Add(task);
+                    if (task.name is not "" && task.shouldLog)
+                        Logger.Info($"\"{task.name}\" is finished", "LateTask");
+
+                    Tasks.Remove(task);
                 }
             }
             catch (Exception ex)
             {
                 Logger.Error($"{ex.GetType()}: {ex.Message}  in \"{task.name}\"\n{ex.StackTrace}", "LateTask.Error", false);
-                TasksToRemove.Add(task);
+                Tasks.Remove(task);
             }
         }
-        TasksToRemove.ForEach(task => Tasks.Remove(task));
     }
 }

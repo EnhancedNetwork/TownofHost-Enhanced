@@ -898,7 +898,7 @@ class IntroCutsceneDestroyPatch
                 }
             }
 
-            
+
             if (GhostRoleAssign.forceRole.Any()) // Incase user has /up access
             {
                 // Needs to be delayed for the game to load it properly

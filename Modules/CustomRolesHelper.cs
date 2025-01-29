@@ -68,7 +68,7 @@ public static class CustomRolesHelper
 
         if (player == null) return false;
         var customRole = player.GetCustomRole();
-        return customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
+        return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
     }
     //This is a overall check for vanilla clients to see if they are imp basis 
     public static bool IsGhostRole(this CustomRoles role)
@@ -492,7 +492,7 @@ public static class CustomRolesHelper
 
         return player.MainRole.IsCoven();
     }
-    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
+    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true, bool checkSelfAddOn = true)
     {
         // Only add-ons
         if (!role.IsAdditionRole() || pc == null) return false;
@@ -501,7 +501,7 @@ public static class CustomRolesHelper
             return false;
 
         // if player already has this addon
-        else if (pc.Is(role)) return false;
+        else if (checkSelfAddOn && pc.Is(role)) return false;
 
         // Checking Lovers and Romantics
         else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
