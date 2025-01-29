@@ -80,6 +80,7 @@ internal class Godfather : RoleBase
             }
             else
             {
+                if (ChangeAddon == CustomRoles.Narc) ChangeAddon = CustomRoles.Admired;
                 killer.RpcSetCustomRole(ChangeAddon);
             }
 
