@@ -182,7 +182,7 @@ public static class Camouflage
                 yield return null;
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(GameStates.IsMeeting ? 0f : 0.1f);
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)
