@@ -2027,16 +2027,17 @@ public static class PlayerControlDiePatch
     public static void Postfix(PlayerControl __instance, DeathReason reason)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        var playerId = __instance.PlayerId;
         // Skip Tasks while Anti Blackout but not for real exiled
-        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != __instance.PlayerId) return;
+        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != playerI) return;
 
         // Fix bug when player was dead due RpcExile while camera uses
         if (reason is DeathReason.Exile)
         {
             var securityCameraSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.TryCast<SecurityCameraSystemType>() : null;
-            if (securityCameraSystem != null)
+            if (securityCameraSystem != null && securityCameraSystem.PlayersUsing.Contains(playerId))
             {
-                securityCameraSystem.PlayersUsing.Remove(__instance.PlayerId);
+                securityCameraSystem.PlayersUsing.Remove(playerId);
                 securityCameraSystem.IsDirty = true;
             }
         }
