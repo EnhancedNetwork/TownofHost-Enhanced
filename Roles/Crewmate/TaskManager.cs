@@ -26,6 +26,7 @@ internal class TaskManager : RoleBase
 
     private static List<CustomRoles> Addons = [];
     private static readonly Dictionary<int, byte> Target = [];
+    private static readonly Dictionary<TaskTypes, string> VisualTasksCompleted = [];
 
     public override void SetupCustomOption()
     {
@@ -46,6 +47,7 @@ internal class TaskManager : RoleBase
     {
         Addons.Clear();
         Target.Clear();
+        VisualTasksCompleted.Clear();
 
         if (CanGetHelpfulAddons.GetBool())
         {
@@ -100,6 +102,47 @@ internal class TaskManager : RoleBase
     public static void ClearData(byte targetId)
     {
         Target[targetId] = byte.MaxValue;
+    }
+    public override void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    {
+        VisualTaskIsCompleted(task.TaskType);
+    }
+    private static void VisualTaskIsCompleted(TaskTypes taskType)
+    {
+        if (VisualTasksCompleted.ContainsKey(taskType)) return;
+
+        if (!(taskType is 
+            TaskTypes.EmptyGarbage or 
+            TaskTypes.PrimeShields or 
+            TaskTypes.ClearAsteroids or 
+            TaskTypes.SubmitScan)) return;
+
+        var taskTypeStr = taskType.ToString();
+        switch (taskType)
+        {
+            case TaskTypes.EmptyGarbage:
+                taskTypeStr = "ClearGarbage";
+                break;
+            case TaskTypes.PrimeShields:
+                taskTypeStr = "ActivatingShields";
+                break;
+            case TaskTypes.ClearAsteroids:
+                taskTypeStr = "ShootingAtAsteroids";
+                break;
+            case TaskTypes.SubmitScan:
+                taskTypeStr = "MedbayScan";
+                break;
+        }
+
+        VisualTasksCompleted[taskType] = taskTypeStr;
+    }
+    public override void MeetingHudClear() => VisualTasksCompleted.Clear();
+    public override void OnMeetingHudStart(PlayerControl pc)
+    {
+        if (VisualTasksCompleted.Count > 0)
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("TaskManager_ListCompletedVisualTasksMessage"), GetString(VisualTasksCompleted.Select(task => task.Value).ToString())), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
+        else
+            MeetingHudStartPatch.AddMsg(GetString("TaskManager_NoOneCompletedVisualTasksMessage"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
     }
     public override string GetProgressText(byte PlayerId, bool comms)
     {

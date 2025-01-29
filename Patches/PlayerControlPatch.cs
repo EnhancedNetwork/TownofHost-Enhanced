@@ -1794,8 +1794,10 @@ class PlayerControlCompleteTaskPatch
         if (GameStates.IsHideNSeek) return true;
 
         var player = __instance;
+        var playerTask = player.myTasks?.ToArray().FirstOrDefault(task => task.Id == idx);
+        var taskType = playerTask != null ? playerTask.TaskType : TaskTypes.None;
 
-        Logger.Info($"Task Complete: {player.GetNameWithRole()}", "CompleteTask.Prefix");
+        Logger.Info($"Task Complete: {player.GetNameWithRole()} - Task id: {idx} Type: {taskType}", "CompleteTask.Prefix");
         var taskState = player.GetPlayerTaskState();
         taskState.Update(player);
 
@@ -1804,7 +1806,7 @@ class PlayerControlCompleteTaskPatch
         if (AmongUsClient.Instance.AmHost)
         {
             var playerIsOverridden = false;
-            if (TaskManager.GetTaskManager(player.PlayerId, out byte taskManagerId))
+            if (TaskManager.HasEnabled && TaskManager.GetTaskManager(player.PlayerId, out byte taskManagerId))
             {
                 var taskManager = taskManagerId.GetPlayer();
                 // check if task manager die after complete task
@@ -1828,7 +1830,6 @@ class PlayerControlCompleteTaskPatch
             }
 
             // Check others complete task
-            var playerTask = player.myTasks.ToArray().FirstOrDefault(task => task.Id == idx);
 
             if (playerTask != null)
                 CustomRoleManager.OthersCompleteThisTask(player, playerTask);

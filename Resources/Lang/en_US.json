@@ -3566,6 +3566,13 @@
   "TaskManager_FailGetAddon": "Fail get random add-on and complete random tasks",
   "TaskManager_YouGetAddon": "All players completed their tasks, so you get random add-on",
   "TaskManager_CompletedRandomTaskForPlayer": "<color=#00ffa5>Task Manager</color> has completed your random task!",
+  "TaskManagerNoticeTitle": "TASK MANAGER",
+  "TaskManager_NoOneCompletedVisualTasksMessage": "No one completed visual tasks this round",
+  "TaskManager_ListCompletedVisualTasksMessage": "In this round visual tasks were completed: {0}",
+  "ClearGarbage": "Clear Garbage",
+  "ActivatingShields": "Activating Shields",
+  "ShootingAtAsteroids": "Shooting At Asteroids",
+  "MedbayScan": "Medbay Scan",
 
   "SpiritualistNoticeTitle": "SPIRITUALIST ",
   "SpiritualistNoticeMessage": "The Spiritualist has an arrow pointing to you!\nYou can use them to a killer or frame a Crewmate",
