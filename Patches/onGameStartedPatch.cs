@@ -92,6 +92,7 @@ internal class ChangeRoleSettings
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
             VentSystemDeterioratePatch.LastClosestVent.Clear();
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport.Clear();

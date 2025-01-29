@@ -58,6 +58,7 @@ class OnGameJoinedPatch
             Main.AllPlayerNames.Clear();
             Main.PlayerQuitTimes.Clear();
             KickPlayerPatch.AttemptedKickPlayerList = [];
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
