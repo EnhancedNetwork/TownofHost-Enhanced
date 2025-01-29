@@ -880,8 +880,6 @@ public enum CustomRoles
     SchrodingersCat,
     Seeker,
     SerialKiller,
-    Summoner,
-    Summoned,
     Shaman,
     Shocker,
     Shroud,
@@ -919,6 +917,8 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Summoner,
+    Summoned,
     VoodooMaster,
 
     //two-way camp
@@ -1012,7 +1012,8 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber
+    Youtuber,
+    LingeringPresence
 }
 //WinData
 [Obfuscation(Exclude = true)]
@@ -1090,7 +1091,6 @@ public enum AdditionalWinners
     None = -1,
     Lovers = CustomRoles.Lovers,
     Opportunist = CustomRoles.Opportunist,
-    Summoner = CustomRoles.Summoner,
     Summoned = CustomRoles.Summoned,
     Randomizer = CustomRoles.Randomizer,
     Evolver = CustomRoles.Evolver,

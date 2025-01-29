@@ -5,6 +5,7 @@ using System.Collections;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.CustomWinnerHolder;
@@ -95,13 +96,30 @@ class GameEndCheckerForNormal
 
             foreach (var pc in Main.AllPlayerControls)
             {
-                var countType = Main.PlayerStates[pc.PlayerId].countTypes;
+               
+                    var playerState = Main.PlayerStates[pc.PlayerId];
+                    if (playerState.IsRandomizer)
+                    {
+                        Logger.Info($"Skipping Randomizer {pc.name} from game-ending criteria.", "CheckEndCriteria");
+
+
+                        {
+                            pc.RpcSetCustomRole(CustomRoles.Randomizer);
+                            pc.RpcChangeRoleBasis(CustomRoles.Crewmate);
+                            Logger.Info($"Reverted {pc.name} to Randomizer before game-end checks.", "CheckEndCriteria");
+                        }
+
+                        continue;
+                    }
+
+                    var countType = Main.PlayerStates[pc.PlayerId].countTypes;
 
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
                         if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId) && !Main.PlayerStates[pc.PlayerId].IsNecromancer ||
+                            (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Crewmate)) 
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
@@ -112,7 +130,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Impostor:
-                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                        if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer || (playerState.IsRandomizer && playerState.LockedTeam == Custom_Team.Impostor))
                             || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -388,37 +406,27 @@ class GameEndCheckerForNormal
                             AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                             break;
 
-                        case CustomRoles.Summoner:
-                            if (WinnerTeam == CustomWinner.Crewmate && pc.IsAlive()) // Ensure Summoner is alive and Crewmates have won
-                            {
-                                WinnerIds.Add(pc.PlayerId);
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Summoner);
-
-                                // Mark Summoner as having won
-                                Summoner.UpdateWinCondition(true);
-                                Logger.Info($"Summoner {pc.PlayerId} has won as part of the Crew victory.", "Summoner");
-                            }
-                            break;
-
-
-
                         case CustomRoles.Summoned:
-                            if (Summoner.HasWon) // Ensure Summoner has won
+                            // Ensure Coven has won
+                            if (WinnerTeam == CustomWinner.Coven)
                             {
-                                if (Summoner.SummonedKillRequirement.GetInt() == 0) // No kill requirement
+                                var summonedState = Main.PlayerStates[pc.PlayerId].RoleClass as Summoned;
+
+                                // Check if Summoned has met the kill requirement
+                                if (Summoner.SummonedKillRequirement.GetInt() == 0 ||
+                                    (summonedState != null && summonedState.NumKills >= Summoner.SummonedKillRequirement.GetInt()))
                                 {
                                     WinnerIds.Add(pc.PlayerId);
-                                    AdditionalWinnerTeams.Add(AdditionalWinners.Summoned);
-                                    Logger.Info($"Summoned {pc.PlayerId} has won with Summoner. No kill requirement.", "Summoner");
+                                    Logger.Info($"Summoned {pc.PlayerId} has won with the Coven, meeting all conditions.", "Summoner");
                                 }
-                                else if (Main.PlayerStates[pc.PlayerId].RoleClass is Summoned summoned
-                                         && summoned.NumKills >= Summoner.SummonedKillRequirement.GetInt()) // Meets kill requirement
+                                else
                                 {
-                                    WinnerIds.Add(pc.PlayerId);
-                                    AdditionalWinnerTeams.Add(AdditionalWinners.Summoned);
-                                    Logger.Info($"Summoned {pc.PlayerId} has won with Summoner after meeting kill requirement.", "Summoner");
-                                    Summoned.ResetKillCounts();
+                                    Logger.Info($"Summoned {pc.PlayerId} did not meet the kill requirement and does not win.", "Summoner");
                                 }
+                            }
+                            else
+                            {
+                                Logger.Info($"Summoned {pc.PlayerId} does not win as Coven has not won.", "Summoner");
                             }
                             break;
 
@@ -482,7 +490,7 @@ class GameEndCheckerForNormal
                 }
 
                 //Neutral Win Together
-                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor() || Utils.GetPlayerById(x).GetCustomRole().IsCoven()) && !Main.PlayerStates[x].IsNecromancer))
+                if (Options.NeutralWinTogether.GetBool() && !WinnerIds.Any(x => Utils.GetPlayerById(x) != null && (Utils.GetPlayerById(x).GetCustomRole().IsCrewmate() || Utils.GetPlayerById(x).GetCustomRole().IsImpostor() || Utils.GetPlayerById(x).GetCustomRole().IsCoven()) && !Main.PlayerStates[x].IsNecromancer && Main.PlayerStates[x].IsRandomizer))
                 {
                     foreach (var pc in Main.AllPlayerControls)
                         if (pc.GetCustomRole().IsNeutral() && !WinnerIds.Contains(pc.PlayerId) && !WinnerRoles.Contains(pc.GetCustomRole()))
@@ -493,7 +501,7 @@ class GameEndCheckerForNormal
                     foreach (var id in WinnerIds)
                     {
                         var pc = Utils.GetPlayerById(id);
-                        if (pc == null || !pc.GetCustomRole().IsNeutral() || Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
+                        if (pc == null || !pc.GetCustomRole().IsNeutral() || Main.PlayerStates[pc.PlayerId].IsNecromancer || !Main.PlayerStates[pc.PlayerId].IsRandomizer) continue;
 
                         foreach (var tar in Main.AllPlayerControls)
                             if (!WinnerIds.Contains(tar.PlayerId) && tar.GetCustomRole() == pc.GetCustomRole())
@@ -512,13 +520,33 @@ class GameEndCheckerForNormal
                 }
             }
 
-            /*Keep Schrodinger cat win condition at last*/
             Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
+            foreach (var pc in Main.AllPlayerControls)
+
+
+                foreach (var player in Main.AllPlayerControls) // Renamed `pc` to `player` here
+                {
+                    var playerState = Main.PlayerStates[player.PlayerId];
+                    if (playerState.IsRandomizer)
+                    {
+                        // Call RandomizerWinCondition to evaluate the player's win condition
+                        Randomizer.RandomizerWinCondition(player);
+
+                        // If Randomizer met its win condition, log and add it to winners
+                        if (CustomWinnerHolder.WinnerIds.Contains(player.PlayerId))
+                        {
+                            Logger.Info($"Randomizer {player.name} has been added to the winners list.", "GameEnd");
+                        }
+                        else
+                        {
+                            Logger.Warn($"Randomizer {player.name} did not meet its win condition.", "GameEnd");
+                        }
+                    }
+
+                }
+
 
             ShipStatus.Instance.enabled = false;
-
-            Logger.Info($"Final WinnerTeam: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
-            Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
             // When crewmates win, show as impostor win, for displaying all names players
             //reason = reason is GameOverReason.HumansByVote or GameOverReason.HumansByTask ? GameOverReason.ImpostorByVote : reason;
             StartEndGame(reason);

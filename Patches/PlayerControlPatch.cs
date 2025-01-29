@@ -1729,7 +1729,7 @@ class PlayerControlCompleteTaskPatch
                             break;
 
                         case CustomRoles.Madmate when taskState.IsTaskFinished && player.Is(CustomRoles.Snitch):
-                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer).ToArray())
+                            foreach (var impostor in Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !Main.PlayerStates[pc.PlayerId].IsRandomizer).ToArray())
                             {
                                 NameColorManager.Add(impostor.PlayerId, player.PlayerId, "#ff1919");
                             }
@@ -1858,7 +1858,7 @@ public static class PlayerControlMixupOutfitPatch
 
         // if player is Desync Impostor and the vanilla sees player as Imposter, the vanilla process does not hide your name, so the other person's name is hidden
         if ((!PlayerControl.LocalPlayer.Is(Custom_Team.Impostor) // Not an Impostor
-            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer // Necromancer
+            || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsRandomizer // Necromancer/Randomizer
             ) &&
             PlayerControl.LocalPlayer.HasDesyncRole())  // Desync Impostor
         {

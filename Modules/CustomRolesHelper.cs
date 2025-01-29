@@ -1323,6 +1323,8 @@ public static class CustomRolesHelper
            var r when r.IsNA() => CountTypes.Apocalypse,
            var r when r.IsCoven() => CountTypes.Coven,
            CustomRoles.Enchanted => CountTypes.Coven,
+           CustomRoles.Summoner => CountTypes.Coven,
+           CustomRoles.Summoned => CountTypes.None,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,

@@ -3,30 +3,45 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
 using Hazel;
-namespace TOHE.Roles.Neutral;
+using UnityEngine.Playables;
+namespace TOHE.Roles.Coven;
 
 internal class Summoner : RoleBase
 {
     //===========================SETUP================================\\
-    private const int Id = 92000;
+    private const int Id = 920000;
     private static readonly HashSet<byte> playerIdList = new(); // Initialize properly
     public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+
+
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
+
+    public override CustomRoles Role => CustomRoles.Summoner;
     //================================================================\\
 
+    public override bool CanUseKillButton(PlayerControl pc)
+    {
+        return CovenManager.HasNecronomicon(pc); // Summoner can only kill with the Necronomicon
+    }
 
     public static OptionItem SummonedKillRequirement;
     private static OptionItem ReviveDelayOption;
     public static OptionItem DeathTimerOption;
     public static OptionItem KnowSummonedRoles;
     public static OptionItem KillCooldownOption;
+    public static OptionItem NecroKillCooldownOption;
     private static OptionItem RevealSummonedPlayer;
     private static OptionItem AllowSummoningRevivedPlayers;
     private static OptionItem HasAbilityUses;
     private static OptionItem MaxSummonsAllowed;
     public static bool HasWon { get; private set; } = false;
+
+    private readonly Dictionary<byte, RoleBase> SummonedOriginalRoles = new();
+
+    private readonly List<byte> SummonedPlayerIds = new List<byte>();
+
     private static int SummonsUsed = 0;
     public static readonly Dictionary<byte, int> SummonedKillCounts = new();
     private static readonly Dictionary<byte, CustomRoles> SavedStates = new();
@@ -36,43 +51,47 @@ internal class Summoner : RoleBase
     public static readonly Dictionary<byte, long> LastUpdateTimes = new();
 
     private bool HasSummonedThisMeeting = false;
-
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NecroKillCooldownOption.GetFloat();
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Summoner);
+        SetupRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Summoner);
 
         // Revive Delay
-        ReviveDelayOption = FloatOptionItem.Create(Id + 10, "Revive Delay", new(1f, 30f, 1f), 5f, TabGroup.NeutralRoles, false)
+        ReviveDelayOption = FloatOptionItem.Create(Id + 10, "Revive Delay", new(1f, 30f, 1f), 5f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
         // Death Timer
-        DeathTimerOption = FloatOptionItem.Create(Id + 11, "Summoned Player Duration", new(5f, 120f, 5f), 30f, TabGroup.NeutralRoles, false)
+        DeathTimerOption = FloatOptionItem.Create(Id + 11, "Summoned Player Duration", new(5f, 120f, 5f), 30f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
         // Kill Cooldown
-        KillCooldownOption = FloatOptionItem.Create(Id + 12, "Summoned Player Kill Cooldown", new(5f, 60f, 1f), 15f, TabGroup.NeutralRoles, false)
+        KillCooldownOption = FloatOptionItem.Create(Id + 12, "Summoned Player Kill Cooldown", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
-        KnowSummonedRoles = BooleanOptionItem.Create(Id + 13, "Know Summoner/Summoned Roles", true, TabGroup.NeutralRoles, false)
+        NecroKillCooldownOption = FloatOptionItem.Create(Id + 19, "Summoner Kill Cooldown with necronomicon", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
+        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
+        .SetValueFormat(OptionFormat.Seconds);
+
+        KnowSummonedRoles = BooleanOptionItem.Create(Id + 13, "Summoned knows other coven members", true, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        RevealSummonedPlayer = BooleanOptionItem.Create(Id + 14, "Reveal Summoned Player", true, TabGroup.NeutralRoles, false)
+        RevealSummonedPlayer = BooleanOptionItem.Create(Id + 14, "Reveal Summoned Player", true, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        SummonedKillRequirement = IntegerOptionItem.Create(Id + 15, "Summoned Kill Requirement", new(0, 2, 1), 0, TabGroup.NeutralRoles, false)
+        SummonedKillRequirement = IntegerOptionItem.Create(Id + 15, "Summoned Kill Requirement", new(0, 2, 1), 0, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
        .SetValueFormat(OptionFormat.Times);
 
-        AllowSummoningRevivedPlayers = BooleanOptionItem.Create(Id + 16, "AllowSummoningRevivedPlayers", false, TabGroup.NeutralRoles, false)
+        AllowSummoningRevivedPlayers = BooleanOptionItem.Create(Id + 16, "AllowSummoningRevivedPlayers", false, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        HasAbilityUses = BooleanOptionItem.Create(Id + 17, "Summoner_HasAbilityUses", true, TabGroup.NeutralRoles, false)
+        HasAbilityUses = BooleanOptionItem.Create(Id + 17, "Summoner_HasAbilityUses", true, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        MaxSummonsAllowed = IntegerOptionItem.Create(Id + 18, "Summoner_MaxSummonsAllowed", new(3, 15, 1), 5, TabGroup.NeutralRoles, false)
+        MaxSummonsAllowed = IntegerOptionItem.Create(Id + 18, "Summoner_MaxSummonsAllowed", new(3, 15, 1), 5, TabGroup.CovenRoles, false)
        .SetParent(HasAbilityUses).SetValueFormat(OptionFormat.Times);
     }
 
@@ -195,15 +214,15 @@ internal class Summoner : RoleBase
         summonerInstance.HasSummonedThisMeeting = true;
 
         // Send global message
-        string summonMessage = Summoner.RevealSummonedPlayer.GetBool()
+        string summonMessage = RevealSummonedPlayer.GetBool()
             ? $"The SUMMONER has brought {targetPlayer.GetRealName()} back to life! \nKillers beware!"
             : "The SUMMONER has brought someone back to life! \nKillers beware!";
         AddMsg(summonMessage, byte.MaxValue, "Summoner Announcement");
 
         // Send private message to the summoned player if hidden
-        if (!Summoner.RevealSummonedPlayer.GetBool())
+        if (!RevealSummonedPlayer.GetBool())
         {
-            Utils.SendMessage(
+            SendMessage(
                 "The summoner has chosen to revive you! \nHunt down the killers!",
                 targetPlayer.PlayerId
             );
@@ -218,21 +237,21 @@ internal class Summoner : RoleBase
     {
         ChatUpdatePatch.DoBlockChat = true;
 
-        // Define a set of decoy commands or filler messages
+      
         string[] decoyCommands = { "/summon" };
         var random = IRandom.Instance;
 
-        for (int i = 0; i < 20; i++) // Generate a few decoy messages
+        for (int i = 0; i < 20; i++) 
         {
             string decoyMessage = decoyCommands[random.Next(0, decoyCommands.Length)];
 
-            // Pick a random player for the decoy sender
+          
             var randomPlayer = Main.AllAlivePlayerControls.RandomElement();
 
             // Add the decoy message to the chat
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(randomPlayer, decoyMessage);
 
-            // Send the decoy message via RPC
+        
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
             writer.StartRpc(randomPlayer.NetId, (byte)RpcCalls.SendChat)
@@ -250,8 +269,8 @@ internal class Summoner : RoleBase
 
 
         // Send the actual message
-        Utils.SendMessage(
-            Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), title) + "\n" + message,
+        SendMessage(
+            ColorString(GetRoleColor(CustomRoles.Summoner), title) + "\n" + message,
             playerId
         );
 
@@ -308,33 +327,43 @@ internal class Summoner : RoleBase
 
     public void SummonPlayer(PlayerControl targetPlayer)
     {
-        if (!CanSummon())
+        if (!CanSummon()) return;
+
+        if (targetPlayer == null || targetPlayer.Data == null || targetPlayer.Data.IsDead)
         {
+            RevivePlayer(targetPlayer); // Revive first
+            SaveOriginalRole(targetPlayer); // Save their original role
+            SummonedPlayerIds.Add(targetPlayer.PlayerId); // Track the player ID
 
-            return;
+            // Assign the Summoned role
+            targetPlayer.RpcChangeRoleBasis(CustomRoles.Summoned);
+            targetPlayer.RpcSetCustomRole(CustomRoles.Summoned);
+
+            // Initialize role and tasks
+            var playerState = Main.PlayerStates[targetPlayer.PlayerId];
+            playerState.InitTask(targetPlayer); // Initialize tasks
+            targetPlayer.SyncSettings(); // Ensure UI updates
+            LastUpdateTimes[targetPlayer.PlayerId] = GetTimeStamp(); // Initialize timer
+            SummonedHealth[targetPlayer.PlayerId] = GetDeathTimer(targetPlayer.PlayerId); // Set death timer
+
+            NotifySummonedHealth((PlayerControl)targetPlayer.PlayerId); // Notify the player
+
+            SummonsUsed++;
+            Logger.Info($"Summoned player {targetPlayer.PlayerId}. Remaining summons: {MaxSummonsAllowed.GetInt() - SummonsUsed}", "Summoner");
         }
-
-
-
-        // Add your summoning code here
-        RevivePlayer(targetPlayer);
-
-        Logger.Info($"Summoned player {targetPlayer.PlayerId}. Remaining summons: {MaxSummonsAllowed.GetInt() - SummonsUsed}", "Summoner");
     }
 
-    private static void SaveOriginalRole(PlayerControl player)
-    {
-        // Check if the role is already saved
-        if (SavedStates.ContainsKey(player.PlayerId))
-        {
-            Logger.Warn($"Player {player.PlayerId}'s original role is already saved as {SavedStates[player.PlayerId]}. Skipping save.", "Summoner");
-            return;
-        }
 
-        // Save the player's original role
-        var originalRole = player.GetCustomRole();
-        SavedStates[player.PlayerId] = originalRole; // Save only the original role
-        Logger.Info($"Player {player.PlayerId}'s original role saved as {originalRole}.", "Summoner");
+
+
+    private void SaveOriginalRole(PlayerControl player)
+    {
+        if (!SummonedOriginalRoles.ContainsKey(player.PlayerId))
+        {
+            var originalRole = player.GetRoleClass();
+            SummonedOriginalRoles[player.PlayerId] = originalRole;
+            Logger.Info($"Saved original role for player {player.PlayerId}: {originalRole}.", "Summoner");
+        }
     }
 
 
@@ -342,98 +371,106 @@ internal class Summoner : RoleBase
 
     private void RestoreOriginalRole(PlayerControl player)
     {
-        if (SavedStates.TryGetValue(player.PlayerId, out var originalRole))
+        if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
-            // Change to the original role's basis
-
-            player.RpcChangeRoleBasis(originalRole);
-
-            // Assign the original role
-            player.RpcSetCustomRole(originalRole);
-
-            // Reinitialize the role class
-            player.GetRoleClass()?.OnAdd(player.PlayerId);
-
-            // Sync role settings with the client
-            player.SyncSettings();
-
-            // Ensure the player is marked as a ghost if their original role is ghost-based
-            var playerState = Main.PlayerStates[player.PlayerId];
-            playerState.IsDead = originalRole.IsGhostRole();
-
-            // Log role restoration
-            Logger.Info($"Player {player.PlayerId} restored to original role: {originalRole}, Role Basis: {ThisRoleBase}.", "Summoner");
-
-            // Clean up saved state
-            SavedStates.Remove(player.PlayerId);
+            player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
+            player.RpcSetCustomRole(originalRole.Role);
+            Logger.Info($"Restored player {player.PlayerId} to their original role: {originalRole}.", "Summoner");
         }
     }
 
+    
 
 
-
+    
 
 
     public void OnRoleRemove(byte playerId)
     {
-        foreach (var summonedId in SavedStates.Keys.ToList())
+        foreach (var summonedId in SummonedPlayerIds.ToList()) // Use ToList to avoid modifying the collection while iterating
         {
-            PlayerControl summonedPlayer = null;
-            foreach (var player in PlayerControl.AllPlayerControls)
+            PlayerControl summonedPlayer = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == summonedId);
+            if (summonedPlayer != null)
             {
-                if (player.PlayerId == summonedId)
-                {
-                    summonedPlayer = player;
-                    break;
-                }
-            }
+                // Restore the player's original role
+                RestoreOriginalRole(summonedPlayer);
 
-            if (summonedPlayer != null && summonedPlayer.IsAlive())
-            {
-                summonedPlayer.RpcExileV2(); // Kill the summoned player
-                RestoreOriginalRole(summonedPlayer); // Restore original role
+                // Teleport the player and handle their death
+                summonedPlayer.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
+                summonedPlayer.RpcMurderPlayer(summonedPlayer);
             }
         }
 
         Logger.Info($"Summoner with player ID {playerId} removed, and all summoned players reset.", "Summoner");
     }
+
+
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (!target.Is(CustomRoles.Summoner)) return;
 
-        Logger.Info($"Summoner {target.GetRealName()} has died. Restoring and killing all Summoned players.", "Summoner");
+        Logger.Info($"Summoner {target.PlayerId} has died. Resetting summoned players.", "Summoner");
 
-        foreach (var summonedId in SavedStates.Keys.ToList())
+        foreach (var summonedId in SummonedPlayerIds.ToList())
         {
             PlayerControl summonedPlayer = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == summonedId);
             if (summonedPlayer != null)
             {
-                // Restore the original role
+                // Restore the player's original role
                 RestoreOriginalRole(summonedPlayer);
 
-                // Kill the summoned player after restoring their role
+                // Teleport them to the black room
                 summonedPlayer.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
-                summonedPlayer.SetDeathReason(PlayerState.DeathReason.Expired); // Set a custom death reason
-                summonedPlayer.SetRealKiller(target); // Set the Summoner as the cause of death
-                summonedPlayer.RpcMurderPlayer(summonedPlayer); // Directly kill the player
-                Logger.Info($"Summoned player {summonedPlayer.GetRealName()} killed due to Summoner's death.", "Summoner");
+
+                // Force sync their death
+                summonedPlayer.RpcMurderPlayer(summonedPlayer);
             }
         }
 
-        SavedStates.Clear();
+        // Clear tracking
+        SummonedPlayerIds.Clear();
+        SummonedOriginalRoles.Clear();
+    }
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (!killer.Is(CustomRoles.Summoner)) return true;
+
+        // Prevent killing summoned players or other coven members
+        if (target.Is(CustomRoles.Summoned) || target.IsPlayerCoven())
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), "You cannot kill Summoned players or other Coven members!"));
+            return false; // Cancel the kill
+        }
+
+        return true; // Allow the kill otherwise
+    }
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        if (!killer.Is(CustomRoles.Summoner)) return;
+
+        
+
+        // Reset the kill cooldown to NecroKillCooldownOption if Summoner has the Necronomicon
+        if (CovenManager.HasNecronomicon(killer))
+        {
+            killer.SetKillCooldown(NecroKillCooldownOption.GetFloat());
+            Logger.Info($"Summoner {killer.PlayerId} reset kill cooldown to {NecroKillCooldownOption.GetFloat()} seconds.", "Summoner");
+        }
+
+        Logger.Info($"Summoner {killer.PlayerId} killed player {target.PlayerId}.", "Summoner");
     }
 
 
     public override string GetProgressText(byte playerId, bool comms)
     {
-        // Show nothing if ability uses are disabled
+
         if (!HasAbilityUses.GetBool()) return string.Empty;
 
         int maxSummons = MaxSummonsAllowed.GetInt();
         int remainingSummons = maxSummons - SummonsUsed;
         Color color = remainingSummons > 0 ? Color.green : Color.red;
 
-        return Utils.ColorString(color, $"{remainingSummons}/{maxSummons}");
+        return ColorString(color, $"{remainingSummons}/{maxSummons}");
     }
 
 
@@ -466,59 +503,35 @@ internal class Summoner : RoleBase
     {
         if (targetPlayer.IsAlive()) return;
 
-        new LateTask(() =>
+        _ = new LateTask(() =>
         {
             if (targetPlayer.IsAlive()) return;
 
-            // RPC Revive to ensure the player is properly revived
+            // Revive the player
             targetPlayer.RpcRevive();
 
-            // Handle players already in the Summoned role
-            // Save the player's current role and replace it with Summoned
+            // Save their original role
             SaveOriginalRole(targetPlayer);
 
-            if (!SavedStates.ContainsKey(targetPlayer.PlayerId))
-            {
-                SaveOriginalRole(targetPlayer);
-            }
-            // Update the player's role basis and set the custom role
-            targetPlayer.RpcChangeRoleBasis(CustomRoles.Summoned); // Update basis to Summoned
-            targetPlayer.RpcSetCustomRole(CustomRoles.Summoned);   // Assign Summoned role
+            // Assign Summoned role
+            targetPlayer.RpcChangeRoleBasis(CustomRoles.Summoned);
+            targetPlayer.RpcSetCustomRole(CustomRoles.Summoned);
+            SummonedPlayerIds.Add(targetPlayer.PlayerId);
 
-            // Check if the player has an existing kill count
-            if (targetPlayer.GetRoleClass() is Summoned summoned)
-            {
-                if (!SavedStates.ContainsKey(targetPlayer.PlayerId)) // First time being revived
-                {
-                    summoned.NumKills = 0; // Reset kill count to zero
-                    Logger.Info($"Player {targetPlayer.PlayerId} revived for the first time. Kill count reset.", "Summoner");
-                }
-                else
-                {
-                    // Restore the existing kill count
-                    if (SummonedKillCounts.TryGetValue(targetPlayer.PlayerId, out int existingKills))
-                    {
-                        summoned.NumKills = existingKills;
-                        Logger.Info($"Restored {targetPlayer.PlayerId}'s kill count to {summoned.NumKills}.", "Summoner");
-                    }
-                }
-            }
-
-            // Initialize role logic for the new role
-            targetPlayer.GetRoleClass()?.OnAdd(targetPlayer.PlayerId);
-
-            // Initialize tasks and abilities
+            // Initialize tasks and cooldowns
             var playerState = Main.PlayerStates[targetPlayer.PlayerId];
-            playerState.InitTask(targetPlayer); // Initialize tasks
-            targetPlayer.ResetKillCooldown();  // Reset kill cooldowns
+            playerState.InitTask(targetPlayer);
             playerState.ResetSubRoles();
 
-            // Sync player settings to ensure UI updates
+            targetPlayer.ResetKillCooldown();
             targetPlayer.SyncSettings();
 
-            Logger.Info($"Player {targetPlayer.PlayerId} revived and properly initialized as Summoned.", "Summoner");
+            Logger.Info($"Player {targetPlayer.PlayerId} revived and assigned Summoned role.", "Summoner");
+
         }, reviveDelay, "SummonerRevive");
     }
+
+
     public void SaveSummonedKillCount(PlayerControl summonedPlayer)
     {
         if (summonedPlayer.GetRoleClass() is Summoned summoned)
@@ -546,7 +559,7 @@ internal class Summoner : RoleBase
         }
 
         // Fallback to the configured default death timer
-        return Summoner.DeathTimerOption?.GetFloat() ?? 40f; // Default to 40 seconds if not set
+        return DeathTimerOption?.GetFloat() ?? 40f; // Default to 40 seconds if not set
     }
 
 
@@ -576,7 +589,7 @@ internal class Summoner : RoleBase
         if (player.Is(CustomRoles.Summoner) || player.Is(CustomRoles.Summoned))
         {
             var health = Mathf.RoundToInt(SummonedHealth[player.PlayerId]);
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoned), $"Time Remaining: {health}s"));
+            player.Notify(ColorString(GetRoleColor(CustomRoles.Summoned), $"Time Remaining: {health}s"));
         }
     }
 

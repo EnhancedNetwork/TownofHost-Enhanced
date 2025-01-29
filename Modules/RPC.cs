@@ -651,6 +651,8 @@ internal class RPCHandlerPatch
             case CustomRPC.Necronomicon:
                 CovenManager.ReceiveNecroRPC(reader);
                 break;
+
+
         }
     }
 
