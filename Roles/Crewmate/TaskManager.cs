@@ -69,7 +69,7 @@ internal class TaskManager : RoleBase
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
         
         List<NetworkedPlayerInfo.TaskInfo> allNotCompletedTasks = [];
-        var randomPlayer = Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
+        var randomPlayer = Main.AllAlivePlayerControls.Where(pc => taskManager.PlayerId != pc.PlayerId && pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
 
         if (randomPlayer != null)
             allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
@@ -88,6 +88,7 @@ internal class TaskManager : RoleBase
             }
             else
             {
+                Addons.RemoveAll(taskManager.Is);
                 taskManager.RpcSetCustomRole(Addons.RandomElement());
                 taskManager.Notify(GetString("TaskManager_YouGetAddon"));
             }

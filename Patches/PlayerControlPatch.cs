@@ -1825,7 +1825,7 @@ class PlayerControlCompleteTaskPatch
 
             var roleClass = player.GetRoleClass();
             // Check task complete for role
-            if (roleClass != null)
+            if (roleClass != null && !playerIsOverridden)
             {
                 ret = roleClass.OnTaskComplete(player, taskState.CompletedTasksCount, taskState.AllTasksCount);
             }
