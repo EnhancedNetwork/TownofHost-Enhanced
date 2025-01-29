@@ -1,5 +1,4 @@
 using TOHE.Roles.Core;
-using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -101,7 +100,7 @@ internal class ChiefOfPolice : RoleBase
             {
                 suidice = true;
             }
-            if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini)|| target.Is(CustomRoles.Loyal))
+            if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini) || target.Is(CustomRoles.Loyal))
             {
                 suidice = true;
             }
