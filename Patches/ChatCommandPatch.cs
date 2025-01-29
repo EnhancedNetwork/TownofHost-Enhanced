@@ -1,9 +1,7 @@
-using AmongUs.GameOptions;
 using Assets.CoreScripts;
 using Hazel;
 using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
