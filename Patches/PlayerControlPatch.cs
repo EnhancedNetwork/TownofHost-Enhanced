@@ -2029,7 +2029,7 @@ public static class PlayerControlDiePatch
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
         var playerId = __instance.PlayerId;
         // Skip Tasks while Anti Blackout but not for real exiled
-        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != playerI) return;
+        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != playerId) return;
 
         // Fix bug when player was dead due RpcExile while camera uses
         if (reason is DeathReason.Exile)
