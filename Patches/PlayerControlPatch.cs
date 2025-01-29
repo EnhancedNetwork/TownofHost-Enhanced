@@ -1088,7 +1088,7 @@ class FixedUpdateInNormalGamePatch
     public static async void Postfix(PlayerControl __instance)
     {
         if (__instance == null || __instance.PlayerId == 255) return;
-        
+
         CheckMurderPatch.Update(__instance.PlayerId);
 
         if (GameStates.IsHideNSeek) return;
