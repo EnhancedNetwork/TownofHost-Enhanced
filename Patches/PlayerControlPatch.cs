@@ -1806,6 +1806,13 @@ class PlayerControlCompleteTaskPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
+            var roleClass = player.GetRoleClass();
+            // Check task complete for role
+            if (roleClass != null)
+            {
+                ret = roleClass.OnTaskComplete(player, taskState.CompletedTasksCount, taskState.AllTasksCount);
+            }
+
             var playerIsOverridden = false;
             if (TaskManager.HasEnabled && TaskManager.GetTaskManager(player.PlayerId, out byte taskManagerId))
             {
@@ -1823,15 +1830,7 @@ class PlayerControlCompleteTaskPatch
                 }
             }
 
-            var roleClass = player.GetRoleClass();
-            // Check task complete for role
-            if (roleClass != null && !playerIsOverridden)
-            {
-                ret = roleClass.OnTaskComplete(player, taskState.CompletedTasksCount, taskState.AllTasksCount);
-            }
-
             // Check others complete task
-
             if (playerTask != null)
                 CustomRoleManager.OthersCompleteThisTask(player, playerTask);
 
