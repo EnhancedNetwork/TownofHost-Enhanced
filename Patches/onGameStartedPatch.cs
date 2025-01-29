@@ -423,9 +423,9 @@ internal class StartGameHostPatch
 
             if (Options.CurrentGameMode == CustomGameMode.FFA)
             {
-                foreach (var pair in Main.PlayerStates)
+                foreach (var pair in RoleAssign.RoleResult)
                 {
-                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
                 }
                 goto EndOfSelectRolePatch;
             }

@@ -354,7 +354,7 @@ class SetEverythingUpPatch
 
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
-                        sb.Append($"\nÒÇÇ ").Append(EndGamePatch.SummaryText[id.Item2]);
+                        sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
                     break;
                 }
             default: // Normal game
