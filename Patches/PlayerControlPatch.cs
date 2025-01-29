@@ -71,18 +71,12 @@ class CheckProtectPatch
 class CheckMurderPatch
 {
     public static Dictionary<byte, float> TimeSinceLastKill = [];
-    public static void Update()
+    public static void Update(byte playerId)
     {
-        foreach (var pc in Main.AllAlivePlayerControls)
+        if (TimeSinceLastKill.ContainsKey(playerId))
         {
-            if (pc == null) continue;
-            var i = pc.PlayerId;
-
-            if (TimeSinceLastKill.ContainsKey(i))
-            {
-                TimeSinceLastKill[i] += Time.deltaTime;
-                if (15f < TimeSinceLastKill[i]) TimeSinceLastKill.Remove(i);
-            }
+            TimeSinceLastKill[playerId] += Time.deltaTime;
+            if (15f < TimeSinceLastKill[playerId]) TimeSinceLastKill.Remove(playerId);
         }
     }
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state = false)
@@ -1093,9 +1087,12 @@ class FixedUpdateInNormalGamePatch
 
     public static async void Postfix(PlayerControl __instance)
     {
+        if (__instance == null || __instance.PlayerId == 255) return;
+        
+        CheckMurderPatch.Update(__instance.PlayerId);
+
         if (GameStates.IsHideNSeek) return;
         if (!GameStates.IsModHost) return;
-        if (__instance == null || __instance.PlayerId == 255) return;
 
         byte id = __instance.PlayerId;
         if (AmongUsClient.Instance.AmHost && GameStates.IsInTask && ReportDeadBodyPatch.CanReport[id] && ReportDeadBodyPatch.WaitReport[id].Any())
@@ -1275,7 +1272,7 @@ class FixedUpdateInNormalGamePatch
             //Mini's count down needs to be done outside if intask if we are counting meeting time
             if (GameStates.IsInGame && player.GetRoleClass() is Mini min)
             {
-                if (!player.Data.IsDead)
+                if (!player.Data.Disconnected)
                     min.OnFixedUpdates(player, nowTime);
             }
 
@@ -2035,11 +2032,23 @@ public static class PlayerControlCheckUseZiplinePatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Die))]
 public static class PlayerControlDiePatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance, DeathReason reason)
     {
         if (!AmongUsClient.Instance.AmHost || __instance == null) return;
+        var playerId = __instance.PlayerId;
         // Skip Tasks while Anti Blackout but not for real exiled
-        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != __instance.PlayerId) return;
+        if (AntiBlackout.SkipTasks && AntiBlackout.ExilePlayerId != playerId) return;
+
+        // Fix bug when player was dead due RpcExile while camera uses
+        if (reason is DeathReason.Exile)
+        {
+            var securityCameraSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.TryCast<SecurityCameraSystemType>() : null;
+            if (securityCameraSystem != null && securityCameraSystem.PlayersUsing.Contains(playerId))
+            {
+                securityCameraSystem.PlayersUsing.Remove(playerId);
+                securityCameraSystem.IsDirty = true;
+            }
+        }
 
         __instance.RpcRemovePet();
     }
