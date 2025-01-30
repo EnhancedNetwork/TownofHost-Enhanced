@@ -163,12 +163,11 @@ public class PlayerState(byte playerId)
             }
         }
 
-        if (role.IsConverted())
+        if (role.IsBetrayalAddonV2())
         {
-            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
+            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsBetrayalAddonV2());
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
-            SubRoles.Remove(CustomRoles.Admired);
         }
 
         switch (role)
@@ -229,12 +228,6 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Admired:
-                countTypes = CountTypes.Crew;
-                SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Loyal);
-                break;
-
             case CustomRoles.Narc:
                 countTypes = CountTypes.Crew;
                 break;
