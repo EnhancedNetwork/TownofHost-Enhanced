@@ -909,6 +909,11 @@ class IntroCutsceneDestroyPatch
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 _ => false
             };
+            bool shouldAntiBlackOut = Options.CurrentGameMode switch
+            {
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
+                _ => false
+            };
             try
             {
                 if (chatVisible) Utils.SetChatVisibleForEveryone();
