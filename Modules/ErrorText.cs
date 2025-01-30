@@ -3,7 +3,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
-[Obfuscation(Exclude = true, ApplyToMembers = true)]
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class ErrorText : MonoBehaviour
 {
     #region Singleton

@@ -37,18 +37,19 @@ internal class ControllerManagerUpdatePatch
                 EndGameManagerPatch.IsRestarting = false;
             }
             // Do next page
-            //if (GameStates.IsLobby && FastDestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
-            //{
-            //    if (Input.GetKeyDown(KeyCode.Tab))
-            //    {
-            //        OptionShower.Next();
-            //    }
-            //    for (var i = 0; i < 9; i++)
-            //    {
-            //        if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
-            //            OptionShower.currentPage = i;
-            //    }
-            //}
+            // Do next page
+            if (GameStates.IsLobby && FastDestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
+            {
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    OptionShower.Next();
+                }
+                for (var i = 0; i < 9; i++)
+                {
+                    if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
+                        OptionShower.currentPage = i;
+                }
+            }
             //捕捉全屏快捷键
             //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
             //{
