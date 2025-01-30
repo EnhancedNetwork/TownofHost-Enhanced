@@ -5,6 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class OptionShower : MonoBehaviour
 {
     public static int currentPage = 0;
