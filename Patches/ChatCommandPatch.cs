@@ -25,6 +25,8 @@ internal class ChatCommands
     private static readonly string modTagsFiles = @"./TOHE-DATA/Tags/MOD_TAGS";
     private static readonly string sponsorTagsFiles = @"./TOHE-DATA/Tags/SPONSOR_TAGS";
     private static readonly string vipTagsFiles = @"./TOHE-DATA/Tags/VIP_TAGS";
+    private static readonly string VIPListPath = @"./TOHE-DATA/VIP-List.txt";
+    private static readonly string ModListPath = @"./TOHE-DATA/Moderators.txt";
 
     private static readonly Dictionary<char, int> Pollvotes = [];
     private static readonly Dictionary<char, string> PollQuestions = [];
@@ -796,6 +798,60 @@ internal class ChatCommands
                     string banlogname = Main.AllPlayerNames.TryGetValue(bannedPlayer.PlayerId, out var n11) ? n11 : "";
                     string logMessage = $"[{DateTime.Now}] {moderatorFriendCode},{modLogname} Banned: {bannedPlayerFriendCode},{banlogname} Reason: {banReason}";
                     File.AppendAllText(modLogFiles, logMessage + Environment.NewLine);
+                    break;
+
+                case "/vip":
+                    canceled = true;
+                    subArgs = args[1];
+                    //subArgs = args.Length < 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !byte.TryParse(subArgs, out byte vipPlayerId))
+                    {
+                        Utils.SendMessage(GetString("vipCommandInvalidID"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    if (vipPlayerId == 0)
+                    {
+                        Utils.SendMessage(GetString("vipCommandBanHost"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    var vipPlayer = Utils.GetPlayerById(vipPlayerId);
+                    if (vipPlayer == null)
+                    {
+                        Utils.SendMessage(GetString("vipCommandInvalidID"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    Utils.SendMessage(GetString("vipAdded"), PlayerControl.LocalPlayer.PlayerId);
+                    
+                    File.AppendAllText(VIPListPath, $"{vipPlayer?.FriendCode}" + Environment.NewLine);
+                    break;
+
+                case "/mod":
+                    canceled = true;
+                    subArgs = args[1];
+                    //subArgs = args.Length < 2 ? "" : args[1];
+                    if (string.IsNullOrEmpty(subArgs) || !byte.TryParse(subArgs, out byte modPlayerId))
+                    {
+                        Utils.SendMessage(GetString("modCommandInvalidID"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    if (modPlayerId == 0)
+                    {
+                        Utils.SendMessage(GetString("modCommandBanHost"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+
+                    var modPlayer = Utils.GetPlayerById(modPlayerId);
+                    if (modPlayer == null)
+                    {
+                        Utils.SendMessage(GetString("modCommandInvalidID"), PlayerControl.LocalPlayer.PlayerId);
+                        break;
+                    }
+                    Utils.SendMessage(GetString("modAdded"), PlayerControl.LocalPlayer.PlayerId);
+
+                    File.AppendAllText(ModListPath, $"{modPlayer?.FriendCode}" + Environment.NewLine);
                     break;
 
                 case "/warn":
