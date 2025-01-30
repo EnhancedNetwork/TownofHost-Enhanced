@@ -17,11 +17,6 @@ class PingTrackerUpdatePatch
     {
         try
         {
-            if (Instance == null || Instance.GetHashCode() != __instance.GetHashCode())
-            {
-                OptionShower.Create(__instance.text);
-            }
-
             Instance ??= __instance;
 
             DelayUpdate--;
