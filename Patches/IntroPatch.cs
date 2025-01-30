@@ -538,7 +538,7 @@ class BeginCrewmatePatch
             case CustomRoles.ChiefOfPolice:
             case CustomRoles.Deputy:
             case CustomRoles.Sheriff:
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = FastDestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
                 break;
 
             case CustomRoles.GM:
