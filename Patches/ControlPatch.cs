@@ -36,18 +36,19 @@ internal class ControllerManagerUpdatePatch
                 EndGameManagerPatch.IsRestarting = false;
             }
             // Do next page
-            //if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
-            //{
-            //    if (Input.GetKeyDown(KeyCode.Tab))
-            //    {
-            //        OptionShower.Next();
-            //    }
-            //    for (var i = 0; i < 9; i++)
-            //    {
-            //        if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
-            //            OptionShower.currentPage = i;
-            //    }
-            //}
+            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
+            {
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    OptionShower.Next();
+                }
+                for (var i = 0; i < 9; i++)
+                {
+                    if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
+                        OptionShower.currentPage = i;
+                }
+            }
+
             //捕捉全屏快捷键
             //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
             //{
@@ -55,7 +56,7 @@ internal class ControllerManagerUpdatePatch
             //}
 
             //Show role info
-            if (Input.GetKeyDown(KeyCode.F1) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F1) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -74,7 +75,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
             // Show add-ons info
-            if (Input.GetKeyDown(KeyCode.F2) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F2) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -97,7 +98,7 @@ internal class ControllerManagerUpdatePatch
                     throw;
                 }
             }
-            if (Input.GetKeyDown(KeyCode.F3) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F3) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -113,7 +114,7 @@ internal class ControllerManagerUpdatePatch
                     Utils.ThrowException(ex);
                 }
             }
-            if (Input.GetKeyDown(KeyCode.F4) && GameStates.InGame && Options.CurrentGameMode == CustomGameMode.Standard)
+            if (Input.GetKeyDown(KeyCode.F4) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
                 {
@@ -127,7 +128,7 @@ internal class ControllerManagerUpdatePatch
                     {
                         if (Options.CustomRoleSpawnChances.TryGetValue(subRole, out var soi))
                             Utils.ShowChildrenSettings(soi, ref sb, command: false);
-                        
+
                         addSett.Add(sb.ToString());
                     }
 
@@ -180,11 +181,7 @@ internal class ControllerManagerUpdatePatch
             {
                 HudManager.Instance.Chat.SetVisible(true);
             }
-            
-            if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
-            {
-                Utils.ErrorEnd("Test AntiBlackout");
-            }
+
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {
@@ -237,6 +234,7 @@ internal class ControllerManagerUpdatePatch
                 }
                 else
                 {
+                    if (Utils.GetTimeStamp() - Main.LastMeetingEnded < 2) return;
                     PlayerControl.LocalPlayer.NoCheckStartMeeting(null, force: true);
                 }
             }
@@ -315,6 +313,11 @@ internal class ControllerManagerUpdatePatch
             // ========================================== Only host and in debug ==========================================
             // ############################################################################################################
             if (!DebugModeManager.IsDebugMode) return;
+
+            if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
+            {
+                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
+            }
 
             // Kill flash
             if (GetKeysDown(KeyCode.Return, KeyCode.F, KeyCode.LeftShift))

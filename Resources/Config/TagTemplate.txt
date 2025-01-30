@@ -1,0 +1,10 @@
+TagName: 
+TagColor: 
+// do not include #
+PermissionLevel: 
+// 0 = Purely Cosmetic, 1 = Like VIP, access to /color and /rn, 2 = Access to /warn, 3 = Access to /start, 4 = Access to /kick, 5 = Access to /ban
+SayCommandAccess: 
+// Only give the permissions below to someone you are certain you trust
+EndCommandAccess: 
+ExecuteCommandAccess: 
+AssignGameMaster: 

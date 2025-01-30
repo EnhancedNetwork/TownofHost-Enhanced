@@ -1,12 +1,10 @@
-﻿namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles.Impostor;
 
 internal class Visionary : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Visionary;
     private const int Id = 3900;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -14,14 +12,6 @@ internal class Visionary : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
-    }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
@@ -38,9 +28,13 @@ internal class Visionary : RoleBase
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
                 or CustomRoles.Soulless
-                or CustomRoles.Refugee
                 or CustomRoles.Admired)
                 return Main.roleColors[CustomRoles.Knight];
+        }
+
+        if (Main.PlayerStates[target.PlayerId].IsNecromancer)
+        {
+            return Main.roleColors[CustomRoles.Coven];
         }
 
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
@@ -51,6 +45,11 @@ internal class Visionary : RoleBase
         if (customRole.IsCrewmate())
         {
             return Main.roleColors[CustomRoles.Bait];
+        }
+
+        if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))
+        {
+            return Main.roleColors[CustomRoles.Coven];
         }
 
         return Main.roleColors[CustomRoles.Knight];

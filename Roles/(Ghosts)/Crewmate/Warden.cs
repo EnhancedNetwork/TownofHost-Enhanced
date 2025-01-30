@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -9,6 +9,7 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 internal class Warden : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Warden;
     private const int Id = 27800;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Warden);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
@@ -42,7 +43,7 @@ internal class Warden : RoleBase
     public override bool OnCheckProtect(PlayerControl killer, PlayerControl target)
     {
         var getTargetRole = target.GetCustomRole();
-        if (AbilityLimit > 0) 
+        if (AbilityLimit > 0)
         {
             if (getTargetRole.IsSpeedRole() || target.IsAnySubRole(x => x.IsSpeedRole()) || IsAffected.Contains(target.PlayerId)) goto Notifiers; // Incompactible speed-roles 
 
@@ -61,7 +62,7 @@ internal class Warden : RoleBase
 
         Notifiers:
             target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));
-            
+
             killer.RpcResetAbilityCooldown();
             AbilityLimit--;
             SendSkillRPC();

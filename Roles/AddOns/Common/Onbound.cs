@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Onbound : IAddon
 {
+    public CustomRoles Role => CustomRoles.Onbound;
     private const int Id = 25800;
     public AddonTypes Type => AddonTypes.Guesser;
 

@@ -3,10 +3,11 @@ namespace TOHE.Roles.Crewmate;
 internal class TimeManager : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.TimeManager;
     private const int Id = 9800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
@@ -32,7 +33,8 @@ internal class TimeManager : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+        if (!playerIdList.Contains(playerId))
+            playerIdList.Add(playerId);
     }
     public override void Remove(byte playerId)
     {
@@ -49,7 +51,7 @@ internal class TimeManager : RoleBase
         int sec = 0;
         foreach (var playerId in playerIdList)
         {
-            if (Utils.GetPlayerById(playerId).Is(CustomRoles.Madmate)) sec -= AdditionalTime(playerId);
+            if (Utils.GetPlayerById(playerId).Is(CustomRoles.Madmate) || Utils.GetPlayerById(playerId).Is(CustomRoles.Enchanted)) sec -= AdditionalTime(playerId);
             else sec += AdditionalTime(playerId);
         }
         Logger.Info($"{sec}second", "TimeManager.TotalIncreasedMeetingTime");
