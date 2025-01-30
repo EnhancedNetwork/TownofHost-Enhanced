@@ -487,8 +487,8 @@ public static class GameStates
     }
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
-    public static bool IsInTask => InGame && !MeetingHud.Instance;
-    public static bool IsMeeting => InGame && MeetingHud.Instance;
+    public static bool IsInTask => InGame && !MeetingHud.Instance && !Main.MeetingIsStarted;
+    public static bool IsMeeting => InGame && (MeetingHud.Instance || Main.MeetingIsStarted);
     public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
     public static bool IsProceeding => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Proceeding;
     public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);
