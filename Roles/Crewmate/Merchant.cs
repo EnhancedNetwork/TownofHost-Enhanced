@@ -191,7 +191,7 @@ internal class Merchant : RoleBase
         return false;
     }
 
-    public static bool OnClientMurder(PlayerControl killer, PlayerControl target)
+    private static bool OnClientMurder(PlayerControl killer, PlayerControl target)
     {
         if (IsBribedKiller(killer, target))
         {

@@ -4,7 +4,7 @@ namespace TOHE.Modules;
 
 class LogHandler(string tag) : ILogHandler
 {
-    public string Tag { get; } = tag;
+    private string Tag { get; } = tag;
 
     public void Info(string text)
         => Logger.Info(text, Tag, true);

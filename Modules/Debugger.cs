@@ -27,9 +27,9 @@ class Webhook
 }
 class Logger
 {
-    public static bool IsEnable;
-    public static List<string> DisableList = [];
-    public static List<string> SendToGameList = [];
+    private static bool IsEnable;
+    private static List<string> DisableList = [];
+    private static List<string> SendToGameList = [];
     private static readonly HashSet<string> NowDetailedErrorLog = [];
 
     public static bool isDetail = false;

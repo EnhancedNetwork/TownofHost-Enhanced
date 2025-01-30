@@ -60,7 +60,7 @@ internal class Altruist : RoleBase
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
 
-    public void SendRPC()
+    private void SendRPC()
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -183,17 +183,14 @@ internal class Altruist : RoleBase
             if (ImpostorsCanGetsArrow.GetBool() && pc.Is(Custom_Team.Impostor))
             {
                 TargetArrow.Remove(pc.PlayerId, RevivedPlayerId);
-                continue;
             }
-            if (NeutralKillersCanGetsArrow.GetBool() && (pc.IsNeutralKiller() || pc.IsNeutralApocalypse()))
+            else if (NeutralKillersCanGetsArrow.GetBool() && (pc.IsNeutralKiller() || pc.IsNeutralApocalypse()))
             {
                 TargetArrow.Remove(pc.PlayerId, RevivedPlayerId);
-                continue;
             }
-            if (CovenCanGetsArrow.GetBool() && pc.Is(Custom_Team.Coven))
+            else if (CovenCanGetsArrow.GetBool() && pc.Is(Custom_Team.Coven))
             {
                 TargetArrow.Remove(pc.PlayerId, RevivedPlayerId);
-                continue;
             }
         }
     }

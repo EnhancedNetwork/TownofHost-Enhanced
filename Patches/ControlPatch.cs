@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Text;
 using TOHE.Modules;
@@ -197,7 +198,7 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notice.Clear();
-                Utils.DoNotifyRoles(ForceLoop: true);
+                Utils.NotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 GameEndCheckerForNormal.GameIsEnded = true;
@@ -208,7 +209,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             //Search Bar In Menu "Press Enter" alternative function
-            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
+            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled)
             {
                 GameSettingMenuPatch._SearchForOptions?.Invoke();
             }
@@ -220,16 +221,17 @@ internal class ControllerManagerUpdatePatch
 
                 if (GameStates.IsMeeting)
                 {
-                    foreach (var pva in MeetingHud.Instance.playerStates)
+                    var meetingHud = MeetingHud.Instance;
+                    foreach (var pva in meetingHud.playerStates)
                     {
                         if (pva == null) continue;
 
                         if (pva.VotedFor < 253)
-                            MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+                            meetingHud.RpcClearVote(pva.TargetPlayerId);
                     }
-                    List<MeetingHud.VoterState> statesList = [];
-                    MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
-                    MeetingHud.Instance.RpcClose();
+                    var statesList = new Il2CppStructArray<MeetingHud.VoterState>(0);
+                    meetingHud.RpcVotingComplete(statesList, null, true);
+                    meetingHud.RpcClose();
                 }
                 else
                 {

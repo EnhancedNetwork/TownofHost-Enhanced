@@ -166,7 +166,6 @@ public class GameStartManagerPatch
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
                         {
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
-                            return;
                         }
                     }
                 }

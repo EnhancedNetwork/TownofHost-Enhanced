@@ -18,8 +18,8 @@ class HudManagerPatch
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;
     public static float FrameRateTimer = 0.0f;
-    public static TextMeshPro LowerInfoText;
-    public static GameObject TempLowerInfoText;
+    private static TextMeshPro LowerInfoText;
+    private static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost || __instance == null) return;
@@ -367,10 +367,10 @@ class TaskPanelBehaviourPatch
 class RepairSender
 {
     public static bool enabled = false;
-    public static bool TypingAmount = false;
+    private static bool TypingAmount = false;
 
-    public static int SystemType;
-    public static int amount;
+    private static int SystemType;
+    private static int amount;
 
     public static void Input(int num)
     {
@@ -400,7 +400,7 @@ class RepairSender
             Send();
         }
     }
-    public static void Send()
+    private static void Send()
     {
         ShipStatus.Instance.RpcUpdateSystem((SystemTypes)SystemType, (byte)amount);
         Reset();

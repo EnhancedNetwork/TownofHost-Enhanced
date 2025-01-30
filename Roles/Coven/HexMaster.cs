@@ -25,10 +25,10 @@ internal class HexMaster : CovenManager
     private static OptionItem CovenCanGetMovingHex;
     private static OptionItem MovingHexPassCooldown;
 
-    public static byte CurrentHexedPlayer = byte.MaxValue;
-    public static byte LastHexedPlayer = byte.MaxValue;
-    public static bool HasHexed = false;
-    public static long? CurrentHexedPlayerTime = new();
+    private static byte CurrentHexedPlayer = byte.MaxValue;
+    private static byte LastHexedPlayer = byte.MaxValue;
+    private static bool HasHexed = false;
+    private static long? CurrentHexedPlayerTime = new();
     public static long? HexedTime = new();
 
     private static readonly Dictionary<byte, HashSet<byte>> HexedPlayer = [];

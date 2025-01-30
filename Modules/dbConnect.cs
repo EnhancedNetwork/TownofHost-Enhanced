@@ -222,7 +222,7 @@ public class dbConnect
                     }
                     else if (!InitOnce)
                     {
-                        Logger.Error($"Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
+                        Logger.Error("Incoming RoleTable is null, cannot init!", "GetRoleTable.error");
                     }
                 }
                 catch (Exception ex)
@@ -269,8 +269,8 @@ public class dbConnect
     }
     public static bool IsBooster(string friendcode)
     {
-        if (!UserType.ContainsKey(friendcode)) return false;
-        return UserType[friendcode] == "s_bo";
+        if (!UserType.TryGetValue(friendcode, out string type)) return false;
+        return type == "s_bo";
     }
 
     private static IEnumerator GetEACList()

@@ -4,8 +4,8 @@ namespace TOHE;
 
 public class BooleanOptionItem(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanilla) : OptionItem(id, name, defaultValue ? 1 : 0, tab, isSingleValue, vanillaStr: vanilla)
 {
-    public const string TEXT_true = "ColoredOn";
-    public const string TEXT_false = "ColoredOff";
+    private const string TEXT_true = "ColoredOn";
+    private const string TEXT_false = "ColoredOff";
 
     public static BooleanOptionItem Create(int id, string name, bool defaultValue, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {

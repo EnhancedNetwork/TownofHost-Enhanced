@@ -28,7 +28,7 @@ internal class Pelican : RoleBase
 
     private static readonly Dictionary<byte, HashSet<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
-    public static Dictionary<byte, Vector2> PelicanLastPosition = [];
+    private static readonly Dictionary<byte, Vector2> PelicanLastPosition = [];
 
     private static int Count = 0;
 
@@ -100,7 +100,7 @@ internal class Pelican : RoleBase
                 return true;
         return false;
     }
-    public static bool CanEat(PlayerControl pc, byte id)
+    private static bool CanEat(PlayerControl pc, byte id)
     {
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
 

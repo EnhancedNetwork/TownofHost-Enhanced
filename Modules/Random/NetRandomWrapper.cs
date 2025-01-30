@@ -4,7 +4,7 @@ namespace TOHE;
 
 public class NetRandomWrapper(Random instance) : IRandom
 {
-    public Random wrapping = instance;
+    private Random wrapping = instance;
 
     public NetRandomWrapper() : this(new Random())
     { }

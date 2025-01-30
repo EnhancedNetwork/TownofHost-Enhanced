@@ -97,7 +97,7 @@ class FixedUpdateInHidenSeekPatch
 {
     private static int LevelKickBufferTime = 20;
     private static readonly Dictionary<int, int> BufferTime = [];
-    public static async void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance)
     {
         if (GameStates.IsNormalGame) return;
         if (!GameStates.IsModHost) return;
@@ -105,7 +105,7 @@ class FixedUpdateInHidenSeekPatch
 
         try
         {
-            await DoPostfix(__instance);
+            DoPostfix(__instance);
         }
         catch (Exception ex)
         {
@@ -113,7 +113,7 @@ class FixedUpdateInHidenSeekPatch
         }
     }
 
-    public static Task DoPostfix(PlayerControl __instance)
+    private static void DoPostfix(PlayerControl __instance)
     {
         var player = __instance;
 
@@ -145,7 +145,7 @@ class FixedUpdateInHidenSeekPatch
             Zoom.OnFixedUpdate();
         }
 
-        if (!AmongUsClient.Instance.AmHost) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost) return;
 
         if (GameStates.IsLobby)
         {
@@ -218,6 +218,5 @@ class FixedUpdateInHidenSeekPatch
         if (!Main.DoBlockNameChange)
             Utils.ApplySuffix(__instance);
 
-        return Task.CompletedTask;
     }
 }

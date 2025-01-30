@@ -76,7 +76,7 @@ internal class Jailer : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = GetPlayerById(id).IsAlive() ? JailCooldown.GetFloat() : 300f;
     public override string GetProgressText(byte playerId, bool cooms) => ColorString(GetRoleColor(CustomRoles.Jailer).ShadeColor(0.25f), JailerExeLimit.TryGetValue(playerId, out var exeLimit) ? $"({exeLimit})" : "Invalid");
 
-    public static void SendRPC(byte jailerId, byte targetId = byte.MaxValue, bool setTarget = true)
+    private static void SendRPC(byte jailerId, byte targetId = byte.MaxValue, bool setTarget = true)
     {
         MessageWriter writer;
         if (!setTarget)

@@ -19,7 +19,7 @@ public static class ModGameOptionsMenu
 [HarmonyPatch(typeof(GameOptionsMenu))]
 public static class GameOptionsMenuPatch
 {
-    public static GameOptionsMenu Instance;
+    private static GameOptionsMenu Instance;
     [HarmonyPatch(nameof(GameOptionsMenu.Initialize)), HarmonyPrefix]
     private static bool InitializePrefix(GameOptionsMenu __instance)
     {
@@ -551,7 +551,7 @@ public static class NumberOptionPatch
         }
         return true;
     }
-    public static string GetValueString(NumberOption __instance, float value, OptionItem item)
+    private static string GetValueString(NumberOption __instance, float value, OptionItem item)
     {
         if (__instance.ZeroIsInfinity && Mathf.Abs(value) < 0.0001f) return "<b>∞</b>";
         return item == null ? value.ToString(__instance.FormatString) : item.GetString();

@@ -26,7 +26,6 @@ internal class TimeMaster : RoleBase
     private static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
     private static readonly Dictionary<byte, Vector2> TimeMasterBackTrack = [];
-    private static readonly Dictionary<byte, int> TimeMasterNum = [];
     private static readonly Dictionary<byte, long> TimeMasterInProtect = [];
 
     public override void SetupCustomOption()
@@ -44,12 +43,10 @@ internal class TimeMaster : RoleBase
     public override void Init()
     {
         TimeMasterBackTrack.Clear();
-        TimeMasterNum.Clear();
         TimeMasterInProtect.Clear();
     }
     public override void Add(byte playerId)
     {
-        TimeMasterNum.TryAdd(playerId, 0);
         AbilityLimit = TimeMasterMaxUses.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

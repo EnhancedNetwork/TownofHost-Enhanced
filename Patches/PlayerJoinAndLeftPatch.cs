@@ -145,7 +145,7 @@ class OnGameJoinedPatch
                         Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined Retry");
                         Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined Retry");
                     }
-                    catch { };
+                    catch { }
                 }, 1.5f, "Retry Log Local Client");
             }
         }, 0.7f, "OnGameJoinedPatch");
@@ -178,7 +178,7 @@ public static class OnPlayerJoinedPatch
         return false;
         //When a client disconnects, it is removed from allClients in method amongusclient.removeplayer
     }
-    public static bool HasInvalidFriendCode(string friendcode)
+    private static bool HasInvalidFriendCode(string friendcode)
     {
         if (string.IsNullOrEmpty(friendcode))
         {
@@ -268,7 +268,7 @@ public static class OnPlayerJoinedPatch
                 string msg = string.Format(GetString("MsgKickOtherPlatformPlayer"), client?.PlayerName, platform.ToString());
                 AmongUsClient.Instance.KickPlayer(client.Id, false);
                 Logger.SendInGame(msg);
-                Logger.Info(msg, "Other Platform Kick"); ;
+                Logger.Info(msg, "Other Platform Kick");
             }
         }
         if (FastDestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)

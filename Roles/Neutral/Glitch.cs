@@ -32,7 +32,7 @@ internal class Glitch : RoleBase
     public int HackCDTimer;
     public int KCDTimer;
     public int MimicCDTimer;
-    public int MimicDurTimer;
+    private int MimicDurTimer;
     public long LastHack;
     public long LastKill;
     public long LastMimic;

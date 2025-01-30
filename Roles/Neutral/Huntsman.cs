@@ -62,7 +62,7 @@ internal class Huntsman : RoleBase
         }, 8f, "Huntsman Reset Targets");
     }
 
-    public void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
+    private void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);

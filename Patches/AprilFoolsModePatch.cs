@@ -49,7 +49,6 @@ public static class GetHnsBodyType_Patch
                 return;
             }
             __result = PlayerBodyTypes.Normal;
-            return;
         }
         else if (Main.HorseMode.Value)
         {
@@ -59,7 +58,6 @@ public static class GetHnsBodyType_Patch
                 return;
             }
             __result = PlayerBodyTypes.Horse;
-            return;
         }
         else if (Main.LongMode.Value)
         {
@@ -69,7 +67,6 @@ public static class GetHnsBodyType_Patch
                 return;
             }
             __result = PlayerBodyTypes.Long;
-            return;
         }
         else
         {
@@ -79,7 +76,6 @@ public static class GetHnsBodyType_Patch
                 return;
             }
             __result = PlayerBodyTypes.Normal;
-            return;
         }
     }
 }

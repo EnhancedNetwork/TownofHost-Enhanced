@@ -96,7 +96,7 @@ internal class RunLoginPatch
 
         var friendcode = EOSManager.Instance.friendCode;
         Main.Instance.StartCoroutine(dbConnect.Init());
-        if (friendcode == null || friendcode == "")
+        if (System.String.IsNullOrEmpty(friendcode))
         {
             EOSManager.Instance.attemptAuthAgain = true;
             Logger.Info("friendcode not found", "EOSManager");
@@ -145,7 +145,7 @@ internal class KickPlayerPatch
             AttemptedKickPlayerList.Add(HashedPuid, 0);
         else if (AttemptedKickPlayerList[HashedPuid] < 10)
         {
-            Logger.Fatal($"Kick player Request too fast! Canceled.", "KickPlayerPatch");
+            Logger.Fatal("Kick player Request too fast! Canceled.", "KickPlayerPatch");
             return false;
         }
         if (ban) BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));

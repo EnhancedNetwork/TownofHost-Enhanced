@@ -108,7 +108,7 @@ namespace TOHE.Modules.ChatManager
 
             if ((operate == 1 || Blackmailer.CheckBlackmaile(player)) && player.IsAlive())
             {
-                Logger.Info($"包含特殊信息，不记录", "ChatManager");
+                Logger.Info("包含特殊信息，不记录", "ChatManager");
                 message = msg;
                 cancel = true;
             }
@@ -136,7 +136,7 @@ namespace TOHE.Modules.ChatManager
                 {
                     if (Options.HideExileChat.GetBool())
                     {
-                        Logger.Info($"Message sent in exiling screen, spamming the chat", "ChatManager");
+                        Logger.Info("Message sent in exiling screen, spamming the chat", "ChatManager");
                         _ = new LateTask(SendPreviousMessagesToAll, 0.3f, "Spamming the chat");
                     }
                     return;
@@ -338,9 +338,8 @@ namespace TOHE.Modules.ChatManager
             //        .SendMessage();
             //}
 
-            for (int i = 0; i < chatHistory.Count; i++)
+            foreach (var entry in chatHistory)
             {
-                var entry = chatHistory[i];
                 var senderId = entry.Keys.First();
                 var senderMessage = entry[senderId];
                 var senderPlayer = senderId.GetPlayer();
@@ -355,7 +354,7 @@ namespace TOHE.Modules.ChatManager
                 FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(senderPlayer, senderMessage);
                 var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
 
-                writer.StartMessage(-1);
+                writer.StartMessage();
                 writer.StartRpc(senderPlayer.NetId, (byte)RpcCalls.SendChat)
                     .Write(senderMessage)
                     .EndRpc()

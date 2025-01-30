@@ -20,8 +20,8 @@ internal class Bloodmoon : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
 
-    public static OptionItem KillCooldown;
-    public static OptionItem CanKillNum;
+    private static OptionItem KillCooldown;
+    private static OptionItem CanKillNum;
     private static OptionItem TimeTilDeath;
 
     private readonly Dictionary<byte, int> PlayerDie = [];

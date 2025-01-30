@@ -65,7 +65,7 @@ internal class Lightning : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
+    private static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
     private static bool IsGhost(byte id) => GhostPlayer.Contains(id);
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

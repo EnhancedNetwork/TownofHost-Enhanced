@@ -52,7 +52,7 @@ internal class Chameleon : RoleBase
     {
         AbilityLimit = UseLimitOpt.GetInt();
     }
-    public void SendRPC(PlayerControl pc, bool isLimit = false)
+    private void SendRPC(PlayerControl pc, bool isLimit = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, SendOption.Reliable, isLimit ? -1 : pc.GetClientId());
         writer.Write(pc.PlayerId);

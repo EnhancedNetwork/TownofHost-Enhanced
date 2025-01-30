@@ -13,7 +13,7 @@ public abstract class RoleBase
     public PlayerState _state;
 #pragma warning disable IDE1006
     public PlayerControl _Player => _state != null ? _state.PlayerId.GetPlayer() ?? null : null;
-    public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
+    public List<byte> _playerIdList => [.. Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId)];
 #pragma warning restore IDE1006
 
     public float AbilityLimit { get; set; } = -100;

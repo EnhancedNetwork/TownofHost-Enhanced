@@ -52,7 +52,7 @@ internal class Mortician : RoleBase
 
         string name = string.Empty;
         var killer = target.PlayerId.GetRealKillerById();
-        if (killer == null)
+        if (killer != null)
         {
             name = killer.GetRealName();
         }

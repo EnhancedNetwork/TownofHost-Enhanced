@@ -50,7 +50,7 @@ internal class FortuneTeller : RoleBase
         AbilityLimit = CheckLimitOpt.GetInt();
     }
 
-    public void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
+    private void SendRPC(byte playerId, bool isTemp = false, bool voted = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -103,8 +103,7 @@ internal class FortuneTeller : RoleBase
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return true;
-        if (didVote.Contains(player.PlayerId)) return true;
-        didVote.Add(player.PlayerId);
+        if (!didVote.Add(player.PlayerId)) return true;
 
         if (AbilityLimit < 1)
         {

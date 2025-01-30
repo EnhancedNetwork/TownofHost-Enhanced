@@ -19,8 +19,8 @@ internal class Nemesis : RoleBase
     //==================================================================\\
 
     private static OptionItem NemesisCanKillNum;
-    public static OptionItem PreventSeeRolesBeforeSkillUsedUp;
-    public static OptionItem LegacyNemesis;
+    private static OptionItem PreventSeeRolesBeforeSkillUsedUp;
+    private static OptionItem LegacyNemesis;
     private static OptionItem NemesisShapeshiftCD;
     private static OptionItem NemesisShapeshiftDur;
 

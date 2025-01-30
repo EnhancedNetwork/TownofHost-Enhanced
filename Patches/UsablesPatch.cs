@@ -20,7 +20,6 @@ class EmergencyMinigamePatch
     {
         if (Options.DisableMeeting.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
             __instance.Close();
-        return;
     }
 }
 [HarmonyPatch(typeof(Vent), nameof(Vent.CanUse))]

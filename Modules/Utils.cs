@@ -171,7 +171,6 @@ public static class Utils
                 FloatOptionNames.CrewLightMod,
                 opt.GetFloat(FloatOptionNames.CrewLightMod) * 5);
             }
-            return;
         }
         else
         {
@@ -184,7 +183,6 @@ public static class Utils
                 FloatOptionNames.ImpostorLightMod,
                 opt.GetFloat(FloatOptionNames.ImpostorLightMod) / 5);
             }
-            return;
         }
     }
     public static void SetVisionV2(this IGameOptions opt)
@@ -194,7 +192,6 @@ public static class Utils
         {
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, opt.GetFloat(FloatOptionNames.ImpostorLightMod) / 5);
         }
-        return;
     }
 
     public static void TargetDies(PlayerControl killer, PlayerControl target)
@@ -206,7 +203,6 @@ public static class Utils
             if (KillFlashCheck(killer, target, seer))
             {
                 seer.KillFlash();
-                continue;
             }
         }
 
@@ -215,7 +211,7 @@ public static class Utils
             Cyber.AfterCyberDeadTask(target, false);
         }
     }
-    public static bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
+    private static bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer)
     {
         if (seer.Is(CustomRoles.GM) || seer.Is(CustomRoles.Seer)) return true;
 
@@ -269,7 +265,6 @@ public static class Utils
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0);
             opt.SetFloat(FloatOptionNames.CrewLightMod, 0);
         }
-        return;
     }
     public static string GetRoleTitle(this CustomRoles role)
     {
@@ -434,7 +429,7 @@ public static class Utils
     {
         return Main.roleColors.GetValueOrDefault(role, "#ffffff");
     }
-    public static Color GetTeamColor(PlayerControl player)
+    private static Color GetTeamColor(PlayerControl player)
     {
         string hexColor = string.Empty;
         var Team = player.GetCustomRole().GetCustomRoleTeam();
@@ -569,7 +564,7 @@ public static class Utils
             return (RoleText.ToString(), RoleColor);
         }
     }
-    public static string GetKillCountText(byte playerId, bool ffa = false)
+    private static string GetKillCountText(byte playerId, bool ffa = false)
     {
         int count = Main.PlayerStates.Count(x => x.Value.GetRealKiller() == playerId);
         if (count < 1 && !ffa) return "";
@@ -658,7 +653,6 @@ public static class Utils
             }
 
         if (CopyCat.NoHaveTask(playerData.PlayerId, ForRecompute)) hasTasks = false;
-        if (Main.TasklessCrewmate.Contains(playerData.PlayerId)) hasTasks = false;
 
         return hasTasks;
     }
@@ -843,7 +837,7 @@ public static class Utils
             var text = sb.ToString();
             sb.Clear().Append(text.RemoveHtmlTags());
         }
-        sb.Append($"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+        sb.Append("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         ClipboardHelper.PutClipboardString(sb.ToString());
     }
     public static void ShowActiveRoles(byte PlayerId = byte.MaxValue)
@@ -936,7 +930,7 @@ public static class Utils
         foreach (byte id in Main.winnerList.ToArray())
         {
             if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;
-            sb.Append($"\n<#c4aa02>★</color> ").Append(EndGamePatch.SummaryText[id]/*.RemoveHtmlTags()*/);
+            sb.Append("\n<#c4aa02>★</color> ").Append(EndGamePatch.SummaryText[id]/*.RemoveHtmlTags()*/);
             cloneRoles.Remove(id);
         }
         switch (Options.CurrentGameMode)
@@ -950,7 +944,7 @@ public static class Utils
                 listFFA.Sort();
                 foreach ((int, byte) id in listFFA.ToArray())
                 {
-                    sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
+                    sb.Append("\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
                 }
                 break;
             default: // Normal game
@@ -958,7 +952,7 @@ public static class Utils
                 {
                     if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>"))
                         continue;
-                    sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id]);
+                    sb.Append("\n　 ").Append(EndGamePatch.SummaryText[id]);
 
                 }
                 break;
@@ -1220,7 +1214,7 @@ public static class Utils
         //    + $"\n  ○ /iconhelp {GetString("Command.iconhelp")}"
             , ID);
     }
-    public static string[] SplitMessage(this string LongMsg)
+    private static string[] SplitMessage(this string LongMsg)
     {
         List<string> result = [];
         var lines = LongMsg.Split('\n');
@@ -1254,7 +1248,7 @@ public static class Utils
     //private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
 
 
-    public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "")
+    private static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "")
     {
         // Always splits it, this is incase you want to very heavily modify msg and use the splitmsg functionality.
         bool isfirst = true;
@@ -1264,7 +1258,7 @@ public static class Utils
             {
                 var titleW = isfirst ? title : "<alpha=#00>.";
                 var msg = new StringBuilder(Regex.Replace(txt, "^<voffset=[-]?\\d+em>", "")); // replaces the first instance of voffset, if any.
-                msg.Append($"<voffset=-1.3em><alpha=#00>.</voffset>"); // fix text clipping OOB
+                msg.Append("<voffset=-1.3em><alpha=#00>.</voffset>"); // fix text clipping OOB
                 if (msg.ToString().IndexOf("\n") <= 4)
                 {
                     var oldMsg = msg.ToString();
@@ -1345,7 +1339,7 @@ public static class Utils
         Regex regex = new("^[0-9A-Fa-f]{6}$");
         return regex.IsMatch(ColorCode);
     }
-    public static bool CheckGradientCode(string ColorCode)
+    private static bool CheckGradientCode(string ColorCode)
     {
         Regex regex = new(@"^[0-9A-Fa-f]{6}\s[0-9A-Fa-f]{6}$");
         return regex.IsMatch(ColorCode);
@@ -1354,7 +1348,7 @@ public static class Utils
     {
         return ColorString(GetRoleColor(role), mark);
     }
-    public static string GradientColorText(string startColorHex, string endColorHex, string text)
+    private static string GradientColorText(string startColorHex, string endColorHex, string text)
     {
         if (startColorHex.Length != 6 || endColorHex.Length != 6)
         {
@@ -1390,7 +1384,7 @@ public static class Utils
         return gradientText.ToString();
     }
 
-    public static Color HexToColor(string hex)
+    private static Color HexToColor(string hex)
     {
         if (ColorUtility.TryParseHtmlString("#" + hex, out var color))
         {
@@ -1401,7 +1395,7 @@ public static class Utils
 
     private static string ColorToHex(Color color)
     {
-        Color32 color32 = (Color32)color;
+        Color32 color32 = color;
         return $"{color32.r:X2}{color32.g:X2}{color32.b:X2}{color32.a:X2}";
     }
     public static void ApplySuffix(PlayerControl player)
@@ -1578,7 +1572,7 @@ public static class Utils
             };
         }
 
-        if (!name.ToString().Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && player.IsModded())
+        if (!name.ToString().Contains("\r\r") && player.FriendCode.GetDevUser().HasTag() && player.IsModded())
         {
             string oldname = name.ToString();
             name.Clear();
@@ -1609,7 +1603,7 @@ public static class Utils
         return Main.CachedPlayerControl[(byte)PlayerId] = player;
     }
     public static PlayerControl GetPlayer(this byte id) => GetPlayerById(id);
-    public static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
+    private static List<PlayerControl> GetPlayerListByIds(this IEnumerable<byte> PlayerIdList)
     {
         var PlayerList = PlayerIdList?.ToList().Select(x => x.GetPlayer()).ToList();
 
@@ -1755,7 +1749,7 @@ public static class Utils
     private static readonly StringBuilder TargetDeathReason = new();
     private static readonly StringBuilder TargetSuffix = new();
     private static readonly StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
         if (MeetingHud.Instance)
@@ -1769,39 +1763,17 @@ public static class Utils
             if (Main.MeetingIsStarted && !isForMeeting) return;
         }
 
-        //var caller = new System.Diagnostics.StackFrame(1, false);
-        //var callerMethod = caller.GetMethod();
-        //string callerMethodName = callerMethod.Name;
-        //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
-
-        await DoNotifyRoles(SpecifySeer, SpecifyTarget, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
-    }
-    public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
-    {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (MeetingHud.Instance)
-        {
-            // When the meeting window is active and game is not ended
-            if (!GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
-        }
-        else
-        {
-            // When some one press report button but NotifyRoles is not for meeting
-            if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
-        }
-
         //var logger = Logger.Handler("DoNotifyRoles");
 
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
         PlayerControl[] seerList = SpecifySeer != null
-            ? ([SpecifySeer])
+            ? [SpecifySeer]
             : Main.AllPlayerControls;
 
         PlayerControl[] targetList = SpecifyTarget != null
-            ? ([SpecifyTarget])
+            ? [SpecifyTarget]
             : Main.AllPlayerControls;
 
         if (!MushroomMixupIsActive)
@@ -2196,8 +2168,7 @@ public static class Utils
             }
         }
         //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
-        Logger.Info($" END", "DoNotifyRoles");
-        return Task.CompletedTask;
+        Logger.Info(" END", "DoNotifyRoles");
     }
     public static void MarkEveryoneDirtySettings()
     {
@@ -2359,7 +2330,6 @@ public static class Utils
             }
 
             if (Statue.IsEnable) Statue.AfterMeetingTasks();
-            if (Burst.IsEnable) Burst.AfterMeetingTasks();
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
@@ -2492,14 +2462,13 @@ public static class Utils
 
         if (taskState.hasTasks)
         {
-            Color CurrentСolor;
             var TaskCompleteColor = Color.green; // Color after task completion
             var NonCompleteColor = taskState.CompletedTasksCount > 0 ? Color.yellow : Color.white; // Uncountable out of person is white
 
             if (Workhorse.IsThisRole(id))
                 NonCompleteColor = Workhorse.RoleColor;
 
-            CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+            Color CurrentСolor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
 
             if (playerState.MainRole is CustomRoles.Crewpostor)
                 CurrentСolor = Color.red;
@@ -2527,7 +2496,7 @@ public static class Utils
             ? "INVALID"
             : disableColor ? summary.ToString().RemoveHtmlTags() : summary.ToString();
     }
-    public static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
+    private static string RemoveHtmlTagsTemplate(this string str) => Regex.Replace(str, "", "");
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", "");
     public static string RemoveHtmlTagsIfNeccessary(this string str) => str.Replace("<color=", "<").Length > 1200 ? str.RemoveHtmlTags() : str.Replace("<color=", "<");
 

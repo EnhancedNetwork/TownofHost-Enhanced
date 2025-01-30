@@ -14,7 +14,7 @@ internal class Snitch : RoleBase
     public override CustomRoles Role => CustomRoles.Snitch;
     private const int Id = 9500;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    private static bool HasEnabled => playerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -136,10 +136,8 @@ internal class Snitch : RoleBase
 
             TargetArrow.Add(snitchId, targetId);
 
-            if (!TargetList.Contains(targetId))
+            if (TargetList.Add(targetId))
             {
-                TargetList.Add(targetId);
-
                 if (CanGetColoredArrow)
                     TargetColorlist.Add(targetId, target.GetRoleColor());
             }
@@ -186,10 +184,8 @@ internal class Snitch : RoleBase
 
                         var targetId = target.PlayerId;
 
-                        if (!TargetList.Contains(targetId))
+                        if (TargetList.Add(targetId))
                         {
-                            TargetList.Add(targetId);
-
                             if (CanGetColoredArrow)
                                 TargetColorlist.Add(targetId, target.GetRoleColor());
                         }

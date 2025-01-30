@@ -182,7 +182,6 @@ public static class PhantomRolePatch
                 phantom?.RpcSetPetDesync(petId, seer);
             }
         }
-        yield break;
     }
     public static void AfterMeeting()
     {

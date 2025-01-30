@@ -75,7 +75,7 @@ internal class Jinx : CovenManager
     }
     */
     //public override void ApplyGameOptions(IGameOptions opt, byte babushka) => opt.SetVision(HasImpostorVision.GetBool());
-    public static bool IsJinxed(byte target)
+    private static bool IsJinxed(byte target)
     {
         if (JinxedPlayers.Count < 1) return false;
         foreach (var player in JinxedPlayers.Keys)
@@ -113,7 +113,7 @@ internal class Jinx : CovenManager
             SendRPC(jinx, target);
         }
     }
-    public void SendRPC(PlayerControl player, PlayerControl target)
+    private void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);

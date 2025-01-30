@@ -32,7 +32,7 @@ static class PerformVentOpPatch
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
-    public static long LastUpadate;
+    private static long LastUpadate;
     public static bool ForceUpadate;
 
     public static void Postfix(VentilationSystem __instance)

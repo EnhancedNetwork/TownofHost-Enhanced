@@ -108,7 +108,7 @@ internal class EvilTracker : RoleBase
     private static byte GetTargetId(byte playerId)
         => Target.GetValueOrDefault(playerId, byte.MaxValue);
 
-    public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
+    private static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
         && (target.Is(Custom_Team.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
@@ -220,7 +220,7 @@ internal class EvilTracker : RoleBase
             {
                 sb.Append(TargetArrow.GetArrows(target, impostorId));
             }
-            sb.Append($"</color>");
+            sb.Append("</color>");
         }
 
         var targetId = Target[trackerId];

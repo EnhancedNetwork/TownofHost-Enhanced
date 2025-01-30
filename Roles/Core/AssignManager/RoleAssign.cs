@@ -9,7 +9,7 @@ public class RoleAssign
 {
     public static readonly Dictionary<byte, CustomRoles> SetRoles = [];
     public static readonly Dictionary<byte, CustomRoles> RoleResult = [];
-    public static CustomRoles[] AllRoles => [.. RoleResult.Values];
+    private static CustomRoles[] AllRoles => [.. RoleResult.Values];
 
     [Obfuscation(Exclude = true)]
     enum RoleAssignType
@@ -22,7 +22,7 @@ public class RoleAssign
         Crewmate
     }
 
-    public class RoleAssignInfo(CustomRoles role, int spawnChance, int maxCount, int assignedCount = 0)
+    private class RoleAssignInfo(CustomRoles role, int spawnChance, int maxCount, int assignedCount = 0)
     {
         public CustomRoles Role { get => role; set => role = value; }
         public int SpawnChance { get => spawnChance; set => spawnChance = value; }
@@ -30,7 +30,7 @@ public class RoleAssign
         public int AssignedCount { get => assignedCount; set => assignedCount = value; }
     }
 
-    public static void GetNeutralCounts(int NKmaxOpt, int NKminOpt, int NNKmaxOpt, int NNKminOpt, int NAmaxOpt, int NAminOpt, ref int ResultNKnum, ref int ResultNNKnum, ref int ResultNAnum)
+    private static void GetNeutralCounts(int NKmaxOpt, int NKminOpt, int NNKmaxOpt, int NNKminOpt, int NAmaxOpt, int NAminOpt, ref int ResultNKnum, ref int ResultNNKnum, ref int ResultNAnum)
     {
         var rd = IRandom.Instance;
 
@@ -49,7 +49,7 @@ public class RoleAssign
             ResultNAnum = rd.Next(NAminOpt, NAmaxOpt + 1);
         }
     }
-    public static void GetCovenCounts(int CVmaxOpt, int CVminOpt, ref int ResultCVnum)
+    private static void GetCovenCounts(int CVmaxOpt, int CVminOpt, ref int ResultCVnum)
     {
         var rd = IRandom.Instance;
 

@@ -24,7 +24,7 @@ public static class CustomRoleManager
         if (!role.IsVanilla() && !role.IsAdditionRole()
             && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
         {
-            if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
+            if (RoleClass.Count(x => x.Value.Role == role) > 1)
                 Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
             if (roleClass == null)
                 Logger.Error($"RoleClass for {role} is null.", "GetStaticRoleClass");
@@ -76,7 +76,7 @@ public static class CustomRoleManager
         }
         return roles;
     }
-    public static bool IsOptBlackListed(this Type role) => CustomRolesHelper.DuplicatedRoles.ContainsValue(role);
+    private static bool IsOptBlackListed(this Type role) => CustomRolesHelper.DuplicatedRoles.ContainsValue(role);
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
@@ -94,7 +94,7 @@ public static class CustomRoleManager
     {
         foreach (var roleClass in AllEnabledRoles.ToArray())
         {
-            if (roleClass.CheckMurderOnOthersTarget(killer, target) == true)
+            if (roleClass.CheckMurderOnOthersTarget(killer, target))
             {
                 Logger.Info($"Role class cancels kill: {roleClass}", "OnCheckMurderAsTargetOnOthers");
                 return false;
@@ -417,7 +417,7 @@ public static class CustomRoleManager
     /// <summary>
     /// If the role need check a present dead body
     /// </summary>
-    public static void CheckDeadBody(PlayerControl killer, PlayerControl deadBody, bool inMeeting)
+    private static void CheckDeadBody(PlayerControl killer, PlayerControl deadBody, bool inMeeting)
     {
         if (!CheckDeadBodyOthers.Any()) return;
         //Execute other viewpoint processing if any

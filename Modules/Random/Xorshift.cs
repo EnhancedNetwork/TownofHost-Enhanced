@@ -9,10 +9,7 @@ public class Xorshift(uint seed) : IRandom
 
     private uint num = seed;
 
-    public Xorshift() : this((uint)DateTime.UtcNow.Ticks)
-    { }
-
-    public uint Next()
+    private uint Next()
     {
         num ^= num << 13;
         num ^= num >> 17;

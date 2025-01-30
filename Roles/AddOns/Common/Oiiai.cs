@@ -27,7 +27,7 @@ public class Oiiai : IAddon
         Role_Imitator
     }
 
-    public static readonly CustomRoles[] NRoleChangeRoles =
+    private static readonly CustomRoles[] NRoleChangeRoles =
     [
         CustomRoles.Amnesiac,
         CustomRoles.Imitator,
@@ -51,7 +51,7 @@ public class Oiiai : IAddon
 
         IsEnable = true;
     }
-    public static void PassOnKiller(byte playerId)
+    private static void PassOnKiller(byte playerId)
     {
         if (!playerIdList.Contains(playerId))
             playerIdList.Add(playerId);

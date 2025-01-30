@@ -31,8 +31,8 @@ internal class DollMaster : RoleBase
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem ShapeshiftDuration;
-    public static OptionItem CanKillAsMainBody;
-    public static OptionItem TargetDiesAfterPossession;
+    private static OptionItem CanKillAsMainBody;
+    private static OptionItem TargetDiesAfterPossession;
 
     public override void SetupCustomOption()
     {
@@ -255,8 +255,6 @@ internal class DollMaster : RoleBase
             case CustomRoles.Penguin:
                 CanUseAbility = false;
                 break;
-            default:
-                break;
         }
 
         if (!CanUseAbility) player.Notify(Utils.ColorString(player.GetRoleColor(), GetString("DollMaster_UnableToUseAbility")));
@@ -277,7 +275,6 @@ internal class DollMaster : RoleBase
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
             killer.RpcMurderPlayer(controllingTarget);
-            return;
         }
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
         else if (target == DollMasterTarget)
@@ -287,7 +284,6 @@ internal class DollMaster : RoleBase
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
             killer.RpcMurderPlayer(DollMasterTarget);
-            return;
         }
     }
 

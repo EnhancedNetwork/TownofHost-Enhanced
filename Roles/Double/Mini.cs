@@ -28,7 +28,7 @@ internal class Mini : RoleBase
 
 
     public static int Age = new();
-    public static bool IsEvilMini = false;
+    private static bool IsEvilMini = false;
     private static int GrowUpTime = new();
     //private static int GrowUp = new();
     private static long LastFixedUpdate = new();
@@ -72,7 +72,7 @@ internal class Mini : RoleBase
             SendRPC();
         }
     }
-    public void SendRPC()
+    private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -122,7 +122,7 @@ internal class Mini : RoleBase
         {
             Age += 1;
             GrowUpTime = 0;
-            Logger.Info($"Mini grow up by 1", "Mini");
+            Logger.Info("Mini grow up by 1", "Mini");
             if (player.Is(CustomRoles.EvilMini))
             {
                 player.ResetKillCooldown();

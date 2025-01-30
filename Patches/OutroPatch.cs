@@ -354,12 +354,12 @@ class SetEverythingUpPatch
 
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
-                        sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
+                        sb.Append("\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
                     break;
                 }
             default: // Normal game
                 {
-                    sb.Append($"</b>\n");
+                    sb.Append("</b>\n");
                     foreach (byte id in cloneRoles.ToArray())
                     {
                         if (EndGamePatch.SummaryText[id].Contains("<INVALID:NotAssigned>")) continue;

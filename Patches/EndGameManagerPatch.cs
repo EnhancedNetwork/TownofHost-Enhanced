@@ -7,8 +7,8 @@ namespace TOHE.Patches;
 [HarmonyPatch(typeof(EndGameManager), nameof(EndGameManager.ShowButtons))]
 public class EndGameManagerPatch
 {
-    public static GameObject CountdownText;
-    public static TextMeshPro CountdownTextText;
+    private static GameObject CountdownText;
+    private static TextMeshPro CountdownTextText;
     public static bool IsRestarting;
 
     public static void Postfix(EndGameManager __instance)

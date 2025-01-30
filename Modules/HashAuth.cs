@@ -5,7 +5,7 @@ namespace TOHE;
 
 public class HashAuth(string hashValue, string salt = null, HashAlgorithm algorithm = null)
 {
-    public readonly string HashValue = hashValue;
+    private readonly string HashValue = hashValue;
 
     private readonly string salt = salt;
     private readonly HashAlgorithm algorithm = algorithm ?? SHA256.Create();
@@ -15,10 +15,10 @@ public class HashAuth(string hashValue, string salt = null, HashAlgorithm algori
         var hash = CalculateHash(value);
         return HashValue == hash;
     }
-    public string CalculateHash(string source)
+    private string CalculateHash(string source)
         => CalculateHash(source, salt, algorithm);
 
-    public static string CalculateHash(string source, string salt = null, HashAlgorithm algorithm = null)
+    private static string CalculateHash(string source, string salt = null, HashAlgorithm algorithm = null)
     {
         // 0.algorithmの初期化
         algorithm ??= SHA256.Create();

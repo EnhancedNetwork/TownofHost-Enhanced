@@ -130,8 +130,6 @@ internal class Alchemist : RoleBase
             case 8:
                 player.Notify(GetString("AlchemistGotInvisibility"), 15f);
                 break;
-            default: // just in case
-                break;
         }
 
         SendRPC(player);
@@ -343,7 +341,6 @@ internal class Alchemist : RoleBase
                 // Invisibility
                 // Handled in CoEnterVent
                 break;
-            case 10:
             default: // just in case
                 player.Notify("NoPotion");
                 break;
@@ -417,8 +414,6 @@ internal class Alchemist : RoleBase
                 case 10:
                     str.Append(GetString("PotionStore") + GetString("StoreNull"));
                     break;
-                default: // just in case
-                    break;
             }
             if (FixNextSabo) str.Append(GetString("WaitQFPotion"));
         }
@@ -455,8 +450,6 @@ internal class Alchemist : RoleBase
                 break;
             case 8: //Invisibility
                 str.Append("<color=#b3b3b3>◌</color>");
-                break;
-            default:
                 break;
         }
         if (FixNextSabo) str.Append("<color=#3333ff>★</color>");

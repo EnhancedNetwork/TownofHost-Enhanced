@@ -62,7 +62,7 @@ public class Cyber : IAddon
             }
         }
 
-        if (!inMeeting && !CyberDead.Contains(target.PlayerId))
+        if (!inMeeting)
             CyberDead.Add(target.PlayerId);
     }
 }

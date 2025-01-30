@@ -8,8 +8,8 @@ namespace TOHE.Modules
 {
     public static class RehostManager
     {
-        public static GameObject RCountdownText;
-        public static TextMeshPro RCountdownTextText;
+        private static GameObject RCountdownText;
+        private static TextMeshPro RCountdownTextText;
         public static bool IsAutoRehostDone;
         public static bool ShouldPublic;
         public static void OnDisconnectInternal(DisconnectReasons reason)

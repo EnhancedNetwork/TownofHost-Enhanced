@@ -129,7 +129,7 @@ public class GameSettingMenuPatch
     }
     public static StringOption PresetBehaviour;
     public static FreeChatInputField InputField;
-    public static List<OptionItem> HiddenBySearch = [];
+    private static List<OptionItem> HiddenBySearch = [];
     public static Action _SearchForOptions;
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)

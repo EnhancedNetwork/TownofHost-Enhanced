@@ -12,7 +12,7 @@ internal class TimeManager : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
-    public static OptionItem IncreaseMeetingTime;
+    private static OptionItem IncreaseMeetingTime;
     public static OptionItem MeetingTimeLimit;
     public static OptionItem MadMinMeetingTimeLimit;
 

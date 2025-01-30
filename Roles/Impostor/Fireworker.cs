@@ -36,7 +36,6 @@ internal class Fireworker : RoleBase
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
     private static readonly Dictionary<byte, HashSet<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
-    private static readonly Dictionary<byte, int> FireworkerBombKill = [];
     private readonly List<Firework> Fireworks = [];
 
     private static int fireworkerCount = 1;
@@ -59,7 +58,6 @@ internal class Fireworker : RoleBase
         nowFireworkerCount.Clear();
         FireworkerPosition.Clear();
         state.Clear();
-        FireworkerBombKill.Clear();
 
         fireworkerCount = FireworkerCount.GetInt();
         fireworkerRadius = FireworkerRadius.GetFloat();
@@ -70,7 +68,6 @@ internal class Fireworker : RoleBase
         nowFireworkerCount[playerId] = fireworkerCount;
         FireworkerPosition[playerId] = [];
         state.TryAdd(playerId, FireworkerState.Initial);
-        FireworkerBombKill[playerId] = 0;
     }
 
     private static void SendRPC(byte playerId)
@@ -100,21 +97,13 @@ internal class Fireworker : RoleBase
     {
         if (!state.TryGetValue(pc.PlayerId, out var fireworkState) || !pc.IsAlive()) return false;
 
-        var canUse = false;
-        if ((fireworkState & FireworkerState.CanUseKill) != 0)
-        {
-            canUse = true;
-        }
-        if (CanKill.GetBool())
-        {
-            canUse = true;
-        }
+        bool canUse = CanKill.GetBool() || (fireworkState & FireworkerState.CanUseKill) != 0;
         return canUse;
     }
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        Logger.Info($"Fireworker ShapeShift", "Fireworker");
+        Logger.Info("Fireworker ShapeShift", "Fireworker");
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])

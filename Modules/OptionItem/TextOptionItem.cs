@@ -2,11 +2,8 @@ namespace TOHE;
 
 public class TextOptionItem : OptionItem
 {
-    // 必須情報
-    public IntegerValueRule Rule;
-
     // コンストラクタ
-    public TextOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanilla)
+    private TextOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanilla)
     : base(id, name, defaultValue, tab, isSingleValue, vanillaStr: vanilla)
     {
         IsText = true;

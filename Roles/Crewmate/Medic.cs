@@ -118,7 +118,7 @@ internal class Medic : RoleBase
     private bool IsProtect(byte id)
         => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    public bool CheckKillButton() => AbilityLimit > 0;
+    private bool CheckKillButton() => AbilityLimit > 0;
 
     public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton();
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton() ? 5f : 300f;

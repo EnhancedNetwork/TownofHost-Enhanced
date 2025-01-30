@@ -56,7 +56,7 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void RemoveIncompatibleAddOns(this PlayerControl player)
+    private static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
         List<CustomRoles> roles = new(player.GetCustomSubRoles());
         roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
@@ -124,7 +124,7 @@ static class ExtendedPlayerControl
         player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
 
-        Utils.DoNotifyRoles(SpecifySeer: player, NoCache: true);
+        Utils.NotifyRoles(SpecifySeer: player, NoCache: true);
     }
     /// <summary>
     /// Changes the Role Basis of player during the game
@@ -212,8 +212,7 @@ static class ExtendedPlayerControl
                         }
                         else
                         {
-                            if (newRoleIsDesync) remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
-                            else remeberRoleType = newRoleType;
+                            remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                         }
 
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
@@ -352,7 +351,7 @@ static class ExtendedPlayerControl
         {
             if (meeting == null)
             {
-                Logger.Info($"Cannot be cleared because meetinghud is null", "RpcClearVoteDelay");
+                Logger.Info("Cannot be cleared because meetinghud is null", "RpcClearVoteDelay");
                 return;
             }
             if (AmongUsClient.Instance.ClientId == clientId)
@@ -1265,9 +1264,9 @@ static class ExtendedPlayerControl
     ///<param name="predicate">リストに入れるプレイヤーの条件 このpredicateに入れてfalseを返すプレイヤーは除外されます。</param>
     ///<param name="ignoreColliders">trueにすると、壁の向こう側のプレイヤーが含まれるようになります。守護天使用</param>
     ///<returns>GetPlayersInAbilityRangeSortedの戻り値から条件に合わないプレイヤーを除外したもの。</returns>
-    public static List<PlayerControl> GetPlayersInAbilityRangeSorted(this PlayerControl player, Predicate<PlayerControl> predicate, bool ignoreColliders = false)
+    private static List<PlayerControl> GetPlayersInAbilityRangeSorted(this PlayerControl player, Predicate<PlayerControl> predicate, bool ignoreColliders = false)
     {
-        var rangePlayersIL = player.Data.Role.GetPlayersInAbilityRangeSorted(RoleBehaviour.GetTempPlayerList(), ignoreColliders);;
+        var rangePlayersIL = player.Data.Role.GetPlayersInAbilityRangeSorted(RoleBehaviour.GetTempPlayerList(), ignoreColliders);
         List<PlayerControl> rangePlayers = [];
         foreach (var pc in rangePlayersIL.GetFastEnumerator())
         {
@@ -1380,7 +1379,7 @@ static class ExtendedPlayerControl
 
         return false;
     }
-    public static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
+    private static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
     {
         //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
 

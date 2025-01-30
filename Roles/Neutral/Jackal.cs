@@ -12,7 +12,7 @@ internal class Jackal : RoleBase
     public override CustomRoles Role => CustomRoles.Jackal;
     private const int Id = 16700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
-    public static readonly HashSet<byte> Playerids = [];
+    private static readonly HashSet<byte> Playerids = [];
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -33,7 +33,7 @@ internal class Jackal : RoleBase
     private static OptionItem SidekickAssignMode;
     public static OptionItem KillCooldownSK;
     public static OptionItem SidekickCanKillWhenJackalAlive;
-    public static OptionItem SidekickTurnIntoJackal;
+    private static OptionItem SidekickTurnIntoJackal;
     public static OptionItem RestoreLimitOnNewJackal;
     public static OptionItem CanVentSK;
     public static OptionItem CanUseSabotageSK;

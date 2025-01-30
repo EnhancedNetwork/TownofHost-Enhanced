@@ -11,13 +11,13 @@ public class Bait : IAddon
     private const int Id = 18700;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem BaitDelayMin;
-    public static OptionItem BaitDelayMax;
-    public static OptionItem BaitDelayNotify;
+    private static OptionItem BaitDelayMin;
+    private static OptionItem BaitDelayMax;
+    private static OptionItem BaitDelayNotify;
     public static OptionItem BaitNotification;
     public static OptionItem BaitCanBeReportedUnderAllConditions;
 
-    public static readonly HashSet<byte> BaitAlive = [];
+    private static readonly HashSet<byte> BaitAlive = [];
 
     public void SetupCustomOption()
     {

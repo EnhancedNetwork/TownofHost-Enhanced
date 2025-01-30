@@ -54,7 +54,7 @@ internal class Illusionist : CovenManager
         GetPlayerById(playerId)?.AddDoubleTrigger();
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    public void SendRPC(PlayerControl player, PlayerControl target)
+    private void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);

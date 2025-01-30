@@ -61,13 +61,8 @@ internal class Collector : RoleBase
     {
         if (_Player != null && _Player.IsAlive() && CollectDone(_Player))
         {
-            bool isWinConverted = false;
-
-            if (CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId))
-            {
-                isWinConverted = true;
-            }
-
+            bool isWinConverted = CustomWinnerHolder.CheckForConvertedWinner(_Player.PlayerId);
+            
             if (check) return true;
 
             if (!isWinConverted)

@@ -5,7 +5,7 @@ using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
-internal partial class Mayor : RoleBase
+internal class Mayor : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Mayor;

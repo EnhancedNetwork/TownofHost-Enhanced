@@ -6,7 +6,7 @@ namespace TOHE;
 
 public class WriterProxy(MessageWriter writer) : ICustomWriter
 {
-    public MessageWriter Writer { get; private set; } = writer;
+    private MessageWriter Writer { get; } = writer;
 
 
     public void Write(float val) => Writer.Write(val);

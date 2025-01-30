@@ -21,11 +21,11 @@ internal class Romantic : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
-    public static bool isProtect = false;
+    private static bool isProtect = false;
     public static bool isRomanticAlive = true;
-    public static bool isPartnerProtected = false;
+    private static bool isPartnerProtected = false;
 
-    public static OptionItem BetCooldown;
+    private static OptionItem BetCooldown;
     private static OptionItem ProtectCooldown;
     private static OptionItem ProtectDuration;
     private static OptionItem KnowTargetRole;
@@ -106,7 +106,6 @@ internal class Romantic : RoleBase
         if (BetTimes.TryGetValue(id, out var times) && times < 1)
         {
             Main.AllPlayerKillCooldown[id] = ProtectCooldown.GetFloat();
-            return;
         }
         else Main.AllPlayerKillCooldown[id] = BetCooldown.GetFloat();
         //float cd = BetCooldown.GetFloat();
@@ -321,7 +320,7 @@ internal class VengefulRomantic : RoleBase
     //==================================================================\\
 
     public static bool hasKilledKiller = false;
-    public static Dictionary<byte, byte> VengefulTarget = [];
+    private static readonly Dictionary<byte, byte> VengefulTarget = [];
 
     public override void Init()
     {

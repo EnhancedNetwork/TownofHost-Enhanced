@@ -234,7 +234,7 @@ class RandomSpawn
                 player.RpcRandomVentTeleport();
             }
         }
-        public Vector2 GetLocation(bool first = false)
+        private Vector2 GetLocation(bool first = false)
         {
             var locations = Positions.ToArray();
             if (first) return locations[0].Value;
@@ -312,12 +312,12 @@ class RandomSpawn
 
     public class DleksSpawnMap : SpawnMap
     {
-        public static Dictionary<string, Vector2> TempPositions = new SkeldSpawnMap().Positions
+        private static Dictionary<string, Vector2> TempPositions = new SkeldSpawnMap().Positions
             .ToDictionary(e => e.Key, e => new Vector2(-e.Value.x, e.Value.y));
 
         public override Dictionary<string, Vector2> Positions { get; } = TempPositions;
     }
-    public class AirshipSpawnMap : SpawnMap
+    private class AirshipSpawnMap : SpawnMap
     {
         public override Dictionary<string, Vector2> Positions { get; } = new()
         {

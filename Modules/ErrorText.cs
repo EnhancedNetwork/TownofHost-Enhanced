@@ -43,10 +43,10 @@ public class ErrorText : MonoBehaviour
         Text.alignment = TMPro.TextAlignmentOptions.Top;
     }
 
-    public TMPro.TextMeshPro Text;
-    public Camera Camera;
-    public List<ErrorData> AllErrors = [];
-    public Vector3 TextOffset = new(0, 0.3f, -1000f);
+    private TMPro.TextMeshPro Text;
+    private Camera Camera;
+    private List<ErrorData> AllErrors = [];
+    private Vector3 TextOffset = new(0, 0.3f, -1000f);
     public void Update()
     {
         foreach (var error in AllErrors.ToArray())
@@ -87,7 +87,7 @@ public class ErrorText : MonoBehaviour
         }
         UpdateText();
     }
-    public void UpdateText()
+    private void UpdateText()
     {
         var text = new System.Text.StringBuilder();
         int maxLevel = 0;
@@ -118,11 +118,11 @@ public class ErrorText : MonoBehaviour
         UpdateText();
     }
 
-    public class ErrorData
+    private class ErrorData
     {
         public readonly ErrorCode Code;
-        public readonly int ErrorType1;
-        public readonly int ErrorType2;
+        private readonly int ErrorType1;
+        private readonly int ErrorType2;
         public readonly int ErrorLevel;
         public float Timer { get; private set; }
         public string Message => GetString(this.ToString());

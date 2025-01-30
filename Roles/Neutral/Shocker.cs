@@ -12,7 +12,7 @@ internal class Shocker : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Shocker;
     private const int Id = 31000;
-    public static byte? playerId;
+    private static byte? playerId;
     public static bool HasEnabled => playerId.HasValue;
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
@@ -29,9 +29,9 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
 
-    private static List<Collider2D> markedRooms = new();
-    private static List<Collider2D> shockedRooms = new();
-    private static List<Collider2D> customRooms = new();
+    private static readonly List<Collider2D> markedRooms = [];
+    private static List<Collider2D> shockedRooms = [];
+    private static readonly List<Collider2D> customRooms = [];
     private static bool isShocking = false;
 
     public override void SetupCustomOption()
@@ -127,7 +127,7 @@ internal class Shocker : RoleBase
         SendSkillRPC();
         pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerAbilityActivate")));
         isShocking = true;
-        shockedRooms = new List<Collider2D>(markedRooms);
+        shockedRooms = markedRooms;
         markedRooms.Clear();
         _ = new LateTask(() =>
         {

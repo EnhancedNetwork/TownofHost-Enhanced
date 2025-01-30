@@ -10,8 +10,8 @@ namespace TOHE;
 
 public static class Translator
 {
-    public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
+    private static Dictionary<string, Dictionary<int, string>> translateMaps;
+    private const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static readonly Dictionary<CustomRoles, HashSet<string>> CrossLangRoleNames = [];
     public static void Init()
@@ -189,7 +189,6 @@ public static class Translator
                 RealName = GetString(role.ToString());
                 Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
             }
-            return;
         }
         else
         {
@@ -270,7 +269,7 @@ public static class Translator
         return false;
     }
 
-    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
+    private static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
@@ -308,7 +307,7 @@ public static class Translator
 
         return GetString(str, lang);
     }
-    public static SupportedLangs GetUserTrueLang()
+    private static SupportedLangs GetUserTrueLang()
     {
         try
         {
@@ -368,7 +367,7 @@ public static class Translator
             }
         }
     }
-    public static void LoadCustomTranslation(string filename, SupportedLangs lang)
+    private static void LoadCustomTranslation(string filename, SupportedLangs lang)
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
         if (File.Exists(path))

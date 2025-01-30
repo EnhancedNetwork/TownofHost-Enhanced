@@ -22,11 +22,11 @@ internal class DoubleAgent : RoleBase
     private static readonly List<GameObject> createdButtonsList = [];
     private static readonly HashSet<byte> CurrentBombedPlayers = [];
     private static float CurrentBombedTime;
-    public static bool BombIsActive = false;
-    public static bool CanBombInMeeting = true;
-    public static bool StartedWithMoreThanOneImp = false;
+    private static bool BombIsActive = false;
+    private static bool CanBombInMeeting = true;
+    private static bool StartedWithMoreThanOneImp = false;
 
-    public static OptionItem DoubleAgentCanDiffuseBombs;
+    private static OptionItem DoubleAgentCanDiffuseBombs;
     private static OptionItem ClearBombedOnMeetingCall;
     private static OptionItem CanUseAbilityInCalledMeeting;
     private static OptionItem BombExplosionTimer;
@@ -42,7 +42,7 @@ internal class DoubleAgent : RoleBase
         Role_Traitor, // Team Neutral
         Role_Trickster, // Team Impostor as Crewmate
     }
-    public static readonly CustomRoles[] CRoleChangeRoles =
+    private static readonly CustomRoles[] CRoleChangeRoles =
     [
         0, // NoChange
         0, // Random
@@ -320,7 +320,7 @@ internal class DoubleAgent : RoleBase
                 CreatePlantBombButton(__instance);
         }
     }
-    public static void CreatePlantBombButton(MeetingHud __instance)
+    private static void CreatePlantBombButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {

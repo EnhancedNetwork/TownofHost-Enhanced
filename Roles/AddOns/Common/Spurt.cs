@@ -12,7 +12,7 @@ internal class Spurt : IAddon
     private static OptionItem DisplaysCharge;
 
     private static readonly Dictionary<byte, Vector2> LastPos = [];
-    public static readonly Dictionary<byte, float> StartingSpeed = [];
+    private static readonly Dictionary<byte, float> StartingSpeed = [];
     private static readonly Dictionary<byte, int> LastNum = [];
     private static readonly Dictionary<byte, long> LastUpdate = [];
     public AddonTypes Type => AddonTypes.Helpful;

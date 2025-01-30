@@ -23,7 +23,7 @@ internal class Quizmaster : RoleBase
 
     private static OptionItem MinQuestionDifficulty;
     private static OptionItem MaxQuestionDifficulty;
-    public static OptionItem CanKillAfterMarkOpt;
+    private static OptionItem CanKillAfterMarkOpt;
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem CanGiveQuestionsAboutPastGames;
@@ -41,14 +41,14 @@ internal class Quizmaster : RoleBase
     private static byte MarkedPlayer = byte.MaxValue;
     public static string lastExiledColor = "None";
     public static string lastReportedColor = "None";
-    public static string thisReportedColor = "None";
+    private static string thisReportedColor = "None";
     public static string lastButtonPressedColor = "None";
-    public static string thisButtonPressedColor = "None";
+    private static string thisButtonPressedColor = "None";
     public static int meetingNum = 0;
     public static int diedThisRound = 0;
     public static int buttonMeeting = 0;
 
-    public static bool CanKillAfterMark = false;
+    private static bool CanKillAfterMark = false;
 
     public override void SetupCustomOption()
     {
@@ -99,7 +99,7 @@ internal class Quizmaster : RoleBase
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    public void SendRPC(byte targetId)
+    private void SendRPC(byte targetId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -303,7 +303,7 @@ internal class Quizmaster : RoleBase
         ResetMarkedPlayer(true);
     }
 
-    public static void ResetMarkedPlayer(bool canMarkAgain = true)
+    private static void ResetMarkedPlayer(bool canMarkAgain = true)
     {
         if (Player == null) return;
 

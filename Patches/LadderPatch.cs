@@ -4,7 +4,7 @@ namespace TOHE;
 
 public class FallFromLadder
 {
-    public static Dictionary<byte, Vector3> TargetLadderData = [];
+    private static Dictionary<byte, Vector3> TargetLadderData = [];
     private static int Chance => (Options.LadderDeathChance as StringOptionItem).GetChance();
     public static void Reset()
     {

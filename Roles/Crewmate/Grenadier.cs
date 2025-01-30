@@ -138,8 +138,8 @@ internal class Grenadier : RoleBase
         }
     }
 
-    public static bool stopGrenadierSkill = false;
-    public static bool stopMadGrenadierSkill = false;
+    private static bool stopGrenadierSkill = false;
+    private static bool stopMadGrenadierSkill = false;
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad) return;

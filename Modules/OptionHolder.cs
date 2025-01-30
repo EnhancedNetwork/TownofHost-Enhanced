@@ -52,7 +52,7 @@ public static class Options
             2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
-    public static readonly string[] gameModes =
+    private static readonly string[] gameModes =
     [
         "Standard",
         "FFA",
@@ -64,8 +64,8 @@ public static class Options
 
 
     // 役職数・確率
-    public static Dictionary<CustomRoles, int> roleCounts;
-    public static Dictionary<CustomRoles, float> roleSpawnChances;
+    private static Dictionary<CustomRoles, int> roleCounts;
+    private static Dictionary<CustomRoles, float> roleSpawnChances;
     public static Dictionary<CustomRoles, OptionItem> CustomRoleCounts;
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
@@ -103,17 +103,17 @@ public static class Options
         RoleOff,
         RoleRate,
     }
-    public static readonly string[] CheatResponsesName =
+    private static readonly string[] CheatResponsesName =
     [
         "Ban", "Kick", "NoticeMe","NoticeEveryone", "TempBan", "OnlyCancel"
     ];
-    public static readonly string[] ConfirmEjectionsMode =
+    private static readonly string[] ConfirmEjectionsMode =
     [
         "ConfirmEjections.None",
         "ConfirmEjections.Team",
         "ConfirmEjections.Role"
     ];
-    public static readonly string[] CamouflageMode =
+    private static readonly string[] CamouflageMode =
     [
         "CamouflageMode.Default",
         "CamouflageMode.Host",
@@ -222,7 +222,7 @@ public static class Options
     public static OptionItem AutoDisplayLastResult;
     public static OptionItem OldKillLog;
 
-    public static OptionItem SuffixMode;
+    private static OptionItem SuffixMode;
     public static OptionItem HideHostText;
     public static OptionItem HideAllTagsAndText;
     public static OptionItem HideGameSettings;
@@ -273,7 +273,7 @@ public static class Options
     public static OptionItem FungleChance;
     public static OptionItem UseMoreRandomMapSelection;
 
-    public static OptionItem MapModification;
+    private static OptionItem MapModification;
     public static OptionItem AirshipVariableElectrical;
     public static OptionItem DisableAirshipMovingPlatform;
     public static OptionItem DisableSporeTriggerOnFungle;
@@ -288,7 +288,7 @@ public static class Options
     public static OptionItem DecontaminationTimeOnMiraHQ;
     public static OptionItem DecontaminationTimeOnPolus;
 
-    public static OptionItem EnableHalloweenDecorations;
+    private static OptionItem EnableHalloweenDecorations;
     public static OptionItem HalloweenDecorationsSkeld;
     public static OptionItem HalloweenDecorationsMira;
     public static OptionItem HalloweenDecorationsDleks;
@@ -319,7 +319,7 @@ public static class Options
     public static OptionItem FungleReactorTimeLimit;
     public static OptionItem FungleMushroomMixupDuration;
 
-    public static OptionItem LightsOutSpecialSettings;
+    private static OptionItem LightsOutSpecialSettings;
     public static OptionItem BlockDisturbancesToSwitches;
     public static OptionItem DisableAirshipViewingDeckLightsPanel;
     public static OptionItem DisableAirshipGapRoomLightsPanel;
@@ -337,25 +337,25 @@ public static class Options
     public static OptionItem DisableCloseDoor;
 
     public static OptionItem DisableDevices;
-    public static OptionItem DisableSkeldDevices;
+    private static OptionItem DisableSkeldDevices;
     public static OptionItem DisableSkeldAdmin;
     public static OptionItem DisableSkeldCamera;
-    public static OptionItem DisableMiraHQDevices;
+    private static OptionItem DisableMiraHQDevices;
     public static OptionItem DisableMiraHQAdmin;
     public static OptionItem DisableMiraHQDoorLog;
-    public static OptionItem DisablePolusDevices;
+    private static OptionItem DisablePolusDevices;
     public static OptionItem DisablePolusAdmin;
     public static OptionItem DisablePolusCamera;
     public static OptionItem DisablePolusVital;
-    public static OptionItem DisableAirshipDevices;
+    private static OptionItem DisableAirshipDevices;
     public static OptionItem DisableAirshipCockpitAdmin;
     public static OptionItem DisableAirshipRecordsAdmin;
     public static OptionItem DisableAirshipCamera;
     public static OptionItem DisableAirshipVital;
-    public static OptionItem DisableFungleDevices;
+    private static OptionItem DisableFungleDevices;
     public static OptionItem DisableFungleBinoculars;
     public static OptionItem DisableFungleVital;
-    public static OptionItem DisableDevicesIgnoreConditions;
+    private static OptionItem DisableDevicesIgnoreConditions;
     public static OptionItem DisableDevicesIgnoreImpostors;
     public static OptionItem DisableDevicesIgnoreNeutrals;
     public static OptionItem DisableDevicesIgnoreCoven;
@@ -375,11 +375,11 @@ public static class Options
     public static OptionItem AdditionalEmergencyCooldownTime;
 
     public static OptionItem VoteMode;
-    public static OptionItem WhenSkipVote;
+    private static OptionItem WhenSkipVote;
     public static OptionItem WhenSkipVoteIgnoreFirstMeeting;
     public static OptionItem WhenSkipVoteIgnoreNoDeadBody;
     public static OptionItem WhenSkipVoteIgnoreEmergency;
-    public static OptionItem WhenNonVote;
+    private static OptionItem WhenNonVote;
     public static OptionItem WhenTie;
 
     // Other
@@ -571,11 +571,11 @@ public static class Options
     public static VoteMode GetWhenSkipVote() => (VoteMode)WhenSkipVote.GetValue();
     public static VoteMode GetWhenNonVote() => (VoteMode)WhenNonVote.GetValue();
 
-    public static readonly string[] voteModes =
+    private static readonly string[] voteModes =
     [
         "Default", "Suicide", "SelfVote", "Skip"
     ];
-    public static readonly string[] tieModes =
+    private static readonly string[] tieModes =
     [
         "TieMode.Default", "TieMode.All", "TieMode.Random"
     ];
@@ -584,7 +584,7 @@ public static class Options
          "GuesserMode.All", "GuesserMode.Harmful", "GuesserMode.Random"
      }; */
 
-    public static readonly string[] suffixModes =
+    private static readonly string[] suffixModes =
     [
         "SuffixMode.None",
         "SuffixMode.Version",
@@ -596,7 +596,7 @@ public static class Options
         "SuffixMode.NoAndroidPlz",
         "SuffixMode.AutoHost"
     ];
-    public static readonly string[] roleAssigningAlgorithms =
+    private static readonly string[] roleAssigningAlgorithms =
     [
         "RoleAssigningAlgorithm.Default",
         "RoleAssigningAlgorithm.NetRandom",
@@ -604,7 +604,7 @@ public static class Options
         "RoleAssigningAlgorithm.Xorshift",
         "RoleAssigningAlgorithm.MersenneTwister",
     ];
-    public static readonly string[] formatNameModes =
+    private static readonly string[] formatNameModes =
     [
         "FormatNameModes.None",
         "FormatNameModes.Color",
@@ -633,7 +633,7 @@ public static class Options
     {
         ResetRoleCounts();
     }
-    public static void ResetRoleCounts()
+    private static void ResetRoleCounts()
     {
         roleCounts = [];
         roleSpawnChances = [];
@@ -1088,14 +1088,6 @@ public static class Options
 
         yield return null;
 
-        #region Experimental Roles/Add-ons Settings
-
-
-
-        #endregion
-
-        yield return null;
-
         #region System Settings
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
@@ -1352,7 +1344,7 @@ public static class Options
             .SetColor(Color.cyan);
 
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
-            .SetColor(Color.cyan); ;
+            .SetColor(Color.cyan);
 
         CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.ModSettings, false)
             .SetColor(Color.cyan);
@@ -2153,7 +2145,7 @@ public static class Options
         public OptionItem numLongTasks;
         public OptionItem numShortTasks;
 
-        public OverrideTasksData(int idStart, TabGroup tab, CustomRoles role)
+        private OverrideTasksData(int idStart, TabGroup tab, CustomRoles role)
         {
             IdStart = idStart;
             Role = role;

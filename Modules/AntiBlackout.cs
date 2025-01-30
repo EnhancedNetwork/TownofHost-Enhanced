@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
@@ -187,7 +188,7 @@ public static class AntiBlackout
         player.IsDead = player.Disconnected = false;
         SendGameData();
     }
-    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, MeetingHud.VoterState[] states, NetworkedPlayerInfo exiled, bool tie)
+    public static void AntiBlackRpcVotingComplete(this MeetingHud __instance, Il2CppStructArray<MeetingHud.VoterState> states, NetworkedPlayerInfo exiled, bool tie)
     {
         if (AmongUsClient.Instance.AmClient)
         {

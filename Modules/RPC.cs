@@ -147,7 +147,7 @@ class ShouldProcessRpcPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class RPCHandlerPatch
 {
-    public static bool TrustedRpc(byte id)
+    private static bool TrustedRpc(byte id)
     => (CustomRPC)id is CustomRPC.VersionCheck
         or CustomRPC.RequestRetryVersionCheck
         or CustomRPC.AntiBlackout
@@ -509,13 +509,12 @@ internal class RPCHandlerPatch
                     bool isdead = reader.ReadBoolean();
                     bool IsDC = reader.ReadBoolean();
                     PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
-                    if (Main.PlayerStates.ContainsKey(paciefID))
+                    if (Main.PlayerStates.TryGetValue(paciefID, out var paciefState))
                     {
-                        var state = Main.PlayerStates[paciefID];
-                        state.MainRole = rola;
-                        state.IsDead = isdead;
-                        state.Disconnected = IsDC;
-                        state.deathReason = drip;
+                        paciefState.MainRole = rola;
+                        paciefState.IsDead = isdead;
+                        paciefState.Disconnected = IsDC;
+                        paciefState.deathReason = drip;
                     }
                 }
                 float Killcd = reader.ReadSingle();
@@ -532,9 +531,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();
                 CustomRoles rl = (CustomRoles)reader.ReadPackedInt32();
-                if (Main.PlayerStates.ContainsKey(playerid))
+                if (Main.PlayerStates.TryGetValue(playerid, out var state))
                 {
-                    Main.PlayerStates[playerid].MainRole = rl;
+                    state.MainRole = rl;
                 }
                 break;
 

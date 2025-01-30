@@ -1,4 +1,5 @@
 using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
@@ -39,7 +40,6 @@ internal class Dictator : RoleBase
         else if (ChatManager.CheckCommond(ref msg, "exp|expel|独裁|獨裁", false)) operate = 2;
         else return false;
         List<MeetingHud.VoterState> statesList = [];
-        MeetingHud.VoterState[] states;
 
         if (operate == 1)
         {
@@ -85,24 +85,25 @@ internal class Dictator : RoleBase
                 VoterId = pc.PlayerId,
                 VotedForId = target.PlayerId
             });
-            states = [.. statesList];
+            var states = (Il2CppStructArray<MeetingHud.VoterState>)statesList.ToList().ToIl2Cpp().ToArray();
             var exiled = target.Data;
             var isBlackOut = AntiBlackout.BlackOutIsActive;
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
             Main.LastVotedPlayerInfo = exiled;
             AntiBlackout.ExilePlayerId = exiled.PlayerId;
+
             if (AntiBlackout.BlackOutIsActive)
             {
                 if (isBlackOut)
                     MeetingHud.Instance.AntiBlackRpcVotingComplete(states, exiled, false);
                 else
-                    MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), exiled, false);
+                    MeetingHud.Instance.RpcVotingComplete(states, exiled, false);
                 if (exiled != null)
                 {
                     AntiBlackout.ShowExiledInfo = isBlackOut;
                     CheckForEndVotingPatch.ConfirmEjections(exiled, isBlackOut);
-                    MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
+                    MeetingHud.Instance.RpcVotingComplete(states, null, true);
                     MeetingHud.Instance.RpcClose();
                 }
             }
@@ -130,7 +131,7 @@ internal class Dictator : RoleBase
     public override string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false)
         => IsForMeeting && ChangeCommandToExpel.GetBool() ? ColorString(GetRoleColor(CustomRoles.Dictator), target.PlayerId.ToString()) + " " + TargetPlayerName : "";
 
-    private void SendDictatorRPC(byte playerId)
+    private static void SendDictatorRPC(byte playerId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DictatorRPC, SendOption.Reliable, -1);
         writer.Write(playerId);

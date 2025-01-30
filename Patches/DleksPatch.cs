@@ -75,8 +75,8 @@ class AllMapIconsPatch
 
         MapIconByName DleksIncon = Object.Instantiate(__instance, __instance.gameObject.transform).AllMapIcons[0];
         DleksIncon.Name = MapNames.Dleks;
-        DleksIncon.MapImage = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
-        DleksIncon.NameImage = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
+        DleksIncon.MapImage = Utils.LoadSprite("TOHE.Resources.Images.DleksBanner.png", 100f);
+        DleksIncon.NameImage = Utils.LoadSprite("TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
 
         __instance.AllMapIcons.Add(DleksIncon);
     }

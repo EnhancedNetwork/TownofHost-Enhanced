@@ -160,13 +160,13 @@ class VersionShowerStartPatch
 
 #if DEBUG
         sb.Append($"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)");
-        sb.Append($"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
+        sb.Append("\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
         buildtype = "Debug";
 #endif
         Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 
         if (Main.IsAprilFools)
-            sb.Clear().Append($"<color=#00bfff>Town Of Host</color> v11.45.14");
+            sb.Clear().Append("<color=#00bfff>Town Of Host</color> v11.45.14");
 
         var credentials = Object.Instantiate(__instance.text);
         credentials.text = Main.credentialsText = sb.ToString();

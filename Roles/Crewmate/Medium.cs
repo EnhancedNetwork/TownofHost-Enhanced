@@ -46,7 +46,7 @@ internal class Medium : RoleBase
     {
         AbilityLimit = ContactLimitOpt.GetFloat();
     }
-    public void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
+    private void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -119,7 +119,7 @@ internal class Medium : RoleBase
 
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         foreach (var comm in comList)
@@ -162,7 +162,7 @@ internal class Medium : RoleBase
 
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))
-            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.FirstOrDefault(x => x.Value == pc.PlayerId).Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
 
         //For target
         if (ContactPlayer.TryGetValue(pc.PlayerId, out var targetId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))

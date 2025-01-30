@@ -235,7 +235,7 @@ internal class Solsticer : RoleBase
     {
         return pc.IsAlive() && (!onlyKiller || pc.HasImpKillButton());
     }
-    public void ResetTasks(PlayerControl pc)
+    private void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
         var taskState = pc.GetPlayerTaskState();

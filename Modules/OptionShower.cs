@@ -67,7 +67,7 @@ public static class OptionShower
                         }
                         sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n");
                     }
-                pages.Add(sb.ToString() + "\n\n");
+                pages.Add(sb + "\n\n");
                 sb.Clear();
             }
             //有効な役職と詳細設定一覧

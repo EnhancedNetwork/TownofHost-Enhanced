@@ -25,7 +25,7 @@ internal class Ritualist : CovenManager
     //==================================================================\\
 
     private static OptionItem MaxRitsPerRound;
-    public static OptionItem TryHideMsg;
+    private static OptionItem TryHideMsg;
     public static OptionItem EnchantedKnowsCoven;
     public static OptionItem EnchantedKnowsEnchanted;
 
@@ -302,7 +302,7 @@ internal class Ritualist : CovenManager
         error = string.Empty;
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         foreach (var comm in comList)

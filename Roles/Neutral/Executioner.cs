@@ -26,7 +26,7 @@ internal class Executioner : RoleBase
     private static OptionItem ChangeRolesAfterTargetKilled;
     private static OptionItem RevealExeTargetUponEjection;
 
-    public static HashSet<byte> TargetList = [];
+    private static readonly HashSet<byte> TargetList = [];
     private byte TargetId;
 
     [Obfuscation(Exclude = true)]
@@ -49,7 +49,7 @@ internal class Executioner : RoleBase
         Role_Deputy,
         Role_Medic
     }
-    public static readonly CustomRoles[] CRoleChangeRoles =
+    private static readonly CustomRoles[] CRoleChangeRoles =
     [
         CustomRoles.Amnesiac,
         CustomRoles.Maverick,

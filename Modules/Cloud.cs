@@ -70,7 +70,7 @@ internal class Cloud
     }*/
 
     private static bool connecting = false;
-    public static void StartConnect()
+    private static void StartConnect()
     {
         if (connecting || EacClientSocket != null && EacClientSocket.Connected) return;
         connecting = true;
@@ -98,7 +98,7 @@ internal class Cloud
             connecting = false;
         }, 3.5f, "EAC Cloud Connect");
     }
-    public static void StopConnect()
+    private static void StopConnect()
     {
         if (EacClientSocket != null && EacClientSocket.Connected)
             EacClientSocket.Close();

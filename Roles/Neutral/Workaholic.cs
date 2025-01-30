@@ -16,13 +16,13 @@ internal class Workaholic : RoleBase
     //==================================================================\\
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
-    public static OptionItem WorkaholicCannotWinAtDeath;
-    public static OptionItem WorkaholicVentCooldown;
+    private static OptionItem WorkaholicCannotWinAtDeath;
+    private static OptionItem WorkaholicVentCooldown;
     public static OptionItem WorkaholicVisibleToEveryone;
-    public static OptionItem WorkaholicGiveAdviceAlive;
+    private static OptionItem WorkaholicGiveAdviceAlive;
     public static OptionItem WorkaholicCanGuess;
 
-    public static readonly HashSet<byte> WorkaholicAlive = [];
+    private static readonly HashSet<byte> WorkaholicAlive = [];
 
     public override void SetupCustomOption()
     {

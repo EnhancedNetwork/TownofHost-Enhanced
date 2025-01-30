@@ -75,7 +75,7 @@ internal class VoodooMaster : CovenManager
         }
         return string.Empty;
     }
-    public static bool IsDoll(byte pc, byte target) => Dolls.TryGetValue(pc, out var dollList) && dollList.Contains(target);
+    private static bool IsDoll(byte pc, byte target) => Dolls.TryGetValue(pc, out var dollList) && dollList.Contains(target);
     public override string GetProgressText(byte playerId, bool comms)
         => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.VoodooMaster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)

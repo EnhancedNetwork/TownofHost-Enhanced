@@ -247,7 +247,7 @@ internal class Baker : RoleBase
             killer.Notify(GetString("BakerBreaded"));
             CanUseAbility = false;
 
-            Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
+            Logger.Info("Bread given to " + target.GetRealName(), "Baker");
 
             if (BTOS2Baker.GetBool())
             {
@@ -295,7 +295,7 @@ internal class Baker : RoleBase
         }
         return true;
     }
-    public static bool IsRoleblocked(byte target)
+    private static bool IsRoleblocked(byte target)
     {
         if (RoleblockedPlayers.Count < 1) return false;
         foreach (var player in RoleblockedPlayers.Keys)
@@ -313,7 +313,7 @@ internal class Baker : RoleBase
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()))
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Count(x => !x.IsNeutralApocalypse())))
         {
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
@@ -383,7 +383,7 @@ internal class Famine : RoleBase
             SendRPC(killer, target);
             NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("FamineStarved"));
-            Logger.Info(target.GetRealName() + $" has been starved", "Famine");
+            Logger.Info(target.GetRealName() + " has been starved", "Famine");
         }
         return false;
     }

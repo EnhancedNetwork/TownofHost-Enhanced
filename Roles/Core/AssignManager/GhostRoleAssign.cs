@@ -147,7 +147,6 @@ public static class GhostRoleAssign
                 player.RpcSetCustomRole(ChosenRole);
                 player.GetRoleClass().OnAdd(player.PlayerId);
             }
-            return;
         }
 
     }

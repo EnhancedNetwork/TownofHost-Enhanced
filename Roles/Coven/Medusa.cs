@@ -159,7 +159,7 @@ internal class Medusa : CovenManager
         }
         return string.Empty;
     }
-    public static bool IsStoned(byte pc, byte target) => StonedPlayers.TryGetValue(pc, out var stoneds) && stoneds.Contains(target);
+    private static bool IsStoned(byte pc, byte target) => StonedPlayers.TryGetValue(pc, out var stoneds) && stoneds.Contains(target);
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

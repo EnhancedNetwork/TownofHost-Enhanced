@@ -94,7 +94,7 @@ internal class GameDataHandlerPatch
                         return false;
                     }
 
-                    if (scene == string.Empty || scene == null)
+                    if (System.String.IsNullOrEmpty(scene))
                     {
                         Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag with null scene.", client.PlayerName, client.Id), "GameDataHandlerPatch");
                         EAC.WarnHost();

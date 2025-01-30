@@ -240,7 +240,6 @@ internal class Arsonist : RoleBase
                         pc.SetRealKiller(__instance.myPlayer);
                     }
                 }
-                return;
             }
             else if (CanIgniteAnytime())
             {
@@ -264,7 +263,6 @@ internal class Arsonist : RoleBase
                             CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                         }
                     }
-                    return;
                 }
             }
         }
@@ -274,20 +272,20 @@ internal class Arsonist : RoleBase
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 
-    public static bool IsDousedPlayer(PlayerControl arsonist, PlayerControl target)
+    private static bool IsDousedPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null || target == null || IsDoused == null) return false;
         return IsDoused.GetValueOrDefault((arsonist.PlayerId, target.PlayerId), false);
     }
 
-    public static bool IsDouseDone(PlayerControl player)
+    private static bool IsDouseDone(PlayerControl player)
     {
         if (!player.Is(CustomRoles.Arsonist)) return false;
         var (doused, all) = GetDousedPlayerCount(player.PlayerId);
         return doused >= all;
     }
 
-    public static (int, int) GetDousedPlayerCount(byte playerId)
+    private static (int, int) GetDousedPlayerCount(byte playerId)
     {
         int doused = 0, all = 0;
 

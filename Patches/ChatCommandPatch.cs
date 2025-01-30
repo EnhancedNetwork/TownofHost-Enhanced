@@ -241,7 +241,6 @@ internal class ChatCommands
                     if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
                     {
                         Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
-                        break;
                     }
                     else
                     {
@@ -591,7 +590,7 @@ internal class ChatCommands
                     {
                         var lp = PlayerControl.LocalPlayer;
                         var Des = lp.GetRoleInfo(true);
-                        var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
+                        var title = "<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
                         var Conf = new StringBuilder();
                         var Sub = new StringBuilder();
                         var rlHex = Utils.GetRoleColorCode(role);
@@ -1327,11 +1326,9 @@ internal class ChatCommands
 
                     static Color32 RndCLR()
                     {
-                        byte r, g, b;
-
-                        r = (byte)IRandom.Instance.Next(45, 185);
-                        g = (byte)IRandom.Instance.Next(45, 185);
-                        b = (byte)IRandom.Instance.Next(45, 185);
+                        byte r = (byte)IRandom.Instance.Next(45, 185);
+                        byte g = (byte)IRandom.Instance.Next(45, 185);
+                        byte b = (byte)IRandom.Instance.Next(45, 185);
 
                         return new Color32(r, g, b, 255);
                     }
@@ -1625,7 +1622,7 @@ internal class ChatCommands
         return !canceled;
     }
 
-    public static string FixRoleNameInput(string text)
+    private static string FixRoleNameInput(string text)
     {
         text = text.Replace("着", "者").Trim().ToLower();
         return text switch
@@ -1985,17 +1982,10 @@ internal class ChatCommands
         {
             foreach (var rl in CustomRolesHelper.AllRoles)
             {
-                if (!CrossLangRoleNames.ContainsKey(rl))
-                    continue;
-                else
+                if (CrossLangRoleNames.TryGetValue(rl, out var list) && list.Contains(nameWithoutId))
                 {
-                    if (!CrossLangRoleNames[rl].Contains(nameWithoutId))
-                        continue;
-                    else
-                    {
-                        role = rl;
-                        return true;
-                    }
+                    role = rl;
+                    return true;
                 }
             }
         }
@@ -2014,7 +2004,7 @@ internal class ChatCommands
         }
         return false;
     }
-    public static void SendRolesInfo(string role, byte playerId, bool isDev = false, bool isUp = false)
+    private static void SendRolesInfo(string role, byte playerId, bool isDev = false, bool isUp = false)
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA)
         {
@@ -2044,17 +2034,10 @@ internal class ChatCommands
 
             if (Options.CrossLanguageGetRole.GetBool())
             {
-                if (!CrossLangRoleNames.ContainsKey(rl))
-                    continue;
-                else
+                if (CrossLangRoleNames.TryGetValue(rl, out var list) && list.Contains(role))
                 {
-                    if (!CrossLangRoleNames[rl].Contains(role))
-                        continue;
-                    else
-                    {
-                        result = rl;
-                        break;
-                    }
+                    result = rl;
+                    break;
                 }
             }
             else
@@ -2137,7 +2120,6 @@ internal class ChatCommands
 
         // Show role settings
         Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
-        return;
     }
     public static void OnReceiveChat(PlayerControl player, string text, out bool canceled)
     {
@@ -2154,18 +2136,18 @@ internal class ChatCommands
 
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
-        if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
-        if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
-        if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
-        if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Councillor cl && cl.MurderMsg(player, text)) { canceled = true; Logger.Info($"Is Councillor command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Swapper sw && sw.SwapMsg(player, text)) { canceled = true; Logger.Info($"Is Swapper command", "OnReceiveChat"); return; }
-        if (Medium.MsMsg(player, text)) { Logger.Info($"Is Medium command", "OnReceiveChat"); return; }
-        if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info($"Is Nemesis Revenge command", "OnReceiveChat"); return; }
-        if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
-        if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true; Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
+        if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info("Is Guesser command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info("Is Judge command", "OnReceiveChat"); return; }
+        if (President.EndMsg(player, text)) { canceled = true; Logger.Info("Is President command", "OnReceiveChat"); return; }
+        if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info("Is Inspector command", "OnReceiveChat"); return; }
+        if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info("Is Pirate command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Councillor cl && cl.MurderMsg(player, text)) { canceled = true; Logger.Info("Is Councillor command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Swapper sw && sw.SwapMsg(player, text)) { canceled = true; Logger.Info("Is Swapper command", "OnReceiveChat"); return; }
+        if (Medium.MsMsg(player, text)) { Logger.Info("Is Medium command", "OnReceiveChat"); return; }
+        if (Nemesis.NemesisMsgCheck(player, text)) { Logger.Info("Is Nemesis Revenge command", "OnReceiveChat"); return; }
+        if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info("Is Retributionist Revenge command", "OnReceiveChat"); return; }
+        if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info("Is Dictator command", "OnReceiveChat"); return; }
+        if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true; Logger.Info("Is Ritualist command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
@@ -2186,7 +2168,7 @@ internal class ChatCommands
             case "/role":
             case "/р":
             case "/роль":
-                Logger.Info($"Command '/r' was activated", "OnReceiveChat");
+                Logger.Info("Command '/r' was activated", "OnReceiveChat");
                 if (text.Contains("/role") || text.Contains("/роль"))
                     subArgs = text.Remove(0, 5);
                 else
@@ -2203,12 +2185,12 @@ internal class ChatCommands
             case "/我":
             case "/我的身份":
             case "/我的职业":
-                Logger.Info($"Command '/m' was activated", "OnReceiveChat");
+                Logger.Info("Command '/m' was activated", "OnReceiveChat");
                 var role = player.GetCustomRole();
                 if (GameStates.IsInGame)
                 {
                     var Des = player.GetRoleInfo(true);
-                    var title = $"<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
+                    var title = "<color=#ffffff>" + role.GetRoleTitle() + "</color>\n";
                     var Conf = new StringBuilder();
                     var Sub = new StringBuilder();
                     var rlHex = Utils.GetRoleColorCode(role);
@@ -2236,7 +2218,7 @@ internal class ChatCommands
                     Utils.SendMessage("", player.PlayerId, Conf.ToString(), noReplay: true);
                     if (Sub.ToString() != string.Empty) Utils.SendMessage(Sub.ToString(), player.PlayerId, SubTitle, noReplay: true);
 
-                    Logger.Info($"Command '/m' should be send message", "OnReceiveChat");
+                    Logger.Info("Command '/m' should be send message", "OnReceiveChat");
                 }
                 else
                     Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
@@ -2353,7 +2335,6 @@ internal class ChatCommands
                     }
                     Main.AllPlayerNames[player.PlayerId] = args.Skip(1).Join(delimiter: " ");
                     Utils.SendMessage(string.Format(GetString("Message.SetName"), args.Skip(1).Join(delimiter: " ")), player.PlayerId);
-                    break;
                 }
                 else
                 {
@@ -3130,7 +3111,6 @@ internal class ChatCommands
                     if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowSayCommand.GetBool() == false)
                     {
                         Utils.SendMessage(GetString("SayCommandDisabled"), player.PlayerId);
-                        break;
                     }
                     else
                     {
@@ -3515,7 +3495,7 @@ internal class ChatCommands
 
 
             default:
-                if (SpamManager.CheckSpam(player, text)) return;
+                SpamManager.CheckSpam(player, text);
                 break;
         }
     }
@@ -3524,7 +3504,7 @@ internal class ChatCommands
 class ChatUpdatePatch
 {
     public static bool DoBlockChat = false;
-    public static ChatController Instance;
+    private static ChatController Instance;
     public static void Postfix(ChatController __instance)
     {
         if (!AmongUsClient.Instance.AmHost || Main.MessagesToSend.Count == 0 || (Main.MessagesToSend[0].Item2 == byte.MaxValue && Main.MessageWait.Value > __instance.timeSinceLastMessage)) return;

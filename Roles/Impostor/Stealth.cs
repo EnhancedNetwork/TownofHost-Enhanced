@@ -11,7 +11,6 @@ internal class Stealth : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Stealth;
     private const int Id = 27400;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Stealth);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -139,7 +138,7 @@ internal class Stealth : RoleBase
         var Player = _Player;
 
         // During the meeting, unless it's my suffix or it's dark everywhere, I won't show anything.
-        if (!HasEnabled || isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
+        if (isForMeeting || seer != Player || seen != Player || !darkenedRoom.HasValue)
         {
             return string.Empty;
         }

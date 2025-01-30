@@ -86,7 +86,7 @@ internal class Retributionist : RoleBase
 
         if (CanOnlyRetributeWithTasksDone.GetBool())
         {
-            if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId) && !Main.TasklessCrewmate.Contains(pc.PlayerId))
+            if (!pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && !CopyCat.playerIdList.Contains(pc.PlayerId))
             {
                 pc.ShowInfoMessage(isUI, GetString("RetributionistKillDisable"));
                 return true;

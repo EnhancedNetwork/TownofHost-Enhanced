@@ -30,7 +30,7 @@ public static class GuessManager
         return text.ToString();
     }
 
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         foreach (string comm in comList)
@@ -349,10 +349,8 @@ public static class GuessManager
 
                 if (pc.PlayerId == target.PlayerId)
                 {
-                    if (pc.Is(CustomRoles.DoubleShot) && !DoubleShot.IsActive.Contains(pc.PlayerId))
+                    if (pc.Is(CustomRoles.DoubleShot) && DoubleShot.IsActive.Add(pc.PlayerId))
                     {
-                        DoubleShot.IsActive.Add(pc.PlayerId);
-
                         Logger.Msg($"{pc.PlayerId}", "GuesserDoubleShotIsActive-1");
 
                         pc.ShowInfoMessage(isUI, GetString("GuessDoubleShot"));
@@ -370,10 +368,8 @@ public static class GuessManager
                 }
                 else if (!target.Is(role))
                 {
-                    if (pc.Is(CustomRoles.DoubleShot) && !DoubleShot.IsActive.Contains(pc.PlayerId))
+                    if (pc.Is(CustomRoles.DoubleShot) && DoubleShot.IsActive.Add(pc.PlayerId))
                     {
-                        DoubleShot.IsActive.Add(pc.PlayerId);
-
                         Logger.Msg($"{pc.PlayerId}", "GuesserDoubleShotIsActive-4");
 
                         pc.ShowInfoMessage(isUI, GetString("GuessDoubleShot"));
@@ -435,8 +431,8 @@ public static class GuessManager
         return true;
     }
 
-    public static TextMeshPro NameText(this PlayerControl p) => p.cosmetics.nameText;
-    public static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
+    private static TextMeshPro NameText(this PlayerControl p) => p.cosmetics.nameText;
+    private static TextMeshPro NameText(this PoolablePlayer p) => p.cosmetics.nameText;
     public static void RpcGuesserMurderPlayer(this PlayerControl pc)
     {
         try
@@ -673,7 +669,7 @@ public static class GuessManager
             }
         }
     }
-    public static void CreateGuesserButton(MeetingHud __instance)
+    private static void CreateGuesserButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates.ToArray())
         {
@@ -691,14 +687,14 @@ public static class GuessManager
         }
     }
 
-    public const int MaxOneScreenRole = 40;
-    public static int Page;
+    private const int MaxOneScreenRole = 40;
+    private static int Page;
     public static PassiveButton ExitButton;
-    public static GameObject guesserUI;
+    private static GameObject guesserUI;
     private static Dictionary<Custom_Team, List<Transform>> RoleButtons;
     private static Dictionary<Custom_Team, SpriteRenderer> RoleSelectButtons;
     private static List<SpriteRenderer> PageButtons;
-    public static Custom_Team currentTeamType;
+    private static Custom_Team currentTeamType;
     static void GuesserSelectRole(Custom_Team Role, bool SetPage = true)
     {
         currentTeamType = Role;
@@ -1019,7 +1015,6 @@ public static class GuessManager
                     or CustomRoles.Flash
                     or CustomRoles.NotAssigned
                     or CustomRoles.SuperStar
-                    or CustomRoles.Oblivious
                     or CustomRoles.Solsticer
                     or CustomRoles.Killer
                     or CustomRoles.Mini

@@ -9,7 +9,7 @@ internal class Poisoner : CovenManager
 {
     private class PoisonedInfo(byte poisonerId, float killTimer)
     {
-        public byte PoisonerId = poisonerId;
+        public readonly byte PoisonerId = poisonerId;
         public float KillTimer = killTimer;
     }
     //===========================SETUP================================\\
@@ -152,7 +152,7 @@ internal class Poisoner : CovenManager
             RoleblockedPlayers[poisoner].Clear();
         }
     }
-    public static bool IsRoleblocked(byte target)
+    private static bool IsRoleblocked(byte target)
     {
         if (RoleblockedPlayers.Count < 1) return false;
         foreach (var player in RoleblockedPlayers.Keys)

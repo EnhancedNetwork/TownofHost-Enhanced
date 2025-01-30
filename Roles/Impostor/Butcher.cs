@@ -92,7 +92,7 @@ internal class Butcher : RoleBase
     public override void AfterMeetingTasks() => MurderTargetLateTask = [];
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => MurderTargetLateTask.Clear();
 
-    public void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
+    private void OnFixedUpdateOthers(PlayerControl target, bool lowLoad, long nowTime)
     {
         if (!target.IsAlive()) return;
         if (!MurderTargetLateTask.TryGetValue(target.PlayerId, out var data)) return;

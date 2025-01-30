@@ -40,7 +40,7 @@ public static class Il2CppHelper
         return obj.Pointer.CastFast<T>();
     }
 
-    public static T CastFast<T>(this IntPtr ptr) where T : Il2CppObjectBase
+    private static T CastFast<T>(this IntPtr ptr) where T : Il2CppObjectBase
     {
         return CastHelper<T>.Cast(ptr);
     }

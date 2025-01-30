@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Text;
 using TMPro;
@@ -13,7 +14,6 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -26,11 +26,7 @@ class CheckForEndVotingPatch
         if (!AmongUsClient.Instance.AmHost) return true;
 
         //Meeting Skip with vote counting on keystroke (m + delete)
-        var shouldSkip = false;
-        if (Input.GetKeyDown(KeyCode.F6))
-        {
-            shouldSkip = true;
-        }
+        var shouldSkip = Input.GetKeyDown(KeyCode.F6);
 
         //  HasNotVoted = 255;
         //  MissedVote = 254;
@@ -41,7 +37,6 @@ class CheckForEndVotingPatch
         try
         {
             List<MeetingHud.VoterState> statesList = [];
-            MeetingHud.VoterState[] states;
             foreach (var pva in __instance.playerStates)
             {
                 if (pva == null) continue;
@@ -68,8 +63,8 @@ class CheckForEndVotingPatch
                         VoterId = pva.TargetPlayerId,
                         VotedForId = pva.VotedFor
                     });
-                    states = [.. statesList];
 
+                    var statesDict = (Il2CppStructArray<MeetingHud.VoterState>)statesList.ToList().ToIl2Cpp().ToArray();
                     var exiled = voteTarget.Data;
 
                     ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
@@ -82,9 +77,9 @@ class CheckForEndVotingPatch
                         var isBlackOut = AntiBlackout.BlackOutIsActive;
 
                         if (isBlackOut)
-                            __instance.AntiBlackRpcVotingComplete(states, exiled, false);
+                            __instance.AntiBlackRpcVotingComplete(statesDict, exiled, false);
                         else
-                            __instance.RpcVotingComplete(states, exiled, false);
+                            __instance.RpcVotingComplete(statesDict, exiled, false);
 
                         if (exiled != null)
                         {
@@ -94,7 +89,7 @@ class CheckForEndVotingPatch
                     }
                     else
                     {
-                        __instance.RpcVotingComplete(states, exiled, false);
+                        __instance.RpcVotingComplete(statesDict, exiled, false);
 
                         if (exiled != null)
                         {
@@ -182,8 +177,6 @@ class CheckForEndVotingPatch
                                 ps.VotedFor = ps.TargetPlayerId;
                                 voteLog.Info($"{voter.GetNameWithRole()} voted to skip, so the player voted self");
                                 break;
-                            default:
-                                break;
                         }
                     }
                     if (ps.VotedFor == 254 && !voter.Data.IsDead)
@@ -201,8 +194,6 @@ class CheckForEndVotingPatch
                             case VoteMode.Skip:
                                 ps.VotedFor = 253;
                                 voteLog.Info($"{voter.GetNameWithRole()} did not vote, so the player voted skip");
-                                break;
-                            default:
                                 break;
                         }
                     }
@@ -279,7 +270,7 @@ class CheckForEndVotingPatch
              Does not effect the votenum and vote result, simply change display icons
              God Niko cant think about a better way to do this, so niko just loops every voterstate LOL*/
 
-            states = [.. statesList];
+            var states = (Il2CppStructArray<MeetingHud.VoterState>)statesList.ToList().ToIl2Cpp().ToArray();
 
             byte exileId = byte.MaxValue;
             int max = 0;
@@ -416,7 +407,7 @@ class CheckForEndVotingPatch
         if (exiledPlayer == null) return;
 
         var exileId = exiledPlayer.PlayerId;
-        if (exileId is < 0 or > 254) return;
+        if (exileId > 254) return;
 
         var realName = new StringBuilder(Main.AllPlayerNames[exiledPlayer.PlayerId]);
         Main.LastVotedPlayer = realName.ToString();
@@ -901,7 +892,7 @@ class MeetingHudStartPatch
     public static List<(string, byte, string)> msgToSend = [];
     public static void AddMsg(string text, byte sendTo = 255, string title = "")
         => msgToSend.Add((text, sendTo, title));
-    public static void NotifyRoleSkillOnMeetingStart()
+    private static void NotifyRoleSkillOnMeetingStart()
     {
         if (!AmongUsClient.Instance.AmHost) return;
 

@@ -44,7 +44,7 @@ public class Workhorse : IAddon
     }
     public void Add(byte playerId, bool gameIsLoading = true)
     { }
-    public static void AddMidGame(byte playerId)
+    private static void AddMidGame(byte playerId)
     {
         if (!playerIdList.Contains(playerId))
             playerIdList.Add(playerId);

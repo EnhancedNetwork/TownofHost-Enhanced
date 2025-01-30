@@ -12,7 +12,6 @@ internal class EAC
     public static void Init()
     {
         DeNum = new();
-        OriginalRoles = [];
         ReportTimes = [];
         LobbyDeadBodies = [];
     }
@@ -367,21 +366,6 @@ internal class EAC
         WarnHost(-1);
         return false;
     }
-    public static Dictionary<byte, CustomRoles> OriginalRoles = [];
-    public static void LogAllRoles()
-    {
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            try
-            {
-                OriginalRoles.Add(pc.PlayerId, pc.GetCustomRole());
-            }
-            catch (Exception error)
-            {
-                Logger.Fatal(error.ToString(), "EAC.LogAllRoles");
-            }
-        }
-    }
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
         if (GameStates.IsLocalGame)
@@ -631,7 +615,7 @@ internal class EAC
                 }
                 if (player.AmOwner)
                 {
-                    Logger.Fatal($"Got climb ladder for my self, this is impossible", "EAC_physics");
+                    Logger.Fatal("Got climb ladder for my self, this is impossible", "EAC_physics");
                     return true;
                 }
                 break;
@@ -639,7 +623,7 @@ internal class EAC
             case RpcCalls.Pet:
                 if (player.AmOwner)
                 {
-                    Logger.Fatal($"Got pet pet for my self, this is impossible", "EAC_physics");
+                    Logger.Fatal("Got pet pet for my self, this is impossible", "EAC_physics");
                     return true;
                 }
 

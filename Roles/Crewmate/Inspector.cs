@@ -68,7 +68,7 @@ internal class Inspector : RoleBase
         MaxCheckLimit.Remove(playerId);
         RoundCheckLimit.Remove(playerId);
     }
-    public static void SendRPC(byte playerId, int operate)
+    private static void SendRPC(byte playerId, int operate)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInspectorLimit, SendOption.Reliable, -1);
         writer.Write(playerId);
@@ -379,7 +379,7 @@ internal class Inspector : RoleBase
         error = string.Empty;
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         foreach (var comm in comList)

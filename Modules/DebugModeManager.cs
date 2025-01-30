@@ -12,7 +12,7 @@ false;
 #endif
     public static bool IsDebugMode => AmDebugger && EnableDebugMode != null && EnableDebugMode.GetBool();
 
-    public static OptionItem EnableDebugMode;
+    private static OptionItem EnableDebugMode;
 
     public static void Auth(HashAuth auth, string input)
     {

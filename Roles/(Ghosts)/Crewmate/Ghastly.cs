@@ -60,7 +60,7 @@ internal class Ghastly : RoleBase
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
 
-    public void SendRPC()
+    private void SendRPC()
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.PlayerId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);

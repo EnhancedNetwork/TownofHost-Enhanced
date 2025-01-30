@@ -41,18 +41,18 @@ internal class Pursuer : RoleBase
     }
     public override bool CanUseKillButton(PlayerControl pc) => CanUseKillButton(pc.PlayerId);
 
-    public bool CanUseKillButton(byte playerId)
+    private bool CanUseKillButton(byte playerId)
         => !Main.PlayerStates[playerId].IsDead
         && AbilityLimit >= 1;
     public override string GetProgressText(byte playerId, bool cooms) => Utils.ColorString(CanUseKillButton(playerId) ? Utils.GetRoleColor(CustomRoles.Pursuer) : Color.gray, $"({AbilityLimit})");
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanUseKillButton(id) ? PursuerSkillCooldown.GetFloat() : 300f;
-    public bool IsClient(byte playerId)
+    private bool IsClient(byte playerId)
     {
         return clientList.Contains(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
-    public bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
-    public bool CanSeel() => AbilityLimit > 0;
+    private bool CanBeClient(PlayerControl pc) => pc != null && pc.IsAlive() && !GameStates.IsMeeting && !IsClient(pc.PlayerId);
+    private bool CanSeel() => AbilityLimit > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return false;

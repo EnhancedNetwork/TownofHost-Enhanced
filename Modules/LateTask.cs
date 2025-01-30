@@ -4,12 +4,12 @@ namespace TOHE;
 
 class LateTask
 {
-    public string name;
-    public float timer;
-    public bool shouldLog;
-    public Action action;
-    public static List<LateTask> Tasks = [];
-    public bool Run(float deltaTime)
+    private string name;
+    private float timer;
+    private bool shouldLog;
+    private Action action;
+    private static List<LateTask> Tasks = [];
+    private bool Run(float deltaTime)
     {
         timer -= deltaTime;
         if (timer <= 0)

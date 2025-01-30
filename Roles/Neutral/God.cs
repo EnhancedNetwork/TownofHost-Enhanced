@@ -11,7 +11,7 @@ internal class God : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
 
-    public static OptionItem NotifyGodAlive;
+    private static OptionItem NotifyGodAlive;
     public static OptionItem CanGuess;
 
     public override void SetupCustomOption()

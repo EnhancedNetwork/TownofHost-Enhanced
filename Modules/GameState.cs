@@ -16,7 +16,7 @@ public class PlayerState(byte playerId)
     public readonly byte PlayerId = playerId;
     public RoleBase RoleClass = new DefaultSetup();
     public CustomRoles MainRole = CustomRoles.NotAssigned;
-    public List<CustomRoles> SubRoles = [];
+    public readonly List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
     public bool Disconnected { get; set; } = false;
@@ -31,7 +31,7 @@ public class PlayerState(byte playerId)
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
-    public Dictionary<byte, string> TargetColorData = [];
+    public readonly Dictionary<byte, string> TargetColorData = [];
     public NetworkedPlayerInfo.PlayerOutfit NormalOutfit;
 
     public void SetMainRole(CustomRoles role)
@@ -361,18 +361,12 @@ public class PlayerState(byte playerId)
 public class TaskState
 {
     public static int InitialTotalTasks;
-    public int AllTasksCount;
-    public int CompletedTasksCount;
-    public bool hasTasks;
+    public int AllTasksCount = -1;
+    public int CompletedTasksCount = 0;
+    public bool hasTasks = false;
     public int RemainingTasksCount => AllTasksCount - CompletedTasksCount;
     public bool DoExpose => RemainingTasksCount <= Options.SnitchExposeTaskLeft && hasTasks;
     public bool IsTaskFinished => RemainingTasksCount <= 0 && hasTasks;
-    public TaskState()
-    {
-        this.AllTasksCount = -1;
-        this.CompletedTasksCount = 0;
-        this.hasTasks = false;
-    }
 
     public static string GetTaskState()
     {

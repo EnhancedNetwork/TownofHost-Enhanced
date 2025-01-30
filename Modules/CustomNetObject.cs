@@ -21,10 +21,10 @@ namespace TOHE.Modules
         private static int MaxId = -1;
         protected int Id;
         protected byte OwnerId;
-        public PlayerControl playerControl;
+        private PlayerControl playerControl;
         private float PlayerControlTimer;
-        public Vector2 Position;
-        public HashSet<byte> HiddenList = [];
+        private Vector2 Position;
+        private readonly HashSet<byte> HiddenList = [];
 
         private string Sprite;
 

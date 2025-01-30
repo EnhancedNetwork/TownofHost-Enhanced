@@ -26,7 +26,7 @@ static class LocateArrow
         LocateArrows.Clear();
     }
 
-    public static void SendRPC(int index, byte seerId, Vector3 vector3)
+    private static void SendRPC(int index, byte seerId, Vector3 vector3)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
@@ -179,8 +179,8 @@ static class LocateArrow
 
     class ArrowInfo(byte from, Vector3 to)
     {
-        public byte From = from;
-        public Vector3 To = to;
+        public readonly byte From = from;
+        public readonly Vector3 To = to;
 
         public bool Equals(ArrowInfo obj)
         {

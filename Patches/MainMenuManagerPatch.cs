@@ -11,7 +11,7 @@ namespace TOHE;
 public class MainMenuManagerStartPatch
 {
     public static GameObject amongUsLogo;
-    public static GameObject Ambience;
+    private static GameObject Ambience;
     public static SpriteRenderer ToheLogo { get; private set; }
 
     private static void Postfix(MainMenuManager __instance)
@@ -332,7 +332,7 @@ public static class MainMenuManagerPatch
         string name2 = name;
         return obj.GetComponentsInChildren<T>().First((T c) => c.name == name2);
     }
-    public static T FindChild<T>(this GameObject obj, string name) where T : Object
+    private static T FindChild<T>(this GameObject obj, string name) where T : Object
     {
         string name2 = name;
         return obj.GetComponentsInChildren<T>().First((T c) => c.name == name2);

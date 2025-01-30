@@ -13,15 +13,15 @@ public static class Madmate
 
     public static OptionItem MadmateSpawnMode;
     public static OptionItem MadmateCountMode;
-    public static OptionItem SheriffCanBeMadmate;
-    public static OptionItem MayorCanBeMadmate;
-    public static OptionItem NGuesserCanBeMadmate;
-    public static OptionItem MarshallCanBeMadmate;
-    public static OptionItem OverseerCanBeMadmate;
-    public static OptionItem SnitchCanBeMadmate;
+    private static OptionItem SheriffCanBeMadmate;
+    private static OptionItem MayorCanBeMadmate;
+    private static OptionItem NGuesserCanBeMadmate;
+    private static OptionItem MarshallCanBeMadmate;
+    private static OptionItem OverseerCanBeMadmate;
+    private static OptionItem SnitchCanBeMadmate;
     public static OptionItem MadSnitchTasks;
-    public static OptionItem RetributionistCanBeMadmate;
-    public static OptionItem JudgeCanBeMadmate;
+    private static OptionItem RetributionistCanBeMadmate;
+    private static OptionItem JudgeCanBeMadmate;
 
     public static OptionItem ImpKnowWhosMadmate;
     public static OptionItem ImpCanKillMadmate;
@@ -115,7 +115,7 @@ public static class Madmate
             (pc.Is(CustomRoles.Hurried) && !Hurried.CanBeOnMadMate.GetBool())
             );
     }
-    public static bool CheckCanBeMadmate(this PlayerControl pc, bool forGangster = false)
+    private static bool CheckCanBeMadmate(this PlayerControl pc, bool forGangster = false)
     {
         return
             (pc.Is(CustomRoles.Sheriff) && (!forGangster ? !SheriffCanBeMadmate.GetBool() : !Gangster.SheriffCanBeMadmate.GetBool())) ||

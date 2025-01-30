@@ -98,7 +98,7 @@ internal class MoonDancer : CovenManager
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = BatonPassCooldown.GetFloat();
 
-    public static bool CanBlast(PlayerControl pc, byte id)
+    private static bool CanBlast(PlayerControl pc, byte id)
     {
         if (!pc.Is(CustomRoles.MoonDancer) || GameStates.IsMeeting) return false;
 
@@ -116,7 +116,7 @@ internal class MoonDancer : CovenManager
         return target != null && target.CanBeTeleported() && !target.IsTransformedNeutralApocalypse() && !Medic.IsProtected(target.PlayerId) && !target.Is(CustomRoles.GM) && !IsBlasted(pc, id) && !IsBlasted(id);
     }
     private static bool IsBlasted(PlayerControl pc, byte id) => BlastedOffList.TryGetValue(pc.PlayerId, out var list) && list.Contains(id);
-    public static bool IsBlasted(byte id)
+    private static bool IsBlasted(byte id)
     {
         foreach (var bl in BlastedOffList)
             if (bl.Value.Contains(id))

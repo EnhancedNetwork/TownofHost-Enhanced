@@ -82,7 +82,7 @@ public static class TemplateManager
         CreateIfNotExists();
     }
 
-    public static void CreateIfNotExists()
+    private static void CreateIfNotExists()
     {
 
         try

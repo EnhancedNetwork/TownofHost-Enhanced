@@ -135,15 +135,8 @@ internal class Enigma : RoleBase
 
             ShownClues[playerId].Add(clue);
 
-            if (MsgToSend.ContainsKey(playerId))
-                MsgToSend[playerId] = msg;
-            else
-                MsgToSend.Add(playerId, msg);
-
-            if (MsgToSendTitle.ContainsKey(playerId))
-                MsgToSendTitle[playerId] = title;
-            else
-                MsgToSendTitle.Add(playerId, title);
+            MsgToSend[playerId] = msg;
+            MsgToSendTitle[playerId] = title;
         }
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)

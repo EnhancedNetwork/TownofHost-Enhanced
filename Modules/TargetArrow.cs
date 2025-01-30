@@ -26,7 +26,7 @@ static class TargetArrow
         TargetArrows.Clear();
     }
 
-    public static void SendRPC(int index, byte seerId, byte targetId = byte.MaxValue)
+    private static void SendRPC(int index, byte seerId, byte targetId = byte.MaxValue)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 

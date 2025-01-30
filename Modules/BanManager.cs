@@ -180,7 +180,6 @@ public static class BanManager
             AmongUsClient.Instance.KickPlayer(player.Id, true);
             //This should not happen
             Logger.Info($"{player.PlayerName} was in temp ban list", "BAN");
-            return;
         }
     }
     public static bool CheckBanList(string code, string hashedpuid = "")

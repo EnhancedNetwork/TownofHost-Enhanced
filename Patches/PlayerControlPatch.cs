@@ -95,16 +95,16 @@ class CheckMurderPatch
         }
 
         killer.ResetKillCooldown();
-        Logger.Info($"Kill Cooldown Resets", "CheckMurder");
+        Logger.Info("Kill Cooldown Resets", "CheckMurder");
 
         // Replacement process when the actual killer and the KILLER are different
         if (Sniper.SnipeIsActive(__instance.PlayerId))
         {
-            Logger.Info($"Killer is Sniper", "CheckMurder");
+            Logger.Info("Killer is Sniper", "CheckMurder");
 
             Sniper.TryGetSniper(target.PlayerId, ref killer);
 
-            Logger.Info($"After Try Get Sniper", "CheckMurder");
+            Logger.Info("After Try Get Sniper", "CheckMurder");
 
             if (killer.PlayerId != __instance.PlayerId)
             {
@@ -112,16 +112,16 @@ class CheckMurderPatch
             }
         }
 
-        Logger.Info($"Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
+        Logger.Info("Start: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
         if (CustomRoleManager.OnCheckMurder(ref killer, ref target, ref __state) == false)
         {
-            Logger.Info($"Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
+            Logger.Info("Canceled from CustomRoleManager.OnCheckMurder", "CheckMurder");
             killer.RpcMurderPlayer(target, didSucceed: false);
             return false;
         }
 
-        Logger.Info($"End: CustomRoleManager.OnCheckMurder", "CheckMurder");
+        Logger.Info("End: CustomRoleManager.OnCheckMurder", "CheckMurder");
 
         //== Kill target ==
         __instance.RpcMurderPlayer(target);
@@ -214,7 +214,7 @@ class CheckMurderPatch
         // if player hacked by Glitch
         if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
         {
-            Logger.Info($"Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
+            Logger.Info("Is hacked by Glitch, it cannot kill ", "Glitch.CheckMurder");
             return false;
         }
 
@@ -258,14 +258,14 @@ class CheckMurderPatch
         var targetRoleClass = target.GetRoleClass();
         var targetSubRoles = target.GetCustomSubRoles();
 
-        Logger.Info($"Start", "FirstDied.CheckMurder");
+        Logger.Info("Start", "FirstDied.CheckMurder");
 
         if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
             killer.SetKillCooldown(5f);
             killer.RpcGuardAndKill(target);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(killer.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
-            Logger.Info($"Canceled from ShieldPersonDiedFirst", "FirstDied");
+            Logger.Info("Canceled from ShieldPersonDiedFirst", "FirstDied");
             return false;
         }
 
@@ -287,7 +287,7 @@ class CheckMurderPatch
         if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
             return false;
 
-        Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
+        Logger.Info("Start", "OnCheckMurderAsTargetOnOthers");
 
         // Check murder on others targets
         if (CustomRoleManager.OnCheckMurderAsTargetOnOthers(killer, target) == false)
@@ -295,7 +295,7 @@ class CheckMurderPatch
             return false;
         }
 
-        Logger.Info($"Start", "TargetSubRoles");
+        Logger.Info("Start", "TargetSubRoles");
 
         if (targetSubRoles.Any())
             foreach (var targetSubRole in targetSubRoles.ToArray())
@@ -344,7 +344,7 @@ class CheckMurderPatch
                 }
             }
 
-        Logger.Info($"Start", "OnCheckMurderAsTarget");
+        Logger.Info("Start", "OnCheckMurderAsTarget");
 
         // Check Murder as target
         if (targetRoleClass.OnCheckMurderAsTarget(killer, target) == false)
@@ -635,7 +635,6 @@ public static class CheckShapeshiftPatch
         writer2.EndMessage();
         AmongUsClient.Instance.SendOrDisconnect(writer2);
         writer2.Recycle();
-        yield break;
     }
 
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
@@ -740,7 +739,7 @@ public static class CheckShapeshiftPatch
         }
         return true;
     }
-    public static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
+    private static void RejectShapeshiftAndReset(this PlayerControl player, bool reset = true)
     {
         player.RpcRejectShapeshift();
         if (reset) player.RpcResetAbilityCooldown();
@@ -1003,10 +1002,7 @@ class ReportDeadBodyPatch
 
                     if (playerStates.IsDead)
                     {
-                        if (!Main.DeadPassedMeetingPlayers.Contains(playerStates.PlayerId))
-                        {
-                            Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
-                        }
+                        Main.DeadPassedMeetingPlayers.Add(playerStates.PlayerId);
                     }
                 }
                 catch (Exception error)
@@ -1069,7 +1065,7 @@ class ReportDeadBodyPatch
         NameNotifyManager.Reset();
 
         // Update Notify Roles for Meeting
-        Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+        Utils.NotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
 
         // Sync all settings on meeting start
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
@@ -1086,7 +1082,7 @@ class FixedUpdateInNormalGamePatch
     public static readonly Dictionary<byte, TMPro.TextMeshPro> RoleTextCache = [];
     private static int LevelKickBufferTime = 20;
 
-    public static async void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl __instance)
     {
         if (__instance == null || __instance.PlayerId == 255) return;
 
@@ -1113,7 +1109,7 @@ class FixedUpdateInNormalGamePatch
 
         try
         {
-            await DoPostfix(__instance);
+            DoPostfix(__instance);
         }
         catch (Exception ex)
         {
@@ -1122,7 +1118,7 @@ class FixedUpdateInNormalGamePatch
         }
     }
 
-    public static Task DoPostfix(PlayerControl __instance)
+    private static void DoPostfix(PlayerControl __instance)
     {
         // FixedUpdate is called 30 times every 1 second
         // If count only one player
@@ -1143,7 +1139,7 @@ class FixedUpdateInNormalGamePatch
         bool inGame = GameStates.IsInGame;
         bool inLobby = GameStates.IsLobby;
         bool isInTask = GameStates.IsInTask;
-        bool isMeeting = GameStates.IsMeeting;
+        //bool isMeeting = GameStates.IsMeeting;
 
         var nowTime = Utils.TimeStamp;
 
@@ -1358,7 +1354,7 @@ class FixedUpdateInNormalGamePatch
                         //Kill target override processing
                         if (!player.Is(Custom_Team.Impostor) && player.CanUseKillButton() && !playerData.IsDead)
                         {
-                            var players = player.GetPlayersInAbilityRangeSorted(false);
+                            var players = player.GetPlayersInAbilityRangeSorted();
                             PlayerControl closest = !players.Any() ? null : players.First();
                             FastDestroyableSingleton<HudManager>.Instance.KillButton.SetTarget(closest);
                         }
@@ -1374,7 +1370,7 @@ class FixedUpdateInNormalGamePatch
             RoleTextCache[playerId] = roleText;
         }
 
-        if (lowLoad || roleText == null || player == null) return Task.CompletedTask;
+        if (lowLoad || roleText == null || player == null) return;
 
         if (inLobby)
         {
@@ -1618,7 +1614,6 @@ class FixedUpdateInNormalGamePatch
             roleText.transform.SetLocalY(0.2f);
             player.cosmetics.colorBlindText.transform.SetLocalY(-0.32f);
         }
-        return Task.CompletedTask;
     }
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false)
     {
@@ -2133,7 +2128,7 @@ class PlayerControlSetRolePatch
             {
                 foreach ((var seer, var role) in GhostRoles)
                 {
-                    if (seer == null || target == null) continue;
+                    if (seer == null) continue;
                     Logger.Info($"Desync {targetName} => {role} for {seer.GetNameWithRole().RemoveHtmlTags()}", "PlayerControl.RpcSetRole");
                     target.RpcSetRoleDesync(role, seer.GetClientId());
                 }

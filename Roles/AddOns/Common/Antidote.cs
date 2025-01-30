@@ -71,15 +71,9 @@ public class Antidote : IAddon
 
     public static void CheckMurder(PlayerControl killer)
     {
-        if (KilledAntidote.ContainsKey(killer.PlayerId))
+        if (!KilledAntidote.TryAdd(killer.PlayerId, 1))
         {
-            // Key already exists, update the value
-            KilledAntidote[killer.PlayerId] += 1;
-        }
-        else
-        {
-            // Key doesn't exist, add the key-value pair
-            KilledAntidote.Add(killer.PlayerId, 1);
+            KilledAntidote[killer.PlayerId]++;
         }
     }
 }

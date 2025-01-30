@@ -29,7 +29,7 @@ internal class EvilHacker : RoleBase
     private string message;
 
     [Obfuscation(Exclude = true)]
-    public enum OptionName
+    private enum OptionName
     {
         EvilHackerCanSeeDeadMark,
         EvilHackerCanSeeImpostorMark,
@@ -215,7 +215,7 @@ internal class EvilHacker : RoleBase
         return Utils.ColorString(Color.green, $"{Translator.GetString("EvilHackerMurderNotify")}: {string.Join(", ", roomNames)}");
     }
 
-    public static bool CheckKillFlash(PlayerControl killer, PlayerControl target)
+    private static bool CheckKillFlash(PlayerControl killer, PlayerControl target)
         => canSeeKillFlash && killer.PlayerId != target.PlayerId;
 
 

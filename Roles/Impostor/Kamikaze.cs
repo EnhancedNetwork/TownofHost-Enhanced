@@ -56,9 +56,8 @@ internal class Kamikaze : RoleBase
 
         return killer.CheckDoubleTrigger(target, () =>
         {
-            if (AbilityLimit >= 1 && !KamikazedList.Contains(target.PlayerId))
+            if (AbilityLimit >= 1 && KamikazedList.Add(target.PlayerId))
             {
-                KamikazedList.Add(target.PlayerId);
                 killer.RpcGuardAndKill(killer);
                 killer.SetKillCooldown(KillCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer);
@@ -120,7 +119,7 @@ internal class Kamikaze : RoleBase
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Targeted, [.. deathList]);
     }
 
-    public void SendRPC()
+    private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);

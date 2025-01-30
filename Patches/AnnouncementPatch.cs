@@ -17,15 +17,15 @@ namespace TOHE;
 [HarmonyPatch]
 public class ModNews
 {
-    public int Number;
+    private int Number;
     public int BeforeNumber;
-    public string Title;
-    public string SubTitle;
-    public string ShortTitle;
-    public string Text;
-    public string Date;
+    private string Title;
+    private string SubTitle;
+    private string ShortTitle;
+    private string Text;
+    private string Date;
 
-    public Announcement ToAnnouncement()
+    private Announcement ToAnnouncement()
     {
         var result = new Announcement
         {
@@ -41,8 +41,8 @@ public class ModNews
 
         return result;
     }
-    public static List<ModNews> AllModNews = [];
-    public static string ModNewsURL = "https://raw.githubusercontent.com/EnhancedNetwork/TownofHost-Enhanced/refs/heads/main/Resources/Announcements/modNews-";
+    private static List<ModNews> AllModNews = [];
+    private static string ModNewsURL = "https://raw.githubusercontent.com/EnhancedNetwork/TownofHost-Enhanced/refs/heads/main/Resources/Announcements/modNews-";
     static bool downloaded = false;
     public ModNews(int Number, string Title, string SubTitle, string ShortTitle, string Text, string Date)
     {
@@ -192,7 +192,7 @@ public class ModNews
         obj.transform.localPosition = new Vector3(-0.8f, 0.13f, 0.5f);
         obj.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         var renderer = obj.AddComponent<SpriteRenderer>();
-        renderer.sprite = Utils.LoadSprite($"TOHE.Resources.Images.CreditsButton.png", 250f);
+        renderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.CreditsButton.png", 250f);
         renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
     }
 }

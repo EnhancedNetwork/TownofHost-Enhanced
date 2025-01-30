@@ -11,8 +11,6 @@ public class Burst : IAddon
     public AddonTypes Type => AddonTypes.Helpful;
 
     private static OptionItem BurstKillDelay;
-
-    private static readonly HashSet<byte> BurstBodies = [];
     private static readonly HashSet<byte> playerList = [];
 
     public void SetupCustomOption()
@@ -25,7 +23,6 @@ public class Burst : IAddon
     public void Init()
     {
         IsEnable = false;
-        BurstBodies.Clear();
         playerList.Clear();
     }
     public void Add(byte playerId, bool gameIsLoading = true)
@@ -41,15 +38,9 @@ public class Burst : IAddon
             IsEnable = false;
     }
 
-    public static void AfterMeetingTasks()
-    {
-        BurstBodies.Clear();
-    }
-
     public static void AfterBurstDeadTasks(PlayerControl killer, PlayerControl target)
     {
         target.SetRealKiller(killer);
-        BurstBodies.Add(target.PlayerId);
         if (killer.PlayerId != target.PlayerId && !killer.IsTransformedNeutralApocalypse())
         {
             killer.Notify(CustomRoles.Burst.GetColoredTextByRole(GetString("BurstNotify")));
@@ -67,7 +58,6 @@ public class Burst : IAddon
                     killer.SetKillCooldown(time: Main.AllPlayerKillCooldown[killer.PlayerId] - BurstKillDelay.GetFloat(), forceAnime: true);
                     killer.Notify(CustomRoles.Burst.GetColoredTextByRole(GetString("BurstFailed")));
                 }
-                BurstBodies.Remove(target.PlayerId);
             }, BurstKillDelay.GetFloat(), "Burst Suicide");
         }
     }

@@ -54,7 +54,7 @@ internal class QuickShooter : RoleBase
         Storaging = false;
     }
 
-    public void SendRPC(bool timer = false)
+    private void SendRPC(bool timer = false)
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);

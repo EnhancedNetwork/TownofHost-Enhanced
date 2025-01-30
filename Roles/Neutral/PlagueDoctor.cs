@@ -15,7 +15,6 @@ internal class PlagueDoctor : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.PlagueDoctor;
     private const int Id = 27600;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueDoctor);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -103,12 +102,12 @@ internal class PlagueDoctor : RoleBase
     {
         hud.KillButton.OverrideText(GetString("InfectiousKillButtonText"));
     }
-    public bool CanInfect(PlayerControl player)
+    private bool CanInfect(PlayerControl player)
     {
         // Not a plague doctor, or capable of self-infection and infected person created
         return player != _Player || (CanInfectSelf && InfectCount == 0);
     }
-    public void SendRPC(byte targetId, float rate, bool firstInfect)
+    private void SendRPC(byte targetId, float rate, bool firstInfect)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -250,7 +249,6 @@ internal class PlagueDoctor : RoleBase
     }
     private string GetInfectRateCharactor(PlayerControl player)
     {
-        if (!HasEnabled) return string.Empty;
         if (!CanInfect(player) || !player.IsAlive()) return string.Empty;
         InfectInfos.TryGetValue(player.PlayerId, out var rate);
         return rate switch

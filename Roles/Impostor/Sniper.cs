@@ -12,7 +12,7 @@ internal class Sniper : RoleBase
     public override CustomRoles Role => CustomRoles.Sniper;
     private const int Id = 2400;
     private static readonly HashSet<byte> PlayerIdList = [];
-    public static bool HasEnabled => PlayerIdList.Any();
+    private static bool HasEnabled => PlayerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -127,7 +127,7 @@ internal class Sniper : RoleBase
         var canUse = false;
         if (!bulletCount.ContainsKey(pc.PlayerId))
         {
-            Logger.Info($" Sniper not Init yet.", "Sniper");
+            Logger.Info(" Sniper not Init yet.", "Sniper");
             return false;
         }
         if (bulletCount[pc.PlayerId] <= 0)

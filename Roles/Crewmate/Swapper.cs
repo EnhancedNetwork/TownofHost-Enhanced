@@ -289,9 +289,8 @@ internal class Swapper : RoleBase
             ReturnChangedPva(pva);
         }
 
-        if (!ResultSent.Contains(pid))
+        if (ResultSent.Add(pid))
         {
-            ResultSent.Add(pid);
             Utils.SendMessage(string.Format(GetString("SwapVote"), target1.GetRealName(), target2.GetRealName()), 255, CustomRoles.Swapper.GetColoredTextByRole(GetString("SwapTitle")));
             AbilityLimit -= 1;
             SendSkillRPC();
@@ -336,20 +335,20 @@ internal class Swapper : RoleBase
         error = string.Empty;
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
+        foreach (var com in comList)
         {
             if (exact)
             {
-                if (msg == "/" + comList[i]) return true;
+                if (msg == "/" + com) return true;
             }
             else
             {
-                if (msg.StartsWith("/" + comList[i]))
+                if (msg.StartsWith("/" + com))
                 {
-                    msg = msg.Replace("/" + comList[i], string.Empty);
+                    msg = msg.Replace("/" + com, string.Empty);
                     return true;
                 }
             }
@@ -409,7 +408,7 @@ internal class Swapper : RoleBase
             }
         }
     }
-    public void CreateSwapperButton(MeetingHud __instance)
+    private void CreateSwapperButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {

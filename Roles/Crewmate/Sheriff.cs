@@ -108,7 +108,7 @@ internal class Sheriff : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
-    public bool IsUseKillButton(PlayerControl pc)
+    private bool IsUseKillButton(PlayerControl pc)
         => pc.IsAlive()
         && (CanKillAllAlive.GetBool() || GameStates.AlreadyDied)
         && AbilityLimit > 0;
@@ -137,7 +137,7 @@ internal class Sheriff : RoleBase
     }
     public override string GetProgressText(byte playerId, bool computervirus)
         => ShowShotLimit.GetBool() ? Utils.ColorString(IsUseKillButton(Utils.GetPlayerById(playerId)) ? Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})") : "";
-    public static bool CanBeKilledBySheriff(PlayerControl player)
+    private static bool CanBeKilledBySheriff(PlayerControl player)
     {
         var cRole = player.GetCustomRole();
         var subRole = player.GetCustomSubRoles();

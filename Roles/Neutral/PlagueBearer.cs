@@ -13,8 +13,8 @@ internal class PlagueBearer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.PlagueBearer;
     private const int Id = 17600;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    private static readonly HashSet<byte> playerIdList = [];
+    private static bool HasEnabled => playerIdList.Any();
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -196,7 +196,7 @@ internal class PlagueBearer : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (HasEnabled && deadBody != null && deadBody.Object != null)
+        if (deadBody != null && deadBody.Object != null)
         {
             CheckAndInfect(reporter, deadBody.Object);
         }
@@ -240,7 +240,6 @@ internal class Pestilence : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Pestilence;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pestilence);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;

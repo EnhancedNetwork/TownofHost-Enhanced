@@ -6,7 +6,7 @@ public class Sleuth : IAddon
     private const int Id = 20100;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem SleuthCanKnowKillerRole;
+    private static OptionItem SleuthCanKnowKillerRole;
 
     public static readonly Dictionary<byte, string> SleuthNotify = [];
 

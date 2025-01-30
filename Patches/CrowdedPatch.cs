@@ -12,7 +12,7 @@ namespace TOHE.Patches.Crowded;
 internal static class Crowded
 {
     private static CreateOptionsPicker instance;
-    public static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
+    private static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
     public static int MaxImpostors => MaxPlayers / 2;
 
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Awake))]
@@ -398,7 +398,7 @@ public class MeetingHudPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr
     internal MeetingHud meetingHud = null!;
 
     [HideFromIl2Cpp]
-    public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
+    private IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
     public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
 
     public override void Start() => OnPageChanged();
@@ -448,7 +448,7 @@ public class ShapeShifterPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(p
 {
     public ShapeshifterMinigame shapeshifterMinigame = null!;
     [HideFromIl2Cpp]
-    public IEnumerable<ShapeshifterPanel> Targets => shapeshifterMinigame.potentialVictims.ToArray();
+    private IEnumerable<ShapeshifterPanel> Targets => shapeshifterMinigame.potentialVictims.ToArray();
 
     public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
     private TextMeshPro PageText = null!;
@@ -502,7 +502,7 @@ public class VitalsPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
     public VitalsMinigame vitalsMinigame = null!;
 
     [HideFromIl2Cpp]
-    public IEnumerable<VitalsPanel> Targets => [.. vitalsMinigame.vitals];
+    private IEnumerable<VitalsPanel> Targets => [.. vitalsMinigame.vitals];
     public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
     private TextMeshPro PageText = null!;
 

@@ -121,7 +121,7 @@ internal class PotionMaster : CovenManager
         return false;
     }
 
-    public static bool IsReveal(byte seer, byte target) => RevealList[seer].Contains(target);
+    private static bool IsReveal(byte seer, byte target) => RevealList[seer].Contains(target);
     private static void SetRitual(PlayerControl killer, PlayerControl target)
     {
         switch (PotionMode)

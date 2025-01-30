@@ -144,17 +144,17 @@ internal class Revolutionist : RoleBase
 
         RevolutionistCountdown[revolutionistId] = countdown;
     }
-    public static bool IsDrawPlayer(PlayerControl arsonist, PlayerControl target)
+    private static bool IsDrawPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null && target == null && IsDraw == null) return false;
         return IsDraw.GetValueOrDefault((arsonist.PlayerId, target.PlayerId), false);
     }
-    public static bool IsDrawDone(PlayerControl player)
+    private static bool IsDrawDone(PlayerControl player)
     {
         var (countItem1, countItem2) = GetDrawPlayerCount(player.PlayerId, out var _);
         return countItem1 >= countItem2;
     }
-    public static (int, int) GetDrawPlayerCount(byte playerId, out List<PlayerControl> winnerList)
+    private static (int, int) GetDrawPlayerCount(byte playerId, out List<PlayerControl> winnerList)
     {
         int draw = 0;
         int all = RevolutionistDrawCount.GetInt();

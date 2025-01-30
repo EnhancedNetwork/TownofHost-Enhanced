@@ -89,7 +89,7 @@ internal class Sacrifist : CovenManager
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
 
     // Sacrifist shouldn't be able to kill at all but if there's solo Sacrifist the game is unwinnable so they can kill when solo
-    public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Coven)).Count() == 1;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Coven)) == 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!CanUseKillButton(killer)) return false;
@@ -128,8 +128,6 @@ internal class Sacrifist : CovenManager
             }
             switch (DebuffID)
             {
-                default:
-                    break;
                 // Change Speed
                 case 0:
                     originalSpeed.Remove(randPlayer);
@@ -280,7 +278,7 @@ internal class Sacrifist : CovenManager
             }
         }
         randPlayer = byte.MaxValue;
-        Logger.Info($"Resetting Debuffs for Affected player", "Sacrifist");
+        Logger.Info("Resetting Debuffs for Affected player", "Sacrifist");
 
 
         ReportDeadBodyPatch.CanReport[sacrifist] = true;
@@ -300,7 +298,7 @@ internal class Sacrifist : CovenManager
                 pc.SetNewOutfit(sacrifistPlayerSkins, setName: true, setNamePlate: true);
             }
         }
-        Logger.Info($"Resetting Debuffs for Sacrifist", "Sacrifist");
+        Logger.Info("Resetting Debuffs for Sacrifist", "Sacrifist");
     }
     public static void SetVision(PlayerControl player, IGameOptions opt)
     {

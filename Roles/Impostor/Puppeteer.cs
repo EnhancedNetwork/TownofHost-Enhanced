@@ -78,7 +78,7 @@ internal class Puppeteer : RoleBase
         }
     }
 
-    public static bool PuppetIsActive(byte playerId) => PuppeteerList.ContainsKey(playerId);
+    private static bool PuppetIsActive(byte playerId) => PuppeteerList.ContainsKey(playerId);
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {

@@ -86,7 +86,7 @@ class SetUpRoleTextPatch
         {
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
-            Utils.DoNotifyRoles(NoCache: true);
+            Utils.NotifyRoles(NoCache: true);
         }
 
         if (GameStates.IsNormalGame)
@@ -159,7 +159,7 @@ class SetUpRoleTextPatch
             // Don't use RpcSetName because the modded client needs to set the name locally
             PlayerControl.LocalPlayer.SetName(realName);
 
-            Utils.DoNotifyRoles(NoCache: true);
+            Utils.NotifyRoles(NoCache: true);
         }, 1f, "Reset Name For Modded Players");
     }
     private static byte[] EncryptDES(byte[] data, string key)
@@ -623,7 +623,7 @@ class BeginCrewmatePatch
             StartFadeIntro(__instance, new Color32(241, 187, 2, byte.MaxValue), Color.red);
         }
     }
-    public static AudioClip GetIntroSound(RoleTypes roleType)
+    private static AudioClip GetIntroSound(RoleTypes roleType)
     {
         return RoleManager.Instance.AllRoles.FirstOrDefault((role) => role.Role == roleType)?.IntroSound;
     }

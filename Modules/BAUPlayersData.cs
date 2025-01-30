@@ -10,7 +10,7 @@ public class BAUPlayersData
         get
         {
             CleanUpNullEntries();
-            return _players.ContainsKey(key) ? _players[key] : null;
+            return _players.GetValueOrDefault(key, null);
         }
         set
         {

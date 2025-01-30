@@ -385,7 +385,6 @@ public static class CustomRolesHelper
         return role is CustomRoles.Mare or
             CustomRoles.LastImpostor or
             CustomRoles.Tricky or
-            CustomRoles.Mare or
             CustomRoles.Clumsy or
             CustomRoles.Mimic or
             CustomRoles.Stealer or
