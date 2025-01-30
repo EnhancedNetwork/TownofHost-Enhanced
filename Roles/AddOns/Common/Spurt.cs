@@ -117,7 +117,10 @@ internal class Spurt : IAddon
             return;
         }
 
-        Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
-        player.MarkDirtySettings();
+        if (charge > 1)
+        {
+            Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
+            player.MarkDirtySettings();
+        }
     }
 }
