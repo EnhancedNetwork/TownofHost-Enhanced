@@ -2042,6 +2042,11 @@ public static class Utils
                         RoleText = ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                         RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
                     }
+                    else if (seer.Is(CustomRoles.Madmate))
+                    {
+                        RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate"));
+                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Madmate), GetString($"{CustomRoles.Madmate}" + "Info"));
+                    }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }

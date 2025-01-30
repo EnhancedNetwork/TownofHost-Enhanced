@@ -390,7 +390,8 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
-            or CustomRoles.Enchanted;
+            or CustomRoles.Enchanted
+            or CustomRoles.Rebel;
     }
 
     public static bool IsBetrayalAddonV2(this CustomRoles role)
