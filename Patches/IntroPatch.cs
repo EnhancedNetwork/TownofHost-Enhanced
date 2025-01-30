@@ -615,7 +615,6 @@ class BeginCrewmatePatch
         }
 
         // I hope no one notices this in code
-        // unfortunately Niko noticed while fixing others' shxt
         if (Input.GetKey(KeyCode.RightShift))
         {
             __instance.TeamTitle.text = "Damn!!";
