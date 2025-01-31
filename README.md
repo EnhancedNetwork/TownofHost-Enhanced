@@ -118,8 +118,5 @@
 >
 > - We included CrowdedMod in our Mod
 ---
-
-## Licensing Information
-
 This project is licensed under the GNU General Public License version 3.0. For more details, please refer to the [LICENSE](https://github.com/0xDrMoe/TownofHost-Enhanced/blob/main/LICENSE) file.
 ---
