@@ -66,7 +66,7 @@ internal class TaskManager : RoleBase
             Addons.AddRange(GroupedAddons[AddonTypes.Mixed]);
         }
 
-        Addons = Addons.Where(role => role.GetMode() != 0).ToList();
+        Addons = Addons.Where(role => role.GetMode() != 0).Shuffle().ToList();
     }
     public override void Add(byte playerId)
     {
@@ -96,27 +96,29 @@ internal class TaskManager : RoleBase
         }
         return true;
     }
-    public override void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     {
         if (!_Player.IsAlive()) return;
 
-        VisualTaskIsCompleted(task.TaskType);
+        if (!playerIsOverridden)
+            VisualTaskIsCompleted(task.TaskType);
 
-        if (pc.PlayerId == _Player.PlayerId || !pc.GetPlayerTaskState().IsTaskFinished) return;
+        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished) return;
 
         var taskManager = _Player;
+        Addons.RemoveAll(taskManager.Is);
+
         if (Addons.Count == 0)
         {
-            taskManager.Notify(GetString("TaskManager_FailGetAddon"));
+            taskManager.Notify(GetString("TaskManager_FailGetAddon"), time: 10);
         }
         else
         {
             AbilityLimit--;
             SendSkillRPC();
 
-            Addons.RemoveAll(taskManager.Is);
             taskManager.RpcSetCustomRole(Addons.RandomElement());
-            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit));
+            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit), time: 10);
         }
     }
     public static bool GetTaskManager(byte targetId, out byte taskManager)

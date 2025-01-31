@@ -1822,6 +1822,7 @@ class PlayerControlCompleteTaskPatch
                 {
                     // ovveride player
                     player = taskManagerId.GetPlayer();
+                    playerTask = player.myTasks?.ToArray().FirstOrDefault(task => task.Id == idx);
                     playerIsOverridden = true;
                 }
                 else
@@ -1832,12 +1833,13 @@ class PlayerControlCompleteTaskPatch
 
             // Check others complete task
             if (playerTask != null)
-                CustomRoleManager.OthersCompleteThisTask(player, playerTask);
+                CustomRoleManager.OthersCompleteThisTask(player, playerTask, playerIsOverridden, __instance);
 
             if (playerIsOverridden)
             {
                 player = __instance;
                 TaskManager.ClearData(player.PlayerId);
+                Logger.Info($"playerId: {player.PlayerId} - __instanceId {__instance.PlayerId}", "CompleteTask.Prefix Finish");
             }
 
             var playerSubRoles = player.GetCustomSubRoles();
