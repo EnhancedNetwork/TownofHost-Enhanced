@@ -126,7 +126,6 @@ internal class TaskManager : RoleBase
         else
         {
             AbilityLimit--;
-            SendSkillRPC();
 
             taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
             taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit), time: 10);
