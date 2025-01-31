@@ -80,7 +80,7 @@ internal class TaskManager : RoleBase
 
         if (randomPlayer == null)
         {
-            randomPlayer.Notify(GetString("TaskManager_FailCompleteRandomTasks"));
+            taskManager.Notify(GetString("TaskManager_FailCompleteRandomTasks"));
             return true;
         }
 
@@ -90,6 +90,8 @@ internal class TaskManager : RoleBase
         {
             Target[randomPlayer.PlayerId] = taskManager.PlayerId;
             randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
+
+            taskManager.Notify(GetString("TaskManager_YouCompletedRandomTask"));
             randomPlayer.Notify(GetString("TaskManager_CompletedRandomTaskForPlayer"));
         }
         return true;
