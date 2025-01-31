@@ -202,35 +202,27 @@ public static class AddonAssign
 
     public static void AssignNarc()
     {
-        if (CustomRoles.Narc.IsEnable() && Narc.CheckNarcAssign())
+        if (Narc.CheckNarcAssign())
         {
-            AddNarcToPlayer();
-        }
-    }
-    private static void AddNarcToPlayer()
-    {
-        var allPlayers = new List<PlayerControl>();
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            if (!pc.GetCustomRole().IsImpostorTeamV3()
-                || pc.Is(CustomRoles.Lovers)
-                || (pc.GetCustomRole().IsMadmate() && !Narc.MadmateCanBeNarc.GetBool())
-                )
-                continue;
+            var allPlayers = new List<PlayerControl>();
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                if (!pc.GetCustomRole().IsImpostorTeamV3()
+                    || pc.Is(CustomRoles.Lovers)
+                    || (pc.GetCustomRole().IsMadmate() && !Narc.MadmateCanBeNarc.GetBool())
+                    )
+                    continue;
 
-            allPlayers.Add(pc);
-        }
-        if (!allPlayers.Any()) return;
-        int count = 1;
-        for (var i = 0; i < count; i++)
-        {
+                allPlayers.Add(pc);
+            }
+            if (!allPlayers.Any()) return;
             var player = allPlayers.RandomElement();
             Main.PlayerStates[player.PlayerId].SetSubRole(CustomRoles.Narc);
             Logger.Info($"Narc Assigned: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {CustomRoles.Narc}", "NarcAssign");
             foreach (var addon in player.GetCustomSubRoles().Where(x => Narc.RemoveTheseRoles(x)).ToArray())
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon); 
-                Logger.Info($"Removed {addon} from {player?.Data?.PlayerName} because Narc should not get these add-ons", "NarcAssign");           
+                Logger.Info($"{addon} removed from {player?.Data?.PlayerName}", "NarcAssign");           
             }
         }
     }
