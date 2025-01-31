@@ -92,7 +92,7 @@ internal class Spurt : IAddon
         if (!player.Is(CustomRoles.Spurt) || !player.IsAlive()) return;
 
         var pos = player.GetCustomPosition();
-        bool moving = Utils.GetDistance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
+        bool moving = Utils.GetDistance(pos, LastPos[player.PlayerId]) > 1f || player.MyPhysics.Animations.IsPlayingRunAnimation();
         LastPos[player.PlayerId] = pos;
 
         float modulator = Modulator.GetFloat();
@@ -117,7 +117,10 @@ internal class Spurt : IAddon
             return;
         }
 
-        Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
-        player.MarkDirtySettings();
+        if (charge > 1)
+        {
+            Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
+            player.MarkDirtySettings();
+        }
     }
 }
