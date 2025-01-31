@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using UnityEngine;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
