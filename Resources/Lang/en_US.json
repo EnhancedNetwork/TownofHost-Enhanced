@@ -1497,6 +1497,7 @@
   "CPAndAlliesKnowEachOther": "Crewpostor And <color=#ff1919>Impostors</color> Know Each Other",
   "CrewpostorLungeKill": "Crewpostor lunges on kill",
   "CrewpostorKillAfterTask": "Number of tasks completed to make one kill",
+  "CrewpostorKillsPerRound": "Number of kills Crewpostor can make per round",
 
   "ConvictRoleChange": "You've completed your tasks.\nWaiting for a meeting to start and become the {0}.",
   "ConvictToRefugeeMsg": "You role has been changed to {0}\nGood luck killing!",
