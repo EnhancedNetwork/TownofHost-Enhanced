@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -9,6 +9,7 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 internal class Possessor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Possessor;
     private const int Id = 28900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Possessor);
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;

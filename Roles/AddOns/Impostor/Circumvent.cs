@@ -1,8 +1,9 @@
-﻿
+
 namespace TOHE.Roles.AddOns.Impostor;
 
 public class Circumvent : IAddon
 {
+    public CustomRoles Role => CustomRoles.Circumvent;
     private const int Id = 22600;
     public AddonTypes Type => AddonTypes.Impostor;
 

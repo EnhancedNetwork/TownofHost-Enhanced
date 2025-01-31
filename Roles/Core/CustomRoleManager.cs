@@ -1,10 +1,11 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -16,7 +17,20 @@ public static class CustomRoleManager
 {
     public static readonly Dictionary<CustomRoles, RoleBase> RoleClass = [];
     public static readonly Dictionary<CustomRoles, IAddon> AddonClasses = [];
-    public static RoleBase GetStaticRoleClass(this CustomRoles role) => RoleClass.TryGetValue(role, out var roleClass) & roleClass != null ? roleClass : new DefaultSetup();
+    public static RoleBase GetStaticRoleClass(this CustomRoles role)
+    {
+        var roleClass = RoleClass.FirstOrDefault(x => x.Key == role).Value;
+
+        if (!role.IsVanilla() && !role.IsAdditionRole()
+            && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
+        {
+            if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
+                Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
+            if (roleClass == null)
+                Logger.Error($"RoleClass for {role} is null.", "GetStaticRoleClass");
+        }
+        return roleClass ?? new DefaultSetup();
+    }
     public static List<RoleBase> AllEnabledRoles => Main.PlayerStates.Values.Select(x => x.RoleClass).ToList(); //Since there are classes which use object attributes and playerstate is not removed.
     public static bool HasEnabled(this CustomRoles role) => role.GetStaticRoleClass().IsEnable;
 
@@ -52,6 +66,10 @@ public static class CustomRoleManager
                 roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsNeutralTeamV2()).Select(r => r.Value).ToList();
                 break;
 
+            case Custom_Team.Coven:
+                roles = RoleClass.Where(r => r.Value.IsExperimental && r.Key.IsCoven()).Select(r => r.Value).ToList();
+                break;
+
             default:
                 Logger.Info("Unsupported team was sent.", "GetExperimentalOptions");
                 break;
@@ -62,7 +80,7 @@ public static class CustomRoleManager
     public static RoleBase GetRoleClass(this PlayerControl player) => GetRoleClassById(player.PlayerId);
     public static RoleBase GetRoleClassById(this byte playerId) => Main.PlayerStates.TryGetValue(playerId, out var statePlayer) && statePlayer != null ? statePlayer.RoleClass : new DefaultSetup();
 
-    public static RoleBase CreateRoleClass(this CustomRoles role) 
+    public static RoleBase CreateRoleClass(this CustomRoles role)
     {
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
@@ -106,10 +124,13 @@ public static class CustomRoleManager
         }
 
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
-        if (Dazzler.HasEnabled) Dazzler.SetDazzled(player, opt);
-        if (Deathpact.HasEnabled) Deathpact.SetDeathpactVision(player, opt);
+        if (CustomRoles.Dazzler.RoleExist()) Dazzler.SetDazzled(player, opt);
+        if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
         if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
-        if (Pitfall.HasEnabled) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
+        if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
+        if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);
+
 
         var playerSubRoles = player.GetCustomSubRoles();
 
@@ -176,11 +197,11 @@ public static class CustomRoleManager
         var killerSubRoles = killer.GetCustomSubRoles();
 
         // If Target is possessed by Dollmaster swap controllers.
-        target = DollMaster.SwapPlayerInfo(target);   
+        target = DollMaster.SwapPlayerInfo(target);
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
 
-        if (PlagueBearer.HasEnabled && !killer.Is(CustomRoles.PlagueBearer))
+        if (CustomRoles.PlagueBearer.RoleExist(true) && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
         }
@@ -250,7 +271,7 @@ public static class CustomRoleManager
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             __state = true;
-            if (cancelbutkill && target.IsAlive() 
+            if (cancelbutkill && target.IsAlive()
                 && !DoubleTrigger.FirstTriggerTimer.TryGetValue(killer.PlayerId, out _)) // some roles have an internal rpcmurderplayer, but still had to cancel
             {
                 target.RpcMurderPlayer(target);
@@ -287,7 +308,7 @@ public static class CustomRoleManager
             Oiiai.OnMurderPlayer(killer, target);
             return false;
         }
-                
+
         return true;
     }
     /// <summary>
@@ -384,13 +405,13 @@ public static class CustomRoleManager
             FixedUpdateInNormalGamePatch.LoversSuicide(target.PlayerId, inMeeting);
         }
     }
-    
+
     /// <summary>
     /// Check if this task is marked by a role and do something.
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
         => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
-    
+
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
@@ -498,7 +519,8 @@ public static class CustomRoleManager
 
     // ADDONS ////////////////////////////
 
-    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x => {
+    public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x =>
+    {
         if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
             IAddon.OnFixedUpdate(pc);
         else return;

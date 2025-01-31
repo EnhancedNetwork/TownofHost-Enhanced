@@ -1,6 +1,6 @@
-﻿using Hazel;
-using System;
+using Hazel;
 using InnerNet;
+using System;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -252,6 +252,37 @@ internal class EAC
                         // Do nothing
                     }
                     break;
+                case 119: // KN Chat
+                    try
+                    {
+                        var firstString = sr.ReadString();
+                        var secondString = sr.ReadString();
+                        sr.ReadInt32();
+
+                        var flag = string.IsNullOrEmpty(firstString) && string.IsNullOrEmpty(secondString);
+
+                        if (!flag)
+                        {
+                            Report(pc, "KN Chat RPC");
+                            HandleCheat(pc, "KN Chat RPC");
+                            Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KN聊天，已驳回", "EAC");
+                            return true;
+                        }
+                    }
+                    catch
+                    {
+                        // Do nothing
+                    }
+                    break;
+                case 250: // KN
+                    if (sr.BytesRemaining == 0)
+                    {
+                        Report(pc, "KN RPC");
+                        HandleCheat(pc, "KN RPC");
+                        Logger.Fatal($"玩家【{pc.GetClientId()}:{pc.GetRealName()}】发送KN RPC，已驳回", "EAC");
+                        return true;
+                    }
+                    break;
                 case unchecked((byte)420): // 164 Sicko
                     if (sr.BytesRemaining == 0)
                     {
@@ -353,6 +384,10 @@ internal class EAC
     }
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
+        if (GameStates.IsLocalGame)
+        {
+            return false;
+        }
         //Update system rpc can not get received by playercontrol.handlerpc
         var Mapid = Utils.GetActiveMapId();
         Logger.Info("Check sabotage RPC" + ", PlayerName: " + player.GetNameWithRole() + ", SabotageType: " + systemType.ToString() + ", amount: " + amount.ToString(), "EAC");
@@ -459,8 +494,8 @@ internal class EAC
         if (!GameStates.IsInGame)
         {
             WarnHost();
-            Report(player, "Report body out of game");
-            HandleCheat(player, "Report body out of game");
+            Report(player, "Report body out of game C");
+            HandleCheat(player, "Report body out of game C");
             Logger.Fatal($"玩家【{player.GetClientId()}:{player.GetRealName()}】非游戏内开会，已驳回", "EAC");
             return true;
         }

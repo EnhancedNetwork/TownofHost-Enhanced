@@ -122,6 +122,7 @@ internal class Seeker : RoleBase
             if (Target == 254)
             {
                 // No target for Seeker to find, normally this wont happen, Seeker already loses the game.
+                // No target for seeker to find, normally this wont happen, seeker already loses the game.
                 player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcExileV2();
                 player.SetRealKiller(player);

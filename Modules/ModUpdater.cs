@@ -1,13 +1,15 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
+using TOHE.Modules;
 using UnityEngine;
-using static TOHE.Translator;
 using UnityEngine.Networking;
+using static TOHE.Translator;
 using IEnumerator = System.Collections.IEnumerator;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace TOHE;
 
@@ -29,6 +31,7 @@ public class ModUpdater
     public static string notice = null;
     public static GenericPopup InfoPopup;
     public static PassiveButton updateButton;
+    private static CancellationTokenSource downloadCancellationTokenSource = new();
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
     public static void Start_Postfix(/*MainMenuManager __instance*/)
@@ -42,6 +45,7 @@ public class ModUpdater
 
     public static IEnumerator PrefixCoroutine()
     {
+        CheckCustomRegions();
         NewVersionCheck();
         DeleteOldFiles();
         InfoPopup = UnityEngine.Object.Instantiate(Twitch.TwitchManager.Instance.TwitchPopup);
@@ -57,6 +61,78 @@ public class ModUpdater
             Logger.Info("downloadUrl: " + downloadUrl, "CheckRelease");
             Logger.Info("latestVersionl: " + latestVersion, "CheckRelease");
             ResetUpdateButton();
+        }
+    }
+
+    const string RegionConfigPath = "./BepInEx/config/at.duikbo.regioninstall.cfg";
+    const string MiniRegionInstallPath = "./BepInEx/plugins/Mini.RegionInstall.dll";
+    const string RegionConfigResource = "TOHE.Resources.at.duikbo.regioninstall.cfg";
+    const string MiniRegionInstallResource = "TOHE.Resources.Mini.RegionInstall.dll";
+    private static void CheckCustomRegions()
+    {
+        var regions = ServerManager.Instance.AvailableRegions;
+        var hasCustomRegions = false;
+        var forceUpdate = false;
+
+        foreach (var region in regions)
+        {
+            if (region.Name.Contains("Niko233", StringComparison.OrdinalIgnoreCase))
+            {
+                hasCustomRegions = true;
+                break;
+            }
+        }
+
+        foreach (var region in regions)
+        {
+            if (region.Name.Contains("Niko233(NA_US)", StringComparison.OrdinalIgnoreCase) || region.Name.Contains("NikoCat233", StringComparison.OrdinalIgnoreCase) || !region.Name.Contains("Niko233(EU)", StringComparison.OrdinalIgnoreCase))
+            {
+                forceUpdate = true;
+                break;
+            }
+        }
+
+        if (!hasCustomRegions || forceUpdate)
+        {
+            Logger.Info("No custom regions found.", "CheckCustomRegions");
+            MoveFile();
+            return;
+        }
+
+        if (!File.Exists(RegionConfigPath) || !File.Exists(MiniRegionInstallPath))
+        {
+            Logger.Info("Updating Region file due to it is missing.", "CheckCustomRegions");
+            MoveFile();
+            return;
+        }
+
+        static void MoveFile()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            using Stream resourceStream = assembly.GetManifestResourceStream(RegionConfigResource);
+            if (resourceStream == null)
+            {
+                Logger.Error($"Resource {RegionConfigResource} not found in assembly.", "MoveRegionConfig");
+                return;
+            }
+
+            using FileStream fileStream = new(RegionConfigPath, FileMode.Create, FileAccess.Write);
+            resourceStream.CopyTo(fileStream);
+            Logger.Info($"Resource {RegionConfigResource} has been moved to {RegionConfigPath}.", "MoveRegionConfig");
+
+            if (!File.Exists(MiniRegionInstallPath))
+            {
+                using Stream miniResourceStream = assembly.GetManifestResourceStream(MiniRegionInstallResource);
+                if (miniResourceStream == null)
+                {
+                    Logger.Error($"Resource {MiniRegionInstallResource} not found in assembly.", "MoveRegionConfig");
+                    return;
+                }
+
+                using FileStream miniFileStream = new(MiniRegionInstallPath, FileMode.Create, FileAccess.Write);
+                miniResourceStream.CopyTo(miniFileStream);
+                Logger.Info($"Resource {MiniRegionInstallResource} has been moved to {MiniRegionInstallPath}.", "MoveRegionConfig");
+            }
         }
     }
     public static void ResetUpdateButton()
@@ -82,7 +158,7 @@ public class ModUpdater
         Stream stream = res.Content.ReadAsStream();
         try
         {
-            //获取内容
+            //ÞÄÀÕÅûÕåàÕ«╣
             using StreamReader reader = new(stream);
             result = reader.ReadToEnd();
         }
@@ -171,7 +247,7 @@ public class ModUpdater
     public static void StartUpdate(string url)
     {
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
-        Main.Instance.StartCoroutine(DownloadDLL(url));
+        Task.Run(() => DownloadDLLAsync(url));
         return;
     }
     public static bool NewVersionCheck()
@@ -183,7 +259,7 @@ public class ModUpdater
             {
                 DirectoryInfo di = new("TOH_DATA");
                 di.Delete(true);
-                Logger.Warn("Deleting old data：TOH_DATA", "NewVersionCheck");
+                Logger.Warn("Deleting old data´╝ÜTOH_DATA", "NewVersionCheck");
             }
         }
         catch (Exception ex)
@@ -195,18 +271,21 @@ public class ModUpdater
     }
     public static void StopDownload()
     {
-        cachedfileStream.Dispose();
-        Main.Instance.StopAllCoroutines();
-        Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
+        lock (downloadLock)
+        {
+            downloadCancellationTokenSource?.Cancel();
+
+            cachedfileStream?.Dispose();
+            cachedfileStream = null;
+        }
     }
     public static IEnumerator DeleteFilesAfterCancel()
     {
-        ShowPopup(GetString("deletingFiles"), StringNames.None, false);
+        ShowPopupAsync(GetString("deletingFiles"), StringNames.None, false);
         yield return new WaitForSeconds(2f);
         InfoPopup.Close();
         yield return new WaitForSeconds(0.3f);
         DeleteOldFiles();
-        Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
         yield break;
     }
     public static void DeleteOldFiles()
@@ -233,64 +312,92 @@ public class ModUpdater
     private static readonly object downloadLock = new();
     private static FileStream cachedfileStream;
 
-    private static IEnumerator DownloadDLL(string url)
+    private static async Task DownloadDLLAsync(string url)
     {
         var savePath = "BepInEx/plugins/TOHE.dll.temp";
-        Application.targetFrameRate = -1;
 
         // Delete the temporary file if it exists
         DeleteOldFiles();
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.timeout = 10;
-        request.SetRequestHeader("Connection", "Keep-Alive");
-        request.SetRequestHeader("User-Agent", "Mozilla/5.0");
-        request.chunkedTransfer = false;
-        yield return request.SendWebRequest();
-
-        if (request.result != UnityWebRequest.Result.Success)
+        try
         {
-            Logger.Error($"File retrieval failed with status code: {request.responseCode}", "DownloadDLL", false);
-            ShowPopup(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
-            Application.targetFrameRate = Main.UnlockFPS.Value ? 165 : 60;
-            yield break;
-        }
+            downloadCancellationTokenSource = new CancellationTokenSource();
+            CancellationToken token = downloadCancellationTokenSource.Token;
 
-        var total = request.downloadedBytes;
-        using (var stream = new MemoryStream(request.downloadHandler.data))
-        {
-            using (var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+            using (HttpClient client = new())
             {
+                client.Timeout = TimeSpan.FromSeconds(10);
+                client.DefaultRequestHeaders.Connection.Add("Keep-Alive");
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0");
+
+                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, token);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Logger.Error($"File retrieval failed with status code: {response.StatusCode}", "DownloadDLL", false);
+                    ShowPopupAsync(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+                    return;
+                }
+
+                var total = response.Content.Headers.ContentLength ?? -1L;
+                using var stream = await response.Content.ReadAsStreamAsync(token);
+                using var fileStream = new FileStream(savePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true);
+
                 cachedfileStream = fileStream;
                 byte[] buffer = new byte[1024];
                 long readLength = 0;
                 int length;
 
-                while ((length = stream.Read(buffer, 0, buffer.Length)) > 0)
+                while ((length = await stream.ReadAsync(buffer, token)) > 0)
                 {
-                    yield return null;
-
-                    fileStream.Write(buffer, 0, length);
+                    await fileStream.WriteAsync(buffer.AsMemory(0, length), token);
 
                     readLength += length;
-                    double? progress = Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero);
+                    double progress = total > 0 ? Math.Round((double)readLength / total * 100, 2, MidpointRounding.ToZero) : 0;
 
                     lock (downloadLock)
                     {
-                        DownloadCallBack(total, readLength, progress ?? 0); // Call back with progress info
+                        DownloadCallBack(total, readLength, progress);
                     }
                 }
-            }
-        }
 
-        var fileName = Assembly.GetExecutingAssembly().Location;
-        File.Move(fileName, fileName + ".bak");
-        File.Move(savePath, fileName);
-        ShowPopup(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
+                await fileStream.DisposeAsync();
+            }
+
+            var fileName = Assembly.GetExecutingAssembly().Location;
+            File.Move(fileName, fileName + ".bak");
+            File.Move(savePath, fileName);
+            ShowPopupAsync(GetString("updateRestart"), StringNames.Close, true, Application.Quit);
+        }
+        catch (OperationCanceledException)
+        {
+            Logger.Warn("Download operation was canceled.", "DownloadDLL");
+            Main.Instance.StartCoroutine(DeleteFilesAfterCancel());
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"An error occurred during the download: {ex.Message}", "DownloadDLL", false);
+            ShowPopupAsync(GetString("updateManually"), StringNames.Close, true, InfoPopup.Close);
+        }
+        finally
+        {
+            cachedfileStream?.Dispose();
+            cachedfileStream = null;
+
+            downloadCancellationTokenSource?.Dispose();
+            downloadCancellationTokenSource = null;
+        }
     }
-    private static void DownloadCallBack(ulong total, long downloaded, double progress)
+    private static void DownloadCallBack(long total, long downloaded, double progress)
     {
-        ShowPopup($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
+        ShowPopupAsync($"{GetString("updateInProgress")}\n{downloaded / (1024f * 1024f):F2}/{total / (1024f * 1024f):F2} MB ({progress}%)", StringNames.Cancel, true, StopDownload);
+    }
+    private static void ShowPopupAsync(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
+    {
+        Dispatcher.Dispatch(() =>
+        {
+            ShowPopup(message, buttonText, showButton, onClick);
+        });
     }
     private static void ShowPopup(string message, StringNames buttonText, bool showButton = false, Action onClick = null)
     {

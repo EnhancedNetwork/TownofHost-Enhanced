@@ -1,4 +1,5 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,6 +9,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Cleanser : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Cleanser;
     private const int Id = 6600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Cleanser);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
@@ -19,7 +21,7 @@ internal class Cleanser : RoleBase
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<byte> CleansedPlayers = [];
-    private readonly Dictionary<byte,byte> CleanserTarget = [];
+    private readonly Dictionary<byte, byte> CleanserTarget = [];
     private bool DidVote;
 
     public override void SetupCustomOption()
@@ -63,11 +65,21 @@ internal class Cleanser : RoleBase
         }
         if (CleanserTarget[voter.PlayerId] != byte.MaxValue) return true;
 
+        bool targetIsVM = false;
+        if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
+        {
+            target = Utils.GetPlayerById(VoodooMaster.Dolls[target.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
+            Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+            targetIsVM = true;
+        }
+        var targetName = target.GetRealName();
+        if (targetIsVM) targetName = Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().GetRealName();
+
         AbilityLimit--;
         CleanserTarget[voter.PlayerId] = target.PlayerId;
         Logger.Info($"{voter.GetNameWithRole()} cleansed {target.GetNameWithRole()}", "Cleansed");
         CleansedPlayers.Add(target.PlayerId);
-        Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
+        Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), targetName), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
         SendSkillRPC();
         return false;
     }

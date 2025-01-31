@@ -57,8 +57,8 @@ public class EndGameManagerPatch
         }
 
         if (seconds == 0) { navigation.NextGame(); CountdownText.transform.DestroyChildren(); }
-        else _ = new LateTask(() => 
-            { 
+        else _ = new LateTask(() =>
+            {
                 BeginAutoPlayAgainCountdown(endGameManager, seconds - 1);
             }, 1f, "Begin Auto Play Again Countdown");
     }

@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Overclocked : IAddon
 {
+    public CustomRoles Role => CustomRoles.Overclocked;
     private const int Id = 19800;
     public AddonTypes Type => AddonTypes.Helpful;
 

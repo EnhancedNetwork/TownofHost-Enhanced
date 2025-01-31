@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 
 namespace TOHE.Roles.Impostor;
 
@@ -6,10 +6,8 @@ namespace TOHE.Roles.Impostor;
 internal class Greedy : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Greedy;
     private const int Id = 1500;
-    public static HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -31,12 +29,10 @@ internal class Greedy : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsOdd.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         IsOdd.Add(playerId, true);
     }
 
@@ -57,7 +53,7 @@ internal class Greedy : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = OddKillCooldown.GetFloat();
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        foreach (var greedyId in playerIdList.ToArray())
+        foreach (var greedyId in _playerIdList)
         {
             IsOdd[greedyId] = true;
             SendRPC(greedyId);

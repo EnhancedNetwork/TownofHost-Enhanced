@@ -1,10 +1,11 @@
-﻿using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
 public class Swift : IAddon
 {
+    public CustomRoles Role => CustomRoles.Swift;
     private const int Id = 23300;
     public AddonTypes Type => AddonTypes.Experimental;
 
@@ -27,7 +28,7 @@ public class Swift : IAddon
             killer.TrapperKilled(target);
 
         killer.SetKillCooldown();
-        
+
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         return false;
     }
