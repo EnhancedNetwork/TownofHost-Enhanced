@@ -19,6 +19,7 @@ internal class TaskManager : RoleBase
     //==================================================================\\
 
     private static OptionItem CanCompleteTaskAfterDeath;
+    private static OptionItem LimitGetsAddOns;
     private static OptionItem CanGetHelpfulAddons;
     private static OptionItem CanGetHarmfulAddons;
     private static OptionItem CanGetMixedAddons;
@@ -33,13 +34,16 @@ internal class TaskManager : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
         CanCompleteTaskAfterDeath = BooleanOptionItem.Create(Id + 2, "TaskManager_OptionCanCompleteTaskAfterDeath", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
-        CanGetHelpfulAddons = BooleanOptionItem.Create(Id + 3, "TaskManager_OptionCanGetHelpfulAddons", true, TabGroup.CrewmateRoles, false)
+        LimitGetsAddOns = IntegerOptionItem.Create(Id + 3, "TaskManager_LimitGetsAddOns", new(1, 10, 1), 3, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager])
+            .SetValueFormat(OptionFormat.Times);
+        CanGetHelpfulAddons = BooleanOptionItem.Create(Id + 4, "TaskManager_OptionCanGetHelpfulAddons", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
-        CanGetHarmfulAddons = BooleanOptionItem.Create(Id + 4, "TaskManager_OptionCanGetHarmfulAddons", false, TabGroup.CrewmateRoles, false)
+        CanGetHarmfulAddons = BooleanOptionItem.Create(Id + 5, "TaskManager_OptionCanGetHarmfulAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
-        CanGetMixedAddons = BooleanOptionItem.Create(Id + 5, "TaskManager_OptionCanGetMixedAddons", false, TabGroup.CrewmateRoles, false)
+        CanGetMixedAddons = BooleanOptionItem.Create(Id + 6, "TaskManager_OptionCanGetMixedAddons", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
-        CanSeeAllCompletedTasks = BooleanOptionItem.Create(Id + 6, "TaskManager_OptionCanSeeAllCompletedTasks", false, TabGroup.CrewmateRoles, false)
+        CanSeeAllCompletedTasks = BooleanOptionItem.Create(Id + 7, "TaskManager_OptionCanSeeAllCompletedTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.TaskManager]);
         OverrideTasksData.Create(Id + 10, TabGroup.CrewmateRoles, CustomRoles.TaskManager);
     }
@@ -64,36 +68,54 @@ internal class TaskManager : RoleBase
 
         Addons = Addons.Where(role => role.GetMode() != 0).ToList();
     }
+    public override void Add(byte playerId)
+    {
+        AbilityLimit = LimitGetsAddOns.GetInt();
+    }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
         
-        List<NetworkedPlayerInfo.TaskInfo> allNotCompletedTasks = [];
         var randomPlayer = Main.AllAlivePlayerControls.Where(pc => taskManager.PlayerId != pc.PlayerId && pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
 
-        if (randomPlayer != null)
-            allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
+        if (randomPlayer == null)
+        {
+            randomPlayer.Notify(GetString("TaskManager_FailCompleteRandomTasks"));
+            return true;
+        }
 
-        if (allNotCompletedTasks.Any())
+        var allNotCompletedTasks = randomPlayer.Data.Tasks.ToArray().Where(pcTask => !pcTask.Complete).ToList();
+
+        if (allNotCompletedTasks.Count > 0)
         {
             Target[randomPlayer.PlayerId] = taskManager.PlayerId;
             randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
             randomPlayer.Notify(GetString("TaskManager_CompletedRandomTaskForPlayer"));
         }
-        else if (taskManager.IsAlive())
-        {
-            if (Addons.Count == 0)
-            {
-                taskManager.Notify(GetString("TaskManager_FailGetAddon"));
-            }
-            else
-            {
-                Addons.RemoveAll(taskManager.Is);
-                taskManager.RpcSetCustomRole(Addons.RandomElement());
-                taskManager.Notify(GetString("TaskManager_YouGetAddon"));
-            }
-        }
         return true;
+    }
+    public override void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
+    {
+        if (!_Player.IsAlive()) return;
+
+        VisualTaskIsCompleted(task.TaskType);
+
+        if (pc.PlayerId == _Player.PlayerId || !pc.GetPlayerTaskState().IsTaskFinished) return;
+
+        var taskManager = _Player;
+        if (Addons.Count == 0)
+        {
+            taskManager.Notify(GetString("TaskManager_FailGetAddon"));
+        }
+        else
+        {
+            AbilityLimit--;
+            SendSkillRPC();
+
+            Addons.RemoveAll(taskManager.Is);
+            taskManager.RpcSetCustomRole(Addons.RandomElement());
+            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit));
+        }
     }
     public static bool GetTaskManager(byte targetId, out byte taskManager)
     {
@@ -103,10 +125,6 @@ internal class TaskManager : RoleBase
     public static void ClearData(byte targetId)
     {
         Target[targetId] = byte.MaxValue;
-    }
-    public override void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
-    {
-        VisualTaskIsCompleted(task.TaskType);
     }
     private static void VisualTaskIsCompleted(TaskTypes taskType)
     {
@@ -140,6 +158,8 @@ internal class TaskManager : RoleBase
     public override void MeetingHudClear() => VisualTasksCompleted.Clear();
     public override void OnMeetingHudStart(PlayerControl pc)
     {
+        if (!pc.IsAlive()) return;
+
         if (VisualTasksCompleted.Count > 0)
             MeetingHudStartPatch.AddMsg(string.Format(GetString("TaskManager_ListCompletedVisualTasksMessage"), GetVisualTaskList()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
         else
