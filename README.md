@@ -119,10 +119,6 @@
 > - We included CrowdedMod in our Mod
 ---
 
-# Legal License Notice
-
-This project utilizes a third-party API, custom-coded by The Enhanced Network. founded by Moe Wehbeh, which is not subject to the GPL 3.0 license. However, please be aware that the project itself, including any modifications, additions, or integrations made to interact with the API, is governed by the terms of the GNU General Public License version 3.0 (GPL-3.0).
-
 ## Licensing Information
 
 This project is licensed under the GNU General Public License version 3.0. For more details, please refer to the [LICENSE](https://github.com/0xDrMoe/TownofHost-Enhanced/blob/main/LICENSE) file.
