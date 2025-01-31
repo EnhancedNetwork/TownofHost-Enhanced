@@ -76,7 +76,6 @@ class PingTrackerUpdatePatch
 
             __instance.aspectPosition.DistanceFromEdge = GetPingPosition();
             __instance.text.text = sb.ToString();
-
             return false;
         }
         catch

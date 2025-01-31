@@ -1957,8 +1957,8 @@ public static class Utils
 
         //var logger = Logger.Handler("DoNotifyRoles");
 
-        HudManagerPatch.NowCallNotifyRolesCount++;
-        HudManagerPatch.LastSetNameDesyncCount = 0;
+        HudManagerUpdatePatch.NowCallNotifyRolesCount++;
+        HudManagerUpdatePatch.LastSetNameDesyncCount = 0;
 
         PlayerControl[] seerList = SpecifySeer != null
             ? ([SpecifySeer])
