@@ -28,7 +28,7 @@
 
 <br>
 
-[![](https://img.shields.io/github/downloads/TOHOptimized/TownofHost-Optimized/total)](../../releases)
+[![Total Downloads](https://img.shields.io/github/downloads/TOHOptimized/TownofHost-Optimized/total)](../../releases)
 
 **Credit to these mods and their developers for the code and help:**
 ### :star: [TOH: Enhanced](https://github.com/EnhancedNetwork/TownofHost-Enhanced)
