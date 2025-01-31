@@ -108,24 +108,22 @@ internal class TaskManager : RoleBase
         var taskManager = _Player;
         Addons.RemoveAll(taskManager.Is);
 
-        CustomRoles randomAddOn = CustomRoles.NotAssigned;
         foreach (var addOn in Addons)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addOn, taskManager, checkLimitAddons: false, checkSelfAddOn: false))
             {
                 Addons.Remove(addOn);
-                continue;
             }
-            randomAddOn = addOn;
         }
 
-        if (Addons.Count == 0 || randomAddOn is CustomRoles.NotAssigned)
+        if (Addons.Count == 0)
         {
             taskManager.Notify(GetString("TaskManager_FailGetAddon"), time: 10);
         }
         else
         {
             AbilityLimit--;
+            var randomAddOn = Addons.RandomElement();
 
             taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
             taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit), time: 10);
