@@ -103,12 +103,23 @@ internal class TaskManager : RoleBase
         if (!playerIsOverridden)
             VisualTaskIsCompleted(task.TaskType);
 
-        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished) return;
+        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || AbilityLimit <= 0) return;
 
         var taskManager = _Player;
         Addons.RemoveAll(taskManager.Is);
 
-        if (Addons.Count == 0)
+        CustomRoles randomAddOn = CustomRoles.NotAssigned;
+        foreach (var addOn in Addons)
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addOn, taskManager, checkLimitAddons: false, checkSelfAddOn: false))
+            {
+                Addons.Remove(addOn);
+                continue;
+            }
+            randomAddOn = addOn;
+        }
+
+        if (Addons.Count == 0 || randomAddOn is CustomRoles.NotAssigned)
         {
             taskManager.Notify(GetString("TaskManager_FailGetAddon"), time: 10);
         }
@@ -117,7 +128,7 @@ internal class TaskManager : RoleBase
             AbilityLimit--;
             SendSkillRPC();
 
-            taskManager.RpcSetCustomRole(Addons.RandomElement());
+            taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
             taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit), time: 10);
         }
     }
