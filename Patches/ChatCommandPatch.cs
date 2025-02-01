@@ -1104,7 +1104,7 @@ internal class ChatCommands
                             PlayerControl.LocalPlayer.RpcChangeRoleBasis(rl);
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
-                            Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
+                            Utils.SendMessage($"Debug Set your role to {rl}", PlayerControl.LocalPlayer.PlayerId);
                             Utils.NotifyRoles(NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
                             break;

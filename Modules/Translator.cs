@@ -292,7 +292,7 @@ public static class Translator
         catch (Exception Ex)
         {
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
-            Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
+            Logger.Error("Here was the error:\n" + Ex, "Translator");
         }
         return res;
     }

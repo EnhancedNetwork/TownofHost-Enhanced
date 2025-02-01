@@ -515,7 +515,7 @@ public static class Utils
                         // Need to set add-ons colors without endings "</color>"
 
                         // colored role
-                        RoleText.Clear().Append(ColorString(GetRoleColor(targetMainRole), oldRoleText.ToString(), withoutEnding: true));
+                        RoleText.Clear().Append(ColorString(GetRoleColor(targetMainRole), oldRoleText, withoutEnding: true));
 
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())

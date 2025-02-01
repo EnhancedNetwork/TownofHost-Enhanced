@@ -24,7 +24,7 @@ internal class GameDataHandlerPatch
 {
     public static bool Prefix(InnerNetClient __instance, MessageReader reader, int msgNum)
     {
-        MessageReader subReader = MessageReader.Get(reader);
+        //MessageReader subReader = MessageReader.Get(reader);
         var tag = (GameDataTag)reader.Tag;
 
         switch (tag)
@@ -36,7 +36,7 @@ internal class GameDataHandlerPatch
                     {
                         if (obj.AmOwner)
                         {
-                            Logger.Warn(string.Format("Received DataFlag for object {0} {1} that we own.", netId.ToString(), obj.name), "GameDataHandlerPatch");
+                            Logger.Warn($"Received DataFlag for object {netId} {obj.name} that we own.", "GameDataHandlerPatch");
                             EAC.WarnHost();
                             return false;
                         }
@@ -46,21 +46,21 @@ internal class GameDataHandlerPatch
                             {
                                 if (obj == MeetingHud.Instance)
                                 {
-                                    Logger.Warn(string.Format("Received DataFlag for MeetingHud {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    Logger.Warn($"Received DataFlag for MeetingHud {netId} that we own.", "GameDataHandlerPatch");
                                     EAC.WarnHost();
                                     return false;
                                 }
 
                                 if (obj == VoteBanSystem.Instance)
                                 {
-                                    Logger.Warn(string.Format("Received DataFlag for VoteBanSystem {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    Logger.Warn($"Received DataFlag for VoteBanSystem {netId} that we own.", "GameDataHandlerPatch");
                                     EAC.WarnHost();
                                     return false;
                                 }
 
                                 if (obj is NetworkedPlayerInfo)
                                 {
-                                    Logger.Warn(string.Format("Received DataFlag for NetworkedPlayerInfo {0} that we own.", netId.ToString()), "GameDataHandlerPatch");
+                                    Logger.Warn($"Received DataFlag for NetworkedPlayerInfo {netId} that we own.", "GameDataHandlerPatch");
                                     EAC.WarnHost();
                                     return false;
                                 }
@@ -96,14 +96,14 @@ internal class GameDataHandlerPatch
 
                     if (System.String.IsNullOrEmpty(scene))
                     {
-                        Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag with null scene.", client.PlayerName, client.Id), "GameDataHandlerPatch");
+                        Logger.Warn($"Client {client?.PlayerName} ({client?.Id}) tried to send SceneChangeFlag with null scene.", "GameDataHandlerPatch");
                         EAC.WarnHost();
                         return false;
                     }
 
                     if (scene.ToLower() == "tutorial")
                     {
-                        Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag to Tutorial.", client.PlayerName, client.Id), "GameDataHandlerPatch");
+                        Logger.Warn($"Client {client?.PlayerName} ({client?.Id}) tried to send SceneChangeFlag to Tutorial.", "GameDataHandlerPatch");
                         EAC.WarnHost(100);
 
                         if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost && GameStates.IsShip && !GameStates.IsLobby)
@@ -116,7 +116,7 @@ internal class GameDataHandlerPatch
 
                     if (GameStates.IsInGame)
                     {
-                        Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag during mid of game.", client.PlayerName, client.Id), "GameDataHandlerPatch");
+                        Logger.Warn($"Client {client?.PlayerName} ({client?.Id}) tried to send SceneChangeFlag during mid of game.", "GameDataHandlerPatch");
                         return false;
                     }
 
