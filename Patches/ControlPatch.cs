@@ -36,7 +36,7 @@ internal class ControllerManagerUpdatePatch
                 EndGameManagerPatch.IsRestarting = false;
             }
             // Do next page
-            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
+            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.InstanceExists && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
             {
                 if (Input.GetKeyDown(KeyCode.Tab))
                 {
