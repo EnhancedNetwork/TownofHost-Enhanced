@@ -2516,7 +2516,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = CustomRolesHelper.AliveImpV3Num;
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.IsNonNarcImpV3());
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
