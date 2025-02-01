@@ -301,7 +301,6 @@ public static class CustomRolesHelper
             CustomRoles.Shapeshifter or
             CustomRoles.Phantom;
     }
-    public static int AliveImpV3Num => Main.AllAlivePlayerControls.Count(pc => pc.IsNonNarcImpV3());
 
     public static bool CheckMMCanSeeImp(this PlayerControl pc, bool CheckImp = true)
     {
