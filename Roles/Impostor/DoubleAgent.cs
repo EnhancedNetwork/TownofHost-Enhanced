@@ -363,7 +363,6 @@ internal class DoubleAgent : RoleBase
         highlightObject?.SetActive(false);
     }
 }
-
 // FieryFlower was here ඞ
 // Drakos wasn't here, 100% not
 // Niko is here, what dog shxt has you guys code
