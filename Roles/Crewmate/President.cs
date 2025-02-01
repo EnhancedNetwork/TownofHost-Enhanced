@@ -143,8 +143,8 @@ internal class President : RoleBase
                 if (pva.VotedFor < 253)
                     meetingHud.RpcClearVote(pva.TargetPlayerId);
             }
-            var statesList = new Il2CppStructArray<MeetingHud.VoterState>(0);
-            meetingHud.RpcVotingComplete(statesList, null, true);
+            List<MeetingHud.VoterState> statesList = [];
+            meetingHud.RpcVotingComplete(statesList.ToArray(), null, true);
             meetingHud.RpcClose();
         }
         else if (operate == 2)

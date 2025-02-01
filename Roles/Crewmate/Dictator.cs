@@ -85,7 +85,7 @@ internal class Dictator : RoleBase
                 VoterId = pc.PlayerId,
                 VotedForId = target.PlayerId
             });
-            var states = (Il2CppStructArray<MeetingHud.VoterState>)statesList.ToList().ToIl2Cpp().ToArray();
+            var states = statesList.ToArray();
             var exiled = target.Data;
             var isBlackOut = AntiBlackout.BlackOutIsActive;
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);

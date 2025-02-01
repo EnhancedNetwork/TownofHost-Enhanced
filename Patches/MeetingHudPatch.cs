@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Text;
 using TMPro;
@@ -37,6 +36,8 @@ class CheckForEndVotingPatch
         try
         {
             List<MeetingHud.VoterState> statesList = [];
+            MeetingHud.VoterState[] states;
+
             foreach (var pva in __instance.playerStates)
             {
                 if (pva == null) continue;
@@ -64,7 +65,7 @@ class CheckForEndVotingPatch
                         VotedForId = pva.VotedFor
                     });
 
-                    var statesDict = (Il2CppStructArray<MeetingHud.VoterState>)statesList.ToList().ToIl2Cpp().ToArray();
+                    states = [.. statesList];
                     var exiled = voteTarget.Data;
 
                     ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
@@ -77,9 +78,9 @@ class CheckForEndVotingPatch
                         var isBlackOut = AntiBlackout.BlackOutIsActive;
 
                         if (isBlackOut)
-                            __instance.AntiBlackRpcVotingComplete(statesDict, exiled, false);
+                            __instance.AntiBlackRpcVotingComplete(states, exiled, false);
                         else
-                            __instance.RpcVotingComplete(statesDict, exiled, false);
+                            __instance.RpcVotingComplete(states, exiled, false);
 
                         if (exiled != null)
                         {
@@ -89,7 +90,7 @@ class CheckForEndVotingPatch
                     }
                     else
                     {
-                        __instance.RpcVotingComplete(statesDict, exiled, false);
+                        __instance.RpcVotingComplete(states, exiled, false);
 
                         if (exiled != null)
                         {
@@ -270,8 +271,6 @@ class CheckForEndVotingPatch
              Does not effect the votenum and vote result, simply change display icons
              God Niko cant think about a better way to do this, so niko just loops every voterstate LOL*/
 
-            var states = (Il2CppStructArray<MeetingHud.VoterState>)statesList.ToList().ToIl2Cpp().ToArray();
-
             byte exileId = byte.MaxValue;
             int max = 0;
             voteLog.Info("=========Vote Result=========");
@@ -357,6 +356,7 @@ class CheckForEndVotingPatch
                 exiledPlayer = NewExiled;
             }
 
+            states = [.. statesList];
             exiledPlayer?.Object.SetRealKiller(null);
 
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiledPlayer;
