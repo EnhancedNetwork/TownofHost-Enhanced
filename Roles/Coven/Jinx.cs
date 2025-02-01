@@ -190,6 +190,7 @@ internal class Jinx : CovenManager
 
     public override string GetProgressText(byte playerId, bool comms)
         => ColorString(CanJinx(playerId) ? GetRoleColor(CustomRoles.Jinx).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
+    public override void SetAbilityButtonText(HudManager hud, byte playerId) =>
+        hud.KillButton.OverrideText(GetString("JinxKillButtonText"));
     private bool CanJinx(byte id) => AbilityLimit > 0;
 }

@@ -2047,6 +2047,7 @@
   "RetrainNotification": "The <b>{0}</b> has requested to retrain you into a <b>{1}</b>.<br>Vote yourself to accept the offer, vote someone else to decline.",
   "RetrainAcceptOffer": "You have accepted the <b>{0}</b>'s retraining and you are now a <b>{1}</b>!",
   "RetrainDeclineOffer": "You declined the <b>{0}</b>'s retraining and your role has not been changed...",
+  "CovenLeaderKillButton": "Retrain",
 
   "RitualistMaxRitsPerRound": "Maximum Blood Rituals per Round",
   "RitualistTryHideMsg": "Try to hide Ritualist's commands",
@@ -2093,6 +2094,8 @@
   "MoonDancerGiveHelpfulAddon": "Target will be given Helpful Add-on during meeting",
   "MoonDancerGiveHarmfulAddon": "Target will be given Harmful Add-on during meeting",
   "MoonDancerNoAddons": "No Add-ons to Baton Pass to {0}",
+  "MoonDancerKillButtonText": "Baton Pass",
+  "MoonDancerNecroKillButtonText": "Blast Off",
 
   "SacrifistDebuffCooldown": "Debuff Cooldown",
   "SacrifistDeathsAfterVote": "Players Killed After Sacrifist is Exiled",
@@ -2148,6 +2151,7 @@
   "JinxSpellTimes": "Amount of Jinx Spells",
   "JinxCooldown": "Jinx Cooldown",
   "JinxCovenCanDieToJinx": "<color=#ac42f2>Coven</color> Can Die To Jinx",
+  "JinxKillButtonText": "Jinx",
 
   "PoisonCooldown": "Poison Cooldown",
   "PoisonerKillDelay": "Poison Kill Delay",
@@ -3820,6 +3824,7 @@
   "RoleType.NeutralChaos": "<color=#D4AF37>★</color> Neutral <color=#D4AF37>Chaos</color> Roles",
   "RoleType.NeutralKilling": "<color=#ff1919>★</color> Neutral <color=#ff1919>Killing</color> Roles",
   "RoleType.NeutralApocalypse": "<color=#ff174f>★</color> Neutral <color=#ff174f>Apocalypse</color> Roles /apocalypseinfo",
+  "CovenInfo": "<color=#ac42f2>★ Coven Roles ★ /coveninfo</color>",
   "RoleType.CovenPower": "<color=#ac42f2>★</color> Coven <color=#1f51ff>Power</color> Roles",
   "RoleType.CovenKilling": "<color=#ac42f2>★</color> Coven <color=#1f51ff>Killing</color> Roles",
   "RoleType.CovenTrickery": "<color=#ac42f2>★</color> Coven <color=#1f51ff>Trickery</color> Roles",

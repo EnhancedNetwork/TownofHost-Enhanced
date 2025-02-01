@@ -752,6 +752,9 @@ public static class Options
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
+        TextOptionItem.Create(10000015, "CovenInfo", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
         CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
@@ -1005,7 +1008,7 @@ public static class Options
             CustomRoleManager.GetExperimentalOptions(Custom_Team.Coven).ForEach(r => r.SetupCustomOption());
 
 
-        }
+        }        
 
         TextOptionItem.Create(10000016, "RoleType.CovenPower", TabGroup.CovenRoles)
             .SetGameMode(CustomGameMode.Standard)
