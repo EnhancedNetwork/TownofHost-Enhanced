@@ -46,7 +46,7 @@ internal class Hangman : RoleBase
             return false;
 
         if (killer.Is(CustomRoles.Narc) 
-        && (target.Is(CustomRoles.Sheriff) || (target.Is(CustomRoles.ChiefOfPolice && target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))))
+        && (target.Is(CustomRoles.Sheriff) || (target.Is(CustomRoles.ChiefOfPolice) && !target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))))
             )
             return true;
 
