@@ -31,6 +31,8 @@ internal class Scavenger : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (killer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)) return false;
+    
         target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
         KilledPlayersId.Add(target.PlayerId);
 
