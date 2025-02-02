@@ -1072,14 +1072,16 @@ static class ExtendedPlayerControl
             }
         }
 
-        if (player.shapeshifting)
+        if (Main.CheckShapeshift.GetValueOrDefault(player.PlayerId, false) || player.shapeshifting)
         {
-            if (Main.AllClientRealNames.TryGetValue(player.OwnerId, out var realname))
+            var target = ((byte)Main.ShapeshiftTarget.GetValueOrDefault(player.PlayerId, 255)).GetPlayer();
+            var targetOwnerId = target != null ? target.OwnerId : 255;
+            if (Main.AllClientRealNames.TryGetValue(targetOwnerId, out var realname))
             {
                 return realname;
             }
 
-            return player.Data.DefaultOutfit.PlayerName;
+            return player?.Data?.PlayerName;
         }
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
