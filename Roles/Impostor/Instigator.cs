@@ -48,7 +48,8 @@ internal class Instigator : RoleBase
         foreach (var playerVote in votedForExiled)
         {
             var crewPlayer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
-            if (crewPlayer == null || !crewPlayer.GetCustomRole().IsCrewmate() || crewPlayer.IsAnySubRole(x => !x.IsCrewmateTeamV2()) || !crewPlayer.IsAlive()) continue;
+            bool CanBeSelected = killer.Is(CustomRoles.Narc) ? !crewPlayer.IsPlayerCrewmateTeam() : (crewPlayer.IsPlayerCrewmateTeam() && crewPlayer != killer);
+            if (crewPlayer == null || !crewPlayer.IsAlive() || !CanBeSelected) continue;
             killPotentials.Add(crewPlayer);
         }
 
