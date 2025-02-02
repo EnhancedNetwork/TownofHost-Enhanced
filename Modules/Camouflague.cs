@@ -184,7 +184,7 @@ public static class Camouflage
             // if player are a shapeshifter, change to the id of your current Outfit
             if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
-                targetId = (byte)Main.ShapeshiftTarget[targetId];
+                targetId = Main.ShapeshiftTarget[targetId];
             }
 
 
