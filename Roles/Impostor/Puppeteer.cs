@@ -84,7 +84,8 @@ internal class Puppeteer : RoleBase
     {
         if (target.Is(CustomRoles.LazyGuy)
             || target.Is(CustomRoles.Lazy)
-            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
+            || target.Is(CustomRoles.NiceMini) && Mini.Age < 18
+            || (killer.Is(CustomRoles.Narc) && (target.Is(CustomRoles.Sheriff) || target.Is(CustomRoles.ChiefOfPolice) && !target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))))
             return false;
 
         return killer.CheckDoubleTrigger(target, () =>
