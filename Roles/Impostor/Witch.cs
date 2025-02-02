@@ -143,6 +143,7 @@ internal class Witch : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (killer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)) return false;
         if (NowSwitchTrigger == SwitchTriggerList.TriggerDouble)
         {
             return killer.CheckDoubleTrigger(target, () => { SetSpelled(killer, target); });
