@@ -80,6 +80,8 @@ internal class Ninja : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantMark")));
             return true;
         }
+        if (killer.Is(CustomRoles.Narc) && (target.Is(CustomRoles.Sheriff) || (target.Is(CustomRoles.ChiefOfPolice) && !target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))))
+            return true;
 
         return killer.CheckDoubleTrigger(target,
             () =>
