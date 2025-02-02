@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Options;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
