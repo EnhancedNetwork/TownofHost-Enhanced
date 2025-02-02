@@ -38,7 +38,7 @@ internal class Convict : RoleBase
         var taskstate = convict.GetPlayerTaskState();
 
         int completed = taskstate.CompletedTasksCount;//total number of Convict's tasks
-        int required = convict.Is(CustomRoles.LastImpostor) ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
+        int required = LastImpostor.currentId == convict.PlayerId ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
  
         if (convict.IsAlive() && completed >= required)
         {
