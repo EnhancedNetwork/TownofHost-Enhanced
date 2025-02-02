@@ -1074,8 +1074,8 @@ static class ExtendedPlayerControl
 
         if (Main.CheckShapeshift.GetValueOrDefault(player.PlayerId, false) || player.shapeshifting)
         {
-            var target = Main.ShapeshiftTarget.GetValueOrDefault(player.PlayerId, (byte)255).GetPlayer();
-            var targetOwnerId = target != null ? target.OwnerId : 255;
+            var target = Main.ShapeshiftTarget.GetValueOrDefault(player.PlayerId, byte.MaxValue).GetPlayer();
+            var targetOwnerId = target != null ? target.OwnerId : byte.MaxValue;
             if (Main.AllClientRealNames.TryGetValue(targetOwnerId, out var realname))
             {
                 return realname;
