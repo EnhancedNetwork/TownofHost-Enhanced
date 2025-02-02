@@ -45,6 +45,9 @@ internal class Hangman : RoleBase
         if (target.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())
             return false;
 
+        if (killer.Is(CustomRoles.Narc) && (target.Is(CustomRoles.Sheriff) || (target.Is(CustomRoles.ChiefOfPolice && target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless)))))
+            return false;
+
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var isShapeshift) && isShapeshift)
         {
             target.SetDeathReason(PlayerState.DeathReason.LossOfHead);
