@@ -135,8 +135,6 @@ internal class Huntsman : RoleBase
 
         if (player.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
 
-        if (target.Is(CustomRoles.Solsticer) || ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18)) return false;
-
         if (target.Is(CustomRoles.Romantic)
             && Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId) return false;
 
@@ -182,7 +180,9 @@ internal class Huntsman : RoleBase
         {
             try
             {
-                var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !Targets.Contains(pc.PlayerId) && PotentialTargets(_Player, pc) && pc.GetCustomRole() != CustomRoles.Huntsman));
+                var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc =>
+                    !Targets.Contains(pc.PlayerId) && PotentialTargets(_Player, pc)
+                    && pc.GetCustomRole() is not CustomRoles.Huntsman and not CustomRoles.Solsticer and not CustomRoles.NiceMini and not CustomRoles.EvilMini));
                 var rand = IRandom.Instance;
                 var target = cTargets.RandomElement();
                 var targetId = target.PlayerId;
