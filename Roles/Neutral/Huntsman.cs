@@ -182,7 +182,8 @@ internal class Huntsman : RoleBase
             {
                 var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc =>
                     !Targets.Contains(pc.PlayerId) && PotentialTargets(_Player, pc)
-                    && pc.GetCustomRole() is not CustomRoles.Huntsman and not CustomRoles.Solsticer and not CustomRoles.NiceMini and not CustomRoles.EvilMini));
+                    && pc.GetCustomRole() is not CustomRoles.Huntsman and not CustomRoles.Solsticer
+                    && ((pc.GetCustomRole() is not CustomRoles.NiceMini and not CustomRoles.EvilMini) || Mini.Age > 18)));
                 var rand = IRandom.Instance;
                 var target = cTargets.RandomElement();
                 var targetId = target.PlayerId;
