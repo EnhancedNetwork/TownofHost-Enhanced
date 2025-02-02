@@ -308,7 +308,7 @@ public static class CustomRolesHelper
 
         if (role == CustomRoles.Convict)
         {
-            var taskState = pc.GetPlayerTaskState();
+            var taskstate = pc.GetPlayerTaskState();
 
             int completed = taskstate.CompletedTasksCount;//total number of Convict's tasks
             int required = LastImpostor.currentId == convict.PlayerId ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
