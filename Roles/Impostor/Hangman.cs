@@ -47,7 +47,6 @@ internal class Hangman : RoleBase
 
         if (killer.Is(CustomRoles.Narc) 
         && (target.Is(CustomRoles.Sheriff) || (target.Is(CustomRoles.ChiefOfPolice) && !target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))))
-            )
             return true;
 
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var isShapeshift) && isShapeshift)
