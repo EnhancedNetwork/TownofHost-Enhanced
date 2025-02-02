@@ -65,6 +65,7 @@ internal class Vampire : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Bait)) return true;
+        if (killer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Narc)) return false;
 
         if (NowActionMode == ActionModeList.Vampire_OnlyBites)
         {
