@@ -306,10 +306,19 @@ public static class CustomRolesHelper
     {
         var role = pc.GetCustomRole();
 
+        if (role == CustomRoles.Convict)
+        {
+            var taskState = pc.GetPlayerTaskState();
+
+            int completed = taskstate.CompletedTasksCount;//total number of Convict's tasks
+            int required = LastImpostor.currentId == convict.PlayerId ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
+            return completed >= required;
+        }
+
         return role is CustomRoles.Refugee 
                 || (role.IsImpostor() && CheckImp)
-                || (role == CustomRoles.Parasite && AliveImpV3Num < 2)
-                || (role == CustomRoles.Apprentice && AliveImpV3Num < 2)
+                || (role == CustomRoles.Parasite && Main.AliveImpostorCount < 2)
+                || (role == CustomRoles.Apprentice && Main.AliveImpostorCount < 2)
                 || (role == CustomRoles.Crewpostor && Crewpostor.CPAndAlliesKnowEachOther.GetBool())
                 || (role == CustomRoles.Underdog && Underdog.CheckCanSeeImp(pc));
     }
