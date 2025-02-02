@@ -64,6 +64,7 @@ internal class Mastermind : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
+        if (killer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)) return false;
 
         return killer.CheckDoubleTrigger(target, () =>
         {
