@@ -144,6 +144,11 @@ internal class Nemesis : RoleBase
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
             return true;
         }
+        else if (pc.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && !target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))
+        {
+            pc.ShowInfoMessage(isUI, GetString("GuessSheriffOrNarc"));
+            return true;
+        }    
         else if (pc.RpcCheckAndMurder(target, true) == false)
         {
             pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
