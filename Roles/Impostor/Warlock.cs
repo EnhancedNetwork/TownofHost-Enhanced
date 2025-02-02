@@ -65,6 +65,7 @@ internal class Warlock : RoleBase
         if (!Main.CheckShapeshift[killer.PlayerId] && !IsCurseAndKill[killer.PlayerId])
         {
             if (target.Is(CustomRoles.LazyGuy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18) return false;
+            if (killer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)) return false;
 
             IsCursed = true;
             killer.SetKillCooldown();
