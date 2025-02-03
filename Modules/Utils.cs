@@ -1879,7 +1879,7 @@ public static class Utils
         var SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
         // Privately sent name.
-        player.RpcSetNamePrivate(SelfName, player);
+        player.RpcSetNamePrivate(SelfName, player, force: true);
     }
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>

@@ -139,15 +139,6 @@ internal class ChangeRoleSettings
                 }
             }
 
-            foreach (var target in Main.AllPlayerControls)
-            {
-                foreach (var seer in Main.AllPlayerControls)
-                {
-                    var pair = (target.PlayerId, seer.PlayerId);
-                    Main.LastNotifyNames[pair] = target.name;
-                }
-            }
-
             foreach (var pc in Main.AllPlayerControls)
             {
                 var outfit = pc.Data.DefaultOutfit;
@@ -170,6 +161,12 @@ internal class ChangeRoleSettings
                         currentName = realName;
                         pc.RpcSetName(realName);
                     }
+                }
+
+                foreach (var target in Main.AllPlayerControls)
+                {
+                    var pair = (target.PlayerId, pc.PlayerId);
+                    Main.LastNotifyNames[pair] = currentName;
                 }
 
                 Main.LowLoadUpdateName[pc.PlayerId] = true;
