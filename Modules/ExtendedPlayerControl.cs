@@ -124,7 +124,7 @@ static class ExtendedPlayerControl
         player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
 
-        Utils.DoNotifyRoles(SpecifySeer: player, NoCache: true);
+        Utils.DoNotifyRoles(SpecifySeer: player);
     }
     /// <summary>
     /// Changes the Role Basis of player during the game

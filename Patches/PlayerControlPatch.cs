@@ -789,7 +789,7 @@ class ShapeshiftPatch
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.NotifyRoles(NoCache: true);
+                    Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
                 },
                 time, "UnShiftNotify");
             }
