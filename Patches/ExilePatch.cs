@@ -176,7 +176,7 @@ class ExileControllerWrapUpPatch
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
-                Utils.NotifyRoles(NoCache: true);
+                Utils.NotifyRoles();
 
                 AntiBlackout.ResetAfterMeeting();
                 Main.LastMeetingEnded = Utils.TimeStamp;
