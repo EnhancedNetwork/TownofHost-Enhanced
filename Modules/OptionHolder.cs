@@ -81,7 +81,7 @@ public static class Options
     public static Dictionary<CustomRoles, OptionItem> CustomRoleCounts;
     public static Dictionary<CustomRoles, OptionItem> CustomGhostRoleCounts;
     public static Dictionary<CustomRoles, StringOptionItem> CustomRoleSpawnChances;
-    public static Dictionary<CustomRoles, IntegerOptionItem> CustomAdtRoleSpawnRate;
+    public static Dictionary<CustomRoles, StringOptionItem> CustomAdtRoleSpawnRate;
 
     public static readonly Dictionary<CustomRoles, (OptionItem Imp, OptionItem Neutral, OptionItem Crew, OptionItem Coven)> AddonCanBeSettings = [];
     [Obfuscation(Exclude = true)]
@@ -2123,9 +2123,9 @@ public static class Options
         CustomRoleCounts.Add(role, countOption);
     }
 
-    public static void SetupAdtRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true, bool teamSpawnOptions = false)
+    public static void SetupAdtRoleOptions(int id, CustomRoles role, CustomGameMode customGameMode = CustomGameMode.Standard, bool canSetNum = false, TabGroup tab = TabGroup.Addons, bool canSetChance = true, bool teamSpawnOptions = false, bool zeroOne = false)
     {
-        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), zeroOne ? EnumHelper.GetAllNames<RatesZeroOne>() : EnumHelper.GetAllNames<SpawnChance>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
@@ -2134,12 +2134,6 @@ public static class Options
             .SetValueFormat(OptionFormat.Players)
             .SetHidden(!canSetNum)
             .SetGameMode(customGameMode);
-
-        var spawnRateOption = IntegerOptionItem.Create(id + 2, "AdditionRolesSpawnRate", new(0, 100, 5), canSetChance ? 65 : 100, tab, false)
-        .SetParent(spawnOption)
-            .SetValueFormat(OptionFormat.Percent)
-            .SetHidden(!canSetChance)
-            .SetGameMode(customGameMode) as IntegerOptionItem;
 
         if (teamSpawnOptions)
         {
@@ -2167,7 +2161,7 @@ public static class Options
         }
 
 
-        CustomAdtRoleSpawnRate.Add(role, spawnRateOption);
+        CustomAdtRoleSpawnRate.Add(role, spawnOption);
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }

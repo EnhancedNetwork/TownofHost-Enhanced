@@ -908,11 +908,6 @@ public static class Utils
             if (role.IsEnable())
             {
                 if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
-                else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.TryGetValue(role, out var spawnRate))
-                {
-                    mode = GetChance(spawnRate.GetFloat());
-
-                }
                 var roleDisplay = $"{GetRoleName(role)}: {mode} x{role.GetCount()}";
                 if (role.IsAdditionRole()) addonsb.Add(roleDisplay);
                 else if (role.IsCrewmate()) crewsb.Add(roleDisplay);
