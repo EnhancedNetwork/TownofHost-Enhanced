@@ -43,7 +43,7 @@ internal class Technician : RoleBase
     {
         if (!seer.IsAlive() || !seen.IsAlive()) return string.Empty;
 
-        return ColorString(GetRoleColor(CustomRoles.Lookout), $" {seen.Data.PlayerId}");
+        return ColorString(GetRoleColor(CustomRoles.Technician), $" {seen.Data.PlayerId}");
     }
     public static bool ActivateGuardAnimation(byte killerId, PlayerControl target, int colorId)
     {
