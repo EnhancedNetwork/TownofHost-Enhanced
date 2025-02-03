@@ -121,6 +121,8 @@ internal class Romantic : RoleBase
         else
             hud.KillButton.OverrideText(GetString("RomanticProtectButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticProtect");
+    
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
@@ -316,7 +318,7 @@ internal class VengefulRomantic : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId == target.PlayerId) return true; //set it to true coz shaman can do this, and killer shd die
+        if (killer.PlayerId == target.PlayerId) return true; //set it to true coz Shaman can do this, and killer should die
 
         if (VengefulTarget.TryGetValue(killer.PlayerId, out var PartnerKiller) && target.PlayerId == PartnerKiller)
         {

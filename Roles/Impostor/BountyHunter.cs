@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -193,7 +194,7 @@ internal class BountyHunter : RoleBase
         Logger.Info($"{player.GetNameWithRole()}: reset target", "BountyHunter");
         player.RpcResetAbilityCooldown();
 
-        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => PotentialTarget(player, pc)));
+        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => PotentialTarget(player, pc) && pc.GetCustomRole() is not CustomRoles.Solsticer));
 
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);

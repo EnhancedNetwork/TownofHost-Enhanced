@@ -636,6 +636,7 @@ public class Main : BasePlugin
         NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
         NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
         HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
 
