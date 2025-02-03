@@ -359,7 +359,7 @@ class GameEndCheckerForNormal
                     }
                 }
                 
-                int PossibleAdtWinners = Main.AllPlayerControls.Count(x => x.GetCustomRole().IsNB() || x.Is(CustomRoles.Lovers) || x.Is(CustomRoles.Narc));
+                int PossibleAdtWinners = Main.AllPlayerControls.Count(x => x.GetCustomRole().IsNB() || x.Is(CustomRoles.Lovers));
                 //I don't know how many times CheckAdditionalWinner has to be executed so ↑↑↑↑this exists ┐(´∇｀)┌
                 for (int i = 0; i < PossibleAdtWinners + 1; i++)
                 {
