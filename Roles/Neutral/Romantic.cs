@@ -160,7 +160,8 @@ internal class Romantic : RoleBase
             if (BetTargetKnowRomantic.GetBool())
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
 
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
+            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
 
             Logger.Info($"Romantic：{killer.GetNameWithRole().RemoveHtmlTags()} bet player => {target.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
         }
