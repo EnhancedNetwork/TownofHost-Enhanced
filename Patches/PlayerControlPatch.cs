@@ -764,7 +764,9 @@ class ShapeshiftPatch
         }
 
         Main.CheckShapeshift[shapeshifter.PlayerId] = shapeshifting;
-        Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
+
+        Main.ShapeshiftTarget.Remove(shapeshifter.PlayerId);
+        Main.ShapeshiftTarget.Add(shapeshifter.PlayerId, target.PlayerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (GameStates.IsHideNSeek) return;
@@ -779,8 +781,7 @@ class ShapeshiftPatch
             _ = new LateTask(() =>
             {
                 Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
-            },
-                time, shapeshifting ? "ShapeShiftNotify" : "UnShiftNotify");
+            }, time, shapeshifting ? "ShapeShiftNotify" : "UnShiftNotify");
         }
     }
 }

@@ -182,7 +182,7 @@ public static class Camouflage
         if (!IsCamouflage || ForceRevert)
         {
             // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
                 targetId = Main.ShapeshiftTarget[targetId];
             }

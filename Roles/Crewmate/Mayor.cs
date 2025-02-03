@@ -15,8 +15,6 @@ internal partial class Mayor : RoleBase
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
-
     private static OptionItem MayorAdditionalVote;
     private static OptionItem MayorHasPortableButton;
     private static OptionItem MayorNumOfUseButton;
@@ -120,4 +118,5 @@ internal partial class Mayor : RoleBase
     {
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("EmergencyButton");
 }
