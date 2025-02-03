@@ -1834,6 +1834,7 @@ public static class Utils
             foreach (PlayerControl target in aapc)
             {
                 NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
+                if (GameStates.IsMeeting) yield break;
                 if (count++ % speed == 0) yield return null;
             }
         }
