@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using System.Text;
 using UnityEngine;
@@ -51,6 +51,7 @@ internal class Seeker : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("SeekerKillButtonText"));
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Tag");
     private void SendRPC(byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -98,7 +99,7 @@ internal class Seeker : RoleBase
 
             if (Target == 254)
             {
-                // No target for seeker to find, normally this wont happen, seeker already loses the game.
+                // No target for Seeker to find, normally this wont happen, Seeker already loses the game.
                 player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcExileV2();
                 player.SetRealKiller(player);
@@ -115,13 +116,10 @@ internal class Seeker : RoleBase
             ResetTarget();
         }
 
-        if (totalPoints >= PointsToWinOpt)
+        if (totalPoints >= PointsToWinOpt && !CustomWinnerHolder.CheckForConvertedWinner(seekerId))
         {
-            if (!CustomWinnerHolder.CheckForConvertedWinner(seekerId))
-            {
-                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
-                CustomWinnerHolder.WinnerIds.Add(seekerId);
-            }
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Seeker);
+            CustomWinnerHolder.WinnerIds.Add(seekerId);
         }
     }
     private void FreezeSeeker()

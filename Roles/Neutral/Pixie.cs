@@ -69,6 +69,7 @@ internal class Pixie : RoleBase
     {
         hud.KillButton.OverrideText(GetString("PixieButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
@@ -154,7 +155,6 @@ internal class Pixie : RoleBase
             SendRPC(pixieId);
         }
     }
-
     public static void PixieWinCondition(PlayerControl pc)
     {
         if (pc == null) return;

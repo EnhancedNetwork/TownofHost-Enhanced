@@ -515,4 +515,5 @@ internal class Alchemist : RoleBase
     {
         hud.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Drink");
 }
