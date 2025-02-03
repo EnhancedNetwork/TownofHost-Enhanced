@@ -1824,7 +1824,20 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
+    public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
+    {
+        var count = 0;
+        PlayerControl[] aapc = Main.AllAlivePlayerControls;
 
+        foreach (PlayerControl seer in aapc)
+        {
+            foreach (PlayerControl target in aapc)
+            {
+                NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
+                if (count++ % speed == 0) yield return null;
+            }
+        }
+    }
     // During intro scene to set team name and role info for non-modded clients and skip the rest.
     // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
     // If not a Desync Role remove team display

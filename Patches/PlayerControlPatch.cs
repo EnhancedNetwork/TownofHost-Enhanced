@@ -521,8 +521,7 @@ class MurderPlayerPatch
         {
             Utils.SyncAllSettings();
         }
-
-        Utils.NotifyRoles();
+        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 4));
     }
     public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
@@ -777,22 +776,11 @@ class ShapeshiftPatch
         {
             var time = animate ? 1.2f : 0.5f;
             //Forced update players name
-            if (shapeshifting)
+            _ = new LateTask(() =>
             {
-                _ = new LateTask(() =>
-                {
-                    Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
-                },
-                time, "ShapeShiftNotify");
-            }
-            else if (!shapeshifting)
-            {
-                _ = new LateTask(() =>
-                {
-                    Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
-                },
-                time, "UnShiftNotify");
-            }
+                Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
+            },
+                time, shapeshifting ? "ShapeShiftNotify" : "UnShiftNotify");
         }
     }
 }
@@ -1856,8 +1844,8 @@ class PlayerControlCompleteTaskPatch
         // Add task for Workhorse
         ret &= Workhorse.OnAddTask(player);
 
-        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
-        Utils.NotifyRoles(SpecifyTarget: player, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: player);
+        Utils.NotifyRoles(SpecifyTarget: player);
 
         return ret;
     }

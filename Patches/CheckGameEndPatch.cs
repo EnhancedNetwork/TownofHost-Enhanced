@@ -77,9 +77,6 @@ class GameEndCheckerForNormal
             // Show all roles
             GameIsEnded = true;
 
-            // Update all Notify Roles
-            Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
-
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
             Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
@@ -562,8 +559,14 @@ class GameEndCheckerForNormal
             yield return new WaitForSeconds(0.3f);
         }
 
-        // Update all Notify Roles
-        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
+        foreach (var winnerId in WinnerIds)
+        {
+            var winnerPC = winnerId.GetPlayer();
+            if (winnerPC == null) continue;
+
+            // Update winner name
+            Utils.DoNotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
+        }
 
         // Start End Game
         GameManager.Instance.RpcEndGame(reason, false);

@@ -908,9 +908,10 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
         }
 
-        Utils.DoNotifyRoles(NoCache: false);
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }
