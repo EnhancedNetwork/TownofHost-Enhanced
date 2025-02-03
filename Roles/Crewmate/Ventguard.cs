@@ -22,7 +22,7 @@ internal class Ventguard : RoleBase
     private static OptionItem BlockVentCooldown;
     private static OptionItem BlockDoesNotAffectCrew;
     private static OptionItem BlocksResetOnMeeting;
-    //public static OptionItem AbilityUseGainWithEachTaskCompleted;
+    public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<int> BlockedVents = [];
 
@@ -38,9 +38,9 @@ internal class Ventguard : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
         BlocksResetOnMeeting = BooleanOptionItem.Create(Id + 13, "Ventguard_BlocksResetOnMeeting", true, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
-        //AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
-        //    .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
-        //    .SetValueFormat(OptionFormat.Times);
+        AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
+            .SetValueFormat(OptionFormat.Times);
     }
 
     public override void Init()
@@ -62,6 +62,7 @@ internal class Ventguard : RoleBase
     {
         hud.AbilityButton.OverrideText(GetString("VentguardVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Block");
 
     public override void OnEnterVent(PlayerControl ventguard, Vent vent)
     {
