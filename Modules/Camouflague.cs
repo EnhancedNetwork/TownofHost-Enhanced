@@ -156,7 +156,14 @@ public static class Camouflage
                     pc.RpcRemovePet();
                 }
             }
-            Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+            if (Main.CurrentServerIsVanilla)
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+            }
+            else
+            {
+                Utils.DoNotifyRoles();
+            }
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)

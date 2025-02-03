@@ -909,7 +909,14 @@ class IntroCutsceneDestroyPatch
 
             Utils.CheckAndSetVentInteractions();
 
-            Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+            if (Main.CurrentServerIsVanilla)
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+            }
+            else
+            {
+                Utils.DoNotifyRoles();
+            }
         }
 
         Logger.Info("OnDestroy", "IntroCutscene");

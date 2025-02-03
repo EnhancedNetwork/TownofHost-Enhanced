@@ -151,6 +151,7 @@ public class Main : BasePlugin
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
     public static string LastSummaryMessage;
+    public static bool CurrentServerIsVanilla = false;
 
     public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> MurderedThisRound = [];

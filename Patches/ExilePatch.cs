@@ -176,7 +176,15 @@ class ExileControllerWrapUpPatch
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
-                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+
+                if (Main.CurrentServerIsVanilla)
+                {
+                    Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+                }
+                else
+                {
+                    Utils.DoNotifyRoles();
+                }
 
                 AntiBlackout.ResetAfterMeeting();
                 Main.LastMeetingEnded = Utils.TimeStamp;
