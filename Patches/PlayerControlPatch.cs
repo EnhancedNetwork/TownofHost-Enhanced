@@ -1240,7 +1240,7 @@ class FixedUpdateInNormalGamePatch
                 if (localplayer)
                 {
                     if (CustomNetObject.AllObjects.Count > 0)
-                        CustomNetObject.FixedUpdate(lowLoad);
+                        CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
 
                     if (!lowLoad)
                         CovenManager.NecronomiconCheck();
