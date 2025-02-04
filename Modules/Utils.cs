@@ -1824,7 +1824,24 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
+    public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
+    {
+        var count = 0;
+        bool isMeeting = GameStates.IsMeeting;
+        if (isMeeting) yield break;
 
+        PlayerControl[] aapc = Main.AllAlivePlayerControls;
+
+        foreach (PlayerControl seer in aapc)
+        {
+            foreach (PlayerControl target in aapc)
+            {
+                if (isMeeting) yield break;
+                NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
+                if (count++ % speed == 0) yield return null;
+            }
+        }
+    }
     // During intro scene to set team name and role info for non-modded clients and skip the rest.
     // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
     // If not a Desync Role remove team display
@@ -1879,7 +1896,7 @@ public static class Utils
         var SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
         // Privately sent name.
-        player.RpcSetNamePrivate(SelfName, player);
+        player.RpcSetNamePrivate(SelfName, player, force: true);
     }
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
@@ -2493,7 +2510,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate());//why cant i just use IsImpostorTeamV3 here
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
