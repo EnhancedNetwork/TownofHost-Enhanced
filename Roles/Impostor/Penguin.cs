@@ -193,7 +193,7 @@ internal class Penguin : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!stopCount)
             AbductTimer -= Time.fixedDeltaTime;
@@ -246,6 +246,8 @@ internal class Penguin : RoleBase
             // SnapToRPC does not work for players on top of the ladder, and only the host behaves differently, so teleporting is not done uniformly.
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
+                if (Main.CurrentServerIsVanilla && timerLowLoad % 3 != 0) return;
+
                 var position = penguin.transform.position;
                 if (!penguin.IsHost())
                 {
