@@ -428,7 +428,7 @@ internal class Jackal : RoleBase
                 {
                     player.Notify(CustomRoles.Jackal.GetColoredTextByRole(string.Format(GetString("Jackal_OnNewJackalSelected"), newJackal.GetRealName())));
                 }
-                Utils.NotifyRoles();
+                Utils.NotifyRoles(SpecifyTarget: newJackal);
 
                 hasConverted = true;
             }
@@ -445,7 +445,6 @@ internal class Jackal : RoleBase
             {
                 player.Notify(CustomRoles.Jackal.GetColoredTextByRole(GetString("Jackal_BossIsDead")));
             }
-            Utils.NotifyRoles();
             hasConverted = true;
         }
     }

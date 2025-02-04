@@ -80,7 +80,7 @@ internal class Doppelganger : RoleBase
 
         SendSkillRPC();
         RPC.SyncAllPlayerNames();
-        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        Utils.NotifyRoles(SpecifyTarget: killer, NoCache: true);
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();

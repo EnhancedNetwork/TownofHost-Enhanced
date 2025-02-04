@@ -105,7 +105,7 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => ChangeTimer.Clear();
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!ChangeTimer.TryGetValue(player.PlayerId, out var timer)) return;
 
@@ -193,7 +193,7 @@ internal class BountyHunter : RoleBase
         Logger.Info($"{player.GetNameWithRole()}: reset target", "BountyHunter");
         player.RpcResetAbilityCooldown();
 
-        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => PotentialTarget(player, pc)));
+        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => PotentialTarget(player, pc) && pc.GetCustomRole() is not CustomRoles.Solsticer));
 
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);

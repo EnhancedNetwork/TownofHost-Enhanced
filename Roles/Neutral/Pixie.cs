@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -63,6 +64,7 @@ internal class Pixie : RoleBase
     {
         HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
@@ -172,4 +174,3 @@ internal class Pixie : RoleBase
         }
     }
 }
-

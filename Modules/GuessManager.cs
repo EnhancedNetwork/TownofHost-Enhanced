@@ -819,7 +819,7 @@ public static class GuessManager
                 Teambutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
                 Transform TeambuttonMask = UnityEngine.Object.Instantiate(maskTemplate, TeambuttonParent);
                 TextMeshPro Teamlabel = UnityEngine.Object.Instantiate(textTemplate, Teambutton);
-                Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateWithKPD");
+                Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateKPD");
                 RoleSelectButtons.Add((Custom_Team)TabId, Teambutton.GetComponent<SpriteRenderer>());
                 TeambuttonParent.localPosition = new(-3.10f + (tabCount++ * 1.47f), 2.225f, -200);
                 TeambuttonParent.localScale = new(0.53f, 0.53f, 1f);
@@ -880,7 +880,7 @@ public static class GuessManager
                 Pagebutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
                 Transform PagebuttonMask = UnityEngine.Object.Instantiate(maskTemplate, PagebuttonParent);
                 TextMeshPro Pagelabel = UnityEngine.Object.Instantiate(textTemplate, Pagebutton);
-                Pagebutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateWithKPD");
+                Pagebutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateKPD");
                 PagebuttonParent.localPosition = IsNext ? new(3.535f, -2.2f, -200) : new(-3.475f, -2.2f, -200);
                 PagebuttonParent.localScale = new(0.55f, 0.55f, 1f);
                 Pagelabel.color = Color.white;

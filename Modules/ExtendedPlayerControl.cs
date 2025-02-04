@@ -124,7 +124,7 @@ static class ExtendedPlayerControl
         player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
 
-        Utils.NotifyRoles(SpecifySeer: player, NoCache: true);
+        Utils.NotifyRoles(SpecifyTarget: player);
     }
     /// <summary>
     /// Changes the Role Basis of player during the game
@@ -1067,9 +1067,14 @@ static class ExtendedPlayerControl
             }
         }
 
-        if (player.shapeshifting)
+        if (Main.CheckShapeshift.GetValueOrDefault(player.PlayerId, false) || player.shapeshifting)
         {
-            return Main.AllClientRealNames.GetValueOrDefault(player.OwnerId, player.Data.DefaultOutfit.PlayerName);
+            if (Main.AllClientRealNames.TryGetValue(player.OwnerId, out var realname))
+            {
+                return realname;
+            }
+
+            return player.Data.DefaultOutfit.PlayerName;
         }
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }

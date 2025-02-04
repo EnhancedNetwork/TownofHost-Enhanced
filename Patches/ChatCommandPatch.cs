@@ -992,7 +992,7 @@ internal class ChatCommands
 
                         _ = new LateTask(() =>
                         {
-                            Utils.NotifyRoles(NoCache: true);
+                            Utils.NotifyRoles(ForceLoop: false, NoCache: true);
 
                         }, 0.2f, "Update NotifyRoles players after /kill");
                     }
@@ -1105,7 +1105,7 @@ internal class ChatCommands
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage($"Debug Set your role to {rl}", PlayerControl.LocalPlayer.PlayerId);
-                            Utils.NotifyRoles(NoCache: true);
+                            Utils.NotifyRoles(SpecifyTarget: PlayerControl.LocalPlayer, NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
                             break;
                         }

@@ -80,7 +80,7 @@ internal class DollMaster : RoleBase
         opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0f * 0);
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (controllingTarget != null && DollMasterTarget != null)

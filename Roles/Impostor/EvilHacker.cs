@@ -183,7 +183,7 @@ internal class EvilHacker : RoleBase
             Utils.NotifyRoles(SpecifySeer: evilHackerPlayer);
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !activeNotifies.Any())
         {

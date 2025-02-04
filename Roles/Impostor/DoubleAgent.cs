@@ -192,7 +192,7 @@ internal class DoubleAgent : RoleBase
     }
 
     // Set timer on Double Agent for Non-Modded Clients.
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 
@@ -333,7 +333,7 @@ internal class DoubleAgent : RoleBase
             targetBox.transform.localPosition = new Vector3(-0.35f, 0.03f, -1.31f);
             createdButtonsList.Add(targetBox);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
-            renderer.sprite = CustomButton.Get("DoubleAgentPocketBomb");
+            renderer.sprite = CustomButton.Get("PocketBomb");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick.RemoveAllListeners();
             button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => DestroyButtons(targetBox)));
@@ -363,7 +363,6 @@ internal class DoubleAgent : RoleBase
         highlightObject?.SetActive(false);
     }
 }
-
 // FieryFlower was here ඞ
 // Drakos wasn't here, 100% not
 // Niko is here, what dog shxt has you guys code

@@ -152,7 +152,7 @@ internal class Deathpact : RoleBase
         }
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !ActiveDeathpacts.Contains(player.PlayerId)) return;
         if (CheckCancelDeathpact(player)) return;

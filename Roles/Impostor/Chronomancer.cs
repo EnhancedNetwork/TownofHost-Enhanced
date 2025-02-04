@@ -136,7 +136,7 @@ internal class Chronomancer : RoleBase
         killer.SetKillCooldown();
         return true;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!Main.IntroDestroyed) return;
 

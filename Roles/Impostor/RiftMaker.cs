@@ -173,7 +173,7 @@ internal class RiftMaker : RoleBase
         }, 0.5f, "RiftMakerOnVent");
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (player == null) return;
         if (Pelican.IsEaten(player.PlayerId) || !player.IsAlive()) return;

@@ -68,7 +68,7 @@ internal class TimeMaster : RoleBase
         hud.ReportButton.OverrideText(GetString("ReportButtonText"));
         hud.AbilityButton.buttonLabelText.text = GetString("TimeMasterVentButtonText");
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && TimeMasterInProtect.TryGetValue(player.PlayerId, out var vtime) && vtime + TimeMasterSkillDuration.GetInt() < nowTime)
         {

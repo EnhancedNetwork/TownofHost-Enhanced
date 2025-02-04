@@ -208,7 +208,7 @@ internal class Alchemist : RoleBase
             }
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !IsInvis(player.PlayerId)) return;
 
@@ -508,4 +508,5 @@ internal class Alchemist : RoleBase
     {
         hud.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Drink");
 }

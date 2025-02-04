@@ -309,7 +309,7 @@ internal class Baker : RoleBase
         if (_Player)
             BarrierList[_Player.PlayerId].Clear();
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
 

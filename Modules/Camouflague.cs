@@ -169,7 +169,14 @@ public static class Camouflage
     }
     private static System.Collections.IEnumerator CoSetCamouflage()
     {
-        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
+        if (Main.CurrentServerIsVanilla)
+        {
+            Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+        }
+        else
+        {
+            Utils.NotifyRoles();
+        }
         yield return null;
 
         foreach (var pc in Main.AllPlayerControls)
@@ -208,7 +215,7 @@ public static class Camouflage
         if (!IsCamouflage || ForceRevert)
         {
             // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
                 targetId = Main.ShapeshiftTarget[targetId];
             }

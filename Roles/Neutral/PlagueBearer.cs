@@ -134,7 +134,8 @@ internal class PlagueBearer : RoleBase
         }
         if (needCheck)
         {
-            NotifyRoles();
+            NotifyRoles(SpecifyTarget: seer);
+            NotifyRoles(SpecifyTarget: target);
             CheckPlagueAllPlayers();
         }
     }

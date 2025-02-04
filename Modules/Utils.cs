@@ -1664,7 +1664,6 @@ public static class Utils
     {
         var count = 0;
         bool isMeeting = GameStates.IsMeeting;
-        if (isMeeting) yield break;
 
         PlayerControl[] aapc = Main.AllAlivePlayerControls;
 
@@ -1734,7 +1733,7 @@ public static class Utils
         var SelfName = new StringBuilder($"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}");
 
         // Privately sent name.
-        player.RpcSetNamePrivate(SelfName.ToString(), player);
+        player.RpcSetNamePrivate(SelfName.ToString(), player, force: true);
     }
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
@@ -2368,7 +2367,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor));
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate());//why cant i just use IsImpostorTeamV3 here
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");

@@ -521,7 +521,7 @@ class MurderPlayerPatch
             Utils.SyncAllSettings();
         }
 
-        Utils.NotifyRoles();
+        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 4));
     }
     public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
@@ -763,7 +763,9 @@ class ShapeshiftPatch
         }
 
         Main.CheckShapeshift[shapeshifter.PlayerId] = shapeshifting;
-        Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
+
+        Main.ShapeshiftTarget.Remove(shapeshifter.PlayerId);
+        Main.ShapeshiftTarget.Add(shapeshifter.PlayerId, target.PlayerId);
 
         if (!AmongUsClient.Instance.AmHost) return;
         if (GameStates.IsHideNSeek) return;
@@ -775,22 +777,10 @@ class ShapeshiftPatch
         {
             var time = animate ? 1.2f : 0.5f;
             //Forced update players name
-            if (shapeshifting)
+            _ = new LateTask(() =>
             {
-                _ = new LateTask(() =>
-                {
-                    Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
-                },
-                time, "ShapeShiftNotify");
-            }
-            else if (!shapeshifting)
-            {
-                _ = new LateTask(() =>
-                {
-                    Utils.NotifyRoles(NoCache: true);
-                },
-                time, "UnShiftNotify");
-            }
+                Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
+            }, time, shapeshifting ? "ShapeShiftNotify" : "UnShiftNotify");
         }
     }
 }
@@ -1065,7 +1055,7 @@ class ReportDeadBodyPatch
         NameNotifyManager.Reset();
 
         // Update Notify Roles for Meeting
-        Utils.NotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+        Utils.NotifyRoles(isForMeeting: true, CamouflageIsForMeeting: true);
 
         // Sync all settings on meeting start
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
@@ -1128,7 +1118,7 @@ class FixedUpdateInNormalGamePatch
         byte localPlayerId = localPlayer.PlayerId;
         var player = __instance;
         byte playerId = player.PlayerId;
-        
+
         var playerData = player.Data;
         var playerClientId = player.GetClientId();
 
@@ -1861,8 +1851,8 @@ class PlayerControlCompleteTaskPatch
         // Add task for Workhorse
         ret &= Workhorse.OnAddTask(player);
 
-        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
-        Utils.NotifyRoles(SpecifyTarget: player, ForceLoop: true);
+        Utils.NotifyRoles(SpecifySeer: player);
+        Utils.NotifyRoles(SpecifyTarget: player);
 
         return ret;
     }

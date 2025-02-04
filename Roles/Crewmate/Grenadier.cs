@@ -140,7 +140,7 @@ internal class Grenadier : RoleBase
 
     private static bool stopGrenadierSkill = false;
     private static bool stopMadGrenadierSkill = false;
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (!GrenadierBlinding.ContainsKey(player.PlayerId) && !MadGrenadierBlinding.ContainsKey(player.PlayerId)) return;

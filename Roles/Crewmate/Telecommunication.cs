@@ -52,7 +52,7 @@ internal class Telecommunication : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 5;
