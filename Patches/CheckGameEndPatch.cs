@@ -482,7 +482,7 @@ class GameEndCheckerForNormal
                             .Do(p => WinnerIds.Add(p.PlayerId));
                     }
 
-                    if (Narc.CheckWinCondition(WinnerTeam, reason)
+                    if (Narc.CheckWinCondition(WinnerTeam, reason))
                     {
                         foreach (var narc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Narc)).ToArray())
                         {
