@@ -1663,12 +1663,16 @@ public static class Utils
     public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
     {
         var count = 0;
+        bool isMeeting = GameStates.IsMeeting;
+        if (isMeeting) yield break;
+
         PlayerControl[] aapc = Main.AllAlivePlayerControls;
 
         foreach (PlayerControl seer in aapc)
         {
             foreach (PlayerControl target in aapc)
             {
+                if (isMeeting) yield break;
                 NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
                 if (count++ % speed == 0) yield return null;
             }

@@ -1145,25 +1145,26 @@ class FixedUpdateInNormalGamePatch
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
-        if (Options.LowLoadMode.GetBool())
+
+        if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
         {
-            if (!BufferTime.TryGetValue(playerId, out var timerLowLoad))
-            {
-                BufferTime[playerId] = 30;
-                timerLowLoad = 30;
-            }
-
-            if (--timerLowLoad > 0)
-            {
-                lowLoad = true;
-            }
-            else
-            {
-                timerLowLoad = 30;
-            }
-
-            BufferTime[playerId] = timerLowLoad;
+            BufferTime[player.PlayerId] = 30;
+            timerLowLoad = 30;
         }
+
+        timerLowLoad--;
+
+        if (timerLowLoad > 0)
+        {
+            if (Options.LowLoadMode.GetBool())
+                lowLoad = true;
+        }
+        else
+        {
+            timerLowLoad = 30;
+        }
+
+        BufferTime[player.PlayerId] = timerLowLoad;
 
         if (!lowLoad)
         {
@@ -1267,7 +1268,7 @@ class FixedUpdateInNormalGamePatch
                         FallFromLadder.FixedUpdate(player);
 
                     if (CustomNetObject.AllObjects.Count > 0)
-                        CustomNetObject.FixedUpdate();
+                        CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
 
                     if (!lowLoad)
                     {
@@ -1325,7 +1326,7 @@ class FixedUpdateInNormalGamePatch
 
                 if (isInTask && !AntiBlackout.SkipTasks)
                 {
-                    CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime);
+                    CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime, timerLowLoad);
 
                     player.OnFixedAddonUpdate(lowLoad);
 
