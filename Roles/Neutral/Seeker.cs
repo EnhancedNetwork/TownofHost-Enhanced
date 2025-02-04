@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -49,6 +50,7 @@ internal class Seeker : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TagCooldownOpt.GetFloat();
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("SeekerKillButtonText"));
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Tag");
     private void SendRPC(byte seekerId, byte targetId = 0xff, bool setTarget = true)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
@@ -56,7 +58,7 @@ internal class Seeker : RoleBase
         writer.Write(setTarget);
 
 
-        if (!setTarget) // Sync seeker points
+        if (!setTarget) // Sync Seeker points
         {
             writer.Write(seekerId);
             writer.Write(TotalPoints);
@@ -119,7 +121,7 @@ internal class Seeker : RoleBase
 
             if (Target == 254)
             {
-                // No target for seeker to find, normally this wont happen, seeker already loses the game.
+                // No target for Seeker to find, normally this wont happen, Seeker already loses the game.
                 player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcExileV2();
                 player.SetRealKiller(player);

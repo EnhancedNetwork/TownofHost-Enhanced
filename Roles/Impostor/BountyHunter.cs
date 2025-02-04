@@ -153,7 +153,7 @@ internal class BountyHunter : RoleBase
         if (player.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
 
         if (target.Is(CustomRoles.Romantic)
-            && ((Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId))) return false;
+            && Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId) return false;
 
         if (target.Is(CustomRoles.Lawyer)
             && Lawyer.TargetList.Contains(player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
@@ -193,7 +193,7 @@ internal class BountyHunter : RoleBase
         Logger.Info($"{player.GetNameWithRole()}: reset target", "BountyHunter");
         player.RpcResetAbilityCooldown();
 
-        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => PotentialTarget(player, pc)));
+        var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => PotentialTarget(player, pc) && pc.GetCustomRole() is not CustomRoles.Solsticer));
 
         if (cTargets.Count >= 2 && Targets.TryGetValue(player.PlayerId, out var nowTarget))
             cTargets.RemoveAll(x => x.PlayerId == nowTarget);
