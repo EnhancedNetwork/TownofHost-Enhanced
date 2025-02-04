@@ -123,7 +123,7 @@ internal class Romantic : RoleBase
             hud.KillButton.OverrideText(GetString("RomanticProtectButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticProtect");
-    
+
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;

@@ -4,7 +4,6 @@ using InnerNet;
 using System;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
 
