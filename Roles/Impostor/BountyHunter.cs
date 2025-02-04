@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Impostor;
-using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
