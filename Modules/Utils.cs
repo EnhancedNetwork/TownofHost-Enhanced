@@ -2533,7 +2533,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate());//why cant i just use IsImpostorTeamV3 here
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.IsNonNarcImpV3());
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
