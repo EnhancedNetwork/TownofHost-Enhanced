@@ -77,7 +77,7 @@ internal class Addict : RoleBase
             Main.AllPlayerSpeed[player] = DefaultSpeed;
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!player.IsAlive() || !SuicideTimer.TryGetValue(player.PlayerId, out var timer)) return;
 

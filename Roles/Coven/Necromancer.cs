@@ -230,7 +230,7 @@ internal class Necromancer : CovenManager
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool()) ||
             (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool());
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (AbilityTimer < AbilityCooldown.GetFloat())
         {

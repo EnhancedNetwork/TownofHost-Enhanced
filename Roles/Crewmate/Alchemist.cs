@@ -214,7 +214,7 @@ internal class Alchemist : RoleBase
             }
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !IsInvis(player.PlayerId)) return;
 
