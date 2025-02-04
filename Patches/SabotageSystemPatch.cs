@@ -271,7 +271,7 @@ public class SabotageSystemPatch
             if (GameStates.IsInTask)
             {
                 foreach (var pc in Main.AllAlivePlayerControls)
-                    if (pc.Is(CustomRoles.Mare) || pc.Is(CustomRoles.Torch))
+                    if (pc.Is(CustomRoles.Mare))
                         Utils.NotifyRoles(SpecifyTarget: pc);
             }
 
@@ -294,7 +294,7 @@ public class SabotageSystemPatch
             if (GameStates.IsInTask)
             {
                 foreach (PlayerControl pc in Main.AllAlivePlayerControls)
-                    if (pc.Is(CustomRoles.Mare) || pc.Is(CustomRoles.Torch))
+                    if (pc.Is(CustomRoles.Mare))
                         Utils.NotifyRoles(SpecifyTarget: pc);
             }
 
