@@ -134,8 +134,8 @@ internal class AbyssBringer : RoleBase
                 {
                     var direction = (pos - blackHole.Position).normalized;
                     var newPosition = blackHole.Position + direction * BlackHoleMoveSpeed.GetFloat() * Time.fixedDeltaTime;
-                    blackHole.NetObject.TP(newPosition);
                     blackHole.Position = newPosition;
+                    blackHole.NetObject.Position = newPosition;
                 }
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())

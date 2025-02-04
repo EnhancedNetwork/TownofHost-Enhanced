@@ -313,6 +313,28 @@ namespace TOHE.Modules
                     }
                 }, 0.4f, "CNO_RespawnPlayerControl_FixModdedCNO");
                 PlayerControlTimer = 0f;
+
+                return;
+            }
+
+            // Host is the -2 owner of NT, dirty the NT and host will serialize it automatically.
+            var NT = playerControl.NetTransform;
+            
+            if (NT == null) return;
+            playerControl.Collider.enabled = false;
+            if (Position != NT.body.position)
+            {
+                Transform transform = NT.transform;
+                NT.body.position = Position;
+                transform.position = Position;
+                NT.body.velocity = Vector2.zero;
+                NT.lastSequenceId++;
+            }
+
+            if (NT.HasMoved())
+            {
+                NT.sendQueue.Enqueue(NT.body.position);
+                NT.SetDirtyBit(2U);
             }
         }
 
@@ -447,6 +469,7 @@ namespace TOHE.Modules
             }, 0.2f);
 
             Position = position;
+            playerControl.Collider.enabled = false;
             PlayerControlTimer = 0f;
             Sprite = sprite;
             ++MaxId;
