@@ -156,7 +156,7 @@ namespace TOHE.Modules
             writer.Recycle();
         }
 
-        protected virtual void OnFixedUpdate()
+        protected virtual void OnFixedUpdate(bool lowload, int timerLowLoad)
         {
             //
             // Need to respawn player every 20s because of 30s timeout
@@ -468,7 +468,7 @@ namespace TOHE.Modules
                 sender.SendMessage();
             }, 0.4f, "CNO_CreatePlayerControl_FixModdedCNO");
         }
-        public static void FixedUpdate() => AllObjects.ToArray().Do(x => x.OnFixedUpdate());
+        public static void FixedUpdate(bool lowload, int timerLowLoad) => AllObjects.ToArray().Do(x => x.OnFixedUpdate(lowload, timerLowLoad));
         public static void AfterMeetingTasks() => AllObjects.ToArray().Do(x => x.OnAfterMeetingTasks());
         public static CustomNetObject Get(int id) => AllObjects.FirstOrDefault(x => x.Id == id);
         public static void DespawnOnQuit(byte Playerid) => AllObjects.Where(x => x.OwnerId == Playerid).ToArray().Do(x => x.Despawn());
@@ -503,9 +503,9 @@ namespace TOHE.Modules
             CreateNetObject($"<size={Size}><line-height=72%><font=\"VCR SDF\"><br><#0000>███<#ff0000>█<#0000>███<br><#ff0000>█<#0000>█<#ff0000>███<#0000>█<#ff0000>█<br>█<#ff8000>██<#ffff00>█<#ff8000>██<#ffff00>█<br>██<#ff8000>█<#ffff00>█<#ff8000>█<#ffff00>██<br><#ff8000>█<#ffff80>██<#ffff00>█<#ffff80>██<#ff8000>█<br><#0000>█<#ff8000>█<#ffff80>███<#ff8000>█<#0000>█<br>██<#ff8000>███<#0000>██", position);
         }
 
-        protected override void OnFixedUpdate()
+        protected override void OnFixedUpdate(bool lowload, int timerLowLoad)
         {
-            base.OnFixedUpdate();
+            base.OnFixedUpdate(lowload, timerLowLoad);
 
             Timer += Time.deltaTime;
             if (Timer >= Duration / 5f && Frame == 0)

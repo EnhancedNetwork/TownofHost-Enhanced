@@ -1121,27 +1121,26 @@ class FixedUpdateInNormalGamePatch
 
         // The code is called once every 1 second (by one player)
         bool lowLoad = false;
-        if (Options.LowLoadMode.GetBool())
+
+        if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
         {
-            if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
-            {
-                BufferTime[player.PlayerId] = 30;
-                timerLowLoad = 30;
-            }
-
-            timerLowLoad--;
-
-            if (timerLowLoad > 0)
-            {
-                lowLoad = true;
-            }
-            else
-            {
-                timerLowLoad = 30;
-            }
-
-            BufferTime[player.PlayerId] = timerLowLoad;
+            BufferTime[player.PlayerId] = 30;
+            timerLowLoad = 30;
         }
+
+        timerLowLoad--;
+
+        if (timerLowLoad > 0)
+        {
+            if (Options.LowLoadMode.GetBool())
+                lowLoad = true;
+        }
+        else
+        {
+            timerLowLoad = 30;
+        }
+
+        BufferTime[player.PlayerId] = timerLowLoad;
 
         if (!lowLoad)
         {
@@ -1241,7 +1240,7 @@ class FixedUpdateInNormalGamePatch
                 if (localplayer)
                 {
                     if (CustomNetObject.AllObjects.Count > 0)
-                        CustomNetObject.FixedUpdate();
+                        CustomNetObject.FixedUpdate(lowLoad);
 
                     if (!lowLoad)
                         CovenManager.NecronomiconCheck();
@@ -1266,7 +1265,7 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
-                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp());
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp(), timerLowLoad);
 
                 player.OnFixedAddonUpdate(lowLoad);
 

@@ -102,7 +102,7 @@ internal class AbyssBringer : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("AbyssbringerButtonText"));
     // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Black Hole");
-    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var abyssbringer = _Player;
 
