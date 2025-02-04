@@ -360,12 +360,10 @@ class GameEndCheckerForNormal
                     }
                 }
                 
-                int PossibleAdtWinners = Main.AllPlayerControls.Count(x => x.GetCustomRole().IsNB() || x.Is(CustomRoles.Lovers));
-                //I don't know how many times CheckAdditionalWinner has to be executed so ↑↑↑↑this exists ┐(´∇｀)┌
-                for (int i = 0; i < PossibleAdtWinners + 1; i++)
+                for (int i = 0; i < Main.AllPlayerControls.Length + 1; i++)
                 {
                     CheckAdditionalWinners();
-                    if (i == PossibleAdtWinners) 
+                    if (i == Main.AllPlayerControls.Length) 
                     {
                         if (AdditionalWinnerTeams.Any()) Logger.Info($"Additional winners: {string.Join(", ", AdditionalWinnerTeams)}", "CheckAdditionalWinner");
                         else Logger.Info($"No additional winners", "CheckAdditionalWinner");
