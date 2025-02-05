@@ -55,6 +55,6 @@ internal class Visionary : RoleBase
             return "ac42f2";
         }
 
-        return Main.roleColors[CustomRoles.Knight];
+        return "7f8c8d";
     }
 }
