@@ -100,7 +100,7 @@ internal class Vulture : RoleBase
         else
             BodyReportCount[playerId] = body;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !player.IsAlive()) return;
 

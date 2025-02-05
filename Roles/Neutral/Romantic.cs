@@ -7,6 +7,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
+
 namespace TOHE.Roles.Neutral;
 
 internal class Romantic : RoleBase
@@ -122,7 +123,7 @@ internal class Romantic : RoleBase
             hud.KillButton.OverrideText(GetString("RomanticProtectButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticProtect");
-    
+
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
@@ -150,7 +151,8 @@ internal class Romantic : RoleBase
             if (BetTargetKnowRomantic.GetBool())
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
 
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
+            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
 
             Logger.Info($"Romantic：{killer.GetNameWithRole().RemoveHtmlTags()} bet player => {target.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
         }
@@ -252,23 +254,22 @@ internal class Romantic : RoleBase
         if (romantic == 0x73) return;
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
-        var killer = player.GetRealKiller();
         if (player.GetCustomRole().IsImpostorTeamV3())
         {
-            Logger.Info($"Impostor Romantic Partner Died => Changing {pc.GetNameWithRole()} to Refugee", "Romantic");
+            Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
             pc.GetRoleClass()?.OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
+            Utils.NotifyRoles(SpecifyTarget: pc);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
-        else if (player.IsNeutralKiller() || killer == null)
+        else if (player.IsNeutralKiller())
         {
-            Logger.Info($"Neutral Romantic Partner Died / No real killer for {player.GetRealName().RemoveHtmlTags()} => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
+            Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
+            Utils.NotifyRoles(SpecifyTarget: pc);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
@@ -276,14 +277,24 @@ internal class Romantic : RoleBase
         {
             _ = new LateTask(() =>
             {
-                Logger.Info($"Crew Romantic Partner Died => Changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful Romantic", "Romantic");
-                VengefulTargetId = killer.PlayerId;
+                Logger.Info($"Crew/nnk Romantic Partner Died changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful romantic", "Romantic");
+                var killer = player.GetRealKiller();
+                if (killer == null) //change role to RuthlessRomantic if there is no killer for partner in game
+                {
+                    pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
+                    pc.GetRoleClass().OnAdd(pc.PlayerId);
+                    Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
+                }
+                else
+                {
+                    VengefulTargetId = killer.PlayerId;
 
-                pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
-                pc.GetRoleClass().OnAdd(pc.PlayerId);
-                if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
-                Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
-                Utils.NotifyRoles(ForceLoop: true);
+                    pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
+                    pc.GetRoleClass().OnAdd(pc.PlayerId);
+                    if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
+                    Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
+                }
+                Utils.NotifyRoles(SpecifyTarget: pc);
                 pc.ResetKillCooldown();
                 pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");
@@ -354,7 +365,7 @@ internal class VengefulRomantic : RoleBase
         if (Target != byte.MaxValue)
             VengefulTarget.Add(PlayerId, Target);
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = hasKilledKiller ? 300f : Romantic.VengefulKCD.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.VengefulKCD.GetFloat();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.VengefulCanVent.GetBool();
 }
 
@@ -366,7 +377,14 @@ internal class RuthlessRomantic : RoleBase
     public override CustomRoles ThisRoleBase => new Romantic().ThisRoleBase;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
+    public override void Init()
+    {
 
+    }
+    public override void Add(byte playerId)
+    {
+
+    }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.RuthlessKCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.RuthlessCanVent.GetBool();

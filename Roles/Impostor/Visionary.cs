@@ -1,5 +1,3 @@
-using static TOHE.Options;
-
 namespace TOHE.Roles.Impostor;
 
 internal class Visionary : RoleBase
@@ -13,7 +11,7 @@ internal class Visionary : RoleBase
 
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
+        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Visionary);
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
@@ -30,7 +28,11 @@ internal class Visionary : RoleBase
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
                 or CustomRoles.Soulless)
-                return Main.roleColors[CustomRoles.Knight];
+                return "7f8c8d";
+            if (SubRole is CustomRoles.Admired)
+            {
+                return Main.roleColors[CustomRoles.Bait];
+            }
         }
 
         if (Main.PlayerStates[target.PlayerId].IsNecromancer)
@@ -38,12 +40,12 @@ internal class Visionary : RoleBase
             return Main.roleColors[CustomRoles.Coven];
         }
 
-        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))
+        if (customRole.IsImpostorTeamV2() || customRole.IsMadmate())
         {
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rascal) && !target.Is(CustomRoles.Rebel))
+        if (customRole.IsCrewmate())
         {
             return Main.roleColors[CustomRoles.Bait];
         }
@@ -53,6 +55,6 @@ internal class Visionary : RoleBase
             return Main.roleColors[CustomRoles.Coven];
         }
 
-        return Main.roleColors[CustomRoles.Knight];
+        return "7f8c8d";
     }
 }

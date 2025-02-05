@@ -55,7 +55,7 @@ internal class Lighter : RoleBase
     {
         Timer = 0;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && Timer != 0 && Timer + LighterSkillDuration.GetInt() < nowTime)
         {

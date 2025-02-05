@@ -78,9 +78,6 @@ class GameEndCheckerForNormal
             // Show all roles
             GameIsEnded = true;
 
-            // Update all Notify Roles
-            Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
-
             Logger.Info("Start end game", "CheckEndCriteria.Prefix");
 
             Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
@@ -127,7 +124,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Apocalypse:
-                        if (pc.IsNeutralApocalypse() && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -231,7 +228,7 @@ class GameEndCheckerForNormal
                 // Egoist (Crewmate)
                 if (WinnerTeam == CustomWinner.Crewmate)
                 {
-                    var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.Rebel) && x.Is(CustomRoles.Egoist)).ToArray();
+                    var egoistCrewArray = Main.AllAlivePlayerControls.Where(x => x != null && x.GetCustomRole().IsCrewmate() && x.Is(CustomRoles.Egoist)).ToArray();
 
                     if (egoistCrewArray.Length > 0)
                     {
@@ -299,6 +296,7 @@ class GameEndCheckerForNormal
                     }
                 }
 
+
                 if (Main.AllAlivePlayerControls.All(p => p.IsNeutralApocalypse()))
                 {
                     foreach (var pc in Main.AllPlayerControls.Where(x => x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer))
@@ -315,6 +313,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                     }
                 }
+
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));
@@ -340,7 +339,7 @@ class GameEndCheckerForNormal
                     foreach (var id in WinnerIds)
                     {
                         var pc = Utils.GetPlayerById(id);
-                        if (pc == null || !pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
+                        if (pc == null || !(pc.GetCustomRole().IsNeutral() && !pc.GetCustomRole().IsMadmate()) || Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
 
                         foreach (var tar in Main.AllPlayerControls)
                             if (!WinnerIds.Contains(tar.PlayerId) && tar.GetCustomRole() == pc.GetCustomRole())
@@ -357,12 +356,11 @@ class GameEndCheckerForNormal
                         Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
                     }
                 }
-
-                // Additional Winners
+                
                 for (int i = 0; i < Main.AllPlayerControls.Length + 1; i++)
                 {
                     CheckAdditionalWinners();
-                    if (i == Main.AllPlayerControls.Length)
+                    if (i == Main.AllPlayerControls.Length) 
                     {
                         if (AdditionalWinnerTeams.Any()) Logger.Info($"Additional winners: {string.Join(", ", AdditionalWinnerTeams)}", "CheckAdditionalWinner");
                         else Logger.Info($"No additional winners", "CheckAdditionalWinner");
@@ -371,9 +369,9 @@ class GameEndCheckerForNormal
 
                 void CheckAdditionalWinners()
                 {
-
-                    foreach (var pc in Main.AllPlayerControls)
-                    {
+                   foreach (var pc in Main.AllPlayerControls)
+                   {
+                        if (WinnerIds.Contains(pc.PlayerId)) continue;
                         switch (pc.GetCustomRole())
                         {
                             case CustomRoles.Opportunist when pc.IsAlive():
@@ -407,9 +405,12 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Specter);
                                 break;
-                            case CustomRoles.Provocateur when Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId):
-                                WinnerIds.Add(pc.PlayerId);
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
+                            case CustomRoles.Provocateur:
+                                if (Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId))
+                                {
+                                    WinnerIds.Add(pc.PlayerId);
+                                    AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
+                                }
                                 break;
                             case CustomRoles.Hater when Hater.isWon:
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
@@ -426,10 +427,13 @@ class GameEndCheckerForNormal
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Troller);
                                 WinnerIds.Add(pc.PlayerId);
                                 break;
-                            case CustomRoles.Romantic when Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
-                                && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))):
-                                WinnerIds.Add(pc.PlayerId);
-                                AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
+                            case CustomRoles.Romantic:
+                                if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
+                                    && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
+                                {
+                                    WinnerIds.Add(pc.PlayerId);
+                                    AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
+                                }
                                 break;
                             case CustomRoles.VengefulRomantic when VengefulRomantic.hasKilledKiller:
                                 WinnerIds.Add(pc.PlayerId);
@@ -449,44 +453,18 @@ class GameEndCheckerForNormal
                                 }
                                 break;
                             case CustomRoles.Follower when Follower.BetPlayer.TryGetValue(pc.PlayerId, out var followerTarget)
-                                && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):
+                               && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                                 break;
                         }
                     }
 
-                    foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rebel)).ToArray())
-                    {
-                        if (WinnerTeam == CustomWinner.Crewmate && WinnerIds.Contains(pc.PlayerId))
-                            WinnerIds.Remove(pc.PlayerId);
-                        if (WinnerTeam != CustomWinner.Crewmate)
-                        {
-                            switch (Rebel.CanWinAfterDeath.GetBool())
-                            {
-                                case true:
-                                    WinnerIds.Add(pc.PlayerId);
-                                    break;
-                                case false:
-                                    if (pc.IsAlive()) WinnerIds.Add(pc.PlayerId);
-                                    break;
-                            }
-                            AdditionalWinnerTeams.Add(AdditionalWinners.Rebel);
-                        }
-                    }
-
-                    if (AdditionalWinnerTeams.Contains(AdditionalWinners.Rebel))
-                    {
-                        Main.AllPlayerControls
-                            .Where(p => p.Is(CustomRoles.Rebel) && !WinnerIds.Contains(p.PlayerId))
-                            .Do(p => WinnerIds.Add(p.PlayerId));
-                    }
-
                     //Lovers follow winner
                     if (WinnerTeam is not CustomWinner.Lovers)
                     {
                         var loverArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lovers)).ToArray();
-
+    
                         foreach (var lover in loverArray)
                         {
                             if (WinnerIds.Any(x => Utils.GetPlayerById(x).Is(CustomRoles.Lovers)) && !WinnerIds.Contains(lover.PlayerId))
@@ -503,7 +481,7 @@ class GameEndCheckerForNormal
                             .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
                             .Do(p => WinnerIds.Add(p.PlayerId));
                     }
-
+                    
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
                 }
@@ -596,8 +574,14 @@ class GameEndCheckerForNormal
             yield return new WaitForSeconds(0.3f);
         }
 
-        // Update all Notify Roles
-        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
+        foreach (var winnerId in WinnerIds)
+        {
+            var winnerPC = winnerId.GetPlayer();
+            if (winnerPC == null) continue;
+
+            // Update winner name
+            Utils.DoNotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
+        }
 
         // Start End Game
         GameManager.Instance.RpcEndGame(reason, false);

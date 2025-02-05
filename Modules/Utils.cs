@@ -40,10 +40,14 @@ public static class Utils
         if (!AmongUsClient.Instance.AmHost) return;
         foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, player.OwnerId);
+            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, ExtendedPlayerControl.RpcSendOption, player.OwnerId);
             writer.Write(GetString("NotifyGameEnding"));
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+
+        var writer2 = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, -1);
+        writer2.Write(GetString("NotifyGameEnding"));
+        AmongUsClient.Instance.FinishRpcImmediately(writer2);
     }
 
     public static ClientData GetClientById(int id)
@@ -1826,7 +1830,24 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
+    public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
+    {
+        var count = 0;
+        bool isMeeting = GameStates.IsMeeting;
+        if (isMeeting) yield break;
 
+        PlayerControl[] aapc = Main.AllAlivePlayerControls;
+
+        foreach (PlayerControl seer in aapc)
+        {
+            foreach (PlayerControl target in aapc)
+            {
+                if (isMeeting) yield break;
+                NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
+                if (count++ % speed == 0) yield return null;
+            }
+        }
+    }
     // During intro scene to set team name and role info for non-modded clients and skip the rest.
     // Note: When Neutral is based on the Crewmate role then it is impossible to display the info for it
     // If not a Desync Role remove team display
@@ -1881,7 +1902,7 @@ public static class Utils
         var SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
         // Privately sent name.
-        player.RpcSetNamePrivate(SelfName, player);
+        player.RpcSetNamePrivate(SelfName, player, force: true);
     }
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
