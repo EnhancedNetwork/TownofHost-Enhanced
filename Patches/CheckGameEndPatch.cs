@@ -111,7 +111,7 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Impostor:
                         if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
-                            || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))//why don't we use "pc.GetCustomRole().IsImpostorTeamV3() here?"
+                            || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -258,7 +258,7 @@ class GameEndCheckerForNormal
                         }
                     }
                 }
-                
+
                 if (CustomRoles.God.RoleExist())
                 {
                     var godArray = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.God));
@@ -366,7 +366,6 @@ class GameEndCheckerForNormal
                         else Logger.Info($"No additional winners", "CheckAdditionalWinner");
                     }
                 }
-
 
                 void CheckAdditionalWinners()
                 {
@@ -481,7 +480,7 @@ class GameEndCheckerForNormal
                         Main.AllPlayerControls
                             .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
                             .Do(p => WinnerIds.Add(p.PlayerId));
-                    }     
+                    }
                     
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
