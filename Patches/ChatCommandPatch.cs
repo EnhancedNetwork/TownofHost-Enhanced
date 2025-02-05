@@ -1032,26 +1032,26 @@ internal class ChatCommands
                     canceled = true;
                     Utils.SendMessage(GetString("Message.CanNotUseByHost"), PlayerControl.LocalPlayer.PlayerId);
                     break;
-
-                case "/xf":
-                case "/修复":
-                case "/修":
-                    canceled = true;
-                    if (GameStates.IsLobby)
-                    {
-                        Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
-                        break;
-                    }
-                    foreach (var pc in Main.AllPlayerControls)
-                    {
-                        if (!pc.IsAlive()) continue;
-                        pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
-                    }
-                    ChatUpdatePatch.DoBlockChat = false;
-                    //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
-                    Utils.SendMessage(GetString("Message.TryFixName"), PlayerControl.LocalPlayer.PlayerId);
-                    break;
-
+                /*
+                                case "/xf":
+                                case "/修复":
+                                case "/修":
+                                    canceled = true;
+                                    if (GameStates.IsLobby)
+                                    {
+                                        Utils.SendMessage(GetString("Message.CanNotUseInLobby"), PlayerControl.LocalPlayer.PlayerId);
+                                        break;
+                                    }
+                                    foreach (var pc in Main.AllPlayerControls)
+                                    {
+                                        if (!pc.IsAlive()) continue;
+                                        pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                                    }
+                                    ChatUpdatePatch.DoBlockChat = false;
+                                    //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                                    Utils.SendMessage(GetString("Message.TryFixName"), PlayerControl.LocalPlayer.PlayerId);
+                                    break;
+                */
                 case "/id":
                 case "/айди":
                 case "/编号":
@@ -3021,24 +3021,26 @@ internal class ChatCommands
                 }
                 break;
 
-            case "/xf":
-            case "/修复":
-            case "/修":
-                if (GameStates.IsLobby)
-                {
-                    Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
-                    break;
-                }
-                foreach (var pc in Main.AllPlayerControls)
-                {
-                    if (!pc.IsAlive()) continue;
+            /*
+                        case "/xf":
+                        case "/修复":
+                        case "/修":
+                            if (GameStates.IsLobby)
+                            {
+                                Utils.SendMessage(GetString("Message.CanNotUseInLobby"), player.PlayerId);
+                                break;
+                            }
+                            foreach (var pc in Main.AllPlayerControls)
+                            {
+                                if (!pc.IsAlive()) continue;
 
-                    pc.RpcSetNamePrivate(pc.GetRealName(isMeeting: true), player, true);
-                }
-                ChatUpdatePatch.DoBlockChat = false;
-                //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
-                Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);
-                break;
+                                pc.RpcSetNamePrivate(pc.GetRealName(isMeeting: true), player, true);
+                            }
+                            ChatUpdatePatch.DoBlockChat = false;
+                            //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
+                            Utils.SendMessage(GetString("Message.TryFixName"), player.PlayerId);
+                            break;
+            */
 
             case "/tpout":
             case "/传送出":
