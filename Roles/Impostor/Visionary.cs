@@ -30,8 +30,9 @@ internal class Visionary : RoleBase
                 or CustomRoles.Soulless)
                 return "7f8c8d";
             if (SubRole is CustomRoles.Admired)
-                return seer.Is(CustomRoles.Admired) || seer.Is(CustomRoles.Narc) ?
-                "00ffff" : "7f8c8d";
+            {
+                return Main.roleColors[CustomRoles.Bait];
+            }
         }
 
         if (Main.PlayerStates[target.PlayerId].IsNecromancer)
