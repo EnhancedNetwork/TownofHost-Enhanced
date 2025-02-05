@@ -754,7 +754,7 @@ public static class Options
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
-        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60035, "SpawnOneRandomKillingFraction", false, TabGroup.NeutralRoles, false)
+        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60035, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
 
