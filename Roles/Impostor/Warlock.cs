@@ -142,7 +142,7 @@ internal class Warlock : RoleBase
         }
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
         {

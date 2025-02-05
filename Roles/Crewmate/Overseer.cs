@@ -184,7 +184,7 @@ internal class Overseer : RoleBase
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!OverseerTimer.TryGetValue(player.PlayerId, out var data)) return;
 

@@ -93,7 +93,7 @@ internal class Vampire : RoleBase
         return false;
     }
 
-    public override void OnFixedUpdate(PlayerControl vampire, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl vampire, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var vampireId = vampire.PlayerId;
         List<byte> targetList = new(BittenPlayers.Where(b => b.Value.VampireId == vampireId).Select(b => b.Key));

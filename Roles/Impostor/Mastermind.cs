@@ -78,7 +78,7 @@ internal class Mastermind : RoleBase
         });
     }
 
-    public override void OnFixedUpdate(PlayerControl mastermind, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl mastermind, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (ManipulatedPlayers.Count == 0 && ManipulateDelays.Count == 0) return;
