@@ -86,6 +86,7 @@ internal class Harvester : CovenManager
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
+        if (!CustomRoles.Harvester.RoleExist()) return;
         if (killer == null || deadPlayer == null || deadPlayer.IsDisconnected()) return;
         var harvester = GetPlayerById(SwapPlayers.Keys.First());
         if (harvester == null) return;
@@ -124,6 +125,7 @@ internal class Harvester : CovenManager
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
+        if (!CustomRoles.Harvester.RoleExist()) return;
         if (SwapPlayers[_Player.PlayerId].Count() != 2) return;
         SwapAddons(GetPlayerById(SwapPlayers[_Player.PlayerId][0]), GetPlayerById(SwapPlayers[_Player.PlayerId][1]));
     }
