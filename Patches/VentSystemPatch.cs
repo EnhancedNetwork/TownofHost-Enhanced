@@ -47,8 +47,7 @@ static class VentSystemDeterioratePatch
             var needUpdate = false;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                bool haveBlockedVent = pc.BlockVentInteraction();
-                if (haveBlockedVent)
+                if (pc.BlockVentInteraction())
                 {
                     var closestVents = pc.GetVentsFromClosest()[0].Id;
                     if (ForceUpadate || closestVents != LastClosestVent.GetValueOrDefault(pc.PlayerId, 99))
