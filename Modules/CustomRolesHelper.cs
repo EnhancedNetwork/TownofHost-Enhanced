@@ -382,7 +382,8 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
-            or CustomRoles.Enchanted;
+            or CustomRoles.Enchanted
+            or CustomRoles.Rebel;
     }
 
     public static bool IsBetrayalAddonV2(this CustomRoles role)
@@ -414,7 +415,7 @@ public static class CustomRolesHelper
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
         if (!onlyMainRole)
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Rebel) && x is not CustomRoles.Madmate)) return false;
 
         return player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate;
     }
@@ -425,7 +426,8 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Admired)) return true;
-            if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
+            if (player.SubRoles.Contains(CustomRoles.Rebel)) return false;
+            if (player.SubRoles.Any(x => x.IsConverted())) return false;
         }
 
         return player.MainRole.IsCrewmate();
@@ -437,7 +439,8 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
-            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return true;
+            if (player.SubRoles.Contains(CustomRoles.Rebel)) return true;
+            if (player.SubRoles.Any(x => x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted)) return true;
         }
 
         // Imp roles like crewposter and parasite is counted as netural, but should be treated as impostor team in general
@@ -450,7 +453,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
-            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Rebel)) return false;
             if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
         }
 
@@ -561,9 +564,9 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Guesser) || pc.Is(CustomRoles.NiceGuesser)) return true;
                 if (Options.GuesserMode.GetBool())
                 {
-                    if (pc.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
+                    if (pc.IsNonNeutralKiller() && Options.PassiveNeutralsCanGuess.GetBool())
                         return true;
-                    if (pc.GetCustomRole().IsCrewmate() && Options.CrewmatesCanGuess.GetBool())
+                    if (pc.IsNonRebelCrewmate() && Options.CrewmatesCanGuess.GetBool())
                         return true;
                     else return false;
                 }
@@ -621,11 +624,11 @@ public static class CustomRolesHelper
                 {
                     if (DoubleShot.ImpCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.EvilGuesser) && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !Options.ImpostorsCanGuess.GetBool())
                         return false;
-                    if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && (pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool()))
+                    if (DoubleShot.CrewCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.NiceGuesser) && pc.Is(Custom_Team.Crewmate) && !Options.CrewmatesCanGuess.GetBool())
                         return false;
-                    if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && ((pc.GetCustomRole().IsNonNK() && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
+                    if (DoubleShot.NeutralCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer) && ((pc.IsNonNeutralKiller() && !Options.PassiveNeutralsCanGuess.GetBool()) || (pc.GetCustomRole().IsNK() && !Options.NeutralKillersCanGuess.GetBool()) || (pc.GetCustomRole().IsNA() && !Options.NeutralApocalypseCanGuess.GetBool())))
                         return false;
-                    if (DoubleShot.CovenCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && (pc.Is(Custom_Team.Coven) && !Options.CovenCanGuess.GetBool()))
+                    if (DoubleShot.CovenCanBeDoubleShot.GetBool() && !pc.Is(CustomRoles.Guesser) && pc.Is(Custom_Team.Coven) && !Options.CovenCanGuess.GetBool())
                         return false;
                 }
                 if ((pc.Is(Custom_Team.Impostor) && !DoubleShot.ImpCanBeDoubleShot.GetBool()) || (pc.Is(Custom_Team.Crewmate) && !DoubleShot.CrewCanBeDoubleShot.GetBool()) || (pc.Is(Custom_Team.Neutral) && !DoubleShot.NeutralCanBeDoubleShot.GetBool()) || (pc.Is(Custom_Team.Coven) && !DoubleShot.CovenCanBeDoubleShot.GetBool()))
@@ -1235,9 +1238,18 @@ public static class CustomRolesHelper
     /// </summary>
     public static bool IsCovenTeam(this CustomRoles role) => role.IsCoven() || role == CustomRoles.Enchanted;
     public static bool IsImpostorTeamV3(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
+    public static bool IsNeutralTeamV3(this CustomRoles role) => role.IsNeutral() && !role.IsMadmate();
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
+    /// <summary>
+    /// Rebel part
+    /// </summary>
+    public static bool IsNonRebelCrewmate(this PlayerControl pc) => pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel);
+    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutralTeamV3();
+    /// <summary>
+    /// End Rebel part
+    /// </summary>
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
