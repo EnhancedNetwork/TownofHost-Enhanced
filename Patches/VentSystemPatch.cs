@@ -33,17 +33,14 @@ static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
     public static Dictionary<byte, bool> PlayerHadBlockedVentLastTime = [];
-    public static long LastUpadate;
     public static bool ForceUpadate;
 
     public static void Postfix()
     {
         if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed || GameStates.IsMeeting) return;
 
-        var nowTime = Utils.TimeStamp;
-        if (ForceUpadate || (nowTime != LastUpadate))
+        if (ForceUpadate || FixedUpdateInNormalGamePatch.BufferTime.GetValueOrDefault((byte)0, 0) % 6 == 0)
         {
-            LastUpadate = nowTime;
             var needUpdate = false;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
