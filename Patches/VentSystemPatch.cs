@@ -36,7 +36,7 @@ static class VentSystemDeterioratePatch
     public static long LastUpadate;
     public static bool ForceUpadate;
 
-    public static void Postfix(VentilationSystem __instance)
+    public static void Postfix()
     {
         if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed || GameStates.IsMeeting) return;
 
