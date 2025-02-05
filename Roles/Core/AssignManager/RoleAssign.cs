@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using static Sentry.MeasurementUnit;
 
 namespace TOHE.Roles.Core.AssignManager;
 
