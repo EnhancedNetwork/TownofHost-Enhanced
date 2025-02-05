@@ -49,7 +49,7 @@ internal class Eraser : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         EraseLimitOpt = IntegerOptionItem.Create(Id + 11, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Times);
-        CanEraseNeutral = BooleanOptionItem.Create(Id + 12, "EraserCanEraseNeutral", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser]);
+        CanEraseNeutral = BooleanOptionItem.Create(Id + 12, "EraserCanEraseNeutral", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser]);
         ChangeNeutralRole = StringOptionItem.Create(Id + 13, "NeutralChangeRolesForOiiai", EnumHelper.GetAllNames<ChangeRolesSelectList>(), 0, TabGroup.ImpostorRoles, false).SetParent(CanEraseNeutral);
         CanEraseCoven = BooleanOptionItem.Create(Id + 14, "EraserCanEraseCoven", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser]);
         CanGuessErasedPlayer = BooleanOptionItem.Create(Id + 15, "EraserCanGuessErasedPlayer", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser]);
@@ -85,7 +85,7 @@ internal class Eraser : RoleBase
         var targetRole = target.GetCustomRole();
         if ((targetRole.IsNeutral() && !CanEraseNeutral.GetBool()) || (targetRole.IsCoven() && !CanEraseCoven.GetBool()) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
-            Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
+            Logger.Info($"Cannot erase role because is Neutral or ect", "Eraser");
             killer.Notify(GetString("EraserEraseRoleNotice"));
             return true;
         }
@@ -126,7 +126,6 @@ internal class Eraser : RoleBase
         foreach (var pc in PlayerToErase.ToArray())
         {
             var player = GetPlayerById(pc);
-            var role = player.GetCustomRole();
             var readyRole = GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole());
             if (player == null) continue;
             if (!ErasedRoleStorage.ContainsKey(player.PlayerId))
@@ -145,7 +144,7 @@ internal class Eraser : RoleBase
                 Logger.Info($"Canceled {player.GetNameWithRole()} because player have ghost role", "Eraser");
                 return;
             }
-            if (role.IsMadmate())
+            if (player.GetCustomRole().IsMadmate())
             {
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
@@ -154,7 +153,7 @@ internal class Eraser : RoleBase
                 player.RpcSetCustomRole(CustomRoles.Madmate);
                 player.AddInSwitchAddons(player, CustomRoles.Madmate);
             }
-            else if (role.IsCoven() && !CovenManager.HasNecronomicon(player) && CanEraseCoven.GetBool())
+            else if (player.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(player) && CanEraseCoven.GetBool())
             {
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
@@ -163,9 +162,9 @@ internal class Eraser : RoleBase
                 player.RpcSetCustomRole(CustomRoles.Enchanted);
                 player.AddInSwitchAddons(player, CustomRoles.Enchanted);
             }
-            else if (role.IsNeutral() && !role.IsTNA() && CanEraseNeutral.GetBool())
+            else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsTNA() && CanEraseNeutral.GetBool())
             {
-                if (role is CustomRoles.Sidekick)
+                if (player.Is(CustomRoles.Sidekick))
                 {
                     player.GetRoleClass().OnRemove(player.PlayerId);
                     player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
