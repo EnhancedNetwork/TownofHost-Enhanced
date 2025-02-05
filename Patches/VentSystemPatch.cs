@@ -40,7 +40,7 @@ static class VentSystemDeterioratePatch
     {
         if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed || GameStates.IsMeeting) return;
 
-        var nowTime = Utils.GetTimeStamp();
+        var nowTime = Utils.TimeStamp;
         if (ForceUpadate || (nowTime != LastUpadate))
         {
             LastUpadate = nowTime;
