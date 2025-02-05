@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using static Sentry.MeasurementUnit;
 
 namespace TOHE.Roles.Core.AssignManager;
 
@@ -19,7 +20,9 @@ public class RoleAssign
         NonKillingNeutral,
         NeutralApocalypse,
         Coven,
-        Crewmate
+        Crewmate,
+
+        None
     }
 
     public class RoleAssignInfo(CustomRoles role, int spawnChance, int maxCount, int assignedCount = 0)
@@ -291,26 +294,37 @@ public class RoleAssign
         RoleAssignInfo[] Covs = [];
         RoleAssignInfo[] Crews = [];
 
+        List<RoleAssignType> KillingFraction = [];
+
         bool spawnNK = false;
         bool spawnNA = false;
         bool spawnCoven = false;
 
-        //  0 - Neutral Killers
-        //  1 - Neutral Apocalypse
-        //  2 - Coven
-        // -1 - All killing fraction
-        int random = Options.SpawnOneRandomKillingFraction.GetBool() 
-            ? IRandom.Instance.Next(0, 3) : -1;
-
-        switch (random)
+        if (Roles[RoleAssignType.NeutralKilling].Any())
         {
-            case 0:
+            KillingFraction.Add(RoleAssignType.NeutralKilling);
+        }
+        if (Roles[RoleAssignType.NeutralApocalypse].Any())
+        {
+            KillingFraction.Add(RoleAssignType.NeutralApocalypse);
+        }
+        if (Roles[RoleAssignType.Coven].Any())
+        {
+            KillingFraction.Add(RoleAssignType.Coven);
+        }
+
+        var randomType = Options.SpawnOneRandomKillingFraction.GetBool()
+            ? KillingFraction.RandomElement() : RoleAssignType.None;
+
+        switch (randomType)
+        {
+            case RoleAssignType.NeutralKilling:
                 spawnNK = true;
                 break;
-            case 1:
+            case RoleAssignType.NeutralApocalypse:
                 spawnNA = true;
                 break;
-            case 2:
+            case RoleAssignType.Coven:
                 spawnCoven = true;
                 break;
             default:
