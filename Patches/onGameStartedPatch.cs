@@ -75,7 +75,7 @@ internal class ChangeRoleSettings
             Main.DeadPassedMeetingPlayers.Clear();
             Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
-            Main.CurrentServerIsVanilla = GameStates.IsVanillaServer;
+            Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
 
             Main.LastNotifyNames.Clear();
 
