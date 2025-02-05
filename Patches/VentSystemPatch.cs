@@ -32,6 +32,7 @@ static class PerformVentOpPatch
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
+    public static Dictionary<byte, bool> PlayerHadBlockedVentLastTime = [];
     public static long LastUpadate;
     public static bool ForceUpadate;
 
@@ -46,10 +47,20 @@ static class VentSystemDeterioratePatch
             var needUpdate = false;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                var closestVents = pc.GetVentsFromClosest()[0].Id;
-                if (ForceUpadate || closestVents != LastClosestVent[pc.PlayerId])
+                bool haveBlockedVent = pc.BlockVentInteraction();
+                if (haveBlockedVent)
                 {
-                    LastClosestVent[pc.PlayerId] = closestVents;
+                    var closestVents = pc.GetVentsFromClosest()[0].Id;
+                    if (ForceUpadate || closestVents != LastClosestVent.GetValueOrDefault(pc.PlayerId, 999))
+                    {
+                        PlayerHadBlockedVentLastTime[pc.PlayerId] = true;
+                        LastClosestVent[pc.PlayerId] = closestVents;
+                        needUpdate = true;
+                    }
+                }
+                else if (!haveBlockedVent && PlayerHadBlockedVentLastTime[pc.PlayerId])
+                {
+                    PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
                     needUpdate = true;
                 }
             }

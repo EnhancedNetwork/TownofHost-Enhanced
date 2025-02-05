@@ -91,7 +91,9 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
+
             VentSystemDeterioratePatch.LastClosestVent.Clear();
+            VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime.Clear();
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport.Clear();
@@ -186,6 +188,8 @@ internal class ChangeRoleSettings
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
 
                 VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
+                VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
+
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
                 CustomRoleManager.DoNotUnlockVentsList[pc.PlayerId] = [];
 
