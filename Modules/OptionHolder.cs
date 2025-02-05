@@ -516,6 +516,9 @@ public static class Options
 
     // ------------ General Role Settings ------------
 
+    // Crew
+    public static OptionItem CrewInvestCanBeGuessed;
+
     // Imp
     public static OptionItem ImpsCanSeeEachOthersRoles;
     public static OptionItem ImpsCanSeeEachOthersAddOns;
@@ -896,10 +899,19 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateBasic).ForEach(r => r.SetupCustomOption());
 
+
         /*
-         * MINI 
+         * INVESTIGATIVE ROLES
          */
-        CustomRoles.Mini.GetStaticRoleClass().SetupCustomOption();
+        TextOptionItem.Create(10000102, "RoleType.CrewInvestigative", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        CrewInvestCanBeGuessed = BooleanOptionItem.Create(60035, "CrewInvestCanBeGuessed", true, TabGroup.CrewmateRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateInvestigative).ForEach(r => r.SetupCustomOption());
 
         /*
          * SUPPORT ROLES
@@ -909,6 +921,20 @@ public static class Options
             .SetColor(new Color32(140, 255, 255, byte.MaxValue));
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateSupport).ForEach(r => r.SetupCustomOption());
+
+        /*
+         * MINI 
+         */
+        CustomRoles.Mini.GetStaticRoleClass().SetupCustomOption();
+
+        /*
+         * INVESTIGATIVE ROLES
+         */
+        TextOptionItem.Create(10000103, "RoleType.CrewProtective", TabGroup.CrewmateRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateProtective).ForEach(r => r.SetupCustomOption());
 
         /*
          * KILLING ROLES

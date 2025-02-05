@@ -16,7 +16,7 @@ internal class Alchemist : RoleBase
     public override CustomRoles Role => CustomRoles.Alchemist;
     private const int Id = 6400;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 

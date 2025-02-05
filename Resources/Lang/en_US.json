@@ -2394,6 +2394,7 @@
   "GuessCrewRole": "Unfortunately, the Host's settings do not allow Crewmates to guess Crewmate roles.",
   "GuessApocRole": "Fortunately, the Host's settings does not allow Apocalypse to guess Apocalypse roles.",
   "GuessCovenRole": "Fortunately, the Host's settings does not allow Coven to guess Coven roles.",
+  "GuessCrewInvestRole": "Unfortunately, the Host's settings do not allow you to guess Crewmate Investigative roles. Try silencing them some other way...",
   "GuessKill": "<b>{0}</b> was guessed",
   "GuessNull": "Please select an ID of a living player to guess their role",
   "GuessHelp": "Instructions: /bt [Player ID] [Role Name] \nExample: /bt 3 Bait \nYou can see the player ID's before everyone's names \n or use the /id command to list the player ID's",
@@ -3806,6 +3807,7 @@
   "RoleType.CrewPower": "<color=#ffff00>★</color> Crewmate <color=#ffff00>Power</color> Roles",
   "RoleType.CrewKilling": "<color=#ff1919>★</color> Crewmate <color=#ff1919>Killing</color> Roles",
   "RoleType.CrewBasic": "<color=#FF6600>★</color> Crewmate <color=#FF6600>Basic</color> Roles",
+  "RoleType.CrewProtective": "<color=#FF6600>★</color> Crewmate <color=#68f2ad>Protective</color> Roles",
   "RoleType.CrewGhost": "<color=#afc3c9>★</color> Crewmate <color=#afc3c9>Ghost</color> Roles /ghostinfo",
   "RoleType.NeutralEvil": "<color=#912900>★</color> Neutral <color=#912900>Evil</color> Roles",
   "RoleType.NeutralBenign": "<color=#046300>★</color> Neutral <color=#046300>Benign</color> Roles",
@@ -4164,5 +4166,6 @@
   "ChiefOfPoliceKillButtonText": "Recruitment",
   "PolicPreventRecruitNonKiller": "Prevent recruit players without Kill button",
   "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non-Killer or non-<color=#8cffff>Crewmate</color>",
-  "PolicPassConverted": "Can pass Converted Add-on to <color=#ffb347>Sheriff</color>"
+  "PolicPassConverted": "Can pass Converted Add-on to <color=#ffb347>Sheriff</color>",
+  "CrewInvestCanBeGuessed": "<color=#8cffff>Crewmate</color> <color=#008080>Investigative</color> roles can be guessed"
 }
