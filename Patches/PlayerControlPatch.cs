@@ -1071,7 +1071,7 @@ class FixedUpdateInNormalGamePatch
 {
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
-    private static readonly Dictionary<byte, int> BufferTime = [];
+    public static readonly Dictionary<byte, int> BufferTime = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
