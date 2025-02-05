@@ -294,27 +294,27 @@ public class RoleAssign
         RoleAssignInfo[] Covs = [];
         RoleAssignInfo[] Crews = [];
 
-        List<RoleAssignType> KillingFraction = [];
+        List<RoleAssignType> KillingFractions = [];
 
         bool spawnNK = false;
         bool spawnNA = false;
         bool spawnCoven = false;
 
-        if (Roles[RoleAssignType.NeutralKilling].Any())
+        if (Roles[RoleAssignType.NeutralKilling].Count > 0)
         {
-            KillingFraction.Add(RoleAssignType.NeutralKilling);
+            KillingFractions.Add(RoleAssignType.NeutralKilling);
         }
-        if (Roles[RoleAssignType.NeutralApocalypse].Any())
+        if (Roles[RoleAssignType.NeutralApocalypse].Count > 0)
         {
-            KillingFraction.Add(RoleAssignType.NeutralApocalypse);
+            KillingFractions.Add(RoleAssignType.NeutralApocalypse);
         }
-        if (Roles[RoleAssignType.Coven].Any())
+        if (Roles[RoleAssignType.Coven].Count > 0)
         {
-            KillingFraction.Add(RoleAssignType.Coven);
+            KillingFractions.Add(RoleAssignType.Coven);
         }
 
         var randomType = Options.SpawnOneRandomKillingFraction.GetBool()
-            ? KillingFraction.RandomElement() : RoleAssignType.None;
+            ? KillingFractions.RandomElement() : RoleAssignType.None;
 
         switch (randomType)
         {
