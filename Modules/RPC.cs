@@ -1050,12 +1050,12 @@ internal class StartRpcPatch
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
 public class StartRpcImmediatelyPatch
 {
-    public static void Postfix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId, ref MessageWriter __result)
+    public static bool Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId, ref MessageWriter __result)
     {
-        if (callId < (byte)CustomRPC.VersionCheck || !AmongUsClient.Instance.AmHost || !GameStates.IsVanillaServer || option is SendOption.None)
+        if (callId < (byte)CustomRPC.VersionCheck || !AmongUsClient.Instance.AmHost || !GameStates.IsVanillaServer || GameStates.IsLocalGame || option is SendOption.None)
         {
             RPC.SendRpcLogger(targetNetId, callId, targetClientId);
-            return;
+            return true;
         }
 
         MessageWriter messageWriter = MessageWriter.Get(SendOption.None);
@@ -1074,9 +1074,8 @@ public class StartRpcImmediatelyPatch
         messageWriter.WritePacked(targetNetId);
         messageWriter.Write(callId);
 
-        __result.Recycle();
         __result = messageWriter;
         RPC.SendRpcLogger(targetNetId, callId, targetClientId);
-        return;
+        return false;
     }
 }
