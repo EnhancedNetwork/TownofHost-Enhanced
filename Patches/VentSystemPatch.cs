@@ -51,16 +51,17 @@ static class VentSystemDeterioratePatch
                 if (haveBlockedVent)
                 {
                     var closestVents = pc.GetVentsFromClosest()[0].Id;
-                    if (ForceUpadate || closestVents != LastClosestVent.GetValueOrDefault(pc.PlayerId, 999))
+                    if (ForceUpadate || closestVents != LastClosestVent.GetValueOrDefault(pc.PlayerId, 99))
                     {
                         PlayerHadBlockedVentLastTime[pc.PlayerId] = true;
                         LastClosestVent[pc.PlayerId] = closestVents;
                         needUpdate = true;
                     }
                 }
-                else if (!haveBlockedVent && PlayerHadBlockedVentLastTime[pc.PlayerId])
+                else if (PlayerHadBlockedVentLastTime[pc.PlayerId])
                 {
                     PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
+                    LastClosestVent[pc.PlayerId] = 99;
                     needUpdate = true;
                 }
             }

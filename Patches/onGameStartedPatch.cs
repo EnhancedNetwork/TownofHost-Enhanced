@@ -187,7 +187,7 @@ internal class ChangeRoleSettings
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
 
-                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 99;
                 VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
 
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
