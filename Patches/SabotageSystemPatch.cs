@@ -259,21 +259,46 @@ public class SabotageSystemPatch
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
     public static class ElectricTaskInitializePatch
     {
+        private static long LastUpdate;
         public static void Postfix()
         {
+            long now = Utils.TimeStamp;
+            if (LastUpdate >= now) return;
+            LastUpdate = now;
+
             Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
+
+            if (GameStates.IsInTask)
+            {
+                foreach (var pc in Main.AllAlivePlayerControls)
+                    if (pc.Is(CustomRoles.Mare))
+                        Utils.NotifyRoles(SpecifyTarget: pc);
+            }
+
+            Logger.Info("Lights sabotage called", "ElectricTask");
         }
     }
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
     public static class ElectricTaskCompletePatch
     {
+        private static long LastUpdate;
+
         public static void Postfix()
         {
+            long now = Utils.TimeStamp;
+            if (LastUpdate >= now) return;
+            LastUpdate = now;
+
             Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
+
+            if (GameStates.IsInTask)
+            {
+                foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+                    if (pc.Is(CustomRoles.Mare))
+                        Utils.NotifyRoles(SpecifyTarget: pc);
+            }
+
+            Logger.Info("Lights sabotage fixed", "ElectricTask");
         }
     }
     // https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs

@@ -202,7 +202,7 @@ internal class HexMaster : CovenManager
         LastHexedPlayer = byte.MaxValue;
         HasHexed = false;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && CurrentHexedPlayer == 254)
         {
