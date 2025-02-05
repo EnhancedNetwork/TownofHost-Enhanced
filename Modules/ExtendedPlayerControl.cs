@@ -1580,4 +1580,5 @@ static class ExtendedPlayerControl
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
     public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
+    public static SendOption RpcSendOption => Main.CurrentServerIsVanilla ? SendOption.None : SendOption.Reliable;
 }
