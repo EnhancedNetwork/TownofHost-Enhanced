@@ -82,7 +82,7 @@ internal class BloodKnight : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => true;
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && TimeStamp < nowTime && TimeStamp != 0)
         {

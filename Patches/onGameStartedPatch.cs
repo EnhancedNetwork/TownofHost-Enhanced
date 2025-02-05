@@ -75,7 +75,7 @@ internal class ChangeRoleSettings
             Main.DeadPassedMeetingPlayers.Clear();
             Main.OvverideOutfit.Clear();
             Main.GameIsLoaded = false;
-            Main.CurrentServerIsVanilla = GameStates.IsVanillaServer;
+            Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
 
             Main.LastNotifyNames.Clear();
 
@@ -91,7 +91,9 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
+
             VentSystemDeterioratePatch.LastClosestVent.Clear();
+            VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime.Clear();
 
             ChatManager.ResetHistory();
             ReportDeadBodyPatch.CanReport.Clear();
@@ -185,7 +187,9 @@ internal class ChangeRoleSettings
                 ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                 ReportDeadBodyPatch.WaitReport[pc.PlayerId] = [];
 
-                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 0;
+                VentSystemDeterioratePatch.LastClosestVent[pc.PlayerId] = 99;
+                VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
+
                 CustomRoleManager.BlockedVentsList[pc.PlayerId] = [];
                 CustomRoleManager.DoNotUnlockVentsList[pc.PlayerId] = [];
 
@@ -395,10 +399,26 @@ internal class StartGameHostPatch
             // Assign roles and create role map for normal roles
             RpcSetRoleReplacer.AssignNormalRoles();
             RpcSetRoleReplacer.SendRpcForNormal();
+        }
+        catch (Exception ex)
+        {
+            CriticalErrorManager.SetCreiticalError("Select Role Prefix - Building Role Sender", true, ex.ToString());
+            Utils.ThrowException(ex);
+            yield break;
+        }
 
-            // Send all Rpc
+        if (!Main.CurrentServerIsVanilla)
+        {
+            // Send all Rpc for modded region
             RpcSetRoleReplacer.Release();
+        }
+        else
+        {
+            yield return RpcSetRoleReplacer.ReleaseVanilla();
+        }
 
+        try
+        {
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
                 if (Main.PlayerStates[pc.PlayerId].MainRole != CustomRoles.NotAssigned) continue;
@@ -511,7 +531,7 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Select Role Prefix", true, ex.ToString());
+            CriticalErrorManager.SetCreiticalError("Select Role Prefix - Building Role classes", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }
@@ -814,6 +834,17 @@ public static class RpcSetRoleReplacer
         BlockSetRole = false;
         Senders.Do(kvp => kvp.Value.SendMessage());
     }
+
+    public static System.Collections.IEnumerator ReleaseVanilla()
+    {
+        BlockSetRole = false;
+        foreach (var kvp in Senders)
+        {
+            kvp.Value.SendMessage();
+            yield return new WaitForSeconds(0.3f);
+        }
+    }
+
     public static void EndReplace()
     {
         Senders = null;
