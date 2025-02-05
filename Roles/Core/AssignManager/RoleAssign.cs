@@ -291,6 +291,35 @@ public class RoleAssign
         RoleAssignInfo[] Covs = [];
         RoleAssignInfo[] Crews = [];
 
+        bool spawnNK = false;
+        bool spawnNA = false;
+        bool spawnCoven = false;
+
+        //  0 - Neutral Killers
+        //  1 - Neutral Apocalypse
+        //  2 - Coven
+        // -1 - All killing fraction
+        int random = Options.SpawnOneRandomKillingFraction.GetBool() 
+            ? IRandom.Instance.Next(0, 3) : -1;
+
+        switch (random)
+        {
+            case 0:
+                spawnNK = true;
+                break;
+            case 1:
+                spawnNA = true;
+                break;
+            case 2:
+                spawnCoven = true;
+                break;
+            default:
+                spawnNK = true;
+                spawnNA = true;
+                spawnCoven = true;
+                break;
+        }
+
         // Impostor Roles
         {
             List<CustomRoles> AlwaysImpRoles = [];
@@ -494,6 +523,7 @@ public class RoleAssign
             }
 
             // Neutral Killing Roles
+            if (spawnNK)
             {
                 List<CustomRoles> AlwaysNKRoles = [];
                 List<CustomRoles> ChanceNKRoles = [];
@@ -590,7 +620,9 @@ public class RoleAssign
                     }
                 }
             }
+
             // Neutral Apocalypse Roles
+            if (spawnNA)
             {
                 List<CustomRoles> AlwaysNARoles = [];
                 List<CustomRoles> ChanceNARoles = [];
@@ -689,8 +721,10 @@ public class RoleAssign
                 }
             }
         }
+
         // Coven Roles
         {
+            if (spawnCoven)
             {
                 List<CustomRoles> AlwaysCVRoles = [];
                 List<CustomRoles> ChanceCVRoles = [];
