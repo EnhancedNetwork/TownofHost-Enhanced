@@ -4475,5 +4475,6 @@
   "MassacreInfo": "Kill your targets",
   "MassacreInfoLong": "The transformed version of Contaminator.",
   "MassacreSwitch": "You will become a Contaminator next round",
-  "WinnerRoleText.Massacre": "Massacre Wins!"
+  "WinnerRoleText.Massacre": "Massacre Wins!",
+  "MassacreKillCooldown": "Massacre kill cooldown"
 }
