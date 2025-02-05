@@ -1072,6 +1072,7 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
     public static readonly Dictionary<byte, int> BufferTime = [];
+    public static readonly Dictionary<byte, int> TeleportBuffer = [];
     private static int LevelKickBufferTime = 20;
 
     public static async void Postfix(PlayerControl __instance)
@@ -1141,6 +1142,11 @@ class FixedUpdateInNormalGamePatch
         }
 
         BufferTime[player.PlayerId] = timerLowLoad;
+
+        if (__instance.AmOwner && timerLowLoad == 30)
+        {
+            TeleportBuffer.Clear();
+        }
 
         if (!lowLoad)
         {
