@@ -199,6 +199,7 @@ public static class Options
     public static OptionItem ImmediateStartTimer;
     public static OptionItem StartWhenPlayersReach;
     public static OptionItem StartWhenTimerLowerThan;
+    public static OptionItem StartWhenTimePassed;
 
     public static OptionItem AutoPlayAgain;
     public static OptionItem AutoPlayAgainCountdown;
@@ -1165,6 +1166,8 @@ public static class Options
         MaxWaitAutoStart = FloatOptionItem.Create(60180, "MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
         PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 100, 1), 14, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Players);
+        StartWhenTimePassed = IntegerOptionItem.Create(60205, "StartWhenTimePassed", new(0, 1200, 10), 300, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Seconds);
         AutoStartTimer = IntegerOptionItem.Create(60200, "AutoStartTimer", new(10, 600, 1), 20, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Seconds);
         ImmediateAutoStart = BooleanOptionItem.Create(60201, "ImmediateAutoStart", false, TabGroup.SystemSettings, false);

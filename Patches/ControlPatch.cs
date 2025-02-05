@@ -198,7 +198,7 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notice.Clear();
-                Utils.NotifyRoles(ForceLoop: true);
+                //Utils.NotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 GameEndCheckerForNormal.GameIsEnded = true;

@@ -259,7 +259,7 @@ internal class Romantic : RoleBase
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
             pc.GetRoleClass()?.OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
+            Utils.NotifyRoles(SpecifyTarget: pc);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
@@ -268,7 +268,7 @@ internal class Romantic : RoleBase
             Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
+            Utils.NotifyRoles(SpecifyTarget: pc);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
@@ -293,7 +293,7 @@ internal class Romantic : RoleBase
                     if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
                     Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
                 }
-                Utils.NotifyRoles(ForceLoop: true);
+                Utils.NotifyRoles(SpecifyTarget: pc);
                 pc.ResetKillCooldown();
                 pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");

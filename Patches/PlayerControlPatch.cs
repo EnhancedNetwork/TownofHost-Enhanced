@@ -1068,7 +1068,8 @@ class FixedUpdateInNormalGamePatch
     private static readonly StringBuilder DeathReason = new();
     private static readonly StringBuilder Mark = new(20);
     private static readonly StringBuilder Suffix = new(120);
-    private static readonly Dictionary<byte, int> BufferTime = [];
+    public static readonly Dictionary<byte, int> BufferTime = [];
+    public static readonly Dictionary<byte, int> TeleportBuffer = [];
     public static readonly Dictionary<byte, TMPro.TextMeshPro> RoleTextCache = [];
     private static int LevelKickBufferTime = 20;
 
@@ -1155,6 +1156,11 @@ class FixedUpdateInNormalGamePatch
         }
 
         BufferTime[player.PlayerId] = timerLowLoad;
+
+        if (__instance.AmOwner && timerLowLoad == 30)
+        {
+            TeleportBuffer.Clear();
+        }
 
         if (!lowLoad)
         {
