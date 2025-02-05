@@ -339,6 +339,13 @@ public static class CustomRolesHelper
             CustomRoles.Madmate or
             CustomRoles.Enchanted;
 
+    public static bool IsConvertedV2(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
+        || role is
+            CustomRoles.Charmed or
+            CustomRoles.Recruit or
+            CustomRoles.Infected or
+            CustomRoles.Contagious;
+
     public static bool IsNotKnightable(this CustomRoles role)
     {
         return role is
@@ -454,7 +461,7 @@ public static class CustomRolesHelper
         {
             if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
             if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Rebel)) return false;
-            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
+            if (player.SubRoles.Any(x => x.IsConverted() && x is not CustomRoles.Enchanted)) return false;
         }
 
         return player.MainRole.IsCoven();

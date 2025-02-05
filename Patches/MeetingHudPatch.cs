@@ -1137,6 +1137,12 @@ class MeetingHudStartPatch
                 }
                 roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
             }
+            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Rebel) && !PlayerControl.LocalPlayer.IsAnySubRole(x => x.IsConverted()))
+            {
+                BlankRT = ColorString(GetRoleColor(CustomRoles.Taskinator), GetString(CustomRoles.Taskinator.ToString())); // Taskinator
+                BlankRT += $" {ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({Taskinator.maxTasksMarkedPerRound})")}"; // Taskinator progress text
+                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
+            }
 
             var suffixBuilder = new StringBuilder(32);
             if (myRole != null)

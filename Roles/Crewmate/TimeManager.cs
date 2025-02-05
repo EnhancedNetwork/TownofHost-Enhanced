@@ -51,7 +51,8 @@ internal class TimeManager : RoleBase
         int sec = 0;
         foreach (var playerId in playerIdList)
         {
-            if (playerId.GetPlayer().Is(CustomRoles.Madmate) || playerId.GetPlayer().Is(CustomRoles.Enchanted) || playerId.GetPlayer().Is(CustomRoles.Rebel)) sec -= AdditionalTime(playerId);
+            bool isNonCrew = playerId.GetPlayer().IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Admired and not CustomRoles.Soulless);
+            if (isNonCrew) sec -= AdditionalTime(playerId);
             else sec += AdditionalTime(playerId);
         }
         Logger.Info($"{sec}second", "TimeManager.TotalIncreasedMeetingTime");

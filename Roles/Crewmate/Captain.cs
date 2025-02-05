@@ -107,7 +107,7 @@ internal class Captain : RoleBase
             if (role == CustomRoles.Cleansed ||
                 role == CustomRoles.LastImpostor ||
                 role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
-                role.IsBetrayalAddon())
+                role.IsBetrayalAddonV2())
             {
                 Logger.Info($"Removed {role} from list of addons", "Captain");
                 AllSubRoles.Remove(role);

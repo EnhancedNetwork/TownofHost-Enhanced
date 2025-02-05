@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -61,7 +61,7 @@ public class Rebel : IAddon
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        bool lightsOut = IsActive(SystemTypes.Electrical);
+        bool lightsOut = IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsCrewmate();
         float impVision = lightsOut ? Main.DefaultImpostorVision * 5 : Main.DefaultImpostorVision;
         if (!player.Is(CustomRoles.Lighter) && HasImpostorVision.GetBool())
         {

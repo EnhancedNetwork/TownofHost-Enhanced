@@ -1432,6 +1432,12 @@ class FixedUpdateInNormalGamePatch
                         }
                         RoleText.text = $"<size=1.3>{BlankRT}</size>";
                     }
+                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Rebel) && !PlayerControl.LocalPlayer.IsAnySubRole(x => x.IsConverted()))
+                    {
+                        BlankRT = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator), GetString(CustomRoles.Taskinator.ToString())); // Taskinator
+                        BlankRT += $" {Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({Taskinator.maxTasksMarkedPerRound})")}"; // Taskinator progress text
+                        RoleText.text = $"<size=1.3>{BlankRT}</size>";
+                    }
 
 
                     if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)

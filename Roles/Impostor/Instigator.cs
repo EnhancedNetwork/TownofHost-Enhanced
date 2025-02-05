@@ -36,7 +36,7 @@ internal class Instigator : RoleBase
 
     public override void OnPlayerExiled(PlayerControl instigator, NetworkedPlayerInfo exiled)
     {
-        if (exiled == null || !exiled.Object.IsNonRebelCrewmate()) return;
+        if (exiled == null || !exiled.GetCustomRole().IsCrewmate()) return;
 
         if (AbilityLimit <= 0) return;
 
@@ -48,7 +48,8 @@ internal class Instigator : RoleBase
         foreach (var playerVote in votedForExiled)
         {
             var crewPlayer = Main.AllPlayerControls.FirstOrDefault(a => a.PlayerId == playerVote.TargetPlayerId);
-            if (crewPlayer == null || !crewPlayer.IsNonRebelCrewmate() || crewPlayer.IsAnySubRole(x => !x.IsCrewmateTeamV2()) || !crewPlayer.IsAlive()) continue;
+            bool CanBeSelected = crewPlayer.IsPlayerCrewmateTeam() && crewPlayer != killer;
+            if (crewPlayer == null || !crewPlayer.IsAlive() || !CanBeSelected) continue;
             killPotentials.Add(crewPlayer);
         }
 
