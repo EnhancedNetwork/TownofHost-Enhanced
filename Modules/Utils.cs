@@ -515,9 +515,9 @@ public static class Utils
                             case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_Always:
                             case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_OnlyInMeeting when meeting:
                             case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_OnlyInGame when !meeting:
-                                return addBracketsToAddons ? $"({str[0]}) " : $"{str[0]} ";
+                                return addBracketsToAddons ? $"({GetString(str)[0]}) " : $"{GetString(str)[0]} ";
                             default:
-                                return addBracketsToAddons ? $"({str}) " : $"{str} ";
+                                return addBracketsToAddons ? $"({GetString(str)}) " : $"{GetString(str)} ";
                         }
                     }
 
