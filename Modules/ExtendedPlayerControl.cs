@@ -401,7 +401,7 @@ static class ExtendedPlayerControl
         var clientId = seer.GetClientId();
         if (clientId == -1) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, Main.CurrentServerIsVanilla ? SendOption.None : SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
         writer.Write(seer.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -870,35 +870,8 @@ static class ExtendedPlayerControl
             return;
         }
 
-        var sendOption = SendOption.Reliable;
-
-        if (Main.CurrentServerIsVanilla)
-        {
-            if (!FixedUpdateInNormalGamePatch.BufferTime.TryGetValue(player.PlayerId, out var bufferTime))
-            {
-                Logger.Error($"Canceled RpcTeleport bcz bufferTime is null.", "RpcTeleport");
-                return;
-            }
-
-            if (!FixedUpdateInNormalGamePatch.TeleportBuffer.TryGetValue(player.PlayerId, out var teleportBuffer))
-            {
-                FixedUpdateInNormalGamePatch.TeleportBuffer[player.PlayerId] = bufferTime;
-            }
-            else
-            {
-                if (bufferTime >= teleportBuffer + 6)
-                {
-                    FixedUpdateInNormalGamePatch.TeleportBuffer[player.PlayerId] = bufferTime;
-                }
-                else
-                {
-                    sendOption = SendOption.None;
-                }
-            }
-        }
-
         ushort newSid = (ushort)(netTransform.lastSequenceId + 8);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, sendOption);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable);
         NetHelpers.WriteVector2(position, messageWriter);
         messageWriter.Write(newSid);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
