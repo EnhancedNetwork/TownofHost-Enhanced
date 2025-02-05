@@ -29,6 +29,7 @@ class OnGameJoinedPatch
             Main.VersionCheat.Value = false;
 
         ChatUpdatePatch.DoBlockChat = false;
+        Main.CurrentServerIsVanilla = GameStates.IsVanillaServer;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();

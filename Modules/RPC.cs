@@ -1002,7 +1002,7 @@ internal static class RPC
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
+    public static void SendRpcLogger(uint targetNetId, byte callId, SendOption sendOption, int targetClientId = -1)
     {
         if (!DebugModeManager.AmDebugger) return;
         string rpcName = GetRpcName(callId);
@@ -1015,7 +1015,7 @@ internal static class RPC
         }
         catch { }
 
-        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
+        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName}) SendOption:{sendOption}", "SendRPC");
     }
     public static string GetRpcName(byte callId)
     {
@@ -1042,9 +1042,9 @@ internal static class RPC
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpc))]
 internal class StartRpcPatch
 {
-    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
+    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option = SendOption.Reliable)
     {
-        RPC.SendRpcLogger(targetNetId, callId);
+        RPC.SendRpcLogger(targetNetId, callId, option);
     }
 }
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
@@ -1054,7 +1054,7 @@ public class StartRpcImmediatelyPatch
     {
         if (callId < (byte)CustomRPC.VersionCheck || !AmongUsClient.Instance.AmHost || !GameStates.IsVanillaServer || GameStates.IsLocalGame || option is SendOption.None)
         {
-            RPC.SendRpcLogger(targetNetId, callId, targetClientId);
+            RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
             return true;
         }
 
@@ -1075,7 +1075,7 @@ public class StartRpcImmediatelyPatch
         messageWriter.Write(callId);
 
         __result = messageWriter;
-        RPC.SendRpcLogger(targetNetId, callId, targetClientId);
+        RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
         return false;
     }
 }
