@@ -37,18 +37,25 @@ static class VentSystemDeterioratePatch
 
     public static void Postfix(VentilationSystem __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed) return;
+        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed || GameStates.IsMeeting) return;
 
         var nowTime = Utils.GetTimeStamp();
         if (ForceUpadate || (nowTime != LastUpadate))
         {
             LastUpadate = nowTime;
+            var needUpdate = false;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                var closestVents = pc.GetVentsFromClosest()[0].Id;
+                if (ForceUpadate || closestVents == LastClosestVent[pc.PlayerId])
+                {
+                    LastClosestVent[pc.PlayerId] = closestVents;
+                    needUpdate = true;
+                }
             }
 
-            ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
+            if (needUpdate)
+                ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>
