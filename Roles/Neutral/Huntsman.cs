@@ -4,7 +4,6 @@ using InnerNet;
 using System;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -168,7 +167,7 @@ internal class Huntsman : RoleBase
     }
     private void ResetTargets(bool isStartedGame = false)
     {
-        if (!AmongUsClient.Instance.AmHost || IsDead) return;
+        if (!AmongUsClient.Instance.AmHost || IsDead || _Player == null) return;
 
         Targets.Clear();
         SendRPC(isSetTarget: false);
@@ -187,6 +186,8 @@ internal class Huntsman : RoleBase
                 Targets.Add(targetId);
                 SendRPC(isSetTarget: true, targetId: targetId);
 
+                if (isStartedGame)
+                    Utils.NotifyRoles(SpecifySeer: _Player, SpecifyTarget: target);
             }
             catch (Exception ex)
             {
@@ -194,9 +195,6 @@ internal class Huntsman : RoleBase
                 break;
             }
         }
-
-        if (isStartedGame)
-            Utils.NotifyRoles(ForceLoop: true);
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)

@@ -109,7 +109,7 @@ internal class Cultist : RoleBase
             (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
             (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
-            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist)
+            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Enchanted)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
