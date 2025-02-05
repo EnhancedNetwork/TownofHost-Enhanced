@@ -41,7 +41,7 @@ internal class AntiAdminer : RoleBase
     }
 
     private static int Count = 0;
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 3;

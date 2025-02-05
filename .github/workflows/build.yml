@@ -22,6 +22,7 @@ jobs:
     - name: Create token.env file
       run: echo "Github Actions" > token.env
     - name: Setup .NET
+      id: setup-dotnet
       uses: actions/setup-dotnet@v4
     - name: Restore dependencies
       run: dotnet restore
