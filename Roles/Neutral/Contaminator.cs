@@ -71,6 +71,7 @@ internal class Contaminator : RoleBase
                     {
                         TargetList.Add(killing.PlayerId);
                     }
+                    player.RpcGuardAndKill(killing);
                 }
             }, 0.1f, "Contaminator Bug Fix");
         }
