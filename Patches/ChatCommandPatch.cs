@@ -1044,8 +1044,7 @@ internal class ChatCommands
                     }
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (pc.IsAlive()) continue;
-
+                        if (!pc.IsAlive()) continue;
                         pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
                     }
                     ChatUpdatePatch.DoBlockChat = false;
@@ -3032,9 +3031,9 @@ internal class ChatCommands
                 }
                 foreach (var pc in Main.AllPlayerControls)
                 {
-                    if (pc.IsAlive()) continue;
+                    if (!pc.IsAlive()) continue;
 
-                    pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                    pc.RpcSetNamePrivate(pc.GetRealName(isMeeting: true), player, true);
                 }
                 ChatUpdatePatch.DoBlockChat = false;
                 //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
