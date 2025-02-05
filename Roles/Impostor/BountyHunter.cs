@@ -176,9 +176,12 @@ internal class BountyHunter : RoleBase
         if (player.Is(CustomRoles.Soulless)
             && target.Is(CustomRoles.CursedSoul) || target.Is(CustomRoles.Soulless)) return false;
 
-        if (target.CheckMMCanSeeImp()
-            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool())) return false;
+        if (player.Is(CustomRoles.Enchanted)
+            && target.IsPlayerCoven() || (target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool())) return false;
 
+        if (target.GetCustomRole().IsImpostor()
+            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool())) return false;
+    
         if (player.Is(CustomRoles.Narc)
             && (target.Is(CustomRoles.Sheriff) || (target.Is(CustomRoles.ChiefOfPolice) && !target.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless)) || target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)))
             return false;
