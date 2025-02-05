@@ -429,7 +429,6 @@
   "Eavesdropper": "Eavesdropper",
   "Shocker": "Shocker",
   "Revenant": "Revenant",
-  "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable Vitals from anywhere",
   "NoisemakerTOHEInfo": "Send out an alert when killed",
@@ -1692,7 +1691,15 @@
   "Prohibited_CountBlockedVentsInFungle": "Count Blocked Vents In <color=#ffa646>The Fungle</color>",
 
   "UndertakerFreezeDuration": "Freeze Duration",
+
   "NameDisplayAddons": "Display Add-Ons next to the role name",
+  "BracketAddons": "Add Brackets To Add-ons",
+  "ShowShortNamesForAddOns": "Show Short Names For Add-Ons",
+  "ShortAddOnNamesMode_Disable": "Disable",
+  "ShortAddOnNamesMode_Always": "Always",
+  "ShortAddOnNamesMode_OnlyInMeeting": "Only In Meeting",
+  "ShortAddOnNamesMode_OnlyInGame": "Only In Game",
+
   "YourAddon": "Your Add-ons:",
   "NoLimitAddonsNumMax": "Maximum Add-ons Per Player",
   "RemoveIncompatibleAddOnsMidGame": "Remove Incompatible Addons for role assigned mid game",
