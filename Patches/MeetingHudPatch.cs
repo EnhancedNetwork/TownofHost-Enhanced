@@ -531,21 +531,33 @@ class CheckForEndVotingPatch
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
             name += "\n";
-            string comma = neutralnum > 0 ? "" : "";
-            if (impnum == 0) name += GetString("NoImpRemain") + comma;
-            if (impnum == 1) name += GetString("OneImpRemain") + comma;
-            if (impnum == 2) name += GetString("TwoImpRemain") + comma;
-            if (impnum == 3) name += GetString("ThreeImpRemain") + comma;
-            //    else name += string.Format(GetString("ImpRemain"), impnum) + comma;
+            name += impnum switch
+            {
+                1 => GetString("OneImpRemain"),
+                > 1 => string.Format(GetString("ImpRemain"), impnum),
+                _ => string.Empty
+            };
             if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
-                if (neutralnum == 1)
-                    name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
-                else
-                    name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
+                name += "\n" + neutralnum switch
+                {
+                    1 => GetString("OneNeutralRemain"),
+                    > 1 => string.Format(GetString("NeutralRemain"), neutralnum) + comma,
+                    _ => string.Empty
+                };
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                name += string.Format(GetString("ApocRemain"), apocnum) + comma;
+                name += "\n" + apocnum switch
+                {
+                    1 => GetString("OneApocRemain"),
+                    > 1 => string.Format(GetString("ApocRemain"), apocnum)
+                    _ => string.Empty
+                };
             if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
-                name += string.Format(GetString("CovenRemain"), covennum) + comma;
+                name += "\n" + covennum switch
+                {
+                    1 => GetString("OneCovenRemain"),
+                    > 1 => string.Format(GetString("CovenRemain"), covennum),
+                    _ => string.Empty
+                };
         }
 
     EndOfSession:
