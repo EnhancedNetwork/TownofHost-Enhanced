@@ -567,7 +567,7 @@ class CheckForEndVotingPatch
                     && (neutralnum <= 0 || !Options.ShowNKRemainOnEject.GetBool())
                     && (apocnum <= 0 || !Options.ShowNARemainOnEject.GetBool())
                     && (covennum <= 0 || !Options.ShowCovenRemainOnEject.GetBool()))
-                    name += GetString("NoImpRemain") + GetString("PotentialThreat");
+                    name += GetString("NoImpRemain") + "\n" + GetString("PotentialThreat");
             }
         }
 
