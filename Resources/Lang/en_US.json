@@ -4153,6 +4153,8 @@
   "QuickChatSpam_EzHacked": "Ducked Ezly",
   "CrossLanguageGetRole": "Get role names from different languages for commands",
 
+  "BypassRateLimitAC": "Experimental Changes to Bypass RateLimit Anticheat",
+
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can recruit <color=#ff1919>Impostor</color>",
   "PolicCanNeutral": "Can recruit <color=#7f8c8d>Neutral</color>",
