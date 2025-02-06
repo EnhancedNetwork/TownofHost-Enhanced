@@ -438,6 +438,7 @@ public static class Options
     public static OptionItem NeutralCanBecomeGhost;
     public static OptionItem MaxImpGhost;
     public static OptionItem MaxCrewGhost;
+    public static OptionItem MaxNeutralGhost;
     public static OptionItem DefaultAngelCooldown;
 
 
@@ -1030,6 +1031,12 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
+
+        TextOptionItem.Create(10000101, "RoleType.NeutralGhost", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(100, 100, 100, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralGhosts).ForEach(r => r.SetupCustomOption());
         #endregion
 
         yield return null;

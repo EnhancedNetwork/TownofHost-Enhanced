@@ -1576,6 +1576,7 @@ public enum Custom_RoleType
     NeutralChaos,
     NeutralKilling,
     NeutralApocalypse,
+    NeutralGhosts,
 
     // Coven
     CovenPower,

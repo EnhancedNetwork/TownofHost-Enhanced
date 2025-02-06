@@ -3844,6 +3844,7 @@
   "RoleType.NeutralChaos": "<color=#d4af37>★</color> Neutral <color=#D4AF37>Chaos</color> Roles",
   "RoleType.NeutralKilling": "<color=#ff1919>★</color> Neutral <color=#ff1919>Killing</color> Roles",
   "RoleType.NeutralApocalypse": "<color=#ff174f>★</color> Neutral <color=#ff174f>Apocalypse</color> Roles /apocalypseinfo",
+  "RoleType.NeutralGhost": "<color=#646464>★</color> Neutral <color=#646464>Ghost</color> Roles /ghostinfo",
   "RoleType.CovenPower": "<color=#ac42f2>★</color> Coven <color=#1f51ff>Power</color> Roles",
   "RoleType.CovenKilling": "<color=#ac42f2>★</color> Coven <color=#1f51ff>Killing</color> Roles",
   "RoleType.CovenTrickery": "<color=#ac42f2>★</color> Coven <color=#1f51ff>Trickery</color> Roles",
