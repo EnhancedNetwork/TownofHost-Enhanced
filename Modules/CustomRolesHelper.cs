@@ -87,6 +87,7 @@ public static class CustomRolesHelper
         if (role.GetStaticRoleClass().ThisRoleType is
             Custom_RoleType.CrewmateGhosts or
             Custom_RoleType.CrewmateVanillaGhosts or
+            Custom_RoleType.NeutralGhosts or
             Custom_RoleType.ImpostorGhosts)
             return true;
 

@@ -4478,5 +4478,9 @@
   "MassacreInfoLong": "The transformed version of Contaminator.",
   "MassacreSwitch": "You will become a Contaminator next round",
   "WinnerRoleText.Massacre": "Massacre Wins!",
-  "MassacreKillCooldown": "Massacre kill cooldown"
+  "MassacreKillCooldown": "Massacre kill cooldown",
+
+  "Spirit": "Spirit",
+  "SpiritInfo": "Come back to life",
+  "SpiritInfoLong": "(Ghosts):\nThe Spirit can come back to life by using their protect button, taking the player's name, skin, and role."
 }

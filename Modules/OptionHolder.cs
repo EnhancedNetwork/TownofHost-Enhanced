@@ -1032,7 +1032,7 @@ public static class Options
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
 
-        TextOptionItem.Create(10000101, "RoleType.NeutralGhost", TabGroup.NeutralRoles)
+        TextOptionItem.Create(10000117, "RoleType.NeutralGhost", TabGroup.NeutralRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(100, 100, 100, byte.MaxValue));
 
@@ -2051,11 +2051,11 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        MaxNeutralGhost = IntegerOptionItem.Create(60860, "MaxNeutralGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
+        MaxNeutralGhost = IntegerOptionItem.Create(60870, "MaxNeutralGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        DefaultAngelCooldown = FloatOptionItem.Create(60870, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.ModSettings, false)
+        DefaultAngelCooldown = FloatOptionItem.Create(60880, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));

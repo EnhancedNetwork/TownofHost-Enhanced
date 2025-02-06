@@ -846,6 +846,8 @@ public enum CustomRoles
     Vigilante,
     Witness,
 
+    //Neutral Ghost
+
     //Neutral
     Agitater,
     Amnesiac,
