@@ -1257,6 +1257,7 @@
   "NeutralCanBeGhostRole": "Neutral Players can be Any Ghost-Roles (Will change team respectively)",
   "MaxImpGhostRole": "Maximum <#ff1919>Impostor</color> Ghost-Roles",
   "MaxCrewGhostRole": "Maximum <#8cffff>Crewmate</color> Ghost-Roles",
+  "MaxNeutralGhostRole": "Maximum <#646464>Neutral</color> Ghost-Roles",
   "DefaultAngelCooldown": "Default Ability Cooldown",
   "DisableTaskWin": "Disable Task Win",
   "DisableTaskWinIfAllCrewsAreDead": "Disable Task Win if All <#8cffff>Crewmates</color> Are Dead",
