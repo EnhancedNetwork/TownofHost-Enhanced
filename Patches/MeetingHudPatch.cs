@@ -546,7 +546,7 @@ class CheckForEndVotingPatch
                     name += "\n" + neutralnum switch
                     {
                         1 => GetString("OneNeutralRemain"),
-                        > 1 => string.Format(GetString("NeutralRemain"), neutralnum) + comma,
+                        > 1 => string.Format(GetString("NeutralRemain"), neutralnum),
                         _ => string.Empty
                     };
                 if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
