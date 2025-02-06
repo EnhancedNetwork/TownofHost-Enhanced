@@ -439,7 +439,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
-        int badnum = Main.AllAlivePlayerControls.Count(x => x.DoesPlayerKeepGameGoing());
+        int badnum = Main.AllAlivePlayerControls.Count(x => x.DoesPlayerKeepGameGoing() && x != exiledPlayer.Object);
 
 
         if (CustomRoles.Bard.RoleExist())
