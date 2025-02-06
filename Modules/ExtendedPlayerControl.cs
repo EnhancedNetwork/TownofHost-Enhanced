@@ -872,7 +872,7 @@ static class ExtendedPlayerControl
 
         var sendOption = SendOption.Reliable;
 
-        if (Main.CurrentServerIsVanilla)
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
         {
             if (!FixedUpdateInNormalGamePatch.BufferTime.TryGetValue(player.PlayerId, out var bufferTime))
             {
@@ -1610,5 +1610,5 @@ static class ExtendedPlayerControl
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
     public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
-    public static SendOption RpcSendOption => Main.CurrentServerIsVanilla ? SendOption.None : SendOption.Reliable;
+    public static SendOption RpcSendOption => Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool() ? SendOption.None : SendOption.Reliable;
 }
