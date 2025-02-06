@@ -413,7 +413,7 @@ public static class CustomRolesHelper
     public static bool DoesPlayerKeepGameGoing(this PlayerControl pc)
     {
         var pc_role = pc.GetCustomRole();
-        return (!pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Soulless)
+        return (!pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Soulless) &&
                (pc_role.IsImpostorTeamV3() || pc_role.IsNK() || pc_role.IsNA() || pc_role.IsCoven())) 
                || pc.Is(CustomRoles.Infected) 
                || pc.Is(CustomRoles.Enchanted) 
