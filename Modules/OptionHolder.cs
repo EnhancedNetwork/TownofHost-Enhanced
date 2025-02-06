@@ -890,15 +890,6 @@ public static class Options
 
         }
 
-        /*
-         * BASIC ROLES
-         */
-        TextOptionItem.Create(10000007, "RoleType.CrewBasic", TabGroup.CrewmateRoles)
-            .SetGameMode(CustomGameMode.Standard)
-            .SetColor(new Color32(140, 255, 255, byte.MaxValue));
-
-        CustomRoleManager.GetNormalOptions(Custom_RoleType.CrewmateBasic).ForEach(r => r.SetupCustomOption());
-
 
         /*
          * INVESTIGATIVE ROLES
