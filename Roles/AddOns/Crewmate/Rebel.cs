@@ -7,7 +7,7 @@ namespace TOHE.Roles.AddOns.Crewmate;
 public class Rebel : IAddon
 {
     public CustomRoles Role => CustomRoles.Rebel;
-    private const int Id = 31600;
+    private const int Id = 31700;
     public AddonTypes Type => AddonTypes.Misc;
 
     public static OptionItem SheriffCanBeRebel;
@@ -70,4 +70,6 @@ public class Rebel : IAddon
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, impVision);
         }
     }
+    public static bool CheckWinCondition(CustomWinner winner, PlayerControl pc)
+        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || (pc.IsAlive() && !CanWinAfterDeath.GetBool()));
 }

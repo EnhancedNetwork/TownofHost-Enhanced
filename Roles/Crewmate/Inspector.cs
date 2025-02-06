@@ -157,8 +157,6 @@ internal class Inspector : RoleBase
 
             if (TryHideMsg.GetBool())
             {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else TryHideMsgForCompare(); 
                 TryHideMsgForCompare();
                 ChatManager.SendPreviousMessagesToAll();
             }
@@ -174,8 +172,8 @@ internal class Inspector : RoleBase
             bool target1IsVM = false;
             if (target1.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
             {
-                target1 = Utils.GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
-                Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+                target1 = GetPlayerById(VoodooMaster.Dolls[target1.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target1.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
                 target1IsVM = true;
             }
             var target1Name = target1.GetRealName();
@@ -186,8 +184,8 @@ internal class Inspector : RoleBase
             bool target2IsVM = false;
             if (target2.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target1.PlayerId].Count > 0)
             {
-                target2 = Utils.GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => Utils.GetPlayerById(x).IsAlive()).ToList().RandomElement());
-                Utils.SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
+                target2 = GetPlayerById(VoodooMaster.Dolls[target2.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
+                SendMessage(string.Format(GetString("VoodooMasterTargetInMeeting"), target2.GetRealName()), Utils.GetPlayerListByRole(CustomRoles.VoodooMaster).First().PlayerId);
                 target2IsVM = true;
             }
             var target2Name = target2.GetRealName();
@@ -240,9 +238,9 @@ internal class Inspector : RoleBase
                     if
                     (
                         (
-                        (target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId))
+                        (target1.IsPlayerCoven() || target1.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target1.PlayerId)) && !target1.Is(CustomRoles.Admired) && !target1.Is(CustomRoles.Rebel)
                         &&
-                        (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId))
+                        (target2.IsPlayerCoven() || target2.Is(CustomRoles.Enchanted) || Illusionist.IsNonCovIllusioned(target2.PlayerId)) && !target2.Is(CustomRoles.Admired) && !target2.Is(CustomRoles.Rebel)
                         )
                         ||
                         (
