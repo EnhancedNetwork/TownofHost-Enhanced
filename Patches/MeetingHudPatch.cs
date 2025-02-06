@@ -553,7 +553,7 @@ class CheckForEndVotingPatch
                     name += "\n" + apocnum switch
                     {
                         1 => GetString("OneApocRemain"),
-                        > 1 => string.Format(GetString("ApocRemain"), apocnum)
+                        > 1 => string.Format(GetString("ApocRemain"), apocnum),
                         _ => string.Empty
                     };
                 if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
