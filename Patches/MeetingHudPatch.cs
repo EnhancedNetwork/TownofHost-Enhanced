@@ -439,6 +439,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
+        int badnum = Main.AllAlivePlayerControls.Count(x => x.DoesPlayerKeepGameGoing());
 
 
         if (CustomRoles.Bard.RoleExist())
@@ -529,35 +530,45 @@ class CheckForEndVotingPatch
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
-        {
+        {            
             name += "\n";
-            name += impnum switch
+            if (badnum <= 0)
+                name += GetString("NoImpRemain");
+            else 
             {
-                1 => GetString("OneImpRemain"),
-                > 1 => string.Format(GetString("ImpRemain"), impnum),
-                _ => string.Empty
-            };
-            if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
-                name += "\n" + neutralnum switch
+                name += impnum switch
                 {
-                    1 => GetString("OneNeutralRemain"),
-                    > 1 => string.Format(GetString("NeutralRemain"), neutralnum) + comma,
+                    1 => GetString("OneImpRemain"),
+                    > 1 => string.Format(GetString("ImpRemain"), impnum),
                     _ => string.Empty
                 };
-            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                name += "\n" + apocnum switch
-                {
-                    1 => GetString("OneApocRemain"),
-                    > 1 => string.Format(GetString("ApocRemain"), apocnum)
-                    _ => string.Empty
-                };
-            if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
-                name += "\n" + covennum switch
-                {
-                    1 => GetString("OneCovenRemain"),
-                    > 1 => string.Format(GetString("CovenRemain"), covennum),
-                    _ => string.Empty
-                };
+                if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
+                    name += "\n" + neutralnum switch
+                    {
+                        1 => GetString("OneNeutralRemain"),
+                        > 1 => string.Format(GetString("NeutralRemain"), neutralnum) + comma,
+                        _ => string.Empty
+                    };
+                if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                    name += "\n" + apocnum switch
+                    {
+                        1 => GetString("OneApocRemain"),
+                        > 1 => string.Format(GetString("ApocRemain"), apocnum)
+                        _ => string.Empty
+                    };
+                if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
+                    name += "\n" + covennum switch
+                    {
+                        1 => GetString("OneCovenRemain"),
+                        > 1 => string.Format(GetString("CovenRemain"), covennum),
+                        _ => string.Empty
+                    };
+                if (impnum <= 0
+                    && (neutralnum <= 0 || !Options.ShowNKRemainOnEject.GetBool())
+                    && (apocnum <= 0 || !Options.ShowNARemainOnEject.GetBool())
+                    && (covennum <= 0 || !Options.ShowCovenRemainOnEject.GetBool()))
+                    name += GetString("NoImpRemain") + GetString("PotentialThreat");
+            }
         }
 
     EndOfSession:
