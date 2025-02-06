@@ -45,7 +45,7 @@ internal class Eraser : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Eraser);
-        EraseCooldown = FloatOptionItem.Create(Id + 10, "EraserEraseCooldown", new(0f, 180f, 1f), 10f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser])
+        EraseCooldown = FloatOptionItem.Create(Id + 10, "EraserEraseCooldown", new(0f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Seconds);
         EraseLimitOpt = IntegerOptionItem.Create(Id + 11, "EraseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Eraser])
             .SetValueFormat(OptionFormat.Times);
