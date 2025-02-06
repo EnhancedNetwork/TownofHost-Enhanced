@@ -83,7 +83,7 @@ internal class Eraser : RoleBase
         if (AbilityLimit < 1) return true;
 
         var targetRole = target.GetCustomRole();
-        if ((targetRole.IsNeutral() && !CanEraseNeutral.GetBool()) || (targetRole.IsCoven() && !CanEraseCoven.GetBool()) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
+        if ((targetRole.IsNeutral() && !CanEraseNeutral.GetBool()) || (targetRole.IsCoven() && (!CanEraseCoven.GetBool() || CovenManager.HasNecronomicon(target))) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Cannot erase role because is Neutral or ect", "Eraser");
             killer.Notify(GetString("EraserEraseRoleNotice"));
