@@ -2365,6 +2365,7 @@
   "ShowCovenInLeftCommand": "Show <color=#ac42f2>Coven</color>",
   "SeeEjectedRolesInMeeting": "See ejected roles in meetings",
   "ThankYouForUsingTOHE": "Thank you for using TOHE!",
+  "ShowBetrayalAddonsOnEject" :"Show teams by Betrayal Add-ons of ejected players",
 
   "SkillUsedLeft": "You have activated your skill to call a meeting. \nRemaining amount of uses left:",
   "NemesisDeadMsg": "The death of the Nemesis means the beginning of the revenge. \nPlease use /rv + [player ID] to kill the specified player \nYou can see player ID's in front of their names. \nOr type /rv to get a list of player ID's",
