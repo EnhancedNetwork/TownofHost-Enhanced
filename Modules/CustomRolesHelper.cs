@@ -1253,7 +1253,8 @@ public static class CustomRolesHelper
     /// Rebel part
     /// </summary>
     public static bool IsNonRebelCrewmate(this PlayerControl pc) => pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel);
-    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutralTeamV3();
+    public static bool IsRebelNeutral(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutral();
+    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.IsRebelNeutral() && !pc.GetCustomRole().IsMadmate();
     /// <summary>
     /// End Rebel part
     /// </summary>
@@ -1357,18 +1358,16 @@ public static class CustomRolesHelper
            var r when r.IsCoven() => CountTypes.Coven,
            CustomRoles.Enchanted => CountTypes.Coven,
            CustomRoles.Agitater => CountTypes.Agitater,
-           CustomRoles.Parasite => CountTypes.Impostor,
+           var r when r.IsMadmate() => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,
            CustomRoles.Quizmaster => Quizmaster.CanKillsAfterMark() ? CountTypes.Quizmaster : CountTypes.Crew,
            CustomRoles.Juggernaut => CountTypes.Juggernaut,
            CustomRoles.Infectious or CustomRoles.Infected => CountTypes.Infectious,
-           CustomRoles.Crewpostor => CountTypes.Impostor,
            CustomRoles.Pyromaniac => CountTypes.Pyromaniac,
            CustomRoles.PlagueDoctor => CountTypes.PlagueDoctor,
            CustomRoles.Virus => CountTypes.Virus,
            CustomRoles.Pickpocket => CountTypes.Pickpocket,
            CustomRoles.Traitor => CountTypes.Traitor,
-           CustomRoles.Refugee => CountTypes.Impostor,
            CustomRoles.Huntsman => CountTypes.Huntsman,
            CustomRoles.Glitch => CountTypes.Glitch,
            CustomRoles.Spiritcaller => CountTypes.Spiritcaller,

@@ -85,7 +85,19 @@ internal class SchrodingersCat : RoleBase
     {
         if (teammate.TryGetValue(seer.PlayerId, out var temmate) && target.PlayerId == temmate)
         {
-            if (target.GetCustomRole().IsCrewmate()) return Main.roleColors[CustomRoles.CrewmateTOHE];
+            foreach (var SubRole in target.GetCustomSubRoles())
+            {
+                if (SubRole is CustomRoles.Charmed
+                    or CustomRoles.Infected
+                    or CustomRoles.Contagious
+                    or CustomRoles.Egoist
+                    or CustomRoles.Recruit)
+                    return Main.roleColors[SubRole];
+            }
+
+            if ((target.GetCustomRole().IsCrewmate() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel)) return Main.roleColors[CustomRoles.CrewmateTOHE];
+            else if (target.GetCustomRole().IsImpostorTeamV3() || target.Is(CustomRoles.Madmate)) return Main.roleColors[CustomRoles.ImpostorTOHE];
+            else if (target.GetCustomRole().IsCoven() || target.Is(CustomRoles.Enchanted)) return Main.roleColors[CustomRoles.Coven];
             else return Main.roleColors[target.GetCustomRole()];
         }
         return string.Empty;

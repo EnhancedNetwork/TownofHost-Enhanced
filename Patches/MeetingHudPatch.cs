@@ -508,19 +508,18 @@ class CheckForEndVotingPatch
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
             name += "\n";
-            string comma = neutralnum > 0 ? "" : "";
-            if (impnum == 0) name += GetString("NoImpRemain") + comma;
-            else if (impnum == 1) name += GetString("OneImpRemain") + comma;
-            else name += string.Format(GetString("ImpRemain"), impnum) + comma;
+            if (impnum == 0) name += GetString("NoImpRemain");
+            else if (impnum == 1) name += GetString("OneImpRemain");
+            else name += string.Format(GetString("ImpRemain"), impnum);
             if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
                 if (neutralnum == 1)
-                    name += GetString("OneNeutralRemain") + comma;
+                    name += "\n" + GetString("OneNeutralRemain");
                 else
-                    name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
+                    name += "\n" + string.Format(GetString("NeutralRemain"), neutralnum);
             if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                name += string.Format(GetString("ApocRemain"), apocnum) + comma;
+                name += "\n" + string.Format(GetString("ApocRemain"), apocnum);
             if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
-                name += string.Format(GetString("CovenRemain"), covennum) + comma;
+                name += "\n" + string.Format(GetString("CovenRemain"), covennum);
         }
 
     EndOfSession:
