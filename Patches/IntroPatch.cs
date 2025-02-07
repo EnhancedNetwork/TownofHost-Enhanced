@@ -757,7 +757,12 @@ class BeginImpostorPatch
         BeginCrewmatePatch.Postfix(__instance);
     }
 }
+// Android not have "IntroCutscene.OnDestroy" so need use "HudManager.OnGameStart"
+#if DEBUGPC || BETAPC || RELEASEPC
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.OnDestroy))]
+#else
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.OnGameStart))]
+#endif
 class IntroCutsceneDestroyPatch
 {
     public static void Prefix()
@@ -919,6 +924,10 @@ class IntroCutsceneDestroyPatch
             }
         }
 
+#if DEBUGPC || BETAPC || RELEASEPC
         Logger.Info("OnDestroy", "IntroCutscene");
+#else
+        Logger.Info("OnGameStart", "HudManager");
+#endif
     }
 }
