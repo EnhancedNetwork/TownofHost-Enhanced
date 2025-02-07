@@ -123,7 +123,7 @@ class UpdateSystemPatch
         [HarmonyArgument(1)] PlayerControl player,
         [HarmonyArgument(2)] byte amount)
     {
-        Camouflage.CheckCamouflage(false);
+        Camouflage.CheckCamouflage();
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {

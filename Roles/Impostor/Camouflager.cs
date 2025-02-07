@@ -116,7 +116,7 @@ internal class Camouflager : RoleBase
         {
             if (!Main.MeetingIsStarted && GameStates.IsInTask)
             {
-                Camouflage.CheckCamouflage(false);
+                Camouflage.CheckCamouflage();
             }
         }, timer, "Camouflager Use Shapeshift");
     }
@@ -145,6 +145,6 @@ internal class Camouflager : RoleBase
     {
         AbilityActivated = false;
         SendRPC();
-        Camouflage.CheckCamouflage(true);
+        Camouflage.CheckCamouflage();
     }
 }

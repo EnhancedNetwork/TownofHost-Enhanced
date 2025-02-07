@@ -139,7 +139,7 @@ public static class Camouflage
                 break;
         }
     }
-    public static void CheckCamouflage(bool force)
+    public static void CheckCamouflage()
     {
         if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
 
@@ -149,7 +149,7 @@ public static class Camouflage
 
         if (oldIsCamouflage != IsCamouflage)
         {
-            if (force)
+            if (GameStates.IsMeeting)
             {
                 foreach (var pc in Main.AllPlayerControls)
                 {
@@ -169,7 +169,7 @@ public static class Camouflage
     }
     private static System.Collections.IEnumerator CoSetCamouflage()
     {
-        if (Main.CurrentServerIsVanilla)
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
         {
             Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
         }
