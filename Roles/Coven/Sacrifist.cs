@@ -312,7 +312,7 @@ internal class Sacrifist : CovenManager
     {
         return GetString("SacrifistDebuffCooldown") + ": " + string.Format("{0:f0}", debuffTimer) + "s / " + string.Format("{0:f0}", maxDebuffTimer) + "s";
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (debuffTimer < maxDebuffTimer)
         {

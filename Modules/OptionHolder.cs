@@ -145,6 +145,7 @@ public static class Options
 
 
     // ------------ System Settings Tab ------------
+    public static OptionItem BypassRateLimitAC;
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem ShowMadmatesInLeftCommand;
@@ -199,6 +200,7 @@ public static class Options
     public static OptionItem ImmediateStartTimer;
     public static OptionItem StartWhenPlayersReach;
     public static OptionItem StartWhenTimerLowerThan;
+    public static OptionItem StartWhenTimePassed;
 
     public static OptionItem AutoPlayAgain;
     public static OptionItem AutoPlayAgainCountdown;
@@ -1097,6 +1099,8 @@ public static class Options
         yield return null;
 
         #region System Settings
+        BypassRateLimitAC = BooleanOptionItem.Create(60049, "BypassRateLimitAC", true, TabGroup.SystemSettings, false)
+            .SetHeader(true);
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
@@ -1173,6 +1177,8 @@ public static class Options
         MaxWaitAutoStart = FloatOptionItem.Create(60180, "MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
         PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 100, 1), 14, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Players);
+        StartWhenTimePassed = IntegerOptionItem.Create(60205, "StartWhenTimePassed", new(0, 1200, 10), 300, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Seconds);
         AutoStartTimer = IntegerOptionItem.Create(60200, "AutoStartTimer", new(10, 600, 1), 20, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Seconds);
         ImmediateAutoStart = BooleanOptionItem.Create(60201, "ImmediateAutoStart", false, TabGroup.SystemSettings, false);

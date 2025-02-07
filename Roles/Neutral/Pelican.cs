@@ -249,12 +249,12 @@ internal class Pelican : RoleBase
                 target.SyncSettings();
 
                 RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+                Utils.NotifyRoles(SpecifySeer: target);
 
                 Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");
             }
             eatenList.Remove(pelicanId);
             SyncEatenList();
-            Utils.NotifyRoles();
         }
         catch (System.Exception error)
         {
@@ -264,7 +264,7 @@ internal class Pelican : RoleBase
         GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 

@@ -123,7 +123,7 @@ internal class Solsticer : RoleBase
         }
         warningActived = true;
         SendRPC();
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(SpecifyTarget: pc);
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -166,7 +166,7 @@ internal class Solsticer : RoleBase
         MurderMessage = "";
         patched = false;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (patched)

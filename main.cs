@@ -46,8 +46,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0131.220.20000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Beta 2";
+    public const string PluginVersion = "2025.0206.220.30000"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Beta 3";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -151,6 +151,7 @@ public class Main : BasePlugin
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
     public static string LastSummaryMessage;
+    public static bool CurrentServerIsVanilla = false;
 
     public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> MurderedThisRound = [];
@@ -636,6 +637,7 @@ public class Main : BasePlugin
         NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
         NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
         HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
 
