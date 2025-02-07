@@ -405,12 +405,16 @@ internal static class CopsAndRobbersManager
             {
                 finalRoles[pc.PlayerId] = CustomRoles.Cop;
                 RoleType.Cop.Add(pc.PlayerId);
+                pc.RpcSetCustomRole(CustomRoles.Cop);
+                pc.RpcChangeRoleBasis(CustomRoles.Cop);
                 optImpNum--;
             }
             else
             {
                 finalRoles[pc.PlayerId] = CustomRoles.Robber;
                 RoleType.Robber.Add(pc.PlayerId);
+                pc.RpcSetCustomRole(CustomRoles.Robber);
+                pc.RpcChangeRoleBasis(CustomRoles.Robber);
             }
             Logger.Msg($"set role for {pc.PlayerId}: {finalRoles[pc.PlayerId]}", "SetRoles");
         }

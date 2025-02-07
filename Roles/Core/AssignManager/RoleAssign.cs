@@ -22,6 +22,12 @@ public class RoleAssign
         Crewmate
     }
 
+    public static void OnInit()
+    {
+        RoleResult.Clear();
+        SetRoles.Clear();
+    }
+
     public class RoleAssignInfo(CustomRoles role, int spawnChance, int maxCount, int assignedCount = 0)
     {
         public CustomRoles Role { get => role; set => role = value; }
@@ -81,8 +87,11 @@ public class RoleAssign
                 }
                 return;
             case CustomGameMode.CandR:
-                RoleResult = [];
-                RoleResult = CopsAndRobbersManager.SetRoles();
+                foreach (PlayerControl pc in Main.AllPlayerControls)
+                {
+                    RoleResult = [];
+                    RoleResult = CopsAndRobbersManager.SetRoles();
+                }
                 return;
         }
 
