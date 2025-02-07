@@ -58,7 +58,7 @@ static class ExtendedPlayerControl
     }
     public static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
-        List<CustomRoles> roles = new(player.GetCustomSubRoles());
+        var roles = player.GetCustomSubRoles().ToList();
         roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
         roles.Shuffle();
 
