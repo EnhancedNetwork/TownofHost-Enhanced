@@ -495,7 +495,8 @@ class CheckForEndVotingPatch
 
                 break;
             case 2:
-                name = string.Format(GetString("PlayerIsRole"), realName, coloredRole);
+                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() ? coloredRole : player.GetCustomRole().ToColoredString();
+                name = string.Format(GetString("PlayerIsRole"), realName, ejectedRoleText);
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
