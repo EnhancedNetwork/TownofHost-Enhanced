@@ -146,7 +146,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     { }
 
     /// <summary>
@@ -481,6 +481,7 @@ public abstract class RoleBase
         // Ability
         Cooldown,
         AbilityCooldown,
+        AbilityDuration,
         SkillLimitTimes,
 
         // Impostor-based settings

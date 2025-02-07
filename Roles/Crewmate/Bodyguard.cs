@@ -46,7 +46,7 @@ internal class Bodyguard : RoleBase
         }
         else if (bodyguard.Is(CustomRoles.Enchanted) && killer.GetCustomRole().IsCoven())
         {
-            Logger.Info($"{bodyguard.GetRealName()} He was a impostor, so he chose to ignore the murder scene", "Bodyguard");
+            Logger.Info($"{bodyguard.GetRealName()} He was a Coven, so he chose to ignore the murder scene", "Bodyguard");
         }
         else if (bodyguard.CheckForInvalidMurdering(killer))
         {
