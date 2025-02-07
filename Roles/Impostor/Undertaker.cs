@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace TOHE.Roles.Impostor;
 
@@ -101,6 +102,11 @@ internal class Undertaker : RoleBase
     {
         if (!HasMarkedLoc(killer.PlayerId)) return true;
         if (target.Is(CustomRoles.Bait)) return true;
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(Translator.GetString("StubbornNotify"));
+            return true;
+        }
 
         if (target.CanBeTeleported())
         {

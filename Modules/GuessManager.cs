@@ -250,7 +250,12 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessRainbow"));
                     return true;
                 }
-                if (role is CustomRoles.LastImpostor or CustomRoles.Mare or CustomRoles.Cyber or CustomRoles.Flash or CustomRoles.Glow or CustomRoles.Sloth)
+                if (role == CustomRoles.Stubborn && target.Is(CustomRoles.Stubborn))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("GuessStubborn"));
+                    return true;
+                }
+                if (role is CustomRoles.LastImpostor or CustomRoles.Mare or CustomRoles.Cyber or CustomRoles.Flash or CustomRoles.Glow or CustomRoles.Sloth or CustomRoles.Statue or CustomRoles.Spurt)
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessObviousAddon"));
                     return true;
@@ -391,8 +396,17 @@ public static class GuessManager
 
                 if (target.Is(role) && target.Is(CustomRoles.Rebound))
                 {
-                    guesserSuicide = true;
-                    Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser suicide because rebound", "GuessManager");
+                    if (target.Is(CustomRoles.Stubborn))
+                    {
+                        pc.ShowInfoMessage(isUI, GetString("StubbornGuessRebound"));
+                        Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser supposed to suicide because rebound but too Stubborn", "GuessManager");
+                        return true;
+                    }
+                    else 
+                    {
+                        guesserSuicide = true;
+                        Logger.Info($"{pc.GetNameWithRole()} guessed {target.GetNameWithRole()}, guesser suicide because rebound", "GuessManager");
+                    }
                 }
 
                 Logger.Info($"{pc.GetNameWithRole().RemoveHtmlTags()} guessed => {target.GetNameWithRole().RemoveHtmlTags()}", "Guesser");
