@@ -2675,6 +2675,10 @@
 
   "Warning.NoGameEndIsEnabled": "Warning: <b>{0}</b> is enabled!",
 
+  "Warning.CandR": "Warning: C&R is glitched\nFor more info, do /candr",
+  "Message.CadnR": "If you turn C&R on after playing a different game mode, the game will glitch.\nTo fix this, restart Among Us, and you can play C&R.",
+  "CandRWarn": "Cops and Robbers Warning",
+
   "AntiBlackoutProtectionTitle": "Anti Blackout",
   "Warning.AntiBlackoutProtectionMsg": "<size=110%>Warning:</size>\n\r<b>Black screen protection has been activated,</b> due to the low number of alive <color=#ff1919>Impostors</color>, <color=#8cffff>Crewmates</color> and <color=#7f8c8d>Neutral Killers</color>\n<b>The voting screen will show as a tied vote (only affects the visual, not the results voting)</b>\n<size=70%>Modded players will see voting screen normally</size>",
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in the last meeting.</b>\n",

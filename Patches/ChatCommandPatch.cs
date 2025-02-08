@@ -235,6 +235,11 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
                     break;
 
+                case "/candr":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.CandR"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), GetString("CandRWarn")));
+                    break;
+
                 case "/rn":
                 case "/rename":
                 case "/renomear":
