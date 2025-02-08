@@ -90,6 +90,8 @@ internal class Eraser : RoleBase
             return true;
         }
 
+        if (target.IsTransformedNeutralApocalypse()) return false;
+
         return killer.CheckDoubleTrigger(target, () =>
         {
             AbilityLimit--;
