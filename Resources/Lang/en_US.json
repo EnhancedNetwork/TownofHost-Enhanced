@@ -2676,7 +2676,7 @@
   "Warning.NoGameEndIsEnabled": "Warning: <b>{0}</b> is enabled!",
 
   "Warning.CandR": "Warning: C&R is glitched\nFor more info, do /candr",
-  "Message.CadnR": "If you turn C&R on after playing a different game mode, the game will glitch.\nTo fix this, restart Among Us, and you can play C&R.",
+  "Message.CandR": "If you turn C&R on after playing a different game mode, the game will glitch.\nTo fix this, restart Among Us, and you can play C&R.",
   "CandRWarn": "Cops and Robbers Warning",
 
   "AntiBlackoutProtectionTitle": "Anti Blackout",
