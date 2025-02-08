@@ -309,7 +309,7 @@ internal class Inspector : RoleBase
                             else if (target2.Is(CustomRoles.Rebel)) roleT2 = "Neutral";
                             else if (target2.GetCustomRole().IsImpostorTeamV2() || target2.IsAnySubRole(role => role.IsImpostorTeamV2())) roleT2 = "Impostor";
                             else if (target2.GetCustomRole().IsNeutralTeamV2() || target2.IsAnySubRole(role => role.IsNeutralTeamV2())) roleT2 = "Neutral";
-                            else if (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || target2.GetCustomSubRoles().Count == 0)) roleT2 = "Crewmate";
+                            else if (target2.GetCustomRole().IsCrewmateTeamV2() && (target2.GetCustomSubRoles().Any(role => role.IsCrewmateTeamV2()) || (target2.GetCustomSubRoles().Count == 0))) roleT2 = "Crewmate";
 
                             _ = new LateTask(() =>
                             {

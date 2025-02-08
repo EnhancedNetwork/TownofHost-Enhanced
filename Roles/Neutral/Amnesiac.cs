@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
@@ -118,6 +119,12 @@ internal class Amnesiac : RoleBase
                 if (GhostRoleAssign.GhostGetPreviousRole.TryGetValue(targetPlayerStates.PlayerId, out var role) && !role.IsGhostRole())
                 {
                     if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
+                    role = role switch
+                    {
+                        CustomRoles.Jackal or CustomRoles.Sidekick => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Recruit or CustomRoles.Sidekick) ? CustomRoles.Jackal : CustomRoles.Sidekick,
+                        CustomRoles.CopyCat when CopyCat.playerIdList.Contains(targetPlayerStates.PlayerId) => CustomRoles.CopyCat,
+                        _ => role,
+                    };
                     __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                     __instance.RpcChangeRoleBasis(role);
                     __instance.RpcSetCustomRole(role);
@@ -129,6 +136,7 @@ internal class Amnesiac : RoleBase
 
                     role.GetActualRoleName(out var rolename);
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                    deadBody.Object.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     isSuccess = true;
                 }
                 else
@@ -141,6 +149,12 @@ internal class Amnesiac : RoleBase
                 var role = targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel) ?
                     CustomRoles.Taskinator : targetPlayerStates.MainRole;
                 if (targetPlayerStates.MainRole == CustomRoles.Rebel) role = CustomRoles.Taskinator;
+                role = role switch
+                {
+                    CustomRoles.Jackal or CustomRoles.Sidekick => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole() is CustomRoles.Jackal or CustomRoles.Recruit or CustomRoles.Sidekick) ? CustomRoles.Jackal : CustomRoles.Sidekick,
+                    CustomRoles.CopyCat when CopyCat.playerIdList.Contains(targetPlayerStates.PlayerId) => CustomRoles.CopyCat,
+                    _ => role,
+                };
                 __instance.GetRoleClass()?.OnRemove(__instance.PlayerId);
                 __instance.RpcChangeRoleBasis(role);
                 __instance.RpcSetCustomRole(role);
@@ -152,6 +166,7 @@ internal class Amnesiac : RoleBase
 
                 role.GetActualRoleName(out var rolename);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                deadBody.Object.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                 isSuccess = true;
             }
         }
