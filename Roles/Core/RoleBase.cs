@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
-using System.Text;
+using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -11,10 +11,11 @@ public abstract class RoleBase
     public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => _state != null ? _state.PlayerId.GetPlayer() ?? null : null;
+    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
+    public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
@@ -57,9 +58,6 @@ public abstract class RoleBase
 
         Main.UnShapeShifter.Remove(playerId);
     }
-
-    public virtual void OnOthersShapeshift()
-    { }
 
     /// <summary>
     /// Variable resets when the game starts
@@ -128,8 +126,6 @@ public abstract class RoleBase
     public virtual void SetupCustomOption()
     { }
 
-    public virtual void OnFixedUpdateLowLoad(PlayerControl pc)
-    { }
     /// <summary>
     /// A generic method to send a CustomRole's Gameoptions
     /// </summary>
@@ -435,13 +431,7 @@ public abstract class RoleBase
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     [Obfuscation(Exclude = true)]
-    public virtual string GetProgressText(byte playerId, bool comms)
-    {
-        var sb = new StringBuilder();
-        sb.Append(Utils.GetTaskCount(playerId, comms));
-        sb.Append(Utils.GetAbilityUseLimitDisplay(playerId, sb.Length <= 0));
-        return sb.ToString();
-    }
+    public virtual string GetProgressText(byte playerId, bool comms) => string.Empty;
 
     // IMPORTANT note about otherIcons: 
     // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once)
