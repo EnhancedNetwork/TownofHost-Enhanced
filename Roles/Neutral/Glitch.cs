@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System.Text;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -283,6 +284,8 @@ internal class Glitch : RoleBase
         hud.KillButton.OverrideText(GetString("KillButtonText"));
         hud.SabotageButton.OverrideText(GetString("Glitch_MimicButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting ? CustomButton.Get("GlitchHack") : null;
+    public override Sprite SabotageButtonSprite => CustomButton.Get("GlitchMimic");
 
     private void SendRPC()
     {
