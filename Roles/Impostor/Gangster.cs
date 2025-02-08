@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -109,10 +109,6 @@ internal class Gangster : RoleBase
                             break;
                     }
                 }
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Ritualist Assign");
-                target.RpcSetCustomRole(convertedAddon);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("BeRecruitedByGangster")));
             }
             else goto GangsterFailed;
 
@@ -120,6 +116,11 @@ internal class Gangster : RoleBase
 
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
+
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Gangster Assign");
+            target.RpcSetCustomRole(convertedAddon);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("GangsterSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("BeRecruitedByGangster")));
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown(forceAnime: true);

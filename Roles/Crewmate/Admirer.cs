@@ -107,7 +107,6 @@ internal class Admirer : RoleBase
                 AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
             }
-            
 
             if (!killer.GetCustomSubRoles().Find(x => x.IsBetrayalAddonV2(), out var convertedAddon))
             {
@@ -128,10 +127,6 @@ internal class Admirer : RoleBase
                         _ => CustomRoles.Admired,
                     };
                 }
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(convertedAddon);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmiredPlayer")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmirerAdmired")));
             }
             else goto AdmirerFailed;
 
@@ -142,6 +137,11 @@ internal class Admirer : RoleBase
             killer.SetKillCooldown();
             if (!DisableShieldAnimations.GetBool())
                 killer.RpcGuardAndKill(target);
+
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Admirer Assign");
+            target.RpcSetCustomRole(convertedAddon);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmiredPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmirerAdmired")));
 
             target.RpcGuardAndKill(killer);
             target.ResetKillCooldown();

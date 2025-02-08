@@ -239,11 +239,11 @@ internal class Ritualist : CovenManager
                         break;
                 }
             }
-            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Ritualist Assign");
-            target.RpcSetCustomRole(convertedAddon);
-            killer.Notify(ColorString(GetRoleColor(convertedAddon), GetString("RitualistSuccessfullyRecruited")));
-            target.Notify(ColorString(GetRoleColor(convertedAddon), GetString("BeRecruitedByRitualist")));
         }
+        Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Ritualist Assign");
+        target.RpcSetCustomRole(convertedAddon);
+        killer.Notify(ColorString(GetRoleColor(convertedAddon), GetString("RitualistSuccessfullyRecruited")));
+        target.Notify(ColorString(GetRoleColor(convertedAddon), GetString("BeRecruitedByRitualist")));
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
