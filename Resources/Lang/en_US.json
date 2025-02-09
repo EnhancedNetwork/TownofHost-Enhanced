@@ -692,6 +692,7 @@
   "WorkhorseInfo": "Be the first to complete all tasks and get more",
   "FoolInfo": "You can't fix Sabotages",
   "AvangerInfo": "You take someone with you upon death",
+  "AvangerInfoLong": "(Add-ons):\nWhen the Avenger dies, a random player will die with them.",
   "YoutuberInfo": "Get killed first to win",
   "CelebrityInfo": "Everyone knows when you die",
   "EgoistInfo": "Win on your own",
