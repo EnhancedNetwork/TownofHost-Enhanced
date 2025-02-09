@@ -15,7 +15,7 @@ namespace TOHE.Patches
         {
             if (activity == null) return;
 
-            var details = $"TOHO v{Main.PluginDisplayVersion}";
+            var details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}";
             activity.Details = details;
 
             try
@@ -45,12 +45,12 @@ namespace TOHE.Patches
                     else
                     {
                         if (GameStates.IsNormalGame)
-                            details = $"TOHO v{Main.PluginDisplayVersion}";
+                            details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}";
 
                         else if (GameStates.IsHideNSeek)
-                            details = $"TOHO v{Main.PluginDisplayVersion} - Hide & Seek";
+                            details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix} - Hide & Seek";
 
-                        else details = $"TOHO v{Main.PluginDisplayVersion}";
+                        else details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}";
 
                         activity.Details = details;
                     }
@@ -61,7 +61,7 @@ namespace TOHE.Patches
             {
                 Logger.Error("Error in updating discord rpc", "DiscordPatch");
                 Logger.Exception(ex, "DiscordPatch");
-                details = $"TOHO v{Main.PluginDisplayVersion}";
+                details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}";
                 activity.Details = details;
             }
         }

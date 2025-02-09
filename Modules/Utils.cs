@@ -1788,7 +1788,7 @@ public static class Utils
         {
             name = Options.GetSuffixMode() switch
             {
-                SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHE v{Main.PluginDisplayVersion}</color>",
+                SuffixModes.TOHE => name += $"\r\n<color={Main.ModColor}>TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}</color>",
                 SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",

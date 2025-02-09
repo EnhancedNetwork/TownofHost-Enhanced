@@ -143,7 +143,7 @@ class VersionShowerStartPatch
     static TextMeshPro SpecialEventText;
     private static void Postfix(VersionShower __instance)
     {
-        Main.credentialsText = $"<size=70%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
+        Main.credentialsText = $"<size=70%><size=85%><b><color={Main.ModColor}>{Main.ModName}</color> <color=#00ac03>v{Main.PluginDisplayVersion}</color></b>{Main.PluginDisplaySuffix}</size>";
         var buildtype = "";
 
 #if RELEASE
