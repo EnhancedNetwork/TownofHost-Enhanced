@@ -4484,7 +4484,7 @@
   "WinnerRoleText.Massacre": "Massacre Wins!",
   "MassacreKillCooldown": "Massacre kill cooldown",
 
-  "Spirit": "Spirit",
-  "SpiritInfo": "Come back to life",
-  "SpiritInfoLong": "(Ghosts):\nThe Spirit can come back to life by using their protect button, taking the player's name, skin, and role."
+  "Sentinel": "Sentinel",
+  "SentinelInfo": "Report bodies to kill killers",
+  "SentinelInfoLong": "The Sentinel can report a body to kill the body's killer one time. After their tasks are done, they can do this one more time."
 }
