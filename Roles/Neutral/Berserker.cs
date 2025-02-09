@@ -99,10 +99,6 @@ internal class Berserker : RoleBase
 
         BerserkerKillMax[_Player.PlayerId] = killCount;
     }
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
     public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Berserker).ShadeColor(0.25f), BerserkerKillMax.TryGetValue(playerId, out var x) ? $"({x}/{BerserkerMax.GetInt()})" : "Invalid");
     public override bool CanUseImpostorVentButton(PlayerControl pc) => BerserkerCanVent.GetBool();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -201,8 +197,6 @@ internal class War : RoleBase
 
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Berserker.WarKillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Berserker.WarHasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => true;

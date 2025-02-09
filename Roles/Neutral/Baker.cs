@@ -116,10 +116,9 @@ internal class Baker : RoleBase
         }
     }
     public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f), $"({BreadedPlayerCount(playerId).Item1}/{BreadedPlayerCount(playerId).Item2})");
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse()) return true;
+        // if (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse()) return true;
         // i swear this isn't consigliere's code i swear
         if (seer.IsAlive() && RevealList.TryGetValue(seer.PlayerId, out var targets))
         {
@@ -145,7 +144,7 @@ internal class Baker : RoleBase
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!_Player) return string.Empty;
-        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
+        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
             return ColorString(GetRoleColor(CustomRoles.Baker), "●");
         }
