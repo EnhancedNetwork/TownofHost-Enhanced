@@ -680,7 +680,8 @@ public static class CustomRolesHelper
             case CustomRoles.Overclocked:
                 if (!pc.CanUseKillButton())
                     return false;
-                if (pc.Is(CustomRoles.Reverie))
+                if (pc.Is(CustomRoles.Reverie)
+                    || pc.Is(CustomRoles.Underclocked))
                     return false;
                 break;
 
@@ -691,6 +692,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Underclocked:
                 if (!pc.CanUseKillButton())
+                    return false;
+                if (pc.Is(CustomRoles.Overclocked))
                     return false;
                 break;
 
