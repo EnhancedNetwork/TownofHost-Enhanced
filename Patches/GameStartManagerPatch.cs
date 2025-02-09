@@ -21,6 +21,7 @@ public static class GameStartManagerMinPlayersPatch
 public class GameStartManagerPatch
 {
     public static float timer = 600f;
+    public static long joinedTime = Utils.GetTimeStamp();
     private static Vector3 GameStartTextlocalPosition;
     private static TextMeshPro warningText;
     private static TextMeshPro timerText;
@@ -35,6 +36,7 @@ public class GameStartManagerPatch
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
+            joinedTime = Utils.GetTimeStamp();
 
             HideName = Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
             HideName.text = ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
@@ -164,6 +166,12 @@ public class GameStartManagerPatch
                         }
 
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
+                        {
+                            BeginGameAutoStart(Options.AutoStartTimer.GetInt());
+                            return;
+                        }
+
+                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp())
                         {
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
                             return;

@@ -93,7 +93,7 @@ internal class Poisoner : CovenManager
         killer.SetKillCooldown();
     }
 
-    public override void OnFixedUpdate(PlayerControl poisoner, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl poisoner, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var poisonerID = poisoner.PlayerId;
         List<byte> targetList = new(PoisonedPlayers.Where(b => b.Value.PoisonerId == poisonerID).Select(b => b.Key));

@@ -109,10 +109,6 @@ internal class Romantic : RoleBase
             return;
         }
         else Main.AllPlayerKillCooldown[id] = BetCooldown.GetFloat();
-        //float cd = BetCooldown.GetFloat();
-        //cd += Main.AllPlayerControls.Count(x => !x.IsAlive()) * BetCooldownIncrese.GetFloat();
-        //cd = Math.Min(cd, MaxBetCooldown.GetFloat());
-        //Main.AllPlayerKillCooldown[id] = cd;
     }
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
     {
@@ -126,6 +122,8 @@ internal class Romantic : RoleBase
         else
             hud.KillButton.OverrideText(GetString("RomanticProtectButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticProtect");
+
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer.PlayerId == target.PlayerId) return true;
@@ -134,18 +132,11 @@ internal class Romantic : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        //if (BetPlayer.TryGetValue(killer.PlayerId, out var tar) && tar == target.PlayerId) return false;
         if (!BetTimes.TryGetValue(killer.PlayerId, out var times) || times < 1) isProtect = true;
 
         if (!isProtect)
         {
             BetTimes[killer.PlayerId]--;
-
-            //if (BetPlayer.TryGetValue(killer.PlayerId, out var originalTarget) && Utils.GetPlayerById(originalTarget) != null)
-            //{
-            //    Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: Utils.GetPlayerById(originalTarget), ForceLoop: true);
-            //    Utils.NotifyRoles(SpecifySeer: Utils.GetPlayerById(originalTarget), SpecifyTarget: killer, ForceLoop: true);
-            //}
 
             BetPlayer.Remove(killer.PlayerId);
             BetPlayer.Add(killer.PlayerId, target.PlayerId);
@@ -160,7 +151,8 @@ internal class Romantic : RoleBase
             if (BetTargetKnowRomantic.GetBool())
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
 
-            Utils.NotifyRoles();
+            Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
+            Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
 
             Logger.Info($"Romantic：{killer.GetNameWithRole().RemoveHtmlTags()} bet player => {target.GetNameWithRole().RemoveHtmlTags()}", "Romantic");
         }
@@ -268,7 +260,7 @@ internal class Romantic : RoleBase
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcSetCustomRole(CustomRoles.Refugee);
             pc.GetRoleClass()?.OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
+            Utils.NotifyRoles(SpecifyTarget: pc);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
@@ -277,7 +269,7 @@ internal class Romantic : RoleBase
             Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
-            Utils.NotifyRoles(ForceLoop: true);
+            Utils.NotifyRoles(SpecifyTarget: pc);
             pc.ResetKillCooldown();
             pc.SetKillCooldown();
         }
@@ -302,7 +294,7 @@ internal class Romantic : RoleBase
                     if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
                     Logger.Info($"Vengeful romantic target: {killer.GetRealName().RemoveHtmlTags()}, [{VengefulTargetId}]", "Vengeful Romantic");
                 }
-                Utils.NotifyRoles(ForceLoop: true);
+                Utils.NotifyRoles(SpecifyTarget: pc);
                 pc.ResetKillCooldown();
                 pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");
@@ -337,7 +329,7 @@ internal class VengefulRomantic : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.PlayerId == target.PlayerId) return true; //set it to true coz shaman can do this, and killer shd die
+        if (killer.PlayerId == target.PlayerId) return true; //set it to true coz Shaman can do this, and killer should die
 
         if (VengefulTarget.TryGetValue(killer.PlayerId, out var PartnerKiller) && target.PlayerId == PartnerKiller)
         {
@@ -362,7 +354,6 @@ internal class VengefulRomantic : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player); //SyncVengefulRomanticTarget
         writer.Write(playerId);
-        //writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : MaxBetTimes);
         writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
