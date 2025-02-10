@@ -50,6 +50,7 @@ public class RoleAssign
 
     public static void StartSelect()
     {
+        IRandom.SetInstance(new MersenneTwister());
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
