@@ -116,7 +116,7 @@ internal class Eraser : RoleBase
     {
         foreach (var pc in PlayerToErase.ToArray())
         {
-            var player = GetPlayerById(pc);
+            var player = pc.GetPlayer();
             if (player == null) continue;
 
             player.RPCPlayCustomSound("Oiiai");
@@ -127,7 +127,7 @@ internal class Eraser : RoleBase
     {
         foreach (var pc in PlayerToErase.ToArray())
         {
-            var player = GetPlayerById(pc);
+            var player = pc.GetPlayer();
             var readyRole = GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole());
             if (player == null) continue;
             if (!ErasedRoleStorage.ContainsKey(player.PlayerId))
