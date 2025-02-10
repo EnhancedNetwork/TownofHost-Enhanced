@@ -4502,5 +4502,5 @@
   "HolidayAnomaly": "We are experiencing the Holiday anomaly",
   "ShuffleAnomaly": "We are experiencing the Shuffle anomaly",
   "Message.AnomalyInfo": "Anomalies are special events that occur under a percent chance. Here is the list of all anomalies:\n\n<b>Clown Fest</b>\nWhen the Clown Fest occurs, all Crewmates will turn into Jesters for one round.\n\n<b>Retrial</b>\nWhen a Retrial happens, a new meeting will start immediately after the old meeting is over.\n\n<b>New Year</b>\nOn the New Year, all add-ons between players will be randomized and redistributed.\n\n<b>Holiday</b>\nWhen the Holiday occurs, all Crewmates and Impostors will turn into basic Crewmates or Impostors for one round.\n\n<b>Shuffle</b>\nWhen the Shuffle occurs, all Crewmate and non-Neutral Killing roles will be redistributed among players.",
-  "AnomalyInfoTtile": "ANOMALY INFO"
+  "AnomalyInfoTitle": "ANOMALY INFO"
 }
