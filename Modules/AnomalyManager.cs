@@ -5,63 +5,56 @@ using static TOHE.Translator;
 namespace TOHE.Modules;
 internal class AnomalyManager
 {
-    enum WhichAnomaly
-    {
-        ClownFest,
-        Retrial,
-        NewYear,
-        Holiday,
-        Shuffle,
-    };
-    private static readonly List<WhichAnomaly> which1 = [];
+    private static readonly List<string> which1 = [];
 
     public static Dictionary<byte, CustomRoles> FormerRoles = [];
 
     public static void AnomalyChance()
     {
+        which1.Clear();
         var rand = IRandom.Instance;
         if (rand.Next(100) <= AnomalyMeetingPCT.GetInt())
         {
             if (Options.ClownFest.GetBool())
             {
-                which1.Add(WhichAnomaly.ClownFest);
+                which1.Add("ClownFest");
             }
             if (Options.Retrial.GetBool())
             {
-                which1.Add(WhichAnomaly.Retrial);
+                which1.Add("Retrial");
             }
             if (Options.NewYear.GetBool())
             {
-                which1.Add(WhichAnomaly.NewYear);
+                which1.Add("NewYear");
             }
             if (Options.Holiday.GetBool())
             {
-                which1.Add(WhichAnomaly.Holiday);
+                which1.Add("Holiday");
             }
             if (Options.Shuffle.GetBool())
             {
-                which1.Add(WhichAnomaly.Shuffle);
+                which1.Add("Shuffle");
             }
             var which2 = which1.RandomElement();
             switch (which2)
             {
-                case WhichAnomaly.ClownFest:
+                case "ClownFest":
                     AfterAnomaly();
                     ClownFest();
                     break;
-                case WhichAnomaly.Retrial:
+                case "Retrial":
                     AfterAnomaly();
                     Retrial();
                     break;
-                case WhichAnomaly.NewYear:
+                case "NewYear":
                     AfterAnomaly();
                     NewYear();
                     break;
-                case WhichAnomaly.Holiday:
+                case "Holiday":
                     AfterAnomaly();
                     Holiday();
                     break;
-                case WhichAnomaly.Shuffle:
+                case "Shuffle":
                     AfterAnomaly();
                     Shuffle();
                     break;
