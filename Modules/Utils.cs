@@ -2502,6 +2502,10 @@ public static class Utils
                 playerState.RoleClass.LastBlockedMoveInVentVents.Clear();
             }
 
+            //Anomalies
+            AnomalyManager.AnomalyChance();
+
+
             //Set kill timer
             foreach (var player in Main.AllAlivePlayerControls)
             {

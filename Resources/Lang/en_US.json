@@ -4487,5 +4487,20 @@
 
   "Sentinel": "Sentinel",
   "SentinelInfo": "Report bodies to kill killers",
-  "SentinelInfoLong": "The Sentinel can report a body to kill the body's killer one time. After their tasks are done, they can do this one more time."
+  "SentinelInfoLong": "The Sentinel can report a body to kill the body's killer one time. After their tasks are done, they can do this one more time.",
+
+  "ClownFest": "Clown Fest",
+  "Retrial": "Retrial",
+  "NewYear": "New Year",
+  "Holiday": "Holiday",
+  "Shuffle": "Shuffle",
+  "EnableAnomalies": "Enable Anomalies",
+  "AnomalyMeetingPCT": "Chance per meeting to have an Anomaly",
+  "MenuTitle.Anomalies": "★ Anomalies ★ /anomalyinfo",
+  "ClownFestAnomaly": "We are experiencing the Clown Fest anomaly",
+  "NewYearAnomaly": "We are experiencing the New Year anomaly",
+  "HolidayAnomaly": "We are experiencing the Holiday anomaly",
+  "ShuffleAnomaly": "We are experiencing the Shuffle anomaly",
+  "Message.AnomalyInfo": "Anomalies are special events that occur under a percent chance. Here is the list of all anomalies:\n\n<b>Clown Fest</b>\nWhen the Clown Fest occurs, all Crewmates will turn into Jesters for one round.\n\n<b>Retrial</b>\nWhen a Retrial happens, a new meeting will start immediately after the old meeting is over.\n\n<b>New Year</b>\nOn the New Year, all add-ons between players will be randomized and redistributed.\n\n<b>Holiday</b>\nWhen the Holiday occurs, all Crewmates and Impostors will turn into basic Crewmates or Impostors for one round.\n\n<b>Shuffle</b>\nWhen the Shuffle occurs, all Crewmate and non-Neutral Killing roles will be redistributed among players.",
+  "AnomalyInfoTtile": "ANOMALY INFO"
 }

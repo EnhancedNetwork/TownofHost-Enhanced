@@ -441,6 +441,15 @@ public static class Options
     public static OptionItem MaxNeutralGhost;
     public static OptionItem DefaultAngelCooldown;
 
+    // Anomalies
+    public static OptionItem EnableAnomalies;
+    public static OptionItem ClownFest;
+    public static OptionItem Retrial;
+    public static OptionItem NewYear;
+    public static OptionItem Holiday;
+    public static OptionItem Shuffle;
+    public static OptionItem AnomalyMeetingPCT;
+
 
     // ------------ Task Management Tab ------------
 
@@ -2059,6 +2068,37 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+
+        // Anomaly Settings
+
+        TextOptionItem.Create(10000033, "MenuTitle.Anomalies", TabGroup.ModSettings)
+           .HideInFFA()
+           .HideInCandR()
+           .SetColor(new Color32(168, 50, 62, byte.MaxValue));
+        EnableAnomalies = BooleanOptionItem.Create(60890, "EnableAnomalies", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(168, 50, 62, byte.MaxValue));
+        ClownFest = BooleanOptionItem.Create(60910, "ClownFest", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        Retrial = BooleanOptionItem.Create(60920, "Retrial", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        NewYear = BooleanOptionItem.Create(60930, "NewYear", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies); 
+        Holiday = BooleanOptionItem.Create(60940, "Holiday", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        Shuffle = BooleanOptionItem.Create(60950, "Shuffle", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        AnomalyMeetingPCT = IntegerOptionItem.Create(60960, "AnomalyMeetingPCT", new(0, 100, 5), 0, TabGroup.ModSettings, false)
+            .SetValueFormat(OptionFormat.Percent)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+
+
         #endregion
 
         yield return null;

@@ -235,6 +235,12 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
                     break;
 
+                case "/anomalyinfo":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.AnomalyInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jester), GetString("AnomalyInfoTitle")));
+                    break;
+
+
                 case "/candr":
                     canceled = true;
                     Utils.SendMessage(GetString("Message.CandR"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), GetString("CandRWarn")));
@@ -367,6 +373,8 @@ internal class ChatCommands
                         subArgs = text.Remove(0, 2);
                     SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId);
                     break;
+
+                
 
                 case "/up":
                 case "/指定":
