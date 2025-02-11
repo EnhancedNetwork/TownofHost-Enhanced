@@ -8,7 +8,7 @@ public class Torch : IAddon
     public CustomRoles Role => CustomRoles.Torch;
     private const int Id = 20300;
     public AddonTypes Type => AddonTypes.Helpful;
-    private static OptionItem TorchVision;
+    public static OptionItem TorchVision;
     public static OptionItem TorchAffectedByLights;
 
     public void SetupCustomOption()
