@@ -304,6 +304,7 @@ public static class CustomRolesHelper
 
     public static bool CheckMMCanSeeImp(this PlayerControl pc, bool CheckImp = true)
     {
+        //used for checking if Impostors and Madmates can see each other and cannot kill each other
         var role = pc.GetCustomRole();
 
         if (role == CustomRoles.Convict)
@@ -729,7 +730,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
-                if (!pc.GetCustomRole().IsCrewmate())
+                if (!pc.GetCustomRole().IsCrewmate()
+                    && !(pc.Is(CustomRoles.Narc) && Narc.NarcHasCrewVision.GetBool()))
                     return false;
                 break;
 
@@ -906,6 +908,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.Godfather)
+                    || pc.Is(CustomRoles.Narc)
                     || (pc.Is(CustomRoles.Sheriff) && Narc.CheckNarcAssign()))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
@@ -915,7 +918,8 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Nemesis))
+                if (pc.Is(CustomRoles.Nemesis)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -973,7 +977,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Rebound)
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Flash)
-                    || pc.Is(CustomRoles.Sloth))
+                    || pc.Is(CustomRoles.Sloth)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
