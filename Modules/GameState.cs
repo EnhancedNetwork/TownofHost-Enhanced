@@ -124,7 +124,7 @@ public class PlayerState(byte playerId)
             pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
             InitTask(pc);
 
-            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
             {
                 Main.UnShapeShifter.Add(pc.PlayerId);
                 pc.DoUnShiftState(true);
