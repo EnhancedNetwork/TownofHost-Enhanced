@@ -1,4 +1,5 @@
-﻿using static TOHE.Utils;
+﻿/* WILLS - v1.6.0
+using static TOHE.Utils;
 using System;
 
 namespace TOHE.Modules;
@@ -18,3 +19,4 @@ internal class WillManager
         Sent = true;
     }
 }
+*/

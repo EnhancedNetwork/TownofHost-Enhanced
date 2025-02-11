@@ -972,7 +972,7 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
-    Author,
+    // Author,
     Autopsy,
     Avanger,
     Aware,

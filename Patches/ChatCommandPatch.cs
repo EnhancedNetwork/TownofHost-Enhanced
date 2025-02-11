@@ -136,10 +136,11 @@ internal class ChatCommands
         {
             Main.isChatCommand = true;
             switch (args[0])
-            {
+            { 
+                /* WILLS - v1.6.0
                 case "/wa":
-                    var warole = PlayerControl.LocalPlayer.GetCustomRole();
-                    if (warole != CustomRoles.Author && Options.EnableWills.GetBool() == false) break;
+                    var willrole = PlayerControl.LocalPlayer.GetCustomRole();
+                    if (willrole != CustomRoles.Author && Options.EnableWills.GetBool() == false) break;
                     var subArgs3 = text.Remove(0, 4);
                     if (subArgs3 == "" || subArgs3 == string.Empty)
                     {
@@ -165,6 +166,7 @@ internal class ChatCommands
                     if (wvrole != CustomRoles.Author && Options.EnableWills.GetBool() == false) break;
                     Utils.SendMessage(WillManager.Notes[PlayerControl.LocalPlayer.PlayerId], PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Author), Translator.GetString("WillNotesTitle")));
                     break;
+                */
 
                 case "/ans":
                 case "/asw":

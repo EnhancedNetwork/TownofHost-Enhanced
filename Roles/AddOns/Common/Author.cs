@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿/* WILLS - v1.6.0
+using static TOHE.Options;
 namespace TOHE.Roles.AddOns.Common;
 internal class Author : IAddon
 {
@@ -17,3 +18,4 @@ internal class Author : IAddon
     public void Remove(byte playerId)
     { }
 }
+*/
