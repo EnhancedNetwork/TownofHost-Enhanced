@@ -92,8 +92,8 @@ public class Narc : IAddon
             && NarcHasCrewVision.GetBool())
         {
             opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, narcvision);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, narcvision);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, narcVision);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, narcVision);
         }
     }
 
