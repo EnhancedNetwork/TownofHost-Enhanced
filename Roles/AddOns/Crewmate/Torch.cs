@@ -9,7 +9,7 @@ public class Torch : IAddon
     private const int Id = 20300;
     public AddonTypes Type => AddonTypes.Helpful;
     private static OptionItem TorchVision;
-    private static OptionItem TorchAffectedByLights;
+    public static OptionItem TorchAffectedByLights;
 
     public void SetupCustomOption()
     {
