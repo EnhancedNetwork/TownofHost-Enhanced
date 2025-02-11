@@ -19,7 +19,19 @@ public interface IRandom
         { 3, typeof(MersenneTwister) },
     };
 
-    public static IRandom Instance { get; private set; }
+    public static IRandom Instance
+    {
+        get
+        {
+            if (Instance == null)
+            {
+                SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
+            }
+            return Instance;
+        }
+        private set { Instance = value; }
+    }
+
     public static void SetInstance(IRandom instance)
     {
         if (instance != null)
@@ -36,6 +48,7 @@ public interface IRandom
         else
         {
             Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
+            Instance = new NetRandomWrapper();
         }
     }
 }
