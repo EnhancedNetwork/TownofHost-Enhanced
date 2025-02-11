@@ -676,8 +676,9 @@ public static class StringOptionPatch
                 TempCurrentOptions.Clear();
                 foreach (var optionItem in OptionItem.AllOptions.ToArray())
                 {
-                    if (item.Id != optionItem.Id)
-                        TempCurrentOptions.TryAdd(optionItem.Id, optionItem.GetValue());
+                    if (item.Id == optionItem.Id) continue;
+
+                    TempCurrentOptions.TryAdd(optionItem.Id, optionItem.GetValue());
                 }
             }
 
