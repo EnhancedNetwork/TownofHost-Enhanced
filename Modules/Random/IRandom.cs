@@ -31,12 +31,12 @@ public interface IRandom
     {
         if (randomTypes.TryGetValue(id, out var type))
         {
-            // Current instance is null or current instance type does not match specified type
-            if (Instance == null || Instance.GetType() != type)
-            {
-                Instance = Activator.CreateInstance(type) as IRandom ?? Instance;
-            }
+            Instance = Activator.CreateInstance(type) as IRandom;
+            Logger.Info($"Set IRandom instance to {type.Name}", "IRandom");
         }
-        else Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
+        else
+        {
+            Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
+        }
     }
 }

@@ -254,7 +254,7 @@ internal class Romantic : RoleBase
         if (romantic == 0x73) return;
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
-        if (player.GetRealKiller() == pc) 
+        if (player.GetRealKiller() == pc)
         {
             pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
             pc.RpcMurderPlayer(pc);
