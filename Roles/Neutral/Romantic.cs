@@ -254,7 +254,12 @@ internal class Romantic : RoleBase
         if (romantic == 0x73) return;
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
-        if (player.IsNonNarcImpV3())
+        if (player.GetRealKiller() == pc)
+        {
+            pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+            pc.RpcMurderPlayer(pc);
+        }
+        else if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
