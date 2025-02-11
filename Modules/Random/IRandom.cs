@@ -19,18 +19,7 @@ public interface IRandom
         { 3, typeof(MersenneTwister) },
     };
 
-    public static IRandom Instance
-    {
-        get
-        {
-            if (Instance == null)
-            {
-                SetInstanceById(Options.RoleAssigningAlgorithm.GetValue());
-            }
-            return Instance;
-        }
-        private set { Instance = value; }
-    }
+    public static IRandom Instance { get; private set; }
 
     public static void SetInstance(IRandom instance)
     {
