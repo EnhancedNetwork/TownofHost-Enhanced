@@ -86,11 +86,10 @@ public class Narc : IAddon
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor() && !(player.Is(CustomRoles.Torch) && !TorchAffectedByLights.GetBool());
+        bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor() && !(player.Is(CustomRoles.Torch) && !Torch.TorchAffectedByLights.GetBool());
         float initVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultCrewmateVision;
         float crewvision = lightsout? initVision / 5 : initVision;
         if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie)
-            && !(player.Is(CustomRoles.Torch) && !TorchAffectedByLights.GetBool())
             && NarcHasCrewVision.GetBool())
         {
             opt.SetVision(true);
