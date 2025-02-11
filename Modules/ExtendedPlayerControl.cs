@@ -13,7 +13,9 @@ using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
+using static Il2CppSystem.Globalization.CultureInfo;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -622,7 +624,27 @@ static class ExtendedPlayerControl
             }
         }
     }
+    public static void DoUnShiftState(this PlayerControl unshifter, bool updateName = false)
+    {
+        if (unshifter == null || !Main.UnShapeShifter.Contains(unshifter.PlayerId)) return;
 
+        Logger.Info($"Set UnShift State: {unshifter.GetNameWithRole()}", "DoUnShiftState");
+
+        var target = Main.AllAlivePlayerControls.Where(tar => tar.PlayerId != unshifter.PlayerId).RandomElement();
+        var currentOutfit = unshifter.Data.DefaultOutfit;
+
+        unshifter.RpcShapeshift(target, false);
+        Main.CheckShapeshift[unshifter.PlayerId] = false;
+
+        _ = new LateTask(() =>
+        {
+            unshifter?.SetNewOutfit(currentOutfit);
+            if (updateName)
+            {
+                Utils.NotifyRoles(SpecifyTarget: unshifter);
+            }
+        }, 0.1f, "Wait and change outfit", shoudLog: false);
+    }
     public static Vent GetClosestVent(this PlayerControl player)
     {
         var pos = player.GetCustomPosition();
