@@ -423,15 +423,6 @@ public static class CustomRolesHelper
                 or CustomRoles.LastImpostor
                 or CustomRoles.Lovers;
 
-    public static bool ShouldBeRemoved(this PlayerControl player, CustomRoles addon)
-    {
-        var plrRole = player.GetCustomRole();
-        return !addon.IsAddonAssignedMidGame()
-            || (addon == CustomRoles.LastImpostor && !plrRole.IsImpostorTeamV3())
-            || (addon == CustomRoles.Workhorse && (!plrRole.IsCrewmate() || plrRole.IsTasklessCrewmate()))
-            || (addon == CustomRoles.Knighted && plrRole.IsNotKnightable());
-    }
-
     public static bool IsImpOnlyAddon(this CustomRoles role)
     {
         return role is CustomRoles.Mare or
@@ -491,7 +482,7 @@ public static class CustomRolesHelper
         
         return player.MainRole.IsCoven();
     }
-    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true)
+    public static bool CheckAddonConfilct(CustomRoles role, PlayerControl pc, bool checkLimitAddons = true, bool checkSelfAddOn = true)
     {
         // Only Add-ons
         if (!role.IsAdditionRole() || pc == null) return false;
@@ -500,7 +491,7 @@ public static class CustomRolesHelper
             return false;
 
         // if player already has this Add-on
-        else if (pc.Is(role)) return false;
+        else if (checkSelfAddOn && pc.Is(role)) return false;
 
         // Checking Lovers and Romantics
         else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
