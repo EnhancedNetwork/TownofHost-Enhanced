@@ -228,7 +228,8 @@ internal class Necromancer : CovenManager
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool()) ||
-            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool());
+            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool()) ||
+            (role == CustomRoles.Doctor && Doctor.VisibleToEveryoneOpt.GetBool());
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {

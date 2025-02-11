@@ -1,6 +1,5 @@
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -123,6 +122,7 @@ internal class ChiefOfPolice : RoleBase
                     target.RpcChangeRoleBasis(CustomRoles.Sheriff);
                     target.RpcSetCustomRole(CustomRoles.Sheriff);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
+                    if (Main.PlayerStates[target.PlayerId].IsNecromancer) Main.PlayerStates[target.PlayerId].IsNecromancer = false;
 
                     target.ResetKillCooldown();
                     target.SetKillCooldown(forceAnime: true);
