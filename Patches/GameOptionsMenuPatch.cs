@@ -48,26 +48,6 @@ public static class GameOptionsMenuPatch
     {
         var optionMenu = GameObject.Find("PlayerOptionsMenu(Clone)");
         optionMenu?.transform.FindChild("Background")?.gameObject.SetActive(false);
-
-        _ = new LateTask(() =>
-        {
-            var menuDescription = optionMenu?.transform.FindChild("What Is This?");
-
-            var infoImage = menuDescription.transform.FindChild("InfoImage");
-            infoImage.transform.localPosition = new(-4.65f, 0.16f, -1f);
-            infoImage.transform.localScale = new(0.2202f, 0.2202f, 0.3202f);
-
-            var infoText = menuDescription.transform.FindChild("InfoText");
-            infoText.transform.localPosition = new(-3.5f, 0.83f, -2f);
-            infoText.transform.localScale = new(1f, 1f, 1f);
-
-            var cubeObject = menuDescription.transform.FindChild("Cube");
-            cubeObject.transform.localPosition = new(-3.2f, 0.55f, -0.1f);
-            cubeObject.transform.localScale = new(0.61f, 0.64f, 1f);
-
-            var menuDescriptionText = GameSettingMenu.Instance.MenuDescriptionText;
-            menuDescriptionText.m_marginWidth = 2.5f;
-        }, 0.2f, "Set Menu", shoudLog: false);
     }
 
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]
@@ -680,6 +660,7 @@ public static class StringOptionPatch
 
     }
 
+    private static readonly Dictionary<int, int> TempCurrentOptions = [];
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(StringOption __instance)
     {
@@ -687,6 +668,18 @@ public static class StringOptionPatch
         {
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
+
+            // Copy current options
+            if (item is PresetOptionItem && Input.GetKey(KeyCode.C))
+            {
+                Logger.Info("Copy Preset", "PresetOptionItem");
+                TempCurrentOptions.Clear();
+                foreach (var optionItem in OptionItem.AllOptions.ToArray())
+                {
+                    if (item.Id != optionItem.Id)
+                        TempCurrentOptions.TryAdd(optionItem.Id, optionItem.GetValue());
+                }
+            }
 
             item.SetValue(__instance.GetInt());
 
@@ -699,6 +692,24 @@ public static class StringOptionPatch
                 else if (Options.GameMode.GetInt() != 2 && GameStates.IsHideNSeek)
                 {
                     Options.GameMode.SetValue(2);
+                }
+
+                if (item is PresetOptionItem && Input.GetKey(KeyCode.C))
+                {
+                    Logger.Info("Paste Preset", "PresetOptionItem");
+                    foreach (var optionItem in OptionItem.AllOptions.ToArray())
+                    {
+                        if (item.Id == optionItem.Id) continue;
+
+                        if (TempCurrentOptions.TryGetValue(optionItem.Id, out var value))
+                        {
+                            optionItem.SetValue(value);
+                        }
+
+                        // Clear and sync
+                        TempCurrentOptions.Clear();
+                        RPC.SyncCustomSettingsRPC();
+                    }
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }

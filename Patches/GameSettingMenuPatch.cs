@@ -110,6 +110,26 @@ public class GameSettingMenuPatch
         textLabel.DestroyTranslator();
         textLabel.fontStyle = FontStyles.UpperCase;
         textLabel.text = GetString("TabVanilla.GameSettings");
+
+        var optionMenu = GameObject.Find("PlayerOptionsMenu(Clone)");
+        var menuDescription = optionMenu?.transform.FindChild("What Is This?");
+
+        var infoImage = menuDescription.transform.FindChild("InfoImage");
+        infoImage.transform.localPosition = new(-4.65f, 0.16f, -1f);
+        infoImage.transform.localScale = new(0.2202f, 0.2202f, 0.3202f);
+
+        var infoText = menuDescription.transform.FindChild("InfoText");
+        infoText.transform.localPosition = new(-3.5f, 0.83f, -2f);
+        infoText.transform.localScale = new(1f, 1f, 1f);
+
+        var cubeObject = menuDescription.transform.FindChild("Cube");
+        cubeObject.transform.localPosition = new(-3.2f, 0.55f, -0.1f);
+        cubeObject.transform.localScale = new(0.61f, 0.64f, 1f);
+
+        __instance.MenuDescriptionText.m_marginWidth = 2.5f;
+        __instance.MenuDescriptionText?.DestroyTranslator();
+        __instance.MenuDescriptionText.text = GetString("TabMenuDescription_Tips");
+
         //gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
         //gameSettingButton.selectedTextColor = Color.blue;
 
@@ -349,21 +369,8 @@ public class GameSettingMenuPatch
             if (ModSettingsTabs.TryGetValue(tabGroupId, out settingsTab) && settingsTab != null)
             {
                 settingsTab.gameObject.SetActive(true);
-                __instance.MenuDescriptionText.DestroyTranslator();
-                switch (tabGroupId)
-                {
-                    case TabGroup.SystemSettings:
-                    case TabGroup.ModSettings:
-                        __instance.MenuDescriptionText.text = GetString("TabMenuDescription_General");
-                        break;
-                    case TabGroup.ImpostorRoles:
-                    case TabGroup.CrewmateRoles:
-                    case TabGroup.NeutralRoles:
-                    case TabGroup.CovenRoles:
-                    case TabGroup.Addons:
-                        __instance.MenuDescriptionText.text = GetString("TabMenuDescription_Roles&AddOns");
-                        break;
-                }
+                __instance.MenuDescriptionText?.DestroyTranslator();
+                __instance.MenuDescriptionText.text = GetString("TabMenuDescription_Tips");
             }
         }
 
