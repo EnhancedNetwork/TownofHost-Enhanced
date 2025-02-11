@@ -86,8 +86,8 @@ public class RoleAssign
 
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
-        int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors) + Narc.ExtraImpSpotNarc;
-        int optMadmateNum = Options.NumberOfMadmates.GetInt() + Narc.ExtraMadSpotNarc;
+        int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
+        int optMadmateNum = Options.NumberOfMadmates.GetInt();
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
         int optNeutralApocalypseNum = 0;
@@ -193,7 +193,6 @@ public class RoleAssign
         // Take - Takes the first x roles of the list ... x is the maximum number of roles we could need of that team
 
         Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Take(optImpNum).ToList();
-        Roles[RoleAssignType.Madmate] = Roles[RoleAssignType.Madmate].Shuffle(rd).Take(optMadmateNum).ToList();
         Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Take(optNeutralKillingNum).ToList();
         Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Take(optNeutralApocalypseNum).ToList();
         Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].Shuffle(rd).Take(optNonNeutralKillingNum).ToList();
