@@ -928,7 +928,7 @@ class IntroCutsceneDestroyPatch
 
             Utils.CheckAndSetVentInteractions();
 
-            if (Main.CurrentServerIsVanilla)
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {
                 Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
             }

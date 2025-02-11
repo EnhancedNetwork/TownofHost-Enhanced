@@ -284,7 +284,10 @@ internal class Romantic : RoleBase
             {
                 Logger.Info($"Crew/nnk Romantic Partner Died changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful romantic", "Romantic");
                 var killer = player.GetRealKiller();
-                if (killer == null) //change role to RuthlessRomantic if there is no killer for partner in game
+                if (killer == null //if no killer
+                    || Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Vote //or if partner is ejected
+                    || killer == player //or if partner dies by suicide
+                    || !killer.IsAlive()) //or if killer is dead,romantic will become ruthless romantic
                 {
                     pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
