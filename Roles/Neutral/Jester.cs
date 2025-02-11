@@ -66,7 +66,7 @@ internal class Jester : RoleBase
             {
                 if (RevealJesterUponEjection.GetBool())
                 {
-                    name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                    name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
                     DecidedWinner = true;
                 }
             }

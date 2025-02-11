@@ -200,7 +200,7 @@ internal class Mini : RoleBase
             {
                 if (isMeetingHud)
                 {
-                    name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                    name = string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
                 }
                 else
                 {

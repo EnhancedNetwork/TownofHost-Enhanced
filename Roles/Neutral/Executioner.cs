@@ -261,7 +261,7 @@ internal class Executioner : RoleBase
         {
             if (RevealExeTargetUponEjection.GetBool())
             {
-                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
                 DecidedWinner = true;
             }
         }
