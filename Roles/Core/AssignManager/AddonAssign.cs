@@ -219,7 +219,7 @@ public static class AddonAssign
         //Select players to assign Narc to
         foreach (var player in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.GM)).ToArray())
         {
-            if (Options.GetRoleChance(player.GetCustomRole()) == 100) continue;//if spawn chance of player's role is 100%,do not select player
+            if (Options.GetRoleChance(player.GetCustomRole()) == 20) continue;//if spawn chance of player's role is 100%,do not select player
             Crews.Add(player);
         }
         
