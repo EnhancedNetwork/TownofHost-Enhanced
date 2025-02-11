@@ -449,7 +449,7 @@ public static class Options
     public static OptionItem Holiday;
     public static OptionItem Shuffle;
     public static OptionItem AnomalyMeetingPCT;
-    public static OptionItem EnableWills;
+    // public static OptionItem EnableWills;
 
 
     // ------------ Task Management Tab ------------
@@ -2098,9 +2098,10 @@ public static class Options
             .SetValueFormat(OptionFormat.Percent)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(EnableAnomalies);
-        EnableWills = BooleanOptionItem.Create(60970, "EnableWills", false, TabGroup.ModSettings, false)
+        /* EnableWills = BooleanOptionItem.Create(60970, "EnableWills", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(3, 219, 252, byte.MaxValue));
+        */
 
 
         #endregion

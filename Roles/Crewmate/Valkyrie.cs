@@ -22,11 +22,12 @@ internal class Valkyrie : RoleBase
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        killer.RpcMurderPlayer(target);
-        killer.SetKillCooldown();
-        target.RpcChangeRoleBasis(CustomRoles.ValkyrieB);
-        target.RpcSetCustomRole(CustomRoles.ValkyrieB, true);
-        return false;
+        new LateTask(() =>
+        {
+            target.RpcChangeRoleBasis(CustomRoles.ValkyrieB);
+            target.RpcSetCustomRole(CustomRoles.ValkyrieB, true);
+        }, 1f, "Valkyrie Set Role");
+        return true;
     }
 }
 

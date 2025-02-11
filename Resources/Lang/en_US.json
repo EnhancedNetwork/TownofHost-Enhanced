@@ -4508,18 +4508,4 @@
   "CupidInfo": "Create love with your powerful link",
   "CupidInfoLong": "(Impostors):\nAs the Cupid, you can shapeshift into 2 players to link their lives. If one of them dies, the other will also die. You can do this as many times as you want.",
   "LinkCooldown338": "Shapeshift/Link cooldown"
-
-  /* WILLS - v1.6.0
-  "Author": "Author",
-  "AuthorInfo": "Write your will!",
-  "AuthorInfoLong": "(Add-ons):\nYour Will will be showed to everyone when your body is reported.\n Use /wa to write a line in your will, /wc to clear your will, and /wv to view your will.",
-
-  "WillNotesTitle": "PLAYER WILL",
-  "Will.InvalidArgument": "Invalid argument",
-  "Will.CommandUsage": "Use /wa to write a line in your will, /wc to clear your will, and /wv to view your will.",
-  "WillError.IndexOutOfRange": "Not enough arguments",
-  "WillError.ArgumentOutOfRange": "Invalid index",
-  "WillError.Unknown": "Unknown Error",
-  "EnableWills": "Enable Wills"
-  */
 }
