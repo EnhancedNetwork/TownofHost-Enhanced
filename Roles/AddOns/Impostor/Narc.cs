@@ -20,7 +20,7 @@ public class Narc : IAddon
     public static OptionItem NarcCanSeeTeammates;
     public static OptionItem NarcCanKillMadmate;
     private static OptionItem NarcCanUseSabotage;
-    private static OptionItem NarcHasCrewVision;
+    public static OptionItem NarcHasCrewVision;
     public static OptionItem MadmateCanBeNarc;
 
     public void SetupCustomOption()
