@@ -48,10 +48,9 @@ internal class CopyCat : RoleBase
         CurrentKillCooldown = KillCooldown.GetFloat();
         OldAddons[playerId] = [];
     }
-    public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
+    public override void Remove(byte playerId)
     {
-        // Copy cat role wont be removed for now i guess
-        // playerIdList.Remove(playerId);
+        playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
