@@ -56,7 +56,7 @@ public class Narc : IAddon
 
     public static void AssignNarcToPlayer(CustomRoles role, PlayerControl narc)
     {
-        Logger.Info($"{narc.GetRealName()(narc.PlayerId)} Final Role Result: {role.ToString()} + {CustomRoles.Narc.ToString()}", "Narc:Assign");
+        Logger.Info($"{narc.GetRealName()}({narc.PlayerId}) Final Role Result: {role.ToString()} + {CustomRoles.Narc.ToString()}", "Narc:Assign");
         narc.GetRoleClass()?.OnRemove(narc.PlayerId);
         narc.RpcChangeRoleBasis(role);
         narc.RpcSetCustomRole(role);
