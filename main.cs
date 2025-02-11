@@ -46,8 +46,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0206.220.30000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Beta 3";
+    public const string PluginVersion = "2025.0211.220.30171"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0 Alpha 17.1";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -60,10 +60,10 @@ public class Main : BasePlugin
     public const bool ShowUpdateButton = true;
 
     public const bool ShowGitHubButton = true;
-    public const string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public const string GitHubInviteUrl = "https://github.com/EnhancedNetwork/TownofHost-Enhanced";
 
     public const bool ShowDiscordButton = true;
-    public const string DiscordInviteUrl = "https://discord.gg/tohe";
+    public const string DiscordInviteUrl = "https://discord.gg/ten";
 
     public const bool ShowWebsiteButton = true;
     public const string WebsiteInviteUrl = "https://weareten.ca/";

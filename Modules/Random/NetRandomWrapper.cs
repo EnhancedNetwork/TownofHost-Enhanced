@@ -4,10 +4,11 @@ namespace TOHE;
 
 public class NetRandomWrapper(Random instance) : IRandom
 {
-    private Random wrapping = instance;
+    public Random wrapping = instance;
 
-    public NetRandomWrapper() : this(new Random())
+    public NetRandomWrapper() : this(new Random((int)DateTime.UtcNow.Ticks))
     { }
+
     public NetRandomWrapper(int seed) : this(new Random(seed))
     { }
 

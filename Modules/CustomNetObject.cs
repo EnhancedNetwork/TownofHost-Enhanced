@@ -319,7 +319,7 @@ namespace TOHE.Modules
 
             // Host is the -2 owner of NT, dirty the NT and host will serialize it automatically.
             var NT = playerControl.NetTransform;
-            
+
             if (NT == null) return;
             playerControl.Collider.enabled = false;
             if (Position != NT.body.position)

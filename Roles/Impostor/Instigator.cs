@@ -15,8 +15,6 @@ internal class Instigator : RoleBase
     private static OptionItem AbilityLimitt;
     private static OptionItem KillsPerAbilityUse;
 
-    private static readonly IRandom rd = IRandom.Instance;
-
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Instigator);
