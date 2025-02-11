@@ -660,7 +660,7 @@ public static class StringOptionPatch
 
     }
 
-    private static readonly Dictionary<int, int> TempCurrentOptions = [];
+    private static Dictionary<int, int> TempCurrentOptions = [];
     [HarmonyPatch(nameof(StringOption.UpdateValue)), HarmonyPrefix]
     private static bool UpdateValuePrefix(StringOption __instance)
     {
@@ -673,13 +673,7 @@ public static class StringOptionPatch
             if (item is PresetOptionItem && Input.GetKey(KeyCode.C))
             {
                 Logger.Info("Copy Preset", "PresetOptionItem");
-                TempCurrentOptions.Clear();
-                foreach (var optionItem in OptionItem.AllOptions.ToArray())
-                {
-                    if (item.Id == optionItem.Id) continue;
-
-                    TempCurrentOptions.TryAdd(optionItem.Id, optionItem.GetValue());
-                }
+                TempCurrentOptions = OptionItem.AllOptions.ToDictionary(x => x.Id, x => x.GetValue());
             }
 
             item.SetValue(__instance.GetInt());
@@ -706,11 +700,11 @@ public static class StringOptionPatch
                         {
                             optionItem.SetValue(value);
                         }
-
-                        // Clear and sync
-                        TempCurrentOptions.Clear();
-                        RPC.SyncCustomSettingsRPC();
                     }
+
+                    // Clear and sync
+                    TempCurrentOptions.Clear();
+                    RPC.SyncCustomSettingsRPC();
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }
