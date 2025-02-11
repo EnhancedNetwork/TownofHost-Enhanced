@@ -6,6 +6,7 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -231,7 +232,7 @@ internal class Baker : RoleBase
         if (!CanUseAbility)
             killer.Notify(GetString("BakerBreadUsedAlready"));
 
-        else if (target.IsNeutralApocalypse())
+        else if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
             killer.Notify(GetString("BakerCantBreadApoc"));
 
         else if (HasBread(killer.PlayerId, target.PlayerId))
@@ -312,7 +313,7 @@ internal class Baker : RoleBase
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()))
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer).Count()))
         {
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
@@ -369,7 +370,7 @@ internal class Famine : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse())
+        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
             killer.Notify(GetString("FamineCantStarveApoc"));
 
         else if (FamineList[killer.PlayerId].Contains(target.PlayerId))
@@ -422,7 +423,7 @@ internal class Famine : RoleBase
         var baker = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.IsNeutralApocalypse() || Baker.HasBread(baker.PlayerId, pc.PlayerId)) continue;
+            if ((pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) || Baker.HasBread(baker.PlayerId, pc.PlayerId)) continue;
             if (baker.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))

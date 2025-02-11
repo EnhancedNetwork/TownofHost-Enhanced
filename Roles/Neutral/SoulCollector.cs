@@ -4,6 +4,7 @@ using InnerNet;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -181,7 +182,7 @@ internal class Death : RoleBase
         var death = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.IsNeutralApocalypse()) continue;
+            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
             if (death.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
