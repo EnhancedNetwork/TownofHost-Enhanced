@@ -1096,6 +1096,7 @@ class ReportDeadBodyPatch
         }
 
         RPC.SyncDeadPassedMeetingList();
+        WillManager.OnReportDeadBody(target);
         // Set meeting time
         MeetingTimeManager.OnReportDeadBody();
 

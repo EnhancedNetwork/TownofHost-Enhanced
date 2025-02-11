@@ -698,6 +698,7 @@ public enum CustomRoles
     Consigliere,
     Councillor,
     Crewpostor,
+    Cupid,
     CursedWolf,
     Dazzler,
     Deathpact,
@@ -971,6 +972,7 @@ public enum CustomRoles
     // Add-ons
     Admired,
     Antidote,
+    Author,
     Autopsy,
     Avanger,
     Aware,

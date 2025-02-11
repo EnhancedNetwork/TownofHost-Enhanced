@@ -441,7 +441,7 @@ public static class Options
     public static OptionItem MaxNeutralGhost;
     public static OptionItem DefaultAngelCooldown;
 
-    // Anomalies
+    // Modifiers
     public static OptionItem EnableAnomalies;
     public static OptionItem ClownFest;
     public static OptionItem Retrial;
@@ -449,6 +449,7 @@ public static class Options
     public static OptionItem Holiday;
     public static OptionItem Shuffle;
     public static OptionItem AnomalyMeetingPCT;
+    public static OptionItem EnableWills;
 
 
     // ------------ Task Management Tab ------------
@@ -2071,7 +2072,7 @@ public static class Options
 
         // Anomaly Settings
 
-        TextOptionItem.Create(10000033, "MenuTitle.Anomalies", TabGroup.ModSettings)
+        TextOptionItem.Create(10000033, "MenuTitle.GameModifiers", TabGroup.ModSettings)
            .HideInFFA()
            .HideInCandR()
            .SetColor(new Color32(168, 50, 62, byte.MaxValue));
@@ -2097,6 +2098,9 @@ public static class Options
             .SetValueFormat(OptionFormat.Percent)
             .SetGameMode(CustomGameMode.Standard)
             .SetParent(EnableAnomalies);
+        EnableWills = BooleanOptionItem.Create(60970, "EnableWills", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(3, 219, 252, byte.MaxValue));
 
 
         #endregion

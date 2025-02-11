@@ -21,7 +21,6 @@ internal class Contaminator : RoleBase
 
     public static OptionItem ContaminationRadius;
     public static OptionItem CheckLimitOpt;
-    public static OptionItem AbilityUsesPerTaskCompleted;
     public static OptionItem MassacreKillCooldown;
 
     public override void Init()
