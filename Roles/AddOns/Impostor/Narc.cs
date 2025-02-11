@@ -56,7 +56,7 @@ public class Narc : IAddon
 
     public static void AssignNarcToPlayer(CustomRoles role, PlayerControl narc)
     {
-        Logger.Info($"{narc.GetRealName()}({narc.PlayerId}) Final Role Result: {role.ToString()} + {CustomRoles.Narc.ToString()}", "Narc:Assign");
+        Logger.Info($"{narc.GetRealName()}({narc.PlayerId}) Role Change: {narc.GetCustomRole().ToString()} => {role.ToString()} + {CustomRoles.Narc.ToString()}", "Narc:Assign");
         narc.GetRoleClass()?.OnRemove(narc.PlayerId);
         narc.RpcChangeRoleBasis(role);
         narc.RpcSetCustomRole(role);
@@ -87,14 +87,13 @@ public class Narc : IAddon
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
         bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor() && !(player.Is(CustomRoles.Torch) && !Torch.TorchAffectedByLights.GetBool());
-        float initVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultCrewmateVision;
-        float crewvision = lightsout? initVision / 5 : initVision;
+        float narcVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultCrewmateVision;
         if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie)
             && NarcHasCrewVision.GetBool())
         {
             opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, crewvision);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, crewvision);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, narcvision);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, narcvision);
         }
     }
 
