@@ -14,10 +14,9 @@ public interface IRandom
     public static Dictionary<int, Type> randomTypes = new()
     {
         { 0, typeof(NetRandomWrapper) }, //Default
-        { 1, typeof(NetRandomWrapper) },
-        { 2, typeof(HashRandomWrapper) },
-        { 3, typeof(Xorshift) },
-        { 4, typeof(MersenneTwister) },
+        { 1, typeof(HashRandomWrapper) },
+        { 2, typeof(Xorshift) },
+        { 3, typeof(MersenneTwister) },
     };
 
     public static IRandom Instance { get; private set; }
