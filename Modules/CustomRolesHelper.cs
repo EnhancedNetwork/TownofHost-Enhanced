@@ -519,8 +519,8 @@ public static class CustomRolesHelper
         else if (pc.Is(CustomRoles.GM) || role is CustomRoles.Lovers or CustomRoles.Narc || pc.Is(CustomRoles.LazyGuy)) return false;
 
         if (checkLimitAddons)
-            if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
-
+            if (pc.HasSubRole() && pc.GetCustomSubRoles().Count(x => x != CustomRoles.Narc) >= Options.NoLimitAddonsNumMax.GetInt()) return false;
+        //Narc doesn't take an Add-on spot
 
         // Checking for conflicts with roles and other add-ons
         switch (role)
