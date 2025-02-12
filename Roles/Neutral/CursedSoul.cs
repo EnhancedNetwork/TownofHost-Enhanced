@@ -72,14 +72,21 @@ internal class CursedSoul : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        if (CanBeSoulless(target))
+        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Soulless))
         {
+            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Soulless);
             CurseLimit--;
             SendRPC();
-            target.RpcSetCustomRole(CustomRoles.Soulless);
+            target.RpcSetCustomRole(addon);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
+
+            if (addon is CustomRoles.Admired)'
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
 
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
