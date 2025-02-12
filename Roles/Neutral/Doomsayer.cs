@@ -69,7 +69,7 @@ internal class Doomsayer : RoleBase
         ObserveCooldown = FloatOptionItem.Create(Id + 29, "DoomsayerObserveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(EasyMode)
             .SetValueFormat(OptionFormat.Seconds);
         EvenEasierMode = BooleanOptionItem.Create(Id + 28, "DoomsayerEvenEasierMode", false, TabGroup.NeutralRoles, true)
-            .SetParent(EasyMode);
+            .SetParent(EasyMode).SetHidden(true);
 
         AdvancedSettings = BooleanOptionItem.Create(Id + 16, "DoomsayerAdvancedSettings", true, TabGroup.NeutralRoles, true)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doomsayer]);
@@ -295,14 +295,21 @@ internal class Doomsayer : RoleBase
         if (killer == null || target == null) return false;
         if (!EasyMode.GetBool()) return false;
         if (!EvenEasierMode.GetBool()) MsgToSend[killer.PlayerId].Add(string.Format(ObserveRiddleMsg(target), target.GetRealName()));
-        else MsgToSend[killer.PlayerId].Add(string.Format(ObserveRiddleMsg(target), target.GetRealName()) + " " + ObserveRolesMsg(target));
+        else MsgToSend[killer.PlayerId].Add(string.Format(ObserveRiddleMsg(target), target.GetRealName()) + "<br><size=1>" + ObserveRolesMsg(target) + "</size>");
+        killer.Notify(string.Format(GetString("DoomsayerObserveNotif"), target.GetRealName()));
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
         return false;
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton?.OverrideText(GetString("DoomsayerKillButtonText"));
     }
 
     // i hate this code so much no wonder why we reworked fortune teller, oh well, here we go again
     public static string ObserveRiddleMsg(PlayerControl player)
     {
-        string result = "DoomsayerRoles.";
+        string result = "DoomsayerObserve.";
         var role = player.GetCustomRole();
         if (role.IsGhostRole())
         {
