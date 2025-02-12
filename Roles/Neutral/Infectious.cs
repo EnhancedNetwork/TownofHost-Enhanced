@@ -65,9 +65,9 @@ internal class Infectious : RoleBase
 
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
+        var addon = killerGetBetrayalAddon(defaultAddon: CustomRoles.Infected);
         if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Infected))
         {
-            var addon = killerGetBetrayalAddon(defaultAddon: CustomRoles.Infected);
             BiteLimit--;
             target.RpcSetCustomRole(addon);
 
@@ -102,7 +102,7 @@ internal class Infectious : RoleBase
             return true;
         }
 
-        if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected))
+        if (!target.CanBeRecruitedBy(killer, defaultAddon: addon) && !target.Is(addon))
         {
             killer.RpcMurderPlayer(target);
         }
