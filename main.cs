@@ -1140,6 +1140,7 @@ public enum CustomWinner
     FragileHunter = CustomRoles.FragileHunter,
     Contaminator = CustomRoles.Contaminator,
     Massacre = CustomRoles.Massacre,
+    Sorcerer = CustomRoles.Sorcerer,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
