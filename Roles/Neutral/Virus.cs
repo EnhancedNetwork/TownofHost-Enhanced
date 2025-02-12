@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
