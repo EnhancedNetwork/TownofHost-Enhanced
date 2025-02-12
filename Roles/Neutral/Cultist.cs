@@ -64,14 +64,21 @@ internal class Cultist : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        else if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Charmed))
         {
+            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Charmed);
             AbilityLimit--;
             SendSkillRPC();
-            target.RpcSetCustomRole(CustomRoles.Charmed);
+            target.RpcSetCustomRole(addon);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
+
+            if (addon is CustomRoles.Admired)'
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -110,7 +117,8 @@ internal class Cultist : RoleBase
             (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
             && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Enchanted)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool())
+            && (pc.GetCustomRole() is not CustomRoles.NiceMini and not CustomRoles.EvilMini || Mini.Age == 18);
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {
