@@ -98,8 +98,8 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
+                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
@@ -356,7 +356,7 @@ class GameEndCheckerForNormal
                         Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
                     }
                 }
-                
+
                 for (int i = 0; i < Main.AllPlayerControls.Length + 1; i++)
                 {
                     CheckAdditionalWinners();
@@ -471,7 +471,7 @@ class GameEndCheckerForNormal
                     if (WinnerTeam is not CustomWinner.Lovers)
                     {
                         var loverArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lovers)).ToArray();
-    
+
                         foreach (var lover in loverArray)
                         {
                             if (WinnerIds.Any(x => Utils.GetPlayerById(x).Is(CustomRoles.Lovers)) && !WinnerIds.Contains(lover.PlayerId))
@@ -488,7 +488,7 @@ class GameEndCheckerForNormal
                             .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
                             .Do(p => WinnerIds.Add(p.PlayerId));
                     }
-                    
+
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
                 }
