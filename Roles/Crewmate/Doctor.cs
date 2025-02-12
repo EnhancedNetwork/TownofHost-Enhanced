@@ -14,7 +14,7 @@ internal class Doctor : RoleBase
     //==================================================================\\
 
     private static OptionItem TaskCompletedBatteryChargeOpt;
-    private static OptionItem VisibleToEveryoneOpt;
+    public static OptionItem VisibleToEveryoneOpt;
 
     public override void SetupCustomOption()
     {
