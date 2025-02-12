@@ -28,7 +28,6 @@ static class ExtendedPlayerControl
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
             //  player.GetRoleClass()?.OnAdd(player.PlayerId);
             // Remember to manually add OnAdd if you are setting role mid game
-            if (checkAddons && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
@@ -36,7 +35,6 @@ static class ExtendedPlayerControl
             
             Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
             
-            if (checkAAconflict && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -54,20 +52,6 @@ static class ExtendedPlayerControl
             writer.Write(PlayerId);
             writer.WritePacked((int)role);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
-    public static void RemoveIncompatibleAddOns(this PlayerControl player)
-    {
-        List<CustomRoles> roles = new(player.GetCustomSubRoles());
-        roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
-        roles.Shuffle();
-        foreach (var addon in roles)
-        {
-            if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkSelfAddOn: false))
-            {
-                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"{player.GetCustomRole()}");
-            }
         }
     }
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride)
