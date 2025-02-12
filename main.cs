@@ -917,6 +917,7 @@ public enum CustomRoles
     Sidekick,
     Slayer,
     Solsticer,
+    Sorcerer,
     SoulCollector,
     Specter,
     Spiritcaller,
