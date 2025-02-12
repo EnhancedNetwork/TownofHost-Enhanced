@@ -13,7 +13,6 @@ internal class Fury : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Fury;
     const int Id = 31400;
-    public static readonly HashSet<byte> PlayerIdList = [];
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -43,35 +42,27 @@ internal class Fury : RoleBase
         CanStartMeetingWhenAngry = BooleanOptionItem.Create(Id + 14, "CanStartMeetingWhenAngry", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury]);
     }
 
-    public override void Init()
-    {
-        PlayerIdList.Clear();
-    }
-
-    public override void Add(byte playerId)
-    {
-        PlayerIdList.Add(playerId);
-    }
     public override bool OnCheckStartMeeting(PlayerControl reporter)
     {
         foreach (PlayerControl playerControl in Main.AllPlayerControls)
         {
             if (!CanStartMeetingWhenAngry.GetBool() & FuryAngry == true)
             {
-                return false; 
+                return false;
             }
             if (CanStartMeetingWhenAngry.GetBool() & FuryAngry == true)
             {
-                return true; 
+                return true;
             }
         }
-        return true; 
+        return true;
     }
+
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Fury");
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-            hud.AbilityButton.OverrideText(GetString("FuryAngryShapeshiftTextAfterDisguise"));
+        hud.AbilityButton.OverrideText(GetString("FuryAngryShapeshiftTextAfterDisguise"));
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -91,6 +82,7 @@ internal class Fury : RoleBase
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
         }
     }
+
     public override void UnShapeShiftButton(PlayerControl player)
     {
         player.SetKillCooldown(FuryKillCooldownWhenAngry.GetFloat(), null, false);
@@ -112,7 +104,7 @@ internal class Fury : RoleBase
         Main.AllPlayerSpeed[player.PlayerId] = FuryMaxSpeedWhenAngry.GetFloat();
         Main.AllPlayerKillCooldown[player.PlayerId] = FuryKillCooldownWhenAngry.GetFloat();
 
-        new LateTask(() =>
+        _ = new LateTask(() =>
         {
             Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - FuryMaxSpeedWhenAngry.GetFloat() + tmpSpeed;
             Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] - FuryKillCooldownWhenAngry.GetFloat() + tmpKillCooldown;
@@ -121,12 +113,3 @@ internal class Fury : RoleBase
         }, FuryAngryDuration.GetFloat(), "No Name Task", true);
     }
 }
-
-
-
-
-
-
-
-
-
