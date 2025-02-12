@@ -90,7 +90,7 @@ internal class Virus : RoleBase
         AbilityLimit--;
         SendSkillRPC();
 
-        if (KillInfectedPlayerAfterMeeting.GetBool())
+        if (KillInfectedPlayerAfterMeeting.GetBool() && addon is CustomRoles.Contagious)
         {
             InfectedPlayer.Add(reporter.PlayerId);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage2");
@@ -99,6 +99,11 @@ internal class Virus : RoleBase
         {
             reporter.RpcSetCustomRole(addon);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
+            if (addon is CustomRoles.Admired)'
+            {
+                Admirer.AdmiredList[_Player.PlayerId].Add(reporter.PlayerId);
+                Admirer.SendRPC(_Player.PlayerId, reporter.PlayerId);
+            }
         }
 
         Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + addon.ToString());
