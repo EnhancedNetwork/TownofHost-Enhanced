@@ -144,7 +144,7 @@ internal class Admirer : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmirerAdmired")));
             }
-            else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
+            else if (killer.Is(CustomRoles.Infected) && Infectious.CanBeBitten(target))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(CustomRoles.Infected);
