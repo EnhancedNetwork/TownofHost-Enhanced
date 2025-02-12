@@ -58,11 +58,11 @@ internal class Fury : RoleBase
         {
             if (!CanStartMeetingWhenAngry.GetBool() & FuryAngry == true)
             {
-                return false; // 如果没有处于 FuryAngry 状态，允许开始会议
+                return false; 
             }
             if (CanStartMeetingWhenAngry.GetBool() & FuryAngry == true)
             {
-                return true; // 如果有处于 FuryAngry 状态，不允许开始会议
+                return true; 
             }
         }
         return true; 
@@ -111,9 +111,7 @@ internal class Fury : RoleBase
         float tmpKillCooldown = Main.AllPlayerKillCooldown[player.PlayerId];
         Main.AllPlayerSpeed[player.PlayerId] = FuryMaxSpeedWhenAngry.GetFloat();
         Main.AllPlayerKillCooldown[player.PlayerId] = FuryKillCooldownWhenAngry.GetFloat();
-        
 
-        // 创建一个延迟任务，用于恢复玩家的速度和击杀冷却时间
         new LateTask(() =>
         {
             Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - FuryMaxSpeedWhenAngry.GetFloat() + tmpSpeed;
