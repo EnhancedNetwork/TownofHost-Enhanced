@@ -1058,7 +1058,7 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            PhantomRolePatch.OnReportDeadBody(pc, force);
+            PhantomRolePatch.OnReportDeadBody(pc);
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }

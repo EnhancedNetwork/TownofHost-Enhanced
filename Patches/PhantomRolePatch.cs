@@ -55,7 +55,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole() || !Main.PlayerStates[target.PlayerId].IsNecromancer) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             // Set Phantom when his start vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
@@ -93,7 +93,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole() || !Main.PlayerStates[target.PlayerId].IsNecromancer) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             var clientId = target.GetClientId();
 
@@ -129,9 +129,9 @@ public static class PhantomRolePatch
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
     }
 
-    public static void OnReportDeadBody(PlayerControl seer, bool force)
+    public static void OnReportDeadBody(PlayerControl seer)
     {
-        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole() || !Main.PlayerStates[seer.PlayerId].IsNecromancer) return;
+        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsNecromancer)) return;
 
         foreach (var phantom in InvisibilityList.GetFastEnumerator())
         {
@@ -141,17 +141,13 @@ public static class PhantomRolePatch
                 continue;
             }
 
-            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer, force));
+            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer));
         }
     }
     private static bool InValid(PlayerControl phantom, PlayerControl seer) => seer.GetClientId() == -1 || phantom == null;
-    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer, bool force)
+    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer)
     {
         // Set Scientist for meeting
-        if (!force)
-        {
-            yield return new WaitForSeconds(0.0001f);
-        }
         if (InValid(phantom, seer)) yield break;
 
         phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
