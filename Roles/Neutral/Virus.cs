@@ -99,7 +99,7 @@ internal class Virus : RoleBase
         {
             reporter.RpcSetCustomRole(addon);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
-            if (addon is CustomRoles.Admired)'
+            if (addon is CustomRoles.Admired)
             {
                 Admirer.AdmiredList[_Player.PlayerId].Add(reporter.PlayerId);
                 Admirer.SendRPC(_Player.PlayerId, reporter.PlayerId);
