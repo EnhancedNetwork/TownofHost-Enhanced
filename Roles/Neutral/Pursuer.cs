@@ -56,7 +56,7 @@ internal class Pursuer : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl pc, PlayerControl target)
     {
         if (pc == null || target == null || !pc.Is(CustomRoles.Pursuer)) return false;
-        if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.SerialKiller)) return false;
+        if (target.Is(CustomRoles.SerialKiller)) return false;
         if (!(CanBeClient(target) && CanSeel())) return false;
 
         AbilityLimit--;
@@ -64,6 +64,11 @@ internal class Pursuer : RoleBase
         if (target.Is(CustomRoles.KillingMachine))
         {
             Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");
+            return false;
+        }
+        if (target.IsTransformedNeutralApocalypse())
+        {
+            Logger.Info("target is Transformed Neutral Apocalypse, ability used count reduced, but target will not die", "Deceiver");
             return false;
         }
 

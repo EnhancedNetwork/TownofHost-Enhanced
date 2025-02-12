@@ -187,7 +187,7 @@ internal class Shocker : RoleBase
         {
             foreach (Collider2D collider in shockedRooms)
             {
-                if (collider.IsTouching(player.Collider))
+                if (collider.IsTouching(player.Collider) && !player.IsTransformedNeutralApocalypse())
                 {
                     Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");
                     player.SetDeathReason(PlayerState.DeathReason.Electrocuted);

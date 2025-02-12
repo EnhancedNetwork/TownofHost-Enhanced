@@ -372,6 +372,7 @@ internal class Quizmaster : RoleBase
 
     private static void KillPlayer(PlayerControl plrToKill)
     {
+        if (!plrToKill.IsAlive() || plrToKill.IsTransformedNeutralApocalypse()) return;
         plrToKill.SetDeathReason(PlayerState.DeathReason.WrongAnswer);
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
         plrToKill.Data.IsDead = true;

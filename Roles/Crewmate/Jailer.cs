@@ -183,7 +183,7 @@ internal class Jailer : RoleBase
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
                 (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
-                (role.IsNA() && NACanBeExe.GetBool()) ||
+                (role.IsNA() && !role.IsTNA() && NACanBeExe.GetBool()) ||
                 (role.IsCoven() && CovenCanBeExe.GetBool()) ||
                 (role.IsCrewKiller() && CKCanBeExe.GetBool()) ||
                 role.IsImpostorTeamV3();

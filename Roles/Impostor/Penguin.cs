@@ -140,6 +140,12 @@ internal class Penguin : RoleBase
     {
         stopCount = true;
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
+        if (AbductVictim.IsTransformedNeutralApocalypse())
+        {
+            RemoveVictim();
+            Logger.Info($"{AbductVictim.GetRealName()} is TNA, no meeting kill", "Penguin");
+            return;
+        }
         if (AbductVictim != null && AbductTimer <= 0f)
         {
             _Player?.RpcMurderPlayer(AbductVictim);
@@ -207,10 +213,11 @@ internal class Penguin : RoleBase
             }
             if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
-                // Set IsDead to true first (prevents ladder chase)
-                AbductVictim.Data.IsDead = true;
-                AbductVictim.Data.MarkDirty();
-
+                if (!AbductVictim.IsTransformedNeutralApocalypse()) { 
+                    // Set IsDead to true first (prevents ladder chase)
+                    AbductVictim.Data.IsDead = true;
+                    AbductVictim.Data.MarkDirty();
+                }
                 // If the penguin himself is on a ladder, kill him after getting off the ladder.
                 if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
