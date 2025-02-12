@@ -621,7 +621,7 @@ public static class CheckShapeshiftPatch
         UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
         player.RawSetOutfit(player.Data.Outfits[PlayerOutfitType.Default], PlayerOutfitType.Shapeshifted);
 
-        yield return new WaitForSeconds(0.06f);
+        yield return null;
 
         var writer2 = MessageWriter.Get(SendOption.Reliable);
         writer2.StartMessage(6);
@@ -960,6 +960,17 @@ class ReportDeadBodyPatch
             Logger.Info($"target is null? - {target == null}", "AfterReportTasks");
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
+
+            var hostInfoWriter = MessageWriter.Get(SendOption.Reliable);
+            hostInfoWriter.StartMessage(5);
+            hostInfoWriter.Write(AmongUsClient.Instance.GameId);
+            hostInfoWriter.StartMessage(1);
+            hostInfoWriter.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
+            player.Data.Serialize(hostInfoWriter, false);
+            hostInfoWriter.EndMessage();
+            hostInfoWriter.EndMessage();
+            AmongUsClient.Instance.SendOrDisconnect(hostInfoWriter);
+            hostInfoWriter.Recycle();
 
             foreach (var unshapeshifterIds in Main.UnShapeShifter)
             {
