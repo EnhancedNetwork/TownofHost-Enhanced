@@ -175,7 +175,8 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Rebel)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
-                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
+                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool())
+                || (pc.GetCustomRole().IsCoven() && !Options.CovenCanBeInLove.GetBool()))
                 continue;
 
             allPlayers.Add(pc);
@@ -195,52 +196,43 @@ public static class AddonAssign
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
     }
-    public static void AssignRebel()
+    public static void StartAssignRebel()
     {
-        if (CustomRoles.Rebel.IsEnable() && Rebel.CheckRebelAssign())
-            AddRebelToPlayer();
-    }
-    private static void AddRebelToPlayer()
-    {
-        var allPlayers = new List<PlayerControl>();
-        foreach (var pc in Main.AllPlayerControls)
+        var PrepareRoles = new List<CustomRoles>();
+        var NonNKs = new List<PlayerControl>();
+
+        // Select role for Rebel to spawn as
+        foreach (var role in CustomRolesHelper.AllRoles.Where(x => x.IsEnable() && x.IsCrewmate()).ToArray())
         {
-            if (!pc.GetCustomRole().IsCrewmate()
-                || pc.IsAnySubRole(sub => sub.IsConverted())
-                || pc.Is(CustomRoles.Snitch)
-                || pc.Is(CustomRoles.Admirer)
-                || pc.Is(CustomRoles.NiceMini)
-                || pc.Is(CustomRoles.CopyCat)
-                || pc.Is(CustomRoles.Vigilante)
-                || pc.Is(CustomRoles.Lovers)
-                || pc.Is(CustomRoles.Ghoul)
-                || pc.Is(CustomRoles.Bloodthirst)
-                || pc.Is(CustomRoles.Torch)
-                || pc.Is(CustomRoles.Egoist)
-                || pc.Is(CustomRoles.Rascal)
-                || pc.Is(CustomRoles.Paranoia)
-                || pc.Is(CustomRoles.Loyal)
-                || pc.Is(CustomRoles.Hurried)
-                || pc.Is(CustomRoles.Youtuber)
-                || (pc.Is(CustomRoles.Altruist) && !Rebel.CanWinAfterDeath.GetBool())
-                || (pc.Is(CustomRoles.Sheriff) && !Rebel.SheriffCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.Marshall) && !Rebel.MarshallCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.Overseer) && !Rebel.OverseerCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.Swapper) && !Rebel.SwapperCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.Cleanser) && !Rebel.CleanserCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.Reverie) && !Rebel.ReverieCanBeRebel.GetBool())
-                || (pc.Is(CustomRoles.Dictator) && (!Rebel.DictatorCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
-                || (pc.Is(CustomRoles.Retributionist) && (!Rebel.RetributionistCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool())))
+            int CountPlayers = Main.AllPlayerControls.Count(x => x.Is(role));
+            if (CountPlayers >= role.GetCount()
+                || (role == CustomRoles.Altruist && !Rebel.CanWinAfterDeath.GetBool())
+                || (role == CustomRoles.Sheriff && !Rebel.SheriffCanBeRebel.GetBool())
+                || (role == CustomRoles.Marshall && !Rebel.MarshallCanBeRebel.GetBool())
+                || (role == CustomRoles.Overseer && !Rebel.OverseerCanBeRebel.GetBool())
+                || (role == CustomRoles.Swapper && !Rebel.SwapperCanBeRebel.GetBool())
+                || (role == CustomRoles.Cleanser && !Rebel.CleanserCanBeRebel.GetBool())
+                || (role == CustomRoles.Reverie && !Rebel.ReverieCanBeRebel.GetBool())
+                || (role == CustomRoles.Dictator && (!Rebel.DictatorCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
+                || (role == CustomRoles.Retributionist && (!Rebel.RetributionistCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
+                || role is CustomRoles.Snitch or CustomRoles.Admirer or CustomRoles.NiceMini or CustomRoles.CopyCat or CustomRoles.Vigilante)
                 continue;
-            allPlayers.Add(pc);
+            PrepareRoles.Add(role);
         }
-        if (!allPlayers.Any()) return;
-        int count = 1;
-        for (var i = 0; i < count; i++)
+
+        // Select players to assign Rebel to
+        foreach (var player in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsNonNK() && !x.Is(CustomRoles.GM)).ToArray())
         {
-            var player = allPlayers.RandomElement();
-            Main.PlayerStates[player.PlayerId].SetSubRole(CustomRoles.Rebel);
-            Logger.Info($"Rebel Assigned: {player?.Data?.PlayerName} = {player.GetCustomRole()} + {CustomRoles.Rebel}", "Assign Rebel");
+            if (Options.GetRoleChance(player.GetCustomRole()) == 20) continue; // if spawn chance of player's role is 100%,do not select player
+            NonNKs.Add(player);
+        }
+
+        if (Rebel.CheckRebelAssign() && PrepareRoles.Any() && NonNKs.Any())
+            Rebel.AssignRebelToPlayer(PrepareRoles.RandomElement(), NonNKs.RandomElement());
+        else
+        {
+            if (!PrepareRoles.Any()) Logger.Info($"No role for Rebel to spawn as. Rebel will not spawn.", "Assign Rebel");
+            if (!NonNKs.Any()) Logger.Info($"No player can be Rebel. Rebel will not spawn.", "Assign Rebel");
         }
     }
 }

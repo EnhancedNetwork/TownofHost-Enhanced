@@ -122,7 +122,7 @@ internal class Admirer : RoleBase
                         CustomRoles.Enchanted when Ritualist.CanBeConverted(target) => CustomRoles.Enchanted,
                         CustomRoles.Recruit when Jackal.CanBeSidekick(target) => CustomRoles.Recruit,
                         CustomRoles.Charmed when Cultist.CanBeCharmed(target) => CustomRoles.Charmed,
-                        CustomRoles.Infected when target.CanBeInfected() => CustomRoles.Infected,
+                        CustomRoles.Infected when Infectious.CanBeBitten(target) => CustomRoles.Infected,
                         CustomRoles.Contagious when target.CanBeInfected() => CustomRoles.Contagious,
                         _ => CustomRoles.Admired,
                     };

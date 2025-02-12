@@ -9,7 +9,7 @@ public class Bewilder : IAddon
     private const int Id = 18900;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    private static OptionItem BewilderVision;
+    public static OptionItem BewilderVision;
     private static OptionItem KillerGetBewilderVision;
 
     private static readonly HashSet<byte> playerList = [];

@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -19,7 +21,7 @@ public class Rebel : IAddon
     public static OptionItem CleanserCanBeRebel;
     public static OptionItem ReverieCanBeRebel;
     public static OptionItem CanWinAfterDeath;
-    private static OptionItem HasImpostorVision;
+    public static OptionItem HasImpostorVision;
 
     public void SetupCustomOption()
     {
@@ -45,29 +47,28 @@ public class Rebel : IAddon
 
     ///----------------------------------------Check Rebel Assign----------------------------------------///
     public static bool CheckRebelAssign()
+        => CustomRoles.Rebel.IsEnable();
+
+    public static void AssignRebelToPlayer(CustomRoles role, PlayerControl rebel)
     {
-        int optnnknum = NonNeutralKillingRolesMinPlayer.GetInt() + NonNeutralKillingRolesMaxPlayer.GetInt();
-        int assignvalue = IRandom.Instance.Next(1, optnnknum);
-
-        if (optnnknum == 0) return false;
-        else if (assignvalue > optnnknum) return false;
-
-        return true;
+        Logger.Info($"{rebel.GetRealName()}({rebel.PlayerId}) Role Change: {rebel.GetCustomRole().ToString()} => {role.ToString()} + {CustomRoles.Rebel.ToString()}", "Assign Rebel");
+        rebel.GetRoleClass()?.OnRemove(rebel.PlayerId);
+        rebel.RpcChangeRoleBasis(role);
+        rebel.RpcSetCustomRole(role);
+        rebel.GetRoleClass()?.OnAdd(rebel.PlayerId);
+        Main.PlayerStates[rebel.PlayerId].SetSubRole(CustomRoles.Rebel);
     }
-
-    public static int ExtraNNKSpotRebel
-        => CheckRebelAssign() ? 0 : 1;
     ///-------------------------------------------------------------------------------------------------///
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        bool lightsOut = IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsCrewmate();
-        float impVision = lightsOut ? Main.DefaultImpostorVision * 5 : Main.DefaultImpostorVision;
+        bool lightsOut = IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsCrewmate() && !(player.Is(CustomRoles.Torch) && !Torch.TorchAffectedByLights.GetBool());
+        float rebelVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultImpostorVision;
         if (!player.Is(CustomRoles.Lighter) && HasImpostorVision.GetBool())
         {
             opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, impVision);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, impVision);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, rebelVision);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, rebelVision);
         }
     }
     public static bool CheckWinCondition(CustomWinner winner, PlayerControl pc)

@@ -37,7 +37,7 @@ public class RoleAssign
 
         if (NNKmaxOpt > 0 && NNKmaxOpt >= NNKminOpt)
         {
-            ResultNNKnum = rd.Next(NNKminOpt, NNKmaxOpt + Rebel.ExtraNNKSpotRebel);
+            ResultNNKnum = rd.Next(NNKminOpt, NNKmaxOpt + 1);
         }
 
         if (NKmaxOpt > 0 && NKmaxOpt >= NKminOpt)

@@ -457,9 +457,9 @@ internal class StartGameHostPatch
 
             try
             {
+                AddonAssign.StartAssignRebel();
                 AddonAssign.InitAndStartAssignLovers();
                 AddonAssign.StartSortAndAssign();
-                AddonAssign.AssignRebel();
             }
             catch (Exception error)
             {
