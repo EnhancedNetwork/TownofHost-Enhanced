@@ -410,6 +410,28 @@ public static class CustomRolesHelper
             CustomRoles.Swift;
     }
 
+    public static CustomRoles GetBetrayalAddon(this PlayerControl pc, CustomRoles defaultAddon = CustomRoles.NotAssigned)
+    {
+        List<CustomRoles> BTAddonList = pc.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless).ToList();
+        return BTAddonList.Any() ? BTAddonList.FirstOrDefault() : defaultAddon;
+    }
+
+    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned)
+    {
+        return recruiter.GetBetrayalAddon(defaultAddon) switch
+        {
+            CustomRoles.Charmed => Cultist.CanBeCharmed(target),
+            CustomRoles.Madmate => target.CanBeMadmate(forAdmirer: true),
+            CustomRoles.Admired => Admirer.CanBeAdmired(target, recruiter),
+            CustomRoles.Enchanted => Ritualist.CanBeConverted(target),
+            CustomRoles.Recruit => Jackal.CanBeSidekick(target),
+            CustomRoles.Infected => Infectious.CanBeBitten(target),
+            CustomRoles.Contagious => target.CanBeInfected(),
+            CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),
+            _ => false
+        };
+    }
+
     public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
