@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,7 +12,7 @@ internal class Jackal : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Jackal;
     private const int Id = 16700;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jailer);
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jackal);
     public static readonly HashSet<byte> Playerids = [];
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -276,7 +277,7 @@ internal class Jackal : RoleBase
                     target.RpcChangeRoleBasis(role);
                     target.RpcSetCustomRole(role);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
-                    if (role is CustomRoles.Sidekick && killer.GetBetrayalAddon != CustomRoles.NotAssigned) 
+                    if (role is CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned) 
                         target.RpcSetCustomRole(addon);                    
                 }
                 else
