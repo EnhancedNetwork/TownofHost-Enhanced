@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 
@@ -65,7 +66,7 @@ internal class Infectious : RoleBase
 
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
-        var addon = killerGetBetrayalAddon(defaultAddon: CustomRoles.Infected);
+        var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Infected);
         if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Infected))
         {
             BiteLimit--;
