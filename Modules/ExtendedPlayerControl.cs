@@ -636,24 +636,24 @@ static class ExtendedPlayerControl
             PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
             PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
             DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+            return;
         }
-        else
+
+        var currentOutfit = unshifter.Data.Outfits[PlayerOutfitType.Default];
+        unshifter.RpcSpecificShapeshift(PlayerControl.LocalPlayer, false);
+        unshifter.RawSetOutfit(currentOutfit, PlayerOutfitType.Shapeshifted);
+        Main.CheckShapeshift[unshifter.PlayerId] = false;
+
+        _ = new LateTask(() =>
         {
-            var currentOutfit = unshifter.CurrentOutfit;
-            unshifter.RpcSpecificShapeshift(PlayerControl.LocalPlayer, false);
-            Main.CheckShapeshift[unshifter.PlayerId] = false;
+            unshifter?.SetNewOutfit(currentOutfit);
+            unshifter.Data.MarkDirty();
 
-            _ = new LateTask(() =>
+            if (updateName)
             {
-                unshifter?.SetNewOutfit(currentOutfit);
-                unshifter.Data.MarkDirty();
-
-                if (updateName)
-                {
-                    Utils.NotifyRoles(SpecifyTarget: unshifter);
-                }
-            }, 0.1f, "Wait and change outfit", shoudLog: false);
-        }
+                Utils.NotifyRoles(SpecifySeer: unshifter, NoCache: true, ForceLoop: false);
+            }
+        }, 0.2f, "Wait and change outfit", shoudLog: false);
     }
     public static Vent GetClosestVent(this PlayerControl player)
     {

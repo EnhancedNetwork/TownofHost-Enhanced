@@ -94,7 +94,7 @@ class SetUpRoleTextPatch
             foreach (var player in Main.AllPlayerControls)
             {
                 Main.PlayerStates[player.PlayerId].InitTask(player);
-                player.DoUnShiftState();
+                player.DoUnShiftState(true);
             }
 
             GameData.Instance.RecomputeTaskCounts();
