@@ -77,7 +77,7 @@ internal class Infectious : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
 
-            if (addon is CustomRoles.Admired)'
+            if (addon is CustomRoles.Admired)
             {
                 Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
