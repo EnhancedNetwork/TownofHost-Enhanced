@@ -277,7 +277,7 @@ internal class Jackal : RoleBase
                     target.RpcChangeRoleBasis(role);
                     target.RpcSetCustomRole(role);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
-                    if (role is CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned) 
+                    if (role == CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned) 
                         target.RpcSetCustomRole(addon);                    
                 }
                 else
