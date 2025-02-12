@@ -7,6 +7,7 @@ using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Coven;
 using static TOHE.Roles.Core.CustomRoleManager;
 
 namespace TOHE;
