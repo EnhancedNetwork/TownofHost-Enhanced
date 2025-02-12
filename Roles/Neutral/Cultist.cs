@@ -74,7 +74,7 @@ internal class Cultist : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
 
-            if (addon is CustomRoles.Admired)'
+            if (addon is CustomRoles.Admired)
             {
                 Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
