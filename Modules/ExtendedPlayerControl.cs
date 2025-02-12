@@ -624,29 +624,36 @@ static class ExtendedPlayerControl
     }
     public static void DoUnShiftState(this PlayerControl unshifter, bool updateName = false)
     {
-        if (!unshifter.IsAlive() || !Main.UnShapeShifter.Contains(unshifter.PlayerId)) return;
+        if (!AmongUsClient.Instance.AmHost || !unshifter.IsAlive() || !Main.UnShapeShifter.Contains(unshifter.PlayerId)) return;
 
         Logger.Info($"Set UnShift State: {unshifter.GetNameWithRole()}", "DoUnShiftState");
 
-        var target = Main.AllAlivePlayerControls.Where(tar => tar.PlayerId != unshifter.PlayerId).RandomElement();
-        if (target == null)
+        if (unshifter.IsHost())
         {
-            Logger.Warn($"target not found", "DoUnShiftState");
-            return;
+            // Host is Unshapeshifter, make button into unshapeshift state
+            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
         }
-
-        var currentOutfit = unshifter.Data.DefaultOutfit;
-        unshifter.RpcShapeshift(target, false);
-        Main.CheckShapeshift[unshifter.PlayerId] = false;
-
-        _ = new LateTask(() =>
+        else
         {
-            unshifter?.SetNewOutfit(currentOutfit);
-            if (updateName)
+            var currentOutfit = unshifter.CurrentOutfit;
+            unshifter.RpcSpecificShapeshift(PlayerControl.LocalPlayer, false);
+            Main.CheckShapeshift[unshifter.PlayerId] = false;
+
+            _ = new LateTask(() =>
             {
-                Utils.NotifyRoles(SpecifyTarget: unshifter);
-            }
-        }, 0.1f, "Wait and change outfit", shoudLog: false);
+                unshifter?.SetNewOutfit(currentOutfit);
+                unshifter.Data.MarkDirty();
+
+                if (updateName)
+                {
+                    Utils.NotifyRoles(SpecifyTarget: unshifter);
+                }
+            }, 0.1f, "Wait and change outfit", shoudLog: false);
+        }
     }
     public static Vent GetClosestVent(this PlayerControl player)
     {
