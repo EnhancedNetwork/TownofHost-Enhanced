@@ -515,6 +515,12 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
                 break;
 
+            case CustomRoles.Dictator:
+            case CustomRoles.Mayor:
+            case CustomRoles.Swapper:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.Chat.warningSound;
+                break;
+
             case CustomRoles.Saboteur:
             case CustomRoles.Inhibitor:
             case CustomRoles.Mechanic:
@@ -527,6 +533,12 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                 break;
 
+            case CustomRoles.ChiefOfPolice:
+            case CustomRoles.Deputy:
+            case CustomRoles.Sheriff:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
+                break;
+
             case CustomRoles.GM:
                 __instance.TeamTitle.text = Utils.GetRoleName(role);
                 __instance.TeamTitle.color = Utils.GetRoleColor(role);
@@ -536,8 +548,6 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.text = GetString("SubText.GM");
                 break;
 
-            case CustomRoles.ChiefOfPolice:
-            case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
             case CustomRoles.Knight:
             case CustomRoles.KillingMachine:
@@ -603,7 +613,6 @@ class BeginCrewmatePatch
         }
 
         // I hope no one notices this in code
-        // unfortunately niko noticed while fixing others' shxt
         if (Input.GetKey(KeyCode.RightShift))
         {
             __instance.TeamTitle.text = "Damn!!";
@@ -650,7 +659,7 @@ class BeginImpostorPatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
         // Be careful while you are doing this part
-        // This part occurs when local player got impostor base but may need to change to BeginCrewmate
+        // This part occurs when local player got Impostor base but may need to change to BeginCrewmate
         // or BeginCrewmate return false and call BeginImpostor
         // Do not make them call each other!
 
@@ -895,12 +904,25 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => true,
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
+                _ => false
+            };
+            bool shouldAntiBlackOut = Options.CurrentGameMode switch
+            {
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             try
             {
                 if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (shouldAntiBlackOut)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        AntiBlackout.SetIsDead();
+                        Logger.Warn("Set is dead", "IntroPatch");
+                    }, 5f, "anti blackout");
+                }
             }
             catch (Exception error)
             {
