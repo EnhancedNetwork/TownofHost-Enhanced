@@ -253,7 +253,7 @@ internal class Jackal : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
 
-                if (addon is CustomRoles.Admired)'
+                if (addon is CustomRoles.Admired)
                 {
                     Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                     Admirer.SendRPC(killer.PlayerId, target.PlayerId);
