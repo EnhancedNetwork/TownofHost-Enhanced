@@ -1130,18 +1130,6 @@ static class ExtendedPlayerControl
                 return player.GetClient().PlayerName;
             }
         }
-
-        if (Main.CheckShapeshift.GetValueOrDefault(player.PlayerId, false) || player.shapeshifting)
-        {
-            var target = Main.ShapeshiftTarget.GetValueOrDefault(player.PlayerId, byte.MaxValue).GetPlayer();
-            var targetOwnerId = target != null ? target.OwnerId : byte.MaxValue;
-            if (Main.AllClientRealNames.TryGetValue(targetOwnerId, out var realname))
-            {
-                return realname;
-            }
-
-            return player?.Data?.PlayerName;
-        }
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }
     public static bool CanUseKillButton(this PlayerControl pc)
