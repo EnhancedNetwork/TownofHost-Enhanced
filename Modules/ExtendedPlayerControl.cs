@@ -624,13 +624,18 @@ static class ExtendedPlayerControl
     }
     public static void DoUnShiftState(this PlayerControl unshifter, bool updateName = false)
     {
-        if (unshifter == null || !Main.UnShapeShifter.Contains(unshifter.PlayerId)) return;
+        if (!unshifter.IsAlive() || !Main.UnShapeShifter.Contains(unshifter.PlayerId)) return;
 
         Logger.Info($"Set UnShift State: {unshifter.GetNameWithRole()}", "DoUnShiftState");
 
         var target = Main.AllAlivePlayerControls.Where(tar => tar.PlayerId != unshifter.PlayerId).RandomElement();
-        var currentOutfit = unshifter.Data.DefaultOutfit;
+        if (target == null)
+        {
+            Logger.Warn($"target not found", "DoUnShiftState");
+            return;
+        }
 
+        var currentOutfit = unshifter.Data.DefaultOutfit;
         unshifter.RpcShapeshift(target, false);
         Main.CheckShapeshift[unshifter.PlayerId] = false;
 
