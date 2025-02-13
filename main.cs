@@ -50,8 +50,8 @@ public class Main : BasePlugin
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 15
-    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 1
+    public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 17.1
+    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 3
     public static readonly bool fullRelease = true; // Latest: v2.1.1
 
     public static bool hasAccess = true;
@@ -628,6 +628,7 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
+        ClassInjector.RegisterTypeInIl2Cpp<OptionShower>();
         ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
