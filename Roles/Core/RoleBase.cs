@@ -147,7 +147,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     { }
 
     /// <summary>
@@ -157,7 +157,7 @@ public abstract class RoleBase
     /// <summary>
     /// Other Player complete a marked task
     /// </summary>
-    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
+    public virtual void OnOthersTaskComplete(PlayerControl pc, PlayerTask task)
     { }
     /// <summary>
     /// The Role's tasks are needed for a task win
