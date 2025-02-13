@@ -28,7 +28,7 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerShockInVents;
     private static OptionItem ShockerOutsideRadius;
     private static OptionItem ShockerCanShockHimself;
-    private static OptionItem HasImpostorVision;
+    private static OptionItem ShockerHasImpostorVision;
 
     private static readonly List<Collider2D> markedRooms = [];
     private static List<Collider2D> shockedRooms = [];
@@ -38,10 +38,10 @@ internal class Shocker : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shocker);
-        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, "ShockerAbilityCooldown", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
-        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, "ShockerAbilityDuration", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
         ShockerAbilityPerRound = IntegerOptionItem.Create(Id + 12, "ShockerAbilityPerRound", new(0, 10, 1), 2, TabGroup.NeutralRoles, false)
@@ -54,7 +54,7 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]).SetValueFormat(OptionFormat.Multiplier);
         ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        HasImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
+        ShockerHasImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         OverrideTasksData.Create(18, TabGroup.NeutralRoles, CustomRoles.Shocker);
     }
@@ -116,7 +116,7 @@ internal class Shocker : RoleBase
     {
         AURoleOptions.EngineerCooldown = playerId.GetAbilityUseLimit() > 0 ? ShockerAbilityCooldown.GetFloat() : 300;
         AURoleOptions.EngineerInVentMaxTime = 1;
-        opt.SetVision(HasImpostorVision.GetBool());
+        opt.SetVision(ShockerHasImpostorVision.GetBool());
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
