@@ -12,10 +12,6 @@ public static class PhantomRolePatch
     private static readonly Il2CppSystem.Collections.Generic.List<PlayerControl> InvisibilityList = new();
     private static readonly Dictionary<byte, string> PetsList = [];
 
-    /*
-     *  InnerSloth is doing careless stuffs. They didnt put amModdedHost check in cmd check vanish appear
-     *  We temporary need to patch the whole cmd function and wait for the next hotfix from them
-    */
     [HarmonyPatch(nameof(PlayerControl.CmdCheckVanish)), HarmonyPrefix]
     private static bool CmdCheckVanish_Prefix(PlayerControl __instance, float maxDuration)
     {
@@ -44,7 +40,7 @@ public static class PhantomRolePatch
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         return false;
     }
-    // Called when Phantom press vanish button when visible
+    // Called when Phantom press Vanish button when visible
     [HarmonyPatch(nameof(PlayerControl.CheckVanish)), HarmonyPrefix]
     private static void CheckVanish_Prefix(PlayerControl __instance)
     {
@@ -55,11 +51,11 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole() || !Main.PlayerStates[target.PlayerId].IsNecromancer) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
-            // Set Phantom when his start vanish
+            // Set Phantom when his start Vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
-            // Check vanish again for desync role
+            // Check Vanish again for Desync Role
             phantom.RpcCheckVanishDesync(target);
 
             _ = new LateTask(() =>
@@ -77,7 +73,7 @@ public static class PhantomRolePatch
         }
         InvisibilityList.Add(phantom);
     }
-    // Called when Phantom press appear button when is invisible
+    // Called when Phantom press Appear button when is invisible
     [HarmonyPatch(nameof(PlayerControl.CheckAppear)), HarmonyPrefix]
     private static void CheckAppear_Prefix(PlayerControl __instance, bool shouldAnimate)
     {
@@ -93,16 +89,16 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole() || !Main.PlayerStates[target.PlayerId].IsNecromancer) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             var clientId = target.GetClientId();
 
-            // Set Phantom when his end vanish
+            // Set Phantom when his end Vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, clientId);
 
             _ = new LateTask(() =>
             {
-                // Check appear again for desync role
+                // Check Appear again for Desync Role
                 if (target != null)
                     phantom?.RpcCheckAppearDesync(shouldAnimate, target);
             }, 0.5f, $"Check Appear when vanish is over {target.PlayerId}", shoudLog: false);
@@ -129,9 +125,9 @@ public static class PhantomRolePatch
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
     }
 
-    public static void OnReportDeadBody(PlayerControl seer, bool force)
+    public static void OnReportDeadBody(PlayerControl seer)
     {
-        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole() || !Main.PlayerStates[seer.PlayerId].IsNecromancer) return;
+        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsNecromancer)) return;
 
         foreach (var phantom in InvisibilityList.GetFastEnumerator())
         {
@@ -141,17 +137,13 @@ public static class PhantomRolePatch
                 continue;
             }
 
-            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer, force));
+            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer));
         }
     }
     private static bool InValid(PlayerControl phantom, PlayerControl seer) => seer.GetClientId() == -1 || phantom == null;
-    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer, bool force)
+    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer)
     {
         // Set Scientist for meeting
-        if (!force)
-        {
-            yield return new WaitForSeconds(0.0001f);
-        }
         if (InValid(phantom, seer)) yield break;
 
         phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());
@@ -163,7 +155,7 @@ public static class PhantomRolePatch
 
             phantom?.RpcSetRoleDesync(RoleTypes.Phantom, seer.GetClientId());
         }
-        // Revert invis for phantom
+        // Revert invisibility for Phantom
         yield return new WaitForSeconds(1f);
         {
             if (InValid(phantom, seer)) yield break;
@@ -190,7 +182,7 @@ public static class PhantomRolePatch
         PetsList.Clear();
     }
 }
-// Fixed vanilla bug for host (from TOH-Y)
+// Fixed vanilla bug for Host (from TOH-Y)
 [HarmonyPatch(typeof(PhantomRole), nameof(PhantomRole.UseAbility))]
 public static class PhantomRoleUseAbilityPatch
 {
