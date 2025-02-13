@@ -114,7 +114,7 @@ internal class Glitch : RoleBase
         }
         else return false;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || !Main.IntroDestroyed) return;
 
