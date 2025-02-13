@@ -66,17 +66,13 @@ internal class SoulCollector : RoleBase
 
         TargetId =  target;
     }
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse());
-
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
         => TargetId == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠") : string.Empty;
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
+        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
         }
@@ -174,9 +170,6 @@ internal class Death : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => SoulCollector.SoulCollectorCanVent.GetBool();
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => false;
 
@@ -188,7 +181,7 @@ internal class Death : RoleBase
         var death = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.IsNeutralApocalypse()) continue;
+            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
             if (death.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
