@@ -512,6 +512,11 @@ static class ExtendedPlayerControl
         if (!player.HasImpKillButton(considerVanillaShift: true)) return;
         if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
 
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Info($"player {player.PlayerId} should reset cooldown ({(time >= 0f ? time : Main.AllPlayerKillCooldown[player.PlayerId])}) while AntiBlackout", "SetKillCooldown");
+        }
+
         player.SetKillTimer(CD: time);
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
@@ -528,7 +533,7 @@ static class ExtendedPlayerControl
                 gc.KCDTimer = (int)(time / 2);
             }
         }
-        else if (forceAnime || !player.IsModded() || !Options.DisableShieldAnimations.GetBool())
+        else if (forceAnime || !player.IsModded())
         {
             player.SyncSettings();
             player.RpcGuardAndKill(target, fromSetKCD: true);
@@ -575,7 +580,7 @@ static class ExtendedPlayerControl
         if (target == null) target = player;
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
-        if (forceAnime || !player.IsModded() || !Options.DisableShieldAnimations.GetBool())
+        if (forceAnime || !player.IsModded())
         {
             player.SyncSettings();
             player.RpcGuardAndKill(target, fromSetKCD: true);
@@ -1308,7 +1313,14 @@ static class ExtendedPlayerControl
         ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
         DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
-        reporter.RpcStartMeeting(target);
+
+        _ = new LateTask(() =>
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                reporter.RpcStartMeeting(target);
+            }
+        }, 0.12f, "No Check StartMeeting");
     }
     public static bool IsHost(this InnerNetObject innerObject) => innerObject.OwnerId == AmongUsClient.Instance.HostId;
     public static bool IsHost(this byte playerId) => playerId.GetPlayer()?.OwnerId == AmongUsClient.Instance.HostId;
@@ -1383,7 +1395,7 @@ static class ExtendedPlayerControl
         else if (target.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) && !target.Is(CustomRoles.Trickster)) return true;
+        else if (Overseer.IsRevealedPlayer(seer, target)) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
@@ -1413,7 +1425,7 @@ static class ExtendedPlayerControl
         if (target == null) target = seer;
 
         if (seer.PlayerId == target.PlayerId) return true;
-        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.IsHost() && Main.GodMode.Value)) return true;
+        else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
