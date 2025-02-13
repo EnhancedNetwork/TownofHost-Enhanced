@@ -2,6 +2,7 @@ using Hazel;
 using InnerNet;
 using MS.Internal.Xml.XPath;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -266,14 +267,14 @@ internal class Romantic : RoleBase
         });
         if (romantic == 0x73) return;
         var pc = Utils.GetPlayerById(romantic);
-        if (pc == null) return;
+        if (pc == null || !pc.IsAlive()) return;
         if (player.GetRealKiller() == pc)
         {
             pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
             pc.RpcMurderPlayer(pc);
             return;
         }
-        else if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC())
+        if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC())
         {
             Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
             pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
@@ -353,7 +354,6 @@ internal class Romantic : RoleBase
                 pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");
         }
-        pc.Notify(string.Format(GetString("RomanticRoleChange"), pc.GetDisplayRoleAndSubName(pc, false)));
     }
 }
 

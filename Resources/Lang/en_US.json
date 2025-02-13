@@ -3706,7 +3706,6 @@
   "RomanticProtectCooldown": "Protect Cooldown",
   "RomanticBetPlayer": "You picked your partner",
   "RomanticBetOnYou": "The Romantic chose you as their Partner!",
-  "RomanticRoleChange": "Your partner died. Your role has been changed to {0}.",
   "VengefulKCD": "<color=#8B0000>Vengeful Romantic</color> Kill Cooldown",
   "VengefulCanVent": "<color=#8B0000>Vengeful Romantic</color> Can Vent",
   "RuthlessKCD": "<color=#D2691E>Ruthless Romantic</color> Kill Cooldown",
