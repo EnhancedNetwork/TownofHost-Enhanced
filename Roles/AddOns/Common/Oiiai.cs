@@ -127,8 +127,9 @@ public class Oiiai : IAddon
         {
             killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
-            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Recruit);
             killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }
