@@ -1,10 +1,7 @@
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -77,37 +74,18 @@ internal class Gangster : RoleBase
 
         if (CanRecruit(killer.PlayerId))
         {
-            if (!killer.GetCustomSubRoles().Find(x => x.IsBetrayalAddonV2(), out var convertedAddon) && target.CanBeMadmate(forGangster: true) && CanBeGansterRecruit(target))
+            if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Madmate))
             {
-                convertedAddon = CustomRoles.Madmate;
-            }
-            else if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2()))
-            {
-                foreach (var subRole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
+                var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Madmate);
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Gangster Assign");
+                target.RpcSetCustomRole(addon);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("BeRecruitedByGangster")));
+
+                if (addon is CustomRoles.Admired)
                 {
-                    switch (subRole)
-                    {
-                        case CustomRoles.Admired when Admirer.CanBeAdmired(target, killer):
-                            convertedAddon = CustomRoles.Admired;
-                            Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                            Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-                            break;
-                        case CustomRoles.Enchanted when Ritualist.CanBeConverted(target):
-                            convertedAddon = CustomRoles.Enchanted;
-                            break;
-                        case CustomRoles.Recruit when Jackal.CanBeSidekick(target):
-                            convertedAddon = CustomRoles.Recruit;
-                            break;
-                        case CustomRoles.Charmed when Cultist.CanBeCharmed(target):
-                            convertedAddon = CustomRoles.Charmed;
-                            break;
-                        case CustomRoles.Infected when Infectious.CanBeBitten(target):
-                            convertedAddon = CustomRoles.Infected;
-                            break;
-                        case CustomRoles.Contagious when target.CanBeInfected():
-                            convertedAddon = CustomRoles.Contagious;
-                            break;
-                    }
+                    Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                    Admirer.SendRPC(killer.PlayerId, target.PlayerId);
                 }
             }
             else goto GangsterFailed;
@@ -116,11 +94,6 @@ internal class Gangster : RoleBase
 
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
-
-            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Gangster Assign");
-            target.RpcSetCustomRole(convertedAddon);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("GangsterSuccessfullyRecruited")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("BeRecruitedByGangster")));
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown(forceAnime: true);
@@ -143,7 +116,7 @@ internal class Gangster : RoleBase
     public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     private bool CanRecruit(byte id) => AbilityLimit >= 1;
-    private static bool CanBeGansterRecruit(PlayerControl pc)
+    public static bool CanBeGansterRecruit(PlayerControl pc)
     {
         return pc != null && (pc.IsNonRebelCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)

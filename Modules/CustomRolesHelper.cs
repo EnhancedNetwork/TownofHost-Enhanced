@@ -430,7 +430,7 @@ public static class CustomRolesHelper
         return recruiter.GetBetrayalAddon(defaultAddon) switch
         {
             CustomRoles.Charmed => Cultist.CanBeCharmed(target),
-            CustomRoles.Madmate => recruiter.Is(CustomRoles.Gangster) ? target.CanBeMadmate(forGangster: true) : target.CanBeMadmate(forAdmirer: true),
+            CustomRoles.Madmate => recruiter.Is(CustomRoles.Gangster) && Gangster.CanBeGansterRecruit(target) ? target.CanBeMadmate(forGangster: true) : target.CanBeMadmate(forAdmirer: true),
             CustomRoles.Admired => Admirer.CanBeAdmired(target, recruiter),
             CustomRoles.Enchanted => Ritualist.CanBeConverted(target),
             CustomRoles.Recruit => Jackal.CanBeSidekick(target),

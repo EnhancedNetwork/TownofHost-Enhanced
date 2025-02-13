@@ -1,10 +1,7 @@
 using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -108,25 +105,13 @@ internal class Admirer : RoleBase
                 SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
             }
 
-            if (!killer.GetCustomSubRoles().Find(x => x.IsBetrayalAddonV2(), out var convertedAddon))
+            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Admired);
+            if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Admired))
             {
-                convertedAddon = CustomRoles.Admired;
-            }
-            else if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2()))
-            {
-                foreach (var subRole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
-                {
-                    convertedAddon = subRole switch
-                    {
-                        CustomRoles.Madmate when target.CanBeMadmate(forAdmirer: true) => CustomRoles.Madmate,
-                        CustomRoles.Enchanted when Ritualist.CanBeConverted(target) => CustomRoles.Enchanted,
-                        CustomRoles.Recruit when Jackal.CanBeSidekick(target) => CustomRoles.Recruit,
-                        CustomRoles.Charmed when Cultist.CanBeCharmed(target) => CustomRoles.Charmed,
-                        CustomRoles.Infected when Infectious.CanBeBitten(target) => CustomRoles.Infected,
-                        CustomRoles.Contagious when target.CanBeInfected() => CustomRoles.Contagious,
-                        _ => CustomRoles.Admired,
-                    };
-                }
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(addon);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
             }
             else goto AdmirerFailed;
 
@@ -137,11 +122,6 @@ internal class Admirer : RoleBase
             killer.SetKillCooldown();
             if (!DisableShieldAnimations.GetBool())
                 killer.RpcGuardAndKill(target);
-
-            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Admirer Assign");
-            target.RpcSetCustomRole(convertedAddon);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmiredPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(convertedAddon), GetString("AdmirerAdmired")));
 
             target.RpcGuardAndKill(killer);
             target.ResetKillCooldown();

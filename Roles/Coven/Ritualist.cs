@@ -3,10 +3,8 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -207,43 +205,20 @@ internal class Ritualist : CovenManager
     }
     public void ConvertRole(PlayerControl killer, PlayerControl target)
     {
-        if (!killer.GetCustomSubRoles().Find(x => x.IsBetrayalAddonV2(), out var convertedAddon))
+        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Enchanted))
         {
-            convertedAddon = CustomRoles.Enchanted;
-        }
-        else if (killer.IsAnySubRole(x => x.IsBetrayalAddonV2()))
-        {
-            foreach (var subRole in killer.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
+            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Enchanted);
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(addon);
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Ritualist), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(ColorString(GetRoleColor(CustomRoles.Ritualist), GetString("BeRecruitedByRitualist")));
+
+            if (addon is CustomRoles.Admired)
             {
-                switch (subRole)
-                {
-                    case CustomRoles.Admired when Admirer.CanBeAdmired(target, killer):
-                        convertedAddon = CustomRoles.Admired;
-                        Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                        Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-                        break;
-                    case CustomRoles.Madmate when target.CanBeMadmate(forAdmirer: true):
-                        convertedAddon = CustomRoles.Madmate;
-                        break;
-                    case CustomRoles.Recruit when Jackal.CanBeSidekick(target):
-                        convertedAddon = CustomRoles.Recruit;
-                        break;
-                    case CustomRoles.Charmed when Cultist.CanBeCharmed(target):
-                        convertedAddon = CustomRoles.Charmed;
-                        break;
-                    case CustomRoles.Infected when Infectious.CanBeBitten(target):
-                        convertedAddon = CustomRoles.Infected;
-                        break;
-                    case CustomRoles.Contagious when target.CanBeInfected():
-                        convertedAddon = CustomRoles.Contagious;
-                        break;
-                }
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
             }
         }
-        Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + convertedAddon.ToString(), "Ritualist Assign");
-        target.RpcSetCustomRole(convertedAddon);
-        killer.Notify(ColorString(GetRoleColor(convertedAddon), GetString("RitualistSuccessfullyRecruited")));
-        target.Notify(ColorString(GetRoleColor(convertedAddon), GetString("BeRecruitedByRitualist")));
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)
     {
