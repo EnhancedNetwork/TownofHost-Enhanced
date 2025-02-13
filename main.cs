@@ -698,7 +698,6 @@ public enum CustomRoles
     Consigliere,
     Councillor,
     Crewpostor,
-    Cupid,
     CursedWolf,
     Dazzler,
     Deathpact,

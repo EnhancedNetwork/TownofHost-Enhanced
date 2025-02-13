@@ -4504,11 +4504,6 @@
   "Message.AnomalyInfo": "Anomalies are special events that occur under a percent chance. Here is the list of all anomalies:\n\n<b>Clown Fest</b>\nWhen the Clown Fest occurs, all Crewmates will turn into Jesters for one round.\n\n<b>Retrial</b>\nWhen a Retrial happens, a new meeting will start immediately after the old meeting is over.\n\n<b>New Year</b>\nOn the New Year, all add-ons between players will be randomized and redistributed.\n\n<b>Holiday</b>\nWhen the Holiday occurs, all Crewmates and Impostors will turn into basic Crewmates or Impostors for one round.\n\n<b>Shuffle</b>\nWhen the Shuffle occurs, all Crewmate and non-Neutral Killing roles will be redistributed among players.",
   "AnomalyInfoTitle": "ANOMALY INFO",
 
-  "Cupid": "Cupid",
-  "CupidInfo": "Create love with your powerful link",
-  "CupidInfoLong": "(Impostors):\nAs the Cupid, you can shapeshift into 2 players to link their lives. If one of them dies, the other will also die. You can do this as many times as you want.",
-  "LinkCooldown338": "Shapeshift/Link cooldown",
-
   "Sorcerer": "Sorcerer",
   "SorcererInfo": "Mark players and win if they die",
   "SorcererInfoLong": "(Neutrals):\nThe Sorcerer can mark 2 people. Once both of the marked players are dead and there are 3 players alive, the Sorcerer wins alone. The Sorcerer can only kill the marked players."
