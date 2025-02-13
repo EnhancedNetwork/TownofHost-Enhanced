@@ -245,6 +245,11 @@ internal class Romantic : RoleBase
     }
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl player, bool inMeeting)
     {
+        var pc = _Player;
+        if (player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist))
+        {
+            player.GetCustomSubRoles().DoIf(x => x.IsBetrayalAddonV2() && !pc.Is(x), x => pc.RpcSetCustomRole(x));
+        }
         ChangeRole(player);
     }
     private static void ChangeRole(PlayerControl player)
