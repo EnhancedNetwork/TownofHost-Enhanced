@@ -183,7 +183,7 @@ internal class Pelican : RoleBase
                 target.RpcExileV2();
                 target.SetRealKiller(killer);
                 tar.SetDeathReason(PlayerState.DeathReason.Eaten);
-                Main.PlayerStates[tar].SetDead();
+                Main.PlayerStates[target.PlayerId].SetDead();
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
             }
