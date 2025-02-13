@@ -338,7 +338,7 @@ namespace TOHE.Modules.ChatManager
             //        .SendMessage();
             //}
 
-            foreach (var entry in chatHistory)
+            foreach (var entry in chatHistory.ToArray())
             {
                 var senderId = entry.Keys.First();
                 var senderMessage = entry[senderId];

@@ -503,8 +503,7 @@ static class ExtendedPlayerControl
     {
         if (player == null) return;
 
-        if (!player.HasImpKillButton()) return;
-        if (player.HasImpKillButton() && !player.CanUseKillButton()) return;
+        if (!player.HasImpKillButton() || !player.CanUseKillButton()) return;
 
         if (AntiBlackout.SkipTasks)
         {
