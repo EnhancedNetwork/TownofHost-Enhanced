@@ -44,7 +44,7 @@ class CoShowIntroPatch
             {
                 if (GameStates.IsEnded) return;
 
-                // Assign tasks after assign all roles, as it should be
+                // Assign tasks after assign all Roles, as it should be
                 ShipStatus.Instance.Begin();
 
                 GameOptionsSender.AllSenders.Clear();
@@ -87,7 +87,7 @@ class SetUpRoleTextPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            // After showing team for non-modded clients update player names.
+            // After showing team for non-modded clients update player names
             IsInIntro = false;
             Utils.DoNotifyRoles(NoCache: true);
         }
@@ -97,6 +97,7 @@ class SetUpRoleTextPatch
             foreach (var player in Main.AllPlayerControls)
             {
                 Main.PlayerStates[player.PlayerId].InitTask(player);
+                player.DoUnShiftState(true);
             }
 
             GameData.Instance.RecomputeTaskCounts();
@@ -563,6 +564,12 @@ class BeginCrewmatePatch
                         PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
                         break;
 
+                    case CustomRoles.Dictator:
+                    case CustomRoles.Mayor:
+                    case CustomRoles.Swapper:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.Chat.warningSound;
+                        break;
+
                     case CustomRoles.Saboteur:
                     case CustomRoles.Inhibitor:
                     case CustomRoles.Mechanic:
@@ -575,6 +582,12 @@ class BeginCrewmatePatch
                         PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                         break;
 
+                    case CustomRoles.ChiefOfPolice:
+                    case CustomRoles.Deputy:
+                    case CustomRoles.Sheriff:
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
+                        break;
+
                     case CustomRoles.GM:
                         __instance.TeamTitle.text = Utils.GetRoleName(role);
                         __instance.TeamTitle.color = Utils.GetRoleColor(role);
@@ -584,8 +597,6 @@ class BeginCrewmatePatch
                         __instance.ImpostorText.text = GetString("SubText.GM");
                         break;
 
-                    case CustomRoles.ChiefOfPolice:
-                    case CustomRoles.Sheriff:
                     case CustomRoles.Veteran:
                     case CustomRoles.Knight:
                     case CustomRoles.KillingMachine:
@@ -805,7 +816,7 @@ class IntroCutsceneDestroyPatch
     {
         if (AmongUsClient.Instance.AmHost && !AmongUsClient.Instance.IsGameOver)
         {
-            // Host is desync role
+            // Host is Desync Role
             if (PlayerControl.LocalPlayer.HasDesyncRole())
             {
                 PlayerControl.LocalPlayer.Data.Role.AffectedByLightAffectors = false;
@@ -826,72 +837,13 @@ class IntroCutsceneDestroyPatch
 
                 foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator().Where(x => !x.IsPlayerCoven()))
                 {
-                    // Set all players as killable players
+                    // Set all Players as killable Players
                     target.Data.Role.CanBeKilled = true;
 
-                    // When target is Impostor, set name color as white
+                    // When Target is Impostor, set name color as white
                     target.cosmetics.SetNameColor(Color.white);
                     target.Data.Role.NameColor = Color.white;
                 }
-            }
-
-            if (Main.UnShapeShifter.Any())
-            {
-                _ = new LateTask(() =>
-                {
-                    Main.UnShapeShifter.Do(x =>
-                    {
-                        var UnShapeshifter = x.GetPlayer();
-                        if (UnShapeshifter == null)
-                        {
-                            Main.UnShapeShifter.Remove(x);
-                            return;
-                        }
-
-                        if (!UnShapeshifter.AmOwner)
-                        {
-                            var sstarget = PlayerControl.LocalPlayer;
-                            UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
-                            UnShapeshifter.RejectShapeshift();
-
-                            var writer = MessageWriter.Get(SendOption.Reliable);
-                            writer.StartMessage(6);
-                            writer.Write(AmongUsClient.Instance.GameId);
-                            writer.WritePacked(UnShapeshifter.OwnerId);
-
-                            writer.StartMessage(2);
-                            writer.WritePacked(UnShapeshifter.NetId);
-                            writer.Write((byte)RpcCalls.Shapeshift);
-                            writer.WriteNetObject(sstarget);
-                            writer.Write(false);
-                            writer.EndMessage();
-
-                            writer.StartMessage(2);
-                            writer.WritePacked(UnShapeshifter.NetId);
-                            writer.Write((byte)RpcCalls.RejectShapeshift);
-                            writer.EndMessage();
-
-                            writer.EndMessage();
-                            AmongUsClient.Instance.SendOrDisconnect(writer);
-                            writer.Recycle();
-
-                            if (Options.CurrentGameMode is CustomGameMode.CandR) CopsAndRobbersManager.SetCostume(CopsAndRobbersManager.RoleType.Cop, UnShapeshifter.PlayerId);
-                            else UnShapeshifter.ResetPlayerOutfit(force: true);
-                        }
-                        else
-                        {
-                            // Host is Unshapeshifter, make button into Unshapeshift state
-                            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
-                            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
-                            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
-                            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
-                            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
-                        }
-
-                        Main.CheckShapeshift[x] = false;
-                    });
-                    Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
             }
         }
     }
@@ -903,7 +855,7 @@ class IntroCutsceneDestroyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            // Set roleAssigned as false for override role for modded players
+            // Set roleAssigned as false for override role for modded clients
             // For override role for vanilla clients we use "Data.Disconnected" while assign
             pc.roleAssigned = false;
 
