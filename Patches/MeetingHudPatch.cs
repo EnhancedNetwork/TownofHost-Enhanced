@@ -469,7 +469,7 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (Options.ShowBetrayalAddonsOnEject.GetBool())
+                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x != CustomRoles.Soulless && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                 {
                     if (player.Is(CustomRoles.Madmate))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
@@ -500,7 +500,7 @@ class CheckForEndVotingPatch
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (Options.ShowBetrayalAddonsOnEject.GetBool())
+                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x != CustomRoles.Soulless && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                     {
                     if (player.Is(CustomRoles.Madmate))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
