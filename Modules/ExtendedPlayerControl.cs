@@ -621,7 +621,39 @@ static class ExtendedPlayerControl
             }
         }
     }
+    public static void DoUnShiftState(this PlayerControl unshifter, bool updateName = false)
+    {
+        if (!AmongUsClient.Instance.AmHost || !unshifter.IsAlive() || !Main.UnShapeShifter.Contains(unshifter.PlayerId)) return;
 
+        Logger.Info($"Set UnShift State: {unshifter.GetNameWithRole()}", "DoUnShiftState");
+
+        if (unshifter.IsHost())
+        {
+            // Host is Unshapeshifter, make button into unshapeshift state
+            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
+            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
+            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
+            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
+            return;
+        }
+
+        var currentOutfit = unshifter.Data.Outfits[PlayerOutfitType.Default];
+        unshifter.RpcSpecificShapeshift(PlayerControl.LocalPlayer, false);
+        unshifter.RawSetOutfit(currentOutfit, PlayerOutfitType.Shapeshifted);
+        Main.CheckShapeshift[unshifter.PlayerId] = false;
+
+        _ = new LateTask(() =>
+        {
+            unshifter?.SetNewOutfit(currentOutfit);
+            unshifter.Data.MarkDirty();
+
+            if (updateName)
+            {
+                Utils.NotifyRoles(SpecifySeer: unshifter, NoCache: true, ForceLoop: false);
+            }
+        }, 0.2f, "Wait and change outfit", shoudLog: false);
+    }
     public static Vent GetClosestVent(this PlayerControl player)
     {
         var pos = player.GetCustomPosition();
@@ -685,7 +717,7 @@ static class ExtendedPlayerControl
             player.CheckVanish();
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckVanish, SendOption.None, seer.GetClientId());
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckVanish, RpcSendOption, seer.GetClientId());
         messageWriter.Write(0); // not used, lol
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
@@ -696,7 +728,7 @@ static class ExtendedPlayerControl
             player.SetRoleInvisibility(true, false, true);
             return;
         }
-        MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartVanish, SendOption.None, seer.GetClientId());
+        MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartVanish, RpcSendOption, seer.GetClientId());
         AmongUsClient.Instance.FinishRpcImmediately(msg);
     }
     public static void RpcCheckAppearDesync(this PlayerControl player, bool shouldAnimate, PlayerControl seer)
@@ -706,7 +738,7 @@ static class ExtendedPlayerControl
             player.CheckAppear(shouldAnimate);
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, SendOption.None, seer.GetClientId());
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, RpcSendOption, seer.GetClientId());
         messageWriter.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
@@ -717,14 +749,14 @@ static class ExtendedPlayerControl
             player.SetRoleInvisibility(false, shouldAnimate, true);
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, SendOption.None, seer.GetClientId());
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, RpcSendOption, seer.GetClientId());
         messageWriter.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
     public static void RpcCheckAppear(this PlayerControl player, bool shouldAnimate)
     {
         player.CheckAppear(shouldAnimate);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, SendOption.None);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, RpcSendOption);
         messageWriter.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
@@ -1090,18 +1122,12 @@ static class ExtendedPlayerControl
 
             if (client != null)
             {
-                return Main.AllClientRealNames.GetValueOrDefault(client.Id, player.GetClient().PlayerName);
+                if (Main.AllClientRealNames.TryGetValue(client.Id, out var realname))
+                {
+                    return realname;
+                }
+                return player.GetClient().PlayerName;
             }
-        }
-
-        if (Main.CheckShapeshift.GetValueOrDefault(player.PlayerId, false) || player.shapeshifting)
-        {
-            if (Main.AllClientRealNames.TryGetValue(player.OwnerId, out var realname))
-            {
-                return realname;
-            }
-
-            return player.Data.DefaultOutfit.PlayerName;
         }
         return isMeeting || player == null ? player?.Data?.PlayerName : player?.name;
     }

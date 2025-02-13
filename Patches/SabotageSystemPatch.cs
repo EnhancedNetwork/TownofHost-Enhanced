@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
@@ -177,10 +178,14 @@ public class SabotageSystemPatch
                     _ = new LateTask(() =>
                     {
                         // After MushroomMixup sabotage, shapeshift cooldown sets to 0
-                        foreach (var pc in Main.AllAlivePlayerControls)
+                        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                         {
-                            // Reset Ability Cooldown To Default For Alive Players
-                            pc.RpcResetAbilityCooldown();
+                            // Do Unshift, because mushroom mixup revert all shapeshifted players
+                            pc.DoUnShiftState(true);
+
+                            // Reset Ability Cooldown To Default For Living Players
+                            if (pc.GetCustomRole().GetRoleTypes() != RoleTypes.Engineer)
+                                pc.RpcResetAbilityCooldown();
                         }
                     }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 

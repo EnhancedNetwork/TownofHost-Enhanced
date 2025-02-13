@@ -182,6 +182,11 @@ internal class ControllerManagerUpdatePatch
                 FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(true);
             }
 
+            if (DebugModeManager.IsDebugMode && GetKeysDown(KeyCode.F8) && HudManager.Instance && !GameStates.IsMeeting && (GameStates.IsInGame || GameStates.IsLobby))
+            {
+                HudManager.Instance.gameObject.SetActive(!HudManager.Instance.gameObject.active);
+            }
+
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {

@@ -222,7 +222,7 @@ public class InnerNetClientPatch
                 }
                 else
                 {
-                    messageWriter.CancelMessage();
+                    messageWriter.Recycle();
                     player.ClearDirtyBits();
                     return;
                 }
