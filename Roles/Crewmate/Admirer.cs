@@ -89,7 +89,8 @@ internal class Admirer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
+        bool recruit = AbilityLimit > 0;
+        if (!recruit) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
@@ -99,22 +100,20 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (AbilityLimit < 1) return false;
-        if (CanBeAdmired(target, killer))
+        if (recruit)
         {
-            if (KnowTargetRole.GetBool())
-            {
-                AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-            }
-
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Admired
             if (target.CanBeRecruitedBy(killer, defaultAddon:CustomRoles.Admired))
             {
+                var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Admired);
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(addon);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
+                if (KnowTargetRole.GetBool() && addon is CustomRoles.Admired)
+                {
+                    AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                    SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+                }
             }
             else goto AdmirerFailed;
 
