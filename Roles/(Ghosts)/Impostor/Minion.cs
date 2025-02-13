@@ -16,17 +16,17 @@ internal class Minion : RoleBase
     //==================================================================\\
 
     public static OptionItem AbilityCooldown;
-    public static OptionItem AbilityTime;
+    public static OptionItem AbilityDuration;
 
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Minion);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityTime = FloatOptionItem.Create(Id + 11, "MinionAbilityTime", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
+        AbilityTime = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    // EAC bans players when GA uses sabotage
+    // EAC bans Players when GA uses Sabotage
     public override bool CanUseSabotage(PlayerControl pc) => false;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
