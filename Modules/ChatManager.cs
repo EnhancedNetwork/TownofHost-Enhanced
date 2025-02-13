@@ -163,7 +163,7 @@ namespace TOHE.Modules.ChatManager
             var firstAlivePlayer = Main.AllAlivePlayerControls.OrderBy(x => x.PlayerId).FirstOrDefault() ?? PlayerControl.LocalPlayer;
             var title = "<color=#aaaaff>" + GetString("DefaultSystemMessageTitle") + "</color>";
             var name = firstAlivePlayer?.Data?.PlayerName ?? "Error";
-            var writer = CustomRpcSender.Create("EzHacked_QuickChatSpamExploit", SendOption.Reliable);
+            var writer = CustomRpcSender.Create("EzHacked_QuickChatSpamExploit", ExtendedPlayerControl.RpcSendOption);
             writer.AutoStartRpc(firstAlivePlayer.NetId, (byte)RpcCalls.SetName);
             writer.Write(firstAlivePlayer.Data.NetId);
             writer.Write(title);
