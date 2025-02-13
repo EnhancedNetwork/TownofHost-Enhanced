@@ -81,7 +81,7 @@ static class ExtendedPlayerControl
             player.SetRole(role, true);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, RpcSendOption, clientId);
         writer.Write((ushort)role);
         writer.Write(true);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -399,7 +399,7 @@ static class ExtendedPlayerControl
         var clientId = seer.GetClientId();
         if (clientId == -1) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.Reliable, clientId);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, RpcSendOption, clientId);
         writer.Write(seer.Data.NetId);
         writer.Write(name);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -829,7 +829,7 @@ static class ExtendedPlayerControl
     }
     public static void RpcDesyncUpdateSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
-        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
+        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, RpcSendOption, target.GetClientId());
         messageWriter.Write((byte)systemType);
         messageWriter.WriteNetObject(target);
         messageWriter.Write((byte)amount);
@@ -853,11 +853,38 @@ static class ExtendedPlayerControl
             netTransform.SnapTo(position, (ushort)(6 + netTransform.lastSequenceId));
             return;
         }
+
+        var sendOption = SendOption.Reliable;
+
+        if (Main.CurrentServerIsVanilla)
+        {
+            if (!FixedUpdateInNormalGamePatch.BufferTime.TryGetValue(player.PlayerId, out var bufferTime))
+            {
+                Logger.Error($"Canceled RpcTeleport bcz bufferTime is null.", "RpcTeleport");
+                return;
+            }
+
+            if (!FixedUpdateInNormalGamePatch.TeleportBuffer.TryGetValue(player.PlayerId, out var teleportBuffer))
+            {
+                FixedUpdateInNormalGamePatch.TeleportBuffer[player.PlayerId] = bufferTime;
+            }
+            else
+            {
+                if (bufferTime >= teleportBuffer + 6)
+                {
+                    FixedUpdateInNormalGamePatch.TeleportBuffer[player.PlayerId] = bufferTime;
+                }
+                else
+                {
+                    sendOption = SendOption.None;
+                }
+            }
+        }
         netTransform.lastSequenceId += 326;
         netTransform.SetDirtyBit(uint.MaxValue);
 
         ushort newSid = (ushort)(8 + netTransform.lastSequenceId);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, sendOption);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -1641,4 +1668,5 @@ static class ExtendedPlayerControl
     public static bool IsProtected(this PlayerControl self) => self.protectedByGuardianId > -1;
 
     public const MurderResultFlags ResultFlags = MurderResultFlags.Succeeded; //No need for DecisonByHost
+    public static SendOption RpcSendOption => Main.CurrentServerIsVanilla ? SendOption.None : SendOption.Reliable;
 }
