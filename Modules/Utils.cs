@@ -1953,9 +1953,9 @@ public static class Utils
             if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
         }
 
-        HudManagerPatch.NowCallNotifyRolesCount++;
-        HudManagerPatch.LastSetNameDesyncCount = 0;
-
+        HudManagerUpdatePatch.NowCallNotifyRolesCount++;
+        HudManagerUpdatePatch.LastSetNameDesyncCount = 0;
+        
         PlayerControl[] seerList = SpecifySeer != null
             ? ([SpecifySeer])
             : Main.AllPlayerControls;
