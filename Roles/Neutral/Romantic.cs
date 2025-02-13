@@ -1,8 +1,6 @@
 using Hazel;
 using InnerNet;
-using MS.Internal.Xml.XPath;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
