@@ -2973,7 +2973,7 @@
   "MinWaitAutoStart": "自动开始前的等待时间",
   "MaxWaitAutoStart": "当大厅计时器（分钟）低于设定值时强制启动",
   "PlayerAutoStart": "自动开始所需的最小玩家数",
-  "StartWhenTimePassed": "经过足够的时间将自动启动（适用于Mod的区域）",
+  "StartWhenTimePassed": "在指定时间后自动开始游戏（适用于私服）",
   "AutoStartTimer": "自动开始的初始倒计时",
   "ImmediateAutoStart": "达到特定条件时立即开始游戏",
   "ImmediateStartTimer": "立即开始的初始倒计时",
