@@ -1113,7 +1113,7 @@ public static class Options
             .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .HideInHnS();
-        ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowetrayalAddonsOnEject", true, TabGroup.SystemSettings, false)
+        ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowBetrayalAddonsOnEject", true, TabGroup.SystemSettings, false)
             .HideInHnS();
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
