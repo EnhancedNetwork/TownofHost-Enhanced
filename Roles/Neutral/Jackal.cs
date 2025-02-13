@@ -179,17 +179,10 @@ internal class Jackal : RoleBase
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
-        if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam() || target.IsNeutralApocalypse())
+        if (!target.CanBeRecruitedBy(killer,defaultAddon: CustomRoles.Recruit))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
             Logger.Info("Jackal can not recruit this target", "Jackal");
-            return true;
-        }
-        if (target.Is(CustomRoles.Loyal)
-            || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
-        {
-            // Loyal or Only Recruit & can not get addon
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
             return true;
         }
 
