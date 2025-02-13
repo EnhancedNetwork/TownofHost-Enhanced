@@ -357,9 +357,9 @@ class GameEndCheckerForNormal
                     }
                 }
 
+                CheckAdditionalWinners();
                 for (int i = 0; i < Main.AllPlayerControls.Length + 1; i++)
                 {
-                    CheckAdditionalWinners();
                     if (i == Main.AllPlayerControls.Length)
                     {
                         if (AdditionalWinnerTeams.Any()) Logger.Info($"Additional winners: {string.Join(", ", AdditionalWinnerTeams)}", "CheckAdditionalWinner");
@@ -367,7 +367,7 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                void CheckAdditionalWinners()
+                static void CheckAdditionalWinners()
                 {
                     foreach (var pc in Main.AllPlayerControls)
                     {
