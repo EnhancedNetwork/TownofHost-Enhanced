@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
@@ -352,6 +353,7 @@ internal class Romantic : RoleBase
                 pc.SetKillCooldown();
             }, 0.2f, "Convert to Vengeful Romantic");
         }
+        pc.Notify(string.Format(GetString("RomanticRoleChange"), pc.GetDisplayRoleAndSubName(pc, false)));
     }
 }
 
@@ -417,7 +419,7 @@ internal class VengefulRomantic : RoleBase
         if (Target != byte.MaxValue)
             VengefulTarget.Add(PlayerId, Target);
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = hasKilledKiller ? 300f : Romantic.VengefulKCD.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Romantic.VengefulKCD.GetFloat();
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Romantic.VengefulCanVent.GetBool();
 }
 
