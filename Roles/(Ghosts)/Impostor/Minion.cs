@@ -23,7 +23,7 @@ internal class Minion : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Minion);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityTime = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
+        AbilityDuration = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
     }
     // EAC bans Players when GA uses Sabotage
@@ -54,7 +54,7 @@ internal class Minion : RoleBase
             {
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;
                 target.MarkDirtySettings();
-            }, AbilityTime.GetFloat(), "Minion: return vision");
+            }, AbilityDuration.GetFloat(), "Minion: return vision");
             killer.RpcResetAbilityCooldown();
         }
         return false;
