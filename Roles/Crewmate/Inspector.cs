@@ -19,7 +19,7 @@ internal class Inspector : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem TryHideMsg;

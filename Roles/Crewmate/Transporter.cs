@@ -10,7 +10,7 @@ internal class Transporter : RoleBase
     public override CustomRoles Role => CustomRoles.Transporter;
     private const int Id = 7400;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem TransporterTeleportMax;

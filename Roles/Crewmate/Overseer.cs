@@ -17,7 +17,7 @@ internal class Overseer : RoleBase
     private const int Id = 12200;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("prophecies");

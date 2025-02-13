@@ -18,7 +18,7 @@ internal class Medic : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medic);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateProtective;
     //==================================================================\\
 
     private static OptionItem WhoCanSeeProtectOpt;

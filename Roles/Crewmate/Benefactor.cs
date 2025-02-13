@@ -11,7 +11,7 @@ internal class Benefactor : RoleBase
     private const int Id = 26400;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateProtective;
     //==================================================================\\
 
     private static OptionItem TaskMarkPerRoundOpt;

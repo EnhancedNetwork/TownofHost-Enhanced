@@ -13,7 +13,7 @@ internal class Crusader : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Crusader);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateProtective;
     //==================================================================\\
 
     private static OptionItem SkillLimitOpt;

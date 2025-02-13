@@ -10,7 +10,7 @@ internal class SuperStar : RoleBase
     public override CustomRoles Role => CustomRoles.SuperStar;
     private const int Id = 7150;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
     private static OptionItem EveryOneKnowSuperStar; // You should always have this enabled TBHHH 💀💀
