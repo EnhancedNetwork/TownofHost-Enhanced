@@ -211,6 +211,7 @@ internal class ChangeRoleSettings
             {
                 var RoleClass = role.GetStaticRoleClass();
                 RoleClass?.OnInit();
+                RoleAssign.OnInit();
             }
 
             // Initialize all Add-ons

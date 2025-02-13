@@ -142,7 +142,7 @@ public static class MainMenuManagerPatch
         string[] fileNames = assembly.GetManifestResourceNames().Where(resourceName => resourceName.StartsWith(folder) && resourceName.EndsWith(".png")).ToArray();
         int choice = rand.Next(0, fileNames.Length);
 
-        spriteRenderer.sprite = Utils.LoadSprite(fileNames[choice], 150f);
+        spriteRenderer.sprite = Utils.LoadSprite($"TOHE.Resources.Background.CurrentArtWinner.toho_140.png", 150f);
 
 
         //__instance.playLocalButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color(0.1647f, 0f, 0.7765f);

@@ -19,7 +19,6 @@ internal class Contaminator : RoleBase
 
     public static OptionItem ContaminationRadius;
     public static OptionItem CheckLimitOpt;
-    public static OptionItem AbilityUsesPerTaskCompleted;
     public static OptionItem MassacreKillCooldown;
 
     public override void Init()
@@ -69,6 +68,7 @@ internal class Contaminator : RoleBase
                     {
                         TargetList.Add(killing.PlayerId);
                     }
+                    player.RpcGuardAndKill(killing);
                 }
             }, 0.1f, "Contaminator Bug Fix");
         }

@@ -439,7 +439,18 @@ public static class Options
     public static OptionItem NeutralCanBecomeGhost;
     public static OptionItem MaxImpGhost;
     public static OptionItem MaxCrewGhost;
+    public static OptionItem MaxNeutralGhost;
     public static OptionItem DefaultAngelCooldown;
+
+    // Modifiers
+    public static OptionItem EnableAnomalies;
+    public static OptionItem ClownFest;
+    public static OptionItem Retrial;
+    public static OptionItem NewYear;
+    public static OptionItem Holiday;
+    public static OptionItem Shuffle;
+    public static OptionItem AnomalyMeetingPCT;
+    // public static OptionItem EnableWills;
 
 
     // ------------ Task Management Tab ------------
@@ -1031,6 +1042,12 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
         CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralApocalypse).ForEach(r => r.SetupCustomOption());
+
+        TextOptionItem.Create(10000117, "RoleType.NeutralGhost", TabGroup.NeutralRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(100, 100, 100, byte.MaxValue));
+
+        CustomRoleManager.GetNormalOptions(Custom_RoleType.NeutralGhosts).ForEach(r => r.SetupCustomOption());
         #endregion
 
         yield return null;
@@ -2048,10 +2065,49 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Times)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
-        DefaultAngelCooldown = FloatOptionItem.Create(60870, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.ModSettings, false)
+        MaxNeutralGhost = IntegerOptionItem.Create(60870, "MaxNeutralGhostRole", new(0, 15, 1), 15, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Times)
+            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+        DefaultAngelCooldown = FloatOptionItem.Create(60880, "DefaultAngelCooldown", new(2.5f, 120f, 2.5f), 35f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Seconds)
             .SetColor(new Color32(217, 218, 255, byte.MaxValue));
+
+        // Anomaly Settings
+
+        TextOptionItem.Create(10000033, "MenuTitle.GameModifiers", TabGroup.ModSettings)
+           .HideInFFA()
+           .HideInCandR()
+           .SetColor(new Color32(168, 50, 62, byte.MaxValue));
+        EnableAnomalies = BooleanOptionItem.Create(60890, "EnableAnomalies", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(168, 50, 62, byte.MaxValue));
+        ClownFest = BooleanOptionItem.Create(60910, "ClownFest", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        Retrial = BooleanOptionItem.Create(60920, "Retrial", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        NewYear = BooleanOptionItem.Create(60930, "NewYear", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies); 
+        Holiday = BooleanOptionItem.Create(60940, "Holiday", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        Shuffle = BooleanOptionItem.Create(60950, "Shuffle", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        AnomalyMeetingPCT = IntegerOptionItem.Create(60960, "AnomalyMeetingPCT", new(0, 100, 5), 0, TabGroup.ModSettings, false)
+            .SetValueFormat(OptionFormat.Percent)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(EnableAnomalies);
+        /* EnableWills = BooleanOptionItem.Create(60970, "EnableWills", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(3, 219, 252, byte.MaxValue));
+        */
+
+
         #endregion
 
         yield return null;

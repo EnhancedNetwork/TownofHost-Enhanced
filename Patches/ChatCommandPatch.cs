@@ -136,7 +136,38 @@ internal class ChatCommands
         {
             Main.isChatCommand = true;
             switch (args[0])
-            {
+            { 
+                /* WILLS - v1.6.0
+                case "/wa":
+                    var willrole = PlayerControl.LocalPlayer.GetCustomRole();
+                    if (willrole != CustomRoles.Author && Options.EnableWills.GetBool() == false) break;
+                    var subArgs3 = text.Remove(0, 4);
+                    if (subArgs3 == "" || subArgs3 == string.Empty)
+                    {
+                        break;
+                    }
+                    if (WillManager.Notes.ContainsKey(PlayerControl.LocalPlayer.PlayerId))
+                    {
+                        WillManager.Notes[PlayerControl.LocalPlayer.PlayerId] += "\n";
+                        WillManager.Notes[PlayerControl.LocalPlayer.PlayerId] += subArgs3;
+                    }
+                    else
+                    {
+                        WillManager.Notes[PlayerControl.LocalPlayer.PlayerId] = subArgs3;
+                    }
+                    break;
+                case "/wc":
+                    var wcrole = PlayerControl.LocalPlayer.GetCustomRole();
+                    if (wcrole != CustomRoles.Author && Options.EnableWills.GetBool() == false) break;
+                    WillManager.Notes.Remove(PlayerControl.LocalPlayer.PlayerId);
+                    break;
+                case "/wv":
+                    var wvrole = PlayerControl.LocalPlayer.GetCustomRole();
+                    if (wvrole != CustomRoles.Author && Options.EnableWills.GetBool() == false) break;
+                    Utils.SendMessage(WillManager.Notes[PlayerControl.LocalPlayer.PlayerId], PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Author), Translator.GetString("WillNotesTitle")));
+                    break;
+                */
+
                 case "/ans":
                 case "/asw":
                 case "/answer":
@@ -233,6 +264,17 @@ internal class ChatCommands
                 case "/巫师介绍":
                     canceled = true;
                     Utils.SendMessage(GetString("Message.CovenInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
+                    break;
+
+                case "/anomalyinfo":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.AnomalyInfo"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jester), GetString("AnomalyInfoTitle")));
+                    break;
+
+
+                case "/candr":
+                    canceled = true;
+                    Utils.SendMessage(GetString("Message.CandR"), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), GetString("CandRWarn")));
                     break;
 
                 case "/rn":
@@ -362,6 +404,8 @@ internal class ChatCommands
                         subArgs = text.Remove(0, 2);
                     SendRolesInfo(subArgs, PlayerControl.LocalPlayer.PlayerId);
                     break;
+
+                
 
                 case "/up":
                 case "/指定":
