@@ -57,7 +57,7 @@ internal class Fury : RoleBase
     public override void UnShapeShiftButton(PlayerControl player)
     {
         player.SetKillCooldown(RageKillCooldown.GetFloat());
-        player.Notify(GetString("FuryInRage"), RageDuration.GetFloat());
+        player.Notify(GetString("FuryInRage"), AbilityDuration.GetFloat());
         foreach (var target in Main.AllPlayerControls)
         {
             if (NotifyRageActive.GetBool()) target.KillFlash();
@@ -74,7 +74,7 @@ internal class Fury : RoleBase
             Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - SpeedInRage.GetFloat() + tmpSpeed;
             Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] - RageKillCooldown.GetFloat() + tmpKillCooldown;
             player.MarkDirtySettings();
-        }, RageDuration.GetFloat());
+        }, AbilityDuration.GetFloat());
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
