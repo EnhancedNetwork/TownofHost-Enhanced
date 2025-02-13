@@ -40,10 +40,14 @@ public static class Utils
         if (!AmongUsClient.Instance.AmHost) return;
         foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, player.OwnerId);
+            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, ExtendedPlayerControl.RpcSendOption, player.OwnerId);
             writer.Write(GetString("NotifyGameEnding"));
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
+
+        var writer2 = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, -1);
+        writer2.Write(GetString("NotifyGameEnding"));
+        AmongUsClient.Instance.FinishRpcImmediately(writer2);
     }
 
     public static ClientData GetClientById(int id)
