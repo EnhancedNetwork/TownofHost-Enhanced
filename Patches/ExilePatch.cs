@@ -121,8 +121,11 @@ class ExileControllerWrapUpPatch
 
             player.RpcResetAbilityCooldown();
 
-            // Check for remove pet
+            // Check for remove Pet
             player.RpcRemovePet();
+
+            / Set UnShift after meeting
+            player.DoUnShiftState();
         }
 
         Main.MeetingIsStarted = false;
@@ -133,7 +136,7 @@ class ExileControllerWrapUpPatch
 
     private static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
     {
-        // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably.
+        // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably
         if (AmongUsClient.Instance.AmHost)
         {
             _ = new LateTask(() =>
