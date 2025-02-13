@@ -425,7 +425,7 @@ public static class CustomRolesHelper
             CustomRoles.Madmate => recruiter.Is(CustomRoles.Gangster) ? target.CanBeMadmate(forGangster: true) : target.CanBeMadmate(forAdmirer: true),
             CustomRoles.Admired => Admirer.CanBeAdmired(target, recruiter),
             CustomRoles.Enchanted => Ritualist.CanBeConverted(target),
-            CustomRoles.Recruit => Jackal.CanBeSidekick(target),
+            CustomRoles.Recruit => true,
             CustomRoles.Infected => Infectious.CanBeBitten(target),
             CustomRoles.Contagious => target.CanBeInfected(),
             CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),
