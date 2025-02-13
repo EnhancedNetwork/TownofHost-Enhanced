@@ -18,10 +18,6 @@ internal class ControllerManagerUpdatePatch
 
     public static void Postfix(/*ControllerManager __instance*/)
     {
-        /*
-         * KeyCode.Return - Right Enter
-         * KeyCode.Equals - Key "="
-        */
         try
         {
             if (!RehostManager.IsAutoRehostDone && GetKeysDown(KeyCode.LeftShift, KeyCode.C))
@@ -36,25 +32,20 @@ internal class ControllerManagerUpdatePatch
                 EndGameManagerPatch.IsRestarting = false;
             }
             // Do next page
-            //if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
-            //{
-            //    if (Input.GetKeyDown(KeyCode.Tab))
-            //    {
-            //        OptionShower.Next();
-            //    }
-            //    for (var i = 0; i < 9; i++)
-            //    {
-            //        if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
-            //            OptionShower.currentPage = i;
-            //    }
-            //}
-            //捕捉全屏快捷键
-            //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
-            //{
-            //    _ = new LateTask(SetResolutionManager.Postfix, 0.01f, "Fix Button Position");
-            //}
+            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
+            {
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    OptionShower.Next();
+                }
+                for (var i = 0; i < 9; i++)
+                {
+                    if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
+                        OptionShower.currentPage = i;
+                }
+            }
 
-            //Show role info
+            //Show Role info
             if (Input.GetKeyDown(KeyCode.F1) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
@@ -63,8 +54,6 @@ internal class ControllerManagerUpdatePatch
                     var lp = PlayerControl.LocalPlayer;
                     var sb = new StringBuilder();
                     sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + lp.GetRoleInfo(true));
-                    //if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
-                    //    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
                     HudManager.Instance.ShowPopUp(sb.ToString() + "<size=0%>tohe</size>");
                 }
                 catch (Exception ex)
@@ -73,7 +62,7 @@ internal class ControllerManagerUpdatePatch
                     throw;
                 }
             }
-            // Show add-ons info
+            // Show Add-ons info
             if (Input.GetKeyDown(KeyCode.F2) && GameStates.IsInGame && Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 try
@@ -163,19 +152,19 @@ internal class ControllerManagerUpdatePatch
                 Main.ExportCustomRoleColors();
                 Logger.SendInGame("Exported Custom Translation and Role File");
             }
-            // Send logs
+            // Send Logs
             if (GetKeysDown(KeyCode.F1, KeyCode.LeftControl))
             {
                 Logger.Info("Send logs", "KeyCommand");
                 Utils.DumpLog();
             }
-            //Copy current settings
+            //Copy current Settings
             if (GetKeysDown(KeyCode.LeftAlt, KeyCode.C) && !Input.GetKey(KeyCode.LeftShift) && !GameStates.IsNotJoined)
             {
                 Utils.CopyCurrentSettings();
             }
 
-            // Show chat
+            // Show Chat
             if (GetKeysDown(KeyCode.Return, KeyCode.C, KeyCode.LeftShift))
             {
                 HudManager.Instance.Chat.SetVisible(true);
@@ -189,7 +178,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             // ############################################################################################################
-            // ================================================= Only host ================================================
+            // ================================================= Only Host ================================================
             // ############################################################################################################
             if (!AmongUsClient.Instance.AmHost) return;
 
@@ -254,20 +243,13 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // Cancel start count down
+            // Cancel Start count down
             if (Input.GetKeyDown(KeyCode.C) && GameStates.IsCountDown && GameStates.IsLobby)
             {
                 Logger.Info("Reset Countdown", "KeyCommand");
                 GameStartManager.Instance.ResetStartState();
                 Logger.SendInGame(GetString("CancelStartCountDown"));
             }
-            // Displays a description of the currently valid settings
-            //if (GetKeysDown(KeyCode.N, KeyCode.LeftShift, KeyCode.LeftControl))
-            //{
-            //    Main.isChatCommand = true;
-            //    Utils.ShowActiveSettingsHelp();
-            //}
-            // Displays the currently valid settings
             if (GetKeysDown(KeyCode.N, KeyCode.LeftControl) && !Input.GetKey(KeyCode.LeftShift))
             {
                 Main.isChatCommand = true;
@@ -294,7 +276,7 @@ internal class ControllerManagerUpdatePatch
                 Utils.SendMessage(GetString("HostKillSelfByCommand"), title: $"<color=#ff0000>{GetString("DefaultSystemMessageTitle")}</color>");
             }
 
-            // Show intro
+            // Show Intro
             if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
             {
                 HudManager.Instance.StartCoroutine(HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black));
@@ -318,7 +300,7 @@ internal class ControllerManagerUpdatePatch
                 CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
             }
 
-            // Kill flash
+            // Kill Flash
             if (GetKeysDown(KeyCode.Return, KeyCode.F, KeyCode.LeftShift))
             {
                 Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
@@ -367,7 +349,7 @@ internal class ControllerManagerUpdatePatch
                 DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage($"VisibleTaskCount has been changed to {Main.VisibleTasksCount}");
             }
 
-            // All players enter vent
+            // All Players enter Vent
             if (Input.GetKeyDown(KeyCode.C) && !GameStates.IsLobby)
             {
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -376,7 +358,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // All players exit vent
+            // All Players exit Vent
             if (Input.GetKeyDown(KeyCode.B))
             {
                 foreach (var pc in PlayerControl.AllPlayerControls)
@@ -385,7 +367,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // Teleport all players to the host
+            // Teleport all Players to the Host
             if (GetKeysDown(KeyCode.LeftShift, KeyCode.V, KeyCode.Return) && !GameStates.IsLobby && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
             {
                 Vector2 pos = PlayerControl.LocalPlayer.NetTransform.transform.position;
@@ -399,7 +381,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
 
-            // Clear vent
+            // Clear Vent
             if (Input.GetKeyDown(KeyCode.N))
             {
                 VentilationSystem.Update(VentilationSystem.Operation.StartCleaning, 0);
