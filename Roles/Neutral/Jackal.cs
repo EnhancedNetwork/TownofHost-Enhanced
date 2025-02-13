@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -108,15 +109,14 @@ internal class Jackal : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 0;
+        AbilityLimit = SidekickRecruitLimitOpt.GetInt();
         hasConverted = false;
-        if (Playerids.Count == 0 || RestoreLimitOnNewJackal.GetBool())
-        {
-            AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
-        }
 
         if (!Playerids.Contains(playerId))
             Playerids.Add(playerId);
+
+        if (!CanRecruitSidekick.GetBool() || (Playerids.Count > 1 && !RestoreLimitOnNewJackal.GetBool()))
+            AbilityLimit = 0;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -380,7 +380,7 @@ internal class Jackal : RoleBase
                 return false;
             }
         }
-        if (AbilityLimit < 0)
+        if (AbilityLimit < 1)
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         
         Logger.Info($"{killer.GetNameWithRole().RemoveHtmlTags()} - Recruit limit:{AbilityLimit}", "Jackal");
@@ -391,10 +391,15 @@ internal class Jackal : RoleBase
     // very very Long Dog shit lmao
     public static bool CanBeSidekick(PlayerControl pc)
     {
-        return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit)
-            && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate)
-            && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Paranoia)
-            && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Enchanted) && pc.GetCustomRole().IsAbleToBeSidekicked();
+        var role = pc.GetCustomRole();
+        return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit) 
+            && !pc.Is(CustomRoles.Loyal)
+            && !(SidekickAssignMode.GetInt() == 2 && (pc.Is(CustomRoles.Cleansed) || pc.Is(CustomRoles.Stubborn)))
+            && (role is not CustomRoles.NiceMini and not CustomRoles.EvilMini || Mini.Age == 18)
+            && ((CanRecruitCoven.GetBool() && role.IsCoven()) 
+            || (CanRecruitNeutral.GetBool() && role.IsNeutral() && !role.IsNA()) 
+            || (CanRecruitImpostor.GetBool() && role.IsImpostor()) 
+            || role.IsCrewmate());
     }
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
