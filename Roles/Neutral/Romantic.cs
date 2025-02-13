@@ -248,7 +248,7 @@ internal class Romantic : RoleBase
         var pc = _Player;
         if (player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist))
         {
-            player.GetCustomSubRoles().DoIf(x => x.IsBetrayalAddonV2() && !pc.Is(x), x => pc.RpcSetCustomRole(x));
+            player.GetCustomSubRoles().DoIf(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist && !pc.Is(x), x => pc.RpcSetCustomRole(x));
         }
         ChangeRole(player);
     }
