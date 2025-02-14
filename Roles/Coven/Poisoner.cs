@@ -15,7 +15,6 @@ internal class Poisoner : CovenManager
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Poisoner;
     private const int Id = 17500;
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenTrickery;
