@@ -320,7 +320,7 @@ class TaskPanelBehaviourPatch
         if (!player.GetCustomRole().IsVanilla())
         {
             sb.Clear();
-            sb.Append($"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n";
+            sb.Append($"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n");
             sb.Append(player.GetRoleInfo());
 
             var AllText = Utils.ColorString(player.GetRoleColor(), sb.ToString());
