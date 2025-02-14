@@ -436,7 +436,6 @@
     "Diviner": "Diviner",
     "Darkened": "Darkened",
     "Underclocked": "Underclocked",
-    "BracketAddons": "Add Brackets To Add-ons",
     "EngineerTOHOInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
     "ScientistTOHOInfo": "Access portable Vitals from anywhere",
     "NoisemakerTOHOInfo": "Send out an alert when killed",
@@ -1719,7 +1718,15 @@
     "Prohibited_CountBlockedVentsInFungle": "Count Blocked Vents In <color=#ffa646>The Fungle</color>",
 
     "UndertakerFreezeDuration": "Freeze Duration",
+    
     "NameDisplayAddons": "Display Add-Ons next to the role name",
+    "BracketAddons": "Add Brackets to Add-ons",
+    "ShowShortNamesForAddOns": "Show Short Names for Add-Ons",
+    "ShortAddOnNamesMode_Disable": "Disable",
+    "ShortAddOnNamesMode_Always": "Always",
+    "ShortAddOnNamesMode_OnlyInMeeting": "Only in Meeting",
+    "ShortAddOnNamesMode_OnlyInGame": "Only in Game",
+    
     "YourAddon": "Your Add-ons:",
     "NoLimitAddonsNumMax": "Maximum Add-ons per Player",
     "RemoveIncompatibleAddOnsMidGame": "Remove Incompatible Addons for role assigned mid game",
