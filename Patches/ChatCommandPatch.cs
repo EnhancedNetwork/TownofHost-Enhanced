@@ -1682,7 +1682,7 @@ internal class ChatCommands
                         break;
                     }
 
-                    if (!Spectators.Removed(PlayerControl.LocalPlayer.PlayerId))
+                    if (!Spectators.Remove(PlayerControl.LocalPlayer.PlayerId))
                     {
                         Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.Removed"));
                         break;
