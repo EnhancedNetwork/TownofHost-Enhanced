@@ -322,8 +322,6 @@ public class GameStartManagerBeginGamePatch
     {
         if (Options.NoGameEnd.GetBool())
             Logger.SendInGame(string.Format(GetString("Warning.NoGameEndIsEnabled"), GetString("NoGameEnd")));
-        if (Options.CurrentGameMode == CustomGameMode.CandR)
-            Logger.SendInGame(string.Format(GetString("Warning.CandR")));
 
         if (Options.RandomMapsMode.GetBool())
         {
