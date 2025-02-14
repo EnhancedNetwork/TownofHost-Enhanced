@@ -1,16 +1,16 @@
-using TOHE.Modules;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
+
 internal class Sorcerer : RoleBase
 {
-    // ----------- Role Setup ----------- //
+    //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Sorcerer;
     private const int Id = 34000;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor; 
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    //==================================================================\\
 
-    // ----------- Settings ----------- //
     private static float MarkRange = 2.5f; // How close you need to be 
     private bool usedSecondChance = false; // Checking if respawn has been used
     private List<PlayerControl> markedPlayers = [];
@@ -26,7 +26,7 @@ internal class Sorcerer : RoleBase
         usedSecondChance = false; // Reset second chance
     }
 
-        // Try to mark a player (with distance check)
+    // Try to mark Player (with distance check)
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) 
     {
         if (target == null) return true; 
@@ -47,7 +47,7 @@ internal class Sorcerer : RoleBase
         usedSecondChance = true;
     }
 
-    // Check if all marked players are dead
+    // Check if all marked Players are dead
     private bool AreAllMarkedPlayersDead() 
     {
         foreach (var player in markedPlayers)
@@ -71,7 +71,7 @@ internal class Sorcerer : RoleBase
         return aliveCount <= 3;
     }
 
-    // Win: all marked players dead + 3 or fewer alive
+    // Win: all marked Players dead + 3 or fewer alive
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || !player.IsAlive()) return;
