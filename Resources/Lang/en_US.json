@@ -2693,8 +2693,6 @@
     "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in the last meeting.</b>\n",
     "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
 
-
-
     "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no Mods other than TOHO are installed.",
     "Warning.NoModHost": "TOHO is not installed on the Host",
     "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
