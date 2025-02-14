@@ -9,7 +9,6 @@ internal class Terrorist : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Terrorist;
     private const int id = 15400;
-
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
