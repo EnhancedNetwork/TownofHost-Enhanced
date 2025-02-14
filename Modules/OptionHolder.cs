@@ -149,6 +149,14 @@ public static class Options
         QuickChatSpam_Random20,
         QuickChatSpam_EzHacked,
     };
+    [Obfuscation(Exclude = true)]
+    public enum ShortAddOnNamesMode
+    {
+        ShortAddOnNamesMode_Disable,
+        ShortAddOnNamesMode_Always,
+        ShortAddOnNamesMode_OnlyInMeeting,
+        ShortAddOnNamesMode_OnlyInGame
+    }
 
     public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
     public static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
