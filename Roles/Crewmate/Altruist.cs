@@ -16,7 +16,6 @@ internal class Altruist : RoleBase
     //==================================================================\\
 
     private static OptionItem RevivedDeadBodyCannotBeReported;
-    //private static OptionItem KillerAlwaysCanGetAlertAndArrow;
     private static OptionItem ImpostorsCanGetsAlert;
     private static OptionItem ImpostorsCanGetsArrow;
     private static OptionItem NeutralKillersCanGetsAlert;
@@ -26,7 +25,6 @@ internal class Altruist : RoleBase
 
     private bool IsRevivingMode = true;
     private byte RevivedPlayerId = byte.MaxValue;
-    //private readonly static HashSet<byte> AllRevivedPlayerId = [];
 
     public override void SetupCustomOption()
     {
@@ -50,7 +48,6 @@ internal class Altruist : RoleBase
     public override void Init()
     {
         RevivedPlayerId = byte.MaxValue;
-        //AllRevivedPlayerId.Clear();
         IsRevivingMode = true;
     }
 
@@ -94,7 +91,6 @@ internal class Altruist : RoleBase
             var deadBodyObject = deadBody.GetDeadBody();
 
             RevivedPlayerId = deadPlayerId;
-            //AllRevivedPlayerId.Add(deadPlayerId);
 
             deadPlayer.RpcTeleport(deadBodyObject.transform.position);
             deadPlayer.RpcRevive();
