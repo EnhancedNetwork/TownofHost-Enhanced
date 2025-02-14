@@ -884,7 +884,7 @@ static class ExtendedPlayerControl
         netTransform.SetDirtyBit(uint.MaxValue);
 
         ushort newSid = (ushort)(8 + netTransform.lastSequenceId);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, sendOption);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
