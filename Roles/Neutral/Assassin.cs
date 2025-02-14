@@ -10,7 +10,6 @@ internal class Assassin : RoleBase
     private const int Id = 31900;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles Role => CustomRoles.Assassin;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
