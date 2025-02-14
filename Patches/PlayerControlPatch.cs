@@ -1309,7 +1309,7 @@ class FixedUpdateInNormalGamePatch
                 
                 if (needUpdateNameTarget)
                 {
-                    var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
+                    var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId, isMeeting: false);
                     RoleText.text = RoleTextData.Item1;
                     RoleText.color = RoleTextData.Item2;
                     if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
