@@ -25,7 +25,7 @@ class CheckForEndVotingPatch
     {
         if (!AmongUsClient.Instance.AmHost) return true;
 
-        //Meeting Skip with vote counting on keystroke (m + delete)
+        //Meeting Skip with Vote counting on keystroke (m + delete)
         var shouldSkip = false;
         if (Input.GetKeyDown(KeyCode.F6))
         {
@@ -147,7 +147,7 @@ class CheckForEndVotingPatch
             {
                 foreach (var ps in __instance.playerStates)
                 {
-                    //Players who are not dead have not voted
+                    //Players who are not dead have not Voted
                     if (!ps.DidVote && GetPlayerById(ps.TargetPlayerId)?.IsAlive() == true)
                     {
                         return false;
@@ -423,7 +423,7 @@ class CheckForEndVotingPatch
         var player = GetPlayerById(exiledPlayer.PlayerId);
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = GetDisplayRoleAndSubName(exileId, exileId, true);
+        var coloredRole = GetDisplayRoleAndSubName(exileId, exileId, false, true);
 
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = ColorString(GetRoleColor(CustomRoles.Egoist), coloredRole.RemoveHtmlTags());
@@ -580,7 +580,7 @@ class CheckForEndVotingPatch
     public static PlayerVoteArea GetPlayerVoteArea(byte playerId)
     {
         if (MeetingHud.Instance == null || !MeetingHud.Instance.playerStates.Any()) return null;
-        //This function should only be used to get vote states after voting complete
+        //This function should only be used to get Vote states after Voting complete
 
         foreach (var pva in MeetingHud.Instance.playerStates)
         {
@@ -823,14 +823,14 @@ static class ExtendedMeetingHud
             // whether this player is voted for in the player panel
             if (ps.VotedFor is not 252 and not byte.MaxValue and not 254)
             {
-                // Default number of votes 1
+                // Default number of Votes 1
                 int VoteNum = 1;
 
-                // Judgment only when voting for a valid Player
+                // Judgment only when Voting for a valid Player
                 var target = GetPlayerById(ps.VotedFor);
                 if (target != null)
                 {
-                    // Check Tiebreaker voting
+                    // Check Tiebreaker Voting
                     Tiebreaker.CheckVote(target, ps);
 
                     // Check Collector voting data
@@ -1081,7 +1081,7 @@ class MeetingHudStartPatch
             var textTemplate = pva.NameText;
 
             // Create Role text in meeting
-            var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId);
+            var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId, isMeeting: true);
             var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
             if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
                 UnityEngine.Object.Destroy(roleTextMeeting.transform.FindChild("DeathReasonTextMeeting").gameObject);
@@ -1274,7 +1274,6 @@ class MeetingHudStartPatch
                         if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
                         {
                             sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
-                            //isLover = true;
                         }
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
