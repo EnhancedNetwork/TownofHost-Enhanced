@@ -600,6 +600,7 @@ public static class Options
     // Add-on
     public static OptionItem NameDisplayAddons;
     public static OptionItem AddBracketsToAddons;
+    public static OptionItem ShowShortNamesForAddOns;
     public static OptionItem NoLimitAddonsNumMax;
     public static OptionItem RemoveIncompatibleAddOnsMidGame;
 
@@ -829,6 +830,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
         AddBracketsToAddons = BooleanOptionItem.Create(60021, "BracketAddons", true, TabGroup.Addons, false)
+            .SetParent(NameDisplayAddons);
+        ShowShortNamesForAddOns = StringOptionItem.Create(60035, "ShowShortNamesForAddOns", EnumHelper.GetAllNames<ShortAddOnNamesMode>(), 2, TabGroup.Addons, false)
             .SetParent(NameDisplayAddons);
         NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(0, 15, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
