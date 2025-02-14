@@ -14,7 +14,6 @@ internal class Keeper : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Keeper;
     private const int Id = 26500;
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
