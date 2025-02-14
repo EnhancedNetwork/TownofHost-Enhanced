@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
@@ -23,7 +24,7 @@ public class SabotageSystemPatch
             if (!Options.SabotageTimeControl.GetBool()) return;
             if (GameStates.AirshipIsActive) return;
 
-            // If Reactor sabotage is end
+            // If Reactor Sabotage is end
             if (!__instance.IsActive || !SetDurationForReactorSabotage)
             {
                 if (!SetDurationForReactorSabotage && !__instance.IsActive)
@@ -37,7 +38,7 @@ public class SabotageSystemPatch
             Logger.Info($" {SetDurationForReactorSabotage}", "ReactorSystemTypePatch - SetDurationCriticalSabotage");
             SetDurationForReactorSabotage = false;
 
-            // Set time limit reactor (The Skeld/Mira HQ/Polus/The Fungle)
+            // Set time limit Reactor (The Skeld/Mira HQ/Polus/The Fungle)
             switch (ShipStatus.Instance.Type)
             {
                 case ShipStatus.MapType.Ship: //The Skeld
@@ -65,7 +66,7 @@ public class SabotageSystemPatch
             if (!Options.SabotageTimeControl.GetBool()) return;
             if (!GameStates.AirshipIsActive) return;
 
-            // If Reactor sabotage is end (Airship)
+            // If Reactor Sabotage is end (Airship)
             if (!__instance.IsActive || ShipStatus.Instance == null || !SetDurationForReactorSabotage)
             {
                 if (!SetDurationForReactorSabotage && !__instance.IsActive)
@@ -79,7 +80,7 @@ public class SabotageSystemPatch
             Logger.Info($" {SetDurationForReactorSabotage}", "HeliSabotageSystemPatch - SetDurationCriticalSabotage");
             SetDurationForReactorSabotage = false;
 
-            // Set time limit reactor (The Airship)
+            // Set time limit Reactor (The Airship)
             __instance.Countdown = Options.AirshipReactorTimeLimit.GetFloat();
         }
     }
@@ -91,7 +92,7 @@ public class SabotageSystemPatch
             if (!Options.SabotageTimeControl.GetBool()) return;
             if (Utils.GetActiveMapName() is MapNames.Polus or MapNames.Airship or MapNames.Fungle) return;
 
-            // If O2 sabotage is end
+            // If O2 Sabotage is end
             if (!__instance.IsActive || !SetDurationForO2Sabotage)
             {
                 if (!SetDurationForO2Sabotage && !__instance.IsActive)
@@ -105,7 +106,7 @@ public class SabotageSystemPatch
             Logger.Info($" {SetDurationForO2Sabotage}", "LifeSuppSystemType - SetDurationCriticalSabotage");
             SetDurationForO2Sabotage = false;
 
-            // Set time limit reactor (The Skeld/Mira HQ)
+            // Set time limit Reactor (The Skeld/Mira HQ)
             switch (ShipStatus.Instance.Type)
             {
                 case ShipStatus.MapType.Ship: // The Skeld
@@ -130,7 +131,7 @@ public class SabotageSystemPatch
             {
                 if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                 {
-                    // Need for hiding player names if player is desync Impostor
+                    // Need for hiding Player names if Player is Desync Impostor
                     Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true, MushroomMixupIsActive: true);
                 }
             }
@@ -146,7 +147,7 @@ public class SabotageSystemPatch
             if (!Options.SabotageTimeControl.GetBool()) return;
             if (!GameStates.FungleIsActive) return;
 
-            // If Mushroom Mixup sabotage is end
+            // If Mushroom Mixup Sabotage is end
             if (!__instance.IsActive || !SetDurationMushroomMixupSabotage)
             {
                 if (!SetDurationMushroomMixupSabotage && !__instance.IsActive)
@@ -176,11 +177,15 @@ public class SabotageSystemPatch
                 {
                     _ = new LateTask(() =>
                     {
-                        // After MushroomMixup sabotage, shapeshift cooldown sets to 0
-                        foreach (var pc in Main.AllAlivePlayerControls)
+                        // After MushroomMixup Sabotage, Shapeshift Cooldown sets to 0
+                        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                         {
-                            // Reset Ability Cooldown To Default For Alive Players
-                            pc.RpcResetAbilityCooldown();
+                            // Do Unshift since Mushroom Mixup reverts all Shapeshifted Players
+                            pc.DoUnShiftState(true);
+
+                            // Reset Ability Cooldown to default for living Players
+                            if (pc.GetCustomRole().GetRoleTypes() != RoleTypes.Engineer)
+                                pc.RpcResetAbilityCooldown();
                         }
                     }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 
@@ -188,7 +193,7 @@ public class SabotageSystemPatch
                     {
                         if ((!pc.Is(Custom_Team.Impostor) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && pc.HasDesyncRole())
                         {
-                            // Need for display player names if player is desync Impostor
+                            // Need for display Player names if Player is Desync Impostor
                             Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: true);
                         }
                     }
@@ -317,12 +322,6 @@ public class SabotageSystemPatch
             {
                 if (Camouflager.CantPressCommsSabotageButton(player))
                     return false;
-            }
-
-            if (player.GetRoleClass() is Glitch gc)
-            {
-                gc.Mimic(player);
-                return false;
             }
 
             return player.CanUseSabotage();

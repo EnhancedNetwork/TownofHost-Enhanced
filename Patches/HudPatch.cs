@@ -8,8 +8,17 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
+class HudManagerStartPatch
+{
+    public static void Postfix(HudManager __instance)
+    {
+        __instance.gameObject.AddComponent<OptionShower>().hudManager = __instance;
+    }
+}
+
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
-class HudManagerPatch
+class HudManagerUpdatePatch
 {
     public static bool ShowDebugText = false;
     public static int LastCallNotifyRolesPerSecond = 0;
@@ -57,9 +66,7 @@ class HudManagerPatch
                     TempLowerInfoText = new GameObject("CountdownText");
                     TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
                     LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
-                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
                     LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
@@ -78,9 +85,7 @@ class HudManagerPatch
                     TempLowerInfoText = new GameObject("CountdownText");
                     TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
                     LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
-                    //LowerInfoText.text = string.Format(GetString("CountdownText"));
                     LowerInfoText.alignment = TextAlignmentOptions.Center;
-                    //LowerInfoText = Object.Instantiate(__instance.KillButton.buttonLabelText);
                     LowerInfoText.transform.parent = __instance.transform;
                     LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
                     LowerInfoText.overflowMode = TextOverflowModes.Overflow;
@@ -146,7 +151,7 @@ class HudManagerPatch
                 __instance.ImpostorVentButton.ToggleVisible(player.CanUseImpostorVentButton());
                 player.Data.Role.CanVent = player.CanUseVents();
 
-                // Sometimes sabotage button was visible for non-host modded clients
+                // Sometimes Sabotage button was visible for non-host modded clients
                 if (!AmongUsClient.Instance.AmHost && !player.CanUseSabotage())
                     __instance.SabotageButton.Hide();
             }
@@ -233,7 +238,7 @@ class SetHudActivePatch
     public static bool IsActive = false;
     public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl player, [HarmonyArgument(2)] bool isActive)
     {
-        // Fix vanilla bug when report button displayed in the lobby
+        // Fix vanilla bug when Report button displayed in the lobby
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
 
         if (!GameStates.IsModHost || GameStates.IsHideNSeek) return;
@@ -388,17 +393,19 @@ class TaskPanelBehaviourPatch
                     if (sb1.Length > 1)
                     {
                         var text = sb1.ToString().TrimEnd('\n').TrimEnd('\r');
-                        if (!Utils.HasTasks(player.Data, false) && sb1.ToString().Count(s => (s == '\n')) >= 2)
+                        if (!Utils.HasTasks(player.Data, false) && sb1.ToString().Any(s => s == '\n'))
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
-                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                        sb1.Append($"\r\n\r\n<size=85%>{text}</size>");
                     }
+                    sbFinal.Clear();
+                    sbFinal.Append(sb);
                     break;
             }
 
             __instance.taskText.text = sbFinal.ToString();
         }
 
-        // RepairSender display
+        // RepairSender Display
         if (RepairSender.enabled && AmongUsClient.Instance.NetworkMode != NetworkModes.OnlineGame)
             __instance.taskText.text = RepairSender.GetText();
     }

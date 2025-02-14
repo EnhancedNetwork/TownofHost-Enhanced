@@ -76,12 +76,6 @@ internal class Berserker : RoleBase
         Main.AllPlayerKillCooldown[playerId] = BerserkerKillCooldown.GetFloat();
         playerId.SetAbilityUseLimit(0);
     }
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => KnowRoleTarget(seer, target);
-
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
-
     public override string GetProgressText(byte playerId, bool comms)
     {
         var ProgressText = new StringBuilder();
@@ -96,7 +90,7 @@ internal class Berserker : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && !BerserkerCanKillTeamate.GetBool()) return false;
+        if (target.IsNeutralApocalypse() && !BerserkerCanKillTeamate.GetBool() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return false;
 
         bool noScav = true;
         var abilityUse = killer.GetAbilityUseLimit();
@@ -149,13 +143,13 @@ internal class Berserker : RoleBase
 
                 if (Utils.GetDistance(killer.transform.position, player.transform.position) <= Bomber.BomberRadius.GetFloat())
                 {
-                    if (!target.IsNeutralApocalypse())
+                    if (!target.IsNeutralApocalypse() || Main.PlayerStates[target.PlayerId].IsNecromancer)
                     {
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         player.RpcMurderPlayer(player);
                         player.SetRealKiller(killer);
                     }
-                    if (target.IsNeutralApocalypse() && BerserkerCanKillTeamate.GetBool())
+                    if (target.IsNeutralApocalypse() && BerserkerCanKillTeamate.GetBool() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
                     {
                         Main.PlayerStates[player.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
                         player.RpcMurderPlayer(player);
@@ -186,10 +180,6 @@ internal class War : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
     //==================================================================\\
 
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target)
-        => KnowRoleTarget(seer, target);
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => target.IsNeutralApocalypse() && seer.IsNeutralApocalypse();
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Berserker.WarKillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(Berserker.WarHasImpostorVision.GetBool());
     public override bool CanUseKillButton(PlayerControl pc) => true;

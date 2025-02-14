@@ -291,4 +291,15 @@ internal class MoonDancer : CovenManager
             pc.SetDeathReason(PlayerState.DeathReason.BlastedOff);
         }
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (HasNecronomicon(playerId))
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerNecroButtonText"));
+        }
+        else
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerButtonText"));
+        }
+    }
 }

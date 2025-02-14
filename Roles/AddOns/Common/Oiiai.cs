@@ -100,30 +100,36 @@ public class Oiiai : IAddon
         }
         else if (killer.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(killer))
         {
+            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Enchanted, false);
             killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");
         }
         else if (CovenManager.HasNecronomicon(killer))
         {
-            // Necronomicon holder immune to Oiiai
+            // Necronomicon holder immune to OIIAI
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven with Necronomicon.", "Oiiai");
         }
         else if (killer.GetCustomRole().IsMadmate())
         {
+            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-            killer.RpcSetCustomRole(CustomRoles.Madmate, false);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Madmate);
             killer.AddInSwitchAddons(killer, CustomRoles.Madmate);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Madmates assign.", "Oiiai");
         }
         else if (killer.Is(CustomRoles.Sidekick))
         {
+            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-            killer.RpcSetCustomRole(CustomRoles.Recruit, false);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Recruit);
             killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }

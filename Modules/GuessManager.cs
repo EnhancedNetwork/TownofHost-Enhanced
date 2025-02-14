@@ -172,9 +172,7 @@ public static class GuessManager
             (pc.Is(CustomRoles.Guesser) && Guesser.GTryHideMsg.GetBool()) ||
             (Options.GuesserMode.GetBool() && Options.HideGuesserCommands.GetBool())
             )
-            {
-                //if (Options.NewHideMsg.GetBool()) ChatManager.SendPreviousMessagesToAll();
-                //else TryHideMsg(); 
+            { 
                 TryHideMsg();
                 ChatManager.SendPreviousMessagesToAll();
             }
@@ -211,7 +209,7 @@ public static class GuessManager
 
                 if (target.GetRoleClass().OnRoleGuess(isUI, target, pc, role, ref guesserSuicide)) return true;
                 // Used to be a exploit. Guess may be canceled even misguessed
-                // You need to manually check whether guessed correct and then perform role abilities
+                // You need to manually check whether guessed correct and then perform Role abilities
 
                 if (CopyCat.playerIdList.Contains(pc.PlayerId))
                 {
@@ -494,7 +492,7 @@ public static class GuessManager
             }
             Swapper.CheckSwapperTarget(pc.PlayerId);
 
-            // Prevent double check end voting
+            // Prevent double check end Voting
             if (meetingHud.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
             {
                 meetingHud.CheckForEndVoting();
@@ -508,7 +506,6 @@ public static class GuessManager
         }
         catch (Exception error)
         {
-            // try{} catch{} added in case an exception occurs, and "ShouldNotCheck" will remain true forever
             Logger.Error($"Error after guesser murder: {error}", "RpcGuesserMurderPlayer");
             GameEndCheckerForNormal.ShouldNotCheck = false;
         }
@@ -532,7 +529,6 @@ public static class GuessManager
         PlayerVoteArea voteArea = MeetingHud.Instance.playerStates.First(
             x => x.TargetPlayerId == pc.PlayerId
         );
-        //pc.Die(DeathReason.Kill);
         if (voteArea == null) return;
         if (voteArea.DidVote) voteArea.UnsetVote();
         voteArea.AmDead = true;
@@ -569,7 +565,6 @@ public static class GuessManager
         }
         else
         {
-            //byte color = GetColorFromMsg(msg);
             id = byte.MaxValue;
             error = GetString("GuessHelp");
             role = new();
@@ -671,9 +666,6 @@ public static class GuessManager
             {
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
                     CreateGuesserButton(__instance);
-
-                /*    if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.Ritualist))
-                        CreateGuesserButton(__instance); */
 
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser))
                     CreateGuesserButton(__instance);
@@ -836,7 +828,7 @@ public static class GuessManager
                 Teambutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
                 Transform TeambuttonMask = UnityEngine.Object.Instantiate(maskTemplate, TeambuttonParent);
                 TextMeshPro Teamlabel = UnityEngine.Object.Instantiate(textTemplate, Teambutton);
-                Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateWithKPD");
+                Teambutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateKPD");
                 RoleSelectButtons.Add((Custom_Team)TabId, Teambutton.GetComponent<SpriteRenderer>());
                 TeambuttonParent.localPosition = new(-3.10f + (tabCount++ * 1.47f), 2.225f, -200);
                 TeambuttonParent.localScale = new(0.53f, 0.53f, 1f);
@@ -849,7 +841,6 @@ public static class GuessManager
                     Custom_Team.Addon => new Color32(255, 154, 206, byte.MaxValue),
                     _ => throw new NotImplementedException(),
                 };
-                //Logger.Info(Teamlabel.color.ToString(), ((Custom_Team)TabId).ToString());
                 Teamlabel.text = GetString("Type" + ((Custom_Team)TabId).ToString());
                 Teamlabel.alignment = TextAlignmentOptions.Center;
                 Teamlabel.transform.localPosition = new Vector3(0, 0, Teamlabel.transform.localPosition.z);
@@ -897,7 +888,7 @@ public static class GuessManager
                 Pagebutton.FindChild("ControllerHighlight").gameObject.SetActive(false);
                 Transform PagebuttonMask = UnityEngine.Object.Instantiate(maskTemplate, PagebuttonParent);
                 TextMeshPro Pagelabel = UnityEngine.Object.Instantiate(textTemplate, Pagebutton);
-                Pagebutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateWithKPD");
+                Pagebutton.GetComponent<SpriteRenderer>().sprite = CustomButton.Get("GuessPlateKPD");
                 PagebuttonParent.localPosition = IsNext ? new(3.535f, -2.2f, -200) : new(-3.475f, -2.2f, -200);
                 PagebuttonParent.localScale = new(0.55f, 0.55f, 1f);
                 Pagelabel.color = Color.white;
@@ -1082,7 +1073,6 @@ public static class GuessManager
                 label.transform.localPosition = new Vector3(0, 0, label.transform.localPosition.z);
                 label.transform.localScale *= 1.6f;
                 label.autoSizeTextContainer = true;
-                //int copiedIndex = info[(int)role.GetCustomRoleTeam()];
 
                 button.GetComponent<PassiveButton>().OnClick.RemoveAllListeners();
                 if (PlayerControl.LocalPlayer.IsAlive()) button.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>

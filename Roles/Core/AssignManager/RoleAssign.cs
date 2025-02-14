@@ -70,14 +70,14 @@ public class RoleAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+                foreach (PlayerControl pc in Main.AllPlayerControls)
                 {
-                    if (Main.EnableGM.Value && pc == PlayerControl.LocalPlayer)
+                    if (Main.EnableGM.Value && pc.IsHost())
                     {
                         RoleResult[pc.PlayerId] = CustomRoles.GM;
                         continue;
                     }
-                    if (TagManager.AssignGameMaster(pc.FriendCode))
+                    else if (TagManager.AssignGameMaster(pc.FriendCode))
                     {
                         RoleResult[pc.PlayerId] = CustomRoles.GM;
                         Logger.Info($"Assign Game Master due to tag for [{pc.PlayerId}]{pc.GetRealName()}", "TagManager");
@@ -145,7 +145,6 @@ public class RoleAssign
             switch (role)
             {
                 case CustomRoles.Stalker when GameStates.FungleIsActive:
-                //case CustomRoles.Lighter when GameStates.FungleIsActive:
                 case CustomRoles.Doctor when Options.EveryoneCanSeeDeathReason.GetBool():
                 case CustomRoles.VengefulRomantic:
                 case CustomRoles.RuthlessRomantic:
@@ -182,12 +181,6 @@ public class RoleAssign
             else Roles[RoleAssignType.Crewmate].Add(info);
         }
 
-        //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
-        //{
-        //    Roles[RoleAssignType.Impostor].Add(new(CustomRoles.ImpostorTOHO, 100, optImpNum));
-        //    Logger.Warn("Adding Vanilla Impostor", "CustomRoleSelector");
-        //}
-
         Logger.Info($"Number of NKs: {optNeutralKillingNum}, Number of NonNKs: {optNonNeutralKillingNum}", "NeutralNum");
         Logger.Msg("=====================================================", "AllActiveRoles");
         Logger.Info(string.Join(", ", Roles[RoleAssignType.Impostor].Select(x => $"{x.Role}: {x.SpawnChance}% - {x.MaxCount}")), "ImpRoles");
@@ -205,9 +198,9 @@ public class RoleAssign
         IEnumerable<RoleAssignInfo> TempAlwaysCovenRoles = Roles[RoleAssignType.Coven].Where(x => x.SpawnChance == 100);
         IEnumerable<RoleAssignInfo> TempAlwaysCrewRoles = Roles[RoleAssignType.Crewmate].Where(x => x.SpawnChance == 100);
 
-        // DistinctBy - Removes duplicate roles if there are any
-        // Shuffle - Shuffles all roles in the list into a randomized order
-        // Take - Takes the first x roles of the list ... x is the maximum number of roles we could need of that team
+        // DistinctBy - Removes duplicate Roles if there are any
+        // Shuffle - Shuffles all Roles in the list into a randomized order
+        // Take - Takes the first X Roles of the list ... X is the maximum number of Roles we could need of that team
 
         Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Take(optImpNum).ToList();
         Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Take(optNeutralKillingNum).ToList();
@@ -271,7 +264,7 @@ public class RoleAssign
         AllPlayers.RemoveAll(x => ChatCommands.Spectators.Contains(x.PlayerId));
         RoleResult.AddRange(ChatCommands.Spectators.ToDictionary(x => x, _ => CustomRoles.GM));
         
-        // Pre-Assigned Roles By Host Are Selected First
+        // Pre-Assigned Roles by Host are selected first
         foreach (var item in SetRoles)
         {
             PlayerControl pc = Utils.GetPlayerById(item.Key);
@@ -354,7 +347,7 @@ public class RoleAssign
                             continue;
                         }
 
-                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                        // Make "Spawn Chance ÷ 5 = X" (Example: 65 ÷ 5 = 13)
                         for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
                             // Add Imp roles 'x' times (13)
@@ -367,7 +360,7 @@ public class RoleAssign
             RoleAssignInfo[] ImpRoleCounts = AlwaysImpRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceImpRoles.Distinct().Select(GetAssignInfo).ToArray());
             Imps = ImpRoleCounts;
 
-            // Assign roles set to 100%
+            // Assign Roles set to 100%
             if (readyImpNum < optImpNum)
             {
                 while (AlwaysImpRoles.Any())
@@ -389,7 +382,7 @@ public class RoleAssign
                 }
             }
 
-            // Assign other roles when needed
+            // Assign other Roles when needed
             if (readyRoleNum < playerCount && readyImpNum < optImpNum)
             {
                 while (ChanceImpRoles.Any())
@@ -397,7 +390,7 @@ public class RoleAssign
                     var selected = ChanceImpRoles.RandomElement();
                     var info = ImpRoleCounts.FirstOrDefault(x => x.Role == selected);
 
-                    // Remove 'x' times
+                    // Remove 'X' times
                     for (int j = 0; j < info.SpawnChance / 5; j++)
                         ChanceImpRoles.Remove(selected);
 
@@ -448,7 +441,7 @@ public class RoleAssign
                         // Add 'MaxCount' (1) times
                         for (int k = 0; k < item.MaxCount; k++)
                         {
-                            // Don't add if Host has assigned this role by using '/up'
+                            // Don't add if Host has assigned this Role by using '/up'
                             if (SetRoles.ContainsValue(item.Role))
                             {
                                 var playerId = SetRoles.FirstOrDefault(x => x.Value == item.Role).Key;
@@ -456,10 +449,10 @@ public class RoleAssign
                                 continue;
                             }
 
-                            // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                            // Make "Spawn Chance ÷ 5 = X" (Example: 65 ÷ 5 = 13)
                             for (int j = 0; j < item.SpawnChance / 5; j++)
                             {
-                                // Add Non-NK roles 'x' times (13)
+                                // Add Non-NK roles 'X' times (13)
                                 ChanceNonNKRoles.Add(item.Role);
                             }
                         }
@@ -469,7 +462,7 @@ public class RoleAssign
                 RoleAssignInfo[] NonNKRoleCounts = AlwaysNonNKRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceNonNKRoles.Distinct().Select(GetAssignInfo).ToArray());
                 NNKs = NonNKRoleCounts;
 
-                // Assign roles set to 100%
+                // Assign Roles set to 100%
                 if (readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
                     while (AlwaysNonNKRoles.Any() && optNonNeutralKillingNum > 0)
@@ -491,7 +484,7 @@ public class RoleAssign
                     }
                 }
 
-                // Assign other roles when needed
+                // Assign other Roles when needed
                 if (readyRoleNum < playerCount && readyNonNeutralKillingNum < optNonNeutralKillingNum)
                 {
                     while (ChanceNonNKRoles.Any() && optNonNeutralKillingNum > 0)
@@ -499,7 +492,7 @@ public class RoleAssign
                         var selected = ChanceNonNKRoles.RandomElement();
                         var info = NonNKRoleCounts.FirstOrDefault(x => x.Role == selected);
 
-                        // Remove 'x' times
+                        // Remove 'X' times
                         for (int j = 0; j < info.SpawnChance / 5; j++)
                             ChanceNonNKRoles.Remove(selected);
 
@@ -556,7 +549,7 @@ public class RoleAssign
                                 continue;
                             }
 
-                            // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                            // Make "Spawn Chance ÷ 5 = X" (Example: 65 ÷ 5 = 13)
                             for (int j = 0; j < item.SpawnChance / 5; j++)
                             {
                                 // Add NK roles 'x' times (13)
@@ -569,7 +562,7 @@ public class RoleAssign
                 RoleAssignInfo[] NKRoleCounts = AlwaysNKRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceNKRoles.Distinct().Select(GetAssignInfo).ToArray());
                 NKs = NKRoleCounts;
 
-                // Assign roles set to 100%
+                // Assign Roles set to 100%
                 if (readyNeutralKillingNum < optNeutralKillingNum)
                 {
                     while (AlwaysNKRoles.Any() && optNeutralKillingNum > 0)
@@ -591,7 +584,7 @@ public class RoleAssign
                     }
                 }
 
-                // Assign other roles when needed
+                // Assign other Roles when needed
                 if (readyRoleNum < playerCount && readyNeutralKillingNum < optNeutralKillingNum)
                 {
                     while (ChanceNKRoles.Any() && optNeutralKillingNum > 0)
@@ -599,7 +592,7 @@ public class RoleAssign
                         var selected = ChanceNKRoles.RandomElement();
                         var info = NKRoleCounts.FirstOrDefault(x => x.Role == selected);
 
-                        // Remove 'x' times
+                        // Remove 'X' times
                         for (int j = 0; j < info.SpawnChance / 5; j++)
                             ChanceNKRoles.Remove(selected);
 
@@ -653,10 +646,10 @@ public class RoleAssign
                                 continue;
                             }
 
-                            // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                            // Make "Spawn Chance ÷ 5 = X" (Example: 65 ÷ 5 = 13)
                             for (int j = 0; j < item.SpawnChance / 5; j++)
                             {
-                                // Add NA roles 'x' times (13)
+                                // Add NA roles 'X' times (13)
                                 ChanceNARoles.Add(item.Role);
                             }
                         }
@@ -666,7 +659,7 @@ public class RoleAssign
                 RoleAssignInfo[] NARoleCounts = AlwaysNARoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceNARoles.Distinct().Select(GetAssignInfo).ToArray());
                 NAs = NARoleCounts;
 
-                // Assign roles set to 100%
+                // Assign Roles set to 100%
                 if (readyNeutralApocalypseNum < optNeutralApocalypseNum)
                 {
                     while (AlwaysNARoles.Any() && optNeutralApocalypseNum > 0)
@@ -688,7 +681,7 @@ public class RoleAssign
                     }
                 }
 
-                // Assign other roles when needed
+                // Assign other Roles when needed
                 if (readyRoleNum < playerCount && readyNeutralApocalypseNum < optNeutralApocalypseNum)
                 {
                     while (ChanceNARoles.Any() && optNeutralApocalypseNum > 0)
@@ -697,7 +690,7 @@ public class RoleAssign
                         var selected = ChanceNARoles[selectesItem];
                         var info = NARoleCounts.FirstOrDefault(x => x.Role == selected);
 
-                        // Remove 'x' times
+                        // Remove 'X' times
                         for (int j = 0; j < info.SpawnChance / 5; j++)
                             ChanceNARoles.Remove(selected);
 
@@ -753,10 +746,10 @@ public class RoleAssign
                                 continue;
                             }
 
-                            // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                            // Make "Spawn Chance ÷ 5 = X" (Example: 65 ÷ 5 = 13)
                             for (int j = 0; j < item.SpawnChance / 5; j++)
                             {
-                                // Add coven roles 'x' times (13)
+                                // Add coven roles 'X' times (13)
                                 ChanceCVRoles.Add(item.Role);
                             }
                         }
@@ -766,7 +759,7 @@ public class RoleAssign
                 RoleAssignInfo[] CVRoleCounts = AlwaysCVRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceCVRoles.Distinct().Select(GetAssignInfo).ToArray());
                 Covs = CVRoleCounts;
 
-                // Assign roles set to 100%
+                // Assign Roles set to 100%
                 if (readyCovenNum < optCovenNum)
                 {
                     while (AlwaysCVRoles.Any() && optCovenNum > 0)
@@ -788,7 +781,7 @@ public class RoleAssign
                     }
                 }
 
-                // Assign other roles when needed
+                // Assign other Roles when needed
                 if (readyRoleNum < playerCount && readyCovenNum < optCovenNum)
                 {
                     while (ChanceCVRoles.Any() && optCovenNum > 0)
@@ -797,7 +790,7 @@ public class RoleAssign
                         var selected = ChanceCVRoles[selectesItem];
                         var info = CVRoleCounts.FirstOrDefault(x => x.Role == selected);
 
-                        // Remove 'x' times
+                        // Remove 'X' times
                         for (int j = 0; j < info.SpawnChance / 5; j++)
                             ChanceCVRoles.Remove(selected);
 
@@ -852,7 +845,7 @@ public class RoleAssign
                             continue;
                         }
 
-                        // Make "Spawn Chance ÷ 5 = x" (Example: 65 ÷ 5 = 13)
+                        // Make "Spawn Chance ÷ 5 = X" (Example: 65 ÷ 5 = 13)
                         for (int j = 0; j < item.SpawnChance / 5; j++)
                         {
                             // Add Crew roles 'x' times (13)
@@ -865,7 +858,7 @@ public class RoleAssign
             RoleAssignInfo[] CrewRoleCounts = AlwaysCrewRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceCrewRoles.Distinct().Select(GetAssignInfo).ToArray());
             Crews = CrewRoleCounts;
 
-            // Assign roles set to ALWAYS
+            // Assign Roles set to ALWAYS
             if (readyRoleNum < playerCount)
             {
                 while (AlwaysCrewRoles.Any())
@@ -885,7 +878,7 @@ public class RoleAssign
                 }
             }
 
-            // Assign other roles when needed
+            // Assign other Roles when needed
             if (readyRoleNum < playerCount)
             {
                 while (ChanceCrewRoles.Any())
@@ -928,7 +921,7 @@ public class RoleAssign
                 FinalRolesList.Remove(CustomRoles.Lovers);
         }
 
-        // if roles are very few, add vanilla сrewmate roles
+        // If Roles are very few, add vanilla Crewmate Roles
         if (AllPlayers.Count > FinalRolesList.Count)
         {
             while (FinalRolesList.Count < AllPlayers.Count)
@@ -941,23 +934,23 @@ public class RoleAssign
 
         while (AllPlayers.Any() && FinalRolesList.Any())
         {
-            // Shuffle all players list
+            // Shuffle all Players list
             if (AllPlayers.Count > 2)
                 AllPlayers = AllPlayers.Shuffle(rd).ToList();
 
-            // Shuffle final roles list
+            // Shuffle final Roles list
             if (FinalRolesList.Count > 2)
                 FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
 
-            // Select random role and player from list
+            // Select random Role and Player from list
             var randomPlayer = AllPlayers.RandomElement();
             var assignedRole = FinalRolesList.RandomElement();
 
-            // Assign random role for random player
+            // Assign random Role for random Player
             RoleResult[randomPlayer.PlayerId] = assignedRole;
             Logger.Info($"Player：{randomPlayer.GetRealName()} => {assignedRole}", "RoleAssign");
 
-            // Remove random role and player from list
+            // Remove random Role and Player from list
             AllPlayers.Remove(randomPlayer);
             FinalRolesList.Remove(assignedRole);
         }
@@ -979,7 +972,7 @@ public class RoleAssign
     public static int AddTrackerNum;
     public static void CalculateVanillaRoleCount()
     {
-        // Calculate the number of base roles
+        // Calculate the number of base Roles
         AddEngineerNum = 0;
         AddScientistNum = 0;
         AddShapeshifterNum = 0;

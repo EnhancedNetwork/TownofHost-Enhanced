@@ -54,7 +54,6 @@ class CheckForEndVotingPatch
                     {
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
-                        ExtendedPlayerControl.RpcSetCustomRole(pc.PlayerId, CustomRoles.Madmate);
                         Logger.Info($"Assign in meeting by self vote: {pc?.Data?.PlayerName} = {pc.GetCustomRole()} + {CustomRoles.Madmate}", "Madmate");
                     }
                 }
@@ -212,10 +211,10 @@ class CheckForEndVotingPatch
                 var player = GetPlayerById(ps.TargetPlayerId);
                 var playerRoleClass = player.GetRoleClass();
 
-                //Hides vote
+                //Hides Vote
                 if (playerRoleClass.HideVote(ps)) continue;
 
-                // Assing Madmate Slef Vote
+                // Assing Madmate Self Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) continue;
 
                 statesList.Add(new MeetingHud.VoterState()
@@ -224,7 +223,7 @@ class CheckForEndVotingPatch
                     VotedForId = ps.VotedFor
                 });
 
-                // Swapper swap votes
+                // Swapper swap Votes
                 if (voter.GetRoleClass() is Swapper sw) sw.SwapVotes(__instance);
 
                 playerRoleClass?.AddVisualVotes(ps, ref statesList);
@@ -275,10 +274,9 @@ class CheckForEndVotingPatch
                 }
                 statesList[i] = voterstate;
             }
-            /*This change the voter icon on meetinghud to the player the voter actually voted for.
-             Should work for Influenced and swapeer , Also change role like mayor that has mutiple vote icons
-             Does not effect the votenum and vote result, simply change display icons
-             God Niko cant think about a better way to do this, so niko just loops every voterstate LOL*/
+            /*This change the Voter icon on meetinghud to the Player the Voter actually voted for
+             Should work for Influenced and Swapper, Also change Role like Mayor that has mutiple Vote icons
+             Does not effect the votenum and vote result, simply change display icons*/
 
             states = [.. statesList];
 
@@ -515,7 +513,6 @@ class CheckForEndVotingPatch
             if (impnum == 1) name += GetString("OneImpRemain") + comma;
             if (impnum == 2) name += GetString("TwoImpRemain") + comma;
             if (impnum == 3) name += GetString("ThreeImpRemain") + comma;
-            //    else name += string.Format(GetString("ImpRemain"), impnum) + comma;
             if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
                 if (neutralnum == 1)
                     name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
@@ -590,7 +587,7 @@ class CheckForEndVotingPatch
             if (pva.TargetPlayerId == playerId) return pva;
         }
 
-        return null; //if pva doesnt exist
+        return null; //If pva doesnt exist
     }
     public static void ReturnChangedPva(PlayerVoteArea pva)
     {
@@ -681,9 +678,9 @@ class CastVotePatch
             SendMessage(GetString("VoteDead"), srcPlayerId);
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
-        } //Vote a disconnect player
+        } //Vote a disconnect Player
 
-        // Return vote to player if uses checkvote and wants to vote normal without using his abilities.
+        // Return Vote to Player if uses checkvote and wants to Vote normal without using his abilities
         if (suspectPlayerId == 253 && voter.GetRoleClass()?.IsMethodOverridden("CheckVote") == true)
         {
             if (!voter.GetRoleClass().HasVoted)
@@ -818,7 +815,7 @@ static class ExtendedMeetingHud
         Tiebreaker.Clear();
         Evader.RememberRandom();
 
-        // |Voted By| Number of Times Voted For
+        // |Voted By| Number of Times Voted for
         foreach (var ps in __instance.playerStates)
         {
             if (ps == null) continue;
@@ -829,7 +826,7 @@ static class ExtendedMeetingHud
                 // Default number of votes 1
                 int VoteNum = 1;
 
-                // Judgment only when voting for a valid player
+                // Judgment only when voting for a valid Player
                 var target = GetPlayerById(ps.VotedFor);
                 if (target != null)
                 {
@@ -840,7 +837,7 @@ static class ExtendedMeetingHud
                     Collector.CollectorVotes(target, ps);
                 }
 
-                //Add votes for roles
+                //Add Votes for Roles
                 var pc = GetPlayerById(ps.TargetPlayerId);
                 if (pc != null && CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, pc.GetCustomRole())
                     && ps.TargetPlayerId != ps.VotedFor && ps != null)
@@ -857,13 +854,13 @@ static class ExtendedMeetingHud
                         ) VoteNum += VoteNum;
                 }
 
-                // Additional votes
+                // Additional Votes
                 if (pc != null && pc.Is(CustomRoles.Stealer))
                 {
                     VoteNum += Stealer.AddRealVotesNum(ps);
                 }
 
-                // Madmate assign by vote
+                // Madmate assign by Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
 
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.VoidBallot)) VoteNum = 0;
@@ -872,7 +869,7 @@ static class ExtendedMeetingHud
 
                 if (target != null)
                 {
-                    // Remove all votes for Zombie
+                    // Remove all Votes for Zombie
                     Zombie.CheckRealVotes(target, ref VoteNum);
 
                     //Solsticer can not get voted out
@@ -886,7 +883,7 @@ static class ExtendedMeetingHud
                         VoteNum = 0;
                     }
                 }
-                //Set influenced vote num to zero while counting votes, and count influenced vote upon finishing influenced check
+                //Set Influenced Vote number to zero while counting Votes, and count Influenced Vote upon finishing Influenced check
 
                 if (target != null && target.Is(CustomRoles.Evader))
                 {
@@ -954,7 +951,7 @@ class MeetingHudStartPatch
             {
                 foreach (var (text, sendTo, title) in msgToSendNewList)
                 {
-                    // check player left
+                    // Check Player left
                     if (sendTo != byte.MaxValue && GetPlayerById(sendTo) == null) continue;
 
                     SendMessage(text, sendTo, title);
@@ -965,14 +962,14 @@ class MeetingHudStartPatch
 
         msgToSend = [];
 
-        // Madmate spawn mode: Self vote
+        // Madmate Spawn Mode: Self Vote
         if (Madmate.MadmateSpawnMode.GetInt() == 2 && CustomRoles.Madmate.GetCount() > 0)
             AddMsg(string.Format(GetString("Message.MadmateSelfVoteModeNotify"), GetString("MadmateSpawnMode.SelfVote")));
 
         //Bait Notify
         Bait.SendNotify();
 
-        // Apocalypse Notify, thanks tommy
+        // Apocalypse Notify
         var transformRoles = new CustomRoles[] { CustomRoles.Pestilence, CustomRoles.War, CustomRoles.Famine, CustomRoles.Death };
         foreach (var role in transformRoles)
         {
@@ -1028,7 +1025,7 @@ class MeetingHudStartPatch
         if (Eavesdropper.IsEnable)
             Eavesdropper.GetMessage();
 
-        // Add Mimic msg
+        // Add Mimic message
         if (MimicMsg != "")
         {
             MimicMsg = GetString("MimicDeadMsg") + "\n" + MimicMsg;
@@ -1047,7 +1044,7 @@ class MeetingHudStartPatch
         {
             foreach (var (text, sendTo, title) in msgToSend)
             {
-                // check player left
+                // Check Player left
                 if (sendTo != byte.MaxValue && GetPlayerById(sendTo) == null) continue;
 
                 SendMessage(text, sendTo, title);
@@ -1083,7 +1080,7 @@ class MeetingHudStartPatch
             if (pc == null) continue;
             var textTemplate = pva.NameText;
 
-            // Create role text in meeting
+            // Create Role text in meeting
             var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId);
             var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
             if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
@@ -1161,7 +1158,7 @@ class MeetingHudStartPatch
             }
             suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
 
-            // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
+            // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and Player is the most recent victim from the Doppelganger hide Role information for Player
             var player = PlayerControl.LocalPlayer;
             var target = GetPlayerById(pva.TargetPlayerId);
 
@@ -1202,15 +1199,6 @@ class MeetingHudStartPatch
             }
         }
 
-        //if (GameStates.DleksIsActive)
-        //{
-        //    _ = new LateTask(() =>
-        //    {
-        //        SendMessage(GetString("Warning.BrokenVentsInDleksMessage"), title: ColorString(GetRoleColor(CustomRoles.NiceMini), GetString("WarningTitle")), replay: true);
-
-        //    }, 6f, "Message: Warning Broken Vents In Dleks");
-        //}
-
         if (MeetingStates.FirstMeeting) TemplateManager.SendTemplate("OnFirstMeeting", noErr: true);
         TemplateManager.SendTemplate("OnMeeting", noErr: true);
 
@@ -1244,7 +1232,7 @@ class MeetingHudStartPatch
             PlayerControl target = GetPlayerById(pva.TargetPlayerId);
             if (target == null) continue;
 
-            // if based role is Shapeshifter and is Desync Shapeshifter
+            // if based Role is Shapeshifter and is Desync Shapeshifter
             if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
             {
                 // When target is impostor, set name color as white
@@ -1253,18 +1241,14 @@ class MeetingHudStartPatch
             }
             if (Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[target.PlayerId].IsNecromancer)
             {
-                // When target is impostor, set name color as white
+                // When Target is Impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);
                 pva.NameText.color = Color.white;
             }
 
             var sb = new StringBuilder();
 
-            //pva.NameText.text = target.GetRealName(isMeeting: true);
             pva.NameText.text = pva.NameText.text.ApplyNameColorData(seer, target, true);
-
-            //if (seer.KnowDeathReason(target))
-            //    sb.Append($"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))}』");
 
             sb.Append(seerRoleClass?.GetMark(seer, target, true));
             sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
@@ -1282,18 +1266,6 @@ class MeetingHudStartPatch
                 pva.NameText.text = tempNemeText;
             }
 
-            //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
-            //{
-            //    switch (SeerSubRole)
-            //    {
-            //        case CustomRoles.Guesser:
-            //            if (!seer.Data.IsDead && !target.Data.IsDead)
-            //                pva.NameText.text = ColorString(GetRoleColor(CustomRoles.Guesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
-            //            break;
-            //    }
-            //}
-
-            //bool isLover = false;
             foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
                 switch (TargetSubRole)
@@ -1310,7 +1282,7 @@ class MeetingHudStartPatch
                         break;
                 }
             }
-            //add checks for both seer and target's subrole, maybe one day we can use them...
+            //Add checks for both Seer and Target's subrole
 
             pva.NameText.text += sb.ToString();
             pva.ColorBlindName.transform.localPosition -= new Vector3(1.35f, 0f, 0f);
@@ -1366,9 +1338,6 @@ class MeetingHudUpdatePatch
         {
             bufferTime = 10;
             var myRole = PlayerControl.LocalPlayer.GetCustomRole();
-
-            //__instance.playerStates.Where(x => !x.TargetPlayerId.GetPlayer().IsAlive() && !x.AmDead)
-            //    .Do(x => x.SetDead(x.DidReport, true, x.GAIcon));
 
             if (myRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser or CustomRoles.Doomsayer or CustomRoles.Judge or CustomRoles.Councillor or CustomRoles.Guesser or CustomRoles.Swapper && !PlayerControl.LocalPlayer.IsAlive())
                 ClearShootButton(__instance, true);
