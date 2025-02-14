@@ -7,6 +7,8 @@ namespace TOHE.Roles.Impostor;
 
 //Reference to part of the code
 // 部分代码参考：https://github.com/TOHOptimized/TownofHost-Optimized
+// Button Sprite
+//贴图来源 : https://github.com/Dolly1016/Nebula-Public
 internal class Fury : RoleBase
 {
     //===========================SETUP================================\\
@@ -19,14 +21,14 @@ internal class Fury : RoleBase
 
     public bool FuryAngry = false;
     private LateTask _;
+    private float tmpSpeed;
+    private float tmpKillCooldown;
     private static OptionItem FuryKillCooldownWhenAngry;
     private static OptionItem FuryShapeshiftCooldown;
     private static OptionItem FuryMaxSpeedWhenAngry;
     private static OptionItem FuryMaxVisionWhenAngry;
     private static OptionItem FuryAngryDuration;
     private static OptionItem CanStartMeetingWhenAngry;
-
-    private Dictionary<byte, long> FuryAngryTime = new();
 
     public override void SetupCustomOption()
     {
@@ -61,7 +63,7 @@ internal class Fury : RoleBase
 
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => FuryAngry ? CustomButton.Get("Calm") : CustomButton.Get("Rage");
 
-    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    public override void SetAbilityButtonText(HudManager hud, byte playerid)
     {
         if (!FuryAngry)
             hud.AbilityButton.OverrideText(GetString("FuryAngryShapeshiftTextBeforeDisguise"));
@@ -102,7 +104,6 @@ internal class Fury : RoleBase
         {
             ExitFuryMode(player);
         }
-
         if (Main.MeetingIsStarted)
         {
             FuryAngry = false;
@@ -113,16 +114,15 @@ internal class Fury : RoleBase
     private void EnterFuryMode(PlayerControl player)
     {
         player.SetKillCooldown(FuryKillCooldownWhenAngry.GetFloat(), null, false);
-        player.Notify(GetString("SeerFuryInRage"), FuryAngryDuration.GetFloat(), true);
+        player.Notify(GetString("FuryInRage"), FuryAngryDuration.GetFloat(), true);
+        tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
+        tmpKillCooldown = Main.AllPlayerKillCooldown[player.PlayerId];
         foreach (PlayerControl playerControl in Main.AllPlayerControls)
         {
             playerControl.KillFlash(true);
             RPC.PlaySoundRPC(player.PlayerId, Sounds.ImpTransform);
-            playerControl.Notify(GetString("FuryInRage"), 5f, true);
+            playerControl.Notify(GetString("SeerFuryInRage"), 5f, true);
         }
-
-        float tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
-        float tmpKillCooldown = Main.AllPlayerKillCooldown[player.PlayerId];
         Main.AllPlayerSpeed[player.PlayerId] = FuryMaxSpeedWhenAngry.GetFloat();
         Main.AllPlayerKillCooldown[player.PlayerId] = FuryKillCooldownWhenAngry.GetFloat();
         AURoleOptions.ShapeshifterCooldown = 0;
@@ -132,6 +132,7 @@ internal class Fury : RoleBase
         {
             if (FuryAngry)
             {
+                FuryAngry = false;
                 ExitFuryMode(player);
             }
         }, FuryAngryDuration.GetFloat(), "FuryAngryTask", true);
@@ -139,24 +140,17 @@ internal class Fury : RoleBase
 
     private void ExitFuryMode(PlayerControl player)
     {
-        float tmpSpeed = Main.AllPlayerSpeed[player.PlayerId];
-        float tmpKillCooldown = Main.AllPlayerKillCooldown[player.PlayerId];
-        Main.AllPlayerSpeed[player.PlayerId] = tmpSpeed;
-        Main.AllPlayerKillCooldown[player.PlayerId] = tmpKillCooldown;
         FuryAngry = false;
+        Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - FuryMaxSpeedWhenAngry.GetFloat() + tmpSpeed;
+        Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] - FuryKillCooldownWhenAngry.GetFloat() + tmpKillCooldown;
         player.MarkDirtySettings();
         player.Notify(GetString("FuryCalmDown"), FuryAngryDuration.GetFloat(), true);
-
         foreach (PlayerControl playerControl in Main.AllPlayerControls)
         {
             playerControl.KillFlash(false);
             RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
             playerControl.Notify(GetString("SeerFuryCalmDown"), 5f, true);
         }
-
         _?.Cancel();
     }
 }
-/*public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
-    {
-    }*/
