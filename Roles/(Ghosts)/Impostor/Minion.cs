@@ -2,7 +2,6 @@
 using static TOHE.Options;
 using static TOHE.Utils;
 
-
 namespace TOHE.Roles._Ghosts_.Impostor;
 
 internal class Minion : RoleBase
@@ -10,7 +9,6 @@ internal class Minion : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Minion;
     private const int Id = 27900;
-
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
