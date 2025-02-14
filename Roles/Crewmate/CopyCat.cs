@@ -12,7 +12,6 @@ internal class CopyCat : RoleBase
     public override CustomRoles Role => CustomRoles.CopyCat;
     private const int Id = 11500;
     public static readonly HashSet<byte> playerIdList = [];
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
