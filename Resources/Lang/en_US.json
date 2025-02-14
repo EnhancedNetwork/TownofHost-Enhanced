@@ -2259,7 +2259,6 @@
     "StartCommandStarted": "The game has been started by {0}!",
     "StartCommandInvalidCountdown": "<color=#ff1919><size=150%><b>ERROR</b></size></color>\n\n<color=#ff1919>The countdown must be between {0} and {1}!</color>",
     "SpectateCommand.WasSpectatingLastRound": "<#ff0000>X</color> You were spectating last game. You can't spectate again.",
-    "SpectateCommand.AlreadySpectating": "<#ff0000>X</color> You are already spectating for the next game.",
     "SpectateCommand.Success": "<#00ff00>✓</color> You are now spectating for the next game.",
     "SpectateCommand.Removed": "<#ffab1b>-</color> You are no longer spectating.",
 
