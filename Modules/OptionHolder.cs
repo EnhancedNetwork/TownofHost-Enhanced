@@ -580,6 +580,7 @@ public static class Options
     public static OptionItem NeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
+    public static OptionItem SpawnOneRandomKillingFraction;
 
     // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
@@ -802,6 +803,9 @@ public static class Options
         NeutralWinTogether = BooleanOptionItem.Create(60018, "NeutralWinTogether", false, TabGroup.NeutralRoles, false)
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
+        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60010, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
 
         CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
