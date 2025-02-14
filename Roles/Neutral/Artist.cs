@@ -8,25 +8,25 @@ namespace TOHE.Roles.Neutral
 {
     internal class Artist : RoleBase
     {
-        private static readonly NetworkedPlayerInfo.PlayerOutfit PaintedOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
-        private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = new Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit>();
-
-        private const int Id = 32900;
-        private static readonly HashSet<byte> PlayerIds = new HashSet<byte>();
-        public static bool HasEnabled => PlayerIds.Any();
-
+        //===========================SETUP================================\\
         public override CustomRoles Role => CustomRoles.Artist;
+        private const int Id = 32900;
+        public static bool HasEnabled => PlayerIds.Any();
         public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
         public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+        //==================================================================\\
+
+        private static readonly NetworkedPlayerInfo.PlayerOutfit PaintedOutfit = new NetworkedPlayerInfo.PlayerOutfit().Set("", 15, "", "", "visor_Crack", "", "");
+        private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = new Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit>();
+        private static readonly Dictionary<byte, List<byte>> PlayerSkinsPainted = new Dictionary<byte, List<byte>>();
+        private static readonly Dictionary<byte, List<byte>> PaintingTarget = new Dictionary<byte, List<byte>>();
+        private static readonly HashSet<byte> PlayerIds = new HashSet<byte>();
 
         private static OptionItem KillCooldown;
         private static OptionItem PaintCooldown;
         private static OptionItem CanVent;
         private static OptionItem HasImpostorVision;
         private static OptionItem AbilityUses;
-
-        private static readonly Dictionary<byte, List<byte>> PlayerSkinsPainted = new Dictionary<byte, List<byte>>();
-        private static readonly Dictionary<byte, List<byte>> PaintingTarget = new Dictionary<byte, List<byte>>();
 
         public override void SetupCustomOption()
         {
