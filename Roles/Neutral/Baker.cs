@@ -14,7 +14,6 @@ internal class Baker : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Baker;
     private const int Id = 28600;
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => BTOS2Baker.GetBool() ? CustomRoles.Shapeshifter : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;
