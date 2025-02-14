@@ -79,7 +79,7 @@ class OnGameJoinedPatch
                     // If custom Gamemode is HideNSeekTOHO in normal game, set Standard
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHO)
                     {
-                        // Select standart
+                        // Select standard
                         Options.GameMode.SetValue(0);
                     }
                     break;
