@@ -13,7 +13,6 @@ internal class Bane : RoleBase
     private const int Id = 32700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-
     public override CustomRoles Role => CustomRoles.Bane;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
