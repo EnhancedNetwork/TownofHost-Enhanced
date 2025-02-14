@@ -413,7 +413,7 @@ public static class CustomRolesHelper
 
     public static CustomRoles GetBetrayalAddon(this PlayerControl pc, CustomRoles defaultAddon = CustomRoles.NotAssigned)
     {
-        List<CustomRoles> BTAddonList = pc.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless).ToList();
+        List<CustomRoles> BTAddonList = pc.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist).ToList();
         return BTAddonList.Any() ? BTAddonList.FirstOrDefault() : defaultAddon;
     }
 
@@ -428,7 +428,7 @@ public static class CustomRolesHelper
             CustomRoles.Recruit => Jackal.CanBeSidekick(target),
             CustomRoles.Infected => Infectious.CanBeBitten(target),
             CustomRoles.Contagious => target.CanBeInfected(),
-            CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),
+            CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),//Cursed Soul recruits players to Soulless by default
             _ => false
         };
     }
