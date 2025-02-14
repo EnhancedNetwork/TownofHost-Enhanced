@@ -2261,6 +2261,7 @@
     "SpectateCommand.WasSpectatingLastRound": "<#ff0000>X</color> You were spectating last game. You can't spectate again.",
     "SpectateCommand.AlreadySpectating": "<#ff0000>X</color> You are already spectating for the next game.",
     "SpectateCommand.Success": "<#00ff00>✓</color> You are now spectating for the next game.",
+    "SpectateCommand.Removed": "<#ffab1b>-</color> You are no longer spectating.",
 
     "WarnCommandWarnMod": "You are not permitted to warn other Moderators.",
     "WarnCommandWarned": "has been warned. There will be no more warnings given and appropriate action will be taken \n ",
