@@ -151,6 +151,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<string, int> PlayerQuitTimes = [];
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
+    public static bool CurrentServerIsVanilla = false;
     public static string LastSummaryMessage;
 
     public static readonly HashSet<byte> DesyncPlayerList = [];
