@@ -8,12 +8,10 @@ internal class Sorcerer : RoleBase
     public override CustomRoles Role => CustomRoles.Sorcerer;
     private const int Id = 34000;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor; 
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
 
     // ----------- Settings ----------- //
-    private static float MarkRange = 2.5f; // How close you need to be 
-    private bool usedSecondChance = false; // Checking if respawn has been used
-    private List<PlayerControl> markedPlayers = [];
+    private List<byte> markedPlayers = [];
 
     public override void SetupCustomOption()
     {
@@ -22,36 +20,36 @@ internal class Sorcerer : RoleBase
 
     public override void Init() 
     {
-        markedPlayers.Clear(); 
-        usedSecondChance = false; // Reset second chance
+        markedPlayers.Clear();
     }
 
-        // Try to mark a player (with distance check)
+    public override bool CanUseKillButton(PlayerControl pc) => true;
+
+    // Try to mark a player (with distance check)
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) 
     {
         if (target == null) return true; 
-        if (markedPlayers.Contains(target)) return true;
+        if (markedPlayers.Contains(target.PlayerId)) return true;
 
-        if (markedPlayers.Count >= 2) return true;
-
-        markedPlayers.Add(target);
-        return false;
-    }
-
-    public override void AfterMeetingTasks() 
-    {
-        if (!PlayerControl.LocalPlayer.IsAlive() && !usedSecondChance) 
+        if (markedPlayers.Count >= 2)
         {
-            PlayerControl.LocalPlayer.RpcRevive();
+            killer.RpcGuardAndKill(killer);
+            return false;
         }
-        usedSecondChance = true;
+
+        killer.RpcGuardAndKill(killer);
+        markedPlayers.Add(target.PlayerId);
+        return false;
     }
 
     // Check if all marked players are dead
     private bool AreAllMarkedPlayersDead() 
     {
-        foreach (var player in markedPlayers)
+        if (markedPlayers == null) return false;
+        if (markedPlayers.Count == 1) return false;
+        foreach (var playerid in markedPlayers)
         {
+            var player = Utils.GetPlayerById(playerid);
             if (!player.Data.IsDead) return false;
         }
         return true; // All are dead
