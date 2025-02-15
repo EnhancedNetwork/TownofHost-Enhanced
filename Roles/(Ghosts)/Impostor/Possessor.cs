@@ -113,7 +113,7 @@ internal class Possessor : RoleBase
                             checkPos = Utils.GetDistance(_Player.GetCustomPosition(), allPlayers.GetCustomPosition());
                         }
                     }
-                    if (checkPos >= FocusRange.GetFloat())
+                    if (checkPos >= FocusRange.GetFloat() && !target.IsTransformedNeutralApocalypse())
                     {
                         target.SetDeathReason(PlayerState.DeathReason.Curse);
                         target.RpcMurderPlayer(target);

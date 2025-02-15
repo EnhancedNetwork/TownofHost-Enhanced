@@ -90,7 +90,7 @@ internal class YinYanger : RoleBase
         var (yin, yang) = Yanged[player.PlayerId];
         if (!yin || !yang) return;
 
-        if (GetDistance(yin.GetCustomPosition(), yang.GetCustomPosition()) < 1.5f)
+        if (GetDistance(yin.GetCustomPosition(), yang.GetCustomPosition()) < 1.5f && !(yin.IsTransformedNeutralApocalypse() || yang.IsTransformedNeutralApocalypse()))
         {
             yin.SetDeathReason(PlayerState.DeathReason.Equilibrium);
             yin.RpcMurderPlayer(yang);

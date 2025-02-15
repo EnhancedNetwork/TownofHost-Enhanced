@@ -1498,6 +1498,7 @@
   "NeutralApocalypseRolesMinPlayer": "<color=#00a5ff>Minimum</color> amount of <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color>",
   "NeutralApocalypseRolesMaxPlayer": "<color=#00a5ff>Maximum</color> amount of <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color>",
   "TNACanBeGuessed": "<color=#2B0804>Transformed</color> <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles can be guessed",
+  "CanKillTNA": "Can kill <color=#2B0804>Transformed</color> <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "ApocCanSeeEachOthersAddOns": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can see each other's Add-ons",
   "ImpsCanSeeEachOthersRoles": "<color=#ff1919>Impostors</color> know the roles of other <color=#ff1919>Impostors</color>",
   "ImpsCanSeeEachOthersAddOns": "<color=#ff1919>Impostors</color> can see each other's Add-ons",

@@ -119,6 +119,7 @@ internal class Vampire : RoleBase
     private static void KillBitten(PlayerControl vampire, PlayerControl target)
     {
         if (target.Data.Disconnected) return;
+        if (target.IsTransformedNeutralApocalypse()) return;
 
         if (target.IsAlive())
         {

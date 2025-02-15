@@ -95,7 +95,7 @@ internal class Infectious : RoleBase
             return true;
         }
 
-        if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected))
+        if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected) && !target.IsTransformedNeutralApocalypse())
         {
             killer.RpcMurderPlayer(target);
         }
@@ -112,7 +112,6 @@ internal class Infectious : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsTransformedNeutralApocalypse()) return true;
         if (target.Is(CustomRoles.Infectious)) return true;
         if (target.Is(CustomRoles.SerialKiller)) return true;
 
@@ -179,7 +178,7 @@ internal class Infectious : RoleBase
             && !pc.Is(CustomRoles.Loyal)
             && !pc.Is(CustomRoles.Cultist)
             && !pc.Is(CustomRoles.Enchanted)
-            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
+            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus) && !pc.IsTransformedNeutralApocalypse();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

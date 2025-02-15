@@ -4,6 +4,7 @@ using System;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Modules.HazelExtensions;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
@@ -21,6 +22,7 @@ internal class AbyssBringer : RoleBase
     private static OptionItem BlackHoleMovesTowardsNearestPlayer;
     private static OptionItem BlackHoleMoveSpeed;
     private static OptionItem BlackHoleRadius;
+    private static OptionItem CanKillTNA;
 
     private readonly Dictionary<byte, BlackHoleData> BlackHoles = [];
 
@@ -46,6 +48,7 @@ internal class AbyssBringer : RoleBase
         BlackHoleRadius = FloatOptionItem.Create(Id + 15, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
             .SetParent(Options.CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Multiplier);
+        CanKillTNA = BooleanOptionItem.Create(Id + 16, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -148,6 +151,7 @@ internal class AbyssBringer : RoleBase
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())
                 {
+                    if (nearestPlayer.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
                     blackHole.PlayersConsumed++;
                     Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, id, (byte)blackHole.PlayersConsumed);
                     Notify();

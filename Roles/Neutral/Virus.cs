@@ -118,7 +118,7 @@ internal class Virus : RoleBase
         foreach (var infectedId in InfectedPlayer)
         {
             var infected = infectedId.GetPlayer();
-            if (virus.IsAlive() && infected != null)
+            if (virus.IsAlive() && infected != null && !infected.IsTransformedNeutralApocalypse())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(infectedId))
                 {

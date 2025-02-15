@@ -140,14 +140,14 @@ internal class Pirate : RoleBase
             if (targetChose == pirateChose)
             {
                 NumWin++;
-                if (pirateTarget.IsAlive())
+                if (pirateTarget.IsAlive() && !pirateTarget.IsTransformedNeutralApocalypse())
                 {
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
                     pirateTarget.SetRealKiller(_Player);
                 }
             }
         }
-        else if (pirateTarget.IsAlive())
+        else if (pirateTarget.IsAlive() && !pirateTarget.IsTransformedNeutralApocalypse())
         {
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
             pirateTarget.SetRealKiller(_Player);

@@ -118,7 +118,7 @@ internal class Poisoner : CovenManager
     private static void KillPoisoned(PlayerControl poisoner, PlayerControl target, bool isButton = false)
     {
         if (poisoner == null || target == null || target.Data.Disconnected) return;
-        if (target.IsAlive())
+        if (target.IsAlive() && !target.IsTransformedNeutralApocalypse())
         {
             target.SetDeathReason(PlayerState.DeathReason.Poison);
             target.RpcMurderPlayer(target);
