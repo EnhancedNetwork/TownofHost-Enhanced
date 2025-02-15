@@ -436,15 +436,15 @@ public static class CustomRolesHelper
         //loyal can't be recruited
         else if (target.Is(CustomRoles.Loyal) return false
 
-        //settings disabled,hurried cant be recruited
-        else if !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
-
         //for godfather(to refugee) and jackal(to sidekick)
         else if (toMainRole) return true;
         
         var addon = recruiter.GetBetrayalAddon(defaultAddon);                 
         //target already has this addon
         if (target.Is(addon)) return false;
+
+        //settings disabled,hurried cant be recruited
+        else if !(target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
         
         return addon switch
         {
@@ -464,7 +464,10 @@ public static class CustomRolesHelper
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
         if (!onlyMainRole)
+        {
             if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;
+        }
 
         return player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate;
     }
