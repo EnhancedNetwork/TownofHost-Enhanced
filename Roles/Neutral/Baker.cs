@@ -270,8 +270,6 @@ internal class Baker : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (_Player == null || !_Player.IsAlive()) return false;
-        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId) && !IsRoleblocked(killer.PlayerId)) return false;
-
 
         if (BarrierList[_Player.PlayerId].Contains(target.PlayerId))
         {
@@ -282,15 +280,17 @@ internal class Baker : RoleBase
             NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             return true;
         }
-        if (killer.GetCustomRole() is CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false;
-        else
+        if (IsRoleblocked(killer.PlayerId))
         {
+            if (killer.GetCustomRole() is CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false;
+            
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             Logger.Info($"{killer.GetRealName()} fail ability because roleblocked", "Baker");
+            return true;
         }
-        return true;
+        return false;
     }
     public static bool IsRoleblocked(byte target)
     {
