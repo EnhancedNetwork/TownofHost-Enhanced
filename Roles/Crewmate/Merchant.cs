@@ -129,7 +129,7 @@ internal class Merchant : RoleBase
                     (OptionCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven()))
             ).ToList();
 
-        if (AllAlivePlayer.Any())
+        if (AllAlivePlayer.Count > 0)
         {
             bool helpfulAddon = GroupedAddons[AddonTypes.Helpful].Contains(addon);
             bool harmfulAddon = GroupedAddons[AddonTypes.Harmful].Contains(addon);
@@ -148,6 +148,12 @@ internal class Merchant : RoleBase
                 ).ToList();
             }
 
+            if (AllAlivePlayer.Count < 1)
+            {
+                SellFail(player);
+                return true;
+            }
+
             PlayerControl target = AllAlivePlayer.RandomElement();
 
             target.RpcSetCustomRole(addon);
@@ -160,9 +166,14 @@ internal class Merchant : RoleBase
         }
         else
         {
+            SellFail(player);
+            return true;
+        }
+
+        static void SellFail(PlayerControl player)
+        {
             player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Merchant), GetString("MerchantAddonSellFail")));
             Logger.Info("All Alive Player Count = 0", "Merchant");
-            return true;
         }
 
         return true;

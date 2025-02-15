@@ -52,7 +52,7 @@ internal class Conjurer : CovenManager
     public override void Add(byte playerId)
     {
         ConjPosition[playerId] = [];
-        state.TryAdd(playerId, ConjState.NormalMark);
+        state[playerId] = ConjState.NormalMark;
     }
     public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -73,21 +73,24 @@ internal class Conjurer : CovenManager
     {
         resetCooldown = true;
         Logger.Info($"Conjurer ShapeShift", "Conjurer");
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
-        if (state[shapeshifter.PlayerId] != ConjState.NecroBomb && state[shapeshifter.PlayerId] != ConjState.NormalBomb)
-            state[shapeshifter.PlayerId] = HasNecronomicon(shapeshifter) ? ConjState.NecroMark : ConjState.NormalMark;
-        switch (state[shapeshifter.PlayerId])
+        var shapeshifterId = shapeshifter.PlayerId;
+        if (target != null && shapeshifterId == target.PlayerId) return false;
+
+        if (state[shapeshifterId] != ConjState.NecroBomb && state[shapeshifterId] != ConjState.NormalBomb)
+            state[shapeshifterId] = HasNecronomicon(shapeshifterId) ? ConjState.NecroMark : ConjState.NormalMark;
+
+        switch (state[shapeshifterId])
         {
             case ConjState.NormalMark:
-                ConjPosition[shapeshifter.PlayerId].Add(shapeshifter.transform.position);
-                state[shapeshifter.PlayerId] = ConjState.NormalBomb;
+                ConjPosition[shapeshifterId].Add(shapeshifter.transform.position);
+                state[shapeshifterId] = ConjState.NormalBomb;
                 shapeshifter.Notify(GetString("ConjurerMark"));
                 break;
 
             case ConjState.NormalBomb:
                 foreach (var player in Main.AllAlivePlayerControls)
                 {
-                    foreach (var pos in ConjPosition[shapeshifter.PlayerId].ToArray())
+                    foreach (var pos in ConjPosition[shapeshifterId].ToArray())
                     {
                         var dis = GetDistance(pos, player.transform.position);
                         if (dis > ConjureRadius.GetFloat()) continue;
@@ -102,11 +105,16 @@ internal class Conjurer : CovenManager
                     }
                 }
                 shapeshifter.Notify(GetString("ConjurerMeteor"));
-                state[shapeshifter.PlayerId] = ConjState.NormalMark;
+                state[shapeshifterId] = ConjState.NormalMark;
                 break;
             case ConjState.NecroMark:
+                if (target == null)
+                {
+                    Logger.Info("target is null", "ConjState.NecroMark");
+                    return false;
+                }
                 NecroBombHolder = target.PlayerId;
-                state[shapeshifter.PlayerId] = ConjState.NecroBomb;
+                state[shapeshifterId] = ConjState.NecroBomb;
                 shapeshifter.Notify(GetString("ConjurerNecroMark"));
                 break;
             case ConjState.NecroBomb:
@@ -125,7 +133,7 @@ internal class Conjurer : CovenManager
 
                 }
                 shapeshifter.Notify(GetString("ConjurerMeteor"));
-                state[shapeshifter.PlayerId] = ConjState.NecroMark;
+                state[shapeshifterId] = ConjState.NecroMark;
                 NecroBombHolder = byte.MaxValue;
                 break;
         }
