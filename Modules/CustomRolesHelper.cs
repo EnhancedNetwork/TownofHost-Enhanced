@@ -434,7 +434,7 @@ public static class CustomRolesHelper
         if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Main.Age < 18) return false;
 
         //loyal can't be recruited
-        else if (target.Is(CustomRoles.Loyal) return false;
+        else if (target.Is(CustomRoles.Loyal)) return false;
 
         //for godfather(to refugee) and jackal(to sidekick)
         else if (toMainRole) return true;
