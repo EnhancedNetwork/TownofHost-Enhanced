@@ -4506,9 +4506,5 @@
 
   "Sorcerer": "Sorcerer",
   "SorcererInfo": "Mark players and win if they die",
-  "SorcererInfoLong": "(Neutrals):\nThe Sorcerer can mark 2 people. Once both of the marked players are dead and there are 3 players alive, the Sorcerer wins alone. The Sorcerer can only kill the marked players.",
-
-  "WitchDoctor": "Witch Doctor",
-  "WitchDoctorInfo": "Recruit players and cure them from their addons",
-  "WitchDoctorInfoLong": "(Coven):\nThe Witch Doctor can convert a set amount by the Host into coven team, while also removing all harmful Add-ons.\n\n<b>With the Necronomicon, the Witch Doctor will also add a single-use shield to the player for the rest of the round. Double click to kill normally.</b>"
+  "SorcererInfoLong": "(Neutrals):\nThe Sorcerer can mark 2 people. Once both of the marked players are dead and there are 3 players alive, the Sorcerer wins alone. The Sorcerer can only kill the marked players."
 }
