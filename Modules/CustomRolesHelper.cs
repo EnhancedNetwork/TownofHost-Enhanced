@@ -431,7 +431,7 @@ public static class CustomRolesHelper
     public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned, bool toMainRole = false)
     {
         //Mini shouldn't be recruited
-        if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Main.Age < 18) return false;
+        if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18) return false;
 
         //loyal can't be recruited
         else if (target.Is(CustomRoles.Loyal)) return false;
