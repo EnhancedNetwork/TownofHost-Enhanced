@@ -325,7 +325,7 @@ public static class CustomRolesHelper
 
             //Neutral
             CustomRoles.Cultist or
-            CustomRoles.Infectious
+            CustomRoles.Infectious or
             CustomRoles.Jackal or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
@@ -434,7 +434,7 @@ public static class CustomRolesHelper
         if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Main.Age < 18) return false;
 
         //loyal can't be recruited
-        else if (target.Is(CustomRoles.Loyal) return false
+        else if (target.Is(CustomRoles.Loyal) return false;
 
         //for godfather(to refugee) and jackal(to sidekick)
         else if (toMainRole) return true;
@@ -444,7 +444,7 @@ public static class CustomRolesHelper
         if (target.Is(addon)) return false;
 
         //settings disabled,hurried cant be recruited
-        else if !(target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
+        else if (target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
         
         return addon switch
         {
