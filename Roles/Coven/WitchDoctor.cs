@@ -1,5 +1,4 @@
 ﻿using static TOHE.Options;
-using static TOHE.AbilityManager;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using static UnityEngine.GraphicsBuffer;
@@ -16,6 +15,7 @@ internal class WitchDoctor : CovenManager
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
     //==================================================================\\
 
+    public static readonly List<byte> ProtectList = [];
     private static List<CustomRoles> addons = [];
     public static int Uses;
     public static OptionItem AmountOfRecruits;
@@ -52,7 +52,7 @@ internal class WitchDoctor : CovenManager
             {
                 return true;
             }
-            AddSingleRoundShield(killer, target);
+            ProtectList.Add(target.PlayerId);
         }
         var AllSubRoles = Main.PlayerStates[target.PlayerId].SubRoles.ToList();
         foreach (var role in AllSubRoles)
@@ -62,6 +62,17 @@ internal class WitchDoctor : CovenManager
                 AllSubRoles.Remove(role);
             }
         }
+        target.RpcSetCustomRole(CustomRoles.Enchanted);
         return false;
+    }
+
+    public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
+    {
+        if (ProtectList.Contains(target.PlayerId))
+        {
+            killer.RpcGuardAndKill(killer);
+            return false;
+        }
+        else return true;
     }
 }

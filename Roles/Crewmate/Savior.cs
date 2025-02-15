@@ -64,9 +64,11 @@ internal class Savior : RoleBase
     {
         var Saviors = Utils.GetPlayerListByRole(CustomRoles.Savior);
         if (killer == null || target == null || Saviors == null || !Saviors.Any()) return true;
-        if (!ProtectList.Contains(target.PlayerId)) return false;
-        killer.RpcGuardAndKill(target);
-        killer.SetKillCooldown(ResetCooldown.GetFloat());
+        if (ProtectList.Contains(target.PlayerId))
+        {
+            killer.RpcGuardAndKill(killer);
+            return false;
+        }
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Savior", "Savior");
         return true;
     }

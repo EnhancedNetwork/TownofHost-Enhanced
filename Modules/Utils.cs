@@ -2463,7 +2463,6 @@ public static class Utils
             if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
 
             AntiBlackout.AfterMeetingTasks();
-            AbilityManager.AfterMeetingTasks();
             CovenManager.CheckNecroVotes();
 
             foreach (var playerState in Main.PlayerStates.Values.ToArray())

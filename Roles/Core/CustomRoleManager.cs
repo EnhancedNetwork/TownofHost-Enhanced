@@ -191,12 +191,6 @@ public static class CustomRoleManager
                 return false;
             }
         }
-        if (AbilityManager.OnMurderPlayer(killer, target) == false)
-        {
-            __state = true;
-            Logger.Info("Target Shielded", "AbilityManager");
-            return false;
-        }
         var canceled = false;
         var cancelbutkill = false;
 
