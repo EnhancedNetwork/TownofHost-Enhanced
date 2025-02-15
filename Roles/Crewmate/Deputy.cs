@@ -74,15 +74,26 @@ internal class Deputy : RoleBase
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
-        if (!IsRoleblocked(killer.PlayerId) && killer.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false; // I was told these roles should be roleblock immune
         if (killer == null) return false;
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
-        killer.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat(), forceAnime: !DisableShieldAnimations.GetBool());
-        killer.ResetKillCooldown();
+        if (IsRoleblocked(killer.PlayerId))
+        {
+            if (killer.GetCustomRole() is
+                CustomRoles.SerialKiller or
+                CustomRoles.Pursuer or
+                CustomRoles.Deputy or
+                CustomRoles.Deceiver or
+                CustomRoles.Poisoner)
+                return false;
 
-        RemoveRoleblock(killer.PlayerId);
-        Logger.Info($"{killer.GetRealName()} fail ability because roleblocked", "Deputy");
-        return true;
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), GetString("HandcuffedByDeputy")));
+            killer.SetKillCooldownV3(DeputyHandcuffCDForTarget.GetFloat(), forceAnime: !DisableShieldAnimations.GetBool());
+            killer.ResetKillCooldown();
+
+            RemoveRoleblock(killer.PlayerId);
+            Logger.Info($"{killer.GetRealName()} fail ability because roleblocked", "Deputy");
+            return true;
+        }
+        return false;
     }
     public override void AfterMeetingTasks()
     {
