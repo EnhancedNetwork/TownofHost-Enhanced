@@ -8,7 +8,7 @@
 		<Authors>Moe</Authors>
 		<LangVersion>12.0</LangVersion>
 		<!--<AmongUs>C:\Program Files\Epic Games\AmongUs</AmongUs>-->
-		<Configurations>Debug;Release;Canary</Configurations>
+		<Configurations>BetaAndroid;BetaPC;DebugAndroid;DebugPC;ReleaseAndroid;ReleasePC</Configurations>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>True</Optimize>
 		<CodePage>65001</CodePage>
@@ -20,7 +20,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2024.10.29" PrivateAssets="all" />
+		<!--For PC build-->
+		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2024.10.29" PrivateAssets="all" Condition="'$(Configuration)' == 'DebugPC' Or '$(Configuration)' == 'BetaPC' Or '$(Configuration)' == 'ReleasePC'" />
+		<!--For Android build-->
+		<PackageReference Include="AmongUs.GameLibs.Android" Version="2024.10.29" PrivateAssets="all" Condition="'$(Configuration)' == 'DebugAndroid' Or '$(Configuration)' == 'BetaAndroid' Or '$(Configuration)' == 'ReleaseAndroid'" />
+		
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -45,8 +49,8 @@
 	</Target>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">
-		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Debug'" />
-		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Canary'" />
-		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'Release'" />
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'DebugPC'" />
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'BetaPC'" />
+		<Copy SourceFiles="$(OutputPath)$(AssemblyName).dll" DestinationFolder="$(AmongUs)/BepInEx/plugins/" Condition="'$(Configuration)' == 'ReleasePC'" />
 	</Target>
 </Project>
