@@ -63,6 +63,7 @@ internal class WitchDoctor : CovenManager
             }
         }
         target.RpcSetCustomRole(CustomRoles.Enchanted);
+        killer.RpcGuardAndKill(killer);
         return false;
     }
 
@@ -74,5 +75,9 @@ internal class WitchDoctor : CovenManager
             return false;
         }
         else return true;
+    }
+    public override void AfterMeetingTasks()
+    {
+        ProtectList.Clear();
     }
 }
