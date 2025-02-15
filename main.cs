@@ -955,6 +955,7 @@ public enum CustomRoles
     Ritualist,
     Sacrifist,
     VoodooMaster,
+    WitchDoctor,
 
     //two-way camp
     Mini,
