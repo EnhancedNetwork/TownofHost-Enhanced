@@ -1,6 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using System;
 using System.Text;
+using TOHE.Modules;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -189,6 +190,12 @@ public static class CustomRoleManager
                 Logger.Info("Fragile killed in OnCheckMurder, returning false", "Fragile");
                 return false;
             }
+        }
+        if (AbilityManager.OnMurderPlayer(killer, target) == false)
+        {
+            __state = true;
+            Logger.Info("Target Shielded", "AbilityManager");
+            return false;
         }
         var canceled = false;
         var cancelbutkill = false;
