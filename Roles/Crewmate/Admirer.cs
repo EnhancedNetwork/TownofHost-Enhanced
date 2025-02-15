@@ -16,7 +16,7 @@ internal class Admirer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Admirer;
     private const int Id = 24800;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admired);
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admirer);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -174,10 +174,7 @@ internal class Admirer : RoleBase
         }
         else AdmiredList.Add(admirer.PlayerId, []);
 
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven())
-            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
-            && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven());
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
