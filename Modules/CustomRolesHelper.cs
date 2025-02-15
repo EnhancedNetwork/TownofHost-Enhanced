@@ -436,6 +436,9 @@ public static class CustomRolesHelper
         //loyal can't be recruited
         else if (target.Is(CustomRoles.Loyal) return false
 
+        //settings disabled,hurried cant be recruited
+        else if !(pc.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
+
         //for godfather(to refugee) and jackal(to sidekick)
         else if (toMainRole) return true;
         
