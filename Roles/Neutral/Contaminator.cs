@@ -1,10 +1,8 @@
 ﻿using TOHE.Roles.Double;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
-using System.Diagnostics.Metrics;
 using TOHE.Modules;
-using AmongUs.GameOptions;
+using static TOHE.Utils;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Neutral;
 internal class Contaminator : RoleBase

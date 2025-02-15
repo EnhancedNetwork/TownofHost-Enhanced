@@ -69,7 +69,7 @@ public class PlayerState(byte playerId)
             IsNecromancer = true;
         }
 
-        // check for role addon
+        // check for Role Add-on
         if (pc.Is(CustomRoles.Madmate))
         {
             countTypes = Madmate.MadmateCountMode.GetInt() switch
@@ -145,17 +145,18 @@ public class PlayerState(byte playerId)
 
         if (GameStates.IsInGame && preMainRole != CustomRoles.NotAssigned)
         {
-            // Role got assigned mid game.
-            // Since role basis may change, we need to re assign tasks?
+            // Role got assigned mid game
+            // Since Role basis may change, we need to re assign tasks?
 
-            //Some role may be bugged for this, need further testing.
+            //Some Role may be bugged for this, need further testing
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
             pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
             InitTask(pc);
 
-            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
             {
                 Main.UnShapeShifter.Add(pc.PlayerId);
+                pc.DoUnShiftState(true);
                 Logger.Info($"Added {pc.GetNameWithRole()} to UnShapeShifter list mid game", "PlayerState.SetMainRole");
             }
         }
@@ -166,7 +167,7 @@ public class PlayerState(byte playerId)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
 
-            // Remove lovers on Cleansed
+            // Remove Lovers on Cleansed
             if (pc.Is(CustomRoles.Lovers))
             {
                 var lover = Main.PlayerStates.Values.FirstOrDefault(x => x.PlayerId != pc.PlayerId && x.SubRoles.Contains(CustomRoles.Lovers));
@@ -203,6 +204,8 @@ public class PlayerState(byte playerId)
         {
             case CustomRoles.LastImpostor:
                 SubRoles.Remove(CustomRoles.Mare);
+                SubRoles.Remove(CustomRoles.Overclocked);
+                SubRoles.Remove(CustomRoles.Underclocked);
                 break;
 
             case CustomRoles.Madmate:
@@ -260,7 +263,7 @@ public class PlayerState(byte playerId)
                 break;
 
             // This exist as it would be possible for them to exist on the same player via Bandit
-            // But since Bandit can't vent without Nimble, allowing them to have Circumvent is pointless
+            // But since Bandit can't Vent without Nimble, allowing them to have Circumvent is pointless
             case CustomRoles.Nimble:
                 SubRoles.Remove(CustomRoles.Circumvent);
                 break;
@@ -383,7 +386,7 @@ public class PlayerState(byte playerId)
         Toxined,
         Arrested,
 
-        //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
+        //Please add all new Roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
     }
 
@@ -467,7 +470,7 @@ public class TaskState
         // if it's clear, it doesn't count
         if (CompletedTasksCount >= AllTasksCount) return;
 
-        //Solsticer task state is updated by host rpc
+        //Solsticer task state is updated by Host RPC
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;

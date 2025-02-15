@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -18,7 +19,7 @@ internal class Fury : RoleBase
 
     public static OptionItem KillCooldown;
     private static OptionItem AbilityCooldown;
-    private static OptionItem RageDuration;
+    private static OptionItem AbilityDuration;
     private static OptionItem SpeedInRage;
     private static OptionItem RageKillCooldown;
     private static OptionItem NotifyRageActive;
@@ -28,9 +29,9 @@ internal class Fury : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Fury);
         KillCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(0f, 120f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityCooldown = FloatOptionItem.Create(Id + 3, "FuryAbilityCooldown", new(2.5f, 120f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
+        AbilityCooldown = FloatOptionItem.Create(Id + 3, GeneralOption.AbilityCooldown, new(2.5f, 120f, 2.5f), 30f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
             .SetValueFormat(OptionFormat.Seconds);
-        RageDuration = FloatOptionItem.Create(Id + 4, "FuryRageDuration", new(2.5f, 60f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
+        AbilityDuration = FloatOptionItem.Create(Id + 4, GeneralOption.AbilityDuration, new(2.5f, 60f, 2.5f), 15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
                 .SetValueFormat(OptionFormat.Seconds);
         SpeedInRage = FloatOptionItem.Create(Id + 5, "FurySpeedInRage", new(0.1f, 3f, 0.1f), 3f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Fury])
             .SetValueFormat(OptionFormat.Multiplier);
@@ -56,7 +57,7 @@ internal class Fury : RoleBase
     public override void UnShapeShiftButton(PlayerControl player)
     {
         player.SetKillCooldown(RageKillCooldown.GetFloat());
-        player.Notify(GetString("FuryInRage"), RageDuration.GetFloat());
+        player.Notify(GetString("FuryInRage"), AbilityDuration.GetFloat());
         foreach (var target in Main.AllPlayerControls)
         {
             if (NotifyRageActive.GetBool()) target.KillFlash();
@@ -73,10 +74,11 @@ internal class Fury : RoleBase
             Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - SpeedInRage.GetFloat() + tmpSpeed;
             Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] - RageKillCooldown.GetFloat() + tmpKillCooldown;
             player.MarkDirtySettings();
-        }, RageDuration.GetFloat());
+        }, AbilityDuration.GetFloat());
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(GetString("FuryShapeshiftText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Fury");
 }

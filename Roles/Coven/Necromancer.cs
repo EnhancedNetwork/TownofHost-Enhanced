@@ -18,8 +18,6 @@ internal class Necromancer : CovenManager
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    //private static OptionItem CanVent;
-    //private static OptionItem HasImpostorVision;
     private static OptionItem RevengeTime;
     private static OptionItem AbilityDuration;
     private static OptionItem AbilityCooldown;
@@ -43,11 +41,9 @@ internal class Necromancer : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         RevengeTime = IntegerOptionItem.Create(Id + 11, "NecromancerRevengeTime", new(0, 60, 1), 30, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
             .SetValueFormat(OptionFormat.Seconds);
-        //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
-        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
-        AbilityDuration = FloatOptionItem.Create(Id + 14, "NecromancerAbilityDuration", new(0f, 300f, 2.5f), 60f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
+        AbilityDuration = FloatOptionItem.Create(Id + 14, GeneralOption.AbilityDuration, new(0f, 300f, 2.5f), 60f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityCooldown = FloatOptionItem.Create(Id + 15, "NecromancerAbilityCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
+        AbilityCooldown = FloatOptionItem.Create(Id + 15, GeneralOption.AbilityCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
@@ -67,10 +63,8 @@ internal class Necromancer : CovenManager
         UsedRoles[playerId] = [];
         OldAddons[playerId] = [];
     }
-    //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc) || IsRevenge;
-    //public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -220,7 +214,8 @@ internal class Necromancer : CovenManager
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool()) ||
-            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool());
+            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool()) ||
+            (role == CustomRoles.Doctor && Doctor.VisibleToEveryoneOpt.GetBool());
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {

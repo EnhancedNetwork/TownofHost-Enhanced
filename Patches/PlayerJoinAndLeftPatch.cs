@@ -29,12 +29,13 @@ class OnGameJoinedPatch
             Main.VersionCheat.Value = false;
 
         ChatUpdatePatch.DoBlockChat = false;
+        Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();
         Main.AllClientRealNames.Clear();
 
-        if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
+        if (AmongUsClient.Instance.AmHost) // Execute the following only on the Host
         {
             EndGameManagerPatch.IsRestarting = false;
             if (!RehostManager.IsAutoRehostDone)
@@ -75,7 +76,7 @@ class OnGameJoinedPatch
                     if (AURoleOptions.GuardianAngelCooldown == 0f)
                         AURoleOptions.GuardianAngelCooldown = Main.LastGuardianAngelCooldown.Value;
 
-                    // if custom game mode is HideNSeekTOHO in normal game, set standart
+                    // If custom Gamemode is HideNSeekTOHO in normal game, set Standard
                     if (Options.CurrentGameMode == CustomGameMode.HidenSeekTOHO)
                     {
                         // Select standart
@@ -87,8 +88,8 @@ class OnGameJoinedPatch
                 case GameModes.HideNSeek:
                     Logger.Info(" Is Hide & Seek", "Game Mode");
 
-                    // if custom game mode is Standard/FFA in H&S game, set HideNSeekTOHO
-                    if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
+                    // If custom Gamemode is Standard/FFA/C&R in H&S game, set HideNSeekTOHO
+                    if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA or CustomGameMode.CandR)
                     {
                         // Select HideNSeekTOHO
                         Options.GameMode.SetValue(2);
@@ -280,7 +281,6 @@ public static class OnPlayerJoinedPatch
         {
             if (Main.SayStartTimes.ContainsKey(client.Id)) Main.SayStartTimes.Remove(client.Id);
             if (Main.SayBanwordsTimes.ContainsKey(client.Id)) Main.SayBanwordsTimes.Remove(client.Id);
-            //if (Main.newLobby && Options.ShareLobby.GetBool()) Cloud.ShareLobby();
 
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                 && !BanManager.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
@@ -339,7 +339,7 @@ class OnPlayerLeftPatch
 
         if (AmongUsClient.Instance.AmHost && data.Character != null)
         {
-            // Remove messages sending to left player
+            // Remove messages sending to left Player
             for (int i = 0; i < Main.MessagesToSend.Count; i++)
             {
                 var (msg, sendTo, title) = Main.MessagesToSend[i];
@@ -350,7 +350,7 @@ class OnPlayerLeftPatch
                 }
             }
 
-            // This latetask is to make sure that the player control is completely despawned for everyone so nobody gonna disconnect itself
+            // This latetask is to make sure that the Player control is completely despawned for everyone so nobody gonna disconnect itself
             var netid = data.Character.NetId;
             _ = new LateTask(() =>
             {
@@ -386,11 +386,10 @@ class OnPlayerLeftPatch
                 state.Disconnected = true;
                 state.SetDead();
 
-                // if the player left while he had a Notice message, clear it
+                // If the Player left while he had a Notice message, clear it
                 if (NameNotifyManager.Notifying(data.Character))
                 {
                     NameNotifyManager.Notice.Remove(data.Character.PlayerId);
-                    //Utils.DoNotifyRoles(SpecifyTarget: data.Character, ForceLoop: true);
                 }
 
                 if (AmongUsClient.Instance.AmHost)
@@ -430,7 +429,7 @@ class OnPlayerLeftPatch
                 DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
                 player.SetName(name);
 
-                //On Become Host is called before OnPlayerLeft, so this is safe to use
+                //On become Host is called before OnPlayerLeft, so this is safe to use
                 if (AmongUsClient.Instance.AmHost)
                 {
                     var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
@@ -450,7 +449,6 @@ class OnPlayerLeftPatch
                     writer.SendMessage();
                 }
                 Main.HostClientId = AmongUsClient.Instance.HostId;
-                //We won;t notify vanilla players for host's quit bcz niko dont know how to prevent message spamming
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsOnlineGame) return;
@@ -492,7 +490,7 @@ class OnPlayerLeftPatch
 
             Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
 
-            // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
+            // End the game when a Player exits game during assigning roles (AntiBlackOut Protect)
             if (Main.AssignRolesIsStarted)
             {
                 CriticalErrorManager.SetCreiticalError("The player left the game during assigning roles", true);
@@ -520,7 +518,6 @@ class OnPlayerLeftPatch
                         if (Main.PlayerQuitTimes[data?.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
                         {
                             BanManager.TempBanWhiteList.Add(data?.GetHashedPuid());
-                            //should ban on player's next join game
                         }
                     }
                 }
@@ -529,7 +526,7 @@ class OnPlayerLeftPatch
                 {
                     Swapper.CheckSwapperTarget(data.Character.PlayerId);
 
-                    // Prevent double check end voting
+                    // Prevent double check end Voting
                     if (MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                     {
                         MeetingHud.Instance.CheckForEndVoting();
@@ -553,7 +550,6 @@ class OnPlayerLeftPatch
         catch (Exception error)
         {
             Logger.Error(error.ToString(), "OnPlayerLeftPatch.Postfix");
-            //Logger.SendInGame("Error: " + error.ToString());
         }
 
         StartingProcessing = false;
@@ -606,7 +602,7 @@ class InnerNetClientSpawnPatch
                 {
                     if (GameStates.IsLobby && client.Character != null && LobbyBehaviour.Instance != null && GameStates.IsVanillaServer)
                     {
-                        // Only for vanilla
+                        // Only for Vanilla
                         if (!client.Character.IsModded())
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);

@@ -32,27 +32,42 @@ static class PerformVentOpPatch
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
-    public static long LastUpadate;
+    public static Dictionary<byte, bool> PlayerHadBlockedVentLastTime = [];
     public static bool ForceUpadate;
 
-    public static void Postfix(VentilationSystem __instance)
+    public static void Postfix()
     {
-        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed) return;
+        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed || GameStates.IsMeeting) return;
 
-        var nowTime = Utils.GetTimeStamp();
-        if (ForceUpadate || (nowTime != LastUpadate))
+        if (ForceUpadate || FixedUpdateInNormalGamePatch.BufferTime.GetValueOrDefault((byte)0, 0) % 6 == 0)
         {
-            LastUpadate = nowTime;
+            var needUpdate = false;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                if (pc.BlockVentInteraction())
+                {
+                    var closestVents = pc.GetVentsFromClosest()[0].Id;
+                    if (ForceUpadate || closestVents != LastClosestVent.GetValueOrDefault(pc.PlayerId, 99))
+                    {
+                        PlayerHadBlockedVentLastTime[pc.PlayerId] = true;
+                        LastClosestVent[pc.PlayerId] = closestVents;
+                        needUpdate = true;
+                    }
+                }
+                else if (PlayerHadBlockedVentLastTime[pc.PlayerId])
+                {
+                    PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
+                    LastClosestVent[pc.PlayerId] = 99;
+                    needUpdate = true;
+                }
             }
 
-            ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
+            if (needUpdate)
+                ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>
-    /// Check blocking vents
+    /// Check blocking Vents
     /// </summary>
     public static bool BlockVentInteraction(this PlayerControl pc)
     {
@@ -80,7 +95,7 @@ static class VentSystemDeterioratePatch
         }
     }
     /// <summary>
-    /// Send rpc for blocking specifics vent use or all vents
+    /// Send RPC for blocking specifics Vent use or all Vents
     /// </summary>
     private static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance)
     {
@@ -160,7 +175,7 @@ static class VentSystemDeterioratePatch
 [HarmonyPatch(typeof(VentilationSystem), nameof(VentilationSystem.IsVentCurrentlyBeingCleaned))]
 static class VentSystemIsVentCurrentlyBeingCleanedPatch
 {
-    // Patch block use vent for host becouse host always skips RpcSerializeVent
+    // Patch block use Vent for Host becouse host always skips RpcSerializeVent
     public static bool Prefix([HarmonyArgument(0)] int id, ref bool __result)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -171,7 +186,7 @@ static class VentSystemIsVentCurrentlyBeingCleanedPatch
             return false;
         }
 
-        // Run original code if host not have bloked vent
+        // Run original code if host not have blocked Vent
         return true;
     }
 }

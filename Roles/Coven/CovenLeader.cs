@@ -82,5 +82,12 @@ internal class CovenLeader : CovenManager
         killer.SetKillCooldown();
         return false;
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (!HasNecronomicon(playerId))
+        {
+            hud.KillButton.OverrideText(GetString("CovenLeaderButtonText"));
+        }
+    }
 
 }

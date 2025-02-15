@@ -115,7 +115,7 @@ class RpcSetTasksPatch
 
     /* TO DO:
      * Try to make players get different tasks from each other
-     * InnerSloth uses task pool to achieve this.
+     * InnerSloth uses task pool to achieve this
      */
 
     public static List<byte> decidedCommonTasks = [];
@@ -124,7 +124,7 @@ class RpcSetTasksPatch
         if (!AmongUsClient.Instance.AmHost) return false;
         if (GameStates.IsHideNSeek) return true;
 
-        // null measure
+        // Null measure
         if (Main.RealOptionsData == null)
         {
             Logger.Warn("Warning: RealOptionsData is null", "RpcSetTasksPatch");
@@ -143,14 +143,14 @@ class RpcSetTasksPatch
 
         if (Options.OverrideTasksData.AllData.TryGetValue(role, out var data) && data.doOverride.GetBool())
         {
-            // whether to assign a common task (normal task) or not.
-            // If assigned, it will not be reassigned and the same common task will be assigned as the other crew members.
+            // whether to assign a common task (normal task) or not
+            // If assigned, it will not be reassigned and the same common task will be assigned as the other Crewmate members.
             hasCommonTasks = data.assignCommonTasks.GetBool();
 
             NumLongTasks = data.numLongTasks.GetInt(); // Number of long tasks to assign
             NumShortTasks = data.numShortTasks.GetInt(); // Number of short tasks to allocate
 
-            // Long and short tasks are always reallocated.
+            // Long and short tasks are always reallocated
         }
 
         // Betrayal of whistleblower mission coverage
@@ -183,11 +183,11 @@ class RpcSetTasksPatch
             hasCommonTasks = false;
         }
 
-        // Above is override task num
-        /* --------------------------------------------------------------*/
+        // Above is override task number
+        /* --------------------------*/
         //Below is assign tasks
 
-        // We completely igonre the tasks decided by ShipStatus and assign our own.
+        // We completely igonre the tasks decided by ShipStatus and assign our own
         List<NormalPlayerTask> commonTasks = ShipStatus.Instance.CommonTasks.Shuffle().ToList();
         List<NormalPlayerTask> shortTasks = ShipStatus.Instance.ShortTasks.Shuffle().ToList();
         List<NormalPlayerTask> longTasks = ShipStatus.Instance.LongTasks.Shuffle().ToList();
@@ -196,14 +196,13 @@ class RpcSetTasksPatch
         {
             shortTasks.RemoveAll(x => x.TaskType == TaskTypes.SubmitScan);
             longTasks.RemoveAll(x => x.TaskType == TaskTypes.SubmitScan);
-            // Niko admits this is shit.
         }
         List<TaskTypes> usedTaskTypes = [];
 
         int defaultcommoncount = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
         int commonTasksNum = System.Math.Min(commonTasks.Count, defaultcommoncount);
 
-        // Setting task num to 0 will make role description disappear from task panel for vanilla players and mod crews
+        // Setting task number to 0 will make Role description disappear from task panel for Vanilla Players and mod Crewmates
         if (!hasCommonTasks && NumShortTasks + NumLongTasks < 1)
         {
             NumShortTasks = 1;
@@ -321,7 +320,7 @@ class RpcSetTasksPatch
             __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());
         }
 
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, 29, SendOption.Reliable);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SetTasks, SendOption.Reliable);
         messageWriter.WriteBytesAndSize((Il2CppStructArray<byte>)TasksList.ToArray());
         messageWriter.EndMessage();
         return false;
@@ -333,9 +332,6 @@ class HandleRpcPatch
 {
     public static bool Prefix(NetworkedPlayerInfo __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        //MessageReader sr = MessageReader.Get(reader);
-        // var rpc = (RpcCalls)callId;
-
         if (AmongUsClient.Instance.AmHost)
         {
             Logger.Error($"Received Rpc {(RpcCalls)callId} for {__instance.Object.GetRealName()}({__instance.PlayerId}), which is impossible.", "NetworkedPlayerInfo");
