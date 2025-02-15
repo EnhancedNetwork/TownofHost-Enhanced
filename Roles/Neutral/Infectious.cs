@@ -179,10 +179,7 @@ internal class Infectious : RoleBase
 
     public static bool CanBeBitten(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate()
-            || pc.GetCustomRole().IsImpostor()
-            || pc.GetCustomRole().IsNK()
-            || pc.GetCustomRole().IsCoven());
+        return pc != null && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
