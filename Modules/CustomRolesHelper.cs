@@ -315,11 +315,22 @@ public static class CustomRolesHelper
 
     public static bool IsRecruitingRole(this CustomRoles role)
         => role is
-            CustomRoles.Jackal or
+            //Crewmate
+            CustomRoles.Admirer or
+            CustomRoles.ChiefOfPolice or
+
+            //Impostor
+            CustomRoles.Gangster or
+            CustomRoles.Godfather or
+
+            //Neutral
             CustomRoles.Cultist or
-            CustomRoles.Necromancer or
+            CustomRoles.Infectious
+            CustomRoles.Jackal or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
+
+            //Coven
             CustomRoles.Ritualist;
 
     public static bool IsMadmate(this CustomRoles role)
@@ -417,9 +428,22 @@ public static class CustomRolesHelper
         return BTAddonList.Any() ? BTAddonList.FirstOrDefault() : defaultAddon;
     }
 
-    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned)
+    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned, bool toMainRole = false)
     {
-        return recruiter.GetBetrayalAddon(defaultAddon) switch
+        //Mini shouldn't be recruited
+        if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Main.Age < 18) return false;
+
+        //loyal can't be recruited
+        else if (target.Is(CustomRoles.Loyal) return false
+
+        //for godfather(to refugee) and jackal(to sidekick)
+        else if (toMainRole) return true;
+        
+        var addon = recruiter.GetBetrayalAddon(defaultAddon);                 
+        //target already has this addon
+        if (target.Is(addon)) return false;
+        
+        return addon switch
         {
             CustomRoles.Charmed => Cultist.CanBeCharmed(target),
             CustomRoles.Madmate => recruiter.Is(CustomRoles.Gangster) ? target.CanBeMadmate(forGangster: true) : target.CanBeMadmate(forAdmirer: true),
