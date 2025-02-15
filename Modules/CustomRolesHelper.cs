@@ -431,18 +431,18 @@ public static class CustomRolesHelper
 
     public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned, bool toMainRole = false)
     {
+        var addon = recruiter.GetBetrayalAddon(defaultAddon);
         //Mini shouldn't be recruited
         if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18) return false;
 
         //loyal can't be recruited
-        else if (target.Is(CustomRoles.Loyal)) return false;
+        if (target.Is(CustomRoles.Loyal)) return false;
 
         //for godfather(to refugee) and jackal(to sidekick)
         else if (toMainRole) return true;
-        
-        var addon = recruiter.GetBetrayalAddon(defaultAddon);                 
+                         
         //target already has this addon
-        if (target.Is(addon)) return false;
+        else if (target.Is(addon)) return false;
 
         //settings disabled,hurried cant be recruited
         else if (target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
