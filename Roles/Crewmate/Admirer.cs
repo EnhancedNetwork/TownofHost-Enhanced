@@ -13,7 +13,7 @@ internal class Admirer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Admirer;
     private const int Id = 24800;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admired);
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Admirer);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
@@ -86,32 +86,22 @@ internal class Admirer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
-        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        bool recruit = AbilityLimit > 0;
+        if (!recruit) return false;
+        if (recruit)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
-            return false;
-        }
-
-        if (!AdmiredList.ContainsKey(killer.PlayerId))
-            AdmiredList.Add(killer.PlayerId, []);
-
-        if (AbilityLimit < 1) return false;
-        if (CanBeAdmired(target, killer))
-        {
-            if (KnowTargetRole.GetBool())
-            {
-                AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-            }
-
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Admired);
             if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Admired))
             {
+                var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Admired);
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(addon);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
+                if (KnowTargetRole.GetBool() && addon is CustomRoles.Admired)
+                {
+                    AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                    SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+                }
             }
             else goto AdmirerFailed;
 
@@ -172,10 +162,7 @@ internal class Admirer : RoleBase
         }
         else AdmiredList.Add(admirer.PlayerId, []);
 
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven())
-            && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
-            && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven());
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

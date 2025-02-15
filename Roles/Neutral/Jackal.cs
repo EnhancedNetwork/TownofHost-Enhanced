@@ -108,15 +108,14 @@ internal class Jackal : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 0;
+        AbilityLimit = SidekickRecruitLimitOpt.GetInt();
         hasConverted = false;
-        if (Playerids.Count == 0 || RestoreLimitOnNewJackal.GetBool())
-        {
-            AbilityLimit = CanRecruitSidekick.GetBool() ? SidekickRecruitLimitOpt.GetInt() : 0;
-        }
 
         if (!Playerids.Contains(playerId))
             Playerids.Add(playerId);
+
+        if (!CanRecruitSidekick.GetBool() || (Playerids.Count > 1 && !RestoreLimitOnNewJackal.GetBool()))
+            AbilityLimit = 0;
 
         if (AmongUsClient.Instance.AmHost)
         {
@@ -173,36 +172,38 @@ internal class Jackal : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Jackal)) return false;
-        if ((target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return JackalCanKillSidekick.GetBool();
+        if (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)) return JackalCanKillSidekick.GetBool();
         if (!CanRecruitSidekick.GetBool() || !CanRecruit())
         {
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
-        if (!CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam() || !CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() || !CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam() || target.IsNeutralApocalypse())
+        if ((!target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Recruit, toMainRole: SidekickAssignMode.GetInt() != 2)
+            && !((CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven())
+            || (CanRecruitNeutral.GetBool() && target.GetCustomRole().IsNeutral())
+            || (CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor())))
+            || target.GetCustomRole().IsNA())
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
             Logger.Info("Jackal can not recruit this target", "Jackal");
             return true;
         }
         if (target.Is(CustomRoles.Loyal)
-            || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
+            || SidekickAssignMode.GetInt() == 2 && ((target.Is(CustomRoles.Cleansed) && Cleanser.CantGetAddon()) || target.Is(CustomRoles.Stubborn)))
         {
             // Loyal or Only Recruit & can not get addon
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
             return true;
         }
 
-        if (target.IsAnySubRole(x => (x.IsConverted() || x == CustomRoles.Admired) && x != CustomRoles.Recruit))
+        if (target.IsAnySubRole(x => (x.IsBetrayalAddonV2() || x == CustomRoles.Rascal) && x != CustomRoles.Recruit))
         {
             // Remove other team converted roles first
             foreach (var x in target.GetCustomSubRoles())
             {
-                if (x.IsConverted() && x != CustomRoles.Recruit)
+                if ((x.IsBetrayalAddonV2() || x == CustomRoles.Rascal) && x != CustomRoles.Recruit)
                 {
                     Main.PlayerStates[target.PlayerId].RemoveSubRole(x);
-                    Main.PlayerStates[target.PlayerId].SubRoles.Remove(CustomRoles.Rascal);
-                    Main.PlayerStates[target.PlayerId].SubRoles.Remove(CustomRoles.Admired);
                 }
             }
         }
@@ -241,12 +242,6 @@ internal class Jackal : RoleBase
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
                 break;
             case 2: // Only Recruit
-                if (target.GetCustomRole().IsNeutral() && target.HasImpKillButton() || target.Is(CustomRoles.Lawyer))
-                {
-                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
-                    return true;
-                }
-
                 AbilityLimit--;
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned {addon.ToString()} to {target.GetNameWithRole()}", "Jackal");
                 target.RpcSetCustomRole(addon);
@@ -271,7 +266,7 @@ internal class Jackal : RoleBase
                 Main.PlayerStates[target.PlayerId].taskState.hasTasks = false;
                 break;
             case 0: // SideKick when failed Recruit
-                if (target.GetCustomRole().IsNeutral() && target.HasImpKillButton() || target.Is(CustomRoles.Lawyer))
+                if (target.HasImpKillButton())
                 {
                     target.GetRoleClass()?.OnRemove(target.PlayerId);
                     target.RpcChangeRoleBasis(role);
@@ -312,10 +307,13 @@ internal class Jackal : RoleBase
     // very very Long Dog shit lmao
     public static bool CanBeSidekick(PlayerControl pc)
     {
-        return pc != null && !pc.Is(CustomRoles.Sidekick) && !pc.Is(CustomRoles.Recruit)
-            && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Rascal) && !pc.Is(CustomRoles.Madmate)
-            && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Infected) && !pc.Is(CustomRoles.Paranoia)
-            && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Enchanted) && pc.GetCustomRole().IsAbleToBeSidekicked();
+        var role = pc.GetCustomRole();
+        return pc != null && !pc.Is(CustomRoles.Sidekick)
+            && !(SidekickAssignMode.GetInt() == 2 && ((pc.Is(CustomRoles.Cleansed) && Cleanser.CantGetAddon()) || pc.Is(CustomRoles.Stubborn)))
+            && ((CanRecruitCoven.GetBool() && role.IsCoven())
+            || (CanRecruitNeutral.GetBool() && role.IsNeutral() && !role.IsNA())
+            || (CanRecruitImpostor.GetBool() && role.IsImpostor())
+            || role.IsCrewmate());
     }
 
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuidice)
