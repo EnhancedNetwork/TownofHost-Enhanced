@@ -4537,6 +4537,6 @@
   
     "WitchDoctor": "Witch Doctor",
     "WitchDoctorInfo": "Recruit players and cure them from their Add-ons",
-    "AmountRecruits338": "Amount of recruits",
-    "WitchDoctorInfoLong": "(Coven):\nAs the Witch Doctor, you can convert an amount of players set by the Host into Coven members, while also removing all Harmful Add-ons.\n\n<b>With the Necronomicon, the Witch Doctor can also double click to kill normally.</b>"
+    "WitchDoctorInfoLong": "k(Coven):\nAs the Witch Doctor, you can convert an amount of players set by the Host into Coven members, while also removing all Harmful Add-ons.\n\n<b>With the Necronomicon, the Witch Doctor can also double click to kill normally.</b>",
+    "AmountRecruits338": "Amount of Recruits"
 }
