@@ -54,8 +54,7 @@ internal class Godfather : RoleBase
         var godfather = _Player;
 
         var ChangeAddon = godfather.GetBetrayalAddon(defaultAddon: CustomRoles.Madmate);
-        var ChangeRole = godfather.GetBetrayalAddon() == CustomRoles.NotAssigned ? 
-            CustomRoles.Refugee : ChangeAddon switch
+        var ChangeRole = godfather.GetBetrayalAddon() switch
         {
             CustomRoles.Admired => CustomRoles.Sheriff,
             CustomRoles.Recruit => CustomRoles.Sidekick,
@@ -65,25 +64,28 @@ internal class Godfather : RoleBase
         if (GodfatherTarget.Contains(target.PlayerId))
         {
             if (!killer.IsAlive() || killer == godfather) return;
-            if (GodfatherChangeOpt.GetValue() == 0)
+            if (killer.CanBeRecruitedBy(godfather, toMainRole: GodfatherChangeOpt.GetValue() == 0))
             {
-                killer.RpcChangeRoleBasis(ChangeRole);
-                killer.GetRoleClass()?.OnRemove(killer.PlayerId);
-                killer.RpcSetCustomRole(ChangeRole);
-                killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-                if (ChangeRole is CustomRoles.Refugee && godfather.GetBetrayalAddon() != CustomRoles.NotAssigned)
+                if (GodfatherChangeOpt.GetValue() == 0)
+                {
+                    killer.RpcChangeRoleBasis(ChangeRole);
+                    killer.GetRoleClass()?.OnRemove(killer.PlayerId);
+                    killer.RpcSetCustomRole(ChangeRole);
+                    killer.GetRoleClass()?.OnAdd(killer.PlayerId);
+                    if (ChangeRole is CustomRoles.Refugee && godfather.GetBetrayalAddon() != CustomRoles.NotAssigned)
+                        killer.RpcSetCustomRole(ChangeAddon);
+                 }
+                else 
+                {
                     killer.RpcSetCustomRole(ChangeAddon);
+                }
+                killer.RpcGuardAndKill();
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+                killer.Notify(ColorString(GetRoleColor(CustomRoles.Godfather), GetString("GodfatherRefugeeMsg")));
+                NotifyRoles(killer);
             }
-            else
-            {
-                killer.RpcSetCustomRole(ChangeAddon);
-            }
-
-            killer.RpcGuardAndKill();
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            killer.Notify(ColorString(GetRoleColor(CustomRoles.Godfather), GetString("GodfatherRefugeeMsg")));
-            NotifyRoles(killer);
+            
         }
     }
     public override void AfterMeetingTasks() => Didvote = false;
