@@ -115,11 +115,7 @@ internal class Cultist : RoleBase
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
-            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
-            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Enchanted)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool())
-            && (pc.GetCustomRole() is not CustomRoles.NiceMini and not CustomRoles.EvilMini || Mini.Age == 18);
+            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven()));
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {
