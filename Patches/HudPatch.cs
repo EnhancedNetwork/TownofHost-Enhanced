@@ -395,7 +395,7 @@ class TaskPanelBehaviourPatch
                         var text = sb1.ToString().TrimEnd('\n').TrimEnd('\r');
                         if (!Utils.HasTasks(player.Data, false) && sb1.ToString().Any(s => s == '\n'))
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
-                        sb1.Append($"\r\n\r\n<size=85%>{text}</size>");
+                        sb.Append($"\r\n\r\n<size=85%>{text}</size>");
                     }
                     sbFinal.Clear();
                     sbFinal.Append(sb);
