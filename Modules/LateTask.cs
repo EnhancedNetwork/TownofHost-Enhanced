@@ -8,13 +8,24 @@ class LateTask
     public float timer;
     public bool shouldLog;
     public Action action;
+    public bool Cancelled { get; private set; }
     public static List<LateTask> Tasks = [];
+
     public bool Run(float deltaTime)
     {
+        if (Cancelled)
+        {
+            Tasks.Remove(this);
+            return true;
+        }
+
         timer -= deltaTime;
         if (timer <= 0)
         {
-            action();
+            if (!Cancelled)
+            {
+                action();
+            }
             return true;
         }
         return false;
@@ -25,12 +36,20 @@ class LateTask
         this.timer = time;
         this.name = name;
         this.shouldLog = shoudLog;
+        this.Cancelled = false;
 
         Tasks.Add(this);
         if (name != "")
             if (shoudLog)
                 Logger.Info("\"" + name + "\" is created", "LateTask");
     }
+    public void Cancel()
+    {
+        Cancelled = true;
+        if (name != "" && shouldLog)
+            Logger.Info($"\"{name}\" is cancelled", "LateTask");
+    }
+
     public static void Update(float deltaTime)
     {
         foreach (var task in Tasks.ToArray())
