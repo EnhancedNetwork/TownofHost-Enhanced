@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
 using System;
@@ -20,7 +19,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using IEnumerator = System.Collections.IEnumerator;
 
 namespace TOHE;
 
@@ -565,83 +563,6 @@ class RpcMurderPlayerPatch
 public static class CheckShapeshiftPatch
 {
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
-    public static IEnumerator CoPerformUnShapeShifter(PlayerControl player)
-    {
-        if (GameStates.IsMeeting) yield break;
-        if (player.AmOwner)
-        {
-            // Host is Unshapeshifter, make button into unshapeshift state
-            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
-            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
-            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
-            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
-            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
-            yield break;
-        }
-
-        yield return null;
-
-        NetworkedPlayerInfo subPlayerInfo = UnityEngine.Object.Instantiate<NetworkedPlayerInfo>(PlayerControl.LocalPlayer.Data);
-        subPlayerInfo.NetId = PlayerControl.LocalPlayer.Data.NetId;
-        subPlayerInfo.ClientId = PlayerControl.LocalPlayer.Data.ClientId;
-        subPlayerInfo.PlayerId = PlayerControl.LocalPlayer.Data.PlayerId;
-        subPlayerInfo.name = "UnShapeShifter Dummy";
-        subPlayerInfo.Outfits.Clear();
-        subPlayerInfo.FriendCode = PlayerControl.LocalPlayer.Data.FriendCode;
-        subPlayerInfo.Puid = GameStates.IsVanillaServer ? PlayerControl.LocalPlayer.Data.Puid : "";
-        subPlayerInfo.PlayerLevel = 249;
-        subPlayerInfo.Tasks.Clear();
-        subPlayerInfo.Role = PlayerControl.LocalPlayer.Data.Role;
-        subPlayerInfo.DespawnOnDestroy = false;
-
-        var outfit = new NetworkedPlayerInfo.PlayerOutfit();
-        var target = player.Data.Outfits[PlayerOutfitType.Default];
-        outfit.Set(Main.LastNotifyNames[(player.PlayerId, player.PlayerId)] ?? player.GetRealName() ?? player.GetRealName(clientData: true),
-            target.ColorId, target.HatId, target.SkinId, target.VisorId, target.PetId, target.NamePlateId);
-        subPlayerInfo.SetOutfit(PlayerOutfitType.Default, outfit);
-
-        var writer = MessageWriter.Get(SendOption.Reliable);
-        writer.StartMessage(6);
-        writer.Write(AmongUsClient.Instance.GameId);
-        writer.WritePacked(player.OwnerId);
-
-        writer.StartMessage(1);
-        writer.WritePacked(subPlayerInfo.NetId);
-        subPlayerInfo.Serialize(writer, false);
-        writer.EndMessage();
-
-        writer.StartMessage(2);
-        writer.WritePacked(player.NetId);
-        writer.Write((byte)RpcCalls.Shapeshift);
-        writer.WritePacked(PlayerControl.LocalPlayer.NetId);
-        writer.Write(false);
-        writer.EndMessage();
-
-        writer.EndMessage();
-        AmongUsClient.Instance.SendOrDisconnect(writer);
-        writer.Recycle();
-
-        UnityEngine.Object.Destroy(subPlayerInfo.gameObject);
-        player.RawSetOutfit(player.Data.Outfits[PlayerOutfitType.Default], PlayerOutfitType.Shapeshifted);
-
-        yield return null;
-
-        var writer2 = MessageWriter.Get(SendOption.Reliable);
-        writer2.StartMessage(6);
-        writer2.Write(AmongUsClient.Instance.GameId);
-        writer2.WritePacked(player.OwnerId);
-
-        writer2.StartMessage(1);
-        writer2.WritePacked(PlayerControl.LocalPlayer.NetId);
-        PlayerControl.LocalPlayer.Data.Serialize(writer, false);
-        writer2.EndMessage();
-
-        writer2.EndMessage();
-        AmongUsClient.Instance.SendOrDisconnect(writer2);
-        writer2.Recycle();
-        yield break;
-    }
-
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
     {
         if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
@@ -964,36 +885,6 @@ class ReportDeadBodyPatch
             Logger.Info($"target.Object is null? - {target?.Object == null}", "AfterReportTasks");
             Logger.Info($"target.PlayerId is - {target?.PlayerId}", "AfterReportTasks");
 
-            var hostInfoWriter = MessageWriter.Get(SendOption.Reliable);
-            hostInfoWriter.StartMessage(5);
-            hostInfoWriter.Write(AmongUsClient.Instance.GameId);
-            hostInfoWriter.StartMessage(1);
-            hostInfoWriter.WritePacked(PlayerControl.LocalPlayer.Data.NetId);
-            player.Data.Serialize(hostInfoWriter, false);
-            hostInfoWriter.EndMessage();
-            hostInfoWriter.EndMessage();
-            AmongUsClient.Instance.SendOrDisconnect(hostInfoWriter);
-            hostInfoWriter.Recycle();
-
-            foreach (var unshapeshifterIds in Main.UnShapeShifter)
-            {
-                var unshapeshifter = Utils.GetPlayerById(unshapeshifterIds);
-
-                if (unshapeshifter == null) { Main.UnShapeShifter.Remove(unshapeshifterIds); continue; }
-
-                unshapeshifter.Shapeshift(unshapeshifter, false);
-
-                if (unshapeshifter.AmOwner) continue;
-
-                MessageWriter unshapeshiftwriter = AmongUsClient.Instance.StartRpcImmediately(unshapeshifter.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, unshapeshifter.OwnerId);
-                unshapeshiftwriter.WriteNetObject(unshapeshifter);
-                unshapeshiftwriter.Write(false);
-                AmongUsClient.Instance.FinishRpcImmediately(unshapeshiftwriter);
-
-                // Normally unshape shifter will reset its outfit on meeting start itself
-                // But sometimes it may fail. we just need to make sure it resets.
-            }
-
             foreach (var playerStates in Main.PlayerStates.Values.ToArray())
             {
                 try
@@ -1061,7 +952,7 @@ class ReportDeadBodyPatch
                 pc.FixMixedUpOutfit();
             }
 
-            PhantomRolePatch.OnReportDeadBody(pc, force);
+            PhantomRolePatch.OnReportDeadBody(pc);
 
             Logger.Info($"Player {pc?.Data?.PlayerName}: Id {pc.PlayerId} - is alive: {pc.IsAlive()}", "CheckIsAlive");
         }
@@ -1324,27 +1215,6 @@ class FixedUpdateInNormalGamePatch
 
                         if (Rainbow.IsEnabled && Main.IntroDestroyed)
                             Rainbow.OnFixedUpdate();
-
-                        if (Main.UnShapeShifter.Any(x => Utils.GetPlayerById(x) != null && Utils.GetPlayerById(x).CurrentOutfitType != PlayerOutfitType.Shapeshifted)
-                            && !player.IsMushroomMixupActive() && Main.GameIsLoaded)
-                        {
-                            foreach (var UnShapeshifterId in Main.UnShapeShifter)
-                            {
-                                var UnShapeshifter = Utils.GetPlayerById(UnShapeshifterId);
-                                if (UnShapeshifter == null)
-                                {
-                                    Main.UnShapeShifter.Remove(UnShapeshifterId);
-                                    continue;
-                                }
-                                if (UnShapeshifter.CurrentOutfitType == PlayerOutfitType.Shapeshifted) continue;
-
-
-                                UnShapeshifter.StartCoroutine(CheckShapeshiftPatch.CoPerformUnShapeShifter(UnShapeshifter).WrapToIl2Cpp());
-
-                                Utils.NotifyRoles(SpecifyTarget: UnShapeshifter);
-                                Logger.Info($"Revert to shapeshifting state for: {player.GetRealName()}", "UnShapeShifer_FixedUpdate");
-                            }
-                        }
                     }
                 }
             }
@@ -1688,6 +1558,8 @@ class PlayerStartPatch
 
         var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
+        roleText.fontMaterial.SetFloat("_StencilComp", 7f);
+        roleText.fontMaterial.SetFloat("_Stencil", 2f);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
         roleText.fontSize = 1.3f;
         roleText.text = "RoleText";

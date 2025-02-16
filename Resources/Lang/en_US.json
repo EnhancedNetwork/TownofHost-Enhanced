@@ -1610,6 +1610,7 @@
   "In%team%": "(Team %team%)",
   "SheriffMisfireKillsTarget": "Misfire Kills Target",
   "SheriffMisfireOnAdmired": "Sheriff Misfires On <color=#ee43c3>Admired Players</color>",
+  "BlackHoleCountLimit": "Max BlackHole in Game",
   "BlackHolePlaceCooldown": "Black Hole Place Cooldown",
   "BlackHoleDespawnMode": "Black Hole Despawn Mode",
   "BlackHoleDespawnTime": "Time After Black Hole Despawns",
