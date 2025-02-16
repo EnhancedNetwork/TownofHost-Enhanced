@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 
@@ -65,16 +66,23 @@ internal class Infectious : RoleBase
 
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
-        if (CanBeBitten(target))
+        var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Infected);
+        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Infected))
         {
             BiteLimit--;
-            target.RpcSetCustomRole(CustomRoles.Infected);
+            target.RpcSetCustomRole(addon);
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
+
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -95,7 +103,7 @@ internal class Infectious : RoleBase
             return true;
         }
 
-        if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected))
+        if (!target.CanBeRecruitedBy(killer, defaultAddon: addon) && !target.Is(addon))
         {
             killer.RpcMurderPlayer(target);
         }
@@ -171,15 +179,7 @@ internal class Infectious : RoleBase
 
     public static bool CanBeBitten(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate()
-            || pc.GetCustomRole().IsImpostor()
-            || pc.GetCustomRole().IsNK()
-            || pc.GetCustomRole().IsCoven()) && !pc.Is(CustomRoles.Infected)
-            && !pc.Is(CustomRoles.Admired)
-            && !pc.Is(CustomRoles.Loyal)
-            && !pc.Is(CustomRoles.Cultist)
-            && !pc.Is(CustomRoles.Enchanted)
-            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
+        return pc != null && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
