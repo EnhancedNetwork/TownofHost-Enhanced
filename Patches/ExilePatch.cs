@@ -121,6 +121,9 @@ class ExileControllerWrapUpPatch
 
             // Check for remove pet
             player.RpcRemovePet();
+
+            // Set UnShift after meeting
+            player.DoUnShiftState();
         }
 
         Main.MeetingIsStarted = false;
