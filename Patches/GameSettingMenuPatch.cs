@@ -111,13 +111,23 @@ public class GameSettingMenuPatch
         textLabel.DestroyTranslator();
         textLabel.fontStyle = FontStyles.UpperCase;
         textLabel.text = GetString("TabVanilla.GameSettings");
-        //gameSettingButton.activeTextColor = gameSettingButton.inactiveTextColor = Color.black;
-        //gameSettingButton.selectedTextColor = Color.blue;
 
-        //var vanillaActiveButton = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Active_VanillaGameSettings.png", 100f);
-        //gameSettingButton.inactiveSprites.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite($"TownOfHost_Y.Resources.Tab_Small_VanillaGameSettings.png", 100f);
-        //gameSettingButton.activeSprites.GetComponent<SpriteRenderer>().sprite = vanillaActiveButton;
-        //gameSettingButton.selectedSprites.GetComponent<SpriteRenderer>().sprite = vanillaActiveButton;
+        var optionMenu = GameObject.Find("PlayerOptionsMenu(Clone)");
+        var menuDescription = optionMenu?.transform.FindChild("What Is This?");
+
+        var infoImage = menuDescription.transform.FindChild("InfoImage");
+        infoImage.transform.localPosition = new(-4.65f, 0.16f, -1f);
+        infoImage.transform.localScale = new(0.2202f, 0.2202f, 0.3202f);
+
+        var infoText = menuDescription.transform.FindChild("InfoText");
+        infoText.transform.localPosition = new(-3.5f, 0.83f, -2f);
+        infoText.transform.localScale = new(1f, 1f, 1f);
+
+        var cubeObject = menuDescription.transform.FindChild("Cube");
+        cubeObject.transform.localPosition = new(-3.2f, 0.55f, -0.1f);
+        cubeObject.transform.localScale = new(0.61f, 0.64f, 1f);
+
+        __instance.MenuDescriptionText.m_marginWidth = 2.5f;
 
         gameSettingButton.transform.localPosition = ButtonPositionLeft;
         gameSettingButton.transform.localScale = ButtonSize;
@@ -135,6 +145,8 @@ public class GameSettingMenuPatch
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)
     {
+        if (__instance == null) return;
+        
         var ParentLeftPanel = __instance.GamePresetsButton.transform.parent;
 
         var labeltag = GameObject.Find("ModeValue");
@@ -144,14 +156,12 @@ public class GameSettingMenuPatch
         preset.transform.localScale = new Vector3(0.65f, 0.63f, 1f);
         var SpriteRenderer = preset.GetComponentInChildren<SpriteRenderer>();
         SpriteRenderer.color = Color.white;
-        //SpriteRenderer.material = null;
         SpriteRenderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.PresetBox.png", 55f);
 
         Color clr = new(-1, -1, -1);
         var PLabel = preset.GetComponentInChildren<TextMeshPro>();
         PLabel.DestroyTranslator();
         PLabel.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
-        //PLabel.font = PLuLabel.font; 
         float size = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
         {
             SupportedLangs.Russian => 1.45f,
