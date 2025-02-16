@@ -288,7 +288,7 @@ internal class Doomsayer : RoleBase
         }
     }
     public override bool CanUseKillButton(PlayerControl pc) => EasyMode.GetBool();
-    public override void SetKillCooldown(byte id) => ObserveCooldown.GetFloat();
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ObserveCooldown.GetFloat();
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
