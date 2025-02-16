@@ -12,7 +12,7 @@ internal class WitchDoctor : CovenManager
     private const int Id = 33800;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;
     //==================================================================\\
 
     private static List<CustomRoles> addons = [];
