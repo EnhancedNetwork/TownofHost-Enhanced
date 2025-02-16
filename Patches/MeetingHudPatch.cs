@@ -439,7 +439,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
-        int badnum = 0;
+        int badnum = Main.AllAlivePlayerControls.Count(x => x.GetCountTypes() is not CountTypes.None and not CountTypes.OutOfGame and not CountTypes.Crew);
 
 
         if (CustomRoles.Bard.RoleExist())
@@ -462,9 +462,6 @@ class CheckForEndVotingPatch
                 apocnum++;
             else if (pc_role.IsCoven() && pc != exiledPlayer.Object)
                 covennum++;
-
-            if (pc != exiledPlayer.Object && pc.CheckPlayerIsBad())
-                badnum++; //counts everything that keeps the game going
         }
         switch (Options.CEMode.GetInt())
         {
@@ -478,7 +475,7 @@ class CheckForEndVotingPatch
                 else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (CustomRolesHelper.IsConvertedV2(player))  
+                else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))  
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 else if (player.Is(CustomRoles.Enchanted))
@@ -506,7 +503,7 @@ class CheckForEndVotingPatch
                     name += " (";
                     if (player.Is(CustomRoles.Madmate))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (CustomRolesHelper.IsConvertedV2(player))
+                    else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
