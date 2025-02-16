@@ -2194,6 +2194,7 @@
     "NecromancerHide": "Venting is disabled, hide from the Necromancer!",
     "NecromancerCooldownNotDone": "Ability is still on Cooldown!",
     "NecromancerNoUsableRoles": "No usable roles",
+    "NecromancerRevengeInProgress": "You have to finish your revenge before you can change roles!",
 
     "HarvesterSettings.SwapCooldown": "Swap Cooldown",
     "HarvesterSettings.AmountStolen": "Add-ons stolen every steal",
