@@ -14,6 +14,7 @@ public static class AddonAssign
             case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
+            case CustomRoles.Narc:
                 return true;
             case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
@@ -174,6 +175,8 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Mini)
                 || pc.Is(CustomRoles.NiceMini)
                 || pc.Is(CustomRoles.EvilMini)
+                || pc.Is(CustomRoles.Narc)
+                || (pc.Is(CustomRoles.Sheriff) && Narc.CheckNarcAssign())
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
@@ -195,5 +198,37 @@ public static class AddonAssign
         }
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
+    }
+
+    public static void StartAssignNarc()
+    {
+        var PrepareRoles = new List<CustomRoles>();
+        var Crews = new List<PlayerControl>();
+
+        //Select role for Narc to spawn as
+        foreach (var role in CustomRolesHelper.AllRoles.Where(x => x.IsEnable() && x.IsImpostorTeamV3()).ToArray())
+        {
+            int CountPlayers = Main.AllPlayerControls.Count(x => x.Is(role));
+            if (CountPlayers >= role.GetCount()
+                || (role.IsMadmate() && (!Narc.MadmateCanBeNarc.GetBool() || Options.NumberOfMadmates.GetInt() == 0))
+                )
+                continue;
+            PrepareRoles.Add(role);
+        }
+
+        //Select players to assign Narc to
+        foreach (var player in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.GM)).ToArray())
+        {
+            if (Options.GetRoleChance(player.GetCustomRole()) == 20) continue;//if spawn chance of player's role is 100%,do not select player
+            Crews.Add(player);
+        }
+        
+        if (Narc.CheckNarcAssign() && PrepareRoles.Any() && Crews.Any())
+            Narc.AssignNarcToPlayer(PrepareRoles.RandomElement(), Crews.RandomElement());
+        else
+        {
+            if (!PrepareRoles.Any()) Logger.Info($"No role for Narc to spawn as.Narc will not spawn.", "Narc:Assign");
+            if (!Crews.Any()) Logger.Info($"No player can be Narc.Narc will not spawn.", "Narc:Assign");
+        }
     }
 }

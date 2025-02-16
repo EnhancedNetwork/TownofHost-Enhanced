@@ -4,6 +4,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Impostor;
 
 namespace TOHE;
 
@@ -181,6 +182,13 @@ class RpcSetTasksPatch
             var taskState = pc.GetPlayerTaskState();
             taskState.AllTasksCount = NumShortTasks + NumLongTasks;
             hasCommonTasks = false;
+        }
+        if (pc.Is(CustomRoles.Crewpostor))
+        {
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = LastImpostor.currentId == pc.PlayerId ? 
+                            Main.AllAlivePlayerControls.Count(x => x != pc) : Crewpostor.KillAfterTask.GetInt() * Crewpostor.KillsPerRound.GetInt();
         }
 
         // Above is override task num

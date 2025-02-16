@@ -482,6 +482,16 @@ class GameEndCheckerForNormal
                             .Do(p => WinnerIds.Add(p.PlayerId));
                     }
 
+                    if (Narc.CheckWinCondition(WinnerTeam, reason) && CustomRoles.Narc.RoleExist(countDead: true))
+                    {
+                        foreach (var narc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Narc)).ToArray())
+                        {
+                            if (WinnerIds.Contains(narc.PlayerId)) continue;
+                            AdditionalWinnerTeams.Add(AdditionalWinners.Narc);
+                            WinnerIds.Add(narc.PlayerId);
+                        }
+                    }
+
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
                 }

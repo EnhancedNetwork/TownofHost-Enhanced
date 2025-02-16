@@ -327,6 +327,17 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
             return true;
         }
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
+        {
+            var narcDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
+            narcDisplay.Add(PlayerControl.LocalPlayer);
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc != PlayerControl.LocalPlayer)
+                    narcDisplay.Add(pc);
+            }
+            teamToDisplay = narcDisplay;
+        }
         else if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -585,6 +596,14 @@ class BeginCrewmatePatch
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("SubText.Egoist");
         }
+        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
+        {
+            __instance.TeamTitle.text = GetString("TeamCrewmate");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(140, 255, 255, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("SubText.Crewmate");
+        }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
         {
             __instance.TeamTitle.text = GetString("TeamMadmate");
@@ -667,12 +686,12 @@ class BeginImpostorPatch
         }
         // Madmate called from BeginCrewmate, need to skip previous Lovers and Egoist check here
 
-        if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+        if ((role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)) && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
 
-            if (role != CustomRoles.Parasite) // Parasite and Impostor doesnt know each other
+            if (PlayerControl.LocalPlayer.CheckMMCanSeeImp(CheckImp:false)) // Parasite and Impostor doesnt know each other
             {
                 // Crew postor is counted as madmate but should be a impostor
                 if (Madmate.MadmateKnowWhosImp.GetBool() || role != CustomRoles.Madmate)
@@ -696,7 +715,7 @@ class BeginImpostorPatch
             return true;
         }
 
-        if (role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor)
+        if ((role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor) || PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -717,13 +736,13 @@ class BeginImpostorPatch
         }
 
         // We only check Impostor main role here!
-        if (role.IsImpostor())
+        if (role.IsImpostor() && !PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
 
             // Parasite and Impostor doesnt know each other
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && !x.Is(CustomRoles.Parasite) && (x.GetCustomRole().IsImpostor() || !x.Is(CustomRoles.Madmate) && x.GetCustomRole().IsMadmate())))
+            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && x.CheckMMCanSeeImp()))
             {
                 yourTeam.Add(pc);
             }

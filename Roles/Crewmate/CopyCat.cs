@@ -48,10 +48,9 @@ internal class CopyCat : RoleBase
         CurrentKillCooldown = KillCooldown.GetFloat();
         OldAddons[playerId] = [];
     }
-    public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
+    public override void Remove(byte playerId)
     {
-        // Copy cat role wont be removed for now i guess
-        // playerIdList.Remove(playerId);
+        playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
     public static bool NoHaveTask(byte playerId, bool ForRecompute) => playerIdList.Contains(playerId) && (playerId.GetPlayer().GetCustomRole().IsDesyncRole() || ForRecompute);
@@ -106,7 +105,7 @@ internal class CopyCat : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        CustomRoles role = target.GetCustomRole();
+        CustomRoles role = target.Is(CustomRoles.Narc) ? CustomRoles.Sheriff : target.GetCustomRole();
         if (BlackList(role))
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
@@ -114,7 +113,7 @@ internal class CopyCat : RoleBase
             killer.SetKillCooldown();
             return false;
         }
-        if (CopyCrewVar.GetBool())
+        if (CopyCrewVar.GetBool() && !target.Is(CustomRoles.Narc))
         {
             role = role switch
             {
@@ -146,6 +145,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Baker when Baker.CurrentBread() is 2 => CustomRoles.Medic,
                 CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 0 => CustomRoles.Overseer,
                 CustomRoles.PotionMaster when PotionMaster.CurrentPotion() is 1 => CustomRoles.Medic,
+                CustomRoles.Apprentice when Main.AliveImpostorCount > 1 => CustomRoles.Overseer,
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
                 CustomRoles.MoonDancer => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,

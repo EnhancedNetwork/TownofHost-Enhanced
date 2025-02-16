@@ -103,6 +103,7 @@ internal class Penguin : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         bool doKill = true;
+        if (killer.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff)) return false;
         if (AbductVictim != null)
         {
             if (target != AbductVictim)

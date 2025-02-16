@@ -311,6 +311,7 @@ public static class Utils
 
         string mode = GetChance(role.GetMode());
         if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
+        else if (role is CustomRoles.Narc) mode = GetChance(Narc.NarcSpawnChance.GetInt());
         else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
         {
             mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
@@ -551,6 +552,7 @@ public static class Utils
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
                             case CustomRoles.Enchanted:
+                            case CustomRoles.Narc:
                                 RoleColor = GetRoleColor(subRole);
                                 RoleText = GetRoleString($"{subRole}-") + RoleText;
                                 break;
@@ -863,6 +865,7 @@ public static class Utils
             if (role.IsEnable())
             {
                 if (role is CustomRoles.Lovers) mode = GetChance(Options.LoverSpawnChances.GetInt());
+                else if (role is CustomRoles.Narc) mode = GetChance(Narc.NarcSpawnChance.GetInt());
                 else if (role.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(role))
                 {
                     mode = GetChance(Options.CustomAdtRoleSpawnRate[role].GetFloat());
@@ -1018,7 +1021,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Enchanted) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Enchanted or CustomRoles.Narc) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
@@ -2054,14 +2057,20 @@ public static class Utils
                     var SeerRoleInfo = seer.GetRoleInfo();
                     string RoleText = string.Empty;
                     string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                    string RoleInfo = ColorString(seer.GetRoleColor(), seer.GetRoleInfo());
 
-                    if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                    if (seer.Is(CustomRoles.Narc))
+                    {
+                        RoleText =  ColorString(GetRoleColor(CustomRoles.Crewmate), GetString("TeamCrewmate"));
+                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Narc), GetString($"{CustomRoles.Narc}" + "Info"));
+                    }
+                    else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
+                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
                     else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
-                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
                     else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
-                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
+                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{RoleInfo}</size></font>\n";
                 }
 
                 if (NameNotifyManager.GetNameNotify(seer, out var name))
@@ -2165,6 +2174,13 @@ public static class Utils
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
 
+                        if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Sheriff), "★"));
+
+                        if (target.Is(CustomRoles.Narc) 
+                            && seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice)
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Narc), "★"));
+
                         if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
                         {
                             TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
@@ -2183,7 +2199,7 @@ public static class Utils
 
                         string BlankRT = string.Empty;
 
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Madmate)))
                         {
                             BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
                             BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
@@ -2204,6 +2220,13 @@ public static class Utils
                             {
                                 BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
                             }
+                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
+                        }
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
+                        {
+                            BlankRT = ColorString(GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
+                            if (Sheriff.ShowShotLimit.GetBool()) 
+                                BlankRT += $" {ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})")}"; // Sheriff progress text
                             TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
                         }
 
@@ -2514,7 +2537,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate());//why cant i just use IsImpostorTeamV3 here
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.IsNonNarcImpV3());
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");

@@ -457,6 +457,7 @@ internal class StartGameHostPatch
 
             try
             {
+                AddonAssign.StartAssignNarc();
                 AddonAssign.InitAndStartAssignLovers();
                 AddonAssign.StartSortAndAssign();
             }

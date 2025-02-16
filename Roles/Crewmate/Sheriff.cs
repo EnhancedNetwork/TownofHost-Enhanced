@@ -18,8 +18,8 @@ internal class Sheriff : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
-    private static OptionItem ShotLimitOpt;
-    private static OptionItem ShowShotLimit;
+    public static OptionItem ShotLimitOpt;
+    public static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
     private static OptionItem MisfireOnAdmired;
@@ -90,7 +90,7 @@ internal class Sheriff : RoleBase
     }
     private static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutralTeamV3() && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;
@@ -115,6 +115,11 @@ internal class Sheriff : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Narc))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), GetString("CantArrestNarc")));
+            return false;
+        }
         AbilityLimit--;
         Logger.Info($"{killer.GetNameWithRole()} : Number of kills left: {AbilityLimit}", "Sheriff");
         SendSkillRPC();
@@ -171,6 +176,7 @@ internal class Sheriff : RoleBase
         {
             CustomRoles.Trickster => false,
             var r when cRole.IsTNA() => false,
+            var r when cRole.IsMadmate() => CanKillAdmired,
             _ => cRole.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => CanKillAdmired,
