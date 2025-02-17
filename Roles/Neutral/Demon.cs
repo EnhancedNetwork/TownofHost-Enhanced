@@ -91,10 +91,10 @@ internal class Demon : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer == null || target == null || !killer.Is(CustomRoles.Demon) || target.Is(CustomRoles.Demon) || !PlayerHealth.ContainsKey(target.PlayerId)) return false;
+        if (killer == null || target == null || !killer.Is(CustomRoles.Demon) || target.Is(CustomRoles.Demon) || !PlayerHealth.TryGetValue(target.PlayerId, out var damage)) return false;
         killer.SetKillCooldown();
 
-        if (PlayerHealth[target.PlayerId] - Damage.GetInt() < 1)
+        if (damage - Damage.GetInt() < 1)
         {
             PlayerHealth.Remove(target.PlayerId);
             killer.RpcMurderPlayer(target);
@@ -139,7 +139,7 @@ internal class Demon : RoleBase
         Logger.Info($"{killer.GetRealName()} try kill {target.GetRealName()} but get damage {SelfDamage.GetInt()}", "Demon");
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!seer.Is(CustomRoles.Demon) || !seer.IsAlive()) return string.Empty;
 

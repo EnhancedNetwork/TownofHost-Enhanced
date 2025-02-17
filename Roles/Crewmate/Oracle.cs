@@ -53,7 +53,7 @@ internal class Oracle : RoleBase
     {
         AbilityLimit = CheckLimitOpt.GetFloat();
     }
-    public void SendRPC(byte playerId, bool isTemp = false)
+    private void SendRPC(byte playerId, bool isTemp = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -81,8 +81,7 @@ internal class Oracle : RoleBase
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return true;
-        if (DidVote.Contains(player.PlayerId)) return true;
-        DidVote.Add(player.PlayerId);
+        if (!DidVote.Add(player.PlayerId)) return true;
 
         if (AbilityLimit < 1)
         {

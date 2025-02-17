@@ -8,7 +8,7 @@ internal class GuessMaster : RoleBase
     public override CustomRoles Role => CustomRoles.GuessMaster;
     private const int Id = 26800;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    private static bool HasEnabled => playerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
@@ -44,14 +44,14 @@ internal class GuessMaster : RoleBase
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(string.Format(GetString("GuessMasterMisguess"), dp.GetRealName()), gmID, Utils.ColorString(Utils.GetRoleColor(CustomRoles.GuessMaster), GetString("GuessMasterTitle")));
+                    Utils.SendMessage(string.Format(GetString("GuessMasterMisguess"), dp.GetRealName()), gmID, CustomRoles.GuessMaster.GetColoredTextByRole(GetString("GuessMasterTitle")));
                 }, 1f, "GuessMaster On Miss Guess");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(string.Format(GetString("GuessMasterTargetRole"), Utils.GetRoleName(role)), gmID, Utils.ColorString(Utils.GetRoleColor(CustomRoles.GuessMaster), GetString("GuessMasterTitle")));
+                    Utils.SendMessage(string.Format(GetString("GuessMasterTargetRole"), Utils.GetRoleName(role)), gmID, CustomRoles.GuessMaster.GetColoredTextByRole(GetString("GuessMasterTitle")));
                 }, 1f, "GuessMaster Target Role");
 
             }

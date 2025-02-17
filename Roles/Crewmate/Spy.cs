@@ -54,7 +54,7 @@ internal class Spy : RoleBase
     {
 
     }
-    public void SendRPC(byte susId)
+    private void SendRPC(byte susId)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -63,7 +63,7 @@ internal class Spy : RoleBase
         writer.Write(SpyRedNameList[susId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void SendRPC(byte susId, bool changeColor)
+    private void SendRPC(byte susId, bool changeColor)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -86,7 +86,7 @@ internal class Spy : RoleBase
         string stimeStamp = reader.ReadString();
         if (long.TryParse(stimeStamp, out long timeStamp)) SpyRedNameList[susId] = timeStamp;
     }
-    public bool OnKillAttempt(PlayerControl killer, PlayerControl target)
+    private bool OnKillAttempt(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
         if (killer.PlayerId == target.PlayerId) return true;

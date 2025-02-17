@@ -147,7 +147,7 @@ public class GameSettingMenuPatch
     }
     public static StringOption PresetBehaviour;
     public static FreeChatInputField InputField;
-    public static List<OptionItem> HiddenBySearch = [];
+    private static List<OptionItem> HiddenBySearch = [];
     public static Action _SearchForOptions;
 
     private static void SetupAdittionalButtons(GameSettingMenu __instance)
@@ -171,7 +171,7 @@ public class GameSettingMenuPatch
         PLabel.DestroyTranslator();
         PLabel.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
         //PLabel.font = PLuLabel.font; 
-        float size = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
+        float size = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
         {
             SupportedLangs.Russian => 1.45f,
             _ => 2.45f,
@@ -244,7 +244,7 @@ public class GameSettingMenuPatch
 
         var GameSettingsLabel = __instance.GameSettingsButton.transform.parent.parent.FindChild("GameSettingsLabel").GetComponent<TextMeshPro>();
         GameSettingsLabel.DestroyTranslator();
-        GameSettingsLabel.text = GetString($"{Options.CurrentGameMode}");
+        GameSettingsLabel.text = GetString(Options.CurrentGameMode.ToString());
 
         var FreeChatField = DestroyableSingleton<ChatController>.Instance.freeChatField;
         var TextField = Object.Instantiate(FreeChatField, ParentLeftPanel.parent);
@@ -268,7 +268,7 @@ public class GameSettingMenuPatch
         button.FindChild("Hover").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIconHover.png", 100f);
         button.FindChild("Disabled").FindChild("Background").GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.SearchIcon.png", 100f);
 
-        if (DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.Russian)
+        if (FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.Russian)
         {
             Vector3 FixedScale = new(0.7f, 1f, 1f);
             button.FindChild("Normal").FindChild("Background").transform.localScale = FixedScale;
@@ -300,7 +300,7 @@ public class GameSettingMenuPatch
             HiddenBySearch.Do(x => x.SetHidden(false));
             string text = textField.textArea.text.Trim().ToLower();
             var Result = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode)
-            && !GetString($"{x.Name}").ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
+            && !GetString(x.Name).ToLower().Contains(text) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3)).ToList();
             HiddenBySearch = Result;
             var SearchWinners = OptionItem.AllOptions.Where(x => x.Parent == null && !x.IsHiddenOn(Options.CurrentGameMode) && x.Tab == (TabGroup)(ModGameOptionsMenu.TabIndex - 3) && !Result.Contains(x)).ToList();
             if (!SearchWinners.Any() || !ModSettingsTabs.TryGetValue((TabGroup)(ModGameOptionsMenu.TabIndex - 3), out var settingsTab) || settingsTab == null)
@@ -426,7 +426,7 @@ public class GameSettingMenuPatch
         SetDefaultButton(__instance);
 
         ControllerManager.Instance.OpenOverlayMenu(__instance.name, __instance.BackButton, __instance.DefaultButtonSelected, __instance.ControllerSelectable, false);
-        DestroyableSingleton<HudManager>.Instance.menuNavigationPrompts.SetActive(false);
+        FastDestroyableSingleton<HudManager>.Instance.menuNavigationPrompts.SetActive(false);
         if (Controller.currentTouchType != Controller.TouchType.Joystick)
         {
             __instance.ChangeTab(1, Controller.currentTouchType == Controller.TouchType.Joystick);
@@ -436,7 +436,7 @@ public class GameSettingMenuPatch
         return false;
     }
     [HarmonyPatch(nameof(GameSettingMenu.Close)), HarmonyPostfix]
-    private static void ClosePostfix(GameSettingMenu __instance)
+    private static void ClosePostfix()
     {
         foreach (var button in ModSettingsButtons.Values)
             Object.Destroy(button);

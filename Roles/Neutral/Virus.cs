@@ -68,8 +68,8 @@ internal class Virus : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
-        if (VirusNotify.ContainsKey(pc.PlayerId))
-            AddMsg(VirusNotify[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Virus), GetString("VirusNoticeTitle")));
+        if (VirusNotify.TryGetValue(pc.PlayerId, out var notify))
+            AddMsg(notify, pc.PlayerId, CustomRoles.Virus.GetColoredTextByRole(GetString("VirusNoticeTitle")));
     }
     public override void MeetingHudClear() => VirusNotify.Clear();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(ImpostorVision.GetBool());
@@ -162,7 +162,7 @@ public static class VirusPlayerControls
 {
     public static bool CanBeInfected(this PlayerControl pc)
     {
-        return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal)
+        return !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal)
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Specter)
             && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }

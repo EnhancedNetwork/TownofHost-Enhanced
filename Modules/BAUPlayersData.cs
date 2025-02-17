@@ -3,14 +3,14 @@ namespace TOHE.Modules;
 
 public class BAUPlayersData
 {
-    private readonly Dictionary<NetworkedPlayerInfo, string> _players = new Dictionary<NetworkedPlayerInfo, string>();
+    private readonly Dictionary<NetworkedPlayerInfo, string> _players = [];
 
     public string this[NetworkedPlayerInfo key]
     {
         get
         {
             CleanUpNullEntries();
-            return _players.ContainsKey(key) ? _players[key] : null;
+            return _players.GetValueOrDefault(key, null);
         }
         set
         {

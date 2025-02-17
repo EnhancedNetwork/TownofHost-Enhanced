@@ -71,14 +71,14 @@ internal class SoulCollector : RoleBase
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => TargetId == seen.PlayerId ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠") : string.Empty;
+        => TargetId == seen.PlayerId ? CustomRoles.SoulCollector.GetColoredTextByRole("♠") : string.Empty;
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
+            return CustomRoles.SoulCollector.GetColoredTextByRole("♠");
         }
         return string.Empty;
     }
@@ -198,7 +198,7 @@ internal class Death : RoleBase
         }
         CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Armageddon, [.. deathList]);
     }
-    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref System.Text.StringBuilder name)
     {
         if (exiled == null) return;
         var sc = Utils.GetPlayerListByRole(CustomRoles.Death).FirstOrDefault();
@@ -208,11 +208,11 @@ internal class Death : RoleBase
         {
             if (exiled.PlayerId == sc.PlayerId)
             {
-                name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name.Clear().Append(string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true)));
             }
             else
             {
-                name = string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name.Clear().Append(string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true)));
             }
         }
     }

@@ -12,7 +12,7 @@ internal class Sniper : RoleBase
     public override CustomRoles Role => CustomRoles.Sniper;
     private const int Id = 2400;
     private static readonly HashSet<byte> PlayerIdList = [];
-    public static bool HasEnabled => PlayerIdList.Any();
+    private static bool HasEnabled => PlayerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -127,7 +127,7 @@ internal class Sniper : RoleBase
         var canUse = false;
         if (!bulletCount.ContainsKey(pc.PlayerId))
         {
-            Logger.Info($" Sniper not Init yet.", "Sniper");
+            Logger.Info(" Sniper not Init yet.", "Sniper");
             return false;
         }
         if (bulletCount[pc.PlayerId] <= 0)
@@ -325,10 +325,9 @@ internal class Sniper : RoleBase
         }
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
-        seen ??= seer;
         var sniper = Utils.GetPlayerById(PlayerIdList.First());
         if (!(sniper == seer) || !(sniper == seen)) return string.Empty;
 
@@ -336,7 +335,6 @@ internal class Sniper : RoleBase
 
         if (AimAssist)
         {
-            //エイムアシスト中のスナイパー
             if (0.5f < AimTime[seerId] && (!AimAssistOneshot || AimTime[seerId] < 1.0f))
             {
                 if (GetSnipeTargets(Utils.GetPlayerById(seerId)).Any())
@@ -351,10 +349,8 @@ internal class Sniper : RoleBase
     {
         if (isForMeeting) return string.Empty;
 
-        //各スナイパーから
         foreach (var sniper in PlayerIdList)
         {
-            //射撃音が聞こえるプレイヤー
             var snList = shotNotify[sniper];
             if (snList.Any() && snList.Contains(seer.PlayerId))
             {

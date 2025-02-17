@@ -69,7 +69,7 @@ internal class CursedSoul : RoleBase
         if (CurseLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         if (CanBeSoulless(target))
@@ -78,8 +78,8 @@ internal class CursedSoul : RoleBase
             SendRPC();
             target.RpcSetCustomRole(CustomRoles.Soulless);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
+            killer.Notify(CustomRoles.CursedSoul.GetColoredTextByRole(GetString("CursedSoulSoullessPlayer")));
+            target.Notify(CustomRoles.CursedSoul.GetColoredTextByRole(GetString("SoullessByCursedSoul")));
 
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -94,7 +94,7 @@ internal class CursedSoul : RoleBase
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{CurseLimit}次魅惑机会", "CursedSoul");
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulInvalidTarget")));
+        killer.Notify(CustomRoles.CursedSoul.GetColoredTextByRole(GetString("CursedSoulInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{CurseLimit}次魅惑机会", "CursedSoul");
         return false;
     }

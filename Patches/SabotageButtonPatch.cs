@@ -9,7 +9,7 @@ public static class SabotageButtonDoClickPatch
     {
         if (!PlayerControl.LocalPlayer.inVent && GameManager.Instance.SabotagesEnabled())
         {
-            DestroyableSingleton<HudManager>.Instance.ToggleMapVisible(new MapOptions
+            FastDestroyableSingleton<HudManager>.Instance.ToggleMapVisible(new MapOptions
             {
                 Mode = MapOptions.Modes.Sabotage
             });

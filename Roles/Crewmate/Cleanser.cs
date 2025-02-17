@@ -19,8 +19,7 @@ internal class Cleanser : RoleBase
     private static OptionItem CleanserUsesOpt;
     private static OptionItem CleansedCanGetAddon;
     //private static OptionItem AbilityUseGainWithEachTaskCompleted;
-
-    private readonly HashSet<byte> CleansedPlayers = [];
+    
     private readonly Dictionary<byte, byte> CleanserTarget = [];
     private bool DidVote;
 
@@ -55,12 +54,12 @@ internal class Cleanser : RoleBase
         if (AbilityLimit < 1) return true;
         if (target.PlayerId == voter.PlayerId)
         {
-            Utils.SendMessage(GetString("CleanserRemoveSelf"), voter.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
+            Utils.SendMessage(GetString("CleanserRemoveSelf"), voter.PlayerId, CustomRoles.Cleanser.GetColoredTextByRole(GetString("CleanserTitle")));
             return true;
         }
         if (target.Is(CustomRoles.Stubborn))
         {
-            Utils.SendMessage(GetString("CleanserCantRemove"), voter.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
+            Utils.SendMessage(GetString("CleanserCantRemove"), voter.PlayerId, CustomRoles.Cleanser.GetColoredTextByRole(GetString("CleanserTitle")));
             return true;
         }
         if (CleanserTarget[voter.PlayerId] != byte.MaxValue) return true;
@@ -78,8 +77,7 @@ internal class Cleanser : RoleBase
         AbilityLimit--;
         CleanserTarget[voter.PlayerId] = target.PlayerId;
         Logger.Info($"{voter.GetNameWithRole()} cleansed {target.GetNameWithRole()}", "Cleansed");
-        CleansedPlayers.Add(target.PlayerId);
-        Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), targetName), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
+        Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), targetName), voter.PlayerId, title: CustomRoles.Cleanser.GetColoredTextByRole(GetString("CleanserTitle")));
         SendSkillRPC();
         return false;
     }

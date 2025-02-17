@@ -55,9 +55,9 @@ public class UIntOptionBackupValue(UInt32OptionNames name, uint value) : OptionB
 
 public class RoleRateBackupValue(RoleTypes type, int maxCount, int chance) : OptionBackupValue
 {
-    public RoleTypes roleType = type;
-    public int maxCount = maxCount;
-    public int chance = chance;
+    private RoleTypes roleType = type;
+    private int maxCount = maxCount;
+    private int chance = chance;
 
     public override void Restore(IGameOptions option)
     {

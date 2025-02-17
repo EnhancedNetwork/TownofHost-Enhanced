@@ -13,8 +13,8 @@ internal class PlagueBearer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.PlagueBearer;
     private const int Id = 17600;
-    public static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    private static readonly HashSet<byte> playerIdList = [];
+    private static bool HasEnabled => playerIdList.Any();
 
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -193,7 +193,7 @@ internal class PlagueBearer : RoleBase
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
-        if (HasEnabled && deadBody != null && deadBody.Object != null)
+        if (deadBody != null && deadBody.Object != null)
         {
             CheckAndInfect(reporter, deadBody.Object);
         }
@@ -211,12 +211,13 @@ internal class PlagueBearer : RoleBase
         CheckPlagueAllPlayers();
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-        => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿") : string.Empty;
+        => IsPlagued(seer.PlayerId, seen.PlayerId) ? CustomRoles.PlagueBearer.GetColoredTextByRole("⦿") : string.Empty;
+    
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (playerIdList.Any() && IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First() && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
-            return ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿");
+            return CustomRoles.PlagueBearer.GetColoredTextByRole("⦿");
         }
         return string.Empty;
     }
@@ -236,7 +237,6 @@ internal class Pestilence : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Pestilence;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pestilence);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralApocalypse;

@@ -8,7 +8,7 @@ public abstract class ValueRule<T>(T minValue, T maxValue, T step)
     public T MaxValue { get; protected set; } = maxValue;
     public T Step { get; protected set; } = step;
 
-    public ValueRule((T, T, T) tuple)
+    protected ValueRule((T, T, T) tuple)
     : this(tuple.Item1, tuple.Item2, tuple.Item3)
     { }
 
@@ -21,7 +21,7 @@ public class IntegerValueRule : ValueRule<int>
 {
     public IntegerValueRule(int minValue, int maxValue, int step)
     : base(minValue, maxValue, step) { }
-    public IntegerValueRule((int, int, int) tuple)
+    private IntegerValueRule((int, int, int) tuple)
     : base(tuple) { }
 
     public static implicit operator IntegerValueRule((int, int, int) tuple)
@@ -48,7 +48,7 @@ public class FloatValueRule : ValueRule<float>
 {
     public FloatValueRule(float minValue, float maxValue, float step)
     : base(minValue, maxValue, step) { }
-    public FloatValueRule((float, float, float) tuple)
+    private FloatValueRule((float, float, float) tuple)
     : base(tuple) { }
 
     public static implicit operator FloatValueRule((float, float, float) tuple)

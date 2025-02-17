@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;

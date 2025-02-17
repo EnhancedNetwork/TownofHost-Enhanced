@@ -12,7 +12,7 @@ internal class Eraser : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Eraser;
     private const int Id = 24200;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Eraser);
+    private static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Eraser);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -51,22 +51,21 @@ internal class Eraser : RoleBase
         if (target.Is(CustomRoles.Eraser)) return true;
         if (AbilityLimit < 1) return true;
 
-        if (didVote.Contains(player.PlayerId)) return true;
-        didVote.Add(player.PlayerId);
+        if (!didVote.Add(player.PlayerId)) return true;
 
         Logger.Info($"{player.GetCustomRole()} votes for {target.GetCustomRole()}", "Vote Eraser");
 
         if (target.PlayerId == player.PlayerId)
         {
-            Utils.SendMessage(GetString("EraserEraseSelf"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+            Utils.SendMessage(GetString("EraserEraseSelf"), player.PlayerId, CustomRoles.Eraser.GetColoredTextByRole(GetString("EraserEraseMsgTitle")));
             return true;
         }
 
         var targetRole = target.GetCustomRole();
         if (targetRole.IsNeutral() || targetRole.IsCoven() || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
-            Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
-            Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+            Logger.Info("Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
+            Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, CustomRoles.Eraser.GetColoredTextByRole(GetString("EraserEraseMsgTitle")));
             return true;
         }
 
@@ -76,7 +75,7 @@ internal class Eraser : RoleBase
         if (!PlayerToErase.Contains(target.PlayerId))
             PlayerToErase.Add(target.PlayerId);
 
-        Utils.SendMessage(string.Format(GetString("EraserEraseNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+        Utils.SendMessage(string.Format(GetString("EraserEraseNotice"), target.GetRealName()), player.PlayerId, CustomRoles.Eraser.GetColoredTextByRole(GetString("EraserEraseMsgTitle")));
 
         Utils.NotifyRoles(SpecifySeer: player);
         return false;

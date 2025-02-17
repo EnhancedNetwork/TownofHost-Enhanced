@@ -53,7 +53,7 @@ internal class Lawyer : RoleBase
         Role_Sheriff,
         Role_Medic
     }
-    public static readonly CustomRoles[] CRoleChangeRoles =
+    private static readonly CustomRoles[] CRoleChangeRoles =
     [
         CustomRoles.CrewmateTOHE,
         CustomRoles.Amnesiac,
@@ -130,7 +130,7 @@ internal class Lawyer : RoleBase
             }
             else
             {
-                Logger.Info($"Wow, not target for lawyer to select! Changing lawyer role to other", "Lawyer");
+                Logger.Info("Wow, not target for lawyer to select! Changing lawyer role to other", "Lawyer");
 
                 // Unable to find a target? Try to turn to changerole or opportunist
                 var changedRole = ShouldChangeRoleAfterTargetDeath.GetBool() ? CRoleChangeRoles[ChangeRolesAfterTargetKilled.GetValue()] : CustomRoles.Opportunist;
@@ -200,11 +200,11 @@ internal class Lawyer : RoleBase
 
         if ((!seer.IsAlive() || seer.Is(CustomRoles.Lawyer)) && IsTarget(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
+            return CustomRoles.Lawyer.GetColoredTextByRole("♦");
         }
         else if (seer.IsAlive() && TargetKnowsLawyer.GetBool() && IsTarget(seer.PlayerId) && _state.PlayerId == target.PlayerId)
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lawyer), "♦");
+            return CustomRoles.Lawyer.GetColoredTextByRole("♦");
         }
 
         return string.Empty;
@@ -213,7 +213,7 @@ internal class Lawyer : RoleBase
     {
         if (!ShouldChangeRoleAfterTargetDeath.GetBool())
         {
-            Logger.Info($"Laywer target dead, but change role setting is off", "Lawyer");
+            Logger.Info("Laywer target dead, but change role setting is off", "Lawyer");
             return;
         }
 

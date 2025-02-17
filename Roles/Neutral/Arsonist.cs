@@ -183,10 +183,10 @@ internal class Arsonist : RoleBase
         if (seen == null) return string.Empty;
 
         if (IsDousedPlayer(seer, seen))
-            return ColorString(GetRoleColor(CustomRoles.Arsonist), "▲");
+            return CustomRoles.Arsonist.GetColoredTextByRole("▲");
 
         if (!isForMeeting && ArsonistTimer.TryGetValue(seer.PlayerId, out var ar_kvp) && ar_kvp.Item1 == seen)
-            return ColorString(GetRoleColor(CustomRoles.Arsonist), "△");
+            return CustomRoles.Arsonist.GetColoredTextByRole("△");
 
         return string.Empty;
     }
@@ -240,7 +240,6 @@ internal class Arsonist : RoleBase
                         pc.SetRealKiller(__instance.myPlayer);
                     }
                 }
-                return;
             }
             else if (CanIgniteAnytime())
             {
@@ -264,31 +263,29 @@ internal class Arsonist : RoleBase
                             CustomWinnerHolder.WinnerIds.Add(__instance.myPlayer.PlayerId);
                         }
                     }
-                    return;
                 }
             }
         }
     }
 
-    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt == null ? false : ArsonistCanIgniteAnytimeOpt.GetBool();
+    public static bool CanIgniteAnytime() => ArsonistCanIgniteAnytimeOpt != null && ArsonistCanIgniteAnytimeOpt.GetBool();
 
     private static void ResetCurrentDousingTarget(byte arsonistId) => SendCurrentDousingTargetRPC(arsonistId, 255);
 
-    public static bool IsDousedPlayer(PlayerControl arsonist, PlayerControl target)
+    private static bool IsDousedPlayer(PlayerControl arsonist, PlayerControl target)
     {
         if (arsonist == null || target == null || IsDoused == null) return false;
-        IsDoused.TryGetValue((arsonist.PlayerId, target.PlayerId), out bool isDoused);
-        return isDoused;
+        return IsDoused.GetValueOrDefault((arsonist.PlayerId, target.PlayerId), false);
     }
 
-    public static bool IsDouseDone(PlayerControl player)
+    private static bool IsDouseDone(PlayerControl player)
     {
         if (!player.Is(CustomRoles.Arsonist)) return false;
         var (doused, all) = GetDousedPlayerCount(player.PlayerId);
         return doused >= all;
     }
 
-    public static (int, int) GetDousedPlayerCount(byte playerId)
+    private static (int, int) GetDousedPlayerCount(byte playerId)
     {
         int doused = 0, all = 0;
 
@@ -297,7 +294,7 @@ internal class Arsonist : RoleBase
             if (pc.PlayerId == playerId) continue;
 
             all++;
-            if (IsDoused.TryGetValue((playerId, pc.PlayerId), out var isDoused) && isDoused)
+            if (IsDoused.GetValueOrDefault((playerId, pc.PlayerId), false))
                 doused++;
         }
 

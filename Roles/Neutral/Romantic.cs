@@ -21,11 +21,11 @@ internal class Romantic : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
-    public static bool isProtect = false;
+    private static bool isProtect = false;
     public static bool isRomanticAlive = true;
-    public static bool isPartnerProtected = false;
+    private static bool isPartnerProtected = false;
 
-    public static OptionItem BetCooldown;
+    private static OptionItem BetCooldown;
     private static OptionItem ProtectCooldown;
     private static OptionItem ProtectDuration;
     private static OptionItem KnowTargetRole;
@@ -83,8 +83,8 @@ internal class Romantic : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
         writer.Write(playerId);
-        writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : 1);
-        writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
+        writer.Write(BetTimes.GetValueOrDefault(playerId, 1).ToString());
+        writer.Write(BetPlayer.GetValueOrDefault(playerId, byte.MaxValue).ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
@@ -106,7 +106,6 @@ internal class Romantic : RoleBase
         if (BetTimes.TryGetValue(id, out var times) && times < 1)
         {
             Main.AllPlayerKillCooldown[id] = ProtectCooldown.GetFloat();
-            return;
         }
         else Main.AllPlayerKillCooldown[id] = BetCooldown.GetFloat();
     }
@@ -129,7 +128,7 @@ internal class Romantic : RoleBase
         if (killer.PlayerId == target.PlayerId) return true;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         if (!BetTimes.TryGetValue(killer.PlayerId, out var times) || times < 1) isProtect = true;
@@ -149,7 +148,7 @@ internal class Romantic : RoleBase
             killer.Notify(GetString("RomanticBetPlayer"));
 
             if (BetTargetKnowRomantic.GetBool())
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), GetString("RomanticBetOnYou")));
+                target.Notify(CustomRoles.Romantic.GetColoredTextByRole(GetString("RomanticBetOnYou")));
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
@@ -188,10 +187,10 @@ internal class Romantic : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seer == seen) return string.Empty;
+        if (seer.PlayerId == seen.PlayerId) return string.Empty;
 
         return BetPlayer.ContainsValue(seen.PlayerId)
-            ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥") : string.Empty;
+            ? CustomRoles.Romantic.GetColoredTextByRole("♥") : string.Empty;
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
@@ -200,15 +199,15 @@ internal class Romantic : RoleBase
         {
             if (seer == target && seer.IsAlive() && BetPlayer.ContainsValue(seer.PlayerId))
             {
-                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+                return CustomRoles.Romantic.GetColoredTextByRole("♥");
             }
             else if (seer != target && seer.IsAlive() && BetPlayer.ContainsKey(target.PlayerId) && BetPlayer.ContainsValue(seer.PlayerId))
             {
-                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+                return CustomRoles.Romantic.GetColoredTextByRole("♥");
             }
             else if (seer != target && !seer.IsAlive() && BetPlayer.ContainsValue(target.PlayerId))
             {
-                return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Romantic), "♥");
+                return CustomRoles.Romantic.GetColoredTextByRole("♥");
             }
         }
         return string.Empty;
@@ -321,7 +320,7 @@ internal class VengefulRomantic : RoleBase
     //==================================================================\\
 
     public static bool hasKilledKiller = false;
-    public static Dictionary<byte, byte> VengefulTarget = [];
+    private static readonly Dictionary<byte, byte> VengefulTarget = [];
 
     public override void Init()
     {
@@ -362,7 +361,7 @@ internal class VengefulRomantic : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player); //SyncVengefulRomanticTarget
         writer.Write(playerId);
-        writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
+        writer.Write(VengefulTarget.GetValueOrDefault(playerId, byte.MaxValue));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)

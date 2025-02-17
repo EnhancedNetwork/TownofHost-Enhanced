@@ -101,10 +101,10 @@ class ExileControllerWrapUpPatch
             exiled.PlayerId.SetDeathReason(PlayerState.DeathReason.Vote);
 
             var exiledRoleClass = exiled.PlayerId.GetRoleClassById();
-            var emptyString = string.Empty;
+            var emptyStringBuilder = new System.Text.StringBuilder();
 
-            exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString);
-            CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyString));
+            exiledRoleClass?.CheckExile(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyStringBuilder);
+            CustomRoleManager.AllEnabledRoles.Do(roleClass => roleClass.CheckExileTarget(exiled, ref DecidedWinner, isMeetingHud: false, name: ref emptyStringBuilder));
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
@@ -186,7 +186,7 @@ class ExileControllerWrapUpPatch
                 }
                 else
                 {
-                    Utils.DoNotifyRoles();
+                    Utils.NotifyRoles();
                 }
 
                 AntiBlackout.ResetAfterMeeting();
@@ -205,7 +205,7 @@ class ExileControllerWrapUpPatch
         _ = new LateTask(() =>
         {
             if (!AmongUsClient.Instance.IsGameOver)
-                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+                FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
         }, 0.8f, "Set Hud Active");
 
         Logger.Info("Start of Task Phase", "Phase");

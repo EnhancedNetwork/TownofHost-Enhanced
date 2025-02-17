@@ -178,7 +178,6 @@ public static class PhantomRolePatch
                 phantom?.RpcSetPetDesync(petId, seer);
             }
         }
-        yield break;
     }
     public static void AfterMeeting()
     {
@@ -204,8 +203,8 @@ public static class PhantomRoleUseAbilityPatch
                     __instance.MakePlayerVisible(true, true);
                     return false;
                 }
-                DestroyableSingleton<HudManager>.Instance.AbilityButton.SetSecondImage(__instance.Ability);
-                DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.PhantomAbilityUndo, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
+                FastDestroyableSingleton<HudManager>.Instance.AbilityButton.SetSecondImage(__instance.Ability);
+                FastDestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(FastDestroyableSingleton<TranslationController >.Instance.GetString(StringNames.PhantomAbilityUndo, new Il2CppReferenceArray<Il2CppSystem.Object>(0)));
                 __instance.Player.CmdCheckVanish(GameManager.Instance.LogicOptions.GetPhantomDuration());
                 return false;
             }

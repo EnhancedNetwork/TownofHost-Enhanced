@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System.Text;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using TOHE.Roles.Core;
@@ -109,11 +110,12 @@ internal class Solsticer : RoleBase
         if (IsForMeeting || !warningActived || seer.Is(CustomRoles.Solsticer)) return string.Empty;
         if (seer.PlayerId != target.PlayerId && !target.Is(CustomRoles.Solsticer)) return string.Empty;
 
-        var warning = "⚠";
+        var warning = new StringBuilder();
+        warning.Append('⚠');
         if (IsSolsticerTarget(seer, onlyKiller: true) && !target.Is(CustomRoles.Solsticer))
-            warning += TargetArrow.GetArrows(seer, playerid);
+            warning.Append(TargetArrow.GetArrows(seer, playerid));
 
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), warning);
+        return CustomRoles.Solsticer.GetColoredTextByRole(warning.ToString());
     }
     private void ActiveWarning(PlayerControl pc)
     {
@@ -233,7 +235,7 @@ internal class Solsticer : RoleBase
     {
         return pc.IsAlive() && (!onlyKiller || pc.HasImpKillButton());
     }
-    public void ResetTasks(PlayerControl pc)
+    private void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
         var taskState = pc.GetPlayerTaskState();
@@ -258,7 +260,7 @@ internal class Solsticer : RoleBase
         if (pc.PlayerId == target.PlayerId)
         {
             CanGuess = false;
-            _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
+            _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, CustomRoles.Solsticer.GetColoredTextByRole(GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
             return true;
         }
         return false;
@@ -292,14 +294,14 @@ internal class Solsticer : RoleBase
             SetShortTasksToAdd();
             if (MurderMessage == "")
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
-            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            AddMsg(MurderMessage, pc.PlayerId, CustomRoles.Solsticer.GetColoredTextByRole(GetString("SolsticerTitle")));
         }
     }
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
         if (seer.Is(CustomRoles.SchrodingersCat))
         {
-            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
+            if (SchrodingersCat.teammate.TryGetValue(seer.PlayerId, out var seerTemmateTargetId) && target.PlayerId == seerTemmateTargetId)
             {
                 if (target.GetCustomRole().IsCrewmate()) return "#8CFFFF";
                 else return Main.roleColors[target.GetCustomRole()];
@@ -307,7 +309,7 @@ internal class Solsticer : RoleBase
         }
         if (target.Is(CustomRoles.SchrodingersCat))
         {
-            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
+            if (SchrodingersCat.teammate.TryGetValue(target.PlayerId, out var targetTemmateTargetId) && seer.PlayerId == targetTemmateTargetId)
             {
                 if (seer.GetCustomRole().IsCrewmate()) return "#8CFFFF";
                 else return Main.roleColors[seer.GetCustomRole()];

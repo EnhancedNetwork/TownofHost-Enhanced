@@ -159,7 +159,7 @@ internal class Captain : RoleBase
                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
                 ((seer.Is(Custom_Team.Crewmate) && !seer.Is(CustomRoles.Madmate)) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
         {
-            return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
+            return CustomRoles.Captain.GetColoredTextByRole(" ☆");
         }
         return string.Empty;
     }

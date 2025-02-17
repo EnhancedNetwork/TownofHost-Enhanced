@@ -65,7 +65,7 @@ internal class Lightning : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
 
-    public static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
+    private static bool IsGhost(PlayerControl player) => IsGhost(player.PlayerId);
     private static bool IsGhost(byte id) => GhostPlayer.Contains(id);
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -161,9 +161,8 @@ internal class Lightning : RoleBase
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
-    {
-        return (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lightning), "■") : string.Empty;
-    }
+        => (!seer.IsAlive() && seer != target && IsGhost(target)) || IsGhost(target)
+            ? CustomRoles.Lightning.GetColoredTextByRole("■") : string.Empty;
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

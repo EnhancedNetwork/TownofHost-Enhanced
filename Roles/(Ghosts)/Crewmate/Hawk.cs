@@ -19,14 +19,14 @@ internal class Hawk : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateGhosts;
     //==================================================================\\
 
-    public static OptionItem KillCooldown;
-    public static OptionItem HawkCanKillNum;
-    public static OptionItem MinimumPlayersAliveToKill;
-    public static OptionItem MissChance;
-    public static OptionItem IncreaseByOneIfConvert;
+    private static OptionItem KillCooldown;
+    private static OptionItem HawkCanKillNum;
+    private static OptionItem MinimumPlayersAliveToKill;
+    private static OptionItem MissChance;
+    private static OptionItem IncreaseByOneIfConvert;
 
-    public readonly Dictionary<byte, float> KillerChanceMiss = [];
-    public int KeepCount = 0;
+    private readonly Dictionary<byte, float> KillerChanceMiss = [];
+    private int KeepCount = 0;
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Hawk);

@@ -46,7 +46,7 @@ internal class Medium : RoleBase
     {
         AbilityLimit = ContactLimitOpt.GetFloat();
     }
-    public void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
+    private void SendRPC(byte playerId, byte targetId = 0xff, bool isUsed = false)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -97,7 +97,7 @@ internal class Medium : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || pc == null) return false;
-        if (!ContactPlayer.ContainsKey(pc.PlayerId)) return false;
+        if (!ContactPlayer.TryGetValue(pc.PlayerId, out var targetId)) return false;
         if (OnlyReceiveMsgFromCrew.GetBool() && !pc.GetCustomRole().IsCrewmate()) return false;
         if (pc.IsAlive()) return false;
         msg = msg.ToLower().Trim();
@@ -112,14 +112,14 @@ internal class Medium : RoleBase
             return true;
         }
 
-        SendMessage(GetString("Medium" + (ans ? "Yes" : "No")), ContactPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+        SendMessage(GetString("Medium" + (ans ? "Yes" : "No")), targetId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
         SendMessage(GetString("MediumDone"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
 
         ContactPlayer.Remove(pc.PlayerId);
 
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         foreach (var comm in comList)
@@ -162,10 +162,10 @@ internal class Medium : RoleBase
 
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))
-            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.FirstOrDefault(x => x.Value == pc.PlayerId).Key], AbilityLimit), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
 
         //For target
-        if (ContactPlayer.ContainsKey(pc.PlayerId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))
-            AddMsg(string.Format(GetString("MediumNotifyTarget"), Main.AllPlayerNames[ContactPlayer[pc.PlayerId]]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+        if (ContactPlayer.TryGetValue(pc.PlayerId, out var targetId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))
+            AddMsg(string.Format(GetString("MediumNotifyTarget"), Main.AllPlayerNames[targetId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
     }
 }

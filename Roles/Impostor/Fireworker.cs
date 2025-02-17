@@ -36,7 +36,6 @@ internal class Fireworker : RoleBase
     private static readonly Dictionary<byte, int> nowFireworkerCount = [];
     private static readonly Dictionary<byte, HashSet<Vector3>> FireworkerPosition = [];
     private static readonly Dictionary<byte, FireworkerState> state = [];
-    private static readonly Dictionary<byte, int> FireworkerBombKill = [];
     private readonly List<Firework> Fireworks = [];
 
     private static int fireworkerCount = 1;
@@ -59,7 +58,6 @@ internal class Fireworker : RoleBase
         nowFireworkerCount.Clear();
         FireworkerPosition.Clear();
         state.Clear();
-        FireworkerBombKill.Clear();
 
         fireworkerCount = FireworkerCount.GetInt();
         fireworkerRadius = FireworkerRadius.GetFloat();
@@ -70,7 +68,6 @@ internal class Fireworker : RoleBase
         nowFireworkerCount[playerId] = fireworkerCount;
         FireworkerPosition[playerId] = [];
         state.TryAdd(playerId, FireworkerState.Initial);
-        FireworkerBombKill[playerId] = 0;
     }
 
     private static void SendRPC(byte playerId)
@@ -98,23 +95,15 @@ internal class Fireworker : RoleBase
 
     public override bool CanUseKillButton(PlayerControl pc)
     {
-        if (!state.ContainsKey(pc.PlayerId) || !pc.IsAlive()) return false;
+        if (!state.TryGetValue(pc.PlayerId, out var fireworkState) || !pc.IsAlive()) return false;
 
-        var canUse = false;
-        if ((state[pc.PlayerId] & FireworkerState.CanUseKill) != 0)
-        {
-            canUse = true;
-        }
-        if (CanKill.GetBool())
-        {
-            canUse = true;
-        }
+        bool canUse = CanKill.GetBool() || (fireworkState & FireworkerState.CanUseKill) != 0;
         return canUse;
     }
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        Logger.Info($"Fireworker ShapeShift", "Fireworker");
+        Logger.Info("Fireworker ShapeShift", "Fireworker");
 
         var shapeshifterId = shapeshifter.PlayerId;
         switch (state[shapeshifterId])
@@ -179,16 +168,16 @@ internal class Fireworker : RoleBase
         string retText = string.Empty;
         var seerId = seer.PlayerId;
         if (seer == null || !seer.IsAlive()) return retText;
-        if (!state.ContainsKey(seerId)) return retText;
+        if (!state.TryGetValue(seerId, out var fireworkState)) return retText;
 
-        if (state[seer.PlayerId] == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
+        if (fireworkState == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
         {
             Logger.Info("Ready to blow up", "Fireworker");
-            state[seerId] = FireworkerState.ReadyFire;
+            state[seerId] = fireworkState = FireworkerState.ReadyFire;
             SendRPC(seerId);
             Utils.NotifyRoles(SpecifySeer: seer);
         }
-        switch (state[seerId])
+        switch (fireworkState)
         {
             case FireworkerState.Initial:
             case FireworkerState.SettingFireworker:

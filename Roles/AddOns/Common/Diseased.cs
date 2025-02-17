@@ -44,9 +44,9 @@ public class Diseased : IAddon
 
     public static void IncreaseKCD(PlayerControl player)
     {
-        if (KilledDiseased.ContainsKey(player.PlayerId))
+        if (KilledDiseased.TryGetValue(player.PlayerId, out var diseased))
         {
-            Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] + KilledDiseased[player.PlayerId] * DiseasedCDOpt.GetFloat();
+            Main.AllPlayerKillCooldown[player.PlayerId] = Main.AllPlayerKillCooldown[player.PlayerId] + diseased * DiseasedCDOpt.GetFloat();
             Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Diseased");
         }
     }
@@ -68,15 +68,10 @@ public class Diseased : IAddon
 
     public static void CheckMurder(PlayerControl killer)
     {
-        if (KilledDiseased.ContainsKey(killer.PlayerId))
+        if (!KilledDiseased.TryAdd(killer.PlayerId, 1))
         {
             // Key already exists, update the value
-            KilledDiseased[killer.PlayerId] += 1;
-        }
-        else
-        {
-            // Key doesn't exist, add the key-value pair
-            KilledDiseased.Add(killer.PlayerId, 1);
+            KilledDiseased[killer.PlayerId]++;
         }
     }
 }

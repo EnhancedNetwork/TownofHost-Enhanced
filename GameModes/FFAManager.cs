@@ -1,4 +1,6 @@
 using Hazel;
+using System;
+using System.Text;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -11,28 +13,28 @@ internal static class FFAManager
     private static Dictionary<byte, long> FFAIncreasedSpeedList = [];
     private static Dictionary<byte, long> FFADecreasedSpeedList = [];
     public static Dictionary<byte, long> FFALowerVisionList = [];
-    public static Dictionary<byte, long> FFAEnterVentTime = [];
-    public static Dictionary<byte, float> FFAVentDuration = [];
+    private static Dictionary<byte, long> FFAEnterVentTime = [];
+    private static Dictionary<byte, float> FFAVentDuration = [];
 
     private static Dictionary<byte, float> originalSpeed = [];
-    public static Dictionary<byte, int> KBScore = [];
-    public static Dictionary<byte, long> FFALastKill = [];
+    private static Dictionary<byte, int> KBScore = [];
+    private static Dictionary<byte, long> FFALastKill = [];
     public static int RoundTime;
 
     //Options
-    public static OptionItem FFA_GameTime;
+    private static OptionItem FFA_GameTime;
     public static OptionItem FFA_KCD;
     public static OptionItem FFA_LowerVision;
-    public static OptionItem FFA_IncreasedSpeed;
-    public static OptionItem FFA_DecreasedSpeed;
-    public static OptionItem FFA_ShieldDuration;
+    private static OptionItem FFA_IncreasedSpeed;
+    private static OptionItem FFA_DecreasedSpeed;
+    private static OptionItem FFA_ShieldDuration;
     public static OptionItem FFA_ModifiedVisionDuration;
-    public static OptionItem FFA_ModifiedSpeedDuration;
-    public static OptionItem FFA_DisableVentingWhenTwoPlayersAlive;
+    private static OptionItem FFA_ModifiedSpeedDuration;
+    private static OptionItem FFA_DisableVentingWhenTwoPlayersAlive;
     public static OptionItem FFA_DisableVentingWhenKCDIsUp;
-    public static OptionItem FFA_EnableRandomAbilities;
-    public static OptionItem FFA_EnableRandomTwists;
-    public static OptionItem FFA_ShieldIsOneTimeUse;
+    private static OptionItem FFA_EnableRandomAbilities;
+    private static OptionItem FFA_EnableRandomTwists;
+    private static OptionItem FFA_ShieldIsOneTimeUse;
 
     public static void SetupCustomOption()
     {
@@ -123,12 +125,12 @@ internal static class FFAManager
         byte PlayerId = reader.ReadByte();
         KBScore[PlayerId] = reader.ReadInt32();
     }
-    public static void SendRPCSyncNameNotify(PlayerControl pc)
+    private static void SendRPCSyncNameNotify(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncFFANameNotify, SendOption.Reliable, pc.GetClientId());
-        if (NameNotify.ContainsKey(pc.PlayerId))
-            writer.Write(NameNotify[pc.PlayerId].TEXT);
+        if (NameNotify.TryGetValue(pc.PlayerId, out var notify))
+            writer.Write(notify.TEXT);
         else writer.Write(string.Empty);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
@@ -136,23 +138,22 @@ internal static class FFAManager
     {
         var name = reader.ReadString();
         NameNotify.Remove(PlayerControl.LocalPlayer.PlayerId);
-        if (name != null && name != string.Empty)
+        if (!String.IsNullOrEmpty(name))
             NameNotify.Add(PlayerControl.LocalPlayer.PlayerId, (name, 0));
     }
-    public static Dictionary<byte, (string TEXT, long TIMESTAMP)> NameNotify = [];
+    private static Dictionary<byte, (string TEXT, long TIMESTAMP)> NameNotify = [];
     public static void GetNameNotify(PlayerControl player, ref string name)
     {
         if (Options.CurrentGameMode != CustomGameMode.FFA || player == null) return;
-        if (NameNotify.ContainsKey(player.PlayerId))
+        if (NameNotify.TryGetValue(player.PlayerId, out var notify))
         {
-            name = NameNotify[player.PlayerId].TEXT;
-            return;
+            name = notify.TEXT;
         }
     }
     public static string GetDisplayScore(byte playerId)
     {
         int rank = GetRankOfScore(playerId);
-        string score = KBScore.TryGetValue(playerId, out var s) ? $"{s}" : "0";
+        string score = KBScore.GetValueOrDefault(playerId, 0).ToString();
         string text = string.Format(GetString("FFADisplayScore"), rank.ToString(), score);
         Color color = Utils.GetRoleColor(CustomRoles.Killer);
         return Utils.ColorString(color, text);
@@ -328,7 +329,7 @@ internal static class FFAManager
         killer.RpcMurderPlayer(target);
     }
 
-    public static void OnPlayerKill(PlayerControl killer)
+    private static void OnPlayerKill(PlayerControl killer)
     {
         foreach (var player in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.GM)))
         {
@@ -397,7 +398,7 @@ internal static class FFAManager
         if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
         if (Main.AllAlivePlayerControls.Length != 2) return string.Empty;
 
-        string arrows = string.Empty;
+        var arrows = new StringBuilder();
         PlayerControl otherPlayer = null;
         foreach (var pc in Main.AllAlivePlayerControls.Where(pc => pc.IsAlive() && pc.PlayerId != seer.PlayerId).ToArray())
         {
@@ -407,9 +408,9 @@ internal static class FFAManager
         if (otherPlayer == null) return string.Empty;
 
         var arrow = TargetArrow.GetArrows(seer, otherPlayer.PlayerId);
-        arrows += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Killer), arrow);
+        arrows.Append(CustomRoles.Killer.GetColoredTextByRole(arrow));
 
-        return arrows;
+        return arrows.ToString();
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
@@ -437,8 +438,7 @@ internal static class FFAManager
 
                 var rd = IRandom.Instance;
                 byte FFAdoTPdecider = (byte)rd.Next(0, 100);
-                bool FFAdoTP = false;
-                if (FFAdoTPdecider == 0) FFAdoTP = true;
+                bool FFAdoTP = FFAdoTPdecider == 0;
 
                 if (FFA_EnableRandomTwists.GetBool() && FFAdoTP)
                 {

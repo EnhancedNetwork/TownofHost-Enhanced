@@ -16,13 +16,13 @@ internal class Workaholic : RoleBase
     //==================================================================\\
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
-    public static OptionItem WorkaholicCannotWinAtDeath;
-    public static OptionItem WorkaholicVentCooldown;
+    private static OptionItem WorkaholicCannotWinAtDeath;
+    private static OptionItem WorkaholicVentCooldown;
     public static OptionItem WorkaholicVisibleToEveryone;
-    public static OptionItem WorkaholicGiveAdviceAlive;
+    private static OptionItem WorkaholicGiveAdviceAlive;
     public static OptionItem WorkaholicCanGuess;
 
-    public static readonly HashSet<byte> WorkaholicAlive = [];
+    private static readonly HashSet<byte> WorkaholicAlive = [];
 
     public override void SetupCustomOption()
     {
@@ -97,8 +97,8 @@ internal class Workaholic : RoleBase
             {
                 workaholicAliveList.Add(Main.AllPlayerNames[whId]);
             }
-            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
-            AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
+            string separator = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
+            AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, CustomRoles.Workaholic.GetColoredTextByRole(GetString("WorkaholicAliveTitle")));
         }
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)

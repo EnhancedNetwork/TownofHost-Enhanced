@@ -11,13 +11,13 @@ public class Bait : IAddon
     private const int Id = 18700;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem BaitDelayMin;
-    public static OptionItem BaitDelayMax;
-    public static OptionItem BaitDelayNotify;
+    private static OptionItem BaitDelayMin;
+    private static OptionItem BaitDelayMax;
+    private static OptionItem BaitDelayNotify;
     public static OptionItem BaitNotification;
     public static OptionItem BaitCanBeReportedUnderAllConditions;
 
-    public static readonly HashSet<byte> BaitAlive = [];
+    private static readonly HashSet<byte> BaitAlive = [];
 
     public void SetupCustomOption()
     {
@@ -58,8 +58,8 @@ public class Bait : IAddon
                 if (whpc == null) continue;
                 baitAliveList.Add(whpc.GetRealName());
             }
-            string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
-            MeetingHudStartPatch.AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), GetString("BaitAliveTitle")));
+            string separator = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("BaitAdviceAlive"), string.Join(separator, baitAliveList)), 255, CustomRoles.Bait.GetColoredTextByRole(GetString("BaitAliveTitle")));
         }
     }
     public static void BaitAfterDeathTasks(PlayerControl killer, PlayerControl target)
@@ -79,7 +79,7 @@ public class Bait : IAddon
             || killer.Is(CustomRoles.Swooper)
             || killer.Is(CustomRoles.Wraith)
             || killer.Is(CustomRoles.Cleaner)
-            || (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !Bait.BaitCanBeReportedUnderAllConditions.GetBool())
+            || (DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !BaitCanBeReportedUnderAllConditions.GetBool())
             || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
             return;
 
@@ -90,7 +90,7 @@ public class Bait : IAddon
             if (BaitDelayMax.GetFloat() < BaitDelayMin.GetFloat()) delay = 0f;
             else delay = IRandom.Instance.Next((int)BaitDelayMin.GetFloat(), (int)BaitDelayMax.GetFloat() + 1);
             delay = Math.Max(delay, 0.15f);
-            if (delay > 0.15f && BaitDelayNotify.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
+            if (delay > 0.15f && BaitDelayNotify.GetBool()) killer.Notify(CustomRoles.Bait.GetColoredTextByRole(string.Format(GetString("KillBaitNotify"), (int)delay)), delay);
             Logger.Info($"{killer.GetNameWithRole()} 击杀诱饵 => {target.GetNameWithRole()}", "MurderPlayer");
             _ = new LateTask(() => { if (GameStates.IsInTask && GameStates.IsInGame) killer?.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
         }

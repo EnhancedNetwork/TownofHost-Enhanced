@@ -54,16 +54,16 @@ public static class Zoom
         if (reset)
         {
             Camera.main.orthographicSize = 3.0f;
-            HudManager.Instance.UICamera.orthographicSize = 3.0f;
-            HudManager.Instance.Chat.transform.localScale = Vector3.one;
+            FastDestroyableSingleton<HudManager>.Instance.UICamera.orthographicSize = 3.0f;
+            FastDestroyableSingleton<HudManager>.Instance.Chat.transform.localScale = Vector3.one;
             if (GameStates.IsMeeting) MeetingHud.Instance.transform.localScale = Vector3.one;
         }
         else
         {
             Camera.main.orthographicSize *= size;
-            HudManager.Instance.UICamera.orthographicSize *= size;
+            FastDestroyableSingleton<HudManager>.Instance.UICamera.orthographicSize *= size;
         }
-        DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((reset || Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
+        FastDestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((reset || Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
 
         if (ResetButtons)
         {
@@ -73,7 +73,7 @@ public static class Zoom
     }
 
     public static void OnFixedUpdate()
-        => DestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
+        => FastDestroyableSingleton<HudManager>.Instance?.ShadowQuad?.gameObject?.SetActive((Camera.main.orthographicSize == 3.0f) && PlayerControl.LocalPlayer.IsAlive());
 }
 
 public static class Flag

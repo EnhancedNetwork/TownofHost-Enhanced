@@ -73,8 +73,8 @@ internal class Infectious : RoleBase
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
+            killer.Notify(CustomRoles.Infectious.GetColoredTextByRole(GetString("InfectiousBittenPlayer")));
+            target.Notify(CustomRoles.Infectious.GetColoredTextByRole(GetString("BittenByInfectious")));
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -105,7 +105,7 @@ internal class Infectious : RoleBase
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         }
 
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousInvalidTarget")));
+        killer.Notify(CustomRoles.Infectious.GetColoredTextByRole(GetString("InfectiousInvalidTarget")));
 
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{BiteLimit}次招募机会", "Infectious");
         return false;
@@ -119,7 +119,7 @@ internal class Infectious : RoleBase
         if (BiteLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         if (DoubleClickKill.GetBool())

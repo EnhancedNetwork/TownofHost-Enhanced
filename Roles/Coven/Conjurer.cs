@@ -28,7 +28,7 @@ internal class Conjurer : CovenManager
     private static OptionItem NecroRadius;
     private static OptionItem CovenDiesInBlast;
 
-    public static byte NecroBombHolder = byte.MaxValue;
+    private static byte NecroBombHolder = byte.MaxValue;
     private static readonly Dictionary<byte, List<Vector3>> ConjPosition = [];
     private static readonly Dictionary<byte, ConjState> state = [];
 
@@ -96,8 +96,7 @@ internal class Conjurer : CovenManager
                         var dis = GetDistance(pos, player.transform.position);
                         if (dis > ConjureRadius.GetFloat()) continue;
                         if (player.GetCustomRole().IsCovenTeam() && !CovenDiesInBlast.GetBool()) continue;
-                        if (player.IsTransformedNeutralApocalypse()) continue;
-                        else
+                        if (!player.IsTransformedNeutralApocalypse())
                         {
                             player.SetDeathReason(PlayerState.DeathReason.Bombed);
                             player.RpcMurderPlayer(player);
@@ -131,8 +130,7 @@ internal class Conjurer : CovenManager
                     var dis = GetDistance(necroBombHolder.transform.position, player.transform.position);
                     if (dis > NecroRadius.GetFloat()) continue;
                     if (player.GetCustomRole().IsCovenTeam() && !CovenDiesInBlast.GetBool()) continue;
-                    if (player.IsTransformedNeutralApocalypse()) continue;
-                    else
+                    if (!player.IsTransformedNeutralApocalypse())
                     {
                         player.SetDeathReason(PlayerState.DeathReason.Bombed);
                         player.RpcMurderPlayer(player);

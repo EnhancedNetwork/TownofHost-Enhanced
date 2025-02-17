@@ -41,10 +41,10 @@ internal class Escapist : RoleBase
     {
         if (EscapeLocation.TryGetValue(shapeshifter.PlayerId, out var position))
         {
-            EscapeLocation.Remove(shapeshifter.PlayerId);
             Logger.Info($"{shapeshifter.GetNameWithRole()}:{position}", "Escapist Teleport");
             shapeshifter.RpcTeleport(position);
             shapeshifter.RPCPlayCustomSound("Teleport");
+            EscapeLocation.Remove(shapeshifter.PlayerId);
         }
         else
         {

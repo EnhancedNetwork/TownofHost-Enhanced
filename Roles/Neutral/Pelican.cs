@@ -28,7 +28,7 @@ internal class Pelican : RoleBase
 
     private static readonly Dictionary<byte, HashSet<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
-    public static Dictionary<byte, Vector2> PelicanLastPosition = [];
+    private static readonly Dictionary<byte, Vector2> PelicanLastPosition = [];
 
     private static int Count = 0;
 
@@ -92,7 +92,7 @@ internal class Pelican : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
 
-    private static bool IsEaten(PlayerControl pc, byte id) => eatenList.ContainsKey(pc.PlayerId) && eatenList[pc.PlayerId].Contains(id);
+    private static bool IsEaten(PlayerControl pc, byte id) => eatenList.TryGetValue(pc.PlayerId, out var list) && list.Contains(id);
     public static bool IsEaten(byte id)
     {
         foreach (var el in eatenList)
@@ -100,7 +100,7 @@ internal class Pelican : RoleBase
                 return true;
         return false;
     }
-    public static bool CanEat(PlayerControl pc, byte id)
+    private static bool CanEat(PlayerControl pc, byte id)
     {
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
 
@@ -135,8 +135,8 @@ internal class Pelican : RoleBase
     public override string GetProgressText(byte playerId, bool coooms)
     {
         var eatenNum = 0;
-        if (eatenList.ContainsKey(playerId))
-            eatenNum = eatenList[playerId].Count;
+        if (eatenList.TryGetValue(playerId, out var list))
+            eatenNum = list.Count;
         return Utils.ColorString(eatenNum < 1 ? Color.gray : Utils.GetRoleColor(CustomRoles.Pelican), $"({eatenNum})");
     }
     private void EatPlayer(PlayerControl pc, PlayerControl target)
@@ -144,7 +144,7 @@ internal class Pelican : RoleBase
         if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            pc.Notify(CustomRoles.NiceMini.GetColoredTextByRole(GetString("CantEat")));
             return;
         }
 
@@ -223,7 +223,7 @@ internal class Pelican : RoleBase
     private void ReturnEatenPlayerBack(PlayerControl pelican)
     {
         var pelicanId = pelican.PlayerId;
-        if (!eatenList.ContainsKey(pelicanId)) return;
+        if (!eatenList.TryGetValue(pelicanId, out var list)) return;
 
         GameEndCheckerForNormal.ShouldNotCheck = true;
 
@@ -235,7 +235,7 @@ internal class Pelican : RoleBase
             else
                 teleportPosition = pelican.GetCustomPosition();
 
-            foreach (var tar in eatenList[pelicanId])
+            foreach (var tar in list.ToArray())
             {
                 var target = Utils.GetPlayerById(tar);
                 var player = Utils.GetPlayerById(pelicanId);

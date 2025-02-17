@@ -7,7 +7,6 @@ using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -68,24 +67,21 @@ public enum CustomRPC : byte // 185/255 USED
     SyncPuppet,
     SyncKami,
     SetKillOrSpell,
-    SetKillOrHex,
     SetKillOrCurse,
     SetDousedPlayer,
     DoSpell,
-    DoHex,
     DoCurse,
     SniperSync,
     SetLoversPlayers,
     SendFireworkerState,
     SetCurrentDousingTarget,
+    SetEvilTrackerTarget,
+    SyncRevolutionistData,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
-    SetEvilTrackerTarget,
-    SetDrawPlayer,
     SetCrewpostorTasksDone,
-    SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
@@ -151,7 +147,7 @@ class ShouldProcessRpcPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.HandleRpc))]
 internal class RPCHandlerPatch
 {
-    public static bool TrustedRpc(byte id)
+    private static bool TrustedRpc(byte id)
     => (CustomRPC)id is CustomRPC.VersionCheck
         or CustomRPC.RequestRetryVersionCheck
         or CustomRPC.AntiBlackout
@@ -351,7 +347,7 @@ internal class RPCHandlerPatch
                 if (title != "")
                     message = $"{title}\n{message}";
 
-                HudManager.Instance.ShowPopUp(message);
+                FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(message);
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
@@ -389,19 +385,20 @@ internal class RPCHandlerPatch
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
                 break;
-            case CustomRPC.SetKillOrHex:
-                HexMaster.ReceiveRPC(reader, false);
-                break;
             case CustomRPC.ShowChat:
                 var clientId = reader.ReadPackedUInt32();
                 var show = reader.ReadBoolean();
                 if (AmongUsClient.Instance.ClientId == clientId)
                 {
-                    HudManager.Instance.Chat.SetVisible(show);
+                    FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(show);
                 }
                 break;
-            case CustomRPC.SetDrawPlayer:
-                Revolutionist.ReceiveDrawPlayerRPC(reader);
+            case CustomRPC.SyncRevolutionistData:
+                var setDraw = reader.ReadBoolean();
+                if (setDraw)
+                    Revolutionist.ReceiveDrawPlayerRPC(reader);
+                else
+                    Revolutionist.ReceiveCountdown(reader);
                 break;
             case CustomRPC.SetOverseerRevealedPlayer:
                 Overseer.ReceiveSetRevealedPlayerRPC(reader);
@@ -414,9 +411,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.DoSpell:
                 Witch.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.DoHex:
-                HexMaster.ReceiveRPC(reader, true);
                 break;
             case CustomRPC.SniperSync:
                 Sniper.ReceiveRPC(reader);
@@ -462,9 +456,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetDousedPlayer:
                 Arsonist.ReceiveSetDousedPlayerRPC(reader);
-                break;
-            case CustomRPC.SetCurrentDrawTarget:
-                Revolutionist.ReceiveSetCurrentDrawTarget(reader);
                 break;
             case CustomRPC.SetEvilTrackerTarget:
                 EvilTracker.ReceiveRPC(reader);
@@ -518,13 +509,12 @@ internal class RPCHandlerPatch
                     bool isdead = reader.ReadBoolean();
                     bool IsDC = reader.ReadBoolean();
                     PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
-                    if (Main.PlayerStates.ContainsKey(paciefID))
+                    if (Main.PlayerStates.TryGetValue(paciefID, out var paciefState))
                     {
-                        var state = Main.PlayerStates[paciefID];
-                        state.MainRole = rola;
-                        state.IsDead = isdead;
-                        state.Disconnected = IsDC;
-                        state.deathReason = drip;
+                        paciefState.MainRole = rola;
+                        paciefState.IsDead = isdead;
+                        paciefState.Disconnected = IsDC;
+                        paciefState.deathReason = drip;
                     }
                 }
                 float Killcd = reader.ReadSingle();
@@ -541,9 +531,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();
                 CustomRoles rl = (CustomRoles)reader.ReadPackedInt32();
-                if (Main.PlayerStates.ContainsKey(playerid))
+                if (Main.PlayerStates.TryGetValue(playerid, out var state))
                 {
-                    Main.PlayerStates[playerid].MainRole = rl;
+                    state.MainRole = rl;
                 }
                 break;
 
@@ -923,13 +913,13 @@ internal static class RPC
                     SoundManager.Instance.PlaySound(PlayerControl.LocalPlayer.KillSfx, false, 1f);
                     break;
                 case Sounds.TaskComplete:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
+                    SoundManager.Instance.PlaySound(FastDestroyableSingleton<HudManager>.Instance.TaskCompleteSound, false, 1f);
                     break;
                 case Sounds.TaskUpdateSound:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 1f);
+                    SoundManager.Instance.PlaySound(FastDestroyableSingleton<HudManager>.Instance.TaskUpdateSound, false, 1f);
                     break;
                 case Sounds.ImpTransform:
-                    SoundManager.Instance.PlaySound(DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
+                    SoundManager.Instance.PlaySound(FastDestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
                     break;
                 case Sounds.SabotageSound:
                     SoundManager.Instance.PlaySound(ShipStatus.Instance.SabotageSound, false, 0.8f);
@@ -957,8 +947,8 @@ internal static class RPC
         }
 
         if (!AmongUsClient.Instance.IsGameOver)
-            DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-        //    HudManager.Instance.Chat.SetVisible(true);
+            FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        //    FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(true);
 
         if (PlayerControl.LocalPlayer.PlayerId == targetId) RemoveDisableDevicesPatch.UpdateDisableDevices();
     }

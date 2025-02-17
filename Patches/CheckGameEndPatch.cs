@@ -38,7 +38,7 @@ class CheckTaskCompletionPatch
 [HarmonyPatch(typeof(LogicGameFlowNormal), nameof(LogicGameFlowNormal.CheckEndCriteria))]
 class GameEndCheckerForNormal
 {
-    public static GameEndPredicate predicate;
+    private static GameEndPredicate predicate;
     public static bool GameIsEnded = false;
     public static bool ShouldNotCheck = false;
 
@@ -51,8 +51,7 @@ class GameEndCheckerForNormal
         if (Options.NoGameEnd.GetBool() && WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
         GameIsEnded = false;
-        var reason = GameOverReason.ImpostorByKill;
-        predicate.CheckForEndGame(out reason);
+        predicate.CheckForEndGame(out var reason);
 
         // FFA
         if (Options.CurrentGameMode == CustomGameMode.FFA)
@@ -560,9 +559,8 @@ class GameEndCheckerForNormal
         if (ReviveRequiredPlayerIds.Count > 0)
         {
             // Resuscitation Resuscitate one person per transmission to prevent the packet from swelling up and dying
-            for (int i = 0; i < ReviveRequiredPlayerIds.Count; i++)
+            foreach (var playerId in ReviveRequiredPlayerIds)
             {
-                var playerId = ReviveRequiredPlayerIds[i];
                 var playerInfo = GameData.Instance.GetPlayerById(playerId);
                 // revive player
                 playerInfo.IsDead = false;
@@ -580,7 +578,7 @@ class GameEndCheckerForNormal
             if (winnerPC == null) continue;
 
             // Update winner name
-            Utils.DoNotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
+            Utils.NotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
         }
 
         // Start End Game
@@ -603,13 +601,13 @@ class GameEndCheckerForNormal
             return false;
         }
 
-        public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+        private static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
         {
             reason = GameOverReason.ImpostorByKill;
 
             if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
-            var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
+            var allAlivePlayerList = Main.AllAlivePlayerControls;
             int dual = 0, impCount = 0, crewCount = 0, covenCount = 0;
 
             foreach (var pc in allAlivePlayerList)
@@ -739,7 +737,7 @@ class FFAGameEndPredicate : GameEndPredicate
         return false;
     }
 
-    public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
+    private static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
     {
         reason = GameOverReason.ImpostorByKill;
 
@@ -802,7 +800,7 @@ public abstract class GameEndPredicate
         {
             reason = GameOverReason.HumansByTask;
             ResetAndSetWinner(CustomWinner.Crewmate);
-            Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
+            Logger.Info("Game End By Completed All Tasks", "CheckGameEndBySabotage");
             return true;
         }
         return false;
@@ -817,13 +815,13 @@ public abstract class GameEndPredicate
         var systems = ShipStatus.Instance.Systems;
         LifeSuppSystemType LifeSupp;
         if (systems.ContainsKey(SystemTypes.LifeSupp) && // Confirmation of the existence of sabotage
-            (LifeSupp = systems[SystemTypes.LifeSupp].TryCast<LifeSuppSystemType>()) != null && // Castable Confirmation
+            (LifeSupp = systems[SystemTypes.LifeSupp].CastFast<LifeSuppSystemType>()) != null && // Castable Confirmation
             LifeSupp.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
             reason = GameOverReason.ImpostorBySabotage;
             LifeSupp.Countdown = 10000f;
-            Logger.Info($"Game End By LifeSupp Sabotage", "CheckGameEndBySabotage");
+            Logger.Info("Game End By LifeSupp Sabotage", "CheckGameEndBySabotage");
             return true;
         }
 
@@ -834,13 +832,13 @@ public abstract class GameEndPredicate
 
         ICriticalSabotage critical;
         if (sys != null && // Confirmation of the existence of sabotage
-            (critical = sys.TryCast<ICriticalSabotage>()) != null && // Castable Confirmation
+            (critical = sys.CastFast<ICriticalSabotage>()) != null && // Castable Confirmation
             critical.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
             reason = GameOverReason.ImpostorBySabotage;
             critical.ClearSabotage();
-            Logger.Info($"Game End By Critical Sabotage", "CheckGameEndBySabotage");
+            Logger.Info("Game End By Critical Sabotage", "CheckGameEndBySabotage");
             return true;
         }
 

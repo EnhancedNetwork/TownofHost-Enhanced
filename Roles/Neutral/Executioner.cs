@@ -26,7 +26,7 @@ internal class Executioner : RoleBase
     private static OptionItem ChangeRolesAfterTargetKilled;
     private static OptionItem RevealExeTargetUponEjection;
 
-    public static HashSet<byte> TargetList = [];
+    private static readonly HashSet<byte> TargetList = [];
     private byte TargetId;
 
     [Obfuscation(Exclude = true)]
@@ -49,7 +49,7 @@ internal class Executioner : RoleBase
         Role_Deputy,
         Role_Medic
     }
-    public static readonly CustomRoles[] CRoleChangeRoles =
+    private static readonly CustomRoles[] CRoleChangeRoles =
     [
         CustomRoles.Amnesiac,
         CustomRoles.Maverick,
@@ -248,12 +248,12 @@ internal class Executioner : RoleBase
     {
         if ((!seer.IsAlive() || seer.Is(CustomRoles.Executioner)) && IsTarget(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Executioner), "♦");
+            return CustomRoles.Executioner.GetColoredTextByRole("♦");
         }
         return string.Empty;
     }
 
-    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public override void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref System.Text.StringBuilder name)
     {
         if (!_Player.IsAlive() || !IsTarget(exiled.PlayerId)) return;
 
@@ -261,7 +261,7 @@ internal class Executioner : RoleBase
         {
             if (RevealExeTargetUponEjection.GetBool())
             {
-                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name.Clear().Append(string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true)));
                 DecidedWinner = true;
             }
         }

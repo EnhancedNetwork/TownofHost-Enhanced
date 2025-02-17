@@ -187,7 +187,6 @@ public class InnerNetClientPatch
         {
             Debug.LogError("Tried to spawn while not host:" + (netObjParent?.ToString()));
         }
-        return;
     }
 
 

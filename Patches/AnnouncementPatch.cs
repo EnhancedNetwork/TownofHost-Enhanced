@@ -17,15 +17,15 @@ namespace TOHE;
 [HarmonyPatch]
 public class ModNews
 {
-    public int Number;
+    private int Number;
     public int BeforeNumber;
-    public string Title;
-    public string SubTitle;
-    public string ShortTitle;
-    public string Text;
-    public string Date;
+    private string Title;
+    private string SubTitle;
+    private string ShortTitle;
+    private string Text;
+    private string Date;
 
-    public Announcement ToAnnouncement()
+    private Announcement ToAnnouncement()
     {
         var result = new Announcement
         {
@@ -41,8 +41,8 @@ public class ModNews
 
         return result;
     }
-    public static List<ModNews> AllModNews = [];
-    public static string ModNewsURL = "https://raw.githubusercontent.com/EnhancedNetwork/TownofHost-Enhanced/refs/heads/main/Resources/Announcements/modNews-";
+    private static List<ModNews> AllModNews = [];
+    private static string ModNewsURL = "https://raw.githubusercontent.com/EnhancedNetwork/TownofHost-Enhanced/refs/heads/main/Resources/Announcements/modNews-";
     static bool downloaded = false;
     public ModNews(int Number, string Title, string SubTitle, string ShortTitle, string Text, string Date)
     {
@@ -65,7 +65,7 @@ public class ModNews
                 yield break;
             }
             downloaded = true;
-            ModNewsURL += TranslationController.Instance.currentLanguage.languageID switch
+            ModNewsURL += FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
             {
                 SupportedLangs.German => "de_DE.json",
                 SupportedLangs.Latam => "es_419.json",
@@ -122,7 +122,7 @@ public class ModNews
 
     private static void LoadModNewsFromResources()
     {
-        string filename = TranslationController.Instance.currentLanguage.languageID switch
+        string filename = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID switch
         {
             SupportedLangs.German => "de_DE.json",
             SupportedLangs.Latam => "es_419.json",
@@ -192,7 +192,7 @@ public class ModNews
         obj.transform.localPosition = new Vector3(-0.8f, 0.13f, 0.5f);
         obj.transform.localScale = new Vector3(0.9f, 0.9f, 0.9f);
         var renderer = obj.AddComponent<SpriteRenderer>();
-        renderer.sprite = Utils.LoadSprite($"TOHE.Resources.Images.CreditsButton.png", 250f);
+        renderer.sprite = Utils.LoadSprite("TOHE.Resources.Images.CreditsButton.png", 250f);
         renderer.maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
     }
 }

@@ -99,7 +99,7 @@ public static class AddonAssign
             addonsIsEnableList.Remove(randomAddOn);
         }
 
-        Logger.Info($" Is Started", "Assign Add-ons");
+        Logger.Info(" Is Started", "Assign Add-ons");
 
         // Assign add-ons
         foreach (var addOn in addonsList.ToArray())
@@ -110,7 +110,7 @@ public static class AddonAssign
             }
         }
     }
-    public static void AssignSubRoles(CustomRoles role, int RawCount = -1)
+    private static void AssignSubRoles(CustomRoles role, int RawCount = -1)
     {
         try
         {

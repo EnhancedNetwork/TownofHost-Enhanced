@@ -8,7 +8,7 @@ namespace TOHE;
 //来源：https://github.com/tukasa0001/TownOfHost/pull/1265
 public class ClientOptionItem
 {
-    public ConfigEntry<bool> Config;
+    private ConfigEntry<bool> Config;
     public ToggleButtonBehaviour ToggleButton;
 
     public static SpriteRenderer CustomBackground;

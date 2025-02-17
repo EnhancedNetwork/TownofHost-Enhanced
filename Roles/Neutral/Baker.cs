@@ -6,7 +6,6 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -127,17 +126,17 @@ internal class Baker : RoleBase
         }
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         StringBuilder sb = new();
         if (BarrierList[seer.PlayerId].Contains(seen.PlayerId))
         {
-            sb.Append(ColorString(GetRoleColor(CustomRoles.Baker), "●") + ColorString(GetRoleColor(CustomRoles.Medic), "✚"));
+            sb.Append(CustomRoles.Baker.GetColoredTextByRole("●") + CustomRoles.Medic.GetColoredTextByRole("✚"));
             return sb.ToString();
         }
         else if (HasBread(seer.PlayerId, seen.PlayerId))
         {
-            sb.Append(ColorString(GetRoleColor(CustomRoles.Baker), "●"));
+            sb.Append(CustomRoles.Baker.GetColoredTextByRole("●"));
             return sb.ToString();
         }
         return string.Empty;
@@ -147,7 +146,7 @@ internal class Baker : RoleBase
         if (!_Player) return string.Empty;
         if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
-            return ColorString(GetRoleColor(CustomRoles.Baker), "●");
+            return CustomRoles.Baker.GetColoredTextByRole("●");
         }
         return string.Empty;
     }
@@ -247,7 +246,7 @@ internal class Baker : RoleBase
             killer.Notify(GetString("BakerBreaded"));
             CanUseAbility = false;
 
-            Logger.Info($"Bread given to " + target.GetRealName(), "Baker");
+            Logger.Info("Bread given to " + target.GetRealName(), "Baker");
 
             if (BTOS2Baker.GetBool())
             {
@@ -295,7 +294,7 @@ internal class Baker : RoleBase
         }
         return false;
     }
-    public static bool IsRoleblocked(byte target)
+    private static bool IsRoleblocked(byte target)
     {
         if (RoleblockedPlayers.Count < 1) return false;
         foreach (var player in RoleblockedPlayers.Keys)
@@ -313,7 +312,7 @@ internal class Baker : RoleBase
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer).Count()))
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Count(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer)))
         {
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
@@ -350,7 +349,7 @@ internal class Famine : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target) => false;
     public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("FamineKillButtonText"));
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-        => FamineList[seer.PlayerId].Contains(seen.PlayerId) ? $"<color={GetRoleColorCode(seer.GetCustomRole())}>⁂</color>" : string.Empty;
+        => FamineList[seer.PlayerId].Contains(seen.PlayerId) ? seer.GetCustomRole().GetColoredTextByRole("⁂") : string.Empty;
 
     private static void SendRPC(PlayerControl player, PlayerControl target)
     {
@@ -382,7 +381,7 @@ internal class Famine : RoleBase
             SendRPC(killer, target);
             NotifyRoles(SpecifySeer: killer);
             killer.Notify(GetString("FamineStarved"));
-            Logger.Info(target.GetRealName() + $" has been starved", "Famine");
+            Logger.Info(target.GetRealName() + " has been starved", "Famine");
         }
         return false;
     }

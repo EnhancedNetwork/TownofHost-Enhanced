@@ -31,8 +31,8 @@ internal class DollMaster : RoleBase
     private static OptionItem DefaultKillCooldown;
     private static OptionItem ShapeshiftCooldown;
     private static OptionItem ShapeshiftDuration;
-    public static OptionItem CanKillAsMainBody;
-    public static OptionItem TargetDiesAfterPossession;
+    private static OptionItem CanKillAsMainBody;
+    private static OptionItem TargetDiesAfterPossession;
 
     public override void SetupCustomOption()
     {
@@ -255,8 +255,6 @@ internal class DollMaster : RoleBase
             case CustomRoles.Penguin:
                 CanUseAbility = false;
                 break;
-            default:
-                break;
         }
 
         if (!CanUseAbility) player.Notify(Utils.ColorString(player.GetRoleColor(), GetString("DollMaster_UnableToUseAbility")));
@@ -277,7 +275,6 @@ internal class DollMaster : RoleBase
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
             killer.RpcMurderPlayer(controllingTarget);
-            return;
         }
         // If DollMaster gets killed as possessed Target, kill possessed Target instead.
         else if (target == DollMasterTarget)
@@ -287,7 +284,6 @@ internal class DollMaster : RoleBase
             GetPlayersPositions(DollMasterTarget);
             SwapPlayersPositions(DollMasterTarget);
             killer.RpcMurderPlayer(DollMasterTarget);
-            return;
         }
     }
 
@@ -318,7 +314,7 @@ internal class DollMaster : RoleBase
         if (!IsControllingPlayer && target.GetCustomRole().IsImpostorTeam())
         {
             AURoleOptions.ShapeshifterCooldown = 0;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_CannotPossessImpTeammate")));
+            pc.Notify(CustomRoles.DollMaster.GetColoredTextByRole(GetString("DollMaster_CannotPossessImpTeammate")));
             return false;
         }
 
@@ -326,7 +322,7 @@ internal class DollMaster : RoleBase
         if (!target.CanBeTeleported() || Pelican.IsEaten(pc.PlayerId) || Pelican.IsEaten(target.PlayerId))
         {
             AURoleOptions.ShapeshifterCooldown = 0;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), target.IsAlive() ? GetString("DollMaster_CouldNotSwapWithTarget") : GetString("DollMaster_CanNotSwapWithDeadTarget")));
+            pc.Notify(CustomRoles.DollMaster.GetColoredTextByRole(target.IsAlive() ? GetString("DollMaster_CouldNotSwapWithTarget") : GetString("DollMaster_CanNotSwapWithDeadTarget")));
             return false;
         }
 
@@ -371,7 +367,7 @@ internal class DollMaster : RoleBase
         pc?.ResetPlayerOutfit(Main.PlayerStates[target.PlayerId].NormalOutfit);
         target?.ResetPlayerOutfit(Main.PlayerStates[pc.PlayerId].NormalOutfit);
 
-        pc?.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_PossessedTarget")));
+        pc?.Notify(CustomRoles.DollMaster.GetColoredTextByRole(GetString("DollMaster_PossessedTarget")));
     }
 
     // UnPossess Player
@@ -433,10 +429,10 @@ internal class DollMaster : RoleBase
         if (controllingTarget == null || DollMasterTarget == null || target == null) return string.Empty;
 
         if (seer.PlayerId != target.PlayerId && target.PlayerId == controllingTarget.PlayerId)
-            return "<color=#ffea00>" + GetString("DollMaster_MainBody") + "</color>";
+            return $"<color=#ffea00>{GetString("DollMaster_MainBody")}</color>";
 
         if (seer.PlayerId == target.PlayerId && target.PlayerId == DollMasterTarget.PlayerId)
-            return "<color=#ffea00>" + GetString("DollMaster_Doll") + "</color>";
+            return $"<color=#ffea00>{GetString("DollMaster_Doll")}</color>";
 
         return string.Empty;
     }

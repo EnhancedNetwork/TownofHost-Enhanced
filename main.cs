@@ -33,10 +33,10 @@ public class Main : BasePlugin
     // == Program Config ==
     public const string OriginalForkId = "OriginalTOH";
 
-    public static readonly string ModName = "TOHE";
-    public static readonly string ForkId = "TOHE";
-    public static readonly string ModColor = "#ffc0cb";
-    public static readonly bool AllowPublicRoom = true;
+    public const string ModName = "TOHE";
+    public const string ForkId = "TOHE";
+    public const string ModColor = "#ffc0cb";
+    public const bool AllowPublicRoom = true;
 
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";
@@ -55,21 +55,21 @@ public class Main : BasePlugin
     public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
     public static readonly bool fullRelease = false; // Latest: V2.1.1
 
-    public static bool hasAccess = true;
+    public const bool hasAccess = true;
 
-    public static readonly bool ShowUpdateButton = true;
+    public const bool ShowUpdateButton = true;
 
-    public static readonly bool ShowGitHubButton = true;
-    public static readonly string GitHubInviteUrl = "https://github.com/EnhancedNetwork/TownofHost-Enhanced";
+    public const bool ShowGitHubButton = true;
+    public const string GitHubInviteUrl = "https://github.com/EnhancedNetwork/TownofHost-Enhanced";
 
-    public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/ten";
+    public const bool ShowDiscordButton = true;
+    public const string DiscordInviteUrl = "https://discord.gg/ten";
 
-    public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
+    public const bool ShowWebsiteButton = true;
+    public const string WebsiteInviteUrl = "https://weareten.ca/";
 
-    public static readonly bool ShowDonationButton = true;
-    public static readonly string DonationInviteUrl = "https://weareten.ca/TOHE";
+    public const bool ShowDonationButton = true;
+    public const string DonationInviteUrl = "https://weareten.ca/TOHE";
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
     public static Version version = Version.Parse(PluginVersion);
@@ -77,7 +77,7 @@ public class Main : BasePlugin
     public static bool hasArgumentException = false;
     public static string ExceptionMessage;
     public static bool ExceptionMessageIsShown = false;
-    public static bool AlreadyShowMsgBox = false;
+    public const bool AlreadyShowMsgBox = false;
     public static string credentialsText;
     public Coroutines coroutines;
     public Dispatcher dispatcher;
@@ -110,8 +110,6 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> GodMode { get; private set; }
     public static ConfigEntry<bool> AutoRehost { get; private set; }
 
-    public static Dictionary<int, PlayerVersion> playerVersion = [];
-    public static BAUPlayersData BAUPlayers = new();
     //Preset Name Options
     public static ConfigEntry<string> Preset1 { get; private set; }
     public static ConfigEntry<string> Preset2 { get; private set; }
@@ -128,7 +126,9 @@ public class Main : BasePlugin
 
     public static OptionBackupData RealOptionsData;
 
-    public static Dictionary<byte, PlayerState> PlayerStates = [];
+    public static BAUPlayersData BAUPlayers = new();
+    public static Dictionary<int, PlayerVersion> playerVersion = [];
+    public static readonly Dictionary<byte, PlayerState> PlayerStates = [];
     public static readonly Dictionary<byte, string> AllPlayerNames = [];
     public static readonly Dictionary<int, string> AllClientRealNames = [];
     public static readonly Dictionary<byte, CustomRoles> AllPlayerCustomRoles = [];
@@ -155,7 +155,7 @@ public class Main : BasePlugin
 
     public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> MurderedThisRound = [];
-    public static readonly HashSet<byte> TasklessCrewmate = [];
+
     public static readonly HashSet<byte> OverDeadPlayerList = [];
     public static readonly HashSet<byte> UnreportableBodies = [];
     public static readonly Dictionary<byte, float> AllPlayerKillCooldown = [];
@@ -173,6 +173,7 @@ public class Main : BasePlugin
     public static readonly HashSet<byte> UnShapeShifter = [];
     public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
     public static readonly Dictionary<byte, bool> LowLoadUpdateName = [];
+    public static readonly Dictionary<byte, PlayerControl> CachedPlayerControl = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 
@@ -206,10 +207,11 @@ public class Main : BasePlugin
     {
         get
         {
-            int count = PlayerControl.AllPlayerControls.Count;
+            var allPlayers = PlayerControl.AllPlayerControls;
+            int count = allPlayers.Count;
             var result = new PlayerControl[count];
             int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
+            foreach (var pc in allPlayers.GetFastEnumerator())
             {
                 if (pc == null || pc.PlayerId == 255) continue;
                 result[i++] = pc;
@@ -226,10 +228,11 @@ public class Main : BasePlugin
     {
         get
         {
-            int count = PlayerControl.AllPlayerControls.Count;
+            var allPlayers = PlayerControl.AllPlayerControls;
+            int count = allPlayers.Count;
             var result = new PlayerControl[count];
             int i = 0;
-            foreach (var pc in PlayerControl.AllPlayerControls)
+            foreach (var pc in allPlayers.GetFastEnumerator())
             {
                 if (pc == null || pc.PlayerId == 255 || !pc.IsAlive() || pc.Data.Disconnected || Pelican.IsEaten(pc.PlayerId)) continue;
                 result[i++] = pc;
@@ -249,12 +252,12 @@ public class Main : BasePlugin
     public static Dictionary<byte, List<int>> GuessNumber = [];
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
-    public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
+    private static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
 
     public static StringNames[] how2playN = [StringNames.HowToPlayText1, StringNames.HowToPlayText2, StringNames.HowToPlayText41, StringNames.HowToPlayText42, StringNames.HowToPlayText43, StringNames.HowToPlayText44, StringNames.HowToPlayText5, StringNames.HowToPlayText6, StringNames.HowToPlayText7, StringNames.HowToPlayText81, StringNames.HowToPlayText82];
     public static StringNames[] how2playHnS = [StringNames.HideSeekHowToPlayCaptionOne, StringNames.HideSeekHowToPlayCaptionTwo, StringNames.HideSeekHowToPlayCaptionThree, StringNames.HideSeekHowToPlayPageOne, StringNames.HideSeekHowToPlaySubtextOne, StringNames.HideSeekHowToPlayCrewmateInfoOne, StringNames.HideSeekHowToPlayCrewmateInfoTwo, StringNames.HideSeekHowToPlayFlashlightConsoles, StringNames.HideSeekHowToPlayImpostorInfoOne, StringNames.HideSeekHowToPlayFinalHide, StringNames.HideSeekHowToPlayFlashlightDefault];
     public static StringNames[] how2playEzHacked = [StringNames.ErrorAuthNonceFailure, StringNames.ErrorBanned, StringNames.ErrorBannedNoCode, StringNames.ErrorClientTimeout, StringNames.ErrorClientTimeoutConsole, StringNames.ErrorCommunications, StringNames.ErrorCrossPlatformCommunication, StringNames.ErrorDuplicateConnection, StringNames.ErrorFullGame, StringNames.ErrorHacking, StringNames.ErrorInactivity, StringNames.ErrorIntentionalLeaving, StringNames.ErrorInvalidName, StringNames.ErrorKicked, StringNames.ErrorKickedNoCode, StringNames.ErrorLobbyFailedGettingBlockedUsers];
-    public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
+    public static string Get_TName_Snacks => FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
         ? TName_Snacks_CN.RandomElement()
         : TName_Snacks_EN.RandomElement();
 
@@ -264,7 +267,7 @@ public class Main : BasePlugin
         foreach (var title in roleColors) sb.Append($"{title.Key}:\n");
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/templateRoleColor.dat", sb.ToString());
     }
-    public static void LoadCustomRoleColor()
+    private static void LoadCustomRoleColor()
     {
         const string filename = "RoleColor.dat";
         string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
@@ -327,7 +330,7 @@ public class Main : BasePlugin
         coroutines.StopAllCoroutines();
     }
 
-    public static void LoadRoleColors()
+    private static void LoadRoleColors()
     {
         try
         {
@@ -357,7 +360,7 @@ public class Main : BasePlugin
                 }
                 else
                 {
-                    TOHE.Logger.Error($"Embedded resource not found.", "Reading Role Colors");
+                    TOHE.Logger.Error("Embedded resource not found.", "Reading Role Colors");
                 }
             }
 
@@ -370,8 +373,6 @@ public class Main : BasePlugin
                         break;
                     case Custom_Team.Coven:
                         roleColors.TryAdd(role, "#ac42f2");
-                        break;
-                    default:
                         break;
                 }
             }
@@ -392,7 +393,7 @@ public class Main : BasePlugin
             ExceptionMessageIsShown = false;
         }
     }
-    public static void LoadRoleClasses()
+    private static void LoadRoleClasses()
     {
         TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
         try
@@ -426,7 +427,7 @@ public class Main : BasePlugin
             Utils.ThrowException(err);
         }
     }
-    public static void LoadAddonClasses()
+    private static void LoadAddonClasses()
     {
         TOHE.Logger.Info("Loading All AddonClasses...", "LoadAddonClasses");
         try
@@ -500,7 +501,7 @@ public class Main : BasePlugin
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
     }
 
-    private void InitializeFileHash()
+    private static void InitializeFileHash()
     {
         var file = Assembly.GetExecutingAssembly();
         using var stream = file.Location != null ? File.OpenRead(file.Location) : null;

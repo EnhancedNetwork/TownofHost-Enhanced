@@ -73,7 +73,7 @@ internal class Psychic : RoleBase
         for (int i = 0; i < count; i++)
             RedPlayer.Add(reader.ReadByte());
     }
-    public bool IsRedForPsy(PlayerControl target, PlayerControl seer)
+    private bool IsRedForPsy(PlayerControl target, PlayerControl seer)
     {
         if (target == null || seer == null) return false;
         var targetRole = target.GetCustomRole();

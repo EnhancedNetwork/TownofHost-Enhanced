@@ -122,7 +122,7 @@ internal class Blackmailer : RoleBase
     public static bool CheckBlackmaile(PlayerControl player) => HasEnabled && GameStates.IsInGame && ForBlackmailer.ContainsKey(player.PlayerId);
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
-       => isForMeeting && CheckBlackmaile(target) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), "╳") : string.Empty;
+       => isForMeeting && CheckBlackmaile(target) ? CustomRoles.Blackmailer.GetColoredTextByRole("╳") : string.Empty;
 
     public override void OnOthersMeetingHudStart(PlayerControl pc)
     {
@@ -130,7 +130,7 @@ internal class Blackmailer : RoleBase
         {
             var playername = pc.GetRealName(isMeeting: true);
             if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name;
-            AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
+            AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, CustomRoles.Blackmailer.GetColoredTextByRole(GetString("BlackmaileKillTitle"))));
         }
     }
 }

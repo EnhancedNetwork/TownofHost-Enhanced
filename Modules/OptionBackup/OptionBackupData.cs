@@ -6,7 +6,7 @@ namespace TOHE;
 
 public class OptionBackupData
 {
-    public List<OptionBackupValue> AllValues;
+    private List<OptionBackupValue> AllValues;
     public OptionBackupData(IGameOptions option)
     {
         AllValues = new(32);
@@ -61,7 +61,7 @@ public class OptionBackupData
     public float GetFloat(FloatOptionNames name) => Get<FloatOptionNames, float>(name);
     public int GetInt(Int32OptionNames name) => Get<Int32OptionNames, int>(name);
     public uint GetUInt(UInt32OptionNames name) => Get<UInt32OptionNames, uint>(name);
-    public TValue Get<TKey, TValue>(TKey name)
+    private TValue Get<TKey, TValue>(TKey name)
     where TKey : Enum
     {
         var value = AllValues

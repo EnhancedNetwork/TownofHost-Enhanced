@@ -54,7 +54,7 @@ internal class Illusionist : CovenManager
         GetPlayerById(playerId)?.AddDoubleTrigger();
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    public void SendRPC(PlayerControl player, PlayerControl target)
+    private void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -147,7 +147,7 @@ internal class Illusionist : CovenManager
         if (_Player == null) return string.Empty;
         if ((IsCovIllusioned(target.PlayerId) || IsNonCovIllusioned(target.PlayerId)) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.Illusionist), "ø");
+            return CustomRoles.Illusionist.GetColoredTextByRole("ø");
         }
         return string.Empty;
     }

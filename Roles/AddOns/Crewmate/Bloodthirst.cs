@@ -27,6 +27,6 @@ public class Bloodthirst : IAddon
         if (Alchemist.BloodthirstList.ContainsKey(player.PlayerId)) return;
 
         Alchemist.BloodthirstList[player.PlayerId] = player.PlayerId;
-        player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bloodthirst), Translator.GetString("BloodthirstAdded")));
+        player.Notify(CustomRoles.Bloodthirst.GetColoredTextByRole(Translator.GetString("BloodthirstAdded")));
     }
 }

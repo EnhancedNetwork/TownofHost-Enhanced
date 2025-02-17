@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using InnerNet;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Options;
@@ -35,9 +36,6 @@ internal class Sacrifist : CovenManager
     private static readonly Dictionary<byte, float> originalSpeed = [];
     private static readonly Dictionary<byte, NetworkedPlayerInfo.PlayerOutfit> OriginalPlayerSkins = [];
     private static readonly Dictionary<byte, List<byte>> VisionChange = [];
-
-
-
 
     public override void SetupCustomOption()
     {
@@ -74,20 +72,24 @@ internal class Sacrifist : CovenManager
         maxDebuffTimer = DebuffCooldown.GetFloat();
         VisionChange[playerId] = [];
     }
-    public void SendRPC(PlayerControl pc)
+    private static void SendRPC(PlayerControl pc)
     {
+        if (pc == null) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
-        writer.Write(DebuffID);
+        writer.WriteNetObject(pc);
+        writer.Write(debuffTimer);
+        writer.Write(maxDebuffTimer);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        DebuffID = reader.ReadByte();
+        debuffTimer = reader.ReadSingle();
+        maxDebuffTimer = reader.ReadSingle();
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc) => true;
 
     // Sacrifist shouldn't be able to kill at all but if there's solo Sacrifist the game is unwinnable so they can kill when solo
-    public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Where(pc => pc.Is(Custom_Team.Coven)).Count() == 1;
+    public override bool CanUseKillButton(PlayerControl pc) => Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Coven)) == 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!CanUseKillButton(killer)) return false;
@@ -126,8 +128,6 @@ internal class Sacrifist : CovenManager
             }
             switch (DebuffID)
             {
-                default:
-                    break;
                 // Change Speed
                 case 0:
                     originalSpeed.Remove(randPlayer);
@@ -252,8 +252,8 @@ internal class Sacrifist : CovenManager
                     pc.Notify(GetString("SacrifistSwapDebuff"), 15f);
                     break;
             }
-            SendRPC(pc);
             debuffTimer = 0;
+            SendRPC(pc);
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
@@ -264,39 +264,41 @@ internal class Sacrifist : CovenManager
         DebuffID = 10;
 
         ReportDeadBodyPatch.CanReport[randPlayer] = true;
-        GetPlayerById(randPlayer).ResetKillCooldown();
-        if (OriginalPlayerSkins.ContainsKey(randPlayer))
+        randPlayer.GetPlayer().ResetKillCooldown();
+        if (OriginalPlayerSkins.TryGetValue(randPlayer, out var randPlayerSkins))
         {
-            Camouflage.PlayerSkins[randPlayer] = OriginalPlayerSkins[randPlayer];
+            Camouflage.PlayerSkins[randPlayer] = randPlayerSkins;
 
             if (!Camouflage.IsCamouflage)
             {
                 PlayerControl pc =
                     Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == randPlayer);
 
-                pc.SetNewOutfit(OriginalPlayerSkins[randPlayer], setName: true, setNamePlate: true);
+                pc.SetNewOutfit(randPlayerSkins, setName: true, setNamePlate: true);
             }
         }
         randPlayer = byte.MaxValue;
-        Logger.Info($"Resetting Debuffs for Affected player", "Sacrifist");
+        Logger.Info("Resetting Debuffs for Affected player", "Sacrifist");
 
 
         ReportDeadBodyPatch.CanReport[sacrifist] = true;
         _Player.ResetKillCooldown();
         maxDebuffTimer = DebuffCooldown.GetFloat();
-        if (OriginalPlayerSkins.ContainsKey(sacrifist))
+        SendRPC(_Player);
+
+        if (OriginalPlayerSkins.TryGetValue(sacrifist, out var sacrifistPlayerSkins))
         {
-            Camouflage.PlayerSkins[sacrifist] = OriginalPlayerSkins[sacrifist];
+            Camouflage.PlayerSkins[sacrifist] = sacrifistPlayerSkins;
 
             if (!Camouflage.IsCamouflage)
             {
                 PlayerControl pc =
                     Main.AllAlivePlayerControls.FirstOrDefault(a => a.PlayerId == sacrifist);
 
-                pc.SetNewOutfit(OriginalPlayerSkins[sacrifist], setName: true, setNamePlate: true);
+                pc.SetNewOutfit(sacrifistPlayerSkins, setName: true, setNamePlate: true);
             }
         }
-        Logger.Info($"Resetting Debuffs for Sacrifist", "Sacrifist");
+        Logger.Info("Resetting Debuffs for Sacrifist", "Sacrifist");
     }
     public static void SetVision(PlayerControl player, IGameOptions opt)
     {
@@ -311,6 +313,7 @@ internal class Sacrifist : CovenManager
     public override void AfterMeetingTasks()
     {
         debuffTimer = 0;
+        SendRPC(_Player);
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
@@ -321,6 +324,9 @@ internal class Sacrifist : CovenManager
         if (debuffTimer < maxDebuffTimer)
         {
             debuffTimer += Time.fixedDeltaTime;
+
+            if (!lowLoad || debuffTimer >= maxDebuffTimer)
+                SendRPC(_Player);
         }
     }
     public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)

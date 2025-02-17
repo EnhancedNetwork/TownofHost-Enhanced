@@ -56,7 +56,7 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void RemoveIncompatibleAddOns(this PlayerControl player)
+    private static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
         List<CustomRoles> roles = new(player.GetCustomSubRoles());
         roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
@@ -67,7 +67,7 @@ static class ExtendedPlayerControl
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false, checkSelfAddOn: false))
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"{player.GetCustomRole()}");
             }
         }
     }
@@ -124,7 +124,7 @@ static class ExtendedPlayerControl
         player.RpcResetAbilityCooldown();
         player.SyncGeneralOptions();
 
-        Utils.DoNotifyRoles(SpecifyTarget: player);
+        Utils.NotifyRoles(SpecifyTarget: player);
     }
     /// <summary>
     /// Changes the Role Basis of player during the game
@@ -212,8 +212,7 @@ static class ExtendedPlayerControl
                         }
                         else
                         {
-                            if (newRoleIsDesync) remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
-                            else remeberRoleType = newRoleType;
+                            remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
                         }
 
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
@@ -265,10 +264,10 @@ static class ExtendedPlayerControl
 
         if (loggerRoleMap)
         {
-            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var seer in Main.AllPlayerControls)
             {
                 var seerData = seer.Data;
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                foreach (var target in Main.AllPlayerControls)
                 {
                     var targetData = target.Data;
                     var (roleType, customRole) = seer.GetRoleMap(targetData.PlayerId);
@@ -352,7 +351,7 @@ static class ExtendedPlayerControl
         {
             if (meeting == null)
             {
-                Logger.Info($"Cannot be cleared because meetinghud is null", "RpcClearVoteDelay");
+                Logger.Info("Cannot be cleared because meetinghud is null", "RpcClearVoteDelay");
                 return;
             }
             if (AmongUsClient.Instance.ClientId == clientId)
@@ -504,8 +503,7 @@ static class ExtendedPlayerControl
     {
         if (player == null) return;
 
-        if (!player.HasImpKillButton(considerVanillaShift: true)) return;
-        if (player.HasImpKillButton(false) && !player.CanUseKillButton()) return;
+        if (!player.HasImpKillButton() || !player.CanUseKillButton()) return;
 
         if (AntiBlackout.SkipTasks)
         {
@@ -692,7 +690,7 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcSetVentInteraction(this PlayerControl player)
     {
-        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>(), player);
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>(), player);
     }
     public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
     {
@@ -1233,7 +1231,7 @@ static class ExtendedPlayerControl
                 }
             }
 
-        if (!player.HasImpKillButton(considerVanillaShift: false))
+        if (!player.HasImpKillButton())
             Main.AllPlayerKillCooldown[player.PlayerId] = 300f;
 
         if (Main.AllPlayerKillCooldown[player.PlayerId] == 0)
@@ -1297,7 +1295,7 @@ static class ExtendedPlayerControl
         SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
-        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
+        FastDestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
 
         _ = new LateTask(() =>
         {
@@ -1323,11 +1321,10 @@ static class ExtendedPlayerControl
     ///<param name="predicate">リストに入れるプレイヤーの条件 このpredicateに入れてfalseを返すプレイヤーは除外されます。</param>
     ///<param name="ignoreColliders">trueにすると、壁の向こう側のプレイヤーが含まれるようになります。守護天使用</param>
     ///<returns>GetPlayersInAbilityRangeSortedの戻り値から条件に合わないプレイヤーを除外したもの。</returns>
-    public static List<PlayerControl> GetPlayersInAbilityRangeSorted(this PlayerControl player, Predicate<PlayerControl> predicate, bool ignoreColliders = false)
+    private static List<PlayerControl> GetPlayersInAbilityRangeSorted(this PlayerControl player, Predicate<PlayerControl> predicate, bool ignoreColliders = false)
     {
-        var rangePlayersIL = RoleBehaviour.GetTempPlayerList();
+        var rangePlayersIL = player.Data.Role.GetPlayersInAbilityRangeSorted(RoleBehaviour.GetTempPlayerList(), ignoreColliders);
         List<PlayerControl> rangePlayers = [];
-        player.Data.Role.GetPlayersInAbilityRangeSorted(rangePlayersIL, ignoreColliders);
         foreach (var pc in rangePlayersIL.GetFastEnumerator())
         {
             if (predicate(pc)) rangePlayers.Add(pc);
@@ -1361,7 +1358,7 @@ static class ExtendedPlayerControl
         => (seer.Is(CustomRoles.Visionary))
         && !target.Data.IsDead;
 
-    private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
+    //private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
     public static bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
         if (Options.CurrentGameMode == CustomGameMode.FFA || GameEndCheckerForNormal.GameIsEnded) return true;
@@ -1440,7 +1437,7 @@ static class ExtendedPlayerControl
 
         return false;
     }
-    public static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
+    private static bool KnowSubRoleTarget(PlayerControl seer, PlayerControl target)
     {
         //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
 
@@ -1510,7 +1507,7 @@ static class ExtendedPlayerControl
     public static int GetPlayerVentId(this PlayerControl player)
     {
         if (!(ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) &&
-              systemType.TryCast<VentilationSystem>() is VentilationSystem ventilationSystem))
+              systemType.CastFast<VentilationSystem>() is VentilationSystem ventilationSystem))
             return 99;
 
         return ventilationSystem.PlayersInsideVents.TryGetValue(player.PlayerId, out var playerIdVentId) ? playerIdVentId : 99;

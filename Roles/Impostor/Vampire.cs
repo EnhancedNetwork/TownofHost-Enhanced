@@ -9,7 +9,7 @@ internal class Vampire : RoleBase
 {
     private class BittenInfo(byte vampierId, float killTimer)
     {
-        public byte VampireId = vampierId;
+        public readonly byte VampireId = vampierId;
         public float KillTimer = killTimer;
     }
 

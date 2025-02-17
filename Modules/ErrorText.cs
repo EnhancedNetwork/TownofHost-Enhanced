@@ -43,10 +43,10 @@ public class ErrorText : MonoBehaviour
         Text.alignment = TMPro.TextAlignmentOptions.Top;
     }
 
-    public TMPro.TextMeshPro Text;
-    public Camera Camera;
-    public List<ErrorData> AllErrors = [];
-    public Vector3 TextOffset = new(0, 0.3f, -1000f);
+    private TMPro.TextMeshPro Text;
+    private Camera Camera;
+    private List<ErrorData> AllErrors = [];
+    private Vector3 TextOffset = new(0, 0.3f, -1000f);
     public void Update()
     {
         foreach (var error in AllErrors.ToArray())
@@ -67,7 +67,7 @@ public class ErrorText : MonoBehaviour
     {
         if (!Text.enabled) return;
 
-        if (Camera == null) Camera = !HudManager.InstanceExists ? Camera.main : HudManager.Instance.PlayerCam.GetComponent<Camera>();
+        if (Camera == null) Camera = !HudManager.InstanceExists ? Camera.main : FastDestroyableSingleton<HudManager>.Instance.PlayerCam.GetComponent<Camera>();
 
         if (Camera != null)
         {
@@ -87,13 +87,13 @@ public class ErrorText : MonoBehaviour
         }
         UpdateText();
     }
-    public void UpdateText()
+    private void UpdateText()
     {
-        string text = "";
+        var text = new System.Text.StringBuilder();
         int maxLevel = 0;
         foreach (var err in AllErrors.ToArray())
         {
-            text += $"{err}: {err.Message}\n";
+            text.Append($"{err}: {err.Message}\n");
             if (maxLevel < err.ErrorLevel) maxLevel = err.ErrorLevel;
         }
         if (maxLevel == 0)
@@ -103,14 +103,14 @@ public class ErrorText : MonoBehaviour
         else
         {
             if (!HnSFlag)
-                text += $"{GetString($"ErrorLevel{maxLevel}")}";
+                text.Append($"{GetString($"ErrorLevel{maxLevel}")}");
             if (CheatDetected)
-                text = SBDetected ? GetString("EAC.CheatDetected.HighLevel") : GetString("EAC.CheatDetected.LowLevel");
+                text.Clear().Append(SBDetected ? GetString("EAC.CheatDetected.HighLevel") : GetString("EAC.CheatDetected.LowLevel"));
             Text.enabled = true;
         }
         if (GameStates.IsInGame && maxLevel != 3 && !CheatDetected)
-            text += $"\n{GetString("TerminateCommand")}: Shift+L+Enter";
-        Text.text = text;
+            text.Append($"\n{GetString("TerminateCommand")}: Shift+L+Enter");
+        Text.text = text.ToString();
     }
     public void Clear()
     {
@@ -118,11 +118,11 @@ public class ErrorText : MonoBehaviour
         UpdateText();
     }
 
-    public class ErrorData
+    private class ErrorData
     {
         public readonly ErrorCode Code;
-        public readonly int ErrorType1;
-        public readonly int ErrorType2;
+        private readonly int ErrorType1;
+        private readonly int ErrorType2;
         public readonly int ErrorLevel;
         public float Timer { get; private set; }
         public string Message => GetString(this.ToString());

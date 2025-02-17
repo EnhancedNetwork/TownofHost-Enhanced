@@ -10,14 +10,13 @@ internal class MakePublicPatch
 {
     public static bool Prefix(/*GameStartManager __instance*/)
     {
-        // 定数設定による公開ルームブロック
-        if (!Main.AllowPublicRoom)
-        {
-            var message = GetString("DisabledByProgram");
-            Logger.Info(message, "MakePublicPatch");
-            Logger.SendInGame(message);
-            return false;
-        }
+        //if (!Main.AllowPublicRoom)
+        //{
+        //    var message = GetString("DisabledByProgram");
+        //    Logger.Info(message, "MakePublicPatch");
+        //    Logger.SendInGame(message);
+        //    return false;
+        //}
         if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported)
         {
             var message = "";
@@ -97,7 +96,7 @@ internal class RunLoginPatch
 
         var friendcode = EOSManager.Instance.friendCode;
         Main.Instance.StartCoroutine(dbConnect.Init());
-        if (friendcode == null || friendcode == "")
+        if (System.String.IsNullOrEmpty(friendcode))
         {
             EOSManager.Instance.attemptAuthAgain = true;
             Logger.Info("friendcode not found", "EOSManager");
@@ -136,7 +135,7 @@ internal class KickPlayerPatch
         if (!AmongUsClient.Instance.AmHost) return true;
         if (AmongUsClient.Instance.ClientId == clientId)
         {
-            Logger.SendInGame(string.Format("Game Attempting to {0} Host, Blocked the attempt.", ban ? "Ban" : "Kick"));
+            Logger.SendInGame($"Game Attempting to {(ban ? "Ban" : "Kick")} Host, Blocked the attempt.");
             Logger.Info("How the fuck host are kicking it self", "KickPlayerPatch");
             return false;
         }
@@ -146,7 +145,7 @@ internal class KickPlayerPatch
             AttemptedKickPlayerList.Add(HashedPuid, 0);
         else if (AttemptedKickPlayerList[HashedPuid] < 10)
         {
-            Logger.Fatal($"Kick player Request too fast! Canceled.", "KickPlayerPatch");
+            Logger.Fatal("Kick player Request too fast! Canceled.", "KickPlayerPatch");
             return false;
         }
         if (ban) BanManager.AddBanPlayer(AmongUsClient.Instance.GetRecentClient(clientId));

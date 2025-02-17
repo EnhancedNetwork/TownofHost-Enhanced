@@ -21,7 +21,7 @@ internal class Judge : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
-    public static OptionItem TrialLimitPerMeeting;
+    private static OptionItem TrialLimitPerMeeting;
     private static OptionItem TrialLimitPerGame;
     private static OptionItem TryHideMsg;
     private static OptionItem CanTrialMadmate;
@@ -290,7 +290,7 @@ internal class Judge : RoleBase
         error = string.Empty;
         return true;
     }
-    public static bool CheckCommond(ref string msg, string command, bool exact = true)
+    private static bool CheckCommond(ref string msg, string command, bool exact = true)
     {
         var comList = command.Split('|');
         foreach (var comm in comList)
@@ -361,7 +361,7 @@ internal class Judge : RoleBase
                 CreateJudgeButton(__instance);
         }
     }
-    public static void CreateJudgeButton(MeetingHud __instance)
+    private static void CreateJudgeButton(MeetingHud __instance)
     {
         foreach (var pva in __instance.playerStates)
         {

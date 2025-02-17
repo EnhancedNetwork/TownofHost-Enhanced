@@ -13,7 +13,7 @@ public abstract class OptionItem
     private static readonly Dictionary<int, OptionItem> _fastOptions = new(1024);
     private static readonly Dictionary<int, string> nameSettings = [];
 
-    public static int CurrentPreset { get; set; }
+    public static int CurrentPreset { get; private set; }
     #endregion
 
     // Constructor variables
@@ -26,7 +26,7 @@ public abstract class OptionItem
     // Nullable/Empty Variables
     public Color NameColor { get; protected set; }
     public OptionFormat ValueFormat { get; protected set; }
-    public CustomGameMode GameMode { get; protected set; }
+    public CustomGameMode GameMode { get; private set; }
     public CustomGameMode HideOptionInFFA { get; protected set; }
     public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
@@ -48,7 +48,7 @@ public abstract class OptionItem
     public int CurrentValue
     {
         get => GetValue();
-        set => SetValue(value);
+        private set => SetValue(value);
     }
     public int SingleValue { get; private set; }
 
@@ -61,7 +61,7 @@ public abstract class OptionItem
     public event EventHandler<UpdateValueEventArgs> UpdateValueEvent;
 
     // Constructor
-    public OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaStr)
+    protected OptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, bool vanillaStr)
     {
         // Info Setting
         Id = id;
@@ -117,7 +117,7 @@ public abstract class OptionItem
     }
 
     // Setter
-    public OptionItem Do(Action<OptionItem> action)
+    private OptionItem Do(Action<OptionItem> action)
     {
         action(this);
         return this;
@@ -144,7 +144,7 @@ public abstract class OptionItem
         i.Parent = parent;
         parent.SetChild(i);
     });
-    public OptionItem SetChild(OptionItem child) => Do(i => i.Children.Add(child));
+    private OptionItem SetChild(OptionItem child) => Do(i => i.Children.Add(child));
     public OptionItem RegisterUpdateValueEvent(EventHandler<UpdateValueEventArgs> handler)
         => Do(i => UpdateValueEvent += handler);
 
@@ -193,7 +193,7 @@ public abstract class OptionItem
     {
         if (OptionBehaviour is not null and StringOption opt)
         {
-            if (IsVanillaText == true)
+            if (IsVanillaText)
             {
                 opt.TitleText.text = GetNameVanilla();
             }
@@ -295,7 +295,7 @@ public abstract class OptionItem
     }
 
     public const int NumPresets = 5;
-    public const int PresetId = 0;
+    private const int PresetId = 0;
 }
 [Obfuscation(Exclude = true)]
 public enum TabGroup

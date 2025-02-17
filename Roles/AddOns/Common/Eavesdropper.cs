@@ -5,12 +5,12 @@ namespace TOHE.Roles.AddOns.Common;
 public class Eavesdropper : IAddon
 {
     public CustomRoles Role => CustomRoles.Eavesdropper;
-    public const int Id = 30100;
+    private const int Id = 30100;
     private static readonly HashSet<byte> playerList = [];
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    public static OptionItem EavesdropPercentChance;
+    private static OptionItem EavesdropPercentChance;
 
     public void SetupCustomOption()
     {
@@ -51,7 +51,7 @@ public class Eavesdropper : IAddon
                 {
                     // Get random message and send Eavesdropper
                     var randomMsg = eavesdropperMsg.RandomElement();
-                    MeetingHudStartPatch.AddMsg(randomMsg, eavesdropperId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eavesdropper), Translator.GetString("EavesdropperMsgTitle")));
+                    MeetingHudStartPatch.AddMsg(randomMsg, eavesdropperId, CustomRoles.Eavesdropper.GetColoredTextByRole(Translator.GetString("EavesdropperMsgTitle")));
                 }
             }
         }

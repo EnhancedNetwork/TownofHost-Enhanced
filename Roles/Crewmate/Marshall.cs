@@ -28,10 +28,8 @@ internal class Marshall : RoleBase
         return pc.Is(CustomRoles.Marshall) && pc.GetPlayerTaskState().IsTaskFinished;
     }
     private static bool IsMarshallTarget(PlayerControl seer) => CustomRoles.Marshall.HasEnabled() && seer.Is(Custom_Team.Crewmate);
-    public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        target ??= seer;
-
         return IsMarshallTarget(seer) && GetExpose(target) ? Utils.ColorString(RoleColor, "★") : string.Empty;
     }
 

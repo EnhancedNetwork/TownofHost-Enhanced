@@ -48,13 +48,12 @@ internal class ChangeRoleSettings
                 Main.AliveImpostorCount = Main.HideNSeekOptions.NumImpostors;
             }
 
-            Main.PlayerStates = [];
-            RoleAssign.RoleResult = [];
+            Main.PlayerStates.Clear();
+            RoleAssign.RoleResult.Clear();
             KillTimerManager.Initializate();
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
-            Main.TasklessCrewmate.Clear();
             Main.UnreportableBodies.Clear();
 
             Main.LastEnteredVent.Clear();
@@ -66,6 +65,7 @@ internal class ChangeRoleSettings
             GuessManager.GuesserGuessed.Clear();
             Main.AfterMeetingDeathPlayers.Clear();
             Main.clientIdList.Clear();
+            Main.CachedPlayerControl.Clear();
 
             Main.CheckShapeshift.Clear();
             Main.ShapeshiftTarget.Clear();
@@ -91,6 +91,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             VentSystemDeterioratePatch.LastClosestVent.Clear();
             VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime.Clear();
@@ -259,7 +260,7 @@ internal class StartGameHostPatch
 
     private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
     private static Dictionary<RoleTypes, int> RoleTypeNums = [];
-    public static void UpdateRoleTypeNums()
+    private static void UpdateRoleTypeNums()
     {
         RoleTypeNums = new()
         {
@@ -286,7 +287,7 @@ internal class StartGameHostPatch
         return false;
     }
 
-    public static System.Collections.IEnumerator StartGameHost()
+    private static System.Collections.IEnumerator StartGameHost()
     {
         if (LobbyBehaviour.Instance)
         {
@@ -358,10 +359,9 @@ internal class StartGameHostPatch
         yield return new WaitForSeconds(2f);
         yield return AssignRoles();
         //ShipStatus.Instance.Begin(); // Tasks sets in IntroPatch
-        yield break;
     }
 
-    public static System.Collections.IEnumerator AssignRoles()
+    private static System.Collections.IEnumerator AssignRoles()
     {
         if (GameStates.IsEnded) yield break;
 
@@ -371,7 +371,6 @@ internal class StartGameHostPatch
             RpcSetRoleReplacer.Initialize();
 
             // Select custom roles / add-ons
-            EAC.OriginalRoles = [];
             RoleAssign.StartSelect();
             AddonAssign.StartSelect();
 
@@ -499,7 +498,7 @@ internal class StartGameHostPatch
             try
             {
                 if (!AmongUsClient.Instance.IsGameOver)
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+                    FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
             }
             catch { }
 
@@ -524,7 +523,6 @@ internal class StartGameHostPatch
                     break;
             }
 
-            EAC.LogAllRoles();
             //Utils.CountAlivePlayers(sendLog: true, checkGameEnd: false);
 
             Logger.Msg("Ended", "AssignRoles");
@@ -549,7 +547,6 @@ internal class StartGameHostPatch
         SetRoleSelf();
 
         RpcSetRoleReplacer.EndReplace();
-        yield break;
     }
 
     public static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), (RoleTypes, CustomRoles)> rolesMap, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
@@ -717,8 +714,6 @@ internal class SelectRolesPatch
                 }
             }
 
-            EAC.OriginalRoles = [];
-
             GameOptionsSender.AllSenders.Clear();
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
             {
@@ -726,8 +721,7 @@ internal class SelectRolesPatch
                     new PlayerGameOptionsSender(pc)
                 );
             }
-
-            EAC.LogAllRoles();
+            
             Utils.SyncAllSettings();
         }
     }

@@ -27,9 +27,9 @@ class Webhook
 }
 class Logger
 {
-    public static bool IsEnable;
-    public static List<string> DisableList = [];
-    public static List<string> SendToGameList = [];
+    private static bool IsEnable;
+    private static List<string> DisableList = [];
+    private static List<string> SendToGameList = [];
     private static readonly HashSet<string> NowDetailedErrorLog = [];
 
     public static bool isDetail = false;
@@ -46,7 +46,7 @@ class Logger
     public static void SendInGame(string text)
     {
         if (!IsEnable) return;
-        if (DestroyableSingleton<HudManager>._instance) DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage(text);
+        FastDestroyableSingleton<HudManager>.Instance?.Notifier?.AddDisconnectMessage(text);
     }
     private static void SendToFile(string text, LogLevel level = LogLevel.Info, string tag = "", bool escapeCRLF = true, int lineNumber = 0, string fileName = "", bool multiLine = false)
     {

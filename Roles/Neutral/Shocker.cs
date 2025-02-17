@@ -12,7 +12,7 @@ internal class Shocker : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Shocker;
     private const int Id = 31000;
-    public static byte? playerId;
+    private static byte? playerId;
     public static bool HasEnabled => playerId.HasValue;
     public override bool IsExperimental => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
@@ -29,9 +29,9 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
 
-    private static List<Collider2D> markedRooms = new();
-    private static List<Collider2D> shockedRooms = new();
-    private static List<Collider2D> customRooms = new();
+    private static readonly List<Collider2D> markedRooms = [];
+    private static List<Collider2D> shockedRooms = [];
+    private static readonly List<Collider2D> customRooms = [];
     private static bool isShocking = false;
 
     public override void SetupCustomOption()
@@ -120,20 +120,20 @@ internal class Shocker : RoleBase
             return;
         if (isShocking)
         {
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerIsShocking")));
+            pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerIsShocking")));
             return;
         }
         AbilityLimit--;
         SendSkillRPC();
-        pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityActivate")));
+        pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerAbilityActivate")));
         isShocking = true;
-        shockedRooms = new List<Collider2D>(markedRooms);
+        shockedRooms = markedRooms;
         markedRooms.Clear();
         _ = new LateTask(() =>
         {
             shockedRooms.Clear();
             isShocking = false;
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityDeactivate")));
+            pc.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerAbilityDeactivate")));
         }, ShockerAbilityDuration.GetValue(), "Shocker Is Shocking");
     }
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
@@ -150,7 +150,7 @@ internal class Shocker : RoleBase
             PlainShipRoom room = player.GetPlainShipRoom();
             markedRooms.Add(room.roomArea);
             Logger.Info($"Player {player.PlayerId} is in a room {room.RoomId} {room.name}", "Shocker");
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerRoomMarked")));
+            player.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerRoomMarked")));
         }
         else
         {
@@ -161,7 +161,7 @@ internal class Shocker : RoleBase
             collider2D.isTrigger = true;
             markedRooms.Add(collider2D);
             customRooms.Add(collider2D);
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerRoomMarked")));
+            player.Notify(CustomRoles.Shocker.GetColoredTextByRole(GetString("ShockerRoomMarked")));
         }
         return true;
     }

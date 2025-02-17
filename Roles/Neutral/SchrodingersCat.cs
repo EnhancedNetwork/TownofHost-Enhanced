@@ -10,7 +10,7 @@ internal class SchrodingersCat : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.SchrodingersCat;
     private const int Id = 6900;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.SchrodingersCat);
+    private static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.SchrodingersCat);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
@@ -72,11 +72,11 @@ internal class SchrodingersCat : RoleBase
     {
         if (seer != target && seer.IsAlive() && teammate.ContainsKey(seer.PlayerId) && teammate.ContainsValue(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat), " ☜");
+            return CustomRoles.SchrodingersCat.GetColoredTextByRole(" ☜");
         }
         else if (seer != target && !seer.IsAlive() && teammate.ContainsValue(target.PlayerId))
         {
-            return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SchrodingersCat), " ☜");
+            return CustomRoles.SchrodingersCat.GetColoredTextByRole(" ☜");
         }
         return string.Empty;
     }

@@ -2,14 +2,9 @@ using System;
 
 namespace TOHE;
 
-public class NetRandomWrapper : IRandom
+public class NetRandomWrapper(Random instance) : IRandom
 {
-    public Random wrapping;
-
-    public NetRandomWrapper(Random instance)
-    {
-        wrapping = instance;
-    }
+    public Random wrapping = instance;
 
     public NetRandomWrapper() : this(new Random((int)DateTime.UtcNow.Ticks))
     { }

@@ -45,7 +45,7 @@ class TextBoxTMPSetTextPatch
             }
         }
 
-        if (!__instance.tempTxt.ToString().Equals(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EnterName), StringComparison.OrdinalIgnoreCase) && __instance.characterLimit > 0)
+        if (!__instance.tempTxt.ToString().Equals(FastDestroyableSingleton<TranslationController>.Instance.GetString(StringNames.EnterName), StringComparison.OrdinalIgnoreCase) && __instance.characterLimit > 0)
         {
             int length = __instance.tempTxt.Length;
             __instance.tempTxt.Length = Math.Min(__instance.tempTxt.Length, __instance.characterLimit);

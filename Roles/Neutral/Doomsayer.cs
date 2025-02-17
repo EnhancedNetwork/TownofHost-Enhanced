@@ -81,7 +81,7 @@ internal class Doomsayer : RoleBase
     {
         GuessingToWin.TryAdd(playerId, GuessesCount);
     }
-    public void SendRPC(PlayerControl player)
+    private void SendRPC(PlayerControl player)
     {
         MessageWriter writer;
         writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);

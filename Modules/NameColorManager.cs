@@ -133,7 +133,7 @@ public static class NameColorManager
             return false;
         }
     }
-    public static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
+    private static bool TryGetData(PlayerControl seer, PlayerControl target, out string colorCode)
     {
         colorCode = "";
         var state = Main.PlayerStates[seer.PlayerId];
@@ -157,7 +157,7 @@ public static class NameColorManager
 
         SendRPC(seerId, targetId, colorCode);
     }
-    public static void Remove(byte seerId, byte targetId)
+    private static void Remove(byte seerId, byte targetId)
     {
         var state = Main.PlayerStates[seerId];
         if (!state.TargetColorData.ContainsKey(targetId)) return;
@@ -165,7 +165,7 @@ public static class NameColorManager
 
         SendRPC(seerId, targetId);
     }
-    public static void RemoveAll(byte seerId)
+    private static void RemoveAll(byte seerId)
     {
         Main.PlayerStates[seerId].TargetColorData.Clear();
 

@@ -17,7 +17,7 @@ class PingTrackerUpdatePatch
     {
         try
         {
-            Instance ??= __instance;
+            Instance = __instance;
 
             DelayUpdate--;
 
@@ -29,7 +29,7 @@ class PingTrackerUpdatePatch
                 return false;
             }
 
-            DelayUpdate = 500;
+            DelayUpdate = GameStates.IsLobby ? 500 : 1000;
 
             ChangeText(__instance);
             sb.Clear();
@@ -88,7 +88,7 @@ class PingTrackerUpdatePatch
     }
     private static Vector3 GetPingPosition()
     {
-        var settingButtonTransformPosition = DestroyableSingleton<HudManager>.Instance.SettingsButton.transform.localPosition;
+        var settingButtonTransformPosition = FastDestroyableSingleton<HudManager>.Instance.SettingsButton.transform.localPosition;
         var offset_x = settingButtonTransformPosition.x - 1.58f;
         var offset_y = settingButtonTransformPosition.y + 3.2f;
         Vector3 position;
@@ -98,7 +98,7 @@ class PingTrackerUpdatePatch
         }
         if (AmongUsClient.Instance.IsGameStarted)
         {
-            if (DestroyableSingleton<HudManager>.Instance && !HudManager.Instance.Chat.isActiveAndEnabled)
+            if (!FastDestroyableSingleton<HudManager>.Instance.Chat.isActiveAndEnabled)
             {
                 offset_x += 0.7f; // Additional offsets for chat button if present
             }
@@ -123,7 +123,7 @@ class PingTrackerUpdatePatch
 
         if (Main.ShowTextOverlay.Value || Main.ShowFPS.Value)
         {
-            var language = DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
+            var language = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
             __instance.text.outlineWidth = language switch
             {
                 SupportedLangs.Russian or SupportedLangs.Japanese or SupportedLangs.SChinese or SupportedLangs.TChinese => 0.25f,
@@ -140,34 +140,35 @@ class PingTrackerUpdatePatch
 class VersionShowerStartPatch
 {
     static TextMeshPro SpecialEventText;
+    private static readonly StringBuilder sb = new();
     private static void Postfix(VersionShower __instance)
     {
-        Main.credentialsText = $"<size=70%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>";
+        sb.Clear().Append($"<size=70%><size=85%><color={Main.ModColor}>{Main.ModName}</color> v{Main.PluginDisplayVersion}</size>");
         var buildtype = "";
 
 #if RELEASE
-            Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+            sb.Append($"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
             buildtype = "Release";
 #endif
 
 #if CANARY
-        Main.credentialsText += $"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
-        Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+        sb.Append($"\r\n<color=#ffc0cb>Canary:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)");
+        sb.Append($"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
         buildtype = "Canary";
 #endif
 
 #if DEBUG
-        Main.credentialsText += $"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)";
-        Main.credentialsText += $"\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>";
+        sb.Append($"\r\n<color=#ffc0cb>Debug:</color><color=#f34c50>{ThisAssembly.Git.Branch}</color>(<color=#ffc0cb>{ThisAssembly.Git.Commit}</color>)");
+        sb.Append("\r\n<color=#a54aff>By <color=#f34c50>The Enhanced Network</color>");
         buildtype = "Debug";
 #endif
         Logger.Info($"v{Main.PluginVersion}, {buildtype}:{ThisAssembly.Git.Branch}:({ThisAssembly.Git.Commit}), link [{ThisAssembly.Git.RepositoryUrl}], dirty: [{ThisAssembly.Git.IsDirty}]", "TOHE version");
 
         if (Main.IsAprilFools)
-            Main.credentialsText = $"<color=#00bfff>Town Of Host</color> v11.45.14";
+            sb.Clear().Append("<color=#00bfff>Town Of Host</color> v11.45.14");
 
         var credentials = Object.Instantiate(__instance.text);
-        credentials.text = Main.credentialsText;
+        credentials.text = Main.credentialsText = sb.ToString();
         credentials.alignment = TextAlignmentOptions.Right;
         credentials.transform.position = new Vector3(1f, 2.67f, -2f);
         credentials.fontSize = credentials.fontSizeMax = credentials.fontSizeMin = 2f;

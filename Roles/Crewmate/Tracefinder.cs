@@ -59,7 +59,7 @@ internal class Tracefinder : RoleBase
             LocateArrow.RemoveAllTarget(_Player.PlayerId);
     }
 
-    public void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
+    private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         if (inMeeting || target.IsDisconnected()) return;
 

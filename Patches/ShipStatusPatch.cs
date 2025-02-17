@@ -127,7 +127,7 @@ class UpdateSystemPatch
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
-            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].CastFast<SwitchSystem>();
             if (SwitchSystem != null && SwitchSystem.IsActive)
             {
                 player.GetRoleClass()?.SwitchSystemUpdate(SwitchSystem, amount, player);
@@ -369,7 +369,7 @@ class ShipStatusSerializePatch
                 }
             }
 
-            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
                 // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");

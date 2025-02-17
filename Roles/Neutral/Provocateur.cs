@@ -34,7 +34,7 @@ internal class Provocateur : RoleBase
     {
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceMini), GetString("CantBoom")));
+            killer.Notify(CustomRoles.NiceMini.GetColoredTextByRole(GetString("CantBoom")));
             return false;
         }
         target.SetDeathReason(PlayerState.DeathReason.PissedOff);

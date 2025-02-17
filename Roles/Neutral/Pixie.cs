@@ -72,7 +72,7 @@ internal class Pixie : RoleBase
         if (seer.Is(CustomRoles.Pixie) && PixieTargets[seer.PlayerId].Contains(target.PlayerId)) color = Main.roleColors[CustomRoles.Pixie];
         return color;
     }
-    public void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
+    private void SendRPC(byte pixieId, bool operate, byte targetId = 0xff)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player); //SetPixieTargets
@@ -136,20 +136,20 @@ internal class Pixie : RoleBase
     public override void OnPlayerExiled(PlayerControl pc, NetworkedPlayerInfo exiled)
     {
         byte pixieId = pc.PlayerId;
-        if (PixieTargets.ContainsKey(pixieId))
+        if (PixieTargets.TryGetValue(pixieId, out var targets))
         {
             if (exiled != null)
             {
-                if (PixieTargets[pixieId].Count == 0) return;
+                if (targets.Count == 0) return;
                 if (!PixiePoints.ContainsKey(pixieId)) PixiePoints[pixieId] = 0;
                 if (PixiePoints[pixieId] >= PixiePointsToWin.GetInt()) return;
 
-                if (PixieTargets[pixieId].Contains(exiled.PlayerId))
+                if (targets.Contains(exiled.PlayerId))
                 {
                     PixiePoints[pixieId]++;
                 }
                 else if (PixieSuicideOpt.GetBool()
-                    && PixieTargets[pixieId].Any(eid => Utils.GetPlayerById(eid)?.IsAlive() == true))
+                    && targets.Any(eid => Utils.GetPlayerById(eid)?.IsAlive() == true))
                 {
                     pc.SetRealKiller(pc);
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pixieId);

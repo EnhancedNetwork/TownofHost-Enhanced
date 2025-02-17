@@ -12,7 +12,6 @@ internal class EAC
     public static void Init()
     {
         DeNum = new();
-        OriginalRoles = [];
         ReportTimes = [];
         LobbyDeadBodies = [];
     }
@@ -367,21 +366,6 @@ internal class EAC
         WarnHost(-1);
         return false;
     }
-    public static Dictionary<byte, CustomRoles> OriginalRoles = [];
-    public static void LogAllRoles()
-    {
-        foreach (var pc in Main.AllPlayerControls.ToArray())
-        {
-            try
-            {
-                OriginalRoles.Add(pc.PlayerId, pc.GetCustomRole());
-            }
-            catch (Exception error)
-            {
-                Logger.Fatal(error.ToString(), "EAC.LogAllRoles");
-            }
-        }
-    }
     public static bool RpcUpdateSystemCheck(PlayerControl player, SystemTypes systemType, byte amount)
     {
         if (GameStates.IsLocalGame)
@@ -401,7 +385,7 @@ internal class EAC
 
         if (systemType == SystemTypes.Sabotage) //Normal sabotage using buttons
         {
-            if (!player.HasImpKillButton(true))
+            if (!player.HasImpKillButton())
             {
                 WarnHost();
                 Report(player, "Bad Sabotage A : Non Imp");
@@ -631,7 +615,7 @@ internal class EAC
                 }
                 if (player.AmOwner)
                 {
-                    Logger.Fatal($"Got climb ladder for my self, this is impossible", "EAC_physics");
+                    Logger.Fatal("Got climb ladder for my self, this is impossible", "EAC_physics");
                     return true;
                 }
                 break;
@@ -639,7 +623,7 @@ internal class EAC
             case RpcCalls.Pet:
                 if (player.AmOwner)
                 {
-                    Logger.Fatal($"Got pet pet for my self, this is impossible", "EAC_physics");
+                    Logger.Fatal("Got pet pet for my self, this is impossible", "EAC_physics");
                     return true;
                 }
 
@@ -687,11 +671,11 @@ internal class EAC
                 Logger.SendInGame(msg1);
                 break;
             case 2:
-                Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), PlayerControl.LocalPlayer.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
+                Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), PlayerControl.LocalPlayer.PlayerId, CustomRoles.Impostor.GetColoredTextByRole(GetString("MessageFromEAC")));
                 break;
             case 3:
                 foreach (var apc in Main.AllPlayerControls.Where(x => x.PlayerId != pc?.Data?.PlayerId).ToArray())
-                    Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), apc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Impostor), GetString("MessageFromEAC")));
+                    Utils.SendMessage(string.Format(GetString("Message.NoticeByEAC"), pc?.Data?.PlayerName, text), apc.PlayerId, CustomRoles.Impostor.GetColoredTextByRole(GetString("MessageFromEAC")));
                 break;
             case 4:
                 if (!BanManager.TempBanWhiteList.Contains(pc.GetClient().GetHashedPuid()))

@@ -124,7 +124,7 @@ internal class Keeper : RoleBase
         keeperTarget.Add(target.PlayerId);
         Logger.Info($"{voter.GetNameWithRole()} chosen as keeper target by {target.GetNameWithRole()}", "Keeper");
         SendRPC(type: 0, keeperId: voter.PlayerId, targetId: target.PlayerId); // add keeperUses, KeeperTarget and DidVote
-        Utils.SendMessage(string.Format(GetString("KeeperProtect"), target.GetRealName()), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Keeper), GetString("KeeperTitle")));
+        Utils.SendMessage(string.Format(GetString("KeeperProtect"), target.GetRealName()), voter.PlayerId, title: CustomRoles.Keeper.GetColoredTextByRole(GetString("KeeperTitle")));
         return false;
     }
 

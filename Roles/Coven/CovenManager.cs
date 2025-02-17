@@ -74,7 +74,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             opt.SetVision(true);
         else
         {
-            CovenImpVisOptions.TryGetValue(GetPlayerById(playerId).GetCustomRole(), out var option);
+            CovenImpVisOptions.TryGetValue(playerId.GetPlayer().GetCustomRole(), out var option);
             opt.SetVision(option.GetBool());
         }
     }
@@ -90,18 +90,18 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             return option.GetBool();
         }
     }
-    public static void GiveNecronomicon()
+    private static void GiveNecronomicon()
     {
-        var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven() && pc.IsAlive()).ToList();
+        var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven()).ToList();
         if (pcList.Any())
         {
             byte rp = pcList.RandomElement().PlayerId;
             necroHolder = rp;
-            GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
+            necroHolder.GetPlayer().Notify(GetString("NecronomiconNotification"));
             SendRPC(necroHolder);
         }
     }
-    public static void GiveNecronomicon(byte target)
+    private static void GiveNecronomicon(byte target)
     {
         necroHolder = target;
         GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
@@ -149,7 +149,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
         }
         if (currentResult == byte.MinValue && !necroVotes.ContainsKey(byte.MinValue))
         {
-            Logger.Info($"currentResult == byte.MinValue, return", "Coven");
+            Logger.Info("currentResult == byte.MinValue, return", "Coven");
         }
         else if (voteCount.ContainsKey(lastResult) && voteCount[currentResult] == voteCount[lastResult] && currentResult != lastResult)
         {

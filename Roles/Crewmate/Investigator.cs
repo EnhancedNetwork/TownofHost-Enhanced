@@ -156,6 +156,6 @@ internal class Investigator : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton.OverrideText(Translator.GetString("InvestigatorButtonText")); ;
+        hud.KillButton.OverrideText(Translator.GetString("InvestigatorButtonText"));
     }
 }

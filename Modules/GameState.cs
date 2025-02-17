@@ -16,7 +16,7 @@ public class PlayerState(byte playerId)
     public readonly byte PlayerId = playerId;
     public RoleBase RoleClass = new DefaultSetup();
     public CustomRoles MainRole = CustomRoles.NotAssigned;
-    public List<CustomRoles> SubRoles = [];
+    public readonly List<CustomRoles> SubRoles = [];
     public CountTypes countTypes = CountTypes.OutOfGame;
     public bool IsDead { get; set; } = false;
     public bool Disconnected { get; set; } = false;
@@ -31,7 +31,7 @@ public class PlayerState(byte playerId)
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
-    public Dictionary<byte, string> TargetColorData = [];
+    public readonly Dictionary<byte, string> TargetColorData = [];
     public NetworkedPlayerInfo.PlayerOutfit NormalOutfit;
 
     public void SetMainRole(CustomRoles role)
@@ -364,18 +364,12 @@ public class PlayerState(byte playerId)
 public class TaskState
 {
     public static int InitialTotalTasks;
-    public int AllTasksCount;
-    public int CompletedTasksCount;
-    public bool hasTasks;
+    public int AllTasksCount = -1;
+    public int CompletedTasksCount = 0;
+    public bool hasTasks = false;
     public int RemainingTasksCount => AllTasksCount - CompletedTasksCount;
     public bool DoExpose => RemainingTasksCount <= Options.SnitchExposeTaskLeft && hasTasks;
     public bool IsTaskFinished => RemainingTasksCount <= 0 && hasTasks;
-    public TaskState()
-    {
-        this.AllTasksCount = -1;
-        this.CompletedTasksCount = 0;
-        this.hasTasks = false;
-    }
 
     public static string GetTaskState()
     {
@@ -444,10 +438,7 @@ public class PlayerVersion(Version ver, string tag_str, string forkId)
     public readonly Version version = ver;
     public readonly string tag = tag_str;
     public readonly string forkId = forkId;
-#pragma warning disable CA1041 // Provide ObsoleteAttribute message
-    [Obsolete] public PlayerVersion(string ver, string tag_str) : this(Version.Parse(ver), tag_str, string.Empty) { }
-    [Obsolete] public PlayerVersion(Version ver, string tag_str) : this(ver, tag_str, string.Empty) { }
-#pragma warning restore CA1041
+
     public PlayerVersion(string ver, string tag_str, string forkId) : this(Version.Parse(ver), tag_str, forkId) { }
 
     public bool IsEqual(PlayerVersion pv)
@@ -483,7 +474,7 @@ public static class GameStates
             const string Domain = "among.us";
 
             // From Reactor.gg
-            return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&
+            return FastDestroyableSingleton<ServerManager>.Instance.CurrentRegion?.CastFast<StaticHttpRegionInfo>() is { } regionInfo &&
                    regionInfo.PingServer.EndsWith(Domain, StringComparison.Ordinal) &&
                    regionInfo.Servers.All(serverInfo => serverInfo.Ip.EndsWith(Domain, StringComparison.Ordinal));
         }

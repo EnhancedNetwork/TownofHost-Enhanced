@@ -75,7 +75,7 @@ internal class Jinx : CovenManager
     }
     */
     //public override void ApplyGameOptions(IGameOptions opt, byte babushka) => opt.SetVision(HasImpostorVision.GetBool());
-    public static bool IsJinxed(byte target)
+    private static bool IsJinxed(byte target)
     {
         if (JinxedPlayers.Count < 1) return false;
         foreach (var player in JinxedPlayers.Keys)
@@ -113,7 +113,7 @@ internal class Jinx : CovenManager
             SendRPC(jinx, target);
         }
     }
-    public void SendRPC(PlayerControl player, PlayerControl target)
+    private void SendRPC(PlayerControl player, PlayerControl target)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -171,13 +171,13 @@ internal class Jinx : CovenManager
         return false;
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
-    => IsJinxed(seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.Jinx), "⌘") : string.Empty;
+        => IsJinxed(seen.PlayerId) ? CustomRoles.Jinx.GetColoredTextByRole("⌘") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
         if (IsJinxed(target.PlayerId) && seer.GetCustomRole().IsCovenTeam() && seer.PlayerId != _Player.PlayerId)
         {
-            return ColorString(GetRoleColor(CustomRoles.Jinx), "⌘");
+            return CustomRoles.Jinx.GetColoredTextByRole("⌘");
         }
         return string.Empty;
     }

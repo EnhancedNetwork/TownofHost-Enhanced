@@ -15,8 +15,8 @@ internal class Minion : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
 
-    public static OptionItem AbilityCooldown;
-    public static OptionItem AbilityTime;
+    private static OptionItem AbilityCooldown;
+    private static OptionItem AbilityTime;
 
     public override void SetupCustomOption()
     {

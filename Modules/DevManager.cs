@@ -5,9 +5,9 @@ namespace TOHE;
 public class DevUser(string code = "", string color = "null", string userType = "null", string tag = "null", bool isUp = false, bool isDev = false, bool deBug = false, bool colorCmd = false, bool nameCmd = false, string upName = "未认证用户")
 {
     public string Code { get; set; } = code;
-    public string Color { get; set; } = color;
+    private string Color { get; set; } = color;
     public string UserType { get; set; } = userType;
-    public string Tag { get; set; } = tag;
+    private string Tag { get; set; } = tag;
     public bool IsUp { get; set; } = isUp;
     public bool IsDev { get; set; } = isDev;
     public bool DeBug { get; set; } = deBug;
@@ -29,8 +29,7 @@ public class DevUser(string code = "", string color = "null", string userType = 
             var ColorCode = File.ReadAllText(tagColorFilePath);
             if (Utils.CheckColorHex(ColorCode)) startColor = ColorCode;
         }
-        string t1;
-        t1 = Tag == "#Dev" ? Translator.GetString("Developer") : Tag;
+        string t1 = Tag == "#Dev" ? Translator.GetString("Developer") : Tag;
         return $"<size=1.2><color=#{startColor}>{t1}</color></size>\r\r\n";
     }
     //public string GetTag() 

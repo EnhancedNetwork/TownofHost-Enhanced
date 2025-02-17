@@ -54,7 +54,7 @@ internal class QuickShooter : RoleBase
         Storaging = false;
     }
 
-    public void SendRPC(bool timer = false)
+    private void SendRPC(bool timer = false)
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, _Player.GetClientId());
         writer.WriteNetObject(_Player);
@@ -78,7 +78,7 @@ internal class QuickShooter : RoleBase
         }
 
         if (pc.AmOwner && shouldtime)
-            DestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, 0.01f);
+            FastDestroyableSingleton<HudManager>.Instance.AbilityButton.SetCoolDown(timer, 0.01f);
     }
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
