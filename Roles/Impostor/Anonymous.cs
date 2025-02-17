@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -10,6 +10,7 @@ namespace TOHE.Roles.Impostor;
 internal class Anonymous : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Anonymous;
     private const int Id = 5300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Anonymous);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;

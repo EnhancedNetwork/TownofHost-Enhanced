@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;

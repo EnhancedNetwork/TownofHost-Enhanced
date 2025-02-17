@@ -1,12 +1,10 @@
-﻿namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles.Impostor;
 
 internal class Trapster : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Trapster;
     private const int Id = 2600;
-    private static readonly HashSet<byte> Playerids = [];
-    public static bool HasEnabled => Playerids.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
@@ -37,11 +35,7 @@ internal class Trapster : RoleBase
     {
         BoobyTrapBody.Clear();
         KillerOfBoobyTrapBody.Clear();
-        Playerids.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        Playerids.Clear();
+
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TrapsterKillCooldown.GetFloat();
@@ -65,12 +59,12 @@ internal class Trapster : RoleBase
             reporter.SetRealKiller(deadBody.Object);
 
             RPC.PlaySoundRPC(killerId, Sounds.KillSound);
-            
+
             if (TrapConsecutiveTrapsterBodies.GetBool())
             {
                 BoobyTrapBody.Add(reporter.PlayerId);
             }
-            
+
             return false;
         }
 

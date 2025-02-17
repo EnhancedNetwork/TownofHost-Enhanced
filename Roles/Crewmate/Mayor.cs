@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -8,21 +8,18 @@ namespace TOHE.Roles.Crewmate;
 internal partial class Mayor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Mayor;
     private const int Id = 12000;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => MayorHasPortableButton.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
-
-    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Collective");
 
     private static OptionItem MayorAdditionalVote;
     private static OptionItem MayorHasPortableButton;
     private static OptionItem MayorNumOfUseButton;
     private static OptionItem MayorHideVote;
-    private static OptionItem MayorRevealWhenDoneTasks;
+    public static OptionItem MayorRevealWhenDoneTasks;
 
     private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
 
@@ -46,17 +43,14 @@ internal partial class Mayor : RoleBase
 
     public override void Init()
     {
-        playerIdList.Clear();
         MayorUsedButtonCount.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         MayorUsedButtonCount[playerId] = 0;
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         MayorUsedButtonCount[playerId] = 0;
     }
 
@@ -107,6 +101,7 @@ internal partial class Mayor : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Mayor) return false;
         if (MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished)
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessMayor"));
@@ -118,9 +113,10 @@ internal partial class Mayor : RoleBase
     public static bool VisibleToEveryone(PlayerControl target) => target.Is(CustomRoles.Mayor) && MayorRevealWhenDoneTasks.GetBool() && target.GetPlayerTaskState().IsTaskFinished;
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => VisibleToEveryone(target);
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("EmergencyButton");
 }

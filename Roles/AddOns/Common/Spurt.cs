@@ -1,10 +1,11 @@
-﻿using static TOHE.Options;
 using UnityEngine;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 internal class Spurt : IAddon
 {
+    public CustomRoles Role => CustomRoles.Spurt;
     private static OptionItem MinSpeed;
     private static OptionItem Modulator;
     private static OptionItem MaxSpeed;
@@ -20,16 +21,16 @@ internal class Spurt : IAddon
     {
         const int id = 28800;
         SetupAdtRoleOptions(id, CustomRoles.Spurt, canSetNum: true, teamSpawnOptions: true);
-        MinSpeed = FloatOptionItem.Create(id + 6, "SpurtMinSpeed", new(0f, 3f, 0.25f), 0.75f, TabGroup.Addons, false)
+        MinSpeed = FloatOptionItem.Create(id + 7, "SpurtMinSpeed", new(0f, 3f, 0.25f), 0.75f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt])
             .SetValueFormat(OptionFormat.Multiplier);
-        MaxSpeed = FloatOptionItem.Create(id + 7, "SpurtMaxSpeed", new(1.5f, 3f, 0.25f), 3f, TabGroup.Addons, false)
+        MaxSpeed = FloatOptionItem.Create(id + 8, "SpurtMaxSpeed", new(1.5f, 3f, 0.25f), 3f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt])
             .SetValueFormat(OptionFormat.Multiplier);
-        Modulator =FloatOptionItem.Create(id + 8, "SpurtModule", new(0.25f, 3f, 0.25f), 1.25f, TabGroup.Addons, false)
+        Modulator = FloatOptionItem.Create(id + 9, "SpurtModule", new(0.25f, 3f, 0.25f), 1.25f, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt])
             .SetValueFormat(OptionFormat.Multiplier);
-        DisplaysCharge = BooleanOptionItem.Create(id + 9, "EnableSpurtCharge", false, TabGroup.Addons, false)
+        DisplaysCharge = BooleanOptionItem.Create(id + 10, "EnableSpurtCharge", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Spurt]);
     }
     public void Init()
@@ -91,7 +92,7 @@ internal class Spurt : IAddon
         if (!player.Is(CustomRoles.Spurt) || !player.IsAlive()) return;
 
         var pos = player.GetCustomPosition();
-        bool moving = Utils.GetDistance(pos, LastPos[player.PlayerId]) > 0f || player.MyPhysics.Animations.IsPlayingRunAnimation();
+        bool moving = Utils.GetDistance(pos, LastPos[player.PlayerId]) > 1f || player.MyPhysics.Animations.IsPlayingRunAnimation();
         LastPos[player.PlayerId] = pos;
 
         float modulator = Modulator.GetFloat();
@@ -116,7 +117,10 @@ internal class Spurt : IAddon
             return;
         }
 
-        Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
-        player.MarkDirtySettings();
+        if (charge > 1)
+        {
+            Main.AllPlayerSpeed[player.PlayerId] -= Mathf.Clamp(Decreaseby, 0f, Main.AllPlayerSpeed[player.PlayerId] - MinSpeed.GetFloat());
+            player.MarkDirtySettings();
+        }
     }
 }

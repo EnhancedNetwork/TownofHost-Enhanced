@@ -1,16 +1,14 @@
-﻿using static TOHE.Options;
-using static TOHE.Utils;
+using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class SuperStar : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.SuperStar;
     private const int Id = 7150;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
@@ -22,14 +20,6 @@ internal class SuperStar : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.SuperStar);
         EveryOneKnowSuperStar = BooleanOptionItem.Create(7152, "EveryOneKnowSuperStar", true, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.SuperStar]);
-    }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)

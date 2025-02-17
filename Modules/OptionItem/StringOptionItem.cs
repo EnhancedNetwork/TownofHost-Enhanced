@@ -2,7 +2,7 @@ using System;
 
 namespace TOHE;
 
-public class StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections, bool vanilla) : OptionItem(id, name, defaultValue, tab, isSingleValue, vanillaStr:vanilla)
+public class StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections, bool vanilla) : OptionItem(id, name, defaultValue, tab, isSingleValue, vanillaStr: vanilla)
 {
     public IntegerValueRule Rule = (0, selections.Length - 1, 1);
     public string[] Selections = selections;
@@ -11,7 +11,7 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
     {
         return new StringOptionItem(id, name, defaultIndex, tab, isSingleValue, selections, vanillaText);
     }
-    public static StringOptionItem Create(int id,Enum name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static StringOptionItem Create(int id, Enum name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false)
     {
         return new StringOptionItem(id, name.ToString(), defaultIndex, tab, isSingleValue, selections, vanillaText);
     }
@@ -28,7 +28,7 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
         //For 0% or 100%
         if (Selections.Length == 2) return CurrentValue * 100;
 
-        //TOHE’s career generation mode
+        //TOHEΓÇÖs career generation mode
         if (Selections.Length == 3) return CurrentValue;
 
         //For 0% to 100% or 5% to 100%

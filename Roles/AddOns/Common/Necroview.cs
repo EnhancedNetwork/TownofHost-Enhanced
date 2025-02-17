@@ -1,9 +1,10 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Necroview : IAddon
 {
+    public CustomRoles Role => CustomRoles.Necroview;
     private const int Id = 19600;
     public AddonTypes Type => AddonTypes.Helpful;
 
@@ -30,7 +31,7 @@ public class Necroview : IAddon
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
                 or CustomRoles.Soulless)
-                return Main.roleColors[CustomRoles.Knight];
+                return "7f8c8d";
         }
 
         if ((customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Madmate)) && !target.Is(CustomRoles.Admired))
@@ -43,7 +44,11 @@ public class Necroview : IAddon
             return Main.roleColors[CustomRoles.Bait];
         }
 
-        return Main.roleColors[CustomRoles.Knight];
+        if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))
+        {
+            return Main.roleColors[CustomRoles.Coven];
+        }
+        return "7f8c8d";
     }
 }
 

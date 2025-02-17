@@ -1,4 +1,4 @@
-﻿using AmongUs.Data;
+using AmongUs.Data;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -57,6 +57,7 @@ class ExileControllerWrapUpPatch
     }
     private static void CheckAndDoRandomSpawn()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
         if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             RandomSpawn.SpawnMap spawnMap = Utils.GetActiveMapName() switch
@@ -107,19 +108,22 @@ class ExileControllerWrapUpPatch
 
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Terrorist) Main.PlayerStates[exiled.PlayerId].SetDead();
         }
-        
+
         if (AmongUsClient.Instance.AmHost && Main.IsFixedCooldown)
         {
             Main.RefixCooldownDelay = Options.DefaultKillCooldown - 3f;
         }
 
-        
+
         foreach (var player in Main.AllPlayerControls)
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
             // Check for remove pet
             player.RpcRemovePet();
+
+            // Set UnShift after meeting
+            player.DoUnShiftState();
         }
 
         Main.MeetingIsStarted = false;
@@ -147,7 +151,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.7f, "Restore IsDead Task");
+            }, 0.6f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -157,7 +161,7 @@ class ExileControllerWrapUpPatch
                 {
                     var player = x.Key.GetPlayer();
                     var state = Main.PlayerStates[x.Key];
-                    
+
                     Logger.Info($"{player?.GetNameWithRole().RemoveHtmlTags()} died with {x.Value}", "AfterMeetingDeath");
 
                     state.deathReason = x.Value;
@@ -171,19 +175,23 @@ class ExileControllerWrapUpPatch
                 });
 
                 Main.AfterMeetingDeathPlayers.Clear();
-                
+
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
-                Utils.NotifyRoles(NoCache: true);
-            }, 1.2f, "AfterMeetingDeathPlayers Task");
 
-            _ = new LateTask(() =>
-            {
-                if (GameStates.IsEnded) return;
+                if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+                {
+                    Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+                }
+                else
+                {
+                    Utils.DoNotifyRoles();
+                }
 
                 AntiBlackout.ResetAfterMeeting();
-            }, 2f, "Reset Cooldown After Meeting");
+                Main.LastMeetingEnded = Utils.TimeStamp;
+            }, 1f, "AfterMeetingDeathPlayers Task");
         }
 
         //This should happen shortly after the Exile Controller wrap up finished for clients

@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -7,9 +7,8 @@ namespace TOHE.Roles.Neutral;
 internal class Terrorist : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Terrorist;
     private const int id = 15400;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled = PlayerIds.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -28,14 +27,6 @@ internal class Terrorist : RoleBase
         TerroristCanGuess = BooleanOptionItem.Create(15403, GeneralOption.CanGuess, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Terrorist]);
         OverrideTasksData.Create(15404, TabGroup.NeutralRoles, CustomRoles.Terrorist);
-    }
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -64,7 +55,7 @@ internal class Terrorist : RoleBase
         if (taskState.IsTaskFinished && (!state.IsSuicide || CanTerroristSuicideWin.GetBool()) && (state.deathReason != PlayerState.DeathReason.Armageddon))
         {
             if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
-            
+
             if (!CustomWinnerHolder.CheckForConvertedWinner(terrorist.PlayerId))
             {
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Terrorist);

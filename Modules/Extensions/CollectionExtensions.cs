@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace TOHE;
 
@@ -36,6 +36,12 @@ public static class CollectionExtensions
     {
         if (collection.Count == 0) return default;
         return collection[IRandom.Instance.Next(collection.Count)];
+    }
+    public static T RandomElement<T>(this IEnumerable<T> collection)
+    {
+        if (collection is IList<T> list) return list.RandomElement();
+
+        return collection.ToList().RandomElement();
     }
     /// <summary>
     /// Combines multiple collections into a single collection

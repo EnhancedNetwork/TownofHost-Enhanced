@@ -1,10 +1,11 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 
 namespace TOHE.Roles.AddOns.Common;
 
 public class Rebound : IAddon
 {
+    public CustomRoles Role => CustomRoles.Rebound;
     private const int Id = 22300;
     public AddonTypes Type => AddonTypes.Guesser;
 

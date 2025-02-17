@@ -8,6 +8,10 @@ class ChatControllerUpdatePatch
 {
     public static int CurrentHistorySelection = -1;
 
+    private static SpriteRenderer QuickChatIcon;
+    private static SpriteRenderer OpenBanMenuIcon;
+    private static SpriteRenderer OpenKeyboardIcon;
+
     public static void Prefix()
     {
         if (AmongUsClient.Instance.AmHost && DataManager.Settings.Multiplayer.ChatMode == InnerNet.QuickChatModes.QuickChatOnly)
@@ -27,6 +31,21 @@ class ChatControllerUpdatePatch
             // quick chat
             __instance.quickChatField.background.color = backgroundColor;
             __instance.quickChatField.text.color = Color.white;
+
+            if (QuickChatIcon == null)
+                QuickChatIcon = GameObject.Find("QuickChatIcon")?.transform.GetComponent<SpriteRenderer>();
+            else
+                QuickChatIcon.sprite = Utils.LoadSprite("TOHE.Resources.Images.DarkQuickChat.png", 100f);
+
+            if (OpenBanMenuIcon == null)
+                OpenBanMenuIcon = GameObject.Find("OpenBanMenuIcon")?.transform.GetComponent<SpriteRenderer>();
+            else
+                OpenBanMenuIcon.sprite = Utils.LoadSprite("TOHE.Resources.Images.DarkReport.png", 100f);
+
+            if (OpenKeyboardIcon == null)
+                OpenKeyboardIcon = GameObject.Find("OpenKeyboardIcon")?.transform.GetComponent<SpriteRenderer>();
+            else
+                OpenKeyboardIcon.sprite = Utils.LoadSprite("TOHE.Resources.Images.DarkKeyboard.png", 100f);
         }
         else
         {
@@ -36,7 +55,8 @@ class ChatControllerUpdatePatch
         if (!__instance.freeChatField.textArea.hasFocus) return;
         if (!GameStates.IsModHost) return;
 
-        __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 2000 : 300;
+        __instance.freeChatField.textArea.characterLimit = AmongUsClient.Instance.AmHost ? 2000 : 1200;
+
 
         if ((Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) && Input.GetKeyDown(KeyCode.C))
             ClipboardHelper.PutClipboardString(__instance.freeChatField.textArea.text);

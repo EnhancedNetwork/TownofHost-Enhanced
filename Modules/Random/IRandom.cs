@@ -14,13 +14,13 @@ public interface IRandom
     public static Dictionary<int, Type> randomTypes = new()
     {
         { 0, typeof(NetRandomWrapper) }, //Default
-        { 1, typeof(NetRandomWrapper) },
-        { 2, typeof(HashRandomWrapper) },
-        { 3, typeof(Xorshift) },
-        { 4, typeof(MersenneTwister) },
+        { 1, typeof(HashRandomWrapper) },
+        { 2, typeof(Xorshift) },
+        { 3, typeof(MersenneTwister) },
     };
 
     public static IRandom Instance { get; private set; }
+
     public static void SetInstance(IRandom instance)
     {
         if (instance != null)
@@ -31,12 +31,13 @@ public interface IRandom
     {
         if (randomTypes.TryGetValue(id, out var type))
         {
-            // Current instance is null or current instance type does not match specified type
-            if (Instance == null || Instance.GetType() != type)
-            {
-                Instance = Activator.CreateInstance(type) as IRandom ?? Instance;
-            }
+            Instance = Activator.CreateInstance(type) as IRandom;
+            Logger.Info($"Set IRandom instance to {type.Name}", "IRandom");
         }
-        else Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
+        else
+        {
+            Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
+            Instance = new NetRandomWrapper();
+        }
     }
 }

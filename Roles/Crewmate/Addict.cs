@@ -7,12 +7,11 @@ namespace TOHE.Roles.Crewmate;
 internal class Addict : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Addict;
     private const int Id = 6300;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
     private static OptionItem VentCooldown;
@@ -39,7 +38,6 @@ internal class Addict : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         SuicideTimer.Clear();
         ImmortalTimer.Clear();
         DefaultSpeed = new();
@@ -47,14 +45,12 @@ internal class Addict : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         SuicideTimer.TryAdd(playerId, -10f);
         ImmortalTimer.TryAdd(playerId, 420f);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
     }
     public override void Remove(byte playerId)
     {
-        playerIdList.Remove(playerId);
         SuicideTimer.Remove(playerId);
         ImmortalTimer.Remove(playerId);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
@@ -74,14 +70,14 @@ internal class Addict : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        foreach (var player in playerIdList.ToArray())
+        foreach (var player in _playerIdList.ToArray())
         {
             SuicideTimer[player] = -10f;
             ImmortalTimer[player] = 420f;
             Main.AllPlayerSpeed[player] = DefaultSpeed;
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!player.IsAlive() || !SuicideTimer.TryGetValue(player.PlayerId, out var timer)) return;
 

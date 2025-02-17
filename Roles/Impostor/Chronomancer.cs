@@ -1,17 +1,18 @@
-﻿using System;
+using AmongUs.GameOptions;
+using Hazel;
+using InnerNet;
+using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using AmongUs.GameOptions;
-using Hazel;
-using InnerNet;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Chronomancer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Chronomancer;
     private const int Id = 900;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -43,7 +44,7 @@ internal class Chronomancer : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Chronomancer);
         KillCooldown = IntegerOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(1, 180, 1), 60, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
-        Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.05f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+        Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.10f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
         ReduceVision = FloatOptionItem.Create(Id + 12, "ChronomancerVisionMassacre", new(0.25f, 1f, 0.25f), 0.5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Multiplier);
@@ -135,7 +136,7 @@ internal class Chronomancer : RoleBase
         killer.SetKillCooldown();
         return true;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!Main.IntroDestroyed) return;
 

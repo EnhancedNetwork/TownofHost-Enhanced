@@ -11,6 +11,7 @@ namespace TOHE.Roles.Neutral;
 internal class BloodKnight : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.BloodKnight;
     private const int Id = 16100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.BloodKnight);
     public override bool IsDesyncRole => true;
@@ -56,7 +57,7 @@ internal class BloodKnight : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
 
     private bool InProtect() => TimeStamp > Utils.GetTimeStamp();
-    
+
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (InProtect())
@@ -81,7 +82,7 @@ internal class BloodKnight : RoleBase
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => true;
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && TimeStamp < nowTime && TimeStamp != 0)
         {

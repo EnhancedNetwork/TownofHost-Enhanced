@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -10,10 +10,8 @@ namespace TOHE.Roles.Impostor;
 internal class Warlock : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Warlock;
     private const int Id = 5100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
@@ -41,7 +39,7 @@ internal class Warlock : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
+
         CursedPlayers.Clear();
         IsCurseAndKill.Clear();
         WarlockTimer.Clear();
@@ -49,7 +47,7 @@ internal class Warlock : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
+
         CursedPlayers.Add(playerId, null);
         IsCurseAndKill.Add(playerId, false);
     }
@@ -67,7 +65,7 @@ internal class Warlock : RoleBase
         if (!Main.CheckShapeshift[killer.PlayerId] && !IsCurseAndKill[killer.PlayerId])
         {
             if (target.Is(CustomRoles.LazyGuy) || target.Is(CustomRoles.Lazy) || target.Is(CustomRoles.NiceMini) && Mini.Age < 18) return false;
-            
+
             IsCursed = true;
             killer.SetKillCooldown();
             killer.RPCPlayCustomSound("Line");
@@ -76,7 +74,7 @@ internal class Warlock : RoleBase
             IsCurseAndKill[killer.PlayerId] = true;
             return false;
         }
-        
+
         if (Main.CheckShapeshift[killer.PlayerId])
         {
             killer.RpcCheckAndMurder(target);
@@ -99,7 +97,7 @@ internal class Warlock : RoleBase
                 Vector2 cppos = cp.transform.position;
                 Dictionary<PlayerControl, float> cpdistance = [];
                 float dis;
-                
+
                 foreach (PlayerControl p in Main.AllAlivePlayerControls)
                 {
                     if (p.PlayerId == cp.PlayerId) continue;
@@ -107,7 +105,7 @@ internal class Warlock : RoleBase
                     if (!WarlockCanKillAllies.GetBool() && p.Is(Custom_Team.Impostor)) continue;
                     if (Pelican.IsEaten(p.PlayerId) || Medic.IsProtected(p.PlayerId)) continue;
                     if (p.Is(CustomRoles.Glitch) || p.Is(CustomRoles.Pestilence)) continue;
-                    
+
                     dis = Utils.GetDistance(cppos, p.transform.position);
                     cpdistance.Add(p, dis);
                     Logger.Info($"{p?.Data?.PlayerName} distance: {dis}", "Warlock");
@@ -143,7 +141,7 @@ internal class Warlock : RoleBase
         }
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (WarlockTimer.TryGetValue(player.PlayerId, out var warlockTimer))
         {
@@ -172,7 +170,7 @@ internal class Warlock : RoleBase
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        foreach (var warlockId in playerIdList)
+        foreach (var warlockId in _playerIdList)
         {
             CursedPlayers[warlockId] = null;
             IsCurseAndKill[warlockId] = false;

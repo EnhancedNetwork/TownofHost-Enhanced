@@ -1,18 +1,66 @@
+using System;
 using System.Text;
 using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
 
-public static class OptionShower
+[Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
+public class OptionShower : MonoBehaviour
 {
     public static int currentPage = 0;
     public static List<string> pages = [];
     private static byte DelayInUpdate = 0;
-    static OptionShower()
+
+    public OptionShower(IntPtr ptr) : base(ptr)
+    {
+    }
+
+    internal HudManager hudManager = null!;
+
+    public TMPro.TextMeshPro text;
+    public Camera Camera => hudManager ? Camera.main : HudManager.Instance.PlayerCam.GetComponent<Camera>();
+    public Vector3 TextOffset = new(0.38f, 0.38f, 0f);
+
+    public void Start()
     {
 
     }
+    public void Update()
+    {
+        if (text == null)
+        {
+            if (hudManager.AbilityButton != null && hudManager.AbilityButton.cooldownTimerText != null)
+            {
+                text = Instantiate(hudManager.AbilityButton.cooldownTimerText, hudManager.transform);
+                text.name = "OptionShowerText";
+                text.text = "";
+                text.color = Color.white;
+                text.outlineColor = Color.black;
+                text.alignment = TMPro.TextAlignmentOptions.TopLeft;
+                text.gameObject.SetActive(true);
+                text.fontSize = 1.05f;
+                text.fontSizeMin = 1.0f;
+                text.enableWordWrapping = false;
+            }
+        }
+
+        if (Camera == null || text == null) return;
+
+        if (PlayerControl.LocalPlayer == null || !GameStates.IsLobby)
+        {
+            text.text = "";
+            return;
+        }
+
+        text.transform.position = AspectPosition.ComputeWorldPosition(Camera, AspectPosition.EdgeAlignments.LeftTop, TextOffset);
+        UpdateText();
+    }
+    public void UpdateText()
+    {
+        text.text = GetTextNoFresh();
+    }
+
     public static string GetTextNoFresh()
     {
         try
@@ -53,8 +101,11 @@ public static class OptionShower
             if (Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 //有効な役職一覧
-                //sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {Options.EnableGM.GetString()}\n\n");
+                sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {(Main.EnableGM.Value ? GetString("RoleRate") : GetString("RoleOff"))}\n\n");
                 sb.Append(GetString("ActiveRolesList")).Append('\n');
+
+                var count = 4;
+
                 foreach (var kvp in Options.CustomRoleSpawnChances.ToArray())
                     if (kvp.Value.GameMode is CustomGameMode.Standard or CustomGameMode.All && kvp.Value.GetBool()) //スタンダードか全てのゲームモードで表示する役職
                     {
@@ -65,11 +116,20 @@ public static class OptionShower
                             mode = Utils.GetChance(Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat());
 
                         }
-                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n"); 
+                        sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n");
+                        count++;
+
+                        if (count > 35)
+                        {
+                            count = 0;
+                            pages.Add(sb + "\n\n");
+                            sb.Clear().Append(GetString("ActiveRolesList")).Append('\n');
+                        }
                     }
                 pages.Add(sb.ToString() + "\n\n");
                 sb.Clear();
             }
+
             //有効な役職と詳細設定一覧
             pages.Add("");
             //nameAndValue(Options.EnableGM);

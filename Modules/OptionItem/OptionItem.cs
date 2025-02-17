@@ -148,7 +148,7 @@ public abstract class OptionItem
     public OptionItem RegisterUpdateValueEvent(EventHandler<UpdateValueEventArgs> handler)
         => Do(i => UpdateValueEvent += handler);
 
-    // 置き換え辞書
+    // þ¢«ÒüìµÅøÒüêÞ¥×µø©
     public OptionItem AddReplacement((string key, string value) kvp)
         => Do(i =>
         {
@@ -195,11 +195,11 @@ public abstract class OptionItem
         {
             if (IsVanillaText == true)
             {
-            opt.TitleText.text = GetNameVanilla();
+                opt.TitleText.text = GetNameVanilla();
             }
             else
             {
-            opt.TitleText.text = GetName();
+                opt.TitleText.text = GetName();
             }
             opt.ValueText.text = GetString();
             opt.oldValue = opt.Value = CurrentValue;
@@ -297,17 +297,18 @@ public abstract class OptionItem
     public const int NumPresets = 5;
     public const int PresetId = 0;
 }
-
+[Obfuscation(Exclude = true)]
 public enum TabGroup
 {
     SystemSettings,
     ModSettings,
-    ModifierSettings,
     ImpostorRoles,
     CrewmateRoles,
     NeutralRoles,
+    CovenRoles,
     Addons
 }
+[Obfuscation(Exclude = true)]
 public enum OptionFormat
 {
     None,

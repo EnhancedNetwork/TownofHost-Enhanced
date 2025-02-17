@@ -1,8 +1,9 @@
-﻿using static TOHE.Options;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
 public class Mimic : IAddon
 {
+    public CustomRoles Role => CustomRoles.Mimic;
     private const int Id = 23100;
     public AddonTypes Type => AddonTypes.Impostor;
 

@@ -3,8 +3,8 @@ using AmongUs.GameOptions;
 using InnerNet;
 using System;
 using TMPro;
-using UnityEngine;
 using TOHE.Patches;
+using UnityEngine;
 using static TOHE.Translator;
 using Object = UnityEngine.Object;
 
@@ -21,6 +21,7 @@ public static class GameStartManagerMinPlayersPatch
 public class GameStartManagerPatch
 {
     public static float timer = 600f;
+    public static long joinedTime = Utils.GetTimeStamp();
     private static Vector3 GameStartTextlocalPosition;
     private static TextMeshPro warningText;
     private static TextMeshPro timerText;
@@ -35,6 +36,7 @@ public class GameStartManagerPatch
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
+            joinedTime = Utils.GetTimeStamp();
 
             HideName = Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
             HideName.text = ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
@@ -168,6 +170,12 @@ public class GameStartManagerPatch
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
                             return;
                         }
+
+                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp())
+                        {
+                            BeginGameAutoStart(Options.AutoStartTimer.GetInt());
+                            return;
+                        }
                     }
                 }
             }
@@ -247,7 +255,7 @@ public class GameStartManagerPatch
             int minutes = (int)timer / 60;
             int seconds = (int)timer % 60;
             string countDown = $"{minutes:00}:{seconds:00}";
-            if (timer <= 60) countDown = Utils.ColorString(Color.red, countDown);
+            if (timer <= 60) countDown = Utils.ColorString((int)timer % 2 == 0 ? Color.yellow : Color.red, countDown);
             timerText.text = countDown;
         }
         private static void BeginGameAutoStart(float countdown)

@@ -1,14 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Cleaner : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Cleaner;
     private const int Id = 3000;
-    private static readonly HashSet<byte> Playerids = [];
-    public static bool HasEnabled => Playerids.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -27,14 +25,6 @@ internal class Cleaner : RoleBase
         KillCooldownAfterCleaning = FloatOptionItem.Create(Id + 3, "KillCooldownAfterCleaning", new(5f, 180f, 2.5f), 60f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Cleaner])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-    public override void Init()
-    {
-        Playerids.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        Playerids.Add(playerId);
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();

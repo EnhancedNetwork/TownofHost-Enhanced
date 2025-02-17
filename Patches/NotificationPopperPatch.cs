@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using UnityEngine;
 
 namespace TOHE.Patches;

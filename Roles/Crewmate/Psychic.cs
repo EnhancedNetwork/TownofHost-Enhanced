@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -9,6 +10,7 @@ namespace TOHE.Roles.Crewmate;
 internal class Psychic : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Psychic;
     private const int Id = 9400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Psychic);
 
@@ -24,6 +26,8 @@ internal class Psychic : RoleBase
     private static OptionItem NCshowEvil;
     private static OptionItem NAshowEvil;
     private static OptionItem NKshowEvil;
+    private static OptionItem CovshowEvil;
+
 
     private readonly HashSet<byte> RedPlayer = [];
 
@@ -39,6 +43,7 @@ internal class Psychic : RoleBase
         NCshowEvil = BooleanOptionItem.Create(Id + 7, "Psychic_NCareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NAshowEvil = BooleanOptionItem.Create(Id + 8, "Psychic_NAareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
         NKshowEvil = BooleanOptionItem.Create(Id + 9, "Psychic_NKareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
+        CovshowEvil = BooleanOptionItem.Create(Id + 10, "Psychic_CovareRed", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Psychic]);
     }
     public override void Init()
     {
@@ -72,7 +77,7 @@ internal class Psychic : RoleBase
     {
         if (target == null || seer == null) return false;
         var targetRole = target.GetCustomRole();
-        if (seer.Is(CustomRoles.Madmate)) return targetRole.IsNK() || targetRole.IsNE() || targetRole.IsCrewKiller();
+        if (seer.Is(CustomRoles.Madmate)) return targetRole.IsNeutral() || targetRole.IsCrewKiller();
         else return RedPlayer != null && RedPlayer.Contains(target.PlayerId);
     }
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
@@ -84,7 +89,7 @@ internal class Psychic : RoleBase
     {
         if (!_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
-        List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x =>
+        List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
         (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
@@ -92,7 +97,8 @@ internal class Psychic : RoleBase
         (x.GetCustomRole().IsNC() && NCshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNB() && NBshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNK() && NKshowEvil.GetBool()) ||
-        (x.GetCustomRole().IsNA() && NAshowEvil.GetBool())
+        (x.GetCustomRole().IsNA() && NAshowEvil.GetBool()) ||
+        (x.GetCustomRole().IsCoven() && CovshowEvil.GetBool())
         ).ToList();
 
         var randomBadPlayer = BadListPc.RandomElement();

@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using UnityEngine;
 
 using static TOHE.Options;
 
@@ -7,13 +8,13 @@ namespace TOHE.Roles.Neutral;
 internal class Pyromaniac : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pyromaniac;
     private const int Id = 17800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Pyromaniac");
 
     private static OptionItem KillCooldown;
     private static OptionItem DouseCooldown;
@@ -37,13 +38,10 @@ internal class Pyromaniac : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         DousedList.Clear();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
-
         // Double Trigger
         var pc = Utils.GetPlayerById(playerId);
         pc.AddDoubleTrigger();
@@ -68,8 +66,8 @@ internal class Pyromaniac : RoleBase
         }
         else
         {
-            return killer.CheckDoubleTrigger(target, () => 
-            { 
+            return killer.CheckDoubleTrigger(target, () =>
+            {
                 DousedList.Add(target.PlayerId);
                 killer.SetKillCooldown(DouseCooldown.GetFloat());
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);

@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
@@ -7,10 +7,9 @@ namespace TOHE.Roles._Ghosts_.Crewmate;
 internal class GuardianAngelTOHE : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.GuardianAngelTOHE;
     private const int Id = 20900;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateVanillaGhosts;
     //==================================================================\\
@@ -32,13 +31,11 @@ internal class GuardianAngelTOHE : RoleBase
     public override void Init()
     {
         PlayerShield.Clear();
-        PlayerIds.Clear();
     }
     public override void Add(byte playerId)
     {
         CustomRoleManager.OnFixedUpdateOthers.Add(OnOthersFixedUpdate);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
-        PlayerIds.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

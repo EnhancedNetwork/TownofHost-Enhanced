@@ -2,12 +2,18 @@ using System;
 
 namespace TOHE;
 
-public class NetRandomWrapper(Random instance) : IRandom
+public class NetRandomWrapper : IRandom
 {
-    public Random wrapping = instance;
+    public Random wrapping;
 
-    public NetRandomWrapper() : this(new Random())
+    public NetRandomWrapper(Random instance)
+    {
+        wrapping = instance;
+    }
+
+    public NetRandomWrapper() : this(new Random((int)DateTime.UtcNow.Ticks))
     { }
+
     public NetRandomWrapper(int seed) : this(new Random(seed))
     { }
 

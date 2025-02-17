@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Roles.Core;
 
 namespace TOHE;
 
@@ -7,8 +7,8 @@ public static class OneWayShadowsIsIgnoredPatch
 {
     public static bool Prefix(OneWayShadows __instance, ref bool __result)
     {
-        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole();
-        
+        var amDesyncImpostor = PlayerControl.LocalPlayer.HasDesyncRole() || Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].IsNecromancer;
+
         if (__instance.IgnoreImpostor && amDesyncImpostor)
         {
             __result = true;

@@ -1,4 +1,4 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -9,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 internal class Stealth : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Stealth;
     private const int Id = 27400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Stealth);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -52,7 +53,7 @@ internal class Stealth : RoleBase
             playersToDarken = playersToDarken.Where(player => !player.Is(CustomRoles.Impostor)).ToArray();
         }
         DarkenPlayers(playersToDarken);
-        
+
         return true;
     }
     /// <summary>Get all players in the same room as you</summary>
@@ -78,7 +79,7 @@ internal class Stealth : RoleBase
             player.MarkDirtySettings();
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         // when you're darkening someone
         if (darkenedPlayers == null) return;

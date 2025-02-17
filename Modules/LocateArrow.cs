@@ -1,6 +1,6 @@
 using Hazel;
-using UnityEngine;
 using TOHE.Modules;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -171,7 +171,7 @@ static class LocateArrow
             }
         }
 
-        if (update && !seer.IsModded())
+        if (update && (!seer.IsModded() || (seer.IsHost() && Options.LowLoadDelayUpdateNames.GetBool())))
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
         }

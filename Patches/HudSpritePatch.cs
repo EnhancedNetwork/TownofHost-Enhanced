@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Core;
+using TOHE.Roles.Core;
 using UnityEngine;
 
 namespace TOHE;
@@ -16,6 +16,7 @@ public static class HudSpritePatch
     private static Sprite Ability;
     private static Sprite Vent;
     private static Sprite Report;
+    private static Sprite Sabotage;
     public static void Postfix(HudManager __instance)
     {
         if (__instance == null) return;
@@ -29,6 +30,7 @@ public static class HudSpritePatch
             Ability = null;
             Vent = null;
             Report = null;
+            Sabotage = null;
             return;
         }
 
@@ -38,11 +40,13 @@ public static class HudSpritePatch
         if (!Ability) Ability = __instance.AbilityButton.graphic.sprite;
         if (!Vent) Vent = __instance.ImpostorVentButton.graphic.sprite;
         if (!Report) Report = __instance.ReportButton.graphic.sprite;
+        if (!Sabotage) Sabotage = __instance.SabotageButton.graphic.sprite;
 
         Sprite newKillButton = Kill;
         Sprite newAbilityButton = Ability;
         Sprite newVentButton = Vent;
         Sprite newReportButton = Report;
+        Sprite newSabotageButton = Sabotage;
 
         var playerRoleClass = player.GetRoleClass();
         if (playerRoleClass == null) goto EndOfSelectImg;
@@ -59,23 +63,26 @@ public static class HudSpritePatch
         if (playerRoleClass?.ReportButtonSprite is Sprite Reportbutton)
             newReportButton = Reportbutton;
 
+        if (playerRoleClass?.SabotageButtonSprite is Sprite Sabotagebutton)
+            newSabotageButton = Sabotagebutton;
+
         // CustomButton.Get("Paranoid"); for Paranoid
 
         EndOfSelectImg:
 
-        // Set custom icon for kill button
+        // Set custom icon for Kill button
         __instance.KillButton.graphic.sprite = newKillButton;
         //  Set custom icon for impostor vent button
         __instance.ImpostorVentButton.graphic.sprite = newVentButton;
 
-        // Set custom icon for ability button (Shapeshift, Vitals, Engineer Vent)
+        // Set custom icon for Ability button (Shapeshift, Vitals, Engineer Vent)
         __instance.AbilityButton.graphic.sprite = newAbilityButton;
 
-        // This code replaces the sprite that displays the quantity next to the button (for example, like the Engineer)
-        //__instance.AbilityButton.usesRemainingSprite.sprite = newAbilityButton;
-
-        // Set custom icon for report button
+        // Set custom icon for Report button
         __instance.ReportButton.graphic.sprite = newReportButton;
+
+        // Set custom icon for Sabotage button
+        __instance.SabotageButton.graphic.sprite = newSabotageButton;
 
         // Normalized Uvs
         // The sprites after custom icons has a strong overexposure
@@ -83,5 +90,6 @@ public static class HudSpritePatch
         __instance.ImpostorVentButton.graphic.SetCooldownNormalizedUvs();
         __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
         __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
+        __instance.SabotageButton.graphic.SetCooldownNormalizedUvs();
     }
 }
