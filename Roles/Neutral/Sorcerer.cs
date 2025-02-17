@@ -1,17 +1,19 @@
-using TOHE.Modules;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Neutral;
+
 internal class Sorcerer : RoleBase
 {
-    // ----------- Role Setup ----------- //
+    //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Sorcerer;
     private const int Id = 34000;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor; 
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
+    //==================================================================\\
 
-    // ----------- Settings ----------- //
-    private List<byte> markedPlayers = [];
+    private static float MarkRange = 2.5f; // How close you need to be 
+    private bool usedSecondChance = false; // Checking if respawn has been used
+    private List<PlayerControl> markedPlayers = [];
 
     public override void SetupCustomOption()
     {
@@ -20,36 +22,36 @@ internal class Sorcerer : RoleBase
 
     public override void Init() 
     {
-        markedPlayers.Clear();
+        markedPlayers.Clear(); 
+        usedSecondChance = false; // Reset second chance
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => true;
-
-    // Try to mark a player (with distance check)
+    // Try to mark Player (with distance check)
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target) 
     {
         if (target == null) return true; 
-        if (markedPlayers.Contains(target.PlayerId)) return true;
+        if (markedPlayers.Contains(target)) return true;
 
-        if (markedPlayers.Count >= 2)
-        {
-            killer.RpcGuardAndKill(killer);
-            return false;
-        }
+        if (markedPlayers.Count >= 2) return true;
 
-        killer.RpcGuardAndKill(killer);
-        markedPlayers.Add(target.PlayerId);
+        markedPlayers.Add(target);
         return false;
     }
 
-    // Check if all marked players are dead
+    public override void AfterMeetingTasks() 
+    {
+        if (!PlayerControl.LocalPlayer.IsAlive() && !usedSecondChance) 
+        {
+            PlayerControl.LocalPlayer.RpcRevive();
+        }
+        usedSecondChance = true;
+    }
+
+    // Check if all marked Players are dead
     private bool AreAllMarkedPlayersDead() 
     {
-        if (markedPlayers == null) return false;
-        if (markedPlayers.Count == 1) return false;
-        foreach (var playerid in markedPlayers)
+        foreach (var player in markedPlayers)
         {
-            var player = Utils.GetPlayerById(playerid);
             if (!player.Data.IsDead) return false;
         }
         return true; // All are dead
@@ -69,7 +71,7 @@ internal class Sorcerer : RoleBase
         return aliveCount <= 3;
     }
 
-    // Win: all marked players dead + 3 or fewer alive
+    // Win: all marked Players dead + 3 or fewer alive
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad || !player.IsAlive()) return;

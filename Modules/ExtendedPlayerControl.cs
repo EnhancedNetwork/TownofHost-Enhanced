@@ -57,15 +57,39 @@ static class ExtendedPlayerControl
     public static void RemoveIncompatibleAddOns(this PlayerControl player)
     {
         List<CustomRoles> roles = new(player.GetCustomSubRoles());
+        var oldRoles = roles.ToList();
+        
         roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
         roles.Shuffle();
+
+        var changed = false;
 
         foreach (var addon in roles)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false, checkSelfAddOn: false))
             {
+                changed = true;
+                
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
                 Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+            }
+        }
+
+        if (changed)
+        {
+            roles = new(player.GetCustomSubRoles());
+
+            var addedRoles = roles.Except(oldRoles).ToList();
+            var removedRoles = oldRoles.Except(roles).ToList();
+
+            List<(CustomRoles, bool)> changes = [];
+
+            changes.AddRange(removedRoles.Select(x => (x, false)));
+            changes.AddRange(addedRoles.Select(x => (x, true)));
+
+            if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
+            {
+                state.AddonLogs.Add((DateTime.Now, changes));
             }
         }
     }
@@ -1041,9 +1065,9 @@ static class ExtendedPlayerControl
     {
         return Main.PlayerStates[player.PlayerId].TaskState;
     }
-    public static string GetDisplayRoleAndSubName(this PlayerControl seer, PlayerControl target, bool notShowAddOns = false)
+    public static string GetDisplayRoleAndSubName(this PlayerControl seer, PlayerControl target, bool isMeeting, bool notShowAddOns = false)
     {
-        return Utils.GetDisplayRoleAndSubName(seer.PlayerId, target.PlayerId, notShowAddOns);
+        return Utils.GetDisplayRoleAndSubName(seer.PlayerId, target.PlayerId, isMeeting, notShowAddOns);
     }
     public static string GetSubRoleName(this PlayerControl player, bool forUser = false)
     {

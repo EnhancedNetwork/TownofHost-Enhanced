@@ -22,7 +22,6 @@ internal class Fireworker : RoleBase
     public override CustomRoles Role => CustomRoles.Fireworker;
     [Obfuscation(Exclude = true)]
     private const int Id = 3200;
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\

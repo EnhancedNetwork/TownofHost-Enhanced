@@ -30,6 +30,7 @@ public class PlayerState(byte playerId)
     public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
+    public List<(DateTime, List<(CustomRoles, bool)>)> AddonLogs = []; // bool true = add addons. bool false = removed addons
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];

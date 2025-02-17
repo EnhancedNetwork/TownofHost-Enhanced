@@ -40,12 +40,12 @@ public class Sleuth : IAddon
                 return;
             }
             string msg;
-            msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false));
+            msg = string.Format(Translator.GetString("SleuthNoticeVictim"), deadBody.Object.GetRealName(), deadBody.Object.GetDisplayRoleAndSubName(deadBody.Object, false, false));
             if (SleuthCanKnowKillerRole.GetBool())
             {
                 var realKiller = deadBody.Object.GetRealKiller();
                 if (realKiller == null) msg += "；" + Translator.GetString("SleuthNoticeKillerNotFound");
-                else msg += "；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false));
+                else msg += "；" + string.Format(Translator.GetString("SleuthNoticeKiller"), realKiller.GetDisplayRoleAndSubName(realKiller, false, false));
             }
             SleuthNotify.Add(reporter.PlayerId, msg);
         }

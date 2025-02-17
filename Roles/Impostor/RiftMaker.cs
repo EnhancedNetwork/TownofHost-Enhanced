@@ -13,7 +13,6 @@ internal class RiftMaker : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.RiftMaker;
     private const int Id = 27200;
-
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\

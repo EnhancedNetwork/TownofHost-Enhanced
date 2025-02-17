@@ -207,11 +207,11 @@ internal class Death : RoleBase
         {
             if (exiled.PlayerId == sc.PlayerId)
             {
-                name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
             }
             else
             {
-                name = string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name = string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
             }
         }
     }

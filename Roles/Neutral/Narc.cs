@@ -8,11 +8,11 @@ internal class Narc : RoleBase
     private const int Id = 32800;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-
     public override CustomRoles Role => CustomRoles.Narc;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
+    
     private bool AmnesiacReset = true;
     public override void Init()
     {

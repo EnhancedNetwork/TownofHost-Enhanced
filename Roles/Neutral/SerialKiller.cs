@@ -17,7 +17,7 @@ internal class SerialKiller : RoleBase
     private static OptionItem CanVent;
     private static OptionItem HasImpostorVision;
     private static OptionItem HasSerialKillerBuddy;
-    //private static OptionItem ChanceToSpawn;
+    private static OptionItem ChanceToSpawn;
 
     public override void SetupCustomOption()
     {
@@ -27,9 +27,9 @@ internal class SerialKiller : RoleBase
         CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
         HasSerialKillerBuddy = BooleanOptionItem.Create(Id + 16, "HasSerialKillerBuddy", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.SerialKiller]);
-        //ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
-        //    .SetParent(HasSerialKillerBuddy)
-        //    .SetValueFormat(OptionFormat.Percent); 
+        ChanceToSpawn = IntegerOptionItem.Create(Id + 14, "ChanceToSpawn", new(0, 100, 5), 100, TabGroup.NeutralRoles, false)
+            .SetParent(HasSerialKillerBuddy)
+            .SetValueFormat(OptionFormat.Percent); 
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());

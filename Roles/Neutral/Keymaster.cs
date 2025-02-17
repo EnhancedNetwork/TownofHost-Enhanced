@@ -13,7 +13,6 @@ internal class Keymaster : RoleBase
     private const int Id = 32300;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled = playerIdList.Any();
-
     public override CustomRoles Role => CustomRoles.Keymaster;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -21,10 +20,7 @@ internal class Keymaster : RoleBase
 
     private static readonly Dictionary<byte, HashSet<byte>> KeyedList = [];
     public static Dictionary<byte, string> KeymasterNotify = [];
-    private static OptionItem GiveKeyCooldown;
-    public static OptionItem StealsWin;
-    private static OptionItem Stage2Difficulty;
-    private static OptionItem ColoredKeyNotiDuration;
+    
     private static byte KeyID = 10;
     private static byte ColID = 10;
     private static byte kmColor = 10;
@@ -35,6 +31,11 @@ internal class Keymaster : RoleBase
     private static bool LimboState = false;
     int Count;
     public static long LastColorChange;
+
+    private static OptionItem GiveKeyCooldown;
+    public static OptionItem StealsWin;
+    private static OptionItem Stage2Difficulty;
+    private static OptionItem ColoredKeyNotiDuration;
 
     public override void SetupCustomOption()
     {

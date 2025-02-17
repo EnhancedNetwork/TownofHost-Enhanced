@@ -1309,7 +1309,7 @@ class FixedUpdateInNormalGamePatch
                 
                 if (needUpdateNameTarget)
                 {
-                    var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId);
+                    var RoleTextData = Utils.GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, __instance.PlayerId, isMeeting: false);
                     RoleText.text = RoleTextData.Item1;
                     RoleText.color = RoleTextData.Item2;
                     if (Options.CurrentGameMode == CustomGameMode.FFA) RoleText.text = string.Empty;
@@ -1572,6 +1572,8 @@ class PlayerStartPatch
 
         var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
         roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
+        roleText.fontMaterial.SetFloat("_StencilComp", 7f);
+        roleText.fontMaterial.SetFloat("_Stencil", 2f);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
         roleText.fontSize = 1.3f;
         roleText.text = "RoleText";

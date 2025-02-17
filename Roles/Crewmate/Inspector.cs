@@ -18,7 +18,6 @@ internal class Inspector : RoleBase
     public override CustomRoles Role => CustomRoles.Inspector;
     private const int Id = 8300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Inspector);
-
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\

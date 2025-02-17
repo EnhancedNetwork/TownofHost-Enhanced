@@ -19,7 +19,9 @@ public class RoleAssign
         NonKillingNeutral,
         NeutralApocalypse,
         Coven,
-        Crewmate
+        Crewmate,
+
+        None
     }
 
     public static void OnInit()
@@ -311,6 +313,46 @@ public class RoleAssign
         RoleAssignInfo[] Covs = [];
         RoleAssignInfo[] Crews = [];
 
+        List<RoleAssignType> KillingFractions = [];
+
+        bool spawnNK = false;
+        bool spawnNA = false;
+        bool spawnCoven = false;
+
+        if (Roles[RoleAssignType.NeutralKilling].Count > 0)
+        {
+            KillingFractions.Add(RoleAssignType.NeutralKilling);
+        }
+        if (Roles[RoleAssignType.NeutralApocalypse].Count > 0)
+        {
+            KillingFractions.Add(RoleAssignType.NeutralApocalypse);
+        }
+        if (Roles[RoleAssignType.Coven].Count > 0)
+        {
+            KillingFractions.Add(RoleAssignType.Coven);
+        }
+
+        var randomType = Options.SpawnOneRandomKillingFraction.GetBool()
+            ? KillingFractions.RandomElement() : RoleAssignType.None;
+
+        switch (randomType)
+        {
+            case RoleAssignType.NeutralKilling:
+                spawnNK = true;
+                break;
+            case RoleAssignType.NeutralApocalypse:
+                spawnNA = true;
+                break;
+            case RoleAssignType.Coven:
+                spawnCoven = true;
+                break;
+            default:
+                spawnNK = true;
+                spawnNA = true;
+                spawnCoven = true;
+                break;
+        }
+
         // Impostor Roles
         {
             List<CustomRoles> AlwaysImpRoles = [];
@@ -514,6 +556,7 @@ public class RoleAssign
             }
 
             // Neutral Killing Roles
+            if (spawnNK)
             {
                 List<CustomRoles> AlwaysNKRoles = [];
                 List<CustomRoles> ChanceNKRoles = [];
@@ -610,7 +653,9 @@ public class RoleAssign
                     }
                 }
             }
+            
             // Neutral Apocalypse Roles
+            if (spawnNA)
             {
                 List<CustomRoles> AlwaysNARoles = [];
                 List<CustomRoles> ChanceNARoles = [];
@@ -709,7 +754,9 @@ public class RoleAssign
                 }
             }
         }
+        
         // Coven Roles
+        if (spawnCoven)
         {
             {
                 List<CustomRoles> AlwaysCVRoles = [];

@@ -9,7 +9,6 @@ internal class Werewolf : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Werewolf;
     private const int Id = 18400;
-
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;

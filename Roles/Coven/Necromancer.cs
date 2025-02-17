@@ -115,6 +115,11 @@ internal class Necromancer : CovenManager
             nm.Notify(GetString("NecromancerCooldownNotDone"));
             return;
         }
+        if (IsRevenge)
+        {
+            nm.Notify(GetString("NecromancerRevengeInProgress"));
+            return;
+        }
         var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
         List<CustomRoles> deadRoles = [];
         foreach (var deadPlayer in deadPlayers)

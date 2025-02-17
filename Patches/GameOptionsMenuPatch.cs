@@ -48,26 +48,6 @@ public static class GameOptionsMenuPatch
     {
         var optionMenu = GameObject.Find("PlayerOptionsMenu(Clone)");
         optionMenu?.transform.FindChild("Background")?.gameObject.SetActive(false);
-
-        _ = new LateTask(() =>
-        {
-            var menuDescription = optionMenu?.transform.FindChild("What Is This?");
-
-            var infoImage = menuDescription.transform.FindChild("InfoImage");
-            infoImage.transform.localPosition = new(-4.65f, 0.16f, -1f);
-            infoImage.transform.localScale = new(0.2202f, 0.2202f, 0.3202f);
-
-            var infoText = menuDescription.transform.FindChild("InfoText");
-            infoText.transform.localPosition = new(-3.5f, 0.83f, -2f);
-            infoText.transform.localScale = new(1f, 1f, 1f);
-
-            var cubeObject = menuDescription.transform.FindChild("Cube");
-            cubeObject.transform.localPosition = new(-3.2f, 0.55f, -0.1f);
-            cubeObject.transform.localScale = new(0.61f, 0.64f, 1f);
-
-            var menuDescriptionText = GameSettingMenu.Instance.MenuDescriptionText;
-            menuDescriptionText.m_marginWidth = 2.5f;
-        }, 0.2f, "Set Menu", shoudLog: false);
     }
 
     [HarmonyPatch(nameof(GameOptionsMenu.CreateSettings)), HarmonyPrefix]

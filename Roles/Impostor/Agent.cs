@@ -6,7 +6,6 @@ internal class Agent : RoleBase
     private const int Id = 32600;
     private static readonly HashSet<byte> Playerids = [];
     public static bool HasEnabled => Playerids.Any();
-
     public override CustomRoles Role => CustomRoles.Agent;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;

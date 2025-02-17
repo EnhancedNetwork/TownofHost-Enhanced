@@ -98,7 +98,8 @@ internal class Hawk : RoleBase
         }
 
         Logger.Info($" {target.GetRealName()}'s DieChance is :{100f - KillerChanceMiss[target.PlayerId]}%", "Hawk");
-        KillerChanceMiss[target.PlayerId] -= Math.Clamp(35, 0, KillerChanceMiss[target.PlayerId] - 10);
+        var temp = KillerChanceMiss.GetValueOrDefault(target.PlayerId, MissChance.GetFloat());
+        KillerChanceMiss[target.PlayerId] -= Math.Clamp(35f, 0f, temp - 10f);
         return false;
     }
 

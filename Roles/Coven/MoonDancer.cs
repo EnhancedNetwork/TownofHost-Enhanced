@@ -56,8 +56,8 @@ internal class MoonDancer : CovenManager
     }
     public override void Add(byte playerId)
     {
-        BatonPassList.Add(playerId, []);
-        BlastedOffList.Add(playerId, []);
+        BatonPassList[playerId] = [];
+        BlastedOffList[playerId] = [];
     }
     private void SyncBlastList()
     {
@@ -209,13 +209,18 @@ internal class MoonDancer : CovenManager
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
+        if (_Player == null) return;
+        
         KillBlastedOff();
         foreach (var md in BatonPassList.Keys)
         {
-            DistributeAddOns(GetPlayerById(md));
+            var player = GetPlayerById(md);
+            if (player == null) continue;
+        
+            DistributeAddOns(player);
         }
     }
-    private void DistributeAddOns(PlayerControl md)
+    private static void DistributeAddOns(PlayerControl md)
     {
         var rd = IRandom.Instance;
         foreach (var pc in BatonPassList[md.PlayerId])
@@ -275,15 +280,15 @@ internal class MoonDancer : CovenManager
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} Blasted Off {target.GetRealName()}", "MoonDancer");
             }
+            BlastedOffList[pc.Key].Clear();
         }
-        BlastedOffList.Clear();
         SyncBlastList();
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl moonDancer, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
+        if (inMeeting || !BlastedOffList.TryGetValue(moonDancer.PlayerId, out var blastedOff)) return;
 
-        foreach (var bl in BlastedOffList[moonDancer.PlayerId])
+        foreach (var bl in blastedOff)
         {
             var pc = GetPlayerById(bl);
             pc.SetRealKiller(moonDancer);

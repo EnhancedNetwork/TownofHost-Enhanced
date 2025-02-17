@@ -9,9 +9,9 @@ using UnityEngine;
 
 // 8x8 + Animator : https://ultradragon005.github.io/AmongUs-Utilities/animator.html
 // 10x10 : https://ultradragon005.github.io/AmongUs-Utilities/10xeditor.html
-// For special grid such as "8x6" jsut copy 10x10 code and ask gpt to make u that specific grid.
+// For special grid such as "8x6" jsut copy 10x10 code and ask gpt to make u that specific grid
 
-//Sidenote: 8x8 on 100% size is a pretty golden standard and trying to make something smaller than that is very ugly (as the grean bean is very visible) so I wouldn't recommend it. 
+//Sidenote: 8x8 on 100% size is a pretty golden standard and trying to make something smaller than that is very ugly (as the grean bean is very visible) so I wouldn't recommend it
 
 namespace TOHE.Modules
 {
@@ -127,7 +127,7 @@ namespace TOHE.Modules
                 _ = new LateTask(() =>
                 {
                     playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false);
-                }, 0.1f);
+                }, 0.1f, "Hide NameText_TMP", shoudLog: false);
                 playerControl.Visible = false;
                 return;
             }
@@ -158,9 +158,7 @@ namespace TOHE.Modules
 
         protected virtual void OnFixedUpdate()
         {
-            //
             // Need to respawn player every 20s because of 30s timeout
-            // 
             PlayerControlTimer += Time.fixedDeltaTime;
             if (PlayerControlTimer > 20f)
             {
@@ -177,8 +175,8 @@ namespace TOHE.Modules
                 AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
                 msg.EndMessage();
 
-                // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
-                // so it will disable checks regarding it
+                // This makes Innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir
+                // So it will disable checks regarding it
                 if (GameStates.IsVanillaServer)
                 {
                     msg.StartMessage(6);
@@ -296,7 +294,7 @@ namespace TOHE.Modules
                     Hide(pc);
                 }
                 _ = new LateTask(() =>
-                { // Fix for host
+                { // Fix for Host
                     if (!HiddenList.Contains(PlayerControl.LocalPlayer.PlayerId))
                         playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
                 }, 0.1f);
@@ -335,8 +333,8 @@ namespace TOHE.Modules
             AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
             msg.EndMessage();
 
-            // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
-            // so it will disable checks regarding it
+            // This makes Innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir
+            // So it will disable checks regarding it
             if (GameStates.IsVanillaServer)
             {
                 msg.StartMessage(6);
@@ -455,7 +453,7 @@ namespace TOHE.Modules
             AllObjects.Add(this);
 
             _ = new LateTask(() =>
-            { // Fix for host
+            { // Fix for Host
                 playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(true);
             }, 0.1f);
             _ = new LateTask(() =>

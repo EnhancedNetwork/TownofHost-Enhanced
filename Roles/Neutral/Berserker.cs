@@ -29,8 +29,6 @@ internal class Berserker : RoleBase
     private static OptionItem BerserkerScavengerLevel;
     private static OptionItem BerserkerThreeCanBomber;
     private static OptionItem BerserkerBomberLevel;
-    //public static OptionItem BerserkerFourCanFlash;
-    //public static OptionItem BerserkerSpeed;
     private static OptionItem BerserkerFourCanNotKill;
     private static OptionItem BerserkerImmortalLevel;
     public static OptionItem WarKillCooldown;
@@ -61,9 +59,6 @@ internal class Berserker : RoleBase
         BerserkerThreeCanBomber = BooleanOptionItem.Create(Id + 10, "BerserkerThreeCanBomber", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerBomberLevel = IntegerOptionItem.Create(Id + 11, "BerserkerLevelRequirement", new(1, 10, 1), 3, TabGroup.NeutralRoles, false).SetParent(BerserkerThreeCanBomber)
             .SetValueFormat(OptionFormat.Level);
-        //BerserkerFourCanFlash = BooleanOptionItem.Create(Id + 11, "BerserkerFourCanFlash", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
-        //BerserkerSpeed = FloatOptionItem.Create(611, "BerserkerSpeed", new(1.5f, 5f, 0.25f), 2.5f, TabGroup.NeutralRoles, false).SetParent(BerserkerOneCanKillCooldown)
-        //    .SetValueFormat(OptionFormat.Multiplier);
         BerserkerFourCanNotKill = BooleanOptionItem.Create(Id + 12, "BerserkerFourCanNotKill", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Berserker]);
         BerserkerImmortalLevel = IntegerOptionItem.Create(Id + 13, "BerserkerLevelRequirement", new(1, 10, 1), 4, TabGroup.NeutralRoles, false).SetParent(BerserkerFourCanNotKill)
             .SetValueFormat(OptionFormat.Level);

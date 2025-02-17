@@ -11,10 +11,8 @@ internal class Jester : RoleBase
     public override CustomRoles Role => CustomRoles.Jester;
     private const int Id = 14400;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Jester);
-
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
-
     public override bool BlockMoveInVent(PlayerControl pc) => CantMoveInVents.GetBool();
     //==================================================================\\
 
@@ -67,7 +65,7 @@ internal class Jester : RoleBase
             {
                 if (RevealJesterUponEjection.GetBool())
                 {
-                    name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                    name = string.Format(Translator.GetString("ExiledJester"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
                     DecidedWinner = true;
                 }
             }

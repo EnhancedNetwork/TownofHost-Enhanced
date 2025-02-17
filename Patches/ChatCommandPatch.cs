@@ -1682,13 +1682,14 @@ internal class ChatCommands
                         break;
                     }
 
-                    if (!Spectators.Remove(PlayerControl.LocalPlayer.PlayerId))
+                    if (Spectators.Remove(PlayerControl.LocalPlayer.PlayerId))
                     {
                         Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.Removed"));
                         break;
                     }
 
-                    Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.Success"));
+                    if (Spectators.Add(PlayerControl.LocalPlayer.PlayerId))
+                        Utils.SendMessage("\n", PlayerControl.LocalPlayer.PlayerId, GetString("SpectateCommand.Success"));
                     break;
                 case "/spam":
                     canceled = true;
@@ -3487,14 +3488,15 @@ internal class ChatCommands
                     break;
                 }
 
-                if (!Spectators.Remove(player.PlayerId))
+                if (Spectators.Remove(player.PlayerId))
                 {
                     Utils.SendMessage("\n", player.PlayerId, GetString("SpectateCommand.Removed"));
                     break;
                 }
 
-                Utils.SendMessage("\n", player.PlayerId, GetString("SpectateCommand.Success"));
-                return;
+                if (Spectators.Add(player.PlayerId))
+                    Utils.SendMessage("\n", player.PlayerId, GetString("SpectateCommand.Success"));
+                break;
 
             case "/start":
             case "/开始":
