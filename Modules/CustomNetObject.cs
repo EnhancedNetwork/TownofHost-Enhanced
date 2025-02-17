@@ -127,7 +127,7 @@ namespace TOHE.Modules
                 _ = new LateTask(() =>
                 {
                     playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false);
-                }, 0.1f);
+                }, 0.1f, "Hide NameText_TMP", shoudLog: false);
                 playerControl.Visible = false;
                 return;
             }
