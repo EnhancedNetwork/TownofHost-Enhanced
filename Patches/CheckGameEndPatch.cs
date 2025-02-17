@@ -204,7 +204,7 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                             }
                             break;
-                        case CustomRoles.Quizmaster when pc.IsAlive() && !Quizmaster.CanKillsAfterMark() && WinnerTeam != CustomWinner.Default:
+                        case CustomRoles.Quizmaster when pc.IsAlive() && !Quizmaster.CanKillsAfterMark() && WinnerTeam == CustomWinner.Default:
                             reason = GameOverReason.ImpostorByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
@@ -212,7 +212,7 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                             }
                             break;
-                        case CustomRoles.CursedSoul when pc.IsAlive() && WinnerTeam != CustomWinner.Default:
+                        case CustomRoles.CursedSoul when pc.IsAlive() && WinnerTeam == CustomWinner.Default:
                             reason = GameOverReason.ImpostorByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
