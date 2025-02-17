@@ -34,9 +34,7 @@ internal class Quizmaster : RoleBase
     private static PlayerControl Player;
     public static Sabotages lastSabotage = Sabotages.None;
     public static Sabotages firstSabotageOfRound = Sabotages.None;
-    //private static int killsForRound = 0;
     private static bool allowedKilling = false;
-    //private static bool allowedVenting = true;
     private static bool AlreadyMarked = false;
     private static byte MarkedPlayer = byte.MaxValue;
     public static string lastExiledColor = "None";
@@ -112,7 +110,6 @@ internal class Quizmaster : RoleBase
 
         if (targetId != byte.MaxValue)
         {
-            //allowedVenting = false;
             AlreadyMarked = true;
             MarkedPlayer = targetId;
 
@@ -136,7 +133,6 @@ internal class Quizmaster : RoleBase
         if (!killer.RpcCheckAndMurder(target, true)) return false;
         if (AlreadyMarked == false)
         {
-            //allowedVenting = false;
             AlreadyMarked = true;
             MarkedPlayer = target.PlayerId;
             SendRPC(target.PlayerId);
@@ -293,8 +289,6 @@ internal class Quizmaster : RoleBase
         if (Player == null) return;
 
         firstSabotageOfRound = Sabotages.None;
-        //killsForRound = 0;
-        //allowedVenting = true;
         allowedKilling = false;
         diedThisRound = 0;
         if (MarkedPlayer != byte.MaxValue)
