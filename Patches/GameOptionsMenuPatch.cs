@@ -673,9 +673,8 @@ public static class StringOptionPatch
         var text = icon.GetComponentInChildren<TextMeshPro>();
         text.text = "?";
         text.color = Color.white;
-        _ = ColorUtility.TryParseHtmlString("#117055", out var clr);
-        _ = ColorUtility.TryParseHtmlString("#33d6a3", out var clr2);
-        icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = clr;
+        _ = ColorUtility.TryParseHtmlString("#000000", out var clr2);
+        icon.FindChild("ButtonSprite").GetComponent<SpriteRenderer>().color = Utils.GetRoleColor(role);
         var GameOptionsButton = icon.GetComponent<GameOptionButton>();
         GameOptionsButton.OnClick = new();
         GameOptionsButton.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
@@ -697,7 +696,8 @@ public static class StringOptionPatch
                 }
             }
         }));
-        GameOptionsButton.interactableColor = clr;
+
+        GameOptionsButton.interactableColor = Utils.GetRoleColor(role);
         GameOptionsButton.interactableHoveredColor = clr2;
         icon.localPosition += new Vector3(-0.8f, 0f, 0f);
         icon.SetAsLastSibling();
