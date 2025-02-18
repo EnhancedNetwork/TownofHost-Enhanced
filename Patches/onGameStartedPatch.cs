@@ -255,7 +255,7 @@ internal class ChangeRoleSettings
 [HarmonyPatch]
 internal class StartGameHostPatch
 {
-    private static AmongUsClient thiz;
+    private static AmongUsClient auclient;
 
     private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
     private static Dictionary<RoleTypes, int> RoleTypeNums = [];
@@ -281,7 +281,7 @@ internal class StartGameHostPatch
             return true;
         }
 
-        thiz = __instance;
+        auclient = __instance;
         __result = StartGameHost().WrapToIl2Cpp();
         return false;
     }
@@ -311,11 +311,11 @@ internal class StartGameHostPatch
             {
                 Debug.LogError(ex.Message);
             }*/
-            thiz.ShipLoadingAsyncHandle = thiz.ShipPrefabs[num].InstantiateAsync(null, false);
-            yield return thiz.ShipLoadingAsyncHandle;
-            GameObject result = thiz.ShipLoadingAsyncHandle.Result;
+            auclient.ShipLoadingAsyncHandle = auclient.ShipPrefabs[num].InstantiateAsync(null, false);
+            yield return auclient.ShipLoadingAsyncHandle;
+            GameObject result = auclient.ShipLoadingAsyncHandle.Result;
             ShipStatus.Instance = result.GetComponent<ShipStatus>();
-            thiz.Spawn(ShipStatus.Instance, -2, SpawnFlags.None);
+            auclient.Spawn(ShipStatus.Instance, -2, SpawnFlags.None);
         }
         float timer = 0f;
         while (true)
@@ -326,13 +326,13 @@ internal class StartGameHostPatch
             {
                 maxTimer = 15;
             }
-            var allClients = thiz.allClients.ToManaged();
+            var allClients = auclient.allClients.ToManaged();
             lock (allClients)
             {
-                for (int i = 0; i < thiz.allClients.Count; i++)
+                for (int i = 0; i < auclient.allClients.Count; i++)
                 {
-                    ClientData clientData = thiz.allClients[i];
-                    if (clientData.Id != thiz.ClientId && !clientData.IsReady)
+                    ClientData clientData = auclient.allClients[i];
+                    if (clientData.Id != auclient.ClientId && !clientData.IsReady)
                     {
                         if (timer < maxTimer)
                         {
@@ -340,9 +340,9 @@ internal class StartGameHostPatch
                         }
                         else
                         {
-                            thiz.SendLateRejection(clientData.Id, DisconnectReasons.ClientTimeout);
+                            auclient.SendLateRejection(clientData.Id, DisconnectReasons.ClientTimeout);
                             clientData.IsReady = true;
-                            thiz.OnPlayerLeft(clientData, DisconnectReasons.ClientTimeout);
+                            auclient.OnPlayerLeft(clientData, DisconnectReasons.ClientTimeout);
                         }
                     }
                 }
@@ -354,7 +354,7 @@ internal class StartGameHostPatch
             }
             timer += Time.deltaTime;
         }
-        thiz.SendClientReady();
+        auclient.SendClientReady();
         yield return new WaitForSeconds(2f);
         yield return AssignRoles();
         //ShipStatus.Instance.Begin(); // Tasks sets in IntroPatch
