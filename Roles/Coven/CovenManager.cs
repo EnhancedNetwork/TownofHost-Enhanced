@@ -120,12 +120,11 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
         {
             byte soloVote = necroVotes[necroVotes.Keys.First()];
             GiveNecronomicon(soloVote);
-            Logger.Info($"Only one vote for Necronomicon, giving to {GetPlayerById(soloVote).GetRealName()}", "Coven");
+            Logger.Info($"Only one vote for Necronomicon, giving to {GetPlayerById(soloVote)?.GetRealName()}", "Coven");
             necroVotes.Clear();
             return;
         }
         Dictionary<byte, int> voteCount = [];
-        byte currentResult = byte.MinValue;
         byte lastResult = byte.MinValue;
         foreach (byte voter in necroVotes.Keys)
         {
@@ -135,9 +134,9 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
         foreach (byte voter in necroVotes.Keys)
         {
             voteCount[necroVotes[voter]]++;
-            Logger.Info($"{voteCount[necroVotes[voter]]} votes tallied for {GetPlayerById(currentResult).GetRealName()} Necronomicon", "Coven");
+            Logger.Info($"{voteCount[necroVotes[voter]]} votes tallied for {GetPlayerById(necroVotes[voter])?.GetRealName()} Necronomicon", "Coven");
         }
-        currentResult = voteCount.Keys.First();
+        byte currentResult = voteCount.Keys.First();
         foreach (byte vote in voteCount.Keys)
         {
             if (voteCount[vote] >= voteCount[currentResult] && currentResult != vote)

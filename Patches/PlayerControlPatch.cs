@@ -521,9 +521,9 @@ class MurderPlayerPatch
 
         Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 4));
     }
-    public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting, bool fromRole = false)
     {
-        CustomRoleManager.OnMurderPlayer(killer, target, inMeeting);
+        CustomRoleManager.OnMurderPlayer(killer, target, inMeeting, fromRole);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]

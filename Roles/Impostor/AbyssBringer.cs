@@ -96,7 +96,7 @@ internal class AbyssBringer : RoleBase
         }
         // When no player exists, Instantly spawm and despawn networked object will cause error spam
 
-        if (BlackHoles.Count() >= BlackHoleCountLimit.GetInt())
+        if (BlackHoles.Count >= BlackHoleCountLimit.GetInt())
         {
             return;
         }
@@ -156,7 +156,7 @@ internal class AbyssBringer : RoleBase
                     nearestPlayer.SetRealKiller(_Player);
                     nearestPlayer.SetDeathReason(PlayerState.DeathReason.Consumed);
                     Main.PlayerStates[nearestPlayer.PlayerId].SetDead();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, false);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, inMeeting: false, fromRole: true);
 
                     if (despawnMode == DespawnMode.After1PlayerEaten)
                     {
