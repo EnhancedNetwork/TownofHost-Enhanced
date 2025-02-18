@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
@@ -127,10 +128,10 @@ internal class Eraser : RoleBase
                 Logger.Info($"Canceled {player.GetNameWithRole()} because player have ghost role", "Eraser");
                 return;
             }
-            Main.DesyncPlayerList.Remove(player.PlayerId);
             player.GetRoleClass()?.OnRemove(player.PlayerId);
             player.RpcChangeRoleBasis(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+            Main.DesyncPlayerList.Remove(player.PlayerId);
             player.GetRoleClass()?.OnAdd(player.PlayerId);
             player.ResetKillCooldown();
             player.SetKillCooldown();
