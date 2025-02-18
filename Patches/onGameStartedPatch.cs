@@ -474,6 +474,8 @@ internal class StartGameHostPatch
                 // Set add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
+
+                pair.Value.AddonLogs.Add((DateTime.MinValue, pair.Value.SubRoles.Select(role => (role, true)).ToList())); // Min value as a magic value for game start
             }
 
             GhostRoleAssign.Add();
