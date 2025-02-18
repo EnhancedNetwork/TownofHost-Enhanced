@@ -9,7 +9,7 @@ public static class CriticalErrorManager
     private static bool ErrorFromRpc = false;
     private static byte ModdedPlayerId = byte.MinValue;
 
-    public static void SetCreiticalError(string reason, bool whileLoading, string sourseError = "")
+    public static void SetCriticalError(string reason, bool whileLoading, string sourseError = "")
     {
         Logger.Fatal($"Error: {reason} - triggered critical error", "Anti-black");
         IsError = true;
