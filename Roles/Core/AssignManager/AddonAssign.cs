@@ -223,7 +223,8 @@ public static class AddonAssign
         // Select players to assign Rebel to
         foreach (var player in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsNonNK() && !x.Is(CustomRoles.GM)).ToArray())
         {
-            if (Options.GetRoleChance(player.GetCustomRole()) == 20) continue; // if spawn chance of player's role is 100%,do not select player
+            if (RoleAssign.SetRoles.ContainsKey(player.PlayerId)) continue;// If host used /up, do not select host
+            if (Options.GetRoleChance(player.GetCustomRole()) == 20 /*why is it a string option item...*/) continue;// if spawn chance of player's role is 100%, do not select player
             NonNKs.Add(player);
         }
 
