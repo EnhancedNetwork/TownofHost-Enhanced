@@ -23,6 +23,7 @@ internal class ChangeRoleSettings
             SetUpRoleTextPatch.IsInIntro = true;
 
         Main.OverrideWelcomeMsg = "";
+        CriticalErrorManager.Initialize();
 
         Logger.Msg("Is Started", "Initialization");
 
