@@ -44,7 +44,6 @@ internal class CovenLeader : CovenManager
         List.Remove(playerId);
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
-
     public override void SetKillCooldown(byte id) => RetrainCooldown.GetFloat();
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
