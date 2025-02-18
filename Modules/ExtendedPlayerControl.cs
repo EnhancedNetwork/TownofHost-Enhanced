@@ -22,6 +22,8 @@ static class ExtendedPlayerControl
     // checkAddons disable checks in MainRole Set, checkAAconflict disable checks in SubRole Set
     public static void RpcSetCustomRole(this PlayerControl player, CustomRoles role, bool checkAddons = true, bool checkAAconflict = true)
     {
+        List<CustomRoles> oldaddons = new(player.GetCustomSubRoles());
+
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
@@ -46,7 +48,25 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
+        if (GameStates.IsInGame)
+        {
+            var addons = player.GetCustomSubRoles();
+
+            var addedRoles = addons.Except(oldaddons).ToList();
+            var removedRoles = oldaddons.Except(addons).ToList();
+
+            List<(CustomRoles, bool)> changes = [];
+
+            changes.AddRange(removedRoles.Select(x => (x, false)));
+            changes.AddRange(addedRoles.Select(x => (x, true)));
+
+            if (changes.Count > 0 && Main.PlayerStates.TryGetValue(player.PlayerId, out var state))
+            {
+                state.AddonLogs.Add((DateTime.Now, changes));
+            }
+        }
     }
+
     public static void RpcSetCustomRole(byte PlayerId, CustomRoles role)
     {
         if (AmongUsClient.Instance.AmHost)
