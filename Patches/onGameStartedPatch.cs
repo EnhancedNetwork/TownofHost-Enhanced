@@ -407,14 +407,14 @@ internal class StartGameHostPatch
             yield break;
         }
 
-        if (!Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
         {
-            // Send all Rpc for modded region
-            RpcSetRoleReplacer.Release();
+            yield return RpcSetRoleReplacer.ReleaseVanilla();
         }
         else
         {
-            yield return RpcSetRoleReplacer.ReleaseVanilla();
+            // Send all Rpc for modded region
+            RpcSetRoleReplacer.Release();
         }
 
         try
