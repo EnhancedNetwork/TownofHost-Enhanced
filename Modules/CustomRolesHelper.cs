@@ -474,7 +474,7 @@ public static class CustomRolesHelper
     {
         if (!onlyMainRole)
         {
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Rebel) && x is not CustomRoles.Madmate)) return false;
             if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;
         }
 
