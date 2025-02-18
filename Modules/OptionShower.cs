@@ -53,9 +53,6 @@ public class OptionShower : MonoBehaviour
             return;
         }
 
-        var settingButtonTransformPosition = DestroyableSingleton<HudManager>.Instance.SettingsButton.transform.localPosition;
-        var offset_x = settingButtonTransformPosition.x - 3.63f;
-        TextOffset = new Vector3(offset_x, 0.38f, 0f);
         text.transform.position = AspectPosition.ComputeWorldPosition(Camera, AspectPosition.EdgeAlignments.LeftTop, TextOffset);
         UpdateText();
     }
