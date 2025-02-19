@@ -79,7 +79,7 @@ internal class Stealth : RoleBase
             player.MarkDirtySettings();
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         // when you're darkening someone
         if (darkenedPlayers == null) return;
