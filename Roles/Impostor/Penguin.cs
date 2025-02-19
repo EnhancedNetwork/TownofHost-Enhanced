@@ -86,35 +86,23 @@ internal class Penguin : RoleBase
         penguin.MarkDirtySettings();
         penguin.RpcResetAbilityCooldown();
         SendRPC();
-
-        foreach (var vent in ShipStatus.Instance.AllVents)
-        {
-            CustomRoleManager.BlockedVentsList[penguin.PlayerId].Add(vent.Id);
-            CustomRoleManager.BlockedVentsList[AbductVictim.PlayerId].Add(vent.Id);
-        }
-        penguin.RpcSetVentInteraction();
-        AbductVictim.RpcSetVentInteraction();
     }
     private void RemoveVictim()
     {
         if (AbductVictim != null)
         {
             Main.PlayerStates[AbductVictim.PlayerId].CanUseMovingPlatform = true;
-            CustomRoleManager.BlockedVentsList[AbductVictim.PlayerId].Clear();
-            AbductVictim.RpcSetVentInteraction();
             AbductVictim = null;
         }
         //MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
 
-        if (_Player == null) return;
+        var penguin = _Player;
+        if (penguin == null) return;
 
         _state.CanUseMovingPlatform = true;
-        CustomRoleManager.BlockedVentsList[_Player.PlayerId].Clear();
-
-        _Player.MarkDirtySettings();
-        _Player.RpcResetAbilityCooldown();
-        _Player.RpcSetVentInteraction();
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
