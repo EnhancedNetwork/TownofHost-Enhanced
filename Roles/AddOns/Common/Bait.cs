@@ -80,7 +80,7 @@ public class Bait : IAddon
             || target.Is(CustomRoles.Massacre)
             || killer.Is(CustomRoles.Wraith)
             || killer.Is(CustomRoles.Cleaner)
-            || (Options.DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !Bait.BaitCanBeReportedUnderAllConditions.GetBool())
+            || (DisableReportWhenCC.GetBool() && Utils.IsActive(SystemTypes.Comms) && Camouflage.IsActive && !BaitCanBeReportedUnderAllConditions.GetBool())
             || (killer.Is(CustomRoles.Oblivious) && Oblivious.ObliviousBaitImmune.GetBool()))
             return;
 
