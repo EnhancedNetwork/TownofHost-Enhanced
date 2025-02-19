@@ -2475,16 +2475,26 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        PhantomRolePatch.AfterMeeting();
+        ChatManager.ClearLastSysMsg();
+        FallFromLadder.Reset();
+
+        if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
+        if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
+
+        AntiBlackout.AfterMeetingTasks();
+
         try
         {
-            PhantomRolePatch.AfterMeeting();
-            ChatManager.ClearLastSysMsg();
-            FallFromLadder.Reset();
+            CovenManager.CheckNecroVotes();
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Error in CovenManager after meeting: {error}", "AfterMeetingTasks");
+        }
 
-            if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
-            if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
-
-            AntiBlackout.AfterMeetingTasks();
+        try
+        {
             CovenManager.CheckNecroVotes();
 
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
