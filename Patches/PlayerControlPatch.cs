@@ -1059,31 +1059,29 @@ class FixedUpdateInNormalGamePatch
 
         // The code is called once every 1 second (by one Player)
         bool lowLoad = false;
-        if (Options.LowLoadMode.GetBool())
+        if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
         {
-            if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
-            {
-                BufferTime[player.PlayerId] = 30;
-                timerLowLoad = 30;
-            }
+            BufferTime[player.PlayerId] = 30;
+            timerLowLoad = 30;
+        }
 
-            timerLowLoad--;
+        timerLowLoad--;
 
-            if (timerLowLoad > 0)
-            {
+        if (timerLowLoad > 0)
+        {
+            if (Options.LowLoadMode.GetBool())
                 lowLoad = true;
-            }
-            else
-            {
-                timerLowLoad = 30;
-            }
+        }
+        else
+        {
+            timerLowLoad = 30;
+        }
 
-            BufferTime[player.PlayerId] = timerLowLoad;
+        BufferTime[player.PlayerId] = timerLowLoad;
 
-            if (__instance.AmOwner && timerLowLoad == 30)
-            {
-                TeleportBuffer.Clear();
-            }
+        if (__instance.AmOwner && timerLowLoad == 30)
+        {
+            TeleportBuffer.Clear();
         }
 
         if (!lowLoad)
@@ -1169,7 +1167,7 @@ class FixedUpdateInNormalGamePatch
             else // We are not in lobby
             {
                 if (localplayer)
-                    CustomNetObject.FixedUpdate();
+                    CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
             }
 
             DoubleTrigger.OnFixedUpdate(player);
@@ -1194,7 +1192,7 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
-                CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime);
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp(), timerLowLoad);
 
                 player.OnFixedAddonUpdate(lowLoad);
 
