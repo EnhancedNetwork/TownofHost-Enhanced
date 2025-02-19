@@ -1600,6 +1600,7 @@
   "CantArrestNarc": "You can't shoot the Narc.",
   "CantRecruitNarc": "Target is already a member of the Crew.",
   "MadmateCanBeNarc": "<color=#ff1919>Madmates</color> Can Be Narc",
+  "MadmateBeNarcChance": "Chance for <color=#ff1919>Madmates</color> to Become Narc",
   
   "SheriffShowShotLimit": "Display Shot Limit next to Role Name",
   "SheriffCanKill%role%": "Can Kill %role%",
