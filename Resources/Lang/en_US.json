@@ -2393,6 +2393,7 @@
   "GuessCrewRole": "Unfortunately, the Host's settings do not allow Crewmates to guess Crewmate roles.",
   "GuessApocRole": "Fortunately, the Host's settings does not allow Apocalypse to guess Apocalypse roles.",
   "GuessCovenRole": "Fortunately, the Host's settings does not allow Coven to guess Coven roles.",
+  "GuessRoleNotEnabled": "Sorry. <b>{0}</b> is not enabled in this lobby.\n<b>/r</b> - Show enabled roles",
   "GuessKill": "<b>{0}</b> was guessed",
   "GuessNull": "Please select an ID of a living player to guess their role",
   "GuessHelp": "Instructions: /bt [Player ID] [Role Name] \nExample: /bt 3 Bait \nYou can see the player ID's before everyone's names \n or use the /id command to list the player ID's",
