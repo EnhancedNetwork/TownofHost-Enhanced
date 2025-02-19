@@ -11,6 +11,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
+
 internal class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
@@ -19,6 +20,7 @@ internal class DoubleAgent : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
+    
     private static readonly List<GameObject> createdButtonsList = [];
     private static readonly HashSet<byte> CurrentBombedPlayers = [];
     private static float CurrentBombedTime;
@@ -88,8 +90,8 @@ internal class DoubleAgent : RoleBase
         SendRPC();
     }
 
-    // On vent diffuse Bastion & Agitator Bomb if DoubleAgentCanDiffuseBombs is enabled.
-    // Dev Note: Add role check for OnCoEnterVentOthers and make BombedVents public in Bastion.cs.
+    // On Vent diffuse Bastion & Agitator Bomb if DoubleAgentCanDiffuseBombs is enabled
+    // Dev Note: Add Role check for OnCoEnterVentOthers and make BombedVents public in Bastion.cs
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
         if (DoubleAgentCanDiffuseBombs.GetBool())
@@ -145,7 +147,7 @@ internal class DoubleAgent : RoleBase
         return true;
     }
 
-    // Clear active bombed players on meeting call if ClearBombedOnMeetingCall is enabled.
+    // Clear active bombed Players on meeting call if ClearBombedOnMeetingCall is enabled
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (_Player != null && _Player.IsModded())
@@ -162,7 +164,7 @@ internal class DoubleAgent : RoleBase
             CurrentBombedTime = -1;
     }
 
-    // If bomb is active set timer after meeting.
+    // If Bomb is active set timer after meeting
     public override void AfterMeetingTasks()
     {
         CurrentBombedTime = BombExplosionTimer.GetFloat() + 1f;
@@ -170,8 +172,8 @@ internal class DoubleAgent : RoleBase
         SendRPC();
     }
 
-    // Active bomb timer update and check.
-    private void OnFixedUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
+    // Active Bomb timer update and check
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!CurrentBombedPlayers.Contains(player.PlayerId)) return;
 
@@ -192,7 +194,7 @@ internal class DoubleAgent : RoleBase
         }
     }
 
-    // Set timer on Double Agent for Non-Modded Clients.
+    // Set timer on Double Agent for non-Modded Clients
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (lowLoad) return;
@@ -209,7 +211,7 @@ internal class DoubleAgent : RoleBase
                 ClearBomb();
         }
 
-        // If enabled and if DoubleAgent is last Impostor become set role.
+        // If enabled and if DoubleAgent is last Impostor become set Role
         if (ChangeRoleToOnLast.GetValue() != 0 && StartedWithMoreThanOneImp && !GameStates.IsExilling && !AntiBlackout.SkipTasks)
         {
             if (player.Is(CustomRoles.DoubleAgent) && player.IsAlive() && Main.AliveImpostorCount < 2)
@@ -218,7 +220,7 @@ internal class DoubleAgent : RoleBase
                 if (ChangeRoleToOnLast.GetValue() == 1) // Random
                     Role = CRoleChangeRoles[IRandom.Instance.Next(2, CRoleChangeRoles.Length)];
 
-                // If role is not on Impostor team remove all Impostor addons if any.
+                // If Role is not on Impostor team remove all Impostor Add-ons if any
                 if (!Role.IsImpostorTeam())
                 {
                     foreach (CustomRoles allAddons in player.GetCustomSubRoles())
@@ -229,7 +231,7 @@ internal class DoubleAgent : RoleBase
                         }
                     }
                 }
-                // If Role is ImpostorTOHO aka Admired Impostor opt give Admired Addon if player dose not already have it.
+                // If Role is ImpostorTOHO aka Admired Impostor opt give Admired Addon if player dose not already have it
                 if (Role == CustomRoles.ImpostorTOHO && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
 
@@ -270,7 +272,7 @@ internal class DoubleAgent : RoleBase
         _Player?.Notify(ColorString(GetRoleColor(CustomRoles.DoubleAgent), GetString("DoubleAgent_BombExploded")));
     }
 
-    // Set bomb mark on player.
+    // Set Bomb mark on Player
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         if (seen == null) return string.Empty;
@@ -279,7 +281,7 @@ internal class DoubleAgent : RoleBase
     }
 
 
-    // Set timer for Double Agent Modded Clients.
+    // Set timer for Double Agent Modded Clients
     public override string GetLowerText(PlayerControl player, PlayerControl seen, bool isForMeeting = false, bool isForHud = false)
     {
         if (player == null || player != seen || player.IsModded() && !isForHud) return string.Empty;
@@ -287,7 +289,7 @@ internal class DoubleAgent : RoleBase
         return string.Empty;
     }
 
-    // Send bomb timer to Modded Clients when active.
+    // Send Bomb timer to Modded Clients when active
     private void SendRPC(bool addData = false, byte targetId = byte.MaxValue)
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
@@ -298,7 +300,7 @@ internal class DoubleAgent : RoleBase
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    // Receive and set bomb timer from Host when active.
+    // Receive and set Bomb timer from Host when active
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
         bool addData = reader.ReadBoolean();
