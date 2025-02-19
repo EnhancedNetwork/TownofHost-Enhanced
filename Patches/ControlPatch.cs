@@ -290,13 +290,13 @@ internal class ControllerManagerUpdatePatch
             }
 
             // ############################################################################################################
-            // ========================================== Only host and in debug ==========================================
+            // ========================================== Only Host and in Debug ==========================================
             // ############################################################################################################
             if (!DebugModeManager.IsDebugMode) return;
 
             if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
             {
-                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
+                CriticalErrorManager.SetCriticalError("Test AntiBlackout", true);
             }
 
             // Kill Flash
