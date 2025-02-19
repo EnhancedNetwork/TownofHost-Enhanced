@@ -87,7 +87,7 @@ internal class Bomber : RoleBase
                     shapeshifter.SetDeathReason(PlayerState.DeathReason.Bombed);
                     shapeshifter.RpcMurderPlayer(shapeshifter);
                 }
-                Utils.NotifyRoles();
+                Utils.NotifyRoles(SpecifyTarget: target);
             }, 0.3f, $"{playerRole} was suicide");
         }
     }
