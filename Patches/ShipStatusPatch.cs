@@ -292,7 +292,11 @@ class ShipStatusSpawnPlayerPatch
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
