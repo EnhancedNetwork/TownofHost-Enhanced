@@ -29,7 +29,7 @@ public abstract class RoleBase
 
     public void OnAdd(byte playerid) // The Player with the class executes this
     {
-        _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
+        _state = Main.PlayerStates.GetValueOrDefault(playerid);
         try
         {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
