@@ -22,6 +22,7 @@ public class Narc : IAddon
     private static OptionItem NarcCanUseSabotage;
     public static OptionItem NarcHasCrewVision;
     public static OptionItem MadmateCanBeNarc;
+    public static OptionItem MadmateBeNarcChance;
 
     public void SetupCustomOption()
     {
@@ -42,6 +43,9 @@ public class Narc : IAddon
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
         MadmateCanBeNarc = BooleanOptionItem.Create(Id + 15, "MadmateCanBeNarc", false, TabGroup.Addons, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Narc]);
+        MadmateBeNarcChance = IntegerOptionItem.Create(Id + 16, "MadmateBeNarcChance", new(0, 100, 5), 5, TabGroup.Addons, false)
+            .SetParent(MadmateCanBeNarc)
+            .SetValueFormat(OptionFormat.Percent);
     }
     public void Init()
     { }
@@ -54,18 +58,10 @@ public class Narc : IAddon
     public static bool CheckNarcAssign()
         => IRandom.Instance.Next(1, 100) <= NarcSpawnChance.GetInt() && CustomRoles.Narc.IsEnable();
 
-    public static void AssignNarcToPlayer(CustomRoles role, PlayerControl narc)
-    {
-        Logger.Info($"{narc.GetRealName()}({narc.PlayerId}) Role Change: {narc.GetCustomRole().ToString()} => {role.ToString()} + {CustomRoles.Narc.ToString()}", "Narc:Assign");
-        narc.GetRoleClass()?.OnRemove(narc.PlayerId);
-        narc.RpcChangeRoleBasis(role);
-        narc.RpcSetCustomRole(role);
-        narc.GetRoleClass()?.OnAdd(narc.PlayerId); 
-        Main.PlayerStates[narc.PlayerId].SetSubRole(CustomRoles.Narc);       
-    }
+    public static int Value;
+    /*0: Narc is not assigned. 1: Narc is assigned to a Madmate. 2:Narc is assigned to an Impostor.*/    
 ///-------------------------------------------------------------------------------------------------///
 
-    //Narc Checkmurder
     public static bool CancelMurder(PlayerControl killer, PlayerControl target)
     {
         var ShouldCancel = false;
@@ -87,7 +83,9 @@ public class Narc : IAddon
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
         bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor() && !(player.Is(CustomRoles.Torch) && !Torch.TorchAffectedByLights.GetBool());
-        float narcVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultCrewmateVision;
+        float initVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : (player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultCrewmateVision);
+        float narcVision = lightsout ? initVision / 5 : initVision;
+
         if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie)
             && NarcHasCrewVision.GetBool())
         {
