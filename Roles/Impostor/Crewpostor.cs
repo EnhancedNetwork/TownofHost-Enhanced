@@ -1,6 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
+using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Double;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using static TOHE.Options;
 
@@ -104,11 +106,15 @@ internal class Crewpostor : RoleBase
             TasksDone[player.PlayerId] = 0;
 
         SendRPC(player.PlayerId, TasksDone[player.PlayerId]);
-        List<PlayerControl> list = Main.AllAlivePlayerControls
-        .Where(x => x.PlayerId != player.PlayerId 
-        && !(x.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer) 
-        && (!CPAndAlliesKnowEachOther.GetBool() || !(x.CheckMMCanSeeImp() || (x.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool()))) 
-        && !(player.Is(CustomRoles.Narc) && x.Is(CustomRoles.Sheriff))).ToList();
+        List<PlayerControl> list = [];
+        foreach (var cptargets in Main.AllAlivePlayerControls.Where(x => x != player))
+        {
+            if ((cptargets.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18)
+              || (CPAndAlliesKnowEachOther.GetBool() && (cptargets.CheckMMCanSeeImp() || (cptargets.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())))
+              || (cptargets.Is(CustomRoles.Sheriff) && player.Is(CustomRoles.Narc)))
+              continue;
+            list.Add(cptargets);
+        }
 
         if (!list.Any())
         {
@@ -158,17 +164,13 @@ internal class Crewpostor : RoleBase
         return true;
     }
     public override void AfterMeetingTasks()
-    { 
-        foreach (var id in PlayerIds)
-        {
-            var cp = id.GetPlayer();
-            if (cp.IsAlive())
-            {
-                TaskState taskState = cp.GetPlayerTaskState();
-                cp.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-                taskState.CompletedTasksCount = 0;
-                taskState.AllTasksCount = cp.Data.Tasks.Count;
-            }
-        }
+    {
+        if (!_Player.IsAlive()) return;
+        var player = _Player;
+        TaskState taskState = player.GetPlayerTaskState();
+        player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+        taskState.CompletedTasksCount = 0;
+        taskState.AllTasksCount = player.Data.Tasks.Count;
+        TasksDone[player.PlayerId] = 0;
     }
 }

@@ -96,6 +96,21 @@ public class RoleAssign
         GetNeutralCounts(Options.NeutralKillingRolesMaxPlayer.GetInt(), Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NonNeutralKillingRolesMaxPlayer.GetInt(), Options.NonNeutralKillingRolesMinPlayer.GetInt(), Options.NeutralApocalypseRolesMaxPlayer.GetInt(), Options.NeutralApocalypseRolesMinPlayer.GetInt(), ref optNeutralKillingNum, ref optNonNeutralKillingNum, ref optNeutralApocalypseNum);
         GetCovenCounts(Options.CovenRolesMaxPlayer.GetInt(), Options.CovenRolesMinPlayer.GetInt(), ref optCovenNum);
 
+        if (Narc.CheckNarcAssign())//add extra imp/madmate spot for Narc
+        {
+            if (IRandom.Instance.Next(1, 100) <= Narc.MadmateBeNarcChance.GetInt()
+               && Narc.MadmateCanBeNarc.GetBool())
+            {
+                optMadmateNum += 1;
+                Narc.Value = 1;
+            }
+            else
+            {
+                optImpNum += 1;
+                Narc.Value = 2;                
+            }
+        }
+
         int readyRoleNum = 0;
         int readyImpNum = 0;
         int readyMadmateNum = 0;
