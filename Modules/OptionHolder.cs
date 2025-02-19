@@ -182,6 +182,7 @@ public static class Options
 
 
     // ------------ System Settings Tab ------------
+    public static OptionItem BypassRateLimitAC;
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem ShowMadmatesInLeftCommand;
@@ -1169,6 +1170,8 @@ public static class Options
         yield return null;
 
         #region System Settings
+        BypassRateLimitAC = BooleanOptionItem.Create(60049, "BypassRateLimitAC", true, TabGroup.SystemSettings, false)
+            .SetHeader(true);
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
