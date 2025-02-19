@@ -1091,7 +1091,7 @@
     "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other Role/Add-on information-based messages like Mortician or Sleuth.",
     "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
     "RevenantInfoLong": "(Neutrals):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
-    "ValkyrieInfoLong": "(Crewmates):\nAs the Valkyrie, you you spawn with a Kill button but may not kill. When someone tried to kill you, you will be teleported to a random Vent, and will have a limited amount of time to kill your killer. If you do so, you live. Otherwise, you will die.",
+    "ValkyrieInfoLong": "(Crewmates):\nAs the Valkyrie, you spawn as a normal Crewmate. When someone kills you, you spawn with a Protect button that can kill any player and revive you into a normal Crewmate directly.",
     "ProtectorInfoLong": "(Crewmates):\nAs the Protector, whenever you finish a task, you get a temporary shield.\n\n Note: Shield only protects from direct kill attacks.",
     "FuryInfoLong": "(Impostor):\nAs the Fury, use your Shapeshift button to enter Rage Mode.\nRage Mode changes the Fury their speed and Kill Cooldown for a set duration of time.\n\nAdditionally there is a setting to reveal when the Fury enters Rage Mode to everyone.\nWithout the use of Rage Mode, the Fury acts like a regular Impostor.",
     "DivinerInfoLong": "(Impostor):\nAs the Diviner, when someone tries to kill you, you will block the kill, and you will teleport to a random Vent. You will have a limited time to kill your killer. If you succeed in doing so, you live. If the time runs out before you kill your killer, you die permanently. If you try to kill someone else other than your killer, you will die.",
@@ -4288,6 +4288,8 @@
     "QuickChatSpam_Random20": "Random Strings",
     "QuickChatSpam_EzHacked": "Ducked Ezly",
     "CrossLanguageGetRole": "Get role names from different languages for commands",
+
+    "BypassRateLimitAC": "Experimental Changes to Bypass RateLimit Anticheat",
 
     "StubbornNotify": "Your target is Stubborn and your ability did not work!",
     "StubbornNotify2": "One of your targets is Stubborn and your ability did not work!",
