@@ -219,6 +219,11 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessDisabled"));
                     return true;
                 }
+                if (!role.IsEnable() && !role.RoleExist(true))
+                {
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
+                    return true;
+                }        
                 if (Jailer.IsTarget(pc.PlayerId) && role != CustomRoles.Jailer)
                 {
                     pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
@@ -270,12 +275,6 @@ public static class GuessManager
                 if (role.IsTNA() && role != CustomRoles.Pestilence && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool() || role == CustomRoles.Pestilence && !PlagueBearer.PestilenceKillsGuessers.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
-                    return true;
-                }
-
-                if (!role.IsEnable() && !role.RoleExist(true))
-                {
-                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
                     return true;
                 }            
 
