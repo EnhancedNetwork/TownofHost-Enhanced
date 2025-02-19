@@ -273,6 +273,12 @@ public static class GuessManager
                     return true;
                 }
 
+                if (!role.IsEnable() && !role.RoleExist(true))
+                {
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
+                    return true;
+                }            
+
                 // Guesser (add-on) Cant Guess Addons
                 if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
                 {
