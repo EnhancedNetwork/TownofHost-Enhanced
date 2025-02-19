@@ -202,33 +202,25 @@ public static class AddonAssign
 
     public static void StartAssignNarc()
     {
-        var PrepareRoles = new List<CustomRoles>();
-        var Crews = new List<PlayerControl>();
-
-        //Select role for Narc to spawn as
-        foreach (var role in CustomRolesHelper.AllRoles.Where(x => x.IsEnable() && x.IsImpostorTeamV3()).ToArray())
+        if (Narc.Value == 0) return;
+        var Players = new List<PlayerControl>();
+        switch (Narc.Value)
         {
-            int CountPlayers = Main.AllPlayerControls.Count(x => x.Is(role));
-            if (CountPlayers >= role.GetCount()
-                || (role.IsMadmate() && (!Narc.MadmateCanBeNarc.GetBool() || Options.NumberOfMadmates.GetInt() == 0))
-                )
-                continue;
-            PrepareRoles.Add(role);
+            case 1:
+                foreach (var madmate in Main.AllPlayerControls.Where(p => p.GetCustomRole().IsMadmate()))
+                {
+                    Players.Add(madmate);
+                }
+                break;
+            case 2:
+                foreach (var imp in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostor()))
+                {
+                    Players.Add(imp);
+                }
+                break;
         }
-
-        //Select players to assign Narc to
-        foreach (var player in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.GM)).ToArray())
-        {
-            if (Options.GetRoleChance(player.GetCustomRole()) == 20) continue;//if spawn chance of player's role is 100%,do not select player
-            Crews.Add(player);
-        }
-        
-        if (Narc.CheckNarcAssign() && PrepareRoles.Any() && Crews.Any())
-            Narc.AssignNarcToPlayer(PrepareRoles.RandomElement(), Crews.RandomElement());
-        else
-        {
-            if (!PrepareRoles.Any()) Logger.Info($"No role for Narc to spawn as.Narc will not spawn.", "Narc:Assign");
-            if (!Crews.Any()) Logger.Info($"No player can be Narc.Narc will not spawn.", "Narc:Assign");
-        }
+        if (!Players.Any()) return;
+        var pc = Players.RandomElement();
+        Main.PlayerStates[pc.PlayerId].SetSubRole(CustomRoles.Narc); 
     }
 }
