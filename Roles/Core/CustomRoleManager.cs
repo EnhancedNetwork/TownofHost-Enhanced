@@ -89,7 +89,7 @@ public static class CustomRoleManager
     public static bool HasDesyncRole(this PlayerControl player) => player != null && (player.GetRoleClass().IsDesyncRole || Main.DesyncPlayerList.Contains(player.Data.PlayerId) || player.Is(CustomRoles.Killer));
 
     /// <summary>
-    /// If the role protect others players
+    /// If the Role protect others Players
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
     {
@@ -177,7 +177,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// Check Murder as Killer in target
+    /// Check Murder as Killer in Target
     /// </summary>
     public static bool OnCheckMurder(ref PlayerControl killer, ref PlayerControl target, ref bool __state)
     {
@@ -197,7 +197,7 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
-        // If Target is possessed by Dollmaster swap controllers.
+        // If Target is possessed by Dollmaster swap controllers
         target = DollMaster.SwapPlayerInfo(target);
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
@@ -219,7 +219,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "OnCheckMurder.RpcCheckAndMurder");
 
-        // Check in target
+        // Check in Target
         if (killer.RpcCheckAndMurder(target, true) == false)
         {
             __state = true;
@@ -268,7 +268,7 @@ public static class CustomRoleManager
 
         Logger.Info("Start", "OnCheckMurderAsKiller");
 
-        // Check murder as killer
+        // Check murder as Killer
         if (killerRoleClass.OnCheckMurderAsKiller(killer, target) == false)
         {
             __state = true;
@@ -284,13 +284,13 @@ public static class CustomRoleManager
             return false;
         }
 
-        // Swap controllers if Sheriff shots Dollmasters main body.
+        // Swap controllers if Sheriff shots Dollmasters main body
         if (DollMaster.HasEnabled && killer.Is(CustomRoles.Sheriff) && target == DollMaster.DollMasterTarget)
         {
             target = DollMaster.SwapPlayerInfo(target);
         }
 
-        // Check if killer is a true killing role and Target is possessed by Dollmaster
+        // Check if Killer is a true killing Role and Target is possessed by Dollmaster
         if (DollMaster.HasEnabled && DollMaster.IsControllingPlayer)
             if (!(DollMaster.DollMasterTarget == null || DollMaster.controllingTarget == null))
                 if (target == DollMaster.DollMasterTarget || target == DollMaster.controllingTarget)
@@ -313,17 +313,17 @@ public static class CustomRoleManager
         return true;
     }
     /// <summary>
-    /// Tasks after killer murder target
+    /// Tasks after Killer murder Target
     /// </summary>
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting, bool fromRole)
     {
-        // ############-INFO-##############
-        // When using this code, keep in mind that killer and target can be equal (Suicide)
-        // And the player can also die during the Meeting
-        // ################################
+        // #################################-INFO-#########################################
+        // When using this code, keep in mind that Killer and Target can be equal (Suicide)
+        // And the Player can also die during the Meeting
+        // #################################################################################
 
-        PlayerControl trueDMKiller = killer; // Save real killer.
-        killer = DollMaster.SwapPlayerInfo(killer); // If "killer" is possessed by the Dollmaster swap each other's controllers.
+        PlayerControl trueDMKiller = killer; // Save real Killer
+        killer = DollMaster.SwapPlayerInfo(killer); // If "Killer" is possessed by the Dollmaster swap each other's controllers
 
         var killerRoleClass = killer.GetRoleClass();
         var targetRoleClass = target.GetRoleClass();
@@ -331,13 +331,13 @@ public static class CustomRoleManager
         var killerSubRoles = killer.GetCustomSubRoles();
         var targetSubRoles = target.GetCustomSubRoles();
 
-        // Check suicide
+        // Check Suicide
         var isSuicide = killer.PlayerId == target.PlayerId;
 
-        // target was murder by killer
+        // Target was murder by Killer
         targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting, isSuicide);
 
-        // Check target add-ons
+        // Check Target Add-ons
         if (targetSubRoles.Any())
             foreach (var subRole in targetSubRoles.ToArray())
             {
@@ -347,7 +347,7 @@ public static class CustomRoleManager
                         Cyber.AfterCyberDeadTask(target, inMeeting);
                         break;
 
-                    case CustomRoles.Bait when !inMeeting:
+                    case CustomRoles.Bait when !inMeeting && !fromRole:
                         Bait.BaitAfterDeathTasks(trueDMKiller, target); // Use trueDMKiller to any roles that needs the Dollmaster to be the killer!
                         break;
 
@@ -378,10 +378,10 @@ public static class CustomRoleManager
                 }
             }
 
-        // Killer murder target
+        // Killer murder Target
         killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting, isSuicide);
 
-        // Check killer add-ons
+        // Check Killer Add-ons
         if (killerSubRoles.Any())
             foreach (var subRole in killerSubRoles.ToArray())
             {
@@ -397,7 +397,7 @@ public static class CustomRoleManager
                 }
             }
 
-        // Check dead body for others roles
+        // Check dead body for others Roles
         CheckDeadBody(killer, target, inMeeting);
 
         if (!(killer.PlayerId == target.PlayerId && target.IsDisconnected()))
@@ -408,7 +408,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// Check if this task is marked by a role and do something.
+    /// Check if this task is marked by a Role and do something
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
         => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
@@ -416,7 +416,7 @@ public static class CustomRoleManager
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
-    /// If the role need check a present dead body
+    /// If the Role need check a present dead body
     /// </summary>
     public static void CheckDeadBody(PlayerControl killer, PlayerControl deadBody, bool inMeeting)
     {
@@ -431,7 +431,7 @@ public static class CustomRoleManager
     public static HashSet<Action<PlayerControl, bool, long>> OnFixedUpdateOthers = [];
     /// <summary>
     /// Function always called in a task turn
-    /// For interfering with other roles
+    /// For interfering with other Roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
     public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
@@ -460,7 +460,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// When others players on entered to vent
+    /// When other Players on entered to Vent
     /// </summary>
     public static bool OthersCoEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -531,7 +531,7 @@ public static class CustomRoleManager
         OtherCollectionsSet = true;
     }
 
-    // ADDONS ////////////////////////////
+    // ADDONS //
 
     public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x =>
     {
