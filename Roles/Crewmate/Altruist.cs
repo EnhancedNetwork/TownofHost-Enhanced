@@ -140,7 +140,6 @@ internal class Altruist : RoleBase
                         TargetArrow.Add(pc.PlayerId, deadPlayerId);
                 }
             }
-            Utils.NotifyRoles();
             SendRPC();
             return false;
         }
