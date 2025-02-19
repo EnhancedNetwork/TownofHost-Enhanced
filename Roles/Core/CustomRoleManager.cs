@@ -434,9 +434,9 @@ public static class CustomRoleManager
     /// For interfering with other Roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
-    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime,int timerLowLoad)
     {
-        player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime);
+        player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime, timerLowLoad);
 
         if (!OnFixedUpdateOthers.Any()) return;
         //Execute other viewpoint processing if any
