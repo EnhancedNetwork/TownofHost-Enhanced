@@ -9,7 +9,7 @@ public static class CriticalErrorManager
     private static bool ErrorFromRpc = false;
     private static byte ModdedPlayerId = byte.MinValue;
 
-    public static void SetCreiticalError(string reason, bool whileLoading, string sourseError = "")
+    public static void SetCriticalError(string reason, bool whileLoading, string sourseError = "")
     {
         Logger.Fatal($"Error: {reason} - triggered critical error", "Anti-black");
         IsError = true;
@@ -102,7 +102,7 @@ public static class CriticalErrorManager
                 }
                 else if (GameStartManager.Instance != null)
                 {
-                    // We imagine rpc is received when starting game in lobby, not fucked yet
+                    // We imagine RPC is received when starting game in lobby
                     if (AmongUsClient.Instance.AmHost)
                     {
                         GameStartManager.Instance.ResetStartState();
