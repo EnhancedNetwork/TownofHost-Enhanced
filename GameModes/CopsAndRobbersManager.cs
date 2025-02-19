@@ -396,6 +396,11 @@ internal static class CopsAndRobbersManager
             finalRoles[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
+        foreach (byte spectator in ChatCommands.Spectators)
+        {
+            finalRoles.AddRange(ChatCommands.Spectators.ToDictionary(x => x, _ => CustomRoles.GM));
+            AllPlayers.RemoveAll(x => ChatCommands.Spectators.Contains(x.PlayerId));
+        }
 
         int optImpNum = numCops;
         foreach (PlayerControl pc in AllPlayers)
