@@ -222,7 +222,7 @@ internal class Necromancer : CovenManager
             (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool()) ||
             (role == CustomRoles.Doctor && Doctor.VisibleToEveryoneOpt.GetBool());
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (AbilityTimer < AbilityCooldown.GetFloat())
         {
