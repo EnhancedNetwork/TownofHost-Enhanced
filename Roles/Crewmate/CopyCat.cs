@@ -47,9 +47,9 @@ internal class CopyCat : RoleBase
         CurrentKillCooldown = KillCooldown.GetFloat();
         OldAddons[playerId] = [];
     }
-    public override void Remove(byte playerId) //only to be used when copycat's role is going to be changed permanently
+    public override void Remove(byte playerId) //Only to be used when Copycat's Role is going to be changed permanently
     {
-        // Copycat role wont be removed for now i guess
+        // Copycat Role wont be removed for now
         // playerIdList.Remove(playerId);
     }
     public static bool CanCopyTeamChangingAddon() => CopyTeamChangingAddon.GetBool();
@@ -72,7 +72,7 @@ internal class CopyCat : RoleBase
                 }
                 continue;
             }
-            ///*remove the settings for current role*///
+            ///*Remove the settings for current Role*///
 
             var pcRole = pc.GetCustomRole();
             if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Jackal and not CustomRoles.Refugee && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
@@ -97,7 +97,7 @@ internal class CopyCat : RoleBase
     private static bool BlackList(CustomRoles role)
     {
         return role is CustomRoles.CopyCat or
-            CustomRoles.Doomsayer or // CopyCat cannot guessed roles because he can be know others roles players
+            CustomRoles.Doomsayer or // Copycat cannot guess Roles because he can be know other Player Roles
             CustomRoles.EvilGuesser or
             CustomRoles.NiceGuesser or
             CustomRoles.Baker or CustomRoles.Famine;
