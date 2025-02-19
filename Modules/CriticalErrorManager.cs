@@ -9,6 +9,13 @@ public static class CriticalErrorManager
     private static bool ErrorFromRpc = false;
     private static byte ModdedPlayerId = byte.MinValue;
 
+    public static void Initialize()
+    {
+        IsError = false;
+        ErrorFromRpc = false;
+        ModdedPlayerId = byte.MinValue;
+    }
+
     public static void SetCriticalError(string reason, bool whileLoading, string sourseError = "")
     {
         Logger.Fatal($"Error: {reason} - triggered critical error", "Anti-black");
@@ -24,6 +31,7 @@ public static class CriticalErrorManager
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
+            writer.Write(PlayerControl.LocalPlayer.PlayerId);
             writer.Write(reason);
             writer.Write(sourseError);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
@@ -33,10 +41,11 @@ public static class CriticalErrorManager
     {
         IsError = true;
         ErrorFromRpc = true;
-        Logger.Fatal($"Modded client: {player?.Data?.PlayerName}({player.PlayerId}): triggered critical error: {reader.ReadString()}", "Anti-black");
+        ModdedPlayerId = reader.ReadByte();
+
+        Logger.Fatal($"Modded client: {player?.Data?.PlayerName}({ModdedPlayerId}): triggered critical error: {reader.ReadString()}", "Anti-black");
         Logger.Error($"Error: {reader.ReadString()}", "CriticalErrorManager");
 
-        ModdedPlayerId = player.PlayerId;
         ChatUpdatePatch.DoBlockChat = true;
         Main.OverrideWelcomeMsg = string.Format(GetString("RpcAntiBlackOutNotifyInLobby"), player?.Data?.PlayerName, GetString("EndWhenPlayerBug"));
     }
