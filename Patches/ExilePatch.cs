@@ -182,7 +182,7 @@ class ExileControllerWrapUpPatch
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
 
-                if (Main.CurrentServerIsVanilla)
+                if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
                 {
                     Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
                 }
