@@ -218,11 +218,6 @@ public static class GuessManager
                     Logger.Info($"Guess Disabled for this player {pc.PlayerId}", "GuessManager");
                     pc.ShowInfoMessage(isUI, GetString("GuessDisabled"));
                     return true;
-                }
-                if (!role.IsEnable() && !role.RoleExist(true))
-                {
-                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
-                    return true;
                 }        
                 if (Jailer.IsTarget(pc.PlayerId) && role != CustomRoles.Jailer)
                 {
@@ -245,6 +240,11 @@ public static class GuessManager
                     return true;
                 }
 
+                if (!role.IsEnable() && !role.RoleExist(true))
+                {
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
+                    return true;
+                }              
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessNotifiedBait"));
