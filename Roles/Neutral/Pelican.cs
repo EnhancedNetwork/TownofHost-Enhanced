@@ -256,12 +256,12 @@ internal class Pelican : RoleBase
                 target.SyncSettings();
 
                 RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+                Utils.NotifyRoles(SpecifySeer: target);
 
                 Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");
             }
             eatenList[pelicanId].Clear();
             SyncEatenList();
-            NotifyRoles();
         }
         catch (System.Exception error)
         {
