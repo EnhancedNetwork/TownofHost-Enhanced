@@ -144,6 +144,6 @@ internal class Camouflager : RoleBase
     {
         AbilityActivated = false;
         SendRPC();
-        Camouflage.CheckCamouflage(true);
+        Camouflage.CheckCamouflage();
     }
 }
