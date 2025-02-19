@@ -7,6 +7,7 @@ using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Patches;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using UnityEngine;
@@ -111,6 +112,8 @@ internal class ChangeRoleSettings
                 Main.DefaultCrewmateVision = Main.RealOptionsData.GetFloat(FloatOptionNames.CrewLightMod);
                 Main.DefaultImpostorVision = Main.RealOptionsData.GetFloat(FloatOptionNames.ImpostorLightMod);
             }
+
+            Narc.Value = 0;
 
             // Clear last exiled
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = null;
