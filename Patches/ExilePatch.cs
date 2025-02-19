@@ -153,7 +153,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.7f, "Restore IsDead Task");
+            }, 0.6f, "Restore IsDead Task");
 
             _ = new LateTask(() =>
             {
@@ -177,20 +177,23 @@ class ExileControllerWrapUpPatch
                 });
 
                 Main.AfterMeetingDeathPlayers.Clear();
-
+                
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
-                Utils.NotifyRoles(NoCache: true);
-            }, 1.2f, "AfterMeetingDeathPlayers Task");
 
-            _ = new LateTask(() =>
-            {
-                if (GameStates.IsEnded) return;
+                if (Main.CurrentServerIsVanilla)
+                {
+                    Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+                }
+                else
+                {
+                    Utils.DoNotifyRoles();
+                }
 
                 AntiBlackout.ResetAfterMeeting();
-                Main.LastMeetingEnded = Utils.GetTimeStamp();
-            }, 1.5f, "Reset Cooldown After Meeting");
+                Main.LastMeetingEnded = Utils.TimeStamp;
+            }, 1f, "AfterMeetingDeathPlayers Task");
         }
 
         //This should happen shortly after the Exile Controller wrap up finished for clients
