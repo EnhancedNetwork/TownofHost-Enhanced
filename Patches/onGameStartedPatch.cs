@@ -398,10 +398,9 @@ internal class StartGameHostPatch
             yield break;
         }
 
-        f (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
         {
             yield return RpcSetRoleReplacer.ReleaseVanilla();
-
         }
         else
         {
