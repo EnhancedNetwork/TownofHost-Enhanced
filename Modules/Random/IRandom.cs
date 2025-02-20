@@ -38,5 +38,6 @@ public interface IRandom
         {
             Logger.Warn($"Invalid ID: {id}", "IRandom.SetInstanceById");
             Instance = new NetRandomWrapper();
+        }
     }
 }
