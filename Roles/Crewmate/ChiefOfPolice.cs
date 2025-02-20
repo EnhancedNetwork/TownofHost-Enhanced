@@ -73,9 +73,9 @@ internal class ChiefOfPolice : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("CantRecruit")));   
             return false;
         }
-        else if (target.Is(CustomRoles.Loyal))
+        else if (target.Is(CustomRoles.Loyal) || target.Is(CustomRoles.Sheriff))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("TargetCantBeRecruited")));   
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("Jackal_RecruitFailed")));   
             return false;
         }
         else if (target.IsPlayerCrewmateTeam())
