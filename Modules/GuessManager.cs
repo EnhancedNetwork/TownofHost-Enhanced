@@ -238,6 +238,11 @@ public static class GuessManager
                     return true;
                 }
 
+                if (!role.IsEnable() && !role.RoleExist(true) && Options.CanOnlyGuessEnabled.GetBool())
+                {
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
+                    return true;
+                }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessNotifiedBait"));
