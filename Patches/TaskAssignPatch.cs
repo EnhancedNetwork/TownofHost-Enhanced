@@ -10,7 +10,7 @@ namespace TOHE;
 class DisableTasks
 {
     public static void DoRemove(ref List<NormalPlayerTask> usedTasks)
-
+    {
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
 
         List<NormalPlayerTask> disabledTasks = [];
