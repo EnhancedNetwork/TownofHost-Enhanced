@@ -1,5 +1,5 @@
-﻿using static TOHE.Options;
-using TOHE.Roles.AddOns;
+﻿using TOHE.Roles.AddOns;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Coven;
 
