@@ -1436,7 +1436,7 @@ public static class Options
 
         CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
             .SetHeader(true)
-            .SetGameMode(CustomGameMode.Standard);
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
