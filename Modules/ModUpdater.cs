@@ -161,7 +161,9 @@ public class ModUpdater
         if (firstNotify && hasUpdate)
         {
             firstNotify = false;
-            ShowPopupWithTwoButtons(string.Format(GetString("NewUpdateAvailable"), latestTitleModName), GetString("update"), onClickOnFirstButton: () => StartUpdate(downloadUrl));
+            
+            if (!string.IsNullOrEmpty(latestTitleModName))
+                ShowPopupWithTwoButtons(string.Format(GetString("NewUpdateAvailable"), latestTitleModName), GetString("update"), onClickOnFirstButton: () => StartUpdate(downloadUrl));
         }
     }
     public static string Get(string url)
