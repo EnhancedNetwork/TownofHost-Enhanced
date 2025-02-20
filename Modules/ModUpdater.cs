@@ -438,11 +438,14 @@ public class ModUpdater
     {
         if (InfoPopupV2 != null)
         {
-            InfoPopupV2.Show(message);
-            InfoPopupV2.transform.FindChild("Background").localScale *= 2f;
             var templateExitGame = InfoPopupV2.transform.FindChild("ExitGame");
             if (templateExitGame == null) return;
 
+            var background = InfoPopupV2.transform.FindChild("Background");
+            if (background == null) return;
+            background.localScale *= 2f;
+
+            InfoPopupV2.Show(message);
             templateExitGame.gameObject.SetActive(false);
             var firstButton = UnityEngine.Object.Instantiate(templateExitGame, InfoPopupV2.transform);
             var secondButton = UnityEngine.Object.Instantiate(templateExitGame, InfoPopupV2.transform);
