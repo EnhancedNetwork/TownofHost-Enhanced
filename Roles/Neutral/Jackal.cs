@@ -179,31 +179,16 @@ internal class Jackal : RoleBase
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
-        if ((!target.CanBeRecruitedBy(killer,defaultAddon: CustomRoles.Recruit, toMainRole: SidekickAssignMode.GetInt() != 2)
-            && !((CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven()) 
-            || (CanRecruitNeutral.GetBool() && target.GetCustomRole().IsNeutral()) 
-            || (CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor())))
-            || target.GetCustomRole().IsNA())
-        {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
-            Logger.Info("Jackal can not recruit this target", "Jackal");
-            return true;
-        }
 
-        if (target.IsAnySubRole(x => (x.IsBetrayalAddonV2() || x == CustomRoles.Rascal) && x != CustomRoles.Recruit))
-        {
-            // Remove other team converted roles first
-            foreach (var x in target.GetCustomSubRoles())
-            {
-                if ((x.IsBetrayalAddonV2() || x == CustomRoles.Rascal) && x != CustomRoles.Recruit)
-                {
-                    Main.PlayerStates[target.PlayerId].RemoveSubRole(x);
-                }
-            }
-        }
+        bool CanRecruit = (target.GetCustomRole().IsCrewmate() 
+                          || (CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor()) 
+                          || (CanRecruitNeutral.GetBool() && target.GetCustomRole().IsNeutral() && !target.GetCustomRole().IsNA()) 
+                          || (CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven()))
+                          && !(target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18);
 
-        var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Recruit);
-        var role = killer.GetBetrayalAddon() is CustomRoles.NotAssigned ? CustomRoles.Sidekick : addon switch
+
+        var addon = killer.GetBetrayalAddon(forRecruiter: true);
+        var role = addon switch
         {
             CustomRoles.Admired => CustomRoles.Sheriff,
             CustomRoles.Madmate => CustomRoles.Refugee,
@@ -213,6 +198,12 @@ internal class Jackal : RoleBase
         switch (SidekickAssignMode.GetInt())
         {
             case 1: // Only SideKick
+                if (!CanRecruit)
+                {
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(role), GetString("Jackal_RecruitFailed")));
+                    Logger.Info("Jackal can not recruit this target", "Jackal");
+                    return true;
+                }
                 AbilityLimit--;
 
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned {role.ToString()} to {target.GetNameWithRole()}", "Jackal");
@@ -221,11 +212,18 @@ internal class Jackal : RoleBase
                 target.RpcChangeRoleBasis(role);
                 target.RpcSetCustomRole(role);
                 target.GetRoleClass()?.OnAdd(target.PlayerId);
-                if (role == CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned) 
+                // Remove other team converted roles
+                foreach (var x in target.GetCustomSubRoles())
+                {
+                    if ((x.IsBetrayalAddonV2() || x == CustomRoles.Rascal) && x != addon)
+                        Main.PlayerStates[target.PlayerId].RemoveSubRole(x);
+                }
+
+                if (role == CustomRoles.Sidekick && addon != CustomRoles.Recruit) 
                     target.RpcSetCustomRole(addon);
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(role), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(role), GetString("BeRecruitedByJackal")));
 
                 Utils.NotifyRoles(killer, target, true);
                 Utils.NotifyRoles(target, killer, true);
@@ -236,6 +234,12 @@ internal class Jackal : RoleBase
                 killer.SetKillCooldown(forceAnime: !DisableShieldAnimations.GetBool());
                 break;
             case 2: // Only Recruit
+                if (!target.CanBeRecruitedBy(killer))
+                {
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("Jackal_RecruitFailed")));
+                    Logger.Info("Jackal can not recruit this target", "Jackal");
+                    return true;
+                }
                 AbilityLimit--;
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned {addon.ToString()} to {target.GetNameWithRole()}", "Jackal");
                 target.RpcSetCustomRole(addon);
@@ -260,14 +264,26 @@ internal class Jackal : RoleBase
                 Main.PlayerStates[target.PlayerId].taskState.hasTasks = false;
                 break;
             case 0: // SideKick when failed Recruit
-                if (target.HasImpKillButton())
+                if (CanRecruit)
                 {
                     target.GetRoleClass()?.OnRemove(target.PlayerId);
                     target.RpcChangeRoleBasis(role);
                     target.RpcSetCustomRole(role);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
-                    if (role == CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned) 
+                    foreach (var x in target.GetCustomSubRoles()) //remove other team converted addon
+                    { 
+                        if ((x.IsBetrayalAddonV2() || x == CustomRoles.Rascal) && x != addon)
+                            Main.PlayerStates[target.PlayerId].RemoveSubRole(x);
+                    }
+                    
+                    if (role == CustomRoles.Sidekick && addon != CustomRoles.Recruit) 
                         target.RpcSetCustomRole(addon);                    
+                }
+                else if (!target.CanBeRecruitedBy(killer))
+                {
+                    killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("Jackal_RecruitFailed")));
+                    Logger.Info("Jackal can not recruit this target", "Jackal");
+                    return true;
                 }
                 else
                 {
@@ -275,8 +291,8 @@ internal class Jackal : RoleBase
                 }
                 AbilityLimit--;
 
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("BeRecruitedByJackal")));
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
