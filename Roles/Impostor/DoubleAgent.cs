@@ -173,7 +173,7 @@ internal class DoubleAgent : RoleBase
     }
 
     // Active Bomb timer update and check
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
+    private void OnFixedUpdateOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!CurrentBombedPlayers.Contains(player.PlayerId)) return;
 
@@ -195,7 +195,7 @@ internal class DoubleAgent : RoleBase
     }
 
     // Set timer on Double Agent for non-Modded Clients
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 
