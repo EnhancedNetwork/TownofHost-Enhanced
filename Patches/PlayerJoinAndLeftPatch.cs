@@ -455,7 +455,16 @@ class OnPlayerLeftPatch
                     if (Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId))
                     {
                         if (AmongUsClient.Instance.AmHost)
+                        {
                             Utils.SendMessage(string.Format(GetString("Message.HostLeftGameNewHostIsMod"), AmongUsClient.Instance.GetHost().Character?.GetRealName() ?? "null"));
+                            _ = new LateTask(() =>
+                            {
+                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                                GameManager.Instance.enabled = false;
+                                Utils.NotifyGameEnding();
+                                GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
+                            }, 3f, "Disconnect Error Auto-end");
+                        }
                     }
                     else
                     {
@@ -477,14 +486,6 @@ class OnPlayerLeftPatch
                     break;
                 case DisconnectReasons.Error when !GameStates.IsLobby:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByError"), data?.PlayerName));
-                    _ = new LateTask(() =>
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                        GameManager.Instance.enabled = false;
-                        Utils.NotifyGameEnding();
-                        GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
-                    }, 3f, "Disconnect Error Auto-end");
-
                     break;
             }
 
