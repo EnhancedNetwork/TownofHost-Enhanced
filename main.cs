@@ -52,7 +52,7 @@ public class Main : BasePlugin
 
     /******************* Change one of the three variables to true before making a release. *******************/
     public static readonly bool devRelease = false; // Latest: v2.2.0 Alpha 17.1
-    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 3
+    public static readonly bool canaryRelease = false; // Latest: v2.2.0 Beta 4
     public static readonly bool fullRelease = true; // Latest: v2.1.1
 
     public static bool hasAccess = true;
@@ -638,6 +638,7 @@ public class Main : BasePlugin
         NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
         NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
         HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
 
