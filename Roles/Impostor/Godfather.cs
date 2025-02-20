@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -74,16 +75,17 @@ internal class Godfather : RoleBase
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 if (ChangeRole is CustomRoles.Refugee && godfather.GetBetrayalAddon() != CustomRoles.NotAssigned)
                     killer.RpcSetCustomRole(ChangeAddon);
+                killer.Notify(ColorString(GetRoleColor(ChangeRole), GetString("GodfatherRefugeeMsg")));
             }
             else 
             {
                 if (!killer.CanBeRecruitedBy(godfather)) return;
                 killer.RpcSetCustomRole(ChangeAddon);
+                killer.Notify(ColorString(GetRoleColor(ChangeAddon), GetString("GodfatherRefugeeMsg")));
             }
             killer.RpcGuardAndKill();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            killer.Notify(ColorString(GetRoleColor(CustomRoles.Godfather), GetString("GodfatherRefugeeMsg")));
             NotifyRoles(killer);
             
         }
