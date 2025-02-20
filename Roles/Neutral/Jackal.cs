@@ -173,14 +173,14 @@ internal class Jackal : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (target.Is(CustomRoles.Jackal)) return false;
-        if ((target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return JackalCanKillSidekick.GetBool();
+        if (target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick)) return JackalCanKillSidekick.GetBool();
         if (!CanRecruitSidekick.GetBool() || !CanRecruit())
         {
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
 
-        bool CanRecruit = (target.GetCustomRole().IsCrewmate() 
+        bool CanRecruitTarget = (target.GetCustomRole().IsCrewmate() 
                           || (CanRecruitImpostor.GetBool() && target.GetCustomRole().IsImpostor()) 
                           || (CanRecruitNeutral.GetBool() && target.GetCustomRole().IsNeutral() && !target.GetCustomRole().IsNA()) 
                           || (CanRecruitCoven.GetBool() && target.GetCustomRole().IsCoven()))
@@ -198,7 +198,7 @@ internal class Jackal : RoleBase
         switch (SidekickAssignMode.GetInt())
         {
             case 1: // Only SideKick
-                if (!CanRecruit)
+                if (!CanRecruitTarget)
                 {
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(role), GetString("Jackal_RecruitFailed")));
                     Logger.Info("Jackal can not recruit this target", "Jackal");
@@ -264,7 +264,7 @@ internal class Jackal : RoleBase
                 Main.PlayerStates[target.PlayerId].taskState.hasTasks = false;
                 break;
             case 0: // SideKick when failed Recruit
-                if (CanRecruit)
+                if (CanRecruitTarget)
                 {
                     target.GetRoleClass()?.OnRemove(target.PlayerId);
                     target.RpcChangeRoleBasis(role);
