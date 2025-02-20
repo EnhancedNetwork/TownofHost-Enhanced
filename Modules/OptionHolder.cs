@@ -561,6 +561,7 @@ public static class Options
     public static OptionItem CovenCanGuessCoven;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
+    public static OptionItem CanOnlyGuessEnabled;
     public static OptionItem UseQuickChatSpamCheat;
 
 
@@ -1431,6 +1432,11 @@ public static class Options
         ShowOnlyEnabledRolesInGuesserUI = BooleanOptionItem.Create(60689, "ShowOnlyEnabledRolesInGuesserUI", true, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard)
+            .SetColor(Color.cyan);
+
+        CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard);
             .SetColor(Color.cyan);
 
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
