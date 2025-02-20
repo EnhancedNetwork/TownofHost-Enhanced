@@ -86,7 +86,7 @@ internal class Virus : RoleBase
         if (target == null || !InfectedBodies.Contains(target.PlayerId)) return;
         if (reporter == null || !reporter.CanBeInfected()) return;
 
-        var addon = _Player.GetBetrayalAddon(defaultAddon: CustomRoles.Contagious);
+        var addon = _Player.GetBetrayalAddon(forRecruiter: true);
 
         AbilityLimit--;
         SendSkillRPC();
@@ -98,6 +98,7 @@ internal class Virus : RoleBase
         }
         else
         {
+            if (!reporter.CanBeRecruitedBy(_Player)) return;
             reporter.RpcSetCustomRole(addon);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
             if (addon is CustomRoles.Admired)
@@ -107,7 +108,7 @@ internal class Virus : RoleBase
             }
         }
 
-        Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + addon.ToString());
+        Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
