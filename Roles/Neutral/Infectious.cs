@@ -66,8 +66,8 @@ internal class Infectious : RoleBase
 
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
-        var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Infected);
-        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Infected))
+        var addon = killer.GetBetrayalAddon(forRecruiter: true);
+        if (target.CanBeRecruitedBy(killer))
         {
             BiteLimit--;
             target.RpcSetCustomRole(addon);
@@ -75,8 +75,8 @@ internal class Infectious : RoleBase
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("InfectiousBittenPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("BittenByInfectious")));
 
             if (addon is CustomRoles.Admired)
             {
@@ -92,7 +92,7 @@ internal class Infectious : RoleBase
 
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Infected.ToString(), "Assign " + CustomRoles.Infected.ToString());
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
 
             if (BiteLimit < 0)
             {
@@ -103,7 +103,7 @@ internal class Infectious : RoleBase
             return true;
         }
 
-        if (!target.CanBeRecruitedBy(killer, defaultAddon: addon) && !target.Is(addon))
+        if (!target.CanBeRecruitedBy(killer) && !target.Is(addon))
         {
             killer.RpcMurderPlayer(target);
         }
@@ -113,7 +113,7 @@ internal class Infectious : RoleBase
             HudManager.Instance.KillButton.OverrideText($"{GetString("KillButtonText")}");
         }
 
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousInvalidTarget")));
+        killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("InfectiousInvalidTarget")));
 
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{BiteLimit}次招募机会", "Infectious");
         return false;

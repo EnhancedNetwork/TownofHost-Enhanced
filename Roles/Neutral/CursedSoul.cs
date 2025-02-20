@@ -73,15 +73,15 @@ internal class CursedSoul : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Soulless))
+        if (target.CanBeRecruitedBy(killer))
         {
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Soulless);
+            var addon = killer.GetBetrayalAddon(forRecruiter: true);
             CurseLimit--;
             SendRPC();
             target.RpcSetCustomRole(addon);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CursedSoulSoullessPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("SoullessByCursedSoul")));
 
             if (addon is CustomRoles.Admired)
             {
@@ -98,7 +98,7 @@ internal class CursedSoul : RoleBase
             if (!DisableShieldAnimations.GetBool())
                 killer.RpcGuardAndKill(target);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Soulless.ToString(), "Assign " + CustomRoles.Soulless.ToString());
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{CurseLimit}次魅惑机会", "CursedSoul");
             return false;
         }

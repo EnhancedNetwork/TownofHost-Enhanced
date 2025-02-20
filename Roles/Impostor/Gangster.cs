@@ -79,13 +79,13 @@ internal class Gangster : RoleBase
 
         if (CanRecruit(killer.PlayerId))
         {
-            if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Madmate))
+            if (target.CanBeRecruitedBy(killer))
             {
-                var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Madmate);
+                var addon = killer.GetBetrayalAddon(forRecruiter: true);
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Gangster Assign");
                 target.RpcSetCustomRole(addon);
-                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterSuccessfullyRecruited")));
-                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("BeRecruitedByGangster")));
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("GangsterSuccessfullyRecruited")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("BeRecruitedByGangster")));
                 
                 if (addon is CustomRoles.Admired)
                 {

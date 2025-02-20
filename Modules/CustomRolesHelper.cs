@@ -423,23 +423,42 @@ public static class CustomRolesHelper
             CustomRoles.Swift;
     }
 
-    public static CustomRoles GetBetrayalAddon(this PlayerControl pc, CustomRoles defaultAddon = CustomRoles.NotAssigned)
+    public static CustomRoles GetBetrayalAddon(this PlayerControl pc, bool forRecruiter = false)
     {
+        //Soulless and Egoist are excluded because they don't actually change player's team.
         List<CustomRoles> BTAddonList = pc.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist).ToList();
-        return BTAddonList.Any() ? BTAddonList.FirstOrDefault() : defaultAddon;
+
+        //Get player's betrayal add-on,NotAssigned if player doesn't have betrayal addon
+        var addon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.NotAssigned;
+
+        //for recruiting roles to get their respective betrayal add-on
+        if (forRecruiter)
+            addon = addon != CustomRoles.NotAssigned ? 
+            addon : //if player has betrayal addon,return the add-on
+            pc.GetCustomRole() switch //default addon for recruiting roles
+            {
+                CustomRoles.Admirer => CustomRoles.Admired,
+                CustomRoles.Gangster or CustomRoles.Godfather => CustomRoles.Madmate,
+                CustomRoles.CursedSoul => CustomRoles.Soulless,
+                CustomRoles.Cultist => CustomRoles.Charmed,
+                CustomRoles.Infectious => CustomRoles.Infected,
+                CustomRoles.Jackal => CustomRoles.Recruit,
+                CustomRoles.Virus => CustomRoles.Contagious,
+                CustomRoles.Ritualist => CustomRoles.Enchanted,
+                _ => CustomRoles.NotAssigned
+            };
+        
+        return addon;
     }
 
-    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned, bool toMainRole = false)
+    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter)
     {
-        var addon = recruiter.GetBetrayalAddon(defaultAddon);
+        var addon = recruiter.GetBetrayalAddon(forRecruiter: true);
         //Mini shouldn't be recruited
         if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18) return false;
 
         //loyal can't be recruited
         if (target.Is(CustomRoles.Loyal)) return false;
-
-        //for godfather(to refugee) and jackal(to sidekick)
-        else if (toMainRole) return true;
                          
         //target already has this addon
         else if (target.Is(addon)) return false;
