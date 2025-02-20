@@ -214,6 +214,11 @@ internal class Ritualist : CovenManager
             target.RpcSetCustomRole(addon);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("RitualistSuccessfullyRecruited")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("BeRecruitedByRitualist")));
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
         }
 
     }
