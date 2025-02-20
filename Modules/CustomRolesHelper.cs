@@ -435,7 +435,7 @@ public static class CustomRolesHelper
         if (forRecruiter)
             addon = addon != CustomRoles.NotAssigned ? 
             addon : //if player has betrayal addon,return the add-on
-            player.GetCustomRole() switch //default addon for recruiting roles
+            pc.GetCustomRole() switch //default addon for recruiting roles
             {
                 CustomRoles.Admirer => CustomRoles.Admired,
                 CustomRoles.Gangster or CustomRoles.Godfather => CustomRoles.Madmate,
