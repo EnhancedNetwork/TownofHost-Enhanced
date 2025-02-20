@@ -59,6 +59,7 @@ internal class Cultist : RoleBase
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        var addon = killer.GetBetrayalAddon(forRecruiter: true);
         if (AbilityLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
@@ -67,7 +68,6 @@ internal class Cultist : RoleBase
         }
         else if (target.CanBeRecruitedBy(killer))
         {
-            var addon = killer.GetBetrayalAddon(forRecruiter: true);
             AbilityLimit--;
             SendSkillRPC();
             target.RpcSetCustomRole(addon);
