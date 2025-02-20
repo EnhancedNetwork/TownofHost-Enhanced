@@ -14,7 +14,7 @@ public class InnerNetClientPatch
     {
         if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return true;
         // We make sure other stuffs like playercontrol and Lobby behavior is spawned properly
-        // Then we spawn networked data for new clients
+        // Then we spawn Networked Data for new clients
         MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
         messageWriter.StartMessage(6);
         messageWriter.Write(__instance.GameId);
@@ -41,7 +41,6 @@ public class InnerNetClientPatch
                 }
             }
             messageWriter.EndMessage();
-            // Logger.Info($"send first data to {clientId}, size is {messageWriter.Length}", "SendInitialDataPrefix");
             __instance.SendOrDisconnect(messageWriter);
             messageWriter.Recycle();
         }
@@ -53,7 +52,7 @@ public class InnerNetClientPatch
     {
         List<NetworkedPlayerInfo> players = GameData.Instance.AllPlayers.ToArray().ToList();
 
-        // We send 5 players at a time to prevent too huge packet
+        // We send 5 Players at a time to prevent too huge packet
         while (players.Count > 0)
         {
             var batch = players.Take(5).ToList();
@@ -73,7 +72,6 @@ public class InnerNetClientPatch
                 players.Remove(player);
             }
             messageWriter.EndMessage();
-            // Logger.Info($"send delayed network data to {clientId} , size is {messageWriter.Length}", "SendInitialDataPrefix");
             __instance.SendOrDisconnect(messageWriter);
             messageWriter.Recycle();
         }
@@ -84,7 +82,7 @@ public class InnerNetClientPatch
     public static bool SendAllStreamedObjectsPrefix(InnerNetClient __instance, ref bool __result)
     {
         if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return true;
-        // Bypass all NetworkedData here.
+        // Bypass all Networked Data here
         __result = false;
         Il2CppSystem.Collections.Generic.List<InnerNetObject> obj = __instance.allObjects;
         lock (obj)
@@ -196,7 +194,7 @@ public class InnerNetClientPatch
     [HarmonyPostfix]
     public static void FixedUpdatePostfix(InnerNetClient __instance)
     {
-        // Send a networked data pre 2 fixed update should be a good practice?
+        // Send a Networked Data pre 2 fixed update
         if (!Constants.IsVersionModded() || __instance.NetworkMode != NetworkModes.OnlineGame) return;
         if (!__instance.AmHost || __instance.Streams == null) return;
 
@@ -257,9 +255,9 @@ public class InnerNetClientPatch
 internal class DirtyAllDataPatch
 {
     // Currently this function only occurs in CreatePlayer
-    // It's believed to lag host, delay the playercontrol spawn mesasge & blackout new client
+    // It's believed to lag Host, delay the playercontrol spawn mesasge & blackout new client
     // & send huge packets to all clients & completely no need to run
-    // Temporarily disable it until Innersloth get a better fix.
+    // Temporarily disable it until Innersloth get a better fix
     public static bool Prefix()
     {
         return false;
