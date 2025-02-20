@@ -18,6 +18,11 @@ namespace TOHE.Patches
             var details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}";
             activity.Details = details;
 
+            activity.Assets = new ActivityAssets
+            {
+                LargeImage = "https://i.imgur.com/W6HMVgD.png"
+            };
+
             try
             {
                 if (activity.State != "In Menus")

@@ -866,6 +866,7 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Doppelganger)
                     || pc.Is(CustomRoles.Jester)
                     || pc.Is(CustomRoles.Zombie)
+                    || pc.Is(CustomRoles.Sacrifist)
                     || pc.Is(CustomRoles.Solsticer) || pc.IsNeutralApocalypse()) return false;
                 break;
 
