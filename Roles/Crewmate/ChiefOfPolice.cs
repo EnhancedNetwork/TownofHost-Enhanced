@@ -75,7 +75,7 @@ internal class ChiefOfPolice : RoleBase
         }
         else if (target.Is(CustomRoles.Loyal) || target.Is(CustomRoles.Sheriff))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("Jackal_RecruitFailed")));   
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("PoliceFailedRecruit")));   
             return false;
         }
         else if (target.IsPlayerCrewmateTeam())
@@ -113,7 +113,7 @@ internal class ChiefOfPolice : RoleBase
             {
                 suidice = true;
             }
-            if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini) || target.Is(CustomRoles.Loyal))
+            if (target.Is(CustomRoles.Zombie))
             {
                 suidice = true;
             }
