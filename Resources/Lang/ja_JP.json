@@ -1841,7 +1841,7 @@
   "NinjaMarkCooldown": "マークのクールダウン",
   "NinjaAssassinateCooldown": "アサシネイトのクールダウン",
   "NinjaModeDouble": "ダブルクリック = キル、シングルクリック = マーク",
-  "JudgeCanTrialnCrewKilling": "<color=#8cffff>乗組員</color> <color=#ff1919>殺害</color>を試すことができます",
+  "JudgeCanTrialnCrewKilling": "<color=#8cffff>クルーメイト</color>や<color=#ff1919>キル能力持ち</color>のプレイヤーを裁判にかけられる",
   "JudgeCanTrialNeutralB": "<color=#7f8c8d>中立</color> <color=#046300>良性</color>を試すことができます",
   "JudgeCanTrialNeutralK": "<color=#7f8c8d>中立</color> <color=#ff1919>殺害</color>を試すことができます",
   "JudgeCanTrialNeutralE": "<color=#7f8c8d>中立</color> <color=#912900>悪</color>を試すことができます",
