@@ -63,7 +63,7 @@ internal class Godfather : RoleBase
         };
 
         if (killer.GetCustomRole() is CustomRoles.EvilMini or CustomRoles.NiceMini && Mini.Age < 18) return;
-        if (killer.Is(CustomRoles.Loyal) return;
+        if (killer.Is(CustomRoles.Loyal)) return;
         if (GodfatherTarget.Contains(target.PlayerId))
         {
             if (!killer.IsAlive() || killer == godfather) return;
