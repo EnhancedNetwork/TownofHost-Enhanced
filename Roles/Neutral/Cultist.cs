@@ -65,15 +65,15 @@ internal class Cultist : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        else if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Charmed))
+        else if (target.CanBeRecruitedBy(killer))
         {
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Charmed);
+            var addon = killer.GetBetrayalAddon(forRecruiter: true);
             AbilityLimit--;
             SendSkillRPC();
             target.RpcSetCustomRole(addon);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CultistCharmedPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CharmedByCultist")));
 
             if (addon is CustomRoles.Admired)
             {
@@ -90,11 +90,11 @@ internal class Cultist : RoleBase
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));
+        killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CultistInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
         return false;
     }
