@@ -63,7 +63,8 @@ public class Rebel : IAddon
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
         bool lightsOut = IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsCrewmate() && !(player.Is(CustomRoles.Torch) && !Torch.TorchAffectedByLights.GetBool());
-        float rebelVision = Main.DefaultImpostorVision;
+        float initVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : (player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultImpostorVision);
+        float rebelVision = lightsOut ? initVision * 5 : initVision;
         if (!player.Is(CustomRoles.Lighter) && HasImpostorVision.GetBool())
         {
             opt.SetVision(true);
