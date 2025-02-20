@@ -72,7 +72,7 @@ internal class Sorcerer : RoleBase
     }
 
     // Win: all marked Players dead + 3 or fewer alive
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !player.IsAlive()) return;
 
