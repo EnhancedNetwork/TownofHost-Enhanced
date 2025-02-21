@@ -103,6 +103,15 @@ internal class RunLoginPatch
             Logger.Info("friendcode not found", "EOSManager");
             canOnline = false;
         }
+        try
+        {
+            if (Main.canaryRelease ||  Main.fullRelease)
+                ModUpdater.ShowAvailableUpdate();
+        }
+        catch (System.Exception error)
+        {
+            Logger.Error(error.ToString(), "ModUpdater.ShowAvailableUpdate");
+        }
     }
 }
 [HarmonyPatch(typeof(BanMenu), nameof(BanMenu.SetVisible))]

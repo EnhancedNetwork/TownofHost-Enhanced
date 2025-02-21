@@ -37,11 +37,6 @@ internal class CovenLeader : CovenManager
     {
         AbilityLimit = MaxRetrains.GetInt();
     }
-
-    public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
-    {
-        AbilityLimit = reader.ReadSingle();
-    }
     public override bool CanUseKillButton(PlayerControl pc) => pc.IsAlive();
     public override string GetProgressText(byte playerId, bool comms)
         => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.CovenLeader).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
