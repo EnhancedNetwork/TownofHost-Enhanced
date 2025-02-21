@@ -128,7 +128,8 @@ internal class Eraser : RoleBase
         foreach (var pc in PlayerToErase.ToArray())
         {
             var player = pc.GetPlayer();
-            var readyRole = GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole());
+            CustomRoles role = player.GetCustomRole();
+            var readyRole = GetErasedRole(role.GetRoleTypes(), role);
             if (player == null) continue;
             if (!ErasedRoleStorage.ContainsKey(player.PlayerId))
             {
@@ -146,7 +147,7 @@ internal class Eraser : RoleBase
                 Logger.Info($"Canceled {player.GetNameWithRole()} because player have ghost role", "Eraser");
                 return;
             }
-            if (player.GetCustomRole().IsMadmate())
+            if (role.IsMadmate())
             {
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
@@ -156,7 +157,7 @@ internal class Eraser : RoleBase
                 player.RpcSetCustomRole(CustomRoles.Madmate);
                 player.AddInSwitchAddons(player, CustomRoles.Madmate);
             }
-            else if (player.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(player) && CanEraseCoven.GetBool())
+            else if (role.IsCoven() && !CovenManager.HasNecronomicon(player) && CanEraseCoven.GetBool())
             {
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
@@ -166,7 +167,7 @@ internal class Eraser : RoleBase
                 player.RpcSetCustomRole(CustomRoles.Enchanted);
                 player.AddInSwitchAddons(player, CustomRoles.Enchanted);
             }
-            else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsTNA() && CanEraseNeutral.GetBool())
+            else if (role.IsNeutral() && !role.IsTNA() && CanEraseNeutral.GetBool())
             {
                 if (player.Is(CustomRoles.Sidekick))
                 {
