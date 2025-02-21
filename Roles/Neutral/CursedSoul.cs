@@ -20,7 +20,7 @@ internal class CursedSoul : RoleBase
     private static OptionItem CurseCooldown;
     private static OptionItem CurseCooldownIncrese;
     private static OptionItem CurseMax;
-    private static OptionItem KnowTargetRole;
+    private static OptionItem KnowTargetRoleOpt;
     private static OptionItem CanCurseNeutral;
     private static OptionItem CanCurseCoven;
 
@@ -35,7 +35,7 @@ internal class CursedSoul : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         CurseMax = IntegerOptionItem.Create(Id + 12, "CursedSoulCurseMax", new(1, 15, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul])
             .SetValueFormat(OptionFormat.Times);
-        KnowTargetRole = BooleanOptionItem.Create(Id + 13, "CursedSoulKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
+        KnowTargetRoleOpt = BooleanOptionItem.Create(Id + 13, "CursedSoulKnowTargetRole", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
         CanCurseNeutral = BooleanOptionItem.Create(Id + 16, "CursedSoulCanCurseNeutral", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
         CanCurseCoven = BooleanOptionItem.Create(Id + 17, "CursedSoulCanCurseCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.CursedSoul]);
     }
@@ -107,7 +107,7 @@ internal class CursedSoul : RoleBase
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)
-        => player.Is(CustomRoles.CursedSoul) && target.Is(CustomRoles.Soulless);
+        => player.Is(CustomRoles.CursedSoul) && KnowTargetRoleOpt.GetBool() && target.Is(CustomRoles.Soulless);
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : string.Empty;
