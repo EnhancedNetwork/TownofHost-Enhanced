@@ -110,8 +110,9 @@ internal class Crewpostor : RoleBase
         foreach (var cptargets in Main.AllAlivePlayerControls.Where(x => x != player))
         {
             if ((cptargets.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18)
-              || (CPAndAlliesKnowEachOther.GetBool() && (cptargets.CheckMMCanSeeImp() || (cptargets.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())))
-              || (cptargets.Is(CustomRoles.Sheriff) && player.Is(CustomRoles.Narc)))
+              || (CPAndAlliesKnowEachOther.GetBool() && (cptargets.CheckImpTeamCanSeeTeammates() || (cptargets.Is(CustomRoles.Madmate) && !Madmate.ImpCanKillMadmate.GetBool())))
+              || (cptargets.Is(CustomRoles.Sheriff) && player.Is(CustomRoles.Narc))
+              || cptargets.Is(CustomRoles.Solsticer))
               continue;
             list.Add(cptargets);
         }

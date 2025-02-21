@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Double;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -69,14 +70,14 @@ internal class Apprentice : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 
     ((RevealCount[id] > 0) && Main.AliveImpostorCount > 1) ? RevealCooldown.GetFloat() : Options.DefaultKillCooldown;
     public override bool CanUseKillButton(PlayerControl pc) 
-        => (Main.AliveImpostorCount >= 2 && RevealCount[pc.PlayerId] > 0) || Main.AliveImpostorCount < 2;
+        => RevealCount[pc.PlayerId] > 0 || Main.AliveImpostorCount < 2;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => Main.AliveImpostorCount < 2;
     public override bool CanUseSabotage(PlayerControl pc) => Main.AliveImpostorCount < 2;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.CheckMMCanSeeImp() && target.CheckMMCanSeeImp()) return false;
+        if (killer.CheckImpTeamCanSeeTeammates() && target.CheckImpTeamCanSeeTeammates()) return false;
         else if (Main.AliveImpostorCount > 1)
         {
             if (RevealCount[killer.PlayerId] > 0) SetRevealed(killer, target);
@@ -86,15 +87,16 @@ internal class Apprentice : RoleBase
         {
             if (RevealCount[killer.PlayerId] > 0)
             {
-                if (
-                    (!(killer.Is(CustomRoles.Narc) && (target.Is(CustomRoles.Sheriff) || (!target.Is(CustomRoles.Madmate) || Narc.NarcCanKillMadmate.GetBool()))))
-                    || (killer.CheckMMCanSeeImp(CheckImp:false) && !killer.Is(CustomRoles.Narc) && (!target.Is(CustomRoles.Madmate) || Madmate.ImpCanKillMadmate.GetBool()))
-                )
-                {
-                    RevealCount[killer.PlayerId]--;
-                    killer.RpcMurderPlayer(target);
-                    killer.ResetKillCooldown();
-                }
+                if (target.Is(CustomRoles.Sheriff) && killer.Is(CustomRoles.Narc)) return true;
+                if (target.CheckImpTeamCanSeeTeammates()) return true;
+                if (target.Is(CustomRoles.Madmate) && !(killer.Is(CustomRoles.Narc) ? Narc.NarcCanKillMadmate.GetBool() : Madmate.ImpCanKillMadmate.GetBool()))
+                    return true;
+                if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18) return true;
+                if (target.Is(CustomRoles.Solsticer)) return true;
+                
+                RevealCount[killer.PlayerId]--;
+                killer.RpcMurderPlayer(target);
+                killer.ResetKillCooldown();
                 return false;
             }
             else return true;            

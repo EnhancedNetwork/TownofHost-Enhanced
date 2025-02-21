@@ -282,10 +282,12 @@ class CheckMurderPatch
         }
 
         // Impostors can kill Madmate
-        if (killer.CheckMMCanSeeImp() && target.Is(CustomRoles.Madmate))
-            return killer.Is(CustomRoles.Narc) ? Narc.NarcCanKillMadmate.GetBool() : Madmate.ImpCanKillMadmate.GetBool();
+        if (killer.CheckImpTeamCanSeeTeammates() && target.Is(CustomRoles.Madmate)
+           && !(killer.Is(CustomRoles.Narc) ? Narc.NarcCanKillMadmate.GetBool() : Madmate.ImpCanKillMadmate.GetBool())
+           )
+            return false;
 
-        if (killer.CheckMMCanSeeImp() && target.CheckMMCanSeeImp())
+        if (killer.CheckImpTeamCanSeeTeammates() && target.CheckImpTeamCanSeeTeammates())
             return false;
 
         Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");

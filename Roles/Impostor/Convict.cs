@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Options;
-using static TOHE.MeetingHudStartPatch;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -33,15 +32,21 @@ internal class Convict : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
 
-    public override void AfterMeetingTasks()
-    { 
-        var convict = _Player;
-        var taskstate = convict.GetPlayerTaskState();
+    public static bool CanBecomeRefugee(PlayerControl pc)
+    {
+        var taskstate = pc.GetPlayerTaskState();
 
         int completed = taskstate.CompletedTasksCount;//total number of Convict's tasks
-        int required = LastImpostor.currentId == convict.PlayerId ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
+        int required = LastImpostor.currentId == pc.PlayerId ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
+        return completed >= required;
+    }
+
+    public override void AfterMeetingTasks()
+    { 
+        if (!_Player.IsAlive()) return;
+        var convict = _Player;
  
-        if (convict.IsAlive() && completed >= required)
+        if (CanBecomeRefugee(convict))
         {
             convict.RpcChangeRoleBasis(CustomRoles.Refugee);
             convict.RpcSetCustomRole(CustomRoles.Refugee);

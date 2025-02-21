@@ -2,8 +2,6 @@ using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.AddOns.Common;
-using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Options;
 
@@ -82,9 +80,8 @@ public class Narc : IAddon
 
     public static void ApplyGameOptions(IGameOptions opt, PlayerControl player)
     {
-        bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor() && !(player.Is(CustomRoles.Torch) && !Torch.TorchAffectedByLights.GetBool());
-        float initVision = player.Is(CustomRoles.Bewilder) ? Bewilder.BewilderVision.GetFloat() : (player.Is(CustomRoles.Torch) ? Torch.TorchVision.GetFloat() : Main.DefaultCrewmateVision);
-        float narcVision = lightsout ? initVision / 5 : initVision;
+        bool lightsout = Utils.IsActive(SystemTypes.Electrical) && player.GetCustomRole().IsImpostor();
+        float narcVision = lightsout ? Main.DefaultCrewmateVision / 5 : Main.DefaultCrewmateVision;
 
         if (!player.Is(CustomRoles.KillingMachine) && !player.Is(CustomRoles.Zombie)
             && NarcHasCrewVision.GetBool())

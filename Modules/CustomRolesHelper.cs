@@ -302,26 +302,18 @@ public static class CustomRolesHelper
             CustomRoles.Phantom;
     }
 
-    public static bool CheckMMCanSeeImp(this PlayerControl pc, bool CheckImp = true)
+    public static bool CheckImpTeamCanSeeTeammates(this PlayerControl pc, bool CheckImp = true)
     {
-        //used for checking if Impostors and Madmates can see each other and cannot kill each other
-        var role = pc.GetCustomRole();
-
-        if (role == CustomRoles.Convict)
+        return pc.GetCustomRole() switch
         {
-            var taskstate = pc.GetPlayerTaskState();
-
-            int completed = taskstate.CompletedTasksCount;//total number of Convict's tasks
-            int required = LastImpostor.currentId == pc.PlayerId ? taskstate.AllTasksCount / 2 : taskstate.AllTasksCount;//required number of tasks for Convict to become Refugee
-            return completed >= required;
-        }
-
-        return role is CustomRoles.Refugee 
-                || (role.IsImpostor() && CheckImp)
-                || (role == CustomRoles.Parasite && Main.AliveImpostorCount < 2)
-                || (role == CustomRoles.Apprentice && Main.AliveImpostorCount < 2)
-                || (role == CustomRoles.Crewpostor && Crewpostor.CPAndAlliesKnowEachOther.GetBool())
-                || (role == CustomRoles.Underdog && Underdog.CheckCanSeeImp(pc));
+            var r when r.IsImpostor() => CheckImp,
+            CustomRoles.Refugee => true,
+            CustomRoles.Parasite or CustomRoles.Apprentice => Main.AliveImpostorCount < 2,
+            CustomRoles.Underdog => Underdog.CheckCanSeeImp(pc),
+            CustomRoles.Crewpostor => Crewpostor.CPAndAlliesKnowEachOther.GetBool() || Main.AliveImpostorCount < 2,
+            CustomRoles.Convict => Convict.CanBecomeRefugee(pc),
+            _ => false
+        };
     }
     public static bool IsCoven(this CustomRoles role)
     {

@@ -180,7 +180,7 @@ internal class BountyHunter : RoleBase
         if (player.Is(CustomRoles.Enchanted)
             && target.IsPlayerCoven() || (target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool())) return false;
 
-        if (target.CheckMMCanSeeImp()
+        if (target.CheckImpTeamCanSeeTeammates()
             || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool())) return false;
     
         if (player.Is(CustomRoles.Narc)
