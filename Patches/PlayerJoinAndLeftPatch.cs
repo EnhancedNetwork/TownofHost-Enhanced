@@ -416,7 +416,7 @@ class OnPlayerLeftPatch
                 var msg = "";
                 if (GameStates.IsInGame)
                 {
-                    CriticalErrorManager.SetCreiticalError("Host exits the game", false);
+                    CriticalErrorManager.SetCriticalError("Host exits the game", false);
                     CriticalErrorManager.CheckEndGame();
                     msg = GetString("Message.HostLeftGameInGame");
                 }
@@ -493,7 +493,7 @@ class OnPlayerLeftPatch
             // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
             if (Main.AssignRolesIsStarted)
             {
-                CriticalErrorManager.SetCreiticalError("The player left the game during assigning roles", true);
+                CriticalErrorManager.SetCriticalError("The player left the game during assigning roles", true);
             }
 
 
