@@ -2623,6 +2623,7 @@
   "CrewCanBeInLove": "<color=#8cffff>Besatzungsmitglieder</color> können <color=#ff9ace>verliebt</color> sein",
   "NeutralCanBeInLove": "<color=#7f8c8d>Neutrale</color> können <color=#ff9ace>verliebt</color> sein",
   "CovenCanBeInLove": "<color=#ac42f2>Hexenzirkel</color> kann <color=#ff9ace>Liebhaber</color> werden",
+  "NewUpdateAvailable": "<size=400%><b>New Update Available!</b></size>\n<size=200%><b>{0}</b></size>",
   "updateButton": "Update",
   "updatePleaseWait": "Bitte warten...",
   "updateManually": "Update failed.\nPlease try again or update manually.",
