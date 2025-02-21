@@ -1,8 +1,6 @@
 using AmongUs.Data;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
-using UnityEngine;
 
 namespace TOHE;
 
@@ -139,7 +137,7 @@ public static class Camouflage
                 break;
         }
     }
-    public static void CheckCamouflage(bool force)
+    public static void CheckCamouflage()
     {
         if (!(AmongUsClient.Instance.AmHost && (Options.CommsCamouflage.GetBool() || Camouflager.HasEnabled))) return;
 
@@ -149,40 +147,23 @@ public static class Camouflage
 
         if (oldIsCamouflage != IsCamouflage)
         {
-            if (force)
+            foreach (var pc in Main.AllPlayerControls)
             {
-                foreach (var pc in Main.AllPlayerControls)
-                {
-                    RpcSetSkin(pc);
+                RpcSetSkin(pc);
 
-                    if (!IsCamouflage && !pc.IsAlive())
-                    {
-                        pc.RpcRemovePet();
-                    }
+                if (!IsCamouflage && !pc.IsAlive())
+                {
+                    pc.RpcRemovePet();
                 }
+            }
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
             }
             else
             {
-                ShipStatus.Instance.StartCoroutine(CoSetCamouflage().WrapToIl2Cpp());
+                Utils.DoNotifyRoles();
             }
-        }
-    }
-    private static System.Collections.IEnumerator CoSetCamouflage()
-    {
-        Utils.NotifyRoles(ForceLoop: true, NoCache: true);
-        yield return null;
-
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            RpcSetSkin(pc);
-
-            if (!IsCamouflage && !pc.IsAlive())
-            {
-                pc.RpcRemovePet();
-                yield return null;
-            }
-
-            yield return new WaitForSeconds(0.1f);
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)
@@ -208,7 +189,7 @@ public static class Camouflage
         if (!IsCamouflage || ForceRevert)
         {
             // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
                 targetId = Main.ShapeshiftTarget[targetId];
             }

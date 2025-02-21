@@ -29,7 +29,7 @@ public abstract class RoleBase
 
     public void OnAdd(byte playerid) // The Player with the class executes this
     {
-        _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
+        _state = Main.PlayerStates.GetValueOrDefault(playerid);
         try
         {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;
@@ -147,7 +147,7 @@ public abstract class RoleBase
     /// <summary>
     /// A local method to check conditions during gameplay, 30 times each second
     /// </summary>
-    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public virtual void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     { }
 
     /// <summary>

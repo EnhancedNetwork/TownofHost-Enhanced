@@ -204,12 +204,12 @@ public class RoleAssign
         // Shuffle - Shuffles all Roles in the list into a randomized order
         // Take - Takes the first X Roles of the list ... X is the maximum number of Roles we could need of that team
 
-        Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Take(optImpNum).ToList();
-        Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Take(optNeutralKillingNum).ToList();
-        Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Take(optNeutralApocalypseNum).ToList();
-        Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].Shuffle(rd).Take(optNonNeutralKillingNum).ToList();
-        Roles[RoleAssignType.Coven] = Roles[RoleAssignType.Coven].Shuffle(rd).Take(optCovenNum).ToList();
-        Roles[RoleAssignType.Crewmate] = Roles[RoleAssignType.Crewmate].Shuffle(rd).Take(playerCount).ToList();
+        Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Shuffle(rd).Take(optImpNum).ToList();
+        Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Shuffle(rd).Take(optNeutralKillingNum).ToList();
+        Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Shuffle(rd).Take(optNeutralApocalypseNum).ToList();
+        Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].Shuffle(rd).Shuffle(rd).Take(optNonNeutralKillingNum).ToList();
+        Roles[RoleAssignType.Coven] = Roles[RoleAssignType.Coven].Shuffle(rd).Shuffle(rd).Take(optCovenNum).ToList();
+        Roles[RoleAssignType.Crewmate] = Roles[RoleAssignType.Crewmate].Shuffle(rd).Shuffle(rd).Take(playerCount).ToList();
 
         Roles[RoleAssignType.Impostor].AddRange(TempAlwaysImpRoles);
         Roles[RoleAssignType.NeutralKilling].AddRange(TempAlwaysNKRoles);
@@ -983,11 +983,11 @@ public class RoleAssign
         {
             // Shuffle all Players list
             if (AllPlayers.Count > 2)
-                AllPlayers = AllPlayers.Shuffle(rd).ToList();
+                AllPlayers = AllPlayers.Shuffle(rd).Shuffle(rd).ToList();
 
             // Shuffle final Roles list
             if (FinalRolesList.Count > 2)
-                FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
+                FinalRolesList = FinalRolesList.Shuffle(rd).Shuffle(rd).ToList();
 
             // Select random Role and Player from list
             var randomPlayer = AllPlayers.RandomElement();

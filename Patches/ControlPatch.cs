@@ -170,6 +170,11 @@ internal class ControllerManagerUpdatePatch
                 HudManager.Instance.Chat.SetVisible(true);
             }
 
+            if (DebugModeManager.IsDebugMode && GetKeysDown(KeyCode.F8) && HudManager.Instance && !GameStates.IsMeeting && (GameStates.IsInGame || GameStates.IsLobby))
+            {
+                HudManager.Instance.gameObject.SetActive(!HudManager.Instance.gameObject.active);
+            }
+
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {
@@ -186,7 +191,6 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notice.Clear();
-                Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 GameEndCheckerForNormal.GameIsEnded = true;
@@ -291,13 +295,13 @@ internal class ControllerManagerUpdatePatch
             }
 
             // ############################################################################################################
-            // ========================================== Only host and in debug ==========================================
+            // ========================================== Only Host and in Debug ==========================================
             // ############################################################################################################
             if (!DebugModeManager.IsDebugMode) return;
 
             if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
             {
-                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
+                CriticalErrorManager.SetCriticalError("Test AntiBlackout", true);
             }
 
             // Kill Flash

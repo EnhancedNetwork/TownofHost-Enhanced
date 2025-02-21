@@ -80,24 +80,28 @@ internal class Penguin : RoleBase
 
     private void AddVictim(PlayerControl penguin, PlayerControl target)
     {
-        //Prevent using of moving platform??
+        Main.PlayerStates[target.PlayerId].CanUseMovingPlatform = _state.CanUseMovingPlatform = false;
         AbductVictim = target;
         AbductTimer = AbductTimerLimit;
-        penguin?.MarkDirtySettings();
-        penguin?.RpcResetAbilityCooldown();
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     private void RemoveVictim()
     {
         if (AbductVictim != null)
         {
-            //PlayerState.GetByPlayerId(AbductVictim.PlayerId).CanUseMovingPlatform = true;
+            Main.PlayerStates[AbductVictim.PlayerId].CanUseMovingPlatform = true;
             AbductVictim = null;
         }
-        //MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
-        _Player?.MarkDirtySettings();
-        _Player?.RpcResetAbilityCooldown();
+        
+        var penguin = _Player;
+        if (penguin == null) return;
+
+        _state.CanUseMovingPlatform = true;
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -107,7 +111,7 @@ internal class Penguin : RoleBase
         {
             if (target != AbductVictim)
             {
-                // During an abduction, only the abductee can be killed.
+                // During an abduction, only the abductee can be killed
                 killer?.RpcMurderPlayer(AbductVictim);
                 killer?.ResetKillCooldown();
                 doKill = false;
@@ -124,7 +128,7 @@ internal class Penguin : RoleBase
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        // not should shapeshifted
+        // Should not Shapeshifted
         resetCooldown = false;
         return false;
     }
@@ -139,7 +143,7 @@ internal class Penguin : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         stopCount = true;
-        // If you meet a meeting with time running out, kill it even if you're on a ladder.
+        // If you meet a meeting with time running out, kill it even if you're on a ladder
         if (AbductVictim != null && AbductTimer <= 0f)
         {
             _Player?.RpcMurderPlayer(AbductVictim);
@@ -178,7 +182,10 @@ internal class Penguin : RoleBase
     {
         if (AbductVictim != null)
         {
-            physics.RpcBootFromVent(ventId);
+            _ = new LateTask(() =>
+            {
+                physics?.RpcBootFromVent(ventId);
+            }, 0.5f, $"Penguin {physics.myPlayer?.PlayerId} - Boot From Vent");
         }
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
@@ -187,13 +194,16 @@ internal class Penguin : RoleBase
         {
             if (physics.myPlayer.PlayerId == AbductVictim.PlayerId)
             {
-                physics.RpcBootFromVent(ventId);
+                _ = new LateTask(() =>
+                {
+                    physics?.RpcBootFromVent(ventId);
+                }, 0.5f, $"AbductVictim {physics.myPlayer?.PlayerId} - Boot From Vent");
                 return true;
             }
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!stopCount)
             AbductTimer -= Time.fixedDeltaTime;
@@ -211,7 +221,7 @@ internal class Penguin : RoleBase
                 AbductVictim.Data.IsDead = true;
                 AbductVictim.Data.MarkDirty();
 
-                // If the penguin himself is on a ladder, kill him after getting off the ladder.
+                // If the Penguin themself is on a ladder, kill him after getting off the ladder
                 if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
                     var abductVictim = AbductVictim;
@@ -243,7 +253,7 @@ internal class Penguin : RoleBase
                     RemoveVictim();
                 }
             }
-            // SnapToRPC does not work for players on top of the ladder, and only the host behaves differently, so teleporting is not done uniformly.
+            // SnapToRPC does not work for Players on top of the ladder, and only the Host behaves differently, so teleporting is not done uniformly
             else if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
             {
                 var position = penguin.transform.position;

@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -105,7 +106,7 @@ internal class BountyHunter : RoleBase
         return true;
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target) => ChangeTimer.Clear();
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!ChangeTimer.TryGetValue(player.PlayerId, out var timer)) return;
 
@@ -175,6 +176,9 @@ internal class BountyHunter : RoleBase
 
         if (player.Is(CustomRoles.Soulless)
             && target.Is(CustomRoles.CursedSoul) || target.Is(CustomRoles.Soulless)) return false;
+
+        if (player.Is(CustomRoles.Enchanted)
+            && target.IsPlayerCoven() || (target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool())) return false;
 
         if (target.GetCustomRole().IsImpostor()
             || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool())) return false;

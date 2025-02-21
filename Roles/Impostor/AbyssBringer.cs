@@ -99,7 +99,7 @@ internal class AbyssBringer : RoleBase
         }
         // When no Player exists, Instantly spawm and despawn networked object will cause error spam
 
-        if (BlackHoles.Count() >= BlackHoleCountLimit.GetInt())
+        if (BlackHoles.Count >= BlackHoleCountLimit.GetInt())
         {
             return;
         }
@@ -112,7 +112,7 @@ internal class AbyssBringer : RoleBase
         Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, blackHoleId, pos, roomName);
     }
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("AbyssbringerButtonText"));
-    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var abyssbringer = _Player;
 
@@ -144,8 +144,8 @@ internal class AbyssBringer : RoleBase
                 {
                     var direction = (pos - blackHole.Position).normalized;
                     var newPosition = blackHole.Position + direction * BlackHoleMoveSpeed.GetFloat() * Time.fixedDeltaTime;
-                    blackHole.NetObject.TP(newPosition);
                     blackHole.Position = newPosition;
+                    blackHole.NetObject.Position = newPosition;
                 }
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())
@@ -158,7 +158,7 @@ internal class AbyssBringer : RoleBase
                     nearestPlayer.SetRealKiller(_Player);
                     nearestPlayer.SetDeathReason(PlayerState.DeathReason.Consumed);
                     Main.PlayerStates[nearestPlayer.PlayerId].SetDead();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, false);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, inMeeting: false, fromRole: true);
 
                     if (despawnMode == DespawnMode.After1PlayerEaten)
                     {

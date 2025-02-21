@@ -23,6 +23,7 @@ internal class ChangeRoleSettings
             SetUpRoleTextPatch.IsInIntro = true;
 
         Main.OverrideWelcomeMsg = "";
+        CriticalErrorManager.Initialize();
 
         Logger.Msg("Is Started", "Initialization");
 
@@ -142,17 +143,8 @@ internal class ChangeRoleSettings
                     sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc != null).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
                     var msg = sb.ToString();
                     Utils.SendMessage(msg);
-                    CriticalErrorManager.SetCreiticalError("Player Have Invalid Color", true);
+                    CriticalErrorManager.SetCriticalError("Player Have Invalid Color", true);
                     Logger.Error(msg, "CoStartGame");
-                }
-            }
-
-            foreach (var target in Main.AllPlayerControls)
-            {
-                foreach (var seer in Main.AllPlayerControls)
-                {
-                    var pair = (target.PlayerId, seer.PlayerId);
-                    Main.LastNotifyNames[pair] = target.name;
                 }
             }
 
@@ -178,6 +170,14 @@ internal class ChangeRoleSettings
                         pc.RpcSetName(realName);
                     }
                 }
+
+                foreach (var target in Main.AllPlayerControls)
+                {
+                    var pair = (target.PlayerId, pc.PlayerId);
+                    Main.LastNotifyNames[pair] = currentName;
+                }
+
+                Main.LowLoadUpdateName[pc.PlayerId] = true;
 
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
@@ -255,7 +255,7 @@ internal class ChangeRoleSettings
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Change Role Setting Postfix", true, ex.ToString());
+            CriticalErrorManager.SetCriticalError("Change Role Setting Postfix", true, ex.ToString());
             Utils.ThrowException(ex);
         }
     }
@@ -263,7 +263,7 @@ internal class ChangeRoleSettings
 [HarmonyPatch]
 internal class StartGameHostPatch
 {
-    private static AmongUsClient thiz;
+    private static AmongUsClient auclient;
 
     private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
     private static Dictionary<RoleTypes, int> RoleTypeNums = [];
@@ -289,7 +289,7 @@ internal class StartGameHostPatch
             return true;
         }
 
-        thiz = __instance;
+        auclient = __instance;
         __result = StartGameHost().WrapToIl2Cpp();
         return false;
     }
@@ -303,11 +303,11 @@ internal class StartGameHostPatch
         if (!ShipStatus.Instance)
         {
             int num = Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.MapId, 0, Constants.MapNames.Length - 1);
-            thiz.ShipLoadingAsyncHandle = thiz.ShipPrefabs[num].InstantiateAsync(null, false);
-            yield return thiz.ShipLoadingAsyncHandle;
-            GameObject result = thiz.ShipLoadingAsyncHandle.Result;
+            auclient.ShipLoadingAsyncHandle = auclient.ShipPrefabs[num].InstantiateAsync(null, false);
+            yield return auclient.ShipLoadingAsyncHandle;
+            GameObject result = auclient.ShipLoadingAsyncHandle.Result;
             ShipStatus.Instance = result.GetComponent<ShipStatus>();
-            thiz.Spawn(ShipStatus.Instance, -2, SpawnFlags.None);
+            auclient.Spawn(ShipStatus.Instance, -2, SpawnFlags.None);
         }
         float timer = 0f;
         while (true)
@@ -318,13 +318,13 @@ internal class StartGameHostPatch
             {
                 maxTimer = 15;
             }
-            var allClients = thiz.allClients.ToManaged();
+            var allClients = auclient.allClients.ToManaged();
             lock (allClients)
             {
-                for (int i = 0; i < thiz.allClients.Count; i++)
+                for (int i = 0; i < auclient.allClients.Count; i++)
                 {
-                    ClientData clientData = thiz.allClients[i];
-                    if (clientData.Id != thiz.ClientId && !clientData.IsReady)
+                    ClientData clientData = auclient.allClients[i];
+                    if (clientData.Id != auclient.ClientId && !clientData.IsReady)
                     {
                         if (timer < maxTimer)
                         {
@@ -332,9 +332,9 @@ internal class StartGameHostPatch
                         }
                         else
                         {
-                            thiz.SendLateRejection(clientData.Id, DisconnectReasons.ClientTimeout);
+                            auclient.SendLateRejection(clientData.Id, DisconnectReasons.ClientTimeout);
                             clientData.IsReady = true;
-                            thiz.OnPlayerLeft(clientData, DisconnectReasons.ClientTimeout);
+                            auclient.OnPlayerLeft(clientData, DisconnectReasons.ClientTimeout);
                         }
                     }
                 }
@@ -346,7 +346,7 @@ internal class StartGameHostPatch
             }
             timer += Time.deltaTime;
         }
-        thiz.SendClientReady();
+        auclient.SendClientReady();
         yield return new WaitForSeconds(2f);
         yield return AssignRoles();
         yield break;
@@ -393,19 +393,19 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Select Role Prefix - Building Role classes", true, ex.ToString());
+            CriticalErrorManager.SetCriticalError("Select Role Prefix - Building Role classes", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }
 
-        if (!Main.CurrentServerIsVanilla)
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
         {
-            // Send all RPC for modded region
-            RpcSetRoleReplacer.Release();
+            yield return RpcSetRoleReplacer.ReleaseVanilla();
         }
         else
         {
-            yield return RpcSetRoleReplacer.ReleaseVanilla();
+            // Send all RPC for modded region
+            RpcSetRoleReplacer.Release();
         }
 
         try
@@ -474,6 +474,8 @@ internal class StartGameHostPatch
                 // Set Add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
+
+                pair.Value.AddonLogs.Add((DateTime.MinValue, pair.Value.SubRoles.Select(role => (role, true)).ToList())); // Minimum value as a magic value for game start
             }
 
             GhostRoleAssign.Add();
@@ -533,7 +535,7 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Select Role Prefix", true, ex.ToString());
+            CriticalErrorManager.SetCriticalError("Select Role Prefix", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }

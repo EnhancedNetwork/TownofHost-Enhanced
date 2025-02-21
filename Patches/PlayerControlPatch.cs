@@ -539,11 +539,11 @@ class MurderPlayerPatch
             Utils.SyncAllSettings();
         }
 
-        Utils.NotifyRoles();
+        Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 4));
     }
-    public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void AfterPlayerDeathTasks(PlayerControl killer, PlayerControl target, bool inMeeting, bool fromRole = false)
     {
-        CustomRoleManager.OnMurderPlayer(killer, target, inMeeting);
+        CustomRoleManager.OnMurderPlayer(killer, target, inMeeting, fromRole);
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.RpcMurderPlayer))]
@@ -733,22 +733,10 @@ class ShapeshiftPatch
         {
             var time = animate ? 1.2f : 0.5f;
             //Forced update Player name
-            if (shapeshifting)
+            _ = new LateTask(() =>
             {
-                _ = new LateTask(() =>
-                {
-                    Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
-                },
-                time, "ShapeShiftNotify");
-            }
-            else if (!shapeshifting)
-            {
-                _ = new LateTask(() =>
-                {
-                    Utils.NotifyRoles(NoCache: true);
-                },
-                time, "UnShiftNotify");
-            }
+                Utils.NotifyRoles(SpecifyTarget: shapeshifter, NoCache: true);
+            }, time, shapeshifting ? "ShapeShiftNotify" : "UnShiftNotify");
         }
     }
 }
@@ -1012,7 +1000,7 @@ class ReportDeadBodyPatch
         NameNotifyManager.Reset();
 
         // Update Notify Roles for Meeting
-        Utils.DoNotifyRoles(isForMeeting: true, NoCache: true, CamouflageIsForMeeting: true);
+        Utils.DoNotifyRoles(isForMeeting: true, CamouflageIsForMeeting: true);
 
         // Sync all settings on meeting start
         _ = new LateTask(Utils.SyncAllSettings, 3f, "Sync all settings after report");
@@ -1071,31 +1059,29 @@ class FixedUpdateInNormalGamePatch
 
         // The code is called once every 1 second (by one Player)
         bool lowLoad = false;
-        if (Options.LowLoadMode.GetBool())
+        if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
         {
-            if (!BufferTime.TryGetValue(player.PlayerId, out var timerLowLoad))
-            {
-                BufferTime[player.PlayerId] = 30;
-                timerLowLoad = 30;
-            }
+            BufferTime[player.PlayerId] = 30;
+            timerLowLoad = 30;
+        }
 
-            timerLowLoad--;
+        timerLowLoad--;
 
-            if (timerLowLoad > 0)
-            {
+        if (timerLowLoad > 0)
+        {
+            if (Options.LowLoadMode.GetBool())
                 lowLoad = true;
-            }
-            else
-            {
-                timerLowLoad = 30;
-            }
+        }
+        else
+        {
+            timerLowLoad = 30;
+        }
 
-            BufferTime[player.PlayerId] = timerLowLoad;
+        BufferTime[player.PlayerId] = timerLowLoad;
 
-            if (__instance.AmOwner && timerLowLoad == 30)
-            {
-                TeleportBuffer.Clear();
-            }
+        if (__instance.AmOwner && timerLowLoad == 30)
+        {
+            TeleportBuffer.Clear();
         }
 
         if (!lowLoad)
@@ -1181,7 +1167,7 @@ class FixedUpdateInNormalGamePatch
             else // We are not in lobby
             {
                 if (localplayer)
-                    CustomNetObject.FixedUpdate();
+                    CustomNetObject.FixedUpdate(lowLoad, timerLowLoad);
             }
 
             DoubleTrigger.OnFixedUpdate(player);
@@ -1206,7 +1192,7 @@ class FixedUpdateInNormalGamePatch
 
             if (GameStates.IsInTask && !AntiBlackout.SkipTasks)
             {
-                CustomRoleManager.OnFixedUpdate(player, lowLoad, nowTime);
+                CustomRoleManager.OnFixedUpdate(player, lowLoad, Utils.GetTimeStamp(), timerLowLoad);
 
                 player.OnFixedAddonUpdate(lowLoad);
 
@@ -1770,9 +1756,9 @@ class PlayerControlCompleteTaskPatch
         // Add task for Workhorse
         ret &= Workhorse.OnAddTask(player);
 
-        Utils.NotifyRoles(SpecifySeer: player, ForceLoop: true);
-        Utils.NotifyRoles(SpecifyTarget: player, ForceLoop: true);
-
+        Utils.NotifyRoles(SpecifySeer: player);
+        Utils.NotifyRoles(SpecifyTarget: player);
+        
         return ret;
     }
     public static void Postfix()

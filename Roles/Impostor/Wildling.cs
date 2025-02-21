@@ -81,7 +81,7 @@ internal class Wildling : RoleBase
 
         killer.Notify(Translator.GetString("BKInProtect"));
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && TimeStamp != 0 && TimeStamp < nowTime)
         {

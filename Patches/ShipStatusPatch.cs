@@ -17,7 +17,7 @@ class ShipFixedUpdatePatch
         //Above here, all of us will execute
         if (!AmongUsClient.Instance.AmHost) return;
 
-        //Below here, only the host performs
+        //Below here, only the Host performs
         if (Main.IsFixedCooldown && Main.RefixCooldownDelay >= 0)
         {
             Main.RefixCooldownDelay -= Time.fixedDeltaTime;
@@ -123,7 +123,7 @@ class UpdateSystemPatch
         [HarmonyArgument(1)] PlayerControl player,
         [HarmonyArgument(2)] byte amount)
     {
-        Camouflage.CheckCamouflage(false);
+        Camouflage.CheckCamouflage();
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
@@ -277,8 +277,8 @@ class ShipStatusBeginPatch
 }
 
 /*
-    // Since SnapTo is unstable on the server side,
-    // after a meeting, sometimes not all players appear on the table,
+    // Since SnapTo is unstable on the Server side
+    // after a meeting, sometimes not all Players appear on the table
     // it's better to manually teleport them
 */
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.SpawnPlayer))]
@@ -286,13 +286,17 @@ class ShipStatusSpawnPlayerPatch
 {
     public static bool Prefix(ShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        // Skip first spawn and modded clients
+        // Skip first Spawn and modded clients
         if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
 
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"ShipStatus Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
@@ -301,7 +305,7 @@ class PolusShipStatusSpawnPlayerPatch
 {
     public static bool Prefix(PolusShipStatus __instance, PlayerControl player, int numPlayers, bool initialSpawn)
     {
-        // Skip first spawn and modded clients
+        // Skip first Spawn and modded clients
         if (!AmongUsClient.Instance.AmHost || initialSpawn || !player.IsAlive()) return true;
 
         int num1 = Mathf.FloorToInt(numPlayers / 2f);
@@ -311,7 +315,11 @@ class PolusShipStatusSpawnPlayerPatch
             ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
             : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"PolusShipStatus Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
@@ -320,7 +328,7 @@ class PolusShipStatusSpawnPlayerPatch
 class ShipStatusSerializePatch
 {
     // Patch the global way of Serializing ShipStatus
-    // If we are patching any other systemTypes, just add below like Ventilation.
+    // If we are patching any other systemTypes, just add below like Ventilation
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
     {
         __result = false;
@@ -336,7 +344,7 @@ class ShipStatusSerializePatch
             if (systemTypes is SystemTypes.Ventilation)
             {
                 // Skip Ventilation here
-                // Further new systems should skip original methods here and add new patches below.
+                // Further new systems should skip original methods here and add new patches below
                 num++;
                 continue;
             }
@@ -372,14 +380,12 @@ class ShipStatusSerializePatch
             var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
-                // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
                 if (customVentilation)
                 {
                     Utils.SetAllVentInteractions();
                 }
                 else
                 {
-                    // Logger.Info("vanilla update vents", "ShipStatusSerializePatch");
                     var subwriter = MessageWriter.Get(SendOption.Reliable);
                     subwriter.StartMessage(5);
                     {

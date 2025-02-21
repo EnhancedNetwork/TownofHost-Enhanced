@@ -1,9 +1,9 @@
 ﻿using Hazel;
 using InnerNet;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -86,7 +86,7 @@ internal class Seeker : RoleBase
         Main.AllPlayerSpeed[_state.PlayerId] = DefaultSpeed;
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 

@@ -1868,7 +1868,24 @@ public static class Utils
 
         return baseMethod.DeclaringType != derivedMethod.DeclaringType;
     }
+    public static System.Collections.IEnumerator NotifyEveryoneAsync(int speed = 2)
+    {
+        var count = 0;
+        bool isMeeting = GameStates.IsMeeting;
+        if (isMeeting) yield break;
 
+        PlayerControl[] aapc = Main.AllAlivePlayerControls;
+
+        foreach (PlayerControl seer in aapc)
+        {
+            foreach (PlayerControl target in aapc)
+            {
+                if (isMeeting) yield break;
+                NotifyRoles(SpecifySeer: seer, SpecifyTarget: target);
+                if (count++ % speed == 0) yield return null;
+            }
+        }
+    }
     // During intro scene to set team name and Role info for non-modded clients and skip the rest
     // Note: When Neutral is based on the Crewmate Role then it is impossible to display the info for it
     // If not a Desync Role remove team display
@@ -1923,7 +1940,7 @@ public static class Utils
         var SelfName = $"{SelfTeamName}{SelfRoleName}{SelfSubRolesName}\r\n{RoleInfo}{RoleNameUp}";
 
         // Privately sent name
-        player.RpcSetNamePrivate(SelfName, player);
+        player.RpcSetNamePrivate(SelfName, player, force: true);
     }
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
@@ -2458,16 +2475,26 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        PhantomRolePatch.AfterMeeting();
+        ChatManager.ClearLastSysMsg();
+        FallFromLadder.Reset();
+
+        if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
+        if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
+
+        AntiBlackout.AfterMeetingTasks();
+
         try
         {
-            PhantomRolePatch.AfterMeeting();
-            ChatManager.ClearLastSysMsg();
-            FallFromLadder.Reset();
+            CovenManager.CheckNecroVotes();
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Error in CovenManager after meeting: {error}", "AfterMeetingTasks");
+        }
 
-            if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
-            if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
-
-            AntiBlackout.AfterMeetingTasks();
+        try
+        {
             CovenManager.CheckNecroVotes();
 
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
@@ -2526,7 +2553,7 @@ public static class Utils
             // Will be synced by ShipStatus patch, SetAllVentInteractions
         }
     }
-    public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
+    public static string ToColoredString(this CustomRoles role) => ColorString(GetRoleColor(role), GetString(role.ToString()));
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;
