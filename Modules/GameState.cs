@@ -161,8 +161,7 @@ public class PlayerState(byte playerId)
 
             //Some Role may be bugged for this, need further testing
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
-            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            InitTask(pc);
+            pc.RpcResetTasks();
 
             if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
             {
@@ -465,6 +464,7 @@ public class TaskState
         }
 
         hasTasks = true;
+        CompletedTasksCount = 0;
         AllTasksCount = player.Data.Tasks.Count;
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
