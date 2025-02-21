@@ -208,12 +208,8 @@ internal class Sacrifist : CovenManager
                     break;
                 // Reset Tasks
                 case 6:
-                    var taskStateTarget = randPlayerPC.GetPlayerTaskState();
-                    randPlayerPC.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskStateTarget.CompletedTasksCount = 0;
-                    var taskStateSacrif = pc.GetPlayerTaskState();
-                    pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskStateSacrif.CompletedTasksCount = 0;
+                    randPlayerPC.RpcResetTasks();
+                    pc.RpcResetTasks();
                     pc.Notify(GetString("SacrifistTasksDebuff"), 5f);
                     Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName()} and self reset tasks", "Sacrifist");
                     break;
