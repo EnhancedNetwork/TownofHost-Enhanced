@@ -166,7 +166,7 @@ public static class CustomRoleManager
                     case CustomRoles.Mare:
                         Mare.ApplyGameOptions(player.PlayerId);
                         break;
-                    case CustomRoles.Narc:
+                    case CustomRoles.Narc when !player.Is(CustomRoles.Bewilder) && !player.Is(CustomRoles.Torch):
                         Narc.ApplyGameOptions(opt, player);
                         break;
                 }
