@@ -72,12 +72,13 @@ internal class Conjurer : CovenManager
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         resetCooldown = true;
-        Logger.Info($"Conjurer ShapeShift", "Conjurer");
         var shapeshifterId = shapeshifter.PlayerId;
         if (target != null && shapeshifterId == target.PlayerId) return false;
 
         if (state[shapeshifterId] != ConjState.NecroBomb && state[shapeshifterId] != ConjState.NormalBomb)
             state[shapeshifterId] = HasNecronomicon(shapeshifterId) ? ConjState.NecroMark : ConjState.NormalMark;
+
+        Logger.Info($"Conjurer ShapeShift, current state: {state[shapeshifterId]}", "Conjurer");
 
         switch (state[shapeshifterId])
         {
@@ -118,9 +119,16 @@ internal class Conjurer : CovenManager
                 shapeshifter.Notify(GetString("ConjurerNecroMark"));
                 break;
             case ConjState.NecroBomb:
+                var necroBombHolder = NecroBombHolder.GetPlayer();
+                if (necroBombHolder == null)
+                {
+                    Logger.Info("NecroBombHolder is null", "ConjState.NecroBomb");
+                    return false;
+                }
+
                 foreach (var player in Main.AllAlivePlayerControls)
                 {
-                    var dis = GetDistance(GetPlayerById(NecroBombHolder).transform.position, player.transform.position);
+                    var dis = GetDistance(necroBombHolder.transform.position, player.transform.position);
                     if (dis > NecroRadius.GetFloat()) continue;
                     if (player.GetCustomRole().IsCovenTeam() && !CovenDiesInBlast.GetBool()) continue;
                     if (player.IsTransformedNeutralApocalypse()) continue;
@@ -141,11 +149,13 @@ internal class Conjurer : CovenManager
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        if (state[playerId] is ConjState.NormalMark or ConjState.NecroMark)
+        if (!state.TryGetValue(playerId, out var conjState)) return;
+
+        if (conjState is ConjState.NormalMark or ConjState.NecroMark)
         {
             hud.AbilityButton.OverrideText(GetString("ConjurerMarkShapeshift"));
         }
-        else if (state[playerId] is ConjState.NormalBomb or ConjState.NecroBomb)
+        else if (conjState is ConjState.NormalBomb or ConjState.NecroBomb)
         {
             hud.AbilityButton.OverrideText(GetString("ConjurerConjureShapeshift"));
         }

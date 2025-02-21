@@ -317,7 +317,7 @@ public static class CustomRoleManager
     /// <summary>
     /// Tasks after killer murder target
     /// </summary>
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting, bool fromRole)
     {
         // ############-INFO-##############
         // When using this code, keep in mind that killer and target can be equal (Suicide)
@@ -349,7 +349,7 @@ public static class CustomRoleManager
                         Cyber.AfterCyberDeadTask(target, inMeeting);
                         break;
 
-                    case CustomRoles.Bait when !inMeeting:
+                    case CustomRoles.Bait when !inMeeting && !fromRole:
                         Bait.BaitAfterDeathTasks(trueDMKiller, target); // Use trueDMKiller to any roles that needs the Dollmaster to be the killer!
                         break;
 
