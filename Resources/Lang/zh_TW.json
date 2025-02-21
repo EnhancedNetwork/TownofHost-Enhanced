@@ -2623,6 +2623,7 @@
   "CrewCanBeInLove": "<color=#8cffff>船員</color>可以成為<color=#ff9ace>戀人</color>",
   "NeutralCanBeInLove": "<color=#7f8c8d>中立</color>玩家可以成為<color=#ff9ace>戀人</color>",
   "CovenCanBeInLove": "<color=#ac42f2>巫師陣營</color>可以成為<color=#ff9ace>戀人</color>",
+  "NewUpdateAvailable": "<size=400%><b>New Update Available!</b></size>\n<size=200%><b>{0}</b></size>",
   "updateButton": "一鍵更新",
   "updatePleaseWait": "請稍後......",
   "updateManually": "更新失敗，請嘗試更換網路重試或手動更新。",
