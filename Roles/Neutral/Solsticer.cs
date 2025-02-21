@@ -295,24 +295,4 @@ internal class Solsticer : RoleBase
             AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
         }
     }
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-    {
-        if (seer.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
-            {
-                if (target.GetCustomRole().IsCrewmate()) return "#8CFFFF";
-                else return Main.roleColors[target.GetCustomRole()];
-            }
-        }
-        if (target.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
-            {
-                if (seer.GetCustomRole().IsCrewmate()) return "#8CFFFF";
-                else return Main.roleColors[seer.GetCustomRole()];
-            }
-        }
-        return string.Empty;
-    }
 }
