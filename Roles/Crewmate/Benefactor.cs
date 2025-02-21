@@ -125,15 +125,15 @@ internal class Benefactor : RoleBase
         {
             playerId.SetAbilityUseLimit(0);
             taskIndex[playerId].Clear();
-            SendRPC(type: 0, benefactorId: playerId); //clear taskindex
+            SendRPC(type: 0, benefactorId: playerId); //Clear taskindex
         }
         if (shieldedPlayers.Any())
         {
             shieldedPlayers.Clear();
-            SendRPC(type: 1); //clear all shielded players
+            SendRPC(type: 1); //clear all shielded Players
         }
     }
-    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer) // Runs for every Player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
