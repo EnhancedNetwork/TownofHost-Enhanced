@@ -3,8 +3,10 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -205,19 +207,58 @@ internal class Ritualist : CovenManager
     }
     public void ConvertRole(PlayerControl killer, PlayerControl target)
     {
-        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Enchanted))
+        if (!killer.Is(CustomRoles.Admired) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Madmate)
+               && CanBeConverted(target))
         {
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Enchanted);
-            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Ritualist Assign");
-            target.RpcSetCustomRole(addon);
-            killer.Notify(ColorString(GetRoleColor(CustomRoles.Ritualist), GetString("RitualistSuccessfullyRecruited")));
-            target.Notify(ColorString(GetRoleColor(CustomRoles.Ritualist), GetString("BeRecruitedByRitualist")));
-
-            if (addon is CustomRoles.Admired)
-            {
-                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-            }
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Enchanted);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("BeRecruitedByRitualist")));
+        }
+        else if (killer.Is(CustomRoles.Admired) && Admirer.CanBeAdmired(target, killer))
+        {
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Admired);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admired), GetString("BeRecruitedByRitualist")));
+            Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+            Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+        }
+        else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
+        {
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Recruit);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("BeRecruitedByRitualist")));
+        }
+        else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(forAdmirer: true))
+        {
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Madmate);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("BeRecruitedByRitualist")));
+        }
+        else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
+        {
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Charmed);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("BeRecruitedByRitualist")));
+        }
+        else if (killer.Is(CustomRoles.Infected) && Infectious.CanBeBitten(target))
+        {
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Infected);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("BeRecruitedByRitualist")));
+        }
+        else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
+        {
+            Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Contagious.ToString(), "Ritualist Assign");
+            target.RpcSetCustomRole(CustomRoles.Contagious);
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("RitualistSuccessfullyRecruited")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("BeRecruitedByRitualist")));
         }
     }
     private static bool MsgToPlayerAndRole(string msg, out byte id, out CustomRoles role, out string error)

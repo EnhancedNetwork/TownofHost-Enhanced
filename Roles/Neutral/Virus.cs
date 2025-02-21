@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -86,28 +85,21 @@ internal class Virus : RoleBase
         if (target == null || !InfectedBodies.Contains(target.PlayerId)) return;
         if (reporter == null || !reporter.CanBeInfected()) return;
 
-        var addon = _Player.GetBetrayalAddon(defaultAddon: CustomRoles.Contagious);
-
         AbilityLimit--;
         SendSkillRPC();
 
-        if (KillInfectedPlayerAfterMeeting.GetBool() && addon is CustomRoles.Contagious)
+        if (KillInfectedPlayerAfterMeeting.GetBool())
         {
             InfectedPlayer.Add(reporter.PlayerId);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage2");
         }
         else
         {
-            reporter.RpcSetCustomRole(addon);
+            reporter.RpcSetCustomRole(CustomRoles.Contagious);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
-            if (addon is CustomRoles.Admired)
-            {
-                Admirer.AdmiredList[_Player.PlayerId].Add(reporter.PlayerId);
-                Admirer.SendRPC(_Player.PlayerId, reporter.PlayerId);
-            }
         }
 
-        Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + addon.ToString());
+        Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
     }
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
@@ -170,6 +162,8 @@ public static class VirusPlayerControls
 {
     public static bool CanBeInfected(this PlayerControl pc)
     {
-        return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Specter);
+        return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal)
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Specter)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
 }

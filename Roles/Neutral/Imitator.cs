@@ -48,34 +48,14 @@ internal class Imitator : RoleBase
         CustomRoles ChangeRole = CustomRoles.Imitator;
         var role = target.GetCustomRole();
 
-        if (target.IsAnySubRole(x => x.IsBetrayalAddonV2()))
-        {
-            foreach (var subrole in target.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()))
-            {
-                // role returns respective recruiting role for subrole, returns Taskinator for Rebel, Taskinator for Egoist
-                role = subrole switch
-                {
-                    CustomRoles.Madmate => CustomRoles.Gangster,
-                    CustomRoles.Charmed => CustomRoles.Cultist,
-                    CustomRoles.Recruit => CustomRoles.Jackal,
-                    CustomRoles.Infected => CustomRoles.Infectious,
-                    CustomRoles.Contagious => CustomRoles.Virus,
-                    CustomRoles.Admired => CustomRoles.Admirer,
-                    CustomRoles.Enchanted => CustomRoles.Ritualist,
-                    CustomRoles.Egoist => CustomRoles.Taskinator,
-                    CustomRoles.Rebel => CustomRoles.Taskinator,
-                    _ => role
-                };
-            }
-        }
+        if (target.Is(CustomRoles.Rebel)) ChangeRole = CustomRoles.Taskinator;
 
         if (role.IsCrewmate()) ChangeRole = CustomRoles.Sheriff;
-        else if (role.IsImpostor() || role == CustomRoles.Refugee) ChangeRole = CustomRoles.Refugee;
-        else if (role.IsMadmate() && role != CustomRoles.Refugee) ChangeRole = role;
+        else if (role.IsImpostor() || role.IsMadmate()) ChangeRole = CustomRoles.Refugee;
         else if (role.IsNK()) ChangeRole = role is CustomRoles.Jackal ? CustomRoles.Sidekick : role;
         else if (role.IsNA()) ChangeRole = CustomRoles.Berserker;
         else if (role.IsCoven()) ChangeRole = CustomRoles.Sacrifist;
-        else if (role.IsNonNK() && role != CustomRoles.Imitator)
+        else if (role.IsNonNK())
         {
             switch (IncompatibleNeutralMode.GetInt())
             {
@@ -94,7 +74,6 @@ internal class Imitator : RoleBase
                     ChangeRole = CustomRoles.Amnesiac;
                     break;
             }
-
         }
 
         if (ChangeRole != CustomRoles.Imitator)

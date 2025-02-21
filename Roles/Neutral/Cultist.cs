@@ -1,6 +1,5 @@
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -65,21 +64,14 @@ internal class Cultist : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        else if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Charmed))
+        else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Charmed);
             AbilityLimit--;
             SendSkillRPC();
-            target.RpcSetCustomRole(addon);
+            target.RpcSetCustomRole(CustomRoles.Charmed);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
-
-            if (addon is CustomRoles.Admired)
-            {
-                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-            }
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -115,7 +107,10 @@ internal class Cultist : RoleBase
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
-            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven()));
+            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
+            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
+            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Enchanted)
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {

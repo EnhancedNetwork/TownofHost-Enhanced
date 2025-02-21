@@ -1,7 +1,10 @@
 using Hazel;
 using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
+using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -86,22 +89,73 @@ internal class Admirer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        bool recruit = AbilityLimit > 0;
-        if (!recruit) return false;
-        if (recruit)
+        if (AbilityLimit < 1) return false;
+        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Admired))
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            return false;
+        }
+        if (!AdmiredList.ContainsKey(killer.PlayerId))
+            AdmiredList.Add(killer.PlayerId, []);
+
+        if (AbilityLimit < 1) return false;
+        if (CanBeAdmired(target, killer))
+        {
+            if (KnowTargetRole.GetBool())
             {
-                var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Admired);
-                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Admirer Assign");
-                target.RpcSetCustomRole(addon);
+                AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+            }
+
+            if (!killer.Is(CustomRoles.Madmate) && !killer.Is(CustomRoles.Recruit) && !killer.Is(CustomRoles.Charmed)
+                && !killer.Is(CustomRoles.Infected) && !killer.Is(CustomRoles.Contagious) && !killer.Is(CustomRoles.Enchanted))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Admired.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Admired);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerAdmired")));
-                if (KnowTargetRole.GetBool() && addon is CustomRoles.Admired)
-                {
-                    AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                    SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-                }
+            }
+            else if (killer.Is(CustomRoles.Madmate) && target.CanBeMadmate(forAdmirer: true))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Madmate.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Madmate);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Enchanted) && Ritualist.CanBeConverted(target))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Enchanted.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Enchanted);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enchanted), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Recruit) && Jackal.CanBeSidekick(target))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Recruit.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Recruit);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Recruit), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Charmed) && Cultist.CanBeCharmed(target))
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Charmed.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Charmed);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Charmed), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Infected) && target.CanBeInfected())
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Infected.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Infected);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infected), GetString("AdmirerAdmired")));
+            }
+            else if (killer.Is(CustomRoles.Contagious) && target.CanBeInfected())
+            {
+                Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + CustomRoles.Contagious.ToString(), "Admirer Assign");
+                target.RpcSetCustomRole(CustomRoles.Contagious);
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmiredPlayer")));
+                target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Contagious), GetString("AdmirerAdmired")));
             }
             else goto AdmirerFailed;
 
@@ -162,7 +216,7 @@ internal class Admirer : RoleBase
         }
         else AdmiredList.Add(admirer.PlayerId, []);
 
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven());
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven()) && !pc.Is(CustomRoles.Loyal);
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

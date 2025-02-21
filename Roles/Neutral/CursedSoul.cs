@@ -1,5 +1,4 @@
 using Hazel;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -73,21 +72,14 @@ internal class CursedSoul : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Soulless))
+        if (CanBeSoulless(target))
         {
-            var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Soulless);
             CurseLimit--;
             SendRPC();
-            target.RpcSetCustomRole(addon);
+            target.RpcSetCustomRole(CustomRoles.Soulless);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
-
-            if (addon is CustomRoles.Admired)
-            {
-                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-            }
 
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -113,11 +105,11 @@ internal class CursedSoul : RoleBase
         => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : string.Empty;
 
     public override string GetProgressText(byte id, bool cooms) => Utils.ColorString(CurseLimit >= 1 ? Utils.GetRoleColor(CustomRoles.CursedSoul) : Color.gray, $"({CurseLimit})");
-    public static bool CanBeSoulless(PlayerControl pc)
+    private static bool CanBeSoulless(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
-            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven()));
+            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Loyal);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

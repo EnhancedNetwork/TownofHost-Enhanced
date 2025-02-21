@@ -316,22 +316,11 @@ public static class CustomRolesHelper
 
     public static bool IsRecruitingRole(this CustomRoles role)
         => role is
-            //Crewmate
-            CustomRoles.Admirer or
-            CustomRoles.ChiefOfPolice or
-
-            //Impostor
-            CustomRoles.Gangster or
-            CustomRoles.Godfather or
-
-            //Neutral
-            CustomRoles.Cultist or
-            CustomRoles.Infectious or
             CustomRoles.Jackal or
+            CustomRoles.Cultist or
+            CustomRoles.Necromancer or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
-
-            //Coven
             CustomRoles.Ritualist;
 
     public static bool IsMadmate(this CustomRoles role)
@@ -429,44 +418,6 @@ public static class CustomRolesHelper
             CustomRoles.Stealer or
             CustomRoles.Circumvent or
             CustomRoles.Swift;
-    }
-
-    public static CustomRoles GetBetrayalAddon(this PlayerControl pc, CustomRoles defaultAddon = CustomRoles.NotAssigned)
-    {
-        List<CustomRoles> BTAddonList = pc.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist).ToList();
-        return BTAddonList.Any() ? BTAddonList.FirstOrDefault() : defaultAddon;
-    }
-
-    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter, CustomRoles defaultAddon = CustomRoles.NotAssigned, bool toMainRole = false)
-    {
-        // Mini shouldn't be recruited
-        if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18) return false;
-
-        // loyal can't be recruited
-        else if (target.Is(CustomRoles.Loyal)) return false;
-
-        // for godfather(to refugee) and jackal(to sidekick)
-        else if (toMainRole) return true;
-
-        var addon = recruiter.GetBetrayalAddon(defaultAddon);
-        // target already has this addon
-        if (target.Is(addon)) return false;
-
-        // settings disabled,hurried cant be recruited
-        else if (target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
-
-        return addon switch
-        {
-            CustomRoles.Charmed => Cultist.CanBeCharmed(target),
-            CustomRoles.Madmate => recruiter.Is(CustomRoles.Gangster) && Gangster.CanBeGansterRecruit(target) ? target.CanBeMadmate(forGangster: true) : target.CanBeMadmate(forAdmirer: true),
-            CustomRoles.Admired => Admirer.CanBeAdmired(target, recruiter),
-            CustomRoles.Enchanted => Ritualist.CanBeConverted(target),
-            CustomRoles.Recruit => Jackal.CanBeSidekick(target),
-            CustomRoles.Infected => Infectious.CanBeBitten(target),
-            CustomRoles.Contagious => target.CanBeInfected(),
-            CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),//Cursed Soul recruits players to Soulless by default
-            _ => false
-        };
     }
 
     public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);

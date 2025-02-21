@@ -65,23 +65,16 @@ internal class Infectious : RoleBase
 
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
-        var addon = killer.GetBetrayalAddon(defaultAddon: CustomRoles.Infected);
-        if (target.CanBeRecruitedBy(killer, defaultAddon: CustomRoles.Infected))
+        if (CanBeBitten(target))
         {
             BiteLimit--;
-            target.RpcSetCustomRole(addon);
+            target.RpcSetCustomRole(CustomRoles.Infected);
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
-
-            if (addon is CustomRoles.Admired)
-            {
-                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-            }
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -102,7 +95,7 @@ internal class Infectious : RoleBase
             return true;
         }
 
-        if (!target.CanBeRecruitedBy(killer, defaultAddon: addon) && !target.Is(addon))
+        if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected))
         {
             killer.RpcMurderPlayer(target);
         }
