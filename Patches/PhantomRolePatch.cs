@@ -1,5 +1,5 @@
-﻿using Hazel;
 using AmongUs.GameOptions;
+using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -55,7 +55,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             // Set Phantom when his start vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
@@ -93,7 +93,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !target.HasDesyncRole()) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             var clientId = target.GetClientId();
 
@@ -129,29 +129,32 @@ public static class PhantomRolePatch
         Logger.Info($"Player: {__instance.GetRealName()} => Is Active {isActive}, Animate:{shouldAnimate}, Full Animation:{playFullAnimation}", "SetRoleInvisibility");
     }
 
-    public static void OnReportDeadBody(PlayerControl seer, bool force)
+    public static void OnReportDeadBody(PlayerControl seer)
     {
-        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !seer.HasDesyncRole()) return;
-
-        foreach (var phantom in InvisibilityList.GetFastEnumerator())
+        try
         {
-            if (!phantom.IsAlive())
-            {
-                InvisibilityList.Remove(phantom);
-                continue;
-            }
+            if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data?.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsNecromancer)) return;
 
-            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer, force));
+            foreach (var phantom in InvisibilityList.GetFastEnumerator())
+            {
+                if (!phantom.IsAlive())
+                {
+                    InvisibilityList.Remove(phantom);
+                    continue;
+                }
+
+                Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer));
+            }
+        }
+        catch (System.Exception error)
+        {
+            Logger.Error(error.ToString(), "PhantomRole.OnReportDeadBody");
         }
     }
-    private static bool InValid(PlayerControl phantom, PlayerControl seer) => seer.GetClientId() == -1 || phantom == null;
-    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer, bool force)
+    private static bool InValid(PlayerControl phantom, PlayerControl seer) => phantom == null || seer.GetClientId() == -1;
+    private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer)
     {
         // Set Scientist for meeting
-        if (!force)
-        {
-            yield return new WaitForSeconds(0.0001f);
-        }
         if (InValid(phantom, seer)) yield break;
 
         phantom?.RpcSetRoleDesync(RoleTypes.Scientist, seer.GetClientId());

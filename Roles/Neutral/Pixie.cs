@@ -1,6 +1,7 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -8,6 +9,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pixie : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pixie;
     private const int Id = 25900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
     public override bool IsDesyncRole => true;
@@ -57,11 +59,12 @@ internal class Pixie : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool CanUseSabotage(PlayerControl pc) => false;
     public override bool CanUseImpostorVentButton(PlayerControl pc) => false;
-    
+
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         HudManager.Instance.KillButton.OverrideText(GetString("PixieButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
     {
@@ -171,4 +174,3 @@ internal class Pixie : RoleBase
         }
     }
 }
-

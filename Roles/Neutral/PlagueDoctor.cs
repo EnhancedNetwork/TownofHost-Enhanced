@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
@@ -13,6 +13,7 @@ namespace TOHE.Roles.Neutral;
 internal class PlagueDoctor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.PlagueDoctor;
     private const int Id = 27600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.PlagueDoctor);
     public override bool IsDesyncRole => true;
@@ -95,7 +96,7 @@ internal class PlagueDoctor : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => InfectCount != 0;
     public override string GetProgressText(byte plr, bool coomns)
         => Utils.ColorString(Utils.GetRoleColor(CustomRoles.PlagueDoctor).ShadeColor(0.25f), $"({InfectCount})");
-    
+
     public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(false);
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

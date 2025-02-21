@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -11,6 +12,7 @@ namespace TOHE.Roles.Neutral;
 internal class Huntsman : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Huntsman;
     private const int Id = 16500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Huntsman);
     public override bool IsDesyncRole => true;
@@ -126,9 +128,46 @@ internal class Huntsman : RoleBase
         }
         return targetId != 0xff ? GetString("Targets") + $"<b><color=#ff1919>{output}</color></b>" : string.Empty;
     }
+    private static bool PotentialTargets(PlayerControl player, PlayerControl target)
+    {
+        if (target == null || player == null) return false;
+
+        if (player.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return false;
+
+        if (target.Is(CustomRoles.Romantic)
+            && Romantic.BetPlayer.TryGetValue(target.PlayerId, out byte romanticPartner) && romanticPartner == player.PlayerId) return false;
+
+        if (target.Is(CustomRoles.Lawyer)
+            && Lawyer.TargetList.Contains(player.PlayerId) && Lawyer.TargetKnowLawyer) return false;
+
+        if (player.Is(CustomRoles.Charmed)
+            && (target.Is(CustomRoles.Cultist) || (target.Is(CustomRoles.Charmed) && Cultist.TargetKnowOtherTargets))) return false;
+
+        if (player.Is(CustomRoles.Infected)
+            && (target.Is(CustomRoles.Infectious) || (target.Is(CustomRoles.Infected) && Infectious.TargetKnowOtherTargets))) return false;
+
+        if (player.Is(CustomRoles.Recruit)
+            && (target.Is(CustomRoles.Jackal) || target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick))) return false;
+
+        if (player.Is(CustomRoles.Contagious)
+            && target.Is(CustomRoles.Virus) || (target.Is(CustomRoles.Contagious) && Virus.TargetKnowOtherTarget.GetBool())) return false;
+
+        if (player.Is(CustomRoles.Admired)
+            && target.Is(CustomRoles.Admirer) || target.Is(CustomRoles.Admired)) return false;
+
+        if (player.Is(CustomRoles.Soulless)
+            && target.Is(CustomRoles.CursedSoul) || target.Is(CustomRoles.Soulless)) return false;
+
+        if (player.Is(CustomRoles.Madmate)
+            && target.GetCustomRole().IsImpostor()
+            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.MadmateKnowWhosMadmate.GetBool())) return false;
+
+        return true;
+
+    }
     private void ResetTargets(bool isStartedGame = false)
     {
-        if (!AmongUsClient.Instance.AmHost || IsDead) return;
+        if (!AmongUsClient.Instance.AmHost || IsDead || _Player == null) return;
 
         Targets.Clear();
         SendRPC(isSetTarget: false);
@@ -140,13 +179,15 @@ internal class Huntsman : RoleBase
         {
             try
             {
-                var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !Targets.Contains(pc.PlayerId) && pc.GetCustomRole() != CustomRoles.Huntsman));
+                var cTargets = new List<PlayerControl>(Main.AllAlivePlayerControls.Where(pc => !Targets.Contains(pc.PlayerId) && PotentialTargets(_Player, pc) && pc.GetCustomRole() is not CustomRoles.Huntsman and not CustomRoles.Solsticer));
                 var rand = IRandom.Instance;
                 var target = cTargets.RandomElement();
                 var targetId = target.PlayerId;
                 Targets.Add(targetId);
                 SendRPC(isSetTarget: true, targetId: targetId);
 
+                if (isStartedGame)
+                    Utils.NotifyRoles(SpecifySeer: _Player, SpecifyTarget: target);
             }
             catch (Exception ex)
             {
@@ -154,9 +195,6 @@ internal class Huntsman : RoleBase
                 break;
             }
         }
-
-        if (isStartedGame)
-            Utils.NotifyRoles(ForceLoop: true);
     }
 
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)

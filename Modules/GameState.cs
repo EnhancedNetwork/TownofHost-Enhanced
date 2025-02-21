@@ -1,13 +1,13 @@
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using AmongUs.GameOptions;
+using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
-using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Impostor;
+using UnityEngine;
 using static TOHE.Utils;
-using Hazel;
 
 namespace TOHE;
 
@@ -26,7 +26,19 @@ public class PlayerState(byte playerId)
 #pragma warning restore IDE1006
     public TaskState taskState = new();
     public bool IsBlackOut { get; set; } = false;
+    private bool _canUseMovingPlatform = true;
+    public bool CanUseMovingPlatform
+    {
+        get => _canUseMovingPlatform;
+        set
+        {
+            Logger.Info($"player {PlayerId} set to use moving platform as {value}", nameof(PlayerState));
+            _canUseMovingPlatform = value;
+        }
+    }
+    public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
+    public List<(DateTime, CustomRoles)> MainRoleLogs = [];
     public PlainShipRoom LastRoom = null;
     public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData = [];
@@ -34,6 +46,8 @@ public class PlayerState(byte playerId)
 
     public void SetMainRole(CustomRoles role)
     {
+        CustomRoles preMainRole = MainRole;
+
         MainRole = role;
         countTypes = role.GetCountTypes();
         RoleClass = role.CreateRoleClass();
@@ -41,23 +55,11 @@ public class PlayerState(byte playerId)
         var pc = PlayerId.GetPlayer();
         if (pc == null) return;
 
-        if (role == CustomRoles.Opportunist)
+        if (pc.Is(CustomRoles.Necromancer))
         {
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (!pc.HasImpKillButton(considerVanillaShift: true))
-                {
-                    var taskstate = pc.GetPlayerTaskState();
-                    if (taskstate != null)
-                    {
-                        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-                        taskstate.CompletedTasksCount = 0;
-                        taskstate.AllTasksCount = pc.Data.Tasks.Count;
-                        taskstate.hasTasks = true;
-                    }
-                }
-            }
+            IsNecromancer = true;
         }
+
         // check for role addon
         if (pc.Is(CustomRoles.Madmate))
         {
@@ -111,13 +113,48 @@ public class PlayerState(byte playerId)
         {
             countTypes = CountTypes.OutOfGame;
         }
+        if (pc.Is(CustomRoles.Enchanted))
+        {
+            countTypes = CountTypes.Coven;
+        }
+        if (Main.PlayerStates[pc.PlayerId].IsNecromancer)
+        {
+            countTypes = CountTypes.Coven;
+        }
 
+        MainRoleLogs.Add((DateTime.Now, role));
+
+        if (GameStates.IsInGame && preMainRole != CustomRoles.NotAssigned)
+        {
+            // Role got assigned mid game.
+            // Since role basis may change, we need to re assign tasks?
+
+            //Some role may be bugged for this, need further testing.
+            Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
+            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+            InitTask(pc);
+
+            if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            {
+                Main.UnShapeShifter.Add(pc.PlayerId);
+                pc.DoUnShiftState(true);
+
+                Logger.Info($"Added {pc.GetNameWithRole()} to UnShapeShifter list mid game", "PlayerState.SetMainRole");
+            }
+        }
     }
     public void SetSubRole(CustomRoles role, PlayerControl pc = null)
     {
         if (role == CustomRoles.Cleansed)
         {
             if (pc != null) countTypes = pc.GetCustomRole().GetCountTypes();
+
+            // Remove lovers on Cleansed
+            if (pc.Is(CustomRoles.Lovers))
+            {
+                var lover = Main.PlayerStates.Values.FirstOrDefault(x => x.PlayerId != pc.PlayerId && x.SubRoles.Contains(CustomRoles.Lovers));
+                lover?.RemoveSubRole(CustomRoles.Lovers);
+            }
 
             foreach (var subRole in SubRoles.ToArray())
             {
@@ -149,6 +186,7 @@ public class PlayerState(byte playerId)
         {
             case CustomRoles.LastImpostor:
                 SubRoles.Remove(CustomRoles.Mare);
+                SubRoles.Remove(CustomRoles.Overclocked);
                 break;
 
             case CustomRoles.Madmate:
@@ -211,6 +249,10 @@ public class PlayerState(byte playerId)
             case CustomRoles.Soulless:
                 countTypes = CountTypes.OutOfGame;
                 break;
+
+            case CustomRoles.Enchanted:
+                countTypes = CountTypes.Coven;
+                break;
         }
     }
     public void RemoveSubRole(CustomRoles addOn)
@@ -258,6 +300,7 @@ public class PlayerState(byte playerId)
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
+    [Obfuscation(Exclude = true)]
     public enum DeathReason
     {
         Kill,
@@ -287,6 +330,7 @@ public class PlayerState(byte playerId)
         PissedOff,
         Dismembered,
         LossOfHead,
+        Consumed,
         Trialed,
         Infected,
         Jinx,
@@ -306,6 +350,9 @@ public class PlayerState(byte playerId)
         Starved,
         Armageddon,
         Sacrificed,
+        Electrocuted,
+        Scavenged,
+        BlastedOff,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
@@ -442,8 +489,7 @@ public static class GameStates
     {
         get
         {
-            if (!IsOnlineGame) return false;
-
+            if (IsLocalGame && !IsNotJoined) return true;
             const string Domain = "among.us";
 
             // From Reactor.gg
@@ -454,8 +500,8 @@ public static class GameStates
     }
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
-    public static bool IsInTask => InGame && !MeetingHud.Instance;
-    public static bool IsMeeting => InGame && MeetingHud.Instance;
+    public static bool IsInTask => InGame && !MeetingHud.Instance && !Main.MeetingIsStarted;
+    public static bool IsMeeting => InGame && (MeetingHud.Instance || Main.MeetingIsStarted);
     public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
     public static bool IsProceeding => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Proceeding;
     public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);

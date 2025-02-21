@@ -11,6 +11,7 @@ namespace TOHE.Roles.Impostor;
 internal class Wildling : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Wildling;
     private const int Id = 5200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Wildling);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -80,7 +81,7 @@ internal class Wildling : RoleBase
 
         killer.Notify(Translator.GetString("BKInProtect"));
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && TimeStamp != 0 && TimeStamp < nowTime)
         {

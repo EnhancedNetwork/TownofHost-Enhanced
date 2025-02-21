@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -10,10 +10,8 @@ namespace TOHE.Roles.Impostor;
 internal class Pitfall : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pitfall;
     private const int Id = 5600;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -56,7 +54,6 @@ internal class Pitfall : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         Traps.Clear();
         ReducedVisionPlayers.Clear();
         DefaultSpeed = new();
@@ -65,7 +62,6 @@ internal class Pitfall : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         DefaultSpeed = Main.AllPlayerSpeed[playerId];
 
         TrapMaxPlayerCount = TrapMaxPlayerCountOpt.GetFloat();
@@ -81,6 +77,9 @@ internal class Pitfall : RoleBase
     {
         AURoleOptions.ShapeshifterCooldown = ShapeshiftCooldown.GetFloat();
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("PitfallButtonText"));
+    // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Set Trap");
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {

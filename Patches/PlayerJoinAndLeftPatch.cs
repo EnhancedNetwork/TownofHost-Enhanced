@@ -6,8 +6,8 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Patches;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Crewmate;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -29,6 +29,7 @@ class OnGameJoinedPatch
             Main.VersionCheat.Value = false;
 
         ChatUpdatePatch.DoBlockChat = false;
+        Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();
@@ -112,7 +113,7 @@ class OnGameJoinedPatch
                 if (!GameStates.IsOnlineGame) return;
                 if (!GameStates.IsModHost)
                     RPC.RpcRequestRetryVersionCheck();
-                if (BanManager.CheckEACList(PlayerControl.LocalPlayer.FriendCode, PlayerControl.LocalPlayer.GetClient().GetHashedPuid()) && GameStates.IsOnlineGame)
+                if (BanManager.CheckEACList(EOSManager.Instance.FriendCode, BanManager.GetHashedPuid(EOSManager.Instance.ProductUserId)) && GameStates.IsOnlineGame)
                 {
                     AmongUsClient.Instance.ExitGame(DisconnectReasons.Banned);
                     SceneChanger.ChangeScene("MainMenu");
@@ -154,6 +155,7 @@ class DisconnectInternalPatch
 {
     public static void Prefix(InnerNetClient __instance, DisconnectReasons reason, string stringReason)
     {
+        GameStates.InGame = false;
         Logger.Info($"Disconnect (Reason:{reason}:{stringReason}, ping:{__instance.Ping})", "Reason Disconnect");
         RehostManager.OnDisconnectInternal(reason);
     }
@@ -246,7 +248,7 @@ public static class OnPlayerJoinedPatch
             }
         }
 
-        if (Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+        if (AmongUsClient.Instance.AmHost && Options.AllowOnlyWhiteList.GetBool() && !BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, false);
             Logger.SendInGame(string.Format(GetString("Message.KickedByWhiteList"), client.PlayerName));
@@ -271,7 +273,7 @@ public static class OnPlayerJoinedPatch
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, true);
-            Logger.Info($"Ban Player ー {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
+            Logger.Info($"Ban Player => {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
         }
         BanManager.CheckBanPlayer(client);
 
@@ -292,7 +294,7 @@ public static class OnPlayerJoinedPatch
                             BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
                         AmongUsClient.Instance.KickPlayer(client.Id, true);
                         Logger.SendInGame(string.Format(GetString("Message.TempBannedForSpamQuitting"), client.PlayerName));
-                        Logger.Info($"Temp Ban Player ー {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
+                        Logger.Info($"Temp Ban Player => {client?.PlayerName}({client.FriendCode}) has been temp banned.", "BAN");
                     }
                 }
             }
@@ -327,7 +329,10 @@ class OnPlayerLeftPatch
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
+        {
+            if (data.Character != null) CustomNetObject.DespawnOnQuit(data.Character.PlayerId);
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
+        }
 
         if (AmongUsClient.Instance.AmHost && data.Character != null)
         {
@@ -372,7 +377,7 @@ class OnPlayerLeftPatch
                     }
                 }
 
-                if (Spiritualist.HasEnabled) Spiritualist.RemoveTarget(data.Character.PlayerId);
+                Spiritualist.RemoveTarget(data.Character.PlayerId);
 
                 var state = Main.PlayerStates[data.Character.PlayerId];
                 state.Disconnected = true;
@@ -411,7 +416,8 @@ class OnPlayerLeftPatch
                 var msg = "";
                 if (GameStates.IsInGame)
                 {
-                    Utils.ErrorEnd("Host exits the game");
+                    CriticalErrorManager.SetCriticalError("Host exits the game", false);
+                    CriticalErrorManager.CheckEndGame();
                     msg = GetString("Message.HostLeftGameInGame");
                 }
                 else if (GameStates.IsLobby)
@@ -448,7 +454,16 @@ class OnPlayerLeftPatch
                     if (Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId))
                     {
                         if (AmongUsClient.Instance.AmHost)
+                        {
                             Utils.SendMessage(string.Format(GetString("Message.HostLeftGameNewHostIsMod"), AmongUsClient.Instance.GetHost().Character?.GetRealName() ?? "null"));
+                            _ = new LateTask(() =>
+                            {
+                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                                GameManager.Instance.enabled = false;
+                                Utils.NotifyGameEnding();
+                                GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
+                            }, 3f, "Disconnect Error Auto-end");
+                        }
                     }
                     else
                     {
@@ -470,34 +485,27 @@ class OnPlayerLeftPatch
                     break;
                 case DisconnectReasons.Error when !GameStates.IsLobby:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByError"), data?.PlayerName));
-                    _ = new LateTask(() =>
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                        GameManager.Instance.enabled = false;
-                        Utils.NotifyGameEnding();
-                        GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
-                    }, 3f, "Disconnect Error Auto-end");
-
                     break;
             }
 
-            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}，Ping:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
+            Logger.Info($"{data?.PlayerName} - (ClientID:{data?.Id} / FriendCode:{data?.FriendCode} / HashPuid:{data?.GetHashedPuid()} / Platform:{data?.PlatformData.Platform}) Disconnect (Reason:{reason}´╝îPing:{AmongUsClient.Instance.Ping})", "Session OnPlayerLeftPatch");
 
             // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
             if (Main.AssignRolesIsStarted)
             {
-                Utils.ErrorEnd("The player left the game during assigning roles");
+                CriticalErrorManager.SetCriticalError("The player left the game during assigning roles", true);
             }
 
 
             if (data != null)
+            {
                 Main.playerVersion.Remove(data.Id);
+                Main.SayStartTimes.Remove(data.Id);
+                Main.SayBanwordsTimes.Remove(data.Id);
+            }
 
             if (AmongUsClient.Instance.AmHost)
             {
-                Main.SayStartTimes.Remove(__instance.ClientId);
-                Main.SayBanwordsTimes.Remove(__instance.ClientId);
-                
                 if (GameStates.IsLobby && !GameStates.IsLocalGame)
                 {
                     if (data?.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
@@ -523,6 +531,19 @@ class OnPlayerLeftPatch
                     if (MeetingHud.Instance.state is MeetingHud.VoteStates.Discussion or MeetingHud.VoteStates.NotVoted or MeetingHud.VoteStates.Voted)
                     {
                         MeetingHud.Instance.CheckForEndVoting();
+                    }
+                }
+
+                if (GameStates.IsInGame)
+                {
+                    if (data != null)
+                    {
+                        var networkedPlayerInfo = GameData.Instance.GetPlayerByClient(data);
+                        if (networkedPlayerInfo != null)
+                        {
+                            networkedPlayerInfo.PlayerName = Main.AllClientRealNames[networkedPlayerInfo.ClientId];
+                            networkedPlayerInfo.MarkDirty();
+                        }
                     }
                 }
             }

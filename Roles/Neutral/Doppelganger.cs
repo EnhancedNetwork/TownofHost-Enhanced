@@ -10,6 +10,7 @@ namespace TOHE.Roles.Neutral;
 internal class Doppelganger : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Doppelganger;
     private const int Id = 25000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doppelganger);
     public override bool IsDesyncRole => true;
@@ -79,7 +80,7 @@ internal class Doppelganger : RoleBase
 
         SendSkillRPC();
         RPC.SyncAllPlayerNames();
-        Utils.DoNotifyRoles(ForceLoop: true, NoCache: true);
+        Utils.DoNotifyRoles(SpecifyTarget: killer, NoCache: true);
 
         killer.ResetKillCooldown();
         killer.SetKillCooldown();

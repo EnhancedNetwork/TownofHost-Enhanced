@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
@@ -7,9 +7,8 @@ namespace TOHE.Roles.Neutral;
 internal class Stalker : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Stalker;
     private const int Id = 18100;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => SnatchesWins ? Custom_RoleType.NeutralEvil : Custom_RoleType.NeutralKilling;
@@ -37,13 +36,11 @@ internal class Stalker : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsWinKill.Clear();
         SnatchesWins = SnatchesWin.GetBool();
     }
     public override void Add(byte playerId)
     {
-        playerIdList.Add(playerId);
         IsWinKill[playerId] = false;
 
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);

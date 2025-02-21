@@ -1,10 +1,10 @@
 using Hazel;
 using System;
-using UnityEngine;
 using TOHE.Patches;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
-using TOHE.Roles.AddOns.Common;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -266,6 +266,10 @@ class StartMeetingPatch
 [HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.Begin))]
 class ShipStatusBeginPatch
 {
+    public static void Prefix()
+    {
+        RpcSetTasksPatch.decidedCommonTasks.Clear();
+    }
     public static void Postfix()
     {
         Logger.CurrentMethod();
@@ -288,7 +292,11 @@ class ShipStatusSpawnPlayerPatch
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"ShipStatus Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
@@ -307,7 +315,11 @@ class PolusShipStatusSpawnPlayerPatch
             ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
             : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"PolusShipStatus Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
@@ -355,11 +367,12 @@ class ShipStatusSerializePatch
 
             if (GameStates.IsInGame)
             {
-                foreach (var pc in PlayerControl.AllPlayerControls)
+                foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (pc.BlockVentInteraction())
                     {
                         customVentilation = true;
+                        break;
                     }
                 }
             }

@@ -1,8 +1,10 @@
-﻿using Hazel;
+using Hazel;
 using InnerNet;
+using TOHE.Modules;
 
 namespace TOHE.Patches;
 
+[Obfuscation(Exclude = true)]
 public enum GameDataTag : byte
 {
     DataFlag = 1,
@@ -104,9 +106,10 @@ internal class GameDataHandlerPatch
                         Logger.Warn(string.Format("Client {0} ({1}) tried to send SceneChangeFlag to Tutorial.", client.PlayerName, client.Id), "GameDataHandlerPatch");
                         EAC.WarnHost(100);
 
-                        if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
+                        if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost && GameStates.IsShip && !GameStates.IsLobby)
                         {
-                            Utils.ErrorEnd("SceneChange Tutorial Hack");
+                            CriticalErrorManager.SetCriticalError("SceneChange Tutorial Hack", false);
+                            CriticalErrorManager.CheckEndGame();
                         }
                         return false;
                     }

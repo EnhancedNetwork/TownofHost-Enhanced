@@ -1,10 +1,10 @@
-﻿using Hazel;
 using AmongUs.GameOptions;
-using UnityEngine;
-using static TOHE.Translator;
-using static TOHE.Options;
-using TOHE.Roles.Core;
+using Hazel;
 using InnerNet;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Roles/Impostor/Penguin.cs
 namespace TOHE.Roles.Impostor;
@@ -12,6 +12,7 @@ namespace TOHE.Roles.Impostor;
 internal class Penguin : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Penguin;
     private const int Id = 27500;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Penguin);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
@@ -79,24 +80,29 @@ internal class Penguin : RoleBase
 
     private void AddVictim(PlayerControl penguin, PlayerControl target)
     {
-        //Prevent using of moving platform??
+        Main.PlayerStates[target.PlayerId].CanUseMovingPlatform = _state.CanUseMovingPlatform = false;
         AbductVictim = target;
         AbductTimer = AbductTimerLimit;
-        penguin?.MarkDirtySettings();
-        penguin?.RpcResetAbilityCooldown();
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     private void RemoveVictim()
     {
         if (AbductVictim != null)
         {
-            //PlayerState.GetByPlayerId(AbductVictim.PlayerId).CanUseMovingPlatform = true;
+            Main.PlayerStates[AbductVictim.PlayerId].CanUseMovingPlatform = true;
             AbductVictim = null;
         }
         //MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
-        _Player?.MarkDirtySettings();
-        _Player?.RpcResetAbilityCooldown();
+
+        var penguin = _Player;
+        if (penguin == null) return;
+
+        _state.CanUseMovingPlatform = true;
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -177,7 +183,10 @@ internal class Penguin : RoleBase
     {
         if (AbductVictim != null)
         {
-            physics.RpcBootFromVent(ventId);
+            _ = new LateTask(() =>
+            {
+                physics?.RpcBootFromVent(ventId);
+            }, 0.5f, $"Penguin {physics.myPlayer?.PlayerId} - Boot From Vent");
         }
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
@@ -186,13 +195,16 @@ internal class Penguin : RoleBase
         {
             if (physics.myPlayer.PlayerId == AbductVictim.PlayerId)
             {
-                physics.RpcBootFromVent(ventId);
+                _ = new LateTask(() =>
+                {
+                    physics?.RpcBootFromVent(ventId);
+                }, 0.5f, $"AbductVictim {physics.myPlayer?.PlayerId} - Boot From Vent");
                 return true;
             }
         }
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl penguin, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!stopCount)
             AbductTimer -= Time.fixedDeltaTime;
@@ -222,7 +234,7 @@ internal class Penguin : RoleBase
                         penguin.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
 
                         var sender = CustomRpcSender.Create("PenguinMurder");
-                        {  
+                        {
                             sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
                             {
                                 NetHelpers.WriteVector2(penguin.transform.position, sender.stream);

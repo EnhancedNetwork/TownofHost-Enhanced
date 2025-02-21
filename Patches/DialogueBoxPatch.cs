@@ -1,4 +1,4 @@
-﻿namespace TOHE.Patches;
+namespace TOHE.Patches;
 
 [HarmonyPatch(typeof(DialogueBox))]
 internal class DialogueBoxPatch

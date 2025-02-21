@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -8,10 +8,9 @@ namespace TOHE.Roles._Ghosts_.Impostor;
 internal class Minion : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Minion;
     private const int Id = 27900;
-    private static readonly HashSet<byte> Playerids = [];
-    public static bool HasEnabled => Playerids.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
@@ -24,16 +23,8 @@ internal class Minion : RoleBase
         SetupSingleRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Minion);
         AbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(2.5f, 120f, 2.5f), 40f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityTime = FloatOptionItem.Create(Id + 11, "MinionAbilityTime", new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
+        AbilityTime = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(1f, 10f, 1f), 5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Minion])
             .SetValueFormat(OptionFormat.Seconds);
-    }
-    public override void Init()
-    {
-        Playerids.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        Playerids.Add(playerId);
     }
     // EAC bans players when GA uses sabotage
     public override bool CanUseSabotage(PlayerControl pc) => false;
@@ -58,7 +49,7 @@ internal class Minion : RoleBase
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
             target.MarkDirtySettings();
-            
+
             _ = new LateTask(() =>
             {
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;

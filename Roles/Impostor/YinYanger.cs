@@ -1,5 +1,5 @@
-﻿using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -9,6 +9,7 @@ namespace TOHE.Roles.Impostor;
 internal class YinYanger : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.YinYanger;
     const int Id = 29100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.YinYanger);
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
@@ -83,7 +84,7 @@ internal class YinYanger : RoleBase
 
         return seen.PlayerId == yin?.PlayerId || seen.PlayerId == yang?.PlayerId ? ColorString(col, "☯") : string.Empty;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         var (yin, yang) = Yanged[player.PlayerId];

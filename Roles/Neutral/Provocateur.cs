@@ -1,4 +1,4 @@
-﻿using TOHE.Roles.Double;
+using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -7,12 +7,10 @@ namespace TOHE.Roles.Neutral;
 internal class Provocateur : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Provocateur;
     private const int Id = 15100;
-    private static readonly HashSet<byte> Playerids = [];
-    public static bool HasEnabled => Playerids.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     private static OptionItem ProvKillCD;
@@ -28,12 +26,7 @@ internal class Provocateur : RoleBase
     }
     public override void Init()
     {
-        Playerids.Clear();
         Provoked.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        Playerids.Add(playerId);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = ProvKillCD.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;

@@ -1,22 +1,20 @@
-﻿using AmongUs.GameOptions;
-using static TOHE.Translator;
+using AmongUs.GameOptions;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Doctor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Doctor;
     private const int Id = 6700;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
     //==================================================================\\
 
     private static OptionItem TaskCompletedBatteryChargeOpt;
-    private static OptionItem VisibleToEveryoneOpt;
+    public static OptionItem VisibleToEveryoneOpt;
 
     public override void SetupCustomOption()
     {
@@ -26,14 +24,6 @@ internal class Doctor : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         VisibleToEveryoneOpt = BooleanOptionItem.Create(Id + 11, "DoctorVisibleToEveryone", false, TabGroup.CrewmateRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Doctor]);
-    }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
@@ -48,6 +38,7 @@ internal class Doctor : RoleBase
 
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)
     {
+        if (role != CustomRoles.Doctor) return false;
         if (VisibleToEveryoneOpt.GetBool() && !target.GetCustomSubRoles().Any(sub => sub.IsBetrayalAddon()))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessDoctor"));

@@ -1,16 +1,14 @@
-﻿using Hazel;
-using static TOHE.Options;
 using AmongUs.GameOptions;
+using Hazel;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Crewpostor : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Crewpostor;
     private const int Id = 5800;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.Madmate;
     //==================================================================\\
@@ -42,22 +40,21 @@ internal class Crewpostor : RoleBase
     public override void Init()
     {
         TasksDone = [];
-        PlayerIds.Clear();
+
     }
     public override void Add(byte playerId)
     {
         TasksDone[playerId] = 0;
-        PlayerIds.Add(playerId);
+
     }
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) 
-    { 
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
+    {
         if (ForRecompute & !player.IsDead)
             return false;
         if (player.IsDead)
             return false;
 
         return true;
-    
     }
 
     private static void SendRPC(byte cpID, int tasksDone)
@@ -97,8 +94,8 @@ internal class Crewpostor : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target) ? Utils.GetRoleColorCode(CustomRoles.Crewpostor) : string.Empty;
     public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor))
-            || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(Custom_Team.Impostor));
+        => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
+            || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer);
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
@@ -150,7 +147,7 @@ internal class Crewpostor : RoleBase
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill pestilence (reflected back)：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Pestilence Reflect");
             }
-            else 
+            else
             {
                 player.RpcGuardAndKill();
                 Logger.Info($"Crewpostor tried to kill Apocalypse Member：{target.GetNameWithRole().RemoveHtmlTags()} => {player.GetNameWithRole().RemoveHtmlTags()}", "Apocalypse Immune");

@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
@@ -14,6 +14,7 @@ namespace TOHE.Roles.Neutral;
 internal class Pelican : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Pelican;
     private const int Id = 17300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pelican);
     public override bool IsDesyncRole => true;
@@ -180,7 +181,7 @@ internal class Pelican : RoleBase
                 target.RpcExileV2();
                 target.SetRealKiller(killer);
                 tar.SetDeathReason(PlayerState.DeathReason.Eaten);
-                Main.PlayerStates[tar].SetDead();
+                Main.PlayerStates[target.PlayerId].SetDead();
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} 消化了 {target.GetRealName()}", "Pelican");
             }
@@ -231,7 +232,7 @@ internal class Pelican : RoleBase
             Vector2 teleportPosition;
             if (Scavenger.KilledPlayersId.Contains(pelicanId) && PelicanLastPosition.TryGetValue(pelicanId, out var lastPosition))
                 teleportPosition = lastPosition;
-            else 
+            else
                 teleportPosition = pelican.GetCustomPosition();
 
             foreach (var tar in eatenList[pelicanId])
@@ -248,12 +249,12 @@ internal class Pelican : RoleBase
                 target.SyncSettings();
 
                 RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+                Utils.NotifyRoles(SpecifySeer: target);
 
                 Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");
             }
             eatenList.Remove(pelicanId);
             SyncEatenList();
-            Utils.NotifyRoles();
         }
         catch (System.Exception error)
         {
@@ -263,14 +264,14 @@ internal class Pelican : RoleBase
         GameEndCheckerForNormal.ShouldNotCheck = false;
     }
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
 
         Count--;
-        
-        if (Count > 0) return; 
-        
+
+        if (Count > 0) return;
+
         Count = 4;
 
         if (eatenList.TryGetValue(player.PlayerId, out var playerList))

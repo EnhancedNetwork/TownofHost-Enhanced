@@ -1,55 +1,39 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using TOHE.Modules;
+using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
 
 internal class Miner : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Miner;
     private const int Id = 4200;
-    private static readonly HashSet<byte> PlayerIds = [];
-    public static bool HasEnabled => PlayerIds.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
     //==================================================================\\
 
-    private static OptionItem MinerSSDuration;
     private static OptionItem MinerSSCD;
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Miner);
-        MinerSSDuration = FloatOptionItem.Create(Id + 2, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 1, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Miner])
-            .SetValueFormat(OptionFormat.Seconds);
+        SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Miner);
         MinerSSCD = FloatOptionItem.Create(Id + 3, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Miner])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Miner])
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public override void Init()
-    {
-        PlayerIds.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        PlayerIds.Add(playerId);
-    }
-
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = MinerSSCD.GetFloat();
-        AURoleOptions.ShapeshifterDuration = MinerSSDuration.GetFloat();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.AbilityButton.OverrideText(Translator.GetString("MinerTeleButtonText"));
+        hud.AbilityButton.OverrideText(GetString("MinerTeleButtonText"));
     }
 
-    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (shapeshifter.PlayerId == target.PlayerId) return false;
-
         if (Main.LastEnteredVent.ContainsKey(shapeshifter.PlayerId))
         {
             var lastVentPosition = Main.LastEnteredVentLocation[shapeshifter.PlayerId];
@@ -57,7 +41,5 @@ internal class Miner : RoleBase
             shapeshifter.RpcTeleport(lastVentPosition);
             shapeshifter.RPCPlayCustomSound("Teleport");
         }
-
-        return false;
     }
 }

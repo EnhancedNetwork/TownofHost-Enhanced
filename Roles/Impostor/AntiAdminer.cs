@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Text;
 using UnityEngine;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
 
@@ -11,10 +11,11 @@ namespace TOHE.Roles.Impostor;
 internal class AntiAdminer : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.AntiAdminer;
     private const int Id = 2800;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => playerIdList.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -33,23 +34,14 @@ internal class AntiAdminer : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
     }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
-    }
 
     private static int Count = 0;
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 3;
@@ -136,11 +128,8 @@ internal class AntiAdminer : RoleBase
 
         if (isChange)
         {
-            foreach (var pc in playerIdList.ToArray())
-            {
-                var antiAdminer = pc.GetPlayer();
-                NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
-            }
+            if (_Player)
+                NotifyRoles(SpecifySeer: _Player, ForceLoop: false);
         }
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)

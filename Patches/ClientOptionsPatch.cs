@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace TOHE;
 
-//��Դ��https://github.com/tukasa0001/TownOfHost/pull/1265
+//锟斤拷源锟斤拷https://github.com/tukasa0001/TownOfHost/pull/1265
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Start))]
 public static class OptionsMenuBehaviourStartPatch
 {
@@ -14,6 +14,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem DisableLobbyMusic;
     private static ClientOptionItem ShowTextOverlay;
     private static ClientOptionItem HorseMode;
+    private static ClientOptionItem LongMode;
     private static ClientOptionItem ForceOwnLanguage;
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
@@ -84,16 +85,35 @@ public static class OptionsMenuBehaviourStartPatch
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
             HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance, SwitchHorseMode);
+
             static void SwitchHorseMode()
             {
+                Main.LongMode.Value = false;
                 HorseMode.UpdateToggle();
-                foreach (var pc in PlayerControl.AllPlayerControls)
+                LongMode.UpdateToggle();
+
+                foreach (PlayerControl pc in Main.AllPlayerControls)
                 {
                     pc.MyPhysics.SetBodyType(pc.BodyType);
-                    if (pc.BodyType == PlayerBodyTypes.Normal)
-                    {
-                        pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
-                    }
+                    if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
+                }
+            }
+        }
+
+        if (LongMode == null || LongMode.ToggleButton == null)
+        {
+            LongMode = ClientOptionItem.Create("LongMode", Main.LongMode, __instance, SwitchLongMode);
+
+            static void SwitchLongMode()
+            {
+                Main.HorseMode.Value = false;
+                HorseMode.UpdateToggle();
+                LongMode.UpdateToggle();
+
+                foreach (PlayerControl pc in Main.AllPlayerControls)
+                {
+                    pc.MyPhysics.SetBodyType(pc.BodyType);
+                    if (pc.BodyType == PlayerBodyTypes.Normal) pc.cosmetics.currentBodySprite.BodySprite.transform.localScale = new(0.5f, 0.5f, 1f);
                 }
             }
         }

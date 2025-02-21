@@ -1,12 +1,10 @@
-﻿namespace TOHE.Roles.Impostor;
+namespace TOHE.Roles.Impostor;
 
 internal class Vindicator : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Vindicator;
     private const int Id = 3800;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
@@ -23,15 +21,6 @@ internal class Vindicator : RoleBase
         VindicatorHideVote = BooleanOptionItem.Create(Id + 3, GeneralOption.HideAdditionalVotes, false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Vindicator]);
     }
-    public override void Init()
-    {
-        playerIdList.Clear();
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-
     public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
     {
         if (VindicatorHideVote.GetBool()) return;

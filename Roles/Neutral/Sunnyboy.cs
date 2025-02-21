@@ -1,16 +1,17 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 
 namespace TOHE.Roles.Neutral;
 
 internal class Sunnyboy : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Sunnyboy;
     private const int Id = 14400;
     private static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
-    
+
     public override CustomRoles ThisRoleBase => CustomRoles.Scientist;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
     public override void Init()
@@ -19,7 +20,8 @@ internal class Sunnyboy : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerIds.Add(playerId);
+        if (!PlayerIds.Contains(playerId))
+            PlayerIds.Add(playerId);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

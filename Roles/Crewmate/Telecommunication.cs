@@ -1,26 +1,24 @@
+using AmongUs.GameOptions;
 using System;
 using System.Text;
 using UnityEngine;
-using static TOHE.Utils;
 using static TOHE.Translator;
-using AmongUs.GameOptions;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
 internal class Telecommunication : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Telecommunication;
     private const int Id = 12500;
-    private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
-    
     public override CustomRoles ThisRoleBase => CanVent.GetBool() ? CustomRoles.Engineer : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
 
     private static OptionItem CanCheckCamera;
     private static OptionItem CanVent;
-    
+
     private static bool IsAdminWatch;
     private static bool IsVitalWatch;
     private static bool IsDoorLogWatch;
@@ -34,19 +32,10 @@ internal class Telecommunication : RoleBase
     }
     public override void Init()
     {
-        playerIdList.Clear();
         IsAdminWatch = false;
         IsVitalWatch = false;
         IsDoorLogWatch = false;
         IsCameraWatch = false;
-    }
-    public override void Add(byte playerId)
-    {
-        playerIdList.Add(playerId);
-    }
-    public override void Remove(byte playerId)
-    {
-        playerIdList.Remove(playerId);
     }
 
     public static bool CanUseVent() => CanVent.GetBool();
@@ -57,7 +46,7 @@ internal class Telecommunication : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         Count--; if (Count > 0) return; Count = 5;
@@ -143,7 +132,7 @@ internal class Telecommunication : RoleBase
 
         if (isChange)
         {
-            foreach (var pc in playerIdList)
+            foreach (var pc in _playerIdList)
             {
                 var antiAdminer = pc.GetPlayer();
                 NotifyRoles(SpecifySeer: antiAdminer, ForceLoop: false);
