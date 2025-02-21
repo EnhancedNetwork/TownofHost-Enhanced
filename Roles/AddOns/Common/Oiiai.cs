@@ -117,12 +117,10 @@ public class Oiiai : IAddon
         else if (killerRole.IsMadmate())
         {
             killer.GetRoleClass().OnRemove(killer.PlayerId);
-            killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
-            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            killer.RpcChangeRoleBasis(CustomRoles.Convict);
+            killer.RpcSetCustomRole(CustomRoles.Convict);
             Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
-            killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.AddInSwitchAddons(killer, CustomRoles.Madmate);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Madmates assign.", "Oiiai");
         }
         else if (killer.Is(CustomRoles.Sidekick))
