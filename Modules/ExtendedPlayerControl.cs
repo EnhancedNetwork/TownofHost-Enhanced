@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Text;
@@ -298,6 +299,34 @@ static class ExtendedPlayerControl
         }
 
         Logger.Info($"{player.GetNameWithRole()}'s role basis was changed to {newRoleType} ({newCustomRole}) (from role: {playerRole}) - oldRoleIsDesync: {oldRoleIsDesync}, newRoleIsDesync: {newRoleIsDesync}", "RpcChangeRoleBasis");
+    }
+    /// <summary>
+    /// Changes the RoleType but have same CustomRole of player during the game
+    /// </summary>
+    public static void RpcSetRoleType(this PlayerControl player, RoleTypes roleType, bool removeFromDesyncList)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || player == null) return;
+
+        var customRole = player.GetCustomRole();
+        player.RpcSetRole(roleType, canOverrideRole: true);
+
+        foreach (var seer in Main.AllPlayerControls)
+        {
+            RpcSetRoleReplacer.RoleMap[(seer.PlayerId, player.PlayerId)] = (roleType, customRole);
+        }
+
+        if (removeFromDesyncList)
+            Main.DesyncPlayerList.Remove(player.PlayerId);
+    }
+    /// <summary>
+    /// Full reassign tasks for player
+    /// </summary>
+    public static void RpcResetTasks(this PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || player == null) return;
+
+        player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
+        Main.PlayerStates[player.PlayerId].InitTask(player);
     }
     public static void RpcSetPetDesync(this PlayerControl player, string petId, PlayerControl seer)
     {
