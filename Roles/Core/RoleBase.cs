@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System.Text;
@@ -31,7 +31,7 @@ public abstract class RoleBase
 
     public void OnAdd(byte playerid) // The player with the class executes this
     {
-        _state = Main.PlayerStates.Values.FirstOrDefault(state => state.PlayerId == playerid);
+        _state = Main.PlayerStates.GetValueOrDefault(playerid);
         try
         {
             CustomRoleManager.RoleClass.FirstOrDefault(r => r.Key == _state.MainRole).Value.IsEnable = true;

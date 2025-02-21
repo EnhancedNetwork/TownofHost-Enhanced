@@ -108,7 +108,7 @@ internal class GameDataHandlerPatch
 
                         if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost && GameStates.IsShip && !GameStates.IsLobby)
                         {
-                            CriticalErrorManager.SetCreiticalError("SceneChange Tutorial Hack", false);
+                            CriticalErrorManager.SetCriticalError("SceneChange Tutorial Hack", false);
                             CriticalErrorManager.CheckEndGame();
                         }
                         return false;

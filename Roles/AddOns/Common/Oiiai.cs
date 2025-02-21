@@ -101,10 +101,10 @@ public class Oiiai : IAddon
         else if (killerRole.IsCoven() && !CovenManager.HasNecronomicon(killer))
         {
             killer.GetRoleClass().OnRemove(killer.PlayerId);
-            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
-            killer.GetRoleClass().OnAdd(killer.PlayerId);
+            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
             Main.DesyncPlayerList.Remove(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Enchanted);
             killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");
@@ -119,8 +119,8 @@ public class Oiiai : IAddon
             killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-            killer.GetRoleClass().OnAdd(killer.PlayerId);
             Main.DesyncPlayerList.Remove(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Madmate);
             killer.AddInSwitchAddons(killer, CustomRoles.Madmate);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Madmates assign.", "Oiiai");
@@ -130,8 +130,8 @@ public class Oiiai : IAddon
             killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
-            killer.GetRoleClass().OnAdd(killer.PlayerId);
             Main.DesyncPlayerList.Remove(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Recruit);
             killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
@@ -140,10 +140,10 @@ public class Oiiai : IAddon
         {
             var readyrole = Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole());
             //Use eraser here LOL
-            Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass()?.OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(readyrole);
             killer.RpcSetCustomRole(readyrole);
+            Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass()?.OnAdd(killer.PlayerId);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
         }
@@ -153,10 +153,10 @@ public class Oiiai : IAddon
 
             if (changeValue != 0)
             {
-                Main.DesyncPlayerList.Remove(killer.PlayerId);
                 killer.GetRoleClass().OnRemove(killer.PlayerId);
                 killer.RpcChangeRoleBasis(NRoleChangeRoles[changeValue - 1]);
                 killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
+                Main.DesyncPlayerList.Remove(killer.PlayerId);
                 killer.GetRoleClass().OnAdd(killer.PlayerId);
 
                 killer.SyncSettings();

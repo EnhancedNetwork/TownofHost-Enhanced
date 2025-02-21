@@ -322,7 +322,7 @@ internal class ControllerManagerUpdatePatch
 
             if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
             {
-                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
+                CriticalErrorManager.SetCriticalError("Test AntiBlackout", true);
             }
 
             // Kill flash

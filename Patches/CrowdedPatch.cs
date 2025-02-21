@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using TMPro;
 using UnityEngine;
@@ -279,7 +280,7 @@ internal static class Crowded
     {
         public static void Postfix(ref SecurityLogger __instance)
         {
-            __instance.Timers = new float[127];
+            __instance.Timers = new Il2CppStructArray<float>(127);
         }
     }
 

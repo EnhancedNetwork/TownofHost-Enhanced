@@ -131,20 +131,27 @@ public static class PhantomRolePatch
 
     public static void OnReportDeadBody(PlayerControl seer)
     {
-        if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsNecromancer)) return;
-
-        foreach (var phantom in InvisibilityList.GetFastEnumerator())
+        try
         {
-            if (!phantom.IsAlive())
-            {
-                InvisibilityList.Remove(phantom);
-                continue;
-            }
+            if (InvisibilityList.Count == 0 || !seer.IsAlive() || seer.Data?.Role.Role is RoleTypes.Phantom || seer.AmOwner || !(seer.HasDesyncRole() || Main.PlayerStates[seer.PlayerId].IsNecromancer)) return;
 
-            Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer));
+            foreach (var phantom in InvisibilityList.GetFastEnumerator())
+            {
+                if (!phantom.IsAlive())
+                {
+                    InvisibilityList.Remove(phantom);
+                    continue;
+                }
+
+                Main.Instance.StartCoroutine(CoRevertInvisible(phantom, seer));
+            }
+        }
+        catch (System.Exception error)
+        {
+            Logger.Error(error.ToString(), "PhantomRole.OnReportDeadBody");
         }
     }
-    private static bool InValid(PlayerControl phantom, PlayerControl seer) => seer.GetClientId() == -1 || phantom == null;
+    private static bool InValid(PlayerControl phantom, PlayerControl seer) => phantom == null || seer.GetClientId() == -1;
     private static System.Collections.IEnumerator CoRevertInvisible(PlayerControl phantom, PlayerControl seer)
     {
         // Set Scientist for meeting
