@@ -151,6 +151,7 @@ internal class Eraser : RoleBase
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
                 player.RpcSetCustomRole(CustomRoles.Amnesiac);
+                Main.DesyncPlayerList.Remove(player.PlayerId);
                 player.GetRoleClass().OnAdd(player.PlayerId);
                 player.RpcSetCustomRole(CustomRoles.Madmate);
                 player.AddInSwitchAddons(player, CustomRoles.Madmate);
@@ -160,6 +161,7 @@ internal class Eraser : RoleBase
                 player.GetRoleClass().OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
                 player.RpcSetCustomRole(CustomRoles.Amnesiac);
+                Main.DesyncPlayerList.Remove(player.PlayerId);
                 player.GetRoleClass().OnAdd(player.PlayerId);
                 player.RpcSetCustomRole(CustomRoles.Enchanted);
                 player.AddInSwitchAddons(player, CustomRoles.Enchanted);
@@ -171,6 +173,7 @@ internal class Eraser : RoleBase
                     player.GetRoleClass().OnRemove(player.PlayerId);
                     player.RpcChangeRoleBasis(CustomRoles.Amnesiac);
                     player.RpcSetCustomRole(CustomRoles.Amnesiac);
+                    Main.DesyncPlayerList.Remove(player.PlayerId);
                     player.GetRoleClass().OnAdd(player.PlayerId);
                     player.RpcSetCustomRole(CustomRoles.Recruit);
                     player.AddInSwitchAddons(player, CustomRoles.Recruit);
@@ -182,6 +185,7 @@ internal class Eraser : RoleBase
                     player.GetRoleClass().OnRemove(player.PlayerId);
                     player.RpcChangeRoleBasis(NRoleChangeRoles[changeValue]);
                     player.RpcSetCustomRole(NRoleChangeRoles[changeValue]);
+                    Main.DesyncPlayerList.Remove(player.PlayerId);
                     player.GetRoleClass().OnAdd(player.PlayerId);
 
                     player.SyncSettings();
@@ -192,6 +196,7 @@ internal class Eraser : RoleBase
                 player.GetRoleClass()?.OnRemove(player.PlayerId);
                 player.RpcChangeRoleBasis(readyRole);
                 player.RpcSetCustomRole(readyRole);
+                Main.DesyncPlayerList.Remove(player.PlayerId);
                 player.GetRoleClass()?.OnAdd(player.PlayerId);
             }
             player.ResetKillCooldown();

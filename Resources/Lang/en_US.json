@@ -1589,6 +1589,7 @@
   "In%team%": "(Team %team%)",
   "SheriffMisfireKillsTarget": "Misfire Kills Target",
   "SheriffMisfireOnAdmired": "Sheriff Misfires On <color=#ee43c3>Admired Players</color>",
+  "BlackHoleCountLimit": "Max BlackHole in Game",
   "BlackHolePlaceCooldown": "Black Hole Place Cooldown",
   "BlackHoleDespawnMode": "Black Hole Despawn Mode",
   "BlackHoleDespawnTime": "Time After Black Hole Despawns",
@@ -2157,7 +2158,7 @@
   "NecromancerHide": "Venting is disabled, hide from the Necromancer!",
   "NecromancerCooldownNotDone": "Ability is still on Cooldown!",
   "NecromancerNoUsableRoles": "No usable roles",
-
+  "NecromancerRevengeInProgress": "You have to finish your revenge before you can change roles!",
 
   "LuckyProbability": "Probability of surviving a kill",
   "ImpCanBeDoubleShot": "<color=#ff1919>Impostors</color> can have <color=#19fa8d>Double Shot</color>",
@@ -2717,6 +2718,7 @@
   "CrewCanBeInLove": "<color=#8cffff>Crewmates</color> can be <color=#ff9ace>in love</color>",
   "NeutralCanBeInLove": "<color=#7f8c8d>Neutrals</color> can be <color=#ff9ace>in love</color>",
   "CovenCanBeInLove": "<color=#ac42f2>Coven</color> can be <color=#ff9ace>in love</color>",
+  "NewUpdateAvailable": "<size=400%><b>New Update Available!</b></size>\n<size=200%><b>{0}</b></size>",
   "updateButton": "Update",
   "updatePleaseWait": "Please Wait...",
   "updateManually": "Update failed.\nPlease try again or update manually.",
