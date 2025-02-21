@@ -75,7 +75,7 @@ internal class Solsticer : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
-    } //Enabled Solsticer can vent
+    } //Enabled Solsticer can Vent
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
@@ -83,7 +83,7 @@ internal class Solsticer : RoleBase
     {
         if (player == null) return true;
 
-        // Sycn for modded clients
+        // Sync for modded clients
         SendRPC();
 
         if (patched)
@@ -152,8 +152,8 @@ internal class Solsticer : RoleBase
                 MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
             else MurderMessage = "";
         }
-        return false; //should be patched before every others
-    } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
+        return false; //Should be patched before every others
+    } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets Cooldown
     public override void AfterMeetingTasks()
     {
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
