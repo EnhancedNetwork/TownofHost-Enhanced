@@ -37,10 +37,10 @@ internal class Shocker : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Shocker);
-        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, "ShockerAbilityCooldown", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        ShockerAbilityCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
-        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, "ShockerAbilityDuration", new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
+        ShockerAbilityDuration = FloatOptionItem.Create(Id + 11, GeneralOption.AbilityDuration, new(0, 180, 1), 10, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker])
             .SetValueFormat(OptionFormat.Seconds);
         ShockerAbilityPerRound = IntegerOptionItem.Create(Id + 12, "ShockerAbilityPerRound", new(0, 10, 1), 2, TabGroup.NeutralRoles, false)
@@ -53,7 +53,7 @@ internal class Shocker : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]).SetValueFormat(OptionFormat.Multiplier);
         ShockerCanShockHimself = BooleanOptionItem.Create(Id + 16, "ShockerCanShockHimself", false, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
-        ShockerImpostorVision = BooleanOptionItem.Create(Id + 20, "ShockerImpostorVision", true, TabGroup.NeutralRoles, false)
+        ShockerImpostorVision = BooleanOptionItem.Create(Id + 20, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Shocker]);
         OverrideTasksData.Create(18, TabGroup.NeutralRoles, CustomRoles.Shocker);
     }
@@ -140,10 +140,7 @@ internal class Shocker : RoleBase
     {
         if (completedTaskCount == totalTaskCount)
         {
-            TaskState taskState = player.GetPlayerTaskState();
-            player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            taskState.CompletedTasksCount = 0;
-            taskState.AllTasksCount = player.Data.Tasks.Count;
+            player.RpcResetTasks();
         }
         if (player.GetPlainShipRoom() != null)
         {

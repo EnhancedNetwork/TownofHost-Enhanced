@@ -46,24 +46,24 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0206.220.30000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Beta 3";
+    public const string PluginVersion = "2025.0225.220.9999"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.0";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
-    public static readonly bool fullRelease = false; // Latest: V2.1.1
+    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 17 Hotfix 1
+    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 4
+    public static readonly bool fullRelease = true; // Latest: V2.2.0
 
     public static bool hasAccess = true;
 
     public static readonly bool ShowUpdateButton = true;
 
     public static readonly bool ShowGitHubButton = true;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly string GitHubInviteUrl = "https://github.com/EnhancedNetwork/TownofHost-Enhanced";
 
     public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/ten";
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://weareten.ca/";

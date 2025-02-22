@@ -94,6 +94,7 @@ class SetUpRoleTextPatch
             foreach (var player in Main.AllPlayerControls)
             {
                 Main.PlayerStates[player.PlayerId].InitTask(player);
+                player.DoUnShiftState(true);
             }
 
             GameData.Instance.RecomputeTaskCounts();
@@ -793,27 +794,6 @@ class IntroCutsceneDestroyPatch
                     target.Data.Role.NameColor = Color.white;
                 }
             }
-
-            if (Main.UnShapeShifter.Any())
-            {
-                _ = new LateTask(() =>
-                {
-                    Main.UnShapeShifter.Do(x =>
-                    {
-                        var UnShapeshifter = x.GetPlayer();
-                        if (UnShapeshifter == null)
-                        {
-                            Main.UnShapeShifter.Remove(x);
-                            return;
-                        }
-
-                        UnShapeshifter.StartCoroutine(CheckShapeshiftPatch.CoPerformUnShapeShifter(UnShapeshifter).WrapToIl2Cpp());
-
-                        Main.CheckShapeshift[x] = false;
-                    });
-                    Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
-            }
         }
     }
     public static void Postfix()
@@ -909,7 +889,7 @@ class IntroCutsceneDestroyPatch
 
             Utils.CheckAndSetVentInteractions();
 
-            if (Main.CurrentServerIsVanilla)
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
             {
                 Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
             }
@@ -918,6 +898,13 @@ class IntroCutsceneDestroyPatch
                 Utils.DoNotifyRoles();
             }
         }
+
+        try
+        {
+            if (!GameStates.IsEnded)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }
+        catch { }
 
         Logger.Info("OnDestroy", "IntroCutscene");
     }

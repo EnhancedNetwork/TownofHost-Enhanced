@@ -121,6 +121,9 @@ class ExileControllerWrapUpPatch
 
             // Check for remove pet
             player.RpcRemovePet();
+
+            // Set UnShift after meeting
+            player.DoUnShiftState();
         }
 
         Main.MeetingIsStarted = false;
@@ -177,7 +180,7 @@ class ExileControllerWrapUpPatch
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
 
-                if (Main.CurrentServerIsVanilla)
+                if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
                 {
                     Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
                 }

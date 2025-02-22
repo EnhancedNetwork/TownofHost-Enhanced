@@ -25,7 +25,7 @@ public class Susceptible : IAddon
     private static void ChangeRandomDeath()
     {
         PlayerState.DeathReason[] deathReasons = EnumHelper.GetAllValues<PlayerState.DeathReason>();
-        Random random = new();
+        var random = IRandom.Instance;
         int randomIndex = random.Next(deathReasons.Length);
         randomReason = deathReasons[randomIndex];
     }

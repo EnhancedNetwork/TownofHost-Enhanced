@@ -2448,18 +2448,26 @@ public static class Utils
     }
     public static void AfterMeetingTasks()
     {
+        PhantomRolePatch.AfterMeeting();
+        ChatManager.ClearLastSysMsg();
+        FallFromLadder.Reset();
+
+        if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
+        if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
+
+        AntiBlackout.AfterMeetingTasks();
+
         try
         {
-            PhantomRolePatch.AfterMeeting();
-            ChatManager.ClearLastSysMsg();
-            FallFromLadder.Reset();
-
-            if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
-            if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
-
-            AntiBlackout.AfterMeetingTasks();
             CovenManager.CheckNecroVotes();
+        }
+        catch (Exception error)
+        {
+            Logger.Error($"Error in CovenManager after meeting: {error}", "AfterMeetingTasks");
+        }
 
+        try
+        {
             foreach (var playerState in Main.PlayerStates.Values.ToArray())
             {
                 if (playerState.RoleClass == null) continue;
@@ -2512,7 +2520,7 @@ public static class Utils
             // Will be synced by ShipStatus patch, SetAllVentInteractions
         }
     }
-    public static string ToColoredString(this CustomRoles role) => Utils.ColorString(Utils.GetRoleColor(role), Translator.GetString($"{role}"));
+    public static string ToColoredString(this CustomRoles role) => ColorString(GetRoleColor(role), GetString(role.ToString()));
     public static void ChangeInt(ref int ChangeTo, int input, int max)
     {
         var tmp = ChangeTo * 10;

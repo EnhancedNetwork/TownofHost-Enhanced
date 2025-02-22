@@ -1,7 +1,9 @@
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -121,6 +123,7 @@ internal class ChiefOfPolice : RoleBase
                     target.RpcChangeRoleBasis(CustomRoles.Sheriff);
                     target.RpcSetCustomRole(CustomRoles.Sheriff);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
+                    if (Main.PlayerStates[target.PlayerId].IsNecromancer) Main.PlayerStates[target.PlayerId].IsNecromancer = false;
 
                     target.ResetKillCooldown();
                     target.SetKillCooldown(forceAnime: true);
@@ -169,6 +172,7 @@ internal class ChiefOfPolice : RoleBase
     {
         hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("CoPKill");
 
     public override string GetProgressText(byte playerId, bool commns)
     => !commns ? Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.ChiefOfPolice).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})") : "";
