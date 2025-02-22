@@ -1135,9 +1135,8 @@ static class ExtendedPlayerControl
     }
     public static bool CanUseKillButton(this PlayerControl pc)
     {
-        if (pc == null || GameStates.IsLobby) return false;
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
-        if (pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && !Options.ShieldedCanUseKillButton.GetBool() && MeetingStates.FirstMeeting) return false;
+        if (MeetingStates.FirstMeeting && !Options.ShieldedCanUseKillButton.GetBool() && pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
 
         var playerRoleClass = pc.GetRoleClass();
@@ -1147,7 +1146,6 @@ static class ExtendedPlayerControl
     }
     public static bool HasKillButton(this PlayerControl pc)
     {
-        if (pc == null) return false;
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
 
         var role = pc.GetCustomRole();
