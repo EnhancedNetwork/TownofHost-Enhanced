@@ -3718,6 +3718,7 @@
   "RomanticBetTargetKnowRomantic": "Target knows who the <color=#ff1493>Romantic</color> is",
   "RomanticPartnerButtonText": "Pick Partner",
   "RomanticProtectButtonText": "Protect",
+  "VengefulRomanticButtonText": "Avenge",
 
   "GuessMasterMisguess": "<b>{0}</b> misguessed",
   "GuessMasterTargetRole": "Someone tried to guess <b>{0}</b>",
