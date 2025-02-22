@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -8,56 +9,53 @@ public static class CustomButton
     public static Sprite Get(string name) => Utils.LoadSprite($"TOHE.Resources.Images.Skills.{name}.png", 115f);
 }
 
-[HarmonyPriority(520)]
-[HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
+[HarmonyPriority(Priority.First)]
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
+[HarmonyPatch([typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)])]
 public static class HudSpritePatch
 {
-    private static Sprite Kill;
-    private static Sprite Ability;
-    private static Sprite Vent;
-    private static Sprite Report;
-    private static Sprite Sabotage;
-    public static void Postfix(HudManager __instance)
+    private static Sprite OriginalKill;
+    public static Sprite OriginalAbility;
+    private static Sprite OriginalImpVent;
+    private static Sprite OriginalReport;
+    private static Sprite OriginalSabotage;
+    public static void Postfix(HudManager __instance, [HarmonyArgument(0)] PlayerControl localPlayer, [HarmonyArgument(2)] bool isActive)
     {
-        if (__instance == null) return;
-        var player = PlayerControl.LocalPlayer;
-        if (player == null || !Main.EnableCustomButton.Value || AmongUsClient.Instance.IsGameOver || GameStates.IsLobby || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
-        if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
-
+        if (!Main.EnableCustomButton.Value || __instance == null || !isActive || !localPlayer.IsAlive()) return;
+        if (GameStates.IsEnded || GameStates.IsLobby || GameStates.IsHideNSeek || !GameStates.IsModHost) return;
         if (!AmongUsClient.Instance.IsGameStarted || !Main.IntroDestroyed)
         {
-            Kill = null;
-            Ability = null;
-            Vent = null;
-            Report = null;
-            Sabotage = null;
+            OriginalKill = __instance.KillButton.graphic.sprite;
+            OriginalAbility = __instance.AbilityButton.graphic.sprite;
+            OriginalImpVent = __instance.ImpostorVentButton.graphic.sprite;
+            OriginalReport = __instance.ReportButton.graphic.sprite;
+            OriginalSabotage = __instance.SabotageButton.graphic.sprite;
             return;
         }
+        OriginalKill ??= __instance.KillButton.graphic.sprite;
+        OriginalAbility ??= __instance.AbilityButton.graphic.sprite;
+        OriginalImpVent ??= __instance.ImpostorVentButton.graphic.sprite;
+        OriginalReport ??= __instance.ReportButton.graphic.sprite;
+        OriginalSabotage ??= __instance.SabotageButton.graphic.sprite;
 
-        bool shapeshifting = Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
+        bool shapeshifting = Main.CheckShapeshift.GetValueOrDefault(localPlayer.PlayerId, false);
 
-        if (!Kill) Kill = __instance.KillButton.graphic.sprite;
-        if (!Ability) Ability = __instance.AbilityButton.graphic.sprite;
-        if (!Vent) Vent = __instance.ImpostorVentButton.graphic.sprite;
-        if (!Report) Report = __instance.ReportButton.graphic.sprite;
-        if (!Sabotage) Sabotage = __instance.SabotageButton.graphic.sprite;
+        Sprite newKillButton = OriginalKill;
+        Sprite newAbilityButton = OriginalAbility;
+        Sprite newVentButton = OriginalImpVent;
+        Sprite newReportButton = OriginalReport;
+        Sprite newSabotageButton = OriginalSabotage;
 
-        Sprite newKillButton = Kill;
-        Sprite newAbilityButton = Ability;
-        Sprite newVentButton = Vent;
-        Sprite newReportButton = Report;
-        Sprite newSabotageButton = Sabotage;
-
-        var playerRoleClass = player.GetRoleClass();
+        var playerRoleClass = localPlayer.GetRoleClass();
         if (playerRoleClass == null) goto EndOfSelectImg;
 
-        if (playerRoleClass?.GetKillButtonSprite(player, shapeshifting) is Sprite killbutton)
+        if (playerRoleClass?.GetKillButtonSprite(localPlayer, shapeshifting) is Sprite killbutton)
             newKillButton = killbutton;
 
-        if (playerRoleClass?.ImpostorVentButtonSprite(player) is Sprite Ventbutton)
+        if (playerRoleClass?.ImpostorVentButtonSprite(localPlayer) is Sprite Ventbutton)
             newVentButton = Ventbutton;
 
-        if (playerRoleClass?.GetAbilityButtonSprite(player, shapeshifting) is Sprite Abilitybutton)
+        if (playerRoleClass?.GetAbilityButtonSprite(localPlayer, shapeshifting) is Sprite Abilitybutton)
             newAbilityButton = Abilitybutton;
 
         if (playerRoleClass?.ReportButtonSprite is Sprite Reportbutton)
@@ -91,5 +89,28 @@ public static class HudSpritePatch
         __instance.AbilityButton.graphic.SetCooldownNormalizedUvs();
         __instance.ReportButton.graphic.SetCooldownNormalizedUvs();
         __instance.SabotageButton.graphic.SetCooldownNormalizedUvs();
+    }
+}
+[HarmonyPatch(typeof(AbilityButton), nameof(AbilityButton.SetFromSettings))]
+public static class AbilityButtonPatch
+{
+    public static bool Prefix(AbilityButton __instance, AbilityButtonSettings settings)
+    {
+        var localPlayer = PlayerControl.LocalPlayer;
+        if (!localPlayer.IsAlive() || localPlayer.Data.IsDead) return true;
+
+        __instance.SetInfiniteUses();
+        if (localPlayer.GetRoleClass()?.GetAbilityButtonSprite(localPlayer, Main.CheckShapeshift.GetValueOrDefault(localPlayer.PlayerId, false)) is Sprite Abilitybutton)
+        {
+            __instance.graphic.sprite = Abilitybutton;
+        }
+        else
+        {
+            __instance.graphic.sprite = settings.Image ?? HudSpritePatch.OriginalAbility;
+        }
+        __instance.graphic.SetCooldownNormalizedUvs();
+        __instance.buttonLabelText.fontSharedMaterial = settings.FontMaterial;
+        __instance.buttonLabelText.text = DestroyableSingleton<TranslationController>.Instance.GetString(settings.Text, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        return false;
     }
 }
