@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -111,6 +112,7 @@ public class OptionShower : MonoBehaviour
                     {
                         string mode = kvp.Value.GetString();
                         if (kvp.Key is CustomRoles.Lovers) mode = Utils.GetChance(Options.LoverSpawnChances.GetInt());
+                        else if (kvp.Key is CustomRoles.Narc) mode = Utils.GetChance(Narc.NarcSpawnChance.GetInt());
                         else if (kvp.Key.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(kvp.Key))
                         {
                             mode = Utils.GetChance(Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat());

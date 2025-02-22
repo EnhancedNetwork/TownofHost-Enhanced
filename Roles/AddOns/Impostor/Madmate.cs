@@ -118,7 +118,7 @@ public static class Madmate
     public static bool CheckCanBeMadmate(this PlayerControl pc, bool forGangster = false)
     {
         return
-            (pc.Is(CustomRoles.Sheriff) && (!forGangster ? !SheriffCanBeMadmate.GetBool() : !Gangster.SheriffCanBeMadmate.GetBool())) ||
+            (pc.Is(CustomRoles.Sheriff) && ((!forGangster ? !(SheriffCanBeMadmate.GetBool() || Narc.CheckNarcAssign()) : !(Gangster.SheriffCanBeMadmate.GetBool() || CustomRoles.Narc.RoleExist())))) ||
             (pc.Is(CustomRoles.Mayor) && (!forGangster ? !MayorCanBeMadmate.GetBool() : !Gangster.MayorCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.NiceGuesser) && (!forGangster ? !NGuesserCanBeMadmate.GetBool() : !Gangster.NGuesserCanBeMadmate.GetBool())) ||
             (pc.Is(CustomRoles.Snitch) && !SnitchCanBeMadmate.GetBool()) ||

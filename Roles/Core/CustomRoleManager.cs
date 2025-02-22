@@ -166,6 +166,9 @@ public static class CustomRoleManager
                     case CustomRoles.Mare:
                         Mare.ApplyGameOptions(player.PlayerId);
                         break;
+                    case CustomRoles.Narc when !player.Is(CustomRoles.Bewilder) && !player.Is(CustomRoles.Torch):
+                        Narc.ApplyGameOptions(opt, player);
+                        break;
                 }
             }
 
@@ -233,7 +236,7 @@ public static class CustomRoleManager
             {
                 switch (killerSubRole)
                 {
-                    case CustomRoles.Madmate when target.Is(Custom_Team.Impostor) && !Madmate.MadmateCanKillImp.GetBool():
+                    case CustomRoles.Madmate when target.CheckImpTeamCanSeeTeammates() && !Madmate.MadmateCanKillImp.GetBool():
                     case CustomRoles.Infected when target.Is(CustomRoles.Infected) && !Infectious.TargetKnowOtherTargets:
                     case CustomRoles.Infected when target.Is(CustomRoles.Infectious):
                         canceled = true;
@@ -262,6 +265,11 @@ public static class CustomRoleManager
                         if (!Swift.OnCheckMurder(killer, target))
                             cancelbutkill = true;
                         break;
+
+                    case CustomRoles.Narc:
+                        if (Narc.CancelMurder(killer,target))
+                            canceled = true;
+                    break;
                 }
             }
 

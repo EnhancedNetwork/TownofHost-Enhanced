@@ -149,6 +149,12 @@ internal class Councillor : RoleBase
                     return true;
                 }
 
+                if (pc.Is(CustomRoles.Narc) && target.Is(CustomRoles.Sheriff))
+                {
+                    pc.ShowInfoMessage(isUI, GetString("GuessSheriffOrNarc"));
+                    return true;
+                }
+
                 if (target.Is(CustomRoles.Rebound))
                 {
                     Logger.Info($"{pc.GetNameWithRole()} judged {target.GetNameWithRole()}, councillor sucide = true because target rebound", "CouncillorTrialMsg");

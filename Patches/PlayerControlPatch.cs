@@ -282,7 +282,12 @@ class CheckMurderPatch
         }
 
         // Impostors can kill Madmate
-        if (killer.Is(Custom_Team.Impostor) && !Madmate.ImpCanKillMadmate.GetBool() && target.Is(CustomRoles.Madmate))
+        if (killer.CheckImpTeamCanSeeTeammates() && target.Is(CustomRoles.Madmate)
+           && !(killer.Is(CustomRoles.Narc) ? Narc.NarcCanKillMadmate.GetBool() : Madmate.ImpCanKillMadmate.GetBool())
+           )
+            return false;
+
+        if (killer.CheckImpTeamCanSeeTeammates() && target.CheckImpTeamCanSeeTeammates())
             return false;
 
         Logger.Info($"Start", "OnCheckMurderAsTargetOnOthers");
@@ -1288,7 +1293,7 @@ class FixedUpdateInNormalGamePatch
 
                     string BlankRT = string.Empty;
 
-                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster))
+                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Trickster) && (!__instance.Is(CustomRoles.Narc) || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate)))
                     {
                         RoleText.enabled = true; //have to make it return true otherwise modded Overseer won't be able to reveal Trickster's role,same for Illusionist's targets
                         BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
@@ -1313,7 +1318,13 @@ class FixedUpdateInNormalGamePatch
                         }
                         RoleText.text = $"<size=1.3>{BlankRT}</size>";
                     }
-
+                    if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, __instance) && __instance.Is(CustomRoles.Narc) && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+                    {
+                        BlankRT = Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString(CustomRoles.Sheriff.ToString())); //Sheriff
+                        if (Sheriff.ShowShotLimit.GetBool()) 
+                            BlankRT += $" {Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $"({Sheriff.ShotLimitOpt.GetInt()})")}"; // Sheriff progress text
+                        RoleText.text = $"<size=1.3>{BlankRT}</size>";
+                    }
 
                     if (!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay)
                     {
@@ -1394,6 +1405,13 @@ class FixedUpdateInNormalGamePatch
 
                     if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                         Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), "★"));
+
+                    if (target.Is(CustomRoles.Narc) 
+                        && seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice)
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Narc), "★"));
+
+                    if (target.Is(CustomRoles.Sheriff) && seer.Is(CustomRoles.Narc))
+                        Mark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), "★"));
 
                     if (target.Is(CustomRoles.Lovers) && seer.Is(CustomRoles.Lovers))
                     {

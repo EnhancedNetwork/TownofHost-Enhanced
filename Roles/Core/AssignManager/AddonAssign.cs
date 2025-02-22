@@ -14,6 +14,7 @@ public static class AddonAssign
             case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
+            case CustomRoles.Narc:
                 return true;
             case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
@@ -174,6 +175,8 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.Mini)
                 || pc.Is(CustomRoles.NiceMini)
                 || pc.Is(CustomRoles.EvilMini)
+                || pc.Is(CustomRoles.Narc)
+                || (pc.Is(CustomRoles.Sheriff) && Narc.CheckNarcAssign())
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
@@ -195,5 +198,29 @@ public static class AddonAssign
         }
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
+    }
+
+    public static void StartAssignNarc()
+    {
+        if (Narc.Value == 0) return;
+        var Players = new List<PlayerControl>();
+        switch (Narc.Value)
+        {
+            case 1:
+                foreach (var madmate in Main.AllPlayerControls.Where(p => p.GetCustomRole().IsMadmate()))
+                {
+                    Players.Add(madmate);
+                }
+                break;
+            case 2:
+                foreach (var imp in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostor()))
+                {
+                    Players.Add(imp);
+                }
+                break;
+        }
+        if (!Players.Any()) return;
+        var pc = Players.RandomElement();
+        Main.PlayerStates[pc.PlayerId].SetSubRole(CustomRoles.Narc); 
     }
 }
