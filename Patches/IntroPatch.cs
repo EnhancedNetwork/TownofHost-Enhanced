@@ -9,6 +9,7 @@ using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -691,20 +692,37 @@ class BeginImpostorPatch
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
 
-            //for Madmate roles to see teammates on intro screen
-            if (PlayerControl.LocalPlayer.CheckImpTeamCanSeeTeammates(CheckImp:false))
+            // Crewpostor is counted as Madmate but should be a Impostor
+            if (role == CustomRoles.Crewpostor && Crewpostor.CPAndAlliesKnowEachOther.GetBool())
             {
-                foreach (var p in Main.AllPlayerControls.Where(x => x.CheckImpTeamCanSeeTeammates()))
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostor()))
                 {
-                    if (yourTeam.Contains(p)) continue;
-                    yourTeam.Add(p);
+                    yourTeam.Add(pc);
                 }
                 if (Madmate.ImpKnowWhosMadmate.GetBool())
                 {
                     foreach (var p in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Madmate)))
                     {
-                        if (yourTeam.Contains(p)) continue;
                         yourTeam.Add(p);
+                    }
+                }
+            }
+
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
+            {
+                if (Madmate.MadmateKnowWhosImp.GetBool())
+                {
+                    // Crewpostor is counted as Madmate but should be a Impostor
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsImpostor() || (x.Is(CustomRoles.Crewpostor) && Crewpostor.CPAndAlliesKnowEachOther.GetBool())))
+                    {
+                        yourTeam.Add(pc);
+                    }
+                }
+                if (Madmate.MadmateKnowWhosMadmate.GetBool())
+                {
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Madmate) && x.PlayerId != PlayerControl.LocalPlayer.PlayerId))
+                    {
+                        yourTeam.Add(pc);
                     }
                 }
             }
@@ -761,14 +779,14 @@ class BeginImpostorPatch
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
 
-            foreach (var pc in Main.AllAlivePlayerControls.Where(x => !x.AmOwner && x.CheckImpTeamCanSeeTeammates()))
+            foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner && x.GetCustomRole().IsImpostor() || (x.Is(CustomRoles.Crewpostor) && Crewpostor.CPAndAlliesKnowEachOther.GetBool())))
             {
                 yourTeam.Add(pc);
             }
 
             if (Madmate.ImpKnowWhosMadmate.GetBool())
             {
-                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Madmate)))
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Madmate)))
                 {
                     yourTeam.Add(pc);
                 }

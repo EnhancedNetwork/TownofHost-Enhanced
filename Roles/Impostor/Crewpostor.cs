@@ -3,7 +3,6 @@ using Hazel;
 using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Double;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -168,10 +167,7 @@ internal class Crewpostor : RoleBase
     {
         if (!_Player.IsAlive()) return;
         var player = _Player;
-        TaskState taskState = player.GetPlayerTaskState();
-        player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-        taskState.CompletedTasksCount = 0;
-        taskState.AllTasksCount = player.Data.Tasks.Count;
+        player.RpcResetTasks();
         TasksDone[player.PlayerId] = 0;
     }
 }

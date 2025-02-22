@@ -1264,30 +1264,26 @@ public static class CustomRolesHelper
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
 
+    /// <summary>
+    /// Role Is Neutral excluding Madmate
     public static bool IsNeutralTeamV3(this CustomRoles role) => role.IsNeutral() && !role.IsMadmate();
 
-    /// <summary>
-    /// Narc part
-    /// </summary>
+
+    // player's main role is a Crewmate role,or player has Narc
     public static bool IsNarcCrew(this PlayerControl pc)
-    {
-        return pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Narc);
-    }
+        => pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Narc);
+
+    // player's main role is an Impostor role,and player is not Narc
     public static bool IsNonNarcImp(this PlayerControl pc)
-    {
-        return pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc);
-    }
+        => pc.GetCustomRole().IsImpostor() && !pc.Is(CustomRoles.Narc);
+
+    // player's main role is a Madmate role,and player is not Narc
     public static bool IsNonNarcMM(this PlayerControl pc)
-    {
-        return pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc);
-    }
+        => pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc);
+
+    // player's main role is an Impostor role or a Madmate role,and player is not Narc
     public static bool IsNonNarcImpV3(this PlayerControl pc)
-    {
-        return pc.IsNonNarcImp() || pc.IsNonNarcMM();
-    }
-    /// <summary>
-    /// end of Narc part
-    /// </summary> 
+        => pc.IsNonNarcImp() || pc.IsNonNarcMM();
 
     public static bool IsVanilla(this CustomRoles role)
     {
