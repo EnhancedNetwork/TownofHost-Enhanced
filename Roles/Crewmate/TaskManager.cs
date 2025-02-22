@@ -1,8 +1,8 @@
 using System.Text;
 using UnityEngine;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.AddOns;
-using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Utils;
 using static TOHE.Translator;
@@ -104,7 +104,8 @@ internal class TaskManager : RoleBase
         if (!playerIsOverridden)
             VisualTaskIsCompleted(task.TaskType);
 
-        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || player.GetAbilityUseLimit() <= 0) return;
+        var abilityLimit = _Player.GetAbilityUseLimit();
+        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || abilityLimit < 1) return;
 
         var taskManager = _Player;
         Addons.RemoveAll(taskManager.Is);
@@ -123,11 +124,12 @@ internal class TaskManager : RoleBase
         }
         else
         {
+            abilityLimit--;
             taskManager.RpcRemoveAbilityUse();
             var randomAddOn = Addons.RandomElement();
 
             taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
-            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), taskManager.GetAbilityUseLimit()), time: 10);
+            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), abilityLimit), time: 10);
         }
     }
     public static bool GetTaskManager(byte targetId, out byte taskManager)
@@ -182,6 +184,8 @@ internal class TaskManager : RoleBase
 
     public override string GetProgressText(byte playerId, bool comms)
     {
+        if (!CanSeeAllCompletedTasks.GetBool()) return string.Empty;
+
         var ProgressText = new StringBuilder();
         var TextColor = GetRoleColor(CustomRoles.TaskManager);
 
