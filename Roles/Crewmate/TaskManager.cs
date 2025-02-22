@@ -1,5 +1,6 @@
 using System.Text;
 using UnityEngine;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.AddOns;
 using static TOHE.Options;
@@ -70,7 +71,7 @@ internal class TaskManager : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = LimitGetsAddOns.GetInt();
+        playerId.SetAbilityUseLimit(LimitGetsAddOns.GetInt());
     }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
@@ -103,7 +104,8 @@ internal class TaskManager : RoleBase
         if (!playerIsOverridden)
             VisualTaskIsCompleted(task.TaskType);
 
-        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || AbilityLimit <= 0) return;
+        var abilityLimit = _Player.GetAbilityUseLimit();
+        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || abilityLimit < 1) return;
 
         var taskManager = _Player;
         Addons.RemoveAll(taskManager.Is);
@@ -122,11 +124,12 @@ internal class TaskManager : RoleBase
         }
         else
         {
-            AbilityLimit--;
+            abilityLimit--;
+            taskManager.RpcRemoveAbilityUse();
             var randomAddOn = Addons.RandomElement();
 
             taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
-            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit), time: 10);
+            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), abilityLimit), time: 10);
         }
     }
     public static bool GetTaskManager(byte targetId, out byte taskManager)
@@ -179,7 +182,7 @@ internal class TaskManager : RoleBase
     }
     private static string GetVisualTaskList() => string.Join(", ", VisualTasksCompleted.Values.Select(str => GetString(str)));
 
-    public override string GetProgressText(byte PlayerId, bool comms)
+    public override string GetProgressText(byte playerId, bool comms)
     {
         if (!CanSeeAllCompletedTasks.GetBool()) return string.Empty;
 
