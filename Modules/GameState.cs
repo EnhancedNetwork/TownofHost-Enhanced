@@ -27,6 +27,16 @@ public class PlayerState(byte playerId)
 #pragma warning restore IDE1006
     public TaskState taskState = new();
     public bool IsBlackOut { get; set; } = false;
+    private bool _canUseMovingPlatform = true;
+    public bool CanUseMovingPlatform
+    {
+        get => _canUseMovingPlatform;
+        set
+        {
+            Logger.Info($"player {PlayerId} set to use moving platform as {value}", nameof(PlayerState));
+            _canUseMovingPlatform = value;
+        }
+    }
     public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
