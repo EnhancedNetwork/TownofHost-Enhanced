@@ -1,5 +1,6 @@
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -58,20 +59,27 @@ internal class Cultist : RoleBase
     public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        var addon = killer.GetBetrayalAddon(forRecruiter: true);
         if (AbilityLimit < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
+        else if (target.CanBeRecruitedBy(killer))
         {
             AbilityLimit--;
             SendSkillRPC();
-            target.RpcSetCustomRole(CustomRoles.Charmed);
+            target.RpcSetCustomRole(addon);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CultistCharmedPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CharmedByCultist")));
+
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -82,11 +90,11 @@ internal class Cultist : RoleBase
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
             Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));
+        killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CultistInvalidTarget")));
         Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次魅惑机会", "Cultist");
         return false;
     }
@@ -107,10 +115,7 @@ internal class Cultist : RoleBase
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
-            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
-            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Enchanted)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven()));
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {

@@ -1,5 +1,6 @@
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -67,7 +68,17 @@ internal class ChiefOfPolice : RoleBase
         bool suidice = false;
         bool isSuccess = false;
 
-        if (target.IsPlayerCrewmateTeam())
+        if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18)
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("CantRecruit")));   
+            return false;
+        }
+        else if (target.Is(CustomRoles.Loyal) || target.Is(CustomRoles.Sheriff))
+        {
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.ChiefOfPolice), GetString("PoliceFailedRecruit")));   
+            return false;
+        }
+        else if (target.IsPlayerCrewmateTeam())
         {
             if (PreventRecruitNonKiller.GetBool() && !target.CanUseKillButton())
             {
@@ -102,7 +113,7 @@ internal class ChiefOfPolice : RoleBase
             {
                 suidice = true;
             }
-            if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini) || target.Is(CustomRoles.Loyal))
+            if (target.Is(CustomRoles.Zombie))
             {
                 suidice = true;
             }

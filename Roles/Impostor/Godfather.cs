@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Double;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
@@ -52,40 +53,41 @@ internal class Godfather : RoleBase
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
         var godfather = _Player;
-        List<CustomRoles> BTAddonList = godfather.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2()).ToList();
-        //this list will only contain 1 element,or just be an empty list...
 
-        var ChangeRole = BTAddonList.Any() ? BTAddonList.FirstOrDefault() switch
+        var ChangeAddon = godfather.GetBetrayalAddon(forRecruiter: true);
+        var ChangeRole = ChangeAddon switch
         {
             CustomRoles.Admired => CustomRoles.Sheriff,
             CustomRoles.Recruit => CustomRoles.Sidekick,
             _ => CustomRoles.Refugee
-        }
-        : CustomRoles.Refugee;
-        var ChangeAddon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.Madmate;
+        };
+
+        if (killer.GetCustomRole() is CustomRoles.EvilMini or CustomRoles.NiceMini && Mini.Age < 18) return;
+        if (killer.Is(CustomRoles.Loyal)) return;
         if (GodfatherTarget.Contains(target.PlayerId))
         {
-            if (!killer.IsAlive()) return;
+            if (!killer.IsAlive() || killer == godfather) return;
             if (GodfatherChangeOpt.GetValue() == 0)
             {
                 killer.RpcChangeRoleBasis(ChangeRole);
                 killer.GetRoleClass()?.OnRemove(killer.PlayerId);
                 killer.RpcSetCustomRole(ChangeRole);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
-                if (ChangeRole is CustomRoles.Refugee
-                    && (ChangeAddon is not CustomRoles.Madmate || godfather.Is(CustomRoles.Madmate)))//Can Godfather become Madmate?
+                if (ChangeRole is CustomRoles.Refugee && godfather.GetBetrayalAddon() != CustomRoles.NotAssigned)
                     killer.RpcSetCustomRole(ChangeAddon);
+                killer.Notify(ColorString(GetRoleColor(ChangeRole), GetString("GodfatherRefugeeMsg")));
             }
-            else
+            else 
             {
+                if (!killer.CanBeRecruitedBy(godfather)) return;
                 killer.RpcSetCustomRole(ChangeAddon);
+                killer.Notify(ColorString(GetRoleColor(ChangeAddon), GetString("GodfatherRefugeeMsg")));
             }
-
             killer.RpcGuardAndKill();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            killer.Notify(ColorString(GetRoleColor(CustomRoles.Godfather), GetString("GodfatherRefugeeMsg")));
             NotifyRoles(killer);
+            
         }
     }
     public override void AfterMeetingTasks() => Didvote = false;
