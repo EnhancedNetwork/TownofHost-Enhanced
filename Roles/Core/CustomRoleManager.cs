@@ -417,9 +417,8 @@ public static class CustomRoleManager
     /// <summary>
     /// Check if this task is marked by a role and do something.
     /// </summary>
-    public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
-        => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
-
+    public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
+        => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task, playerIsOverridden, realPlayer));
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>

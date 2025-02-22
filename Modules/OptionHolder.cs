@@ -137,6 +137,14 @@ public static class Options
         QuickChatSpam_Random20,
         QuickChatSpam_EzHacked,
     };
+    [Obfuscation(Exclude = true)]
+    public enum ShortAddOnNamesMode
+    {
+        ShortAddOnNamesMode_Disable,
+        ShortAddOnNamesMode_Always,
+        ShortAddOnNamesMode_OnlyInMeeting,
+        ShortAddOnNamesMode_OnlyInGame
+    }
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
@@ -512,6 +520,7 @@ public static class Options
     public static OptionItem CovenCanGuessCoven;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
+    public static OptionItem CanOnlyGuessEnabled;
     public static OptionItem UseQuickChatSpamCheat;
 
 
@@ -533,7 +542,8 @@ public static class Options
     public static OptionItem NeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
-
+    public static OptionItem SpawnOneRandomKillingFraction;
+     
     // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
@@ -553,6 +563,7 @@ public static class Options
     // Add-on
     public static OptionItem NameDisplayAddons;
     public static OptionItem AddBracketsToAddons;
+    public static OptionItem ShowShortNamesForAddOns;
     public static OptionItem NoLimitAddonsNumMax;
     public static OptionItem RemoveIncompatibleAddOnsMidGame;
 
@@ -754,6 +765,10 @@ public static class Options
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
+        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60036, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+
         CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
@@ -781,6 +796,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
         AddBracketsToAddons = BooleanOptionItem.Create(60021, "BracketAddons", true, TabGroup.Addons, false)
+            .SetParent(NameDisplayAddons);
+        ShowShortNamesForAddOns = StringOptionItem.Create(60035, "ShowShortNamesForAddOns", EnumHelper.GetAllNames<ShortAddOnNamesMode>(), 2, TabGroup.Addons, false)
             .SetParent(NameDisplayAddons);
         NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(0, 15, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
@@ -1360,6 +1377,10 @@ public static class Options
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
+
+        CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard);
 
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
             .SetColor(Color.cyan); ;
