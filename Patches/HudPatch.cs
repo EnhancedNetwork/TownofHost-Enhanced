@@ -213,7 +213,7 @@ class SetVentOutlinePatch
     }
 }
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
-[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPatch([typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)])]
 class SetHudActivePatch
 {
     public static bool IsActive = false;
@@ -301,7 +301,7 @@ class TaskPanelBehaviourPatch
         if (!player.GetCustomRole().IsVanilla())
         {
             sb.Clear();
-            sb.Append($"{player.GetDisplayRoleAndSubName(player, false)}:\r\n");
+            sb.Append($"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n");
             sb.Append(player.GetRoleInfo());
 
             var AllText = Utils.ColorString(player.GetRoleColor(), sb.ToString());

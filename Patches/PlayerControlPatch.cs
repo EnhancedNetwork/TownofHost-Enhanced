@@ -1295,7 +1295,7 @@ class FixedUpdateInNormalGamePatch
                 var localPlayerRole = localPlayer.GetCustomRole();
                 var localPlayerRoleClass = localPlayer.GetRoleClass();
 
-                var (text, color) = Utils.GetRoleAndSubText(localPlayerId, playerId);
+                var (text, color) = Utils.GetRoleAndSubText(localPlayerId, playerId, isMeeting: false);
 
                 roleText.text = Options.CurrentGameMode is CustomGameMode.FFA ? string.Empty : text;
                 roleText.color = color;
@@ -1681,8 +1681,10 @@ class PlayerControlCompleteTaskPatch
         if (GameStates.IsHideNSeek) return true;
 
         var player = __instance;
+        var playerTask = player.myTasks?.ToArray().FirstOrDefault(task => task.Id == idx);
+        var taskType = playerTask != null ? playerTask.TaskType : TaskTypes.None;
 
-        Logger.Info($"Task Complete: {player.GetNameWithRole()}", "CompleteTask.Prefix");
+        Logger.Info($"Task Complete: {player.GetNameWithRole()} - Task id: {idx} Type: {taskType}", "CompleteTask.Prefix");
         var taskState = player.GetPlayerTaskState();
         taskState.Update(player);
 
@@ -1697,11 +1699,34 @@ class PlayerControlCompleteTaskPatch
                 ret = roleClass.OnTaskComplete(player, taskState.CompletedTasksCount, taskState.AllTasksCount);
             }
 
-            // Check others complete task
-            var playerTask = player.myTasks.ToArray().FirstOrDefault(task => task.Id == idx);
+            var playerIsOverridden = false;
+            if (TaskManager.HasEnabled && TaskManager.GetTaskManager(player.PlayerId, out byte taskManagerId))
+            {
+                var taskManager = taskManagerId.GetPlayer();
+                // check if task manager die after complete task
+                if (taskManager.IsAlive())
+                {
+                    // ovveride player
+                    player = taskManagerId.GetPlayer();
+                    playerTask = player.myTasks?.ToArray().FirstOrDefault(task => task.Id == idx);
+                    playerIsOverridden = true;
+                }
+                else
+                {
+                    TaskManager.ClearData(player.PlayerId);
+                }
+            }
 
+            // Check others complete task
             if (playerTask != null)
-                CustomRoleManager.OthersCompleteThisTask(player, playerTask);
+                CustomRoleManager.OthersCompleteThisTask(player, playerTask, playerIsOverridden, __instance);
+
+            if (playerIsOverridden)
+            {
+                player = __instance;
+                TaskManager.ClearData(player.PlayerId);
+                Logger.Info($"playerId: {player.PlayerId} - __instanceId {__instance.PlayerId}", "CompleteTask.Prefix Finish");
+            }
 
             var playerSubRoles = player.GetCustomSubRoles();
 

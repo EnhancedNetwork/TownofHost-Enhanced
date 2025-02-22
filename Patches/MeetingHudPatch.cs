@@ -415,7 +415,7 @@ class CheckForEndVotingPatch
         var player = GetPlayerById(exiledPlayer.PlayerId);
         var role = new StringBuilder(GetString(exiledPlayer.GetCustomRole().ToString()));
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = new StringBuilder(GetDisplayRoleAndSubName(exileId, exileId, true));
+        var coloredRole = new StringBuilder(GetDisplayRoleAndSubName(exileId, exileId, false, true));
 
         var oldColoredRole = coloredRole.ToString();
 
@@ -1073,7 +1073,7 @@ class MeetingHudStartPatch
             var textTemplate = pva.NameText;
 
             // Create role text in meeting
-            var RoleTextData = GetRoleAndSubText(playerId, targetId);
+            var RoleTextData = GetRoleAndSubText(playerId, targetId, isMeeting: true);
             var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
             if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
                 UnityEngine.Object.Destroy(roleTextMeeting.transform.FindChild("DeathReasonTextMeeting").gameObject);

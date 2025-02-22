@@ -116,9 +116,9 @@ internal class Cloud
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class EACConnectTimeOut
     {
-        public static void Postfix()
+        public static void Postfix(PlayerControl __instance)
         {
-            if (LastRepotTimeStamp != 0 && LastRepotTimeStamp + 8 < Utils.GetTimeStamp())
+            if (__instance.AmOwner && LastRepotTimeStamp != 0 && LastRepotTimeStamp + 8 < Utils.TimeStamp)
             {
                 LastRepotTimeStamp = 0;
                 StopConnect();

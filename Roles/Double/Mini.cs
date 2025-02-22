@@ -199,7 +199,7 @@ internal class Mini : RoleBase
             {
                 if (isMeetingHud)
                 {
-                    name.Clear().Append(string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true)));
+                    name.Clear().Append(string.Format(GetString("ExiledNiceMini"), Main.LastVotedPlayer, GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true)));
                 }
                 else
                 {

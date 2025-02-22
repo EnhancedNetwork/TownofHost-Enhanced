@@ -289,9 +289,9 @@ public static class Utils
 
         return InfoLong.Replace(RealRole, $"{ColorName}");
     }
-    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
+    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool isMeeting, bool notShowAddOns = false)
     {
-        var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
+        var TextData = GetRoleAndSubText(seerId, targetId, isMeeting, notShowAddOns);
         return ColorString(TextData.Item2, TextData.Item1);
     }
     public static string GetRoleName(CustomRoles role, bool forUser = true)
@@ -457,10 +457,9 @@ public static class Utils
         _ = ColorUtility.TryParseHtmlString(hexColor, out Color c);
         return c;
     }
-    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
+    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool isMeeting, bool notShowAddOns = false)
     {
         var RoleText = new StringBuilder("Invalid Role");
-        
         Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
@@ -485,8 +484,8 @@ public static class Utils
         {
             if (targetSubRoles.Any())
             {
-                var seer = seerId.GetPlayer();
-                var target = targetId.GetPlayer();
+                var seer = GetPlayerById(seerId);
+                var target = GetPlayerById(targetId);
 
                 if (seer == null || target == null) return (RoleText.ToString(), RoleColor);
 
@@ -503,13 +502,18 @@ public static class Utils
                     var seerPlatform = seer.GetClient()?.PlatformData.Platform;
                     var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
-                    static bool Checkif(string str)
+                    static string GetAddOnName(string str, bool meeting, bool addBracketsToAddons)
                     {
-
-                        string[] strings = ["*Prefix", "INVALID"];
-                        return strings.Any(str.Contains);
+                        switch ((Options.ShortAddOnNamesMode)Options.ShowShortNamesForAddOns.GetValue())
+                        {
+                            case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_Always:
+                            case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_OnlyInMeeting when meeting:
+                            case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_OnlyInGame when !meeting:
+                                return addBracketsToAddons ? $"({GetString(str)[0]}) " : $"{GetString(str)[0]} ";
+                            default:
+                                return addBracketsToAddons ? $"({GetString(str)}) " : $"{GetString(str)} ";
+                        }
                     }
-                    static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString(str);
 
                     oldRoleText = RoleText.ToString();
                     // if the player is playing on a console platform
@@ -525,7 +529,7 @@ public static class Utils
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
                         {
                             oldRoleText = RoleText.ToString();
-                            RoleText.Clear().Append(ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname(subRole.ToString())}) " : $"{Getname(subRole.ToString())} ", withoutEnding: true) + oldRoleText);
+                            RoleText.Clear().Append(ColorString(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons), withoutEnding: true) + oldRoleText);
                         }
                     }
                     // default
@@ -534,7 +538,7 @@ public static class Utils
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
                         {
                             oldRoleText = RoleText.ToString();
-                            RoleText.Clear().Append(ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname(subRole.ToString())}) " : $"{Getname(subRole.ToString())} ") + oldRoleText);
+                            RoleText.Clear().Append(ColorString(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons)) + oldRoleText);
                         }
                     }
                 }
@@ -1742,7 +1746,7 @@ public static class Utils
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
-    
+
     // Self
     private static readonly StringBuilder SelfName = new();
     private static readonly StringBuilder SelfRoleName = new();
@@ -1803,8 +1807,8 @@ public static class Utils
             if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
 
             const string fontSizeDeathReason = "1.6";
-            string fontSize = isForMeeting 
-                ? seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch ? "70%" : "1.6" 
+            string fontSize = isForMeeting
+                ? seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch ? "70%" : "1.6"
                 : "1.8";
 
             //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
@@ -1856,9 +1860,9 @@ public static class Utils
                 var SeerRealName = new StringBuilder(seer.GetRealName(isForMeeting));
 
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
-                
+
                 SelfTaskText.Clear().Append(GetProgressText(seer));
-                SelfRoleName.Clear().Append($"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>");
+                SelfRoleName.Clear().Append($"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, isForMeeting, false)}{SelfTaskText}</size>");
                 SelfDeathReason.Clear().Append(seer.KnowDeathReason(seer) ? $"\n<size={fontSizeDeathReason}>『{CustomRoles.Doctor.GetColoredTextByRole(GetVitalText(seer.PlayerId))}』</size>" : string.Empty);
                 SelfName.Clear().Append($"{ColorString(seer.GetRoleColor(), SeerRealName.ToString())}{SelfDeathReason}{SelfMark}");
 
@@ -2020,7 +2024,7 @@ public static class Utils
                         bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
 
                         TargetRoleName.Clear().Append(KnowRoleTarget
-                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : string.Empty);
+                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, isForMeeting, false)}{GetProgressText(target)}</size>\r\n" : string.Empty);
 
 
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target))
@@ -2113,7 +2117,7 @@ public static class Utils
                             {
                                 if (seer.IsAlive() && target.IsAlive())
                                 {
-                                    if (seerRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser || (seer.Is(CustomRoles.Guesser) 
+                                    if (seerRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser || (seer.Is(CustomRoles.Guesser)
                                         && !(seerRole is CustomRoles.Inspector or CustomRoles.Swapper or CustomRoles.Lookout)))
                                     {
                                         TargetPlayerName.Clear().Append(GetTragetId);
@@ -2497,17 +2501,17 @@ public static class Utils
 
         var disconnectedText = new StringBuilder(playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $"({GetString("Disconnected")})" : string.Empty);
         var summary = new StringBuilder();
-        
+
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
                 summary.Clear().Append($"{ColorString(Main.PlayerColors[id], name.ToString())} {GetKillCountText(id, ffa: true)}");
                 break;
             default:
-                summary.Clear().Append($"{ColorString(Main.PlayerColors[id], name.ToString())} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』{disconnectedText}");
+                summary.Clear().Append($"{ColorString(Main.PlayerColors[id], name.ToString())} - {GetDisplayRoleAndSubName(id, id, false, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』{disconnectedText}");
                 break;
         }
-        return check && GetDisplayRoleAndSubName(id, id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
+        return check && GetDisplayRoleAndSubName(id, id, false, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.ToString().RemoveHtmlTags() : summary.ToString();
     }

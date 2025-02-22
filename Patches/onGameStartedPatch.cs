@@ -496,13 +496,6 @@ internal class StartGameHostPatch
 
         EndOfSelectRolePatch:
 
-            try
-            {
-                if (!AmongUsClient.Instance.IsGameOver)
-                    FastDestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-            }
-            catch { }
-
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 pc.ResetKillCooldown();
 

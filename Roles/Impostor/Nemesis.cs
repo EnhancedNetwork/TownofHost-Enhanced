@@ -91,7 +91,7 @@ internal class Nemesis : RoleBase
             bool canSeeRoles = PreventSeeRolesBeforeSkillUsedUp.GetBool();
             var text = new System.Text.StringBuilder(GetString("PlayerIdList"));
             foreach (var npc in Main.AllAlivePlayerControls)
-                text.Append($"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false)}) " : string.Empty) + npc.GetRealName());
+                text.Append($"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false, false)}) " : string.Empty) + npc.GetRealName());
             Utils.SendMessage(text.ToString(), pc.PlayerId);
             return true;
         }
