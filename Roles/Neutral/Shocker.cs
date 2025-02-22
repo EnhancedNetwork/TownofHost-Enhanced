@@ -146,10 +146,7 @@ internal class Shocker : RoleBase
     {
         if (completedTaskCount == totalTaskCount)
         {
-            TaskState taskState = player.GetPlayerTaskState();
-            player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            taskState.CompletedTasksCount = 0;
-            taskState.AllTasksCount = player.Data.Tasks.Count;
+            player.RpcResetTasks();
         }
         if (player.GetPlainShipRoom() != null)
         {

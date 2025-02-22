@@ -16,8 +16,8 @@ internal class Medic : RoleBase
     public override CustomRoles Role => CustomRoles.Medic;
     private const int Id = 8600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medic);
-    public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override bool IsDesyncRole => !GiveTasks;
+    public override CustomRoles ThisRoleBase => GiveTasks ? CustomRoles.Crewmate : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
@@ -33,6 +33,7 @@ internal class Medic : RoleBase
 
     private readonly HashSet<byte> ProtectedList = [];
     private readonly HashSet<byte> TempMarkProtected = [];
+    private bool GiveTasks = false;
 
     [Obfuscation(Exclude = true)]
     private enum SelectOptionsList
@@ -73,6 +74,7 @@ internal class Medic : RoleBase
         ProtectedPlayers.Clear();
         ProtectedList.Clear();
         TempMarkProtected.Clear();
+        GiveTasks = false;
     }
     public override void Add(byte playerId)
     {
@@ -148,6 +150,8 @@ internal class Medic : RoleBase
                 break;
         }
 
+        ChangeToCrewmate();
+
         NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
         NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
         return false;
@@ -184,6 +188,16 @@ internal class Medic : RoleBase
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Medic", "Medic");
         return true;
     }
+    private void ChangeToCrewmate()
+    {
+        if (_Player == null) return;
+        
+        var medic = _Player;
+        GiveTasks = true;
+
+        medic.RpcSetRoleType(RoleTypes.Crewmate, removeFromDesyncList: true);
+        medic.RpcResetTasks();
+    }
     public override void AfterMeetingTasks()
     {
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
@@ -196,7 +210,6 @@ internal class Medic : RoleBase
     }
     private void AfterMedicDeadTask(PlayerControl target)
     {
-        if (!target.Is(CustomRoles.Medic)) return;
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
 
         if (ProtectedPlayers.TryGetValue(target.PlayerId, out var protectedList))
@@ -226,6 +239,7 @@ internal class Medic : RoleBase
         AfterMedicDeadTask(target);
     }
 
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => GiveTasks;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)

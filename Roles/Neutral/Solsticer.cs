@@ -236,9 +236,7 @@ internal class Solsticer : RoleBase
     public void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
-        var taskState = pc.GetPlayerTaskState();
-        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-        taskState.CompletedTasksCount = 0;
+        pc.RpcResetTasks(); //Let taskassign patch decide the tasks
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
         Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));

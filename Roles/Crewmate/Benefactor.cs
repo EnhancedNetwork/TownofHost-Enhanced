@@ -134,7 +134,8 @@ internal class Benefactor : RoleBase
             SendRPC(type: 1); //clear all shielded players
         }
     }
-    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task) // runs for every player which compeletes a task
+
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer) // runs for every player which compeletes a task
     {
         if (!AmongUsClient.Instance.AmHost) return;
 

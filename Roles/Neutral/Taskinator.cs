@@ -53,7 +53,7 @@ internal class Taskinator : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task)
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     {
         if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;
