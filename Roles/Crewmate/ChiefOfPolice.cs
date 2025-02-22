@@ -183,6 +183,7 @@ internal class ChiefOfPolice : RoleBase
     {
         hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
     }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("CoPKill");
 
     public override string GetProgressText(byte playerId, bool commns)
     => !commns ? Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.ChiefOfPolice).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})") : "";
