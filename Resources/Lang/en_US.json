@@ -3785,7 +3785,6 @@
     "RomanticBetOnYou": "The Romantic chose you as their Partner!",
     "VengefulKCD": "<color=#8b0000>Vengeful Romantic</color> Kill Cooldown",
     "VengefulCanVent": "<color=#8b0000>Vengeful Romantic</color> can Vent",
-    "VengefulRomanticButtonText": "Avenge",
     "RuthlessKCD": "<color=#d2691e>Ruthless Romantic</color> Kill Cooldown",
     "RuthlessCanVent": "<color=#d2691e>Ruthless Romantic</color> can Vent",
     "RomanticProtectPartner": "Your partner is under protection",
@@ -3796,6 +3795,7 @@
     "RomanticBetTargetKnowRomantic": "Target knows who the <color=#ff1493>Romantic</color> is",
     "RomanticPartnerButtonText": "Romance",
     "RomanticProtectButtonText": "Protect",
+    "VengefulRomanticButtonText": "Avenge",
 
     "GuessMasterMisguess": "<b>{0}</b> misguessed",
     "GuessMasterTargetRole": "Someone tried to guess <b>{0}</b>",
