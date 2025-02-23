@@ -1266,14 +1266,17 @@ public static class CustomRolesHelper
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
     /// <summary>
-    /// Rebel part
+    /// Player's main role is a Crewmate role, and player is not Rebel
     /// </summary>
     public static bool IsNonRebelCrewmate(this PlayerControl pc) => pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel);
-    public static bool IsRebelNeutral(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutral();
-    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.IsRebelNeutral() && !pc.GetCustomRole().IsMadmate();
     /// <summary>
-    /// End Rebel part
+    /// Player's main role is a Neutral role, or player has Rebel
     /// </summary>
+    public static bool IsRebelNeutral(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutral();
+    /// <summary>
+    /// Player's main role is a Neutral role and not a Madmate role, or player has Rebel
+    /// </summary>
+    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.IsRebelNeutral() && !pc.GetCustomRole().IsMadmate();
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
