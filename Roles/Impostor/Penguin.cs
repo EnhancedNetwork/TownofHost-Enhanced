@@ -222,7 +222,7 @@ internal class Penguin : RoleBase
                 RemoveVictim();
                 return;
             }
-            if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation() && !AbductVictim.IsTransformedNeutralApocalypse())
             {              
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
@@ -250,6 +250,34 @@ internal class Penguin : RoleBase
                             {
                                 sender.WriteNetObject(abductVictim);
                                 sender.Write((int)ExtendedPlayerControl.ResultFlags);
+                            }
+                            sender.EndRpc();
+                        }
+                        sender.SendMessage();
+
+                    }, 0.3f, "PenguinMurder");
+                    RemoveVictim();
+                }
+            }
+            else if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation() && AbductVictim.IsTransformedNeutralApocalypse())
+            {
+                // If the penguin himself is on a ladder, kill him after getting off the ladder.
+                if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                {
+                    var abductVictim = AbductVictim;
+                    _ = new LateTask(() =>
+                    {
+                        var sId = abductVictim.NetTransform.lastSequenceId + 5;
+                        //Host side
+                        abductVictim.NetTransform.SnapTo(penguin.transform.position, (ushort)sId);
+                        penguin.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
+
+                        var sender = CustomRpcSender.Create("PenguinMurder");
+                        {
+                            sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
+                            {
+                                NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
+                                sender.Write(abductVictim.NetTransform.lastSequenceId);
                             }
                             sender.EndRpc();
                         }
