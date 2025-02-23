@@ -80,24 +80,29 @@ internal class Penguin : RoleBase
 
     private void AddVictim(PlayerControl penguin, PlayerControl target)
     {
-        //Prevent using of moving platform??
+        Main.PlayerStates[target.PlayerId].CanUseMovingPlatform = _state.CanUseMovingPlatform = false;
         AbductVictim = target;
         AbductTimer = AbductTimerLimit;
-        penguin?.MarkDirtySettings();
-        penguin?.RpcResetAbilityCooldown();
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     private void RemoveVictim()
     {
         if (AbductVictim != null)
         {
-            //PlayerState.GetByPlayerId(AbductVictim.PlayerId).CanUseMovingPlatform = true;
+            Main.PlayerStates[AbductVictim.PlayerId].CanUseMovingPlatform = true;
             AbductVictim = null;
         }
         //MyState.CanUseMovingPlatform = true;
         AbductTimer = 255f;
-        _Player?.MarkDirtySettings();
-        _Player?.RpcResetAbilityCooldown();
+
+        var penguin = _Player;
+        if (penguin == null) return;
+
+        _state.CanUseMovingPlatform = true;
+        penguin.MarkDirtySettings();
+        penguin.RpcResetAbilityCooldown();
         SendRPC();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -184,7 +189,10 @@ internal class Penguin : RoleBase
     {
         if (AbductVictim != null)
         {
-            physics.RpcBootFromVent(ventId);
+            _ = new LateTask(() =>
+            {
+                physics?.RpcBootFromVent(ventId);
+            }, 0.5f, $"Penguin {physics.myPlayer?.PlayerId} - Boot From Vent");
         }
     }
     public override bool OnCoEnterVentOthers(PlayerPhysics physics, int ventId)
@@ -193,7 +201,10 @@ internal class Penguin : RoleBase
         {
             if (physics.myPlayer.PlayerId == AbductVictim.PlayerId)
             {
-                physics.RpcBootFromVent(ventId);
+                _ = new LateTask(() =>
+                {
+                    physics?.RpcBootFromVent(ventId);
+                }, 0.5f, $"AbductVictim {physics.myPlayer?.PlayerId} - Boot From Vent");
                 return true;
             }
         }

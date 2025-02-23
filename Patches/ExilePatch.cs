@@ -121,6 +121,9 @@ class ExileControllerWrapUpPatch
 
             // Check for remove pet
             player.RpcRemovePet();
+
+            // Set UnShift after meeting
+            player.DoUnShiftState();
         }
 
         Main.MeetingIsStarted = false;
@@ -148,7 +151,9 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.6f, "Restore IsDead Task");
+            }, 0.5f, "Restore IsDead Task");
+
+            _ = new LateTask(AntiBlackout.ResetAfterMeeting, 0.6f, "ResetAfterMeeting");
 
             _ = new LateTask(() =>
             {
@@ -186,7 +191,6 @@ class ExileControllerWrapUpPatch
                     Utils.DoNotifyRoles();
                 }
 
-                AntiBlackout.ResetAfterMeeting();
                 Main.LastMeetingEnded = Utils.TimeStamp;
             }, 1f, "AfterMeetingDeathPlayers Task");
         }
