@@ -218,7 +218,7 @@ public static class GuessManager
                     Logger.Info($"Guess Disabled for this player {pc.PlayerId}", "GuessManager");
                     pc.ShowInfoMessage(isUI, GetString("GuessDisabled"));
                     return true;
-                }
+                }        
                 if (Jailer.IsTarget(pc.PlayerId) && role != CustomRoles.Jailer)
                 {
                     pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
@@ -240,6 +240,11 @@ public static class GuessManager
                     return true;
                 }
 
+                if (!role.IsEnable() && !role.RoleExist(true) && Options.CanOnlyGuessEnabled.GetBool())
+                {
+                    pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
+                    return true;
+                }              
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessNotifiedBait"));
@@ -271,7 +276,7 @@ public static class GuessManager
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
                     return true;
-                }
+                }            
 
                 // Guesser (add-on) Cant Guess Addons
                 if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())
@@ -425,7 +430,7 @@ public static class GuessManager
                         _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("GuessKill"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceGuesser), GetString("GuessKillTitle")), true); }, 0.6f, "Guess Msg");
 
                         var doomsayers = Utils.GetPlayerListByRole(CustomRoles.Doomsayer);
-                        if (Doomsayer.HasEnabled && doomsayers != null && doomsayers.Any()) doomsayers?.Select(x => x.GetRoleClass())
+                        if (Doomsayer.HasEnabled && doomsayers != null && doomsayers.Any()) doomsayers?.Select(x => x?.GetRoleClass())
                             .Do(x => { if (x is Doomsayer ds) ds.SendMessageAboutGuess(pc, dp, role); });
 
                     }, 0.2f, "Guesser Kill");

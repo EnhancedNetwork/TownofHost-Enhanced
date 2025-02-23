@@ -113,7 +113,7 @@ internal class Necromancer : CovenManager
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return string.Format(GetString("NecromancerAbilityCooldown") + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
+        return string.Format(GetString(GeneralOption.AbilityCooldown.ToString()) + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
     }
     public override void UnShapeShiftButton(PlayerControl nm)
     {
@@ -121,6 +121,11 @@ internal class Necromancer : CovenManager
         if (!canUseAbility)
         {
             nm.Notify(GetString("NecromancerCooldownNotDone"));
+            return;
+        }
+        if (IsRevenge)
+        {
+            nm.Notify(GetString("NecromancerRevengeInProgress"));
             return;
         }
         var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
@@ -228,7 +233,8 @@ internal class Necromancer : CovenManager
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool()) ||
-            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool());
+            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool()) ||
+            (role == CustomRoles.Doctor && Doctor.VisibleToEveryoneOpt.GetBool());
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
