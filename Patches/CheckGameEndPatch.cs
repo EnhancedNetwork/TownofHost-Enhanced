@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using System.Collections;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -98,8 +99,8 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless))) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
+                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
@@ -204,7 +205,7 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                             }
                             break;
-                        case CustomRoles.Quizmaster when pc.IsAlive() && !Quizmaster.CanKillsAfterMark():
+                        case CustomRoles.Quizmaster when pc.IsAlive() && !Quizmaster.CanKillsAfterMark() && WinnerTeam == CustomWinner.Default:
                             reason = GameOverReason.ImpostorByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
@@ -212,7 +213,7 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                             }
                             break;
-                        case CustomRoles.CursedSoul when pc.IsAlive():
+                        case CustomRoles.CursedSoul when pc.IsAlive() && WinnerTeam == CustomWinner.Default:
                             reason = GameOverReason.ImpostorByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
@@ -356,11 +357,11 @@ class GameEndCheckerForNormal
                         Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
                     }
                 }
-                
+
                 for (int i = 0; i < Main.AllPlayerControls.Length + 1; i++)
                 {
                     CheckAdditionalWinners();
-                    if (i == Main.AllPlayerControls.Length) 
+                    if (i == Main.AllPlayerControls.Length)
                     {
                         if (AdditionalWinnerTeams.Any()) Logger.Info($"Additional winners: {string.Join(", ", AdditionalWinnerTeams)}", "CheckAdditionalWinner");
                         else Logger.Info($"No additional winners", "CheckAdditionalWinner");
@@ -369,8 +370,8 @@ class GameEndCheckerForNormal
 
                 void CheckAdditionalWinners()
                 {
-                   foreach (var pc in Main.AllPlayerControls)
-                   {
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
                         if (WinnerIds.Contains(pc.PlayerId)) continue;
                         switch (pc.GetCustomRole())
                         {
@@ -397,7 +398,7 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Sunnyboy);
                                 break;
-                            case CustomRoles.Maverick when pc.IsAlive() && Main.PlayerStates[pc.PlayerId].RoleClass is Maverick mr && mr.NumKills >= Maverick.MinKillsForWin.GetInt():
+                            case CustomRoles.Maverick when pc.IsAlive() && pc.GetAbilityUseLimit() >= Maverick.MinKillsForWin.GetInt():
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Maverick);
                                 break;
@@ -464,7 +465,7 @@ class GameEndCheckerForNormal
                     if (WinnerTeam is not CustomWinner.Lovers)
                     {
                         var loverArray = Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Lovers)).ToArray();
-    
+
                         foreach (var lover in loverArray)
                         {
                             if (WinnerIds.Any(x => Utils.GetPlayerById(x).Is(CustomRoles.Lovers)) && !WinnerIds.Contains(lover.PlayerId))
@@ -481,7 +482,7 @@ class GameEndCheckerForNormal
                             .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
                             .Do(p => WinnerIds.Add(p.PlayerId));
                     }
-                    
+
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
                 }

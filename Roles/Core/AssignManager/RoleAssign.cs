@@ -19,7 +19,9 @@ public class RoleAssign
         NonKillingNeutral,
         NeutralApocalypse,
         Coven,
-        Crewmate
+        Crewmate,
+
+        None
     }
 
     public class RoleAssignInfo(CustomRoles role, int spawnChance, int maxCount, int assignedCount = 0)
@@ -184,12 +186,12 @@ public class RoleAssign
         // Shuffle - Shuffles all roles in the list into a randomized order
         // Take - Takes the first x roles of the list ... x is the maximum number of roles we could need of that team
 
-        Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Take(optImpNum).ToList();
-        Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Take(optNeutralKillingNum).ToList();
-        Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Take(optNeutralApocalypseNum).ToList();
-        Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].Shuffle(rd).Take(optNonNeutralKillingNum).ToList();
-        Roles[RoleAssignType.Coven] = Roles[RoleAssignType.Coven].Shuffle(rd).Take(optCovenNum).ToList();
-        Roles[RoleAssignType.Crewmate] = Roles[RoleAssignType.Crewmate].Shuffle(rd).Take(playerCount).ToList();
+        Roles[RoleAssignType.Impostor] = Roles[RoleAssignType.Impostor].Shuffle(rd).Shuffle(rd).Take(optImpNum).ToList();
+        Roles[RoleAssignType.NeutralKilling] = Roles[RoleAssignType.NeutralKilling].Shuffle(rd).Shuffle(rd).Take(optNeutralKillingNum).ToList();
+        Roles[RoleAssignType.NeutralApocalypse] = Roles[RoleAssignType.NeutralApocalypse].Shuffle(rd).Shuffle(rd).Take(optNeutralApocalypseNum).ToList();
+        Roles[RoleAssignType.NonKillingNeutral] = Roles[RoleAssignType.NonKillingNeutral].Shuffle(rd).Shuffle(rd).Take(optNonNeutralKillingNum).ToList();
+        Roles[RoleAssignType.Coven] = Roles[RoleAssignType.Coven].Shuffle(rd).Shuffle(rd).Take(optCovenNum).ToList();
+        Roles[RoleAssignType.Crewmate] = Roles[RoleAssignType.Crewmate].Shuffle(rd).Shuffle(rd).Take(playerCount).ToList();
 
         Roles[RoleAssignType.Impostor].AddRange(TempAlwaysImpRoles);
         Roles[RoleAssignType.NeutralKilling].AddRange(TempAlwaysNKRoles);
@@ -290,6 +292,46 @@ public class RoleAssign
         RoleAssignInfo[] NAs = [];
         RoleAssignInfo[] Covs = [];
         RoleAssignInfo[] Crews = [];
+
+        List<RoleAssignType> KillingFractions = [];
+
+        bool spawnNK = false;
+        bool spawnNA = false;
+        bool spawnCoven = false;
+
+        if (Roles[RoleAssignType.NeutralKilling].Count > 0)
+        {
+            KillingFractions.Add(RoleAssignType.NeutralKilling);
+        }
+        if (Roles[RoleAssignType.NeutralApocalypse].Count > 0)
+        {
+            KillingFractions.Add(RoleAssignType.NeutralApocalypse);
+        }
+        if (Roles[RoleAssignType.Coven].Count > 0)
+        {
+            KillingFractions.Add(RoleAssignType.Coven);
+        }
+
+        var randomType = Options.SpawnOneRandomKillingFraction.GetBool()
+            ? KillingFractions.RandomElement() : RoleAssignType.None;
+
+        switch (randomType)
+        {
+            case RoleAssignType.NeutralKilling:
+                spawnNK = true;
+                break;
+            case RoleAssignType.NeutralApocalypse:
+                spawnNA = true;
+                break;
+            case RoleAssignType.Coven:
+                spawnCoven = true;
+                break;
+            default:
+                spawnNK = true;
+                spawnNA = true;
+                spawnCoven = true;
+                break;
+        }
 
         // Impostor Roles
         {
@@ -494,6 +536,7 @@ public class RoleAssign
             }
 
             // Neutral Killing Roles
+            if (spawnNK)
             {
                 List<CustomRoles> AlwaysNKRoles = [];
                 List<CustomRoles> ChanceNKRoles = [];
@@ -590,7 +633,9 @@ public class RoleAssign
                     }
                 }
             }
+
             // Neutral Apocalypse Roles
+            if (spawnNA)
             {
                 List<CustomRoles> AlwaysNARoles = [];
                 List<CustomRoles> ChanceNARoles = [];
@@ -689,8 +734,10 @@ public class RoleAssign
                 }
             }
         }
+
         // Coven Roles
         {
+            if (spawnCoven)
             {
                 List<CustomRoles> AlwaysCVRoles = [];
                 List<CustomRoles> ChanceCVRoles = [];
@@ -916,11 +963,11 @@ public class RoleAssign
         {
             // Shuffle all players list
             if (AllPlayers.Count > 2)
-                AllPlayers = AllPlayers.Shuffle(rd).ToList();
+                AllPlayers = AllPlayers.Shuffle(rd).Shuffle(rd).ToList();
 
             // Shuffle final roles list
             if (FinalRolesList.Count > 2)
-                FinalRolesList = FinalRolesList.Shuffle(rd).ToList();
+                FinalRolesList = FinalRolesList.Shuffle(rd).Shuffle(rd).ToList();
 
             // Select random role and player from list
             var randomPlayer = AllPlayers.RandomElement();
