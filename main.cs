@@ -914,6 +914,7 @@ public enum CustomRoles
     Coven,
     Conjurer,
     CovenLeader,
+    Harvester,
     HexMaster,
     Illusionist,
     Jinx,
