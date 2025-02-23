@@ -52,6 +52,8 @@ internal class ChangeRoleSettings
             Main.PlayerStates = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
+            AbilityUseManager.Initializate();
+
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
@@ -496,13 +498,6 @@ internal class StartGameHostPatch
             }
 
         EndOfSelectRolePatch:
-
-            try
-            {
-                if (!AmongUsClient.Instance.IsGameOver)
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-            }
-            catch { }
 
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 pc.ResetKillCooldown();
