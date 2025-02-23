@@ -91,7 +91,7 @@ internal class Virus : RoleBase
         AbilityLimit--;
         SendSkillRPC();
 
-        if (KillInfectedPlayerAfterMeeting.GetBool() && addon is CustomRoles.Contagious)
+        if (KillInfectedPlayerAfterMeeting.GetBool())
         {
             InfectedPlayer.Add(reporter.PlayerId);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage2");
