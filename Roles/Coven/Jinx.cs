@@ -1,6 +1,6 @@
 using Hazel;
 using InnerNet;
-using UnityEngine;
+using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -47,9 +47,9 @@ internal class Jinx : CovenManager
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = JinxSpellTimes.GetInt();
+        playerId.SetAbilityUseLimit(JinxSpellTimes.GetInt());
         JinxedPlayers[playerId] = [];
-        GetPlayerById(playerId)?.AddDoubleTrigger();
+        playerId.GetPlayer()?.AddDoubleTrigger();
     }
     /*
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
@@ -104,12 +104,12 @@ internal class Jinx : CovenManager
     private void JinxPlayer(PlayerControl jinx, PlayerControl target)
     {
         if (IsJinxed(target.PlayerId)) return;
-        if (CanJinx(jinx.PlayerId))
+        if (jinx.GetAbilityUseLimit() > 0)
         {
             JinxedPlayers[jinx.PlayerId].Add(target.PlayerId);
             jinx.ResetKillCooldown();
             jinx.SetKillCooldown();
-            AbilityLimit--;
+            jinx.RpcRemoveAbilityUse();
             SendRPC(jinx, target);
         }
     }
@@ -117,16 +117,15 @@ internal class Jinx : CovenManager
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        AbilityLimit = reader.ReadSingle();
         byte jinxID = reader.ReadByte();
         byte jinxedID = reader.ReadByte();
+
         JinxedPlayers[jinxID].Add(jinxedID);
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
@@ -143,6 +142,7 @@ internal class Jinx : CovenManager
             or CustomRoles.Veteran
             or CustomRoles.Deputy)
             return false;
+
         if (killer.GetCustomRole().IsCovenTeam() && !CovenCanDieToJinx.GetBool()) return false;
 
         if (jinx.CheckForInvalidMurdering(killer) && jinx.RpcCheckAndMurder(killer, true))
@@ -182,14 +182,7 @@ internal class Jinx : CovenManager
         return string.Empty;
     }
 
-
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     //public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
-
-
-    public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(CanJinx(playerId) ? GetRoleColor(CustomRoles.Jinx).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
-    private bool CanJinx(byte id) => AbilityLimit > 0;
 }

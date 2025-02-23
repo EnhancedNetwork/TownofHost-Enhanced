@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TMPro;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -704,8 +705,16 @@ class CastVotePatch
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), retrainRole.ToColoredString()), voter.PlayerId);
 
             CovenLeader.retrainPlayer.Clear();
-            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
-            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+
+            if (CovenLeader.List.Any())
+                foreach (var covenLeaderId in CovenLeader.List)
+                {
+                    var covenLeader = covenLeaderId.GetPlayer();
+                    if (covenLeader == null) continue;
+
+                    covenLeader.RpcRemoveAbilityUse();
+                }
+
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         }

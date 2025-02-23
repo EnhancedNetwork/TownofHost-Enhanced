@@ -1,5 +1,5 @@
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using UnityEngine;
 using static TOHE.Options;
@@ -24,7 +24,6 @@ internal class President : RoleBase
     private static OptionItem ImpsSeePresident;
     private static OptionItem CovenSeePresident;
 
-    private static readonly Dictionary<byte, int> EndLimit = [];
     private static readonly Dictionary<byte, int> RevealLimit = [];
     private static readonly Dictionary<byte, bool> CheckPresidentReveal = [];
 
@@ -43,24 +42,21 @@ internal class President : RoleBase
     public override void Init()
     {
         CheckPresidentReveal.Clear();
-        EndLimit.Clear();
         RevealLimit.Clear();
     }
     public override void Add(byte playerId)
     {
         CheckPresidentReveal.Add(playerId, false);
-        EndLimit.Add(playerId, PresidentAbilityUses.GetInt());
         RevealLimit.Add(playerId, 1);
+        playerId.SetAbilityUseLimit(PresidentAbilityUses.GetInt());
     }
     public override void Remove(byte playerId)
     {
         CheckPresidentReveal.Remove(playerId);
-        EndLimit.Remove(playerId);
         RevealLimit.Remove(playerId);
     }
 
     public static bool CheckReveal(byte targetId) => CheckPresidentReveal.GetValueOrDefault(targetId, false);
-    public override string GetProgressText(byte PlayerId, bool comms) => Utils.ColorString(EndLimit[PlayerId] > 0 ? Utils.GetRoleColor(CustomRoles.President) : Color.gray, EndLimit.TryGetValue(PlayerId, out var endLimit) ? $"({endLimit})" : "Invalid");
 
     private static void TryHideMsgForPresident()
     {
@@ -127,13 +123,12 @@ internal class President : RoleBase
             }
             else if (pc.AmOwner) Utils.SendMessage(originMsg, 255, pc.GetRealName());
 
-            if (EndLimit[pc.PlayerId] < 1)
+            if (pc.GetAbilityUseLimit() < 1)
             {
                 Utils.SendMessage(GetString("PresidentEndMax"), pc.PlayerId);
                 return true;
             }
-
-            EndLimit[pc.PlayerId]--;
+            pc.RpcRemoveAbilityUse();
 
             var meetingHud = MeetingHud.Instance;
             foreach (var pva in meetingHud.playerStates)
@@ -227,8 +222,7 @@ internal class President : RoleBase
         if (!isEnd)
         {
             bool revealed = reader.ReadBoolean();
-            if (CheckPresidentReveal.ContainsKey(PlayerId)) CheckPresidentReveal[PlayerId] = revealed;
-            else CheckPresidentReveal.Add(PlayerId, false);
+            CheckPresidentReveal[PlayerId] = revealed;
             return;
         }
         EndMsg(pc, "/finish");

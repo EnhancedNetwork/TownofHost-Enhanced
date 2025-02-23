@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -437,6 +438,12 @@ public class TaskState
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;
+
+        if (player.IsAlive() && Main.IntroDestroyed)
+        {
+            float add = GetSettingNameAndValueForRole(player.GetCustomRole(), "AbilityUseGainWithEachTaskCompleted");
+            if (Math.Abs(add - float.MaxValue) > 0.5f && add > 0) player.RpcIncreaseAbilityUseLimitBy(add);
+        }
 
         // Display only up to the adjusted task amount
         CompletedTasksCount = Math.Min(AllTasksCount, CompletedTasksCount);

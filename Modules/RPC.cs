@@ -15,7 +15,7 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 185/255 USED
+public enum CustomRPC : byte // 184/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -61,6 +61,7 @@ public enum CustomRPC : byte // 185/255 USED
     Arrow,
     NotificationPopper,
     SyncDeadPassedMeetingList,
+    SyncAbilityUseLimit,
 
     //Roles 
     SetBountyTarget,
@@ -74,19 +75,18 @@ public enum CustomRPC : byte // 185/255 USED
     SniperSync,
     SetLoversPlayers,
     SendFireworkerState,
-    SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SyncRevolutionistData,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetCurrentDousingTarget,
     SetCrewpostorTasksDone,
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
-    SetJailerTarget,
-    SetJailerExeLimit,
+    SyncJailerData,
     SetInspectorLimit,
     KeeperRPC,
     SetAlchemistTimer,
@@ -102,14 +102,11 @@ public enum CustomRPC : byte // 185/255 USED
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
-    SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SyncVultureBodyAmount,
     SetChameleonTimer,
     SyncAdmiredList,
-    SyncAdmiredAbility,
     SetImitateLimit,
     DictatorRPC,
     Necronomicon,
@@ -376,6 +373,12 @@ internal class RPCHandlerPatch
                     NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
                 }
                 break;
+            case CustomRPC.SyncAbilityUseLimit:
+                {
+                    var pc = Utils.GetPlayerById(reader.ReadByte());
+                    pc.SetAbilityUseLimit(reader.ReadSingle(), rpc: false);
+                }
+                break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -468,20 +471,14 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
             //    break;
-            case CustomRPC.SetJailerExeLimit:
-                Jailer.ReceiveRPC(reader, setTarget: false);
-                break;
-            case CustomRPC.SetJailerTarget:
-                Jailer.ReceiveRPC(reader, setTarget: true);
+            case CustomRPC.SyncJailerData:
+                Jailer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncAdmiredList:
-                Admirer.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.SyncAdmiredAbility:
-                Admirer.ReceiveRPC(reader, false);
+                Admirer.ReceiveRPC(reader);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
@@ -587,9 +584,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCursedSoulCurseLimit:
-                CursedSoul.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);
                 break;
@@ -616,9 +610,6 @@ internal class RPCHandlerPatch
                     CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
                     CNO.Collider.enabled = false;
                 }
-                break;
-            case CustomRPC.SyncVultureBodyAmount:
-                Vulture.ReceiveBodyRPC(reader);
                 break;
             case CustomRPC.SetInspectorLimit:
                 Inspector.ReceiveRPC(reader);
