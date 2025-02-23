@@ -60,7 +60,7 @@ internal class ChatCommands
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Judge jd && jd.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -993,7 +993,7 @@ internal class ChatCommands
 
                         _ = new LateTask(() =>
                         {
-                            Utils.NotifyRoles(NoCache: true);
+                            Utils.NotifyRoles(ForceLoop: false, NoCache: true);
 
                         }, 0.2f, "Update NotifyRoles players after /kill");
                     }
@@ -1045,8 +1045,7 @@ internal class ChatCommands
                     foreach (var pc in Main.AllPlayerControls)
                     {
                         if (pc.IsAlive()) continue;
-
-                        pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                        pc.SetName(pc.GetRealName(isMeeting: true));
                     }
                     ChatUpdatePatch.DoBlockChat = false;
                     //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
@@ -1106,7 +1105,7 @@ internal class ChatCommands
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
-                            Utils.NotifyRoles(NoCache: true);
+                            Utils.NotifyRoles(SpecifyTarget: PlayerControl.LocalPlayer, NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
                             break;
                         }
@@ -2155,7 +2154,7 @@ internal class ChatCommands
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
+        if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
@@ -3034,7 +3033,7 @@ internal class ChatCommands
                 {
                     if (pc.IsAlive()) continue;
 
-                    pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                    pc.RpcSetNamePrivate(pc.GetRealName(isMeeting: true), player, true);
                 }
                 ChatUpdatePatch.DoBlockChat = false;
                 //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);

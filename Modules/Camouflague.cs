@@ -156,7 +156,14 @@ public static class Camouflage
                     pc.RpcRemovePet();
                 }
             }
-            Utils.NotifyRoles(NoCache: true);
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+            }
+            else
+            {
+                Utils.DoNotifyRoles();
+            }
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)
@@ -182,7 +189,7 @@ public static class Camouflage
         if (!IsCamouflage || ForceRevert)
         {
             // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
                 targetId = Main.ShapeshiftTarget[targetId];
             }

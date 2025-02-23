@@ -332,7 +332,7 @@
         "\n     - Fixed issues with Medium messages showing after Medium is dead.",
         "\n     - Resolved bug where Hangman could kill Nice Mini.",
         "\n     - Corrected Huntsman minimum kill cooldown.",
-        "\n     - Fixed Bloodmoon not working for modded clients and corrected missing strings for Blackmailer.",
+        "\n- 改造クライアントで血の月が機能しない問題を修正し、恐喝者の欠落していたテキストを修正しました。",
         "\n     - Fixed issues where the Overseer would show Med Scanner after a meeting.",
         "\n     - Inhibitor and Saboteur now use sabotage sounds in the intro.",
         "\n     - Resolved issues where Aware did not work after an Overseer check and Merchant could assign converted add-ons.",

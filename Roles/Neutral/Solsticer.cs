@@ -123,7 +123,7 @@ internal class Solsticer : RoleBase
         }
         warningActived = true;
         SendRPC();
-        Utils.NotifyRoles(ForceLoop: true);
+        Utils.NotifyRoles(SpecifyTarget: pc);
     }
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
@@ -166,7 +166,7 @@ internal class Solsticer : RoleBase
         MurderMessage = "";
         patched = false;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (patched)
@@ -236,9 +236,7 @@ internal class Solsticer : RoleBase
     public void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
-        var taskState = pc.GetPlayerTaskState();
-        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-        taskState.CompletedTasksCount = 0;
+        pc.RpcResetTasks(); //Let taskassign patch decide the tasks
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
         Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
@@ -294,25 +292,5 @@ internal class Solsticer : RoleBase
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
             AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
         }
-    }
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-    {
-        if (seer.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
-            {
-                if (target.GetCustomRole().IsCrewmate()) return "#8CFFFF";
-                else return Main.roleColors[target.GetCustomRole()];
-            }
-        }
-        if (target.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
-            {
-                if (seer.GetCustomRole().IsCrewmate()) return "#8CFFFF";
-                else return Main.roleColors[seer.GetCustomRole()];
-            }
-        }
-        return string.Empty;
     }
 }

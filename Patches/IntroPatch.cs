@@ -86,7 +86,7 @@ class SetUpRoleTextPatch
         {
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
-            Utils.DoNotifyRoles(NoCache: true);
+            Utils.DoNotifyRoles(ForceLoop: false, NoCache: true);
         }
 
         if (GameStates.IsNormalGame)
@@ -94,6 +94,7 @@ class SetUpRoleTextPatch
             foreach (var player in Main.AllPlayerControls)
             {
                 Main.PlayerStates[player.PlayerId].InitTask(player);
+                player.DoUnShiftState(true);
             }
 
             GameData.Instance.RecomputeTaskCounts();
@@ -158,8 +159,6 @@ class SetUpRoleTextPatch
             var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
             // Don't use RpcSetName because the modded client needs to set the name locally
             PlayerControl.LocalPlayer.SetName(realName);
-
-            Utils.DoNotifyRoles(NoCache: true);
         }, 1f, "Reset Name For Modded Players");
     }
     private static byte[] EncryptDES(byte[] data, string key)
@@ -795,27 +794,6 @@ class IntroCutsceneDestroyPatch
                     target.Data.Role.NameColor = Color.white;
                 }
             }
-
-            if (Main.UnShapeShifter.Any())
-            {
-                _ = new LateTask(() =>
-                {
-                    Main.UnShapeShifter.Do(x =>
-                    {
-                        var UnShapeshifter = x.GetPlayer();
-                        if (UnShapeshifter == null)
-                        {
-                            Main.UnShapeShifter.Remove(x);
-                            return;
-                        }
-
-                        UnShapeshifter.StartCoroutine(CheckShapeshiftPatch.CoPerformUnShapeShifter(UnShapeshifter).WrapToIl2Cpp());
-
-                        Main.CheckShapeshift[x] = false;
-                    });
-                    Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
-            }
         }
     }
     public static void Postfix()
@@ -910,9 +888,24 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+            }
+            else
+            {
+                Utils.DoNotifyRoles();
+            }
         }
 
-        Utils.DoNotifyRoles(NoCache: true);
+        try
+        {
+            if (!GameStates.IsEnded)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }
+        catch { }
+
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

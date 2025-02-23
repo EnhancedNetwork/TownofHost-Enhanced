@@ -113,7 +113,7 @@ internal class Executioner : RoleBase
                 else if (!CanTargetNeutralEvil.GetBool() && target.GetCustomRole().IsNE()) continue;
                 else if (!CanTargetNeutralChaos.GetBool() && target.GetCustomRole().IsNC()) continue;
                 else if (!CanTargetCoven.GetBool() && target.Is(Custom_Team.Coven)) continue;
-                if (target.GetCustomRole() is CustomRoles.GM or CustomRoles.SuperStar or CustomRoles.NiceMini or CustomRoles.EvilMini) continue;
+                if (target.GetCustomRole() is CustomRoles.GM or CustomRoles.SuperStar or CustomRoles.NiceMini or CustomRoles.EvilMini or CustomRoles.Solsticer or CustomRoles.Workaholic) continue;
                 if (executioner.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) continue;
 
                 targetList.Add(target);
@@ -261,7 +261,7 @@ internal class Executioner : RoleBase
         {
             if (RevealExeTargetUponEjection.GetBool())
             {
-                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name = string.Format(Translator.GetString("ExiledExeTarget"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
                 DecidedWinner = true;
             }
         }

@@ -34,7 +34,6 @@ internal class Alchemist : RoleBase
     public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
     private static byte PotionID = 10;
-    private static string PlayerName = string.Empty;
     private static bool VisionPotionActive = false;
     private static bool FixNextSabo = false;
     private static bool IsProtected = false;
@@ -63,7 +62,6 @@ internal class Alchemist : RoleBase
     {
         BloodthirstList.Clear();
         PotionID = 10;
-        PlayerName = string.Empty;
         ventedId.Clear();
         InvisTime.Clear();
         FixNextSabo = false;
@@ -71,8 +69,6 @@ internal class Alchemist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerName = Utils.GetPlayerById(playerId).GetRealName();
-
         if (AmongUsClient.Instance.AmHost)
         {
             AddBloodlus();
@@ -214,7 +210,7 @@ internal class Alchemist : RoleBase
             }
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !IsInvis(player.PlayerId)) return;
 
@@ -519,4 +515,5 @@ internal class Alchemist : RoleBase
     {
         hud.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Drink");
 }

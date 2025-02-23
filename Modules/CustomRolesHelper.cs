@@ -437,7 +437,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
-            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return true;
         }
 
         // Imp roles like crewposter and parasite is counted as netural, but should be treated as impostor team in general
@@ -633,7 +633,10 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Cyber:
-                if (pc.Is(CustomRoles.Doppelganger) || pc.Is(CustomRoles.Celebrity) || pc.Is(CustomRoles.SuperStar))
+                if (pc.Is(CustomRoles.Doppelganger)
+                    || pc.Is(CustomRoles.Celebrity)
+                    || pc.Is(CustomRoles.SchrodingersCat)
+                    || pc.Is(CustomRoles.SuperStar))
                     return false;
                 break;
 

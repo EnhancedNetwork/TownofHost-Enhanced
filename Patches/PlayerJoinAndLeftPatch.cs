@@ -29,6 +29,7 @@ class OnGameJoinedPatch
             Main.VersionCheat.Value = false;
 
         ChatUpdatePatch.DoBlockChat = false;
+        Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
         GameStates.InGame = false;
         ErrorText.Instance.Clear();
         EAC.Init();
@@ -415,7 +416,7 @@ class OnPlayerLeftPatch
                 var msg = "";
                 if (GameStates.IsInGame)
                 {
-                    CriticalErrorManager.SetCreiticalError("Host exits the game", false);
+                    CriticalErrorManager.SetCriticalError("Host exits the game", false);
                     CriticalErrorManager.CheckEndGame();
                     msg = GetString("Message.HostLeftGameInGame");
                 }
@@ -453,7 +454,16 @@ class OnPlayerLeftPatch
                     if (Main.playerVersion.ContainsKey(AmongUsClient.Instance.HostId))
                     {
                         if (AmongUsClient.Instance.AmHost)
+                        {
                             Utils.SendMessage(string.Format(GetString("Message.HostLeftGameNewHostIsMod"), AmongUsClient.Instance.GetHost().Character?.GetRealName() ?? "null"));
+                            _ = new LateTask(() =>
+                            {
+                                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
+                                GameManager.Instance.enabled = false;
+                                Utils.NotifyGameEnding();
+                                GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
+                            }, 3f, "Disconnect Error Auto-end");
+                        }
                     }
                     else
                     {
@@ -475,14 +485,6 @@ class OnPlayerLeftPatch
                     break;
                 case DisconnectReasons.Error when !GameStates.IsLobby:
                     Logger.SendInGame(string.Format(GetString("PlayerLeftByError"), data?.PlayerName));
-                    _ = new LateTask(() =>
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Error);
-                        GameManager.Instance.enabled = false;
-                        Utils.NotifyGameEnding();
-                        GameManager.Instance.RpcEndGame(GameOverReason.ImpostorDisconnect, false);
-                    }, 3f, "Disconnect Error Auto-end");
-
                     break;
             }
 
@@ -491,7 +493,7 @@ class OnPlayerLeftPatch
             // End the game when a player exits game during assigning roles (AntiBlackOut Protect)
             if (Main.AssignRolesIsStarted)
             {
-                CriticalErrorManager.SetCreiticalError("The player left the game during assigning roles", true);
+                CriticalErrorManager.SetCriticalError("The player left the game during assigning roles", true);
             }
 
 

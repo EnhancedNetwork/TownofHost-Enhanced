@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -41,12 +42,12 @@ internal class ChiefOfPolice : RoleBase
 
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => AbilityLimit > 0;
+    public override bool CanUseKillButton(PlayerControl pc) => pc.GetAbilityUseLimit() > 0;
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit > 0 ? SkillCooldown.GetFloat() : 999f;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = id.GetAbilityUseLimit() > 0 ? SkillCooldown.GetFloat() : 999f;
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
@@ -61,7 +62,8 @@ internal class ChiefOfPolice : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
+        if (killer.GetAbilityUseLimit() < 1) return false;
+
         bool suidice = false;
         bool isSuccess = false;
 
@@ -73,7 +75,7 @@ internal class ChiefOfPolice : RoleBase
             }
             else
             {
-                AbilityLimit--;
+                killer.RpcRemoveAbilityUse();
                 killer.RpcGuardAndKill(target);
                 killer.ResetKillCooldown();
                 killer.SetKillCooldown();
@@ -112,7 +114,7 @@ internal class ChiefOfPolice : RoleBase
                 }
                 else
                 {
-                    AbilityLimit--;
+                    killer.RpcRemoveAbilityUse();
                     killer.RpcGuardAndKill(target);
                     killer.ResetKillCooldown();
                     killer.SetKillCooldown();
@@ -121,6 +123,7 @@ internal class ChiefOfPolice : RoleBase
                     target.RpcChangeRoleBasis(CustomRoles.Sheriff);
                     target.RpcSetCustomRole(CustomRoles.Sheriff);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
+                    if (Main.PlayerStates[target.PlayerId].IsNecromancer) Main.PlayerStates[target.PlayerId].IsNecromancer = false;
 
                     target.ResetKillCooldown();
                     target.SetKillCooldown(forceAnime: true);
@@ -137,7 +140,7 @@ internal class ChiefOfPolice : RoleBase
 
         if (suidice && SuidiceWhenTargetNotKiller.GetBool())
         {
-            AbilityLimit--;
+            killer.RpcRemoveAbilityUse();
             killer.SetDeathReason(PlayerState.DeathReason.Misfire);
             killer.SetRealKiller(killer);
             killer.RpcMurderPlayer(killer);
@@ -162,14 +165,11 @@ internal class ChiefOfPolice : RoleBase
             Utils.NotifyRoles(killer);
         }
 
-        SendSkillRPC();
         return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("ChiefOfPoliceKillButtonText"));
     }
-
-    public override string GetProgressText(byte playerId, bool commns)
-    => !commns ? Utils.ColorString(AbilityLimit > 0 ? Utils.GetRoleColor(CustomRoles.ChiefOfPolice).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})") : "";
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("CoPKill");
 }
