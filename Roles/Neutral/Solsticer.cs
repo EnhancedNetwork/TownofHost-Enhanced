@@ -236,9 +236,7 @@ internal class Solsticer : RoleBase
     public void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
-        var taskState = pc.GetPlayerTaskState();
-        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-        taskState.CompletedTasksCount = 0;
+        pc.RpcResetTasks(); //Let taskassign patch decide the tasks
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
         Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
@@ -294,49 +292,5 @@ internal class Solsticer : RoleBase
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
             AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
         }
-    }
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-    {
-        if (seer.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.ContainsKey(seer.PlayerId) && target.PlayerId == SchrodingersCat.teammate[seer.PlayerId])
-            {
-                foreach (var SubRole in target.GetCustomSubRoles())
-                {
-                    if (SubRole is CustomRoles.Charmed
-                        or CustomRoles.Infected
-                        or CustomRoles.Contagious
-                        or CustomRoles.Egoist
-                        or CustomRoles.Recruit)
-                        return Main.roleColors[SubRole];
-                }
-
-                if ((target.GetCustomRole().IsCrewmate() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel)) return "#8CFFFF";
-                else if (target.GetCustomRole().IsImpostorTeamV3() || target.Is(CustomRoles.Madmate)) return "#ff1919";
-                else if (target.GetCustomRole().IsCoven() || target.Is(CustomRoles.Enchanted)) return "#ac42f2";
-                else return Main.roleColors[target.GetCustomRole()];
-            }
-        }
-        if (target.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.ContainsKey(target.PlayerId) && seer.PlayerId == SchrodingersCat.teammate[target.PlayerId])
-            {
-                foreach (var SubRole in target.GetCustomSubRoles())
-                {
-                    if (SubRole is CustomRoles.Charmed
-                        or CustomRoles.Infected
-                        or CustomRoles.Contagious
-                        or CustomRoles.Egoist
-                        or CustomRoles.Recruit)
-                        return Main.roleColors[SubRole];
-                }
-
-                if ((seer.GetCustomRole().IsCrewmate() || seer.Is(CustomRoles.Admired)) && !seer.Is(CustomRoles.Rebel)) return "#8CFFFF";
-                else if (seer.GetCustomRole().IsImpostorTeamV3() || seer.Is(CustomRoles.Madmate)) return "#ff1919";
-                else if (seer.GetCustomRole().IsCoven() || seer.Is(CustomRoles.Enchanted)) return "#ac42f2";
-                else return Main.roleColors[seer.GetCustomRole()];
-            }
-        }
-        return string.Empty;
     }
 }

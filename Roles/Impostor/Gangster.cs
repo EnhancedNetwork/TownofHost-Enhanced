@@ -1,3 +1,4 @@
+﻿using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -19,8 +20,6 @@ internal class Gangster : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
     //==================================================================\\
-
-    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CanRecruit(player.PlayerId) ? CustomButton.Get("Sidekick") : null;
 
     private static OptionItem RecruitLimitOpt;
     private static OptionItem KillCooldown;
@@ -52,7 +51,7 @@ internal class Gangster : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = RecruitLimitOpt.GetInt();
+        playerId.SetAbilityUseLimit(RecruitLimitOpt.GetInt());
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CanRecruit(id) ? KillCooldown.GetFloat() : Options.DefaultKillCooldown;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
@@ -132,7 +131,7 @@ internal class Gangster : RoleBase
             }
             else goto GangsterFailed;
 
-            AbilityLimit--;
+            killer.RpcRemoveAbilityUse();
 
             killer.RpcGuardAndKill(target);
             target.RpcGuardAndKill(killer);
@@ -141,24 +140,20 @@ internal class Gangster : RoleBase
             killer.SetKillCooldown(forceAnime: true);
             target.ResetKillCooldown();
             target.SetKillCooldown(forceAnime: true);
-
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次招募机会", "Gangster");
-            SendSkillRPC();
             return false;
         }
 
     GangsterFailed:
+
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("GangsterRecruitmentFailure")));
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次招募机会", "Gangster");
-        SendSkillRPC();
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
         Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
         return true;
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(CanRecruit(playerId) ? Utils.GetRoleColor(CustomRoles.Gangster).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CanRecruit(player.PlayerId) ? CustomButton.Get("Sidekick") : null;
+    private static bool CanRecruit(byte id) => id.GetAbilityUseLimit() >= 1;
 
-    private bool CanRecruit(byte id) => AbilityLimit >= 1;
-    public static bool CanBeGansterRecruit(PlayerControl pc)
+    private static bool CanBeGansterRecruit(PlayerControl pc)
     {
         return pc != null && (pc.IsNonRebelCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)

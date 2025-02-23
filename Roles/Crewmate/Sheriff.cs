@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -86,9 +87,7 @@ internal class Sheriff : RoleBase
     public override void Add(byte playerId)
     {
         CurrentKillCooldown = KillCooldown.GetFloat();
-        AbilityLimit = ShotLimitOpt.GetInt();
-
-        Logger.Info($"{GetPlayerById(playerId)?.GetNameWithRole()} : limit: {AbilityLimit}", "Sheriff");
+        playerId.SetAbilityUseLimit(ShotLimitOpt.GetInt());
     }
     private static void SetUpNeutralOptions(int Id)
     {
@@ -110,16 +109,13 @@ internal class Sheriff : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsUseKillButton(GetPlayerById(id)) ? CurrentKillCooldown : 300f;
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
-    public bool IsUseKillButton(PlayerControl pc)
-        => pc.IsAlive()
-        && (CanKillAllAlive.GetBool() || GameStates.AlreadyDied)
-        && AbilityLimit > 0;
+    public static bool IsUseKillButton(PlayerControl pc)
+        => (CanKillAllAlive.GetBool() || GameStates.AlreadyDied) && pc.GetAbilityUseLimit() > 0;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        AbilityLimit--;
-        Logger.Info($"{killer.GetNameWithRole()} : Number of kills left: {AbilityLimit}", "Sheriff");
-        SendSkillRPC();
+        killer.RpcRemoveAbilityUse();
+
         if ((CanBeKilledBySheriff(target) && !(SetNonCrewCanKill.GetBool() && killer.IsNonCrewSheriff() || SidekickSheriffCanGoBerserk.GetBool() && killer.Is(CustomRoles.Recruit)))
             || (SidekickSheriffCanGoBerserk.GetBool() && killer.Is(CustomRoles.Recruit))
             || (SetNonCrewCanKill.GetBool() && killer.IsNonCrewSheriff()
@@ -127,7 +123,7 @@ internal class Sheriff : RoleBase
             )
         {
             killer.ResetKillCooldown();
-            if (AbilityLimit < 1)
+            if (killer.GetAbilityUseLimit() < 1)
             {
                 killer.SetKillCooldown();
             }
@@ -137,8 +133,6 @@ internal class Sheriff : RoleBase
         killer.RpcMurderPlayer(killer);
         return MisfireKillsTarget.GetBool();
     }
-    public override string GetProgressText(byte playerId, bool computervirus)
-        => ShowShotLimit.GetBool() ? ColorString(IsUseKillButton(GetPlayerById(playerId)) ? GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})") : "";
     public static bool CanBeKilledBySheriff(PlayerControl player)
     {
         var cRole = player.GetCustomRole();

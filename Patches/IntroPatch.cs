@@ -916,6 +916,13 @@ class IntroCutsceneDestroyPatch
             }
         }
 
+        try
+        {
+            if (!GameStates.IsEnded)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }
+        catch { }
+
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -38,13 +39,12 @@ internal class Imitator : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberCooldown.GetFloat();
-    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit > 0;
+    public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() > 0;
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
         CustomRoles ChangeRole = CustomRoles.Imitator;
         var role = target.GetCustomRole();
 
@@ -78,8 +78,7 @@ internal class Imitator : RoleBase
 
         if (ChangeRole != CustomRoles.Imitator)
         {
-            AbilityLimit--;
-            SendSkillRPC();
+            killer.RpcRemoveAbilityUse();
             killer.RpcChangeRoleBasis(ChangeRole);
             killer.RpcSetCustomRole(ChangeRole);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
@@ -94,7 +93,8 @@ internal class Imitator : RoleBase
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
 
             Logger.Info("Imitator remembered: " + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString(), "Imitator Assign");
-            Logger.Info($"{killer.GetNameWithRole()} : {AbilityLimit} remember limits left", "Imitator");
+
+            Utils.NotifyRoles(SpecifySeer: killer);
         }
         else
         {
