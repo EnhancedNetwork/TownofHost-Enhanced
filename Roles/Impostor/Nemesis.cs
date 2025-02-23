@@ -88,9 +88,10 @@ internal class Nemesis : RoleBase
 
         if (msg == "/rv")
         {
+            bool canSeeRoles = PreventSeeRolesBeforeSkillUsedUp.GetBool();
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName();
+                text += $"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false, false)}) " : string.Empty) + npc.GetRealName();
             Utils.SendMessage(text, pc.PlayerId);
             return true;
         }
@@ -171,7 +172,6 @@ internal class Nemesis : RoleBase
             else
             {
                 target.RpcMurderPlayer(target);
-                Utils.NotifyRoles(NoCache: true);
             }
             target.SetRealKiller(pc);
 

@@ -38,12 +38,10 @@ internal class Amnesiac : RoleBase
     }
     public override void Init()
     {
-
         CanUseVent.Clear();
     }
     public override void Add(byte playerId)
     {
-
         CanUseVent[playerId] = AmnesiacCanUseVent.GetBool();
 
         if (ShowArrows.GetBool())
@@ -53,8 +51,10 @@ internal class Amnesiac : RoleBase
     }
     public override void Remove(byte playerId)
     {
-
         CheckDeadBodyOthers.Remove(CheckDeadBody);
+
+        if (ShowArrows.GetBool())
+            LocateArrow.RemoveAllTarget(playerId);
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {

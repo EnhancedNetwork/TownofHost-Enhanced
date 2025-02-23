@@ -16,7 +16,7 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 185/255 USED
+public enum CustomRPC : byte // 184/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -62,6 +62,7 @@ public enum CustomRPC : byte // 185/255 USED
     Arrow,
     NotificationPopper,
     SyncDeadPassedMeetingList,
+    SyncAbilityUseLimit,
 
     //Roles 
     SetBountyTarget,
@@ -77,11 +78,11 @@ public enum CustomRPC : byte // 185/255 USED
     SniperSync,
     SetLoversPlayers,
     SendFireworkerState,
-    SetCurrentDousingTarget,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetCurrentDousingTarget,
     SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
@@ -89,8 +90,7 @@ public enum CustomRPC : byte // 185/255 USED
     RpcPassBomb,
     SyncRomanticTarget,
     SyncVengefulRomanticTarget,
-    SetJailerTarget,
-    SetJailerExeLimit,
+    SyncJailerData,
     SetInspectorLimit,
     KeeperRPC,
     SetAlchemistTimer,
@@ -106,14 +106,11 @@ public enum CustomRPC : byte // 185/255 USED
     PresidentEnd,
     PresidentReveal,
     SetBKTimer,
-    SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SyncVultureBodyAmount,
     SetChameleonTimer,
     SyncAdmiredList,
-    SyncAdmiredAbility,
     SetImitateLimit,
     DictatorRPC,
     Necronomicon,
@@ -380,6 +377,12 @@ internal class RPCHandlerPatch
                     NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
                 }
                 break;
+            case CustomRPC.SyncAbilityUseLimit:
+                {
+                    var pc = Utils.GetPlayerById(reader.ReadByte());
+                    pc.SetAbilityUseLimit(reader.ReadSingle(), rpc: false);
+                }
+                break;
             case CustomRPC.SetBountyTarget:
                 BountyHunter.ReceiveRPC(reader);
                 break;
@@ -477,20 +480,14 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
             //    break;
-            case CustomRPC.SetJailerExeLimit:
-                Jailer.ReceiveRPC(reader, setTarget: false);
-                break;
-            case CustomRPC.SetJailerTarget:
-                Jailer.ReceiveRPC(reader, setTarget: true);
+            case CustomRPC.SyncJailerData:
+                Jailer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncAdmiredList:
-                Admirer.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.SyncAdmiredAbility:
-                Admirer.ReceiveRPC(reader, false);
+                Admirer.ReceiveRPC(reader);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
@@ -597,9 +594,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCursedSoulCurseLimit:
-                CursedSoul.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);
                 break;
@@ -621,10 +615,11 @@ internal class RPCHandlerPatch
             case CustomRPC.FixModdedClientCNO:
                 var CNO = reader.ReadNetObject<PlayerControl>();
                 bool active = reader.ReadBoolean();
-                CNO?.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
-                break;
-            case CustomRPC.SyncVultureBodyAmount:
-                Vulture.ReceiveBodyRPC(reader);
+                if (CNO != null)
+                {
+                    CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                    CNO.Collider.enabled = false;
+                }
                 break;
             case CustomRPC.SetInspectorLimit:
                 Inspector.ReceiveRPC(reader);
@@ -998,7 +993,7 @@ internal static class RPC
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
+    public static void SendRpcLogger(uint targetNetId, byte callId, SendOption sendOption, int targetClientId = -1)
     {
         if (!DebugModeManager.AmDebugger) return;
         string rpcName = GetRpcName(callId);
@@ -1011,7 +1006,7 @@ internal static class RPC
         }
         catch { }
 
-        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
+        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName}) SendOption:{sendOption}", "SendRPC");
     }
     public static string GetRpcName(byte callId)
     {
@@ -1038,16 +1033,40 @@ internal static class RPC
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpc))]
 internal class StartRpcPatch
 {
-    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
+    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option = SendOption.Reliable)
     {
-        RPC.SendRpcLogger(targetNetId, callId);
+        RPC.SendRpcLogger(targetNetId, callId, option);
     }
 }
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
-internal class StartRpcImmediatelyPatch
+public class StartRpcImmediatelyPatch
 {
-    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
+    public static bool Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId, ref MessageWriter __result)
     {
-        RPC.SendRpcLogger(targetNetId, callId, targetClientId);
+        if (callId < (byte)CustomRPC.VersionCheck || !AmongUsClient.Instance.AmHost || !GameStates.IsVanillaServer || GameStates.IsLocalGame || option is SendOption.None)
+        {
+            RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
+            return true;
+        }
+
+        MessageWriter messageWriter = MessageWriter.Get(SendOption.None);
+        if (targetClientId < 0)
+        {
+            messageWriter.StartMessage(5);
+            messageWriter.Write(AmongUsClient.Instance.GameId);
+        }
+        else
+        {
+            messageWriter.StartMessage(6);
+            messageWriter.Write(AmongUsClient.Instance.GameId);
+            messageWriter.WritePacked(targetClientId);
+        }
+        messageWriter.StartMessage(2);
+        messageWriter.WritePacked(targetNetId);
+        messageWriter.Write(callId);
+
+        __result = messageWriter;
+        RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
+        return false;
     }
 }

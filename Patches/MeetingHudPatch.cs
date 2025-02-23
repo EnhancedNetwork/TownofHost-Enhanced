@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TMPro;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -53,7 +54,6 @@ class CheckForEndVotingPatch
                     {
                         Main.MadmateNum++;
                         pc.RpcSetCustomRole(CustomRoles.Madmate);
-                        ExtendedPlayerControl.RpcSetCustomRole(pc.PlayerId, CustomRoles.Madmate);
                         Logger.Info($"Assign in meeting by self vote: {pc?.Data?.PlayerName} = {pc.GetCustomRole()} + {CustomRoles.Madmate}", "Madmate");
                     }
                 }
@@ -424,7 +424,7 @@ class CheckForEndVotingPatch
         var player = GetPlayerById(exiledPlayer.PlayerId);
         var role = GetString(exiledPlayer.GetCustomRole().ToString());
         var crole = exiledPlayer.GetCustomRole();
-        var coloredRole = GetDisplayRoleAndSubName(exileId, exileId, true);
+        var coloredRole = GetDisplayRoleAndSubName(exileId, exileId, false, true);
 
         if (Options.ConfirmEgoistOnEject.GetBool() && player.Is(CustomRoles.Egoist))
             coloredRole = ColorString(GetRoleColor(CustomRoles.Egoist), coloredRole.RemoveHtmlTags());
@@ -660,7 +660,6 @@ class CheckForEndVotingPatch
             if (candidate.PlayerId == exiledplayer.PlayerId || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
         }
         if (TargetList == null || TargetList.Count == 0) return null;
-        var rand = IRandom.Instance;
         var target = TargetList.RandomElement();
         return target;
     }
@@ -710,8 +709,16 @@ class CastVotePatch
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
             CovenLeader.retrainPlayer.Clear();
-            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
-            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+
+            if (CovenLeader.List.Any())
+                foreach (var covenLeaderId in CovenLeader.List)
+                {
+                    var covenLeader = covenLeaderId.GetPlayer();
+                    if (covenLeader == null) continue;
+
+                    covenLeader.RpcRemoveAbilityUse();
+                }
+
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         }
@@ -1071,7 +1078,7 @@ class MeetingHudStartPatch
             var textTemplate = pva.NameText;
 
             // Create role text in meeting
-            var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId);
+            var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId, isMeeting: true);
             var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
             if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
                 UnityEngine.Object.Destroy(roleTextMeeting.transform.FindChild("DeathReasonTextMeeting").gameObject);

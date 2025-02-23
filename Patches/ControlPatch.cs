@@ -36,18 +36,19 @@ internal class ControllerManagerUpdatePatch
                 EndGameManagerPatch.IsRestarting = false;
             }
             // Do next page
-            //if (GameStates.IsLobby && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
-            //{
-            //    if (Input.GetKeyDown(KeyCode.Tab))
-            //    {
-            //        OptionShower.Next();
-            //    }
-            //    for (var i = 0; i < 9; i++)
-            //    {
-            //        if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
-            //            OptionShower.currentPage = i;
-            //    }
-            //}
+            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.InstanceExists && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
+            {
+                if (Input.GetKeyDown(KeyCode.Tab))
+                {
+                    OptionShower.Next();
+                }
+                for (var i = 0; i < 9; i++)
+                {
+                    if (ORGetKeysDown(KeyCode.Alpha1 + i, KeyCode.Keypad1 + i) && OptionShower.pages.Count >= i + 1)
+                        OptionShower.currentPage = i;
+                }
+            }
+
             //捕捉全屏快捷键
             //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
             //{
@@ -181,6 +182,11 @@ internal class ControllerManagerUpdatePatch
                 HudManager.Instance.Chat.SetVisible(true);
             }
 
+            if (DebugModeManager.IsDebugMode && GetKeysDown(KeyCode.F8) && HudManager.Instance && !GameStates.IsMeeting && (GameStates.IsInGame || GameStates.IsLobby))
+            {
+                HudManager.Instance.gameObject.SetActive(!HudManager.Instance.gameObject.active);
+            }
+
             // Get Position
             if (Input.GetKeyDown(KeyCode.P) && PlayerControl.LocalPlayer != null)
             {
@@ -197,7 +203,7 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notice.Clear();
-                Utils.DoNotifyRoles(ForceLoop: true);
+                //Utils.DoNotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 GameEndCheckerForNormal.GameIsEnded = true;
@@ -315,7 +321,7 @@ internal class ControllerManagerUpdatePatch
 
             if (GetKeysDown(KeyCode.E, KeyCode.F, KeyCode.LeftControl))
             {
-                CriticalErrorManager.SetCreiticalError("Test AntiBlackout", true);
+                CriticalErrorManager.SetCriticalError("Test AntiBlackout", true);
             }
 
             // Kill flash

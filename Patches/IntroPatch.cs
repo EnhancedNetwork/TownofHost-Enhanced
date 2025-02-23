@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using Hazel;
-using InnerNet;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -88,7 +86,7 @@ class SetUpRoleTextPatch
         {
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
-            Utils.DoNotifyRoles(NoCache: true);
+            Utils.DoNotifyRoles(ForceLoop: false, NoCache: true);
         }
 
         if (GameStates.IsNormalGame)
@@ -96,6 +94,7 @@ class SetUpRoleTextPatch
             foreach (var player in Main.AllPlayerControls)
             {
                 Main.PlayerStates[player.PlayerId].InitTask(player);
+                player.DoUnShiftState(true);
             }
 
             GameData.Instance.RecomputeTaskCounts();
@@ -160,8 +159,6 @@ class SetUpRoleTextPatch
             var realName = Main.AllPlayerNames[PlayerControl.LocalPlayer.PlayerId];
             // Don't use RpcSetName because the modded client needs to set the name locally
             PlayerControl.LocalPlayer.SetName(realName);
-
-            Utils.DoNotifyRoles(NoCache: true);
         }, 1f, "Reset Name For Modded Players");
     }
     private static byte[] EncryptDES(byte[] data, string key)
@@ -797,64 +794,6 @@ class IntroCutsceneDestroyPatch
                     target.Data.Role.NameColor = Color.white;
                 }
             }
-
-            if (Main.UnShapeShifter.Any())
-            {
-                _ = new LateTask(() =>
-                {
-                    Main.UnShapeShifter.Do(x =>
-                    {
-                        var UnShapeshifter = x.GetPlayer();
-                        if (UnShapeshifter == null)
-                        {
-                            Main.UnShapeShifter.Remove(x);
-                            return;
-                        }
-
-                        if (!UnShapeshifter.AmOwner)
-                        {
-                            var sstarget = PlayerControl.LocalPlayer;
-                            UnShapeshifter.Shapeshift(PlayerControl.LocalPlayer, false);
-                            UnShapeshifter.RejectShapeshift();
-
-                            var writer = MessageWriter.Get(SendOption.Reliable);
-                            writer.StartMessage(6);
-                            writer.Write(AmongUsClient.Instance.GameId);
-                            writer.WritePacked(UnShapeshifter.OwnerId);
-
-                            writer.StartMessage(2);
-                            writer.WritePacked(UnShapeshifter.NetId);
-                            writer.Write((byte)RpcCalls.Shapeshift);
-                            writer.WriteNetObject(sstarget);
-                            writer.Write(false);
-                            writer.EndMessage();
-
-                            writer.StartMessage(2);
-                            writer.WritePacked(UnShapeshifter.NetId);
-                            writer.Write((byte)RpcCalls.RejectShapeshift);
-                            writer.EndMessage();
-
-                            writer.EndMessage();
-                            AmongUsClient.Instance.SendOrDisconnect(writer);
-                            writer.Recycle();
-
-                            UnShapeshifter.ResetPlayerOutfit(force: true);
-                        }
-                        else
-                        {
-                            // Host is Unshapeshifter, make button into unshapeshift state
-                            PlayerControl.LocalPlayer.waitingForShapeshiftResponse = false;
-                            var newOutfit = PlayerControl.LocalPlayer.Data.Outfits[PlayerOutfitType.Default];
-                            PlayerControl.LocalPlayer.RawSetOutfit(newOutfit, PlayerOutfitType.Shapeshifted);
-                            PlayerControl.LocalPlayer.shapeshiftTargetPlayerId = PlayerControl.LocalPlayer.PlayerId;
-                            DestroyableSingleton<HudManager>.Instance.AbilityButton.OverrideText(DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.ShapeshiftAbilityUndo));
-                        }
-
-                        Main.CheckShapeshift[x] = false;
-                    });
-                    Main.GameIsLoaded = true;
-                }, 3f, "Set UnShapeShift Button");
-            }
         }
     }
     public static void Postfix()
@@ -863,9 +802,15 @@ class IntroCutsceneDestroyPatch
 
         Main.IntroDestroyed = true;
 
-        // Set roleAssigned as false for override role for modded players
-        // For override role for vanilla clients we use "Data.Disconnected" while assign
-        Main.AllPlayerControls.Do(pc => pc.roleAssigned = false);
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            // Set roleAssigned as false for override role for modded players
+            // For override role for vanilla clients we use "Data.Disconnected" while assign
+            pc.roleAssigned = false;
+
+            // Update name for all after intro
+            Main.LowLoadUpdateName[pc.PlayerId] = true;
+        }
 
         if (!GameStates.AirshipIsActive)
         {
@@ -903,12 +848,17 @@ class IntroCutsceneDestroyPatch
                 }
             }
 
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.GM)) // Incase user has /up access
+            foreach (var player in Main.AllPlayerControls)
             {
-                PlayerControl.LocalPlayer.RpcExile();
-                Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
+                if (player.Is(CustomRoles.GM))
+                {
+                    player.RpcExile();
+                    Main.PlayerStates[player.PlayerId].SetDead();
+                }
             }
-            else if (GhostRoleAssign.forceRole.Any())
+
+
+            if (GhostRoleAssign.forceRole.Any()) // Incase user has /up access
             {
                 // Needs to be delayed for the game to load it properly
                 _ = new LateTask(() =>
@@ -938,9 +888,24 @@ class IntroCutsceneDestroyPatch
             }
 
             Utils.CheckAndSetVentInteractions();
+
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync());
+            }
+            else
+            {
+                Utils.DoNotifyRoles();
+            }
         }
 
-        Utils.DoNotifyRoles(NoCache: true);
+        try
+        {
+            if (!GameStates.IsEnded)
+                DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
+        }
+        catch { }
+
         Logger.Info("OnDestroy", "IntroCutscene");
     }
 }

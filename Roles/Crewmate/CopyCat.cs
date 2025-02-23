@@ -76,7 +76,7 @@ internal class CopyCat : RoleBase
             ////////////           /*remove the settings for current role*/             /////////////////////
 
             var pcRole = pc.GetCustomRole();
-            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Refugee && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
+            if (pcRole is not CustomRoles.Sidekick and not CustomRoles.Jackal and not CustomRoles.Refugee && !(!pc.IsAlive() && pcRole is CustomRoles.Retributionist))
             {
                 if (pcRole != CustomRoles.CopyCat)
                 {
@@ -128,6 +128,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Consigliere => CustomRoles.Overseer,
                 CustomRoles.Mercenary => CustomRoles.Addict,
                 CustomRoles.Miner => CustomRoles.Mole,
+                CustomRoles.Godfather => CustomRoles.ChiefOfPolice,
                 CustomRoles.Twister => CustomRoles.TimeMaster,
                 CustomRoles.Disperser => CustomRoles.Transporter,
                 CustomRoles.Eraser => CustomRoles.Cleanser,
@@ -142,6 +143,8 @@ internal class CopyCat : RoleBase
                 CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
                 CustomRoles.Swooper or CustomRoles.Wraith => CustomRoles.Chameleon,
                 CustomRoles.Vindicator or CustomRoles.Pickpocket => CustomRoles.Mayor,
+                CustomRoles.Opportunist or CustomRoles.BloodKnight or CustomRoles.Wildling => CustomRoles.Guardian,
+                CustomRoles.Cultist or CustomRoles.Virus or CustomRoles.Gangster => CustomRoles.Admirer,
                 CustomRoles.Arrogance or CustomRoles.Juggernaut or CustomRoles.Berserker => CustomRoles.Reverie,
                 CustomRoles.Baker when Baker.CurrentBread() is 0 => CustomRoles.Overseer,
                 CustomRoles.Baker when Baker.CurrentBread() is 1 => CustomRoles.Deputy,

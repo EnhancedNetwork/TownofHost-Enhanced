@@ -206,12 +206,8 @@ internal class Sacrifist : CovenManager
                     break;
                 // Reset Tasks
                 case 6:
-                    var taskStateTarget = randPlayerPC.GetPlayerTaskState();
-                    randPlayerPC.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskStateTarget.CompletedTasksCount = 0;
-                    var taskStateSacrif = pc.GetPlayerTaskState();
-                    pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskStateSacrif.CompletedTasksCount = 0;
+                    randPlayerPC.RpcResetTasks();
+                    pc.RpcResetTasks();
                     pc.Notify(GetString("SacrifistTasksDebuff"), 5f);
                     Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName()} and self reset tasks", "Sacrifist");
                     break;
@@ -316,7 +312,7 @@ internal class Sacrifist : CovenManager
     {
         return GetString("SacrifistDebuffCooldown") + ": " + string.Format("{0:f0}", debuffTimer) + "s / " + string.Format("{0:f0}", maxDebuffTimer) + "s";
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (debuffTimer < maxDebuffTimer)
         {

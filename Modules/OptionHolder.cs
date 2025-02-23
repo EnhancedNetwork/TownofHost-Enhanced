@@ -137,6 +137,30 @@ public static class Options
         QuickChatSpam_Random20,
         QuickChatSpam_EzHacked,
     };
+    [Obfuscation(Exclude = true)]
+    public enum ShortAddOnNamesMode
+    {
+        ShortAddOnNamesMode_Disable,
+        ShortAddOnNamesMode_Always,
+        ShortAddOnNamesMode_OnlyInMeeting,
+        ShortAddOnNamesMode_OnlyInGame
+    }
+
+    public static OptionItem BastionAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem ChameleonAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem FortuneTellerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem InspectorAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem MechanicAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem MediumAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem OracleAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem PacifistAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem SpyAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem VentguardAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
@@ -145,6 +169,7 @@ public static class Options
 
 
     // ------------ System Settings Tab ------------
+    public static OptionItem BypassRateLimitAC;
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem ShowMadmatesInLeftCommand;
@@ -199,6 +224,7 @@ public static class Options
     public static OptionItem ImmediateStartTimer;
     public static OptionItem StartWhenPlayersReach;
     public static OptionItem StartWhenTimerLowerThan;
+    public static OptionItem StartWhenTimePassed;
 
     public static OptionItem AutoPlayAgain;
     public static OptionItem AutoPlayAgainCountdown;
@@ -208,11 +234,13 @@ public static class Options
 
     //public static OptionItem ShowLobbyCode;
     public static OptionItem LowLoadMode;
+    public static OptionItem LowLoadDelayUpdateNames;
     public static OptionItem EndWhenPlayerBug;
     public static OptionItem HideExileChat;
     public static OptionItem RemovePetsAtDeadPlayers;
 
     public static OptionItem CheatResponses;
+    public static OptionItem CrossLanguageGetRole;
     public static OptionItem NewHideMsg;
 
     public static OptionItem AutoDisplayKillLog;
@@ -394,6 +422,7 @@ public static class Options
     public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
+    public static OptionItem NonCrewRandomCommonTasks;
 
     // Ghost
     public static OptionItem GhostIgnoreTasks;
@@ -507,6 +536,7 @@ public static class Options
     public static OptionItem CovenCanGuessCoven;
     public static OptionItem HideGuesserCommands;
     public static OptionItem ShowOnlyEnabledRolesInGuesserUI;
+    public static OptionItem CanOnlyGuessEnabled;
     public static OptionItem UseQuickChatSpamCheat;
 
 
@@ -527,7 +557,8 @@ public static class Options
     public static OptionItem NeutralKillingRolesMaxPlayer;
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
-
+    public static OptionItem SpawnOneRandomKillingFraction;
+     
     // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
@@ -547,7 +578,9 @@ public static class Options
     // Add-on
     public static OptionItem NameDisplayAddons;
     public static OptionItem AddBracketsToAddons;
+    public static OptionItem ShowShortNamesForAddOns;
     public static OptionItem NoLimitAddonsNumMax;
+    public static OptionItem RemoveIncompatibleAddOnsMidGame;
 
     // Add-Ons settings 
     public static OptionItem LoverSpawnChances;
@@ -594,7 +627,6 @@ public static class Options
     ];
     public static readonly string[] roleAssigningAlgorithms =
     [
-        "RoleAssigningAlgorithm.Default",
         "RoleAssigningAlgorithm.NetRandom",
         "RoleAssigningAlgorithm.HashRandom",
         "RoleAssigningAlgorithm.Xorshift",
@@ -748,6 +780,10 @@ public static class Options
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
 
+        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60036, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+
         CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
@@ -776,7 +812,11 @@ public static class Options
             .SetHeader(true);
         AddBracketsToAddons = BooleanOptionItem.Create(60021, "BracketAddons", true, TabGroup.Addons, false)
             .SetParent(NameDisplayAddons);
-        NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(1, 15, 1), 1, TabGroup.Addons, false)
+        ShowShortNamesForAddOns = StringOptionItem.Create(60035, "ShowShortNamesForAddOns", EnumHelper.GetAllNames<ShortAddOnNamesMode>(), 2, TabGroup.Addons, false)
+            .SetParent(NameDisplayAddons);
+        NoLimitAddonsNumMax = IntegerOptionItem.Create(60020, "NoLimitAddonsNumMax", new(0, 15, 1), 1, TabGroup.Addons, false)
+            .SetGameMode(CustomGameMode.Standard);
+        RemoveIncompatibleAddOnsMidGame = BooleanOptionItem.Create(60034, "RemoveIncompatibleAddOnsMidGame", true, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard);
         #endregion
 
@@ -1091,6 +1131,8 @@ public static class Options
         yield return null;
 
         #region System Settings
+        BypassRateLimitAC = BooleanOptionItem.Create(60049, "BypassRateLimitAC", true, TabGroup.SystemSettings, false)
+            .SetHeader(true);
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
@@ -1167,6 +1209,8 @@ public static class Options
         MaxWaitAutoStart = FloatOptionItem.Create(60180, "MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
         PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 100, 1), 14, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Players);
+        StartWhenTimePassed = IntegerOptionItem.Create(60205, "StartWhenTimePassed", new(0, 1200, 10), 300, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Seconds);
         AutoStartTimer = IntegerOptionItem.Create(60200, "AutoStartTimer", new(10, 600, 1), 20, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Seconds);
         ImmediateAutoStart = BooleanOptionItem.Create(60201, "ImmediateAutoStart", false, TabGroup.SystemSettings, false);
@@ -1188,6 +1232,8 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
+        LowLoadDelayUpdateNames = BooleanOptionItem.Create(60231, "LowLoad_DelayUpdateNames", true, TabGroup.SystemSettings, false)
+            .SetParent(LowLoadMode);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
@@ -1236,7 +1282,7 @@ public static class Options
              .SetGameMode(CustomGameMode.Standard)
              .SetColor(Color.red);*/
 
-        RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 4, TabGroup.SystemSettings, true)
+        RoleAssigningAlgorithm = StringOptionItem.Create(60400, "RoleAssigningAlgorithm", roleAssigningAlgorithms, 3, TabGroup.SystemSettings, true)
             .RegisterUpdateValueEvent((object obj, OptionItem.UpdateValueEventArgs args) => IRandom.SetInstanceById(args.CurrentValue))
             .SetHeader(true);
         KPDCamouflageMode = StringOptionItem.Create(60410, "KPDCamouflageMode", CamouflageMode, 0, TabGroup.SystemSettings, false)
@@ -1343,7 +1389,15 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
-        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false);
+        CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
+            .SetHeader(true)
+            .SetGameMode(CustomGameMode.Standard);
+
+        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
+            .SetColor(Color.cyan); ;
+
+        CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.ModSettings, false)
+            .SetColor(Color.cyan);
 
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
@@ -1942,6 +1996,10 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
+
+        NonCrewRandomCommonTasks = BooleanOptionItem.Create(60791, "NonCrewRandomCommonTasks", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定
         TextOptionItem.Create(10000032, "MenuTitle.Ghost", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
@@ -2065,7 +2123,7 @@ public static class Options
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
-        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 10 : 1, 1), 1, tab, false)
+        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, canSetNum ? 15 : 1, 1), 1, tab, false)
             .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Players)
             .SetHidden(!canSetNum)

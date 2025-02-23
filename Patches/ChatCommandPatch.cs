@@ -60,7 +60,7 @@ internal class ChatCommands
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Judge jd && jd.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -993,7 +993,7 @@ internal class ChatCommands
 
                         _ = new LateTask(() =>
                         {
-                            Utils.NotifyRoles(NoCache: true);
+                            Utils.NotifyRoles(ForceLoop: false, NoCache: true);
 
                         }, 0.2f, "Update NotifyRoles players after /kill");
                     }
@@ -1045,8 +1045,7 @@ internal class ChatCommands
                     foreach (var pc in Main.AllPlayerControls)
                     {
                         if (pc.IsAlive()) continue;
-
-                        pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                        pc.SetName(pc.GetRealName(isMeeting: true));
                     }
                     ChatUpdatePatch.DoBlockChat = false;
                     //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);
@@ -1106,7 +1105,7 @@ internal class ChatCommands
                             PlayerControl.LocalPlayer.RpcSetCustomRole(rl);
                             PlayerControl.LocalPlayer.GetRoleClass().OnAdd(PlayerControl.LocalPlayer.PlayerId);
                             Utils.SendMessage(string.Format("Debug Set your role to {0}", rl.ToString()), PlayerControl.LocalPlayer.PlayerId);
-                            Utils.NotifyRoles(NoCache: true);
+                            Utils.NotifyRoles(SpecifyTarget: PlayerControl.LocalPlayer, NoCache: true);
                             Utils.MarkEveryoneDirtySettings();
                             break;
                         }
@@ -1979,15 +1978,37 @@ internal class ChatCommands
         }
         else name = name.Trim().ToLower();
 
-        foreach (var rl in CustomRolesHelper.AllRoles)
+        string nameWithoutId = Regex.Replace(name.Replace(" ", ""), @"^\d+", "");
+
+        if (Options.CrossLanguageGetRole.GetBool())
         {
-            if (rl.IsVanilla()) continue;
-            var roleName = GetString(rl.ToString()).ToLower().Trim().Replace(" ", "");
-            string nameWithoutId = Regex.Replace(name.Replace(" ", ""), @"^\d+", "");
-            if (nameWithoutId == roleName)
+            foreach (var rl in CustomRolesHelper.AllRoles)
             {
-                role = rl;
-                return true;
+                if (!CrossLangRoleNames.ContainsKey(rl))
+                    continue;
+                else
+                {
+                    if (!CrossLangRoleNames[rl].Contains(nameWithoutId))
+                        continue;
+                    else
+                    {
+                        role = rl;
+                        return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            foreach (var rl in CustomRolesHelper.AllRoles)
+            {
+                if (rl.IsVanilla()) continue;
+                var roleName = GetString(rl.ToString()).ToLower().Trim().Replace(" ", "");
+                if (nameWithoutId == roleName)
+                {
+                    role = rl;
+                    return true;
+                }
             }
         }
         return false;
@@ -2014,71 +2035,107 @@ internal class ChatCommands
         }
 
         role = FixRoleNameInput(role).ToLower().Trim().Replace(" ", string.Empty);
+        var result = CustomRoles.NotAssigned;
 
         foreach (var rl in CustomRolesHelper.AllRoles)
         {
             if (rl.IsVanilla()) continue;
-            var roleName = GetString(rl.ToString());
-            if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
+
+            if (Options.CrossLanguageGetRole.GetBool())
             {
-                string devMark = "";
-                if ((isDev || isUp) && GameStates.IsLobby)
+                if (!CrossLangRoleNames.ContainsKey(rl))
+                    continue;
+                else
                 {
-                    devMark = "▲";
-                    if (CustomRolesHelper.IsAdditionRole(rl) || rl is CustomRoles.GM or CustomRoles.Mini || rl.IsGhostRole()) devMark = "";
-                    if (rl.GetCount() < 1 || rl.GetMode() == 0) devMark = "";
-                    if (isUp)
+                    if (!CrossLangRoleNames[rl].Contains(role))
+                        continue;
+                    else
                     {
-                        if (devMark == "▲") Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), roleName), playerId);
-                        else Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), roleName), playerId);
+                        result = rl;
+                        break;
                     }
-                    if (devMark == "▲")
-                    {
-                        byte pid = playerId == 255 ? (byte)0 : playerId;
-                        GhostRoleAssign.forceRole.Remove(pid);
-                        RoleAssign.SetRoles.Remove(pid);
-                        RoleAssign.SetRoles.Add(pid, rl);
-                    }
-                    if (rl.IsGhostRole() && !rl.IsAdditionRole() && isDev && (rl.GetCount() >= 1 && rl.GetMode() > 0))
-                    {
-                        byte pid = playerId == 255 ? (byte)0 : playerId;
-                        CustomRoles setrole = rl.GetCustomRoleTeam() switch
-                        {
-                            Custom_Team.Impostor => CustomRoles.ImpostorTOHE,
-                            _ => CustomRoles.CrewmateTOHE
-
-                        };
-                        RoleAssign.SetRoles.Remove(pid);
-                        RoleAssign.SetRoles.Add(pid, setrole);
-                        GhostRoleAssign.forceRole[pid] = rl;
-
-                        devMark = "▲";
-                    }
-
-                    if (isUp) return;
                 }
-                var Des = rl.GetInfoLong();
-                var title = devMark + $"<color=#ffffff>" + rl.GetRoleTitle() + "</color>\n";
-                var Conf = new StringBuilder();
-                string rlHex = Utils.GetRoleColorCode(rl);
-                if (Options.CustomRoleSpawnChances.ContainsKey(rl))
+            }
+            else
+            {
+                var roleName = GetString(rl.ToString());
+                if (role == roleName.ToLower().Trim().TrimStart('*').Replace(" ", string.Empty))
                 {
-                    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[rl], ref Conf);
-                    var cleared = Conf.ToString();
-                    var Setting = $"<color={rlHex}>{GetString(rl.ToString())} {GetString("Settings:")}</color>\n";
-                    Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
-
+                    result = rl;
+                    break;
                 }
-                // Show role info
-                Utils.SendMessage(Des, playerId, title, noReplay: true);
-
-                // Show role settings
-                Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
-                return;
             }
         }
-        if (isUp) Utils.SendMessage(GetString("Message.YTPlanCanNotFindRoleThePlayerEnter"), playerId);
-        else Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+
+        if (result == CustomRoles.NotAssigned)
+        {
+            Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+            return;
+        }
+
+        bool shouldDevAssign = isDev || isUp;
+
+        if (CustomRolesHelper.IsAdditionRole(result) || result is CustomRoles.GM or CustomRoles.Mini || result.IsGhostRole() && !isDev
+            || result.GetCount() < 1 || result.GetMode() == 0)
+        {
+            shouldDevAssign = false;
+        }
+
+        byte pid = playerId == 255 ? (byte)0 : playerId;
+
+        if (isUp)
+        {
+            if (result.IsGhostRole() || !shouldDevAssign)
+            {
+                Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), Translator.GetActualRoleName(result)), playerId);
+                return;
+            }
+
+            GhostRoleAssign.forceRole.Remove(pid);
+            RoleAssign.SetRoles[pid] = result;
+
+            Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), Translator.GetActualRoleName(result)), playerId);
+            return;
+        }
+
+        if (isDev && shouldDevAssign)
+        {
+            if (result.IsGhostRole() && !result.IsAdditionRole())
+            {
+                CustomRoles setrole = result.GetCustomRoleTeam() switch
+                {
+                    Custom_Team.Impostor => CustomRoles.ImpostorTOHE,
+                    _ => CustomRoles.CrewmateTOHE
+
+                };
+                RoleAssign.SetRoles[pid] = setrole;
+                GhostRoleAssign.forceRole[pid] = result;
+            }
+            else
+            {
+                GhostRoleAssign.forceRole.Remove(pid);
+                RoleAssign.SetRoles[pid] = result;
+            }
+        }
+
+
+        var Des = result.GetInfoLong();
+        var title = "▲" + $"<color=#ffffff>" + result.GetRoleTitle() + "</color>\n";
+        var Conf = new StringBuilder();
+        string rlHex = Utils.GetRoleColorCode(result);
+        if (Options.CustomRoleSpawnChances.ContainsKey(result))
+        {
+            Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[result], ref Conf);
+            var cleared = Conf.ToString();
+            var Setting = $"<color={rlHex}>{GetString(result.ToString())} {GetString("Settings:")}</color>\n";
+            Conf.Clear().Append($"<color=#ffffff>" + $"<size={Csize}>" + Setting + cleared + "</size>" + "</color>");
+
+        }
+        // Show role info
+        Utils.SendMessage(Des, playerId, title, noReplay: true);
+
+        // Show role settings
+        Utils.SendMessage("", playerId, Conf.ToString(), noReplay: true);
         return;
     }
     public static void OnReceiveChat(PlayerControl player, string text, out bool canceled)
@@ -2097,7 +2154,7 @@ internal class ChatCommands
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
+        if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
@@ -2976,7 +3033,7 @@ internal class ChatCommands
                 {
                     if (pc.IsAlive()) continue;
 
-                    pc.RpcSetNameEx(pc.GetRealName(isMeeting: true));
+                    pc.RpcSetNamePrivate(pc.GetRealName(isMeeting: true), player, true);
                 }
                 ChatUpdatePatch.DoBlockChat = false;
                 //Utils.NotifyRoles(isForMeeting: GameStates.IsMeeting, NoCache: true);

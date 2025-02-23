@@ -8,8 +8,17 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+[HarmonyPatch(typeof(HudManager), nameof(HudManager.Start))]
+class HudManagerStartPatch
+{
+    public static void Postfix(HudManager __instance)
+    {
+        __instance.gameObject.AddComponent<OptionShower>().hudManager = __instance;
+    }
+}
+
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update))]
-class HudManagerPatch
+class HudManagerUpdatePatch
 {
     public static bool ShowDebugText = false;
     public static int LastCallNotifyRolesPerSecond = 0;
@@ -203,7 +212,7 @@ class SetVentOutlinePatch
     }
 }
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.SetHudActive))]
-[HarmonyPatch(new Type[] { typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool) })]
+[HarmonyPatch([typeof(PlayerControl), typeof(RoleBehaviour), typeof(bool)])]
 class SetHudActivePatch
 {
     public static bool IsActive = false;
@@ -288,7 +297,7 @@ class TaskPanelBehaviourPatch
         // Display Description
         if (!player.GetCustomRole().IsVanilla())
         {
-            var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false)}:\r\n";
+            var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n";
             RoleWithInfo += player.GetRoleInfo();
 
             var AllText = Utils.ColorString(player.GetRoleColor(), RoleWithInfo);

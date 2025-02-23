@@ -102,9 +102,10 @@ internal class Retributionist : RoleBase
 
         if (msg == "/ret")
         {
+            bool canSeeRoles = PreventSeeRolesBeforeSkillUsedUp.GetBool();
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += "\n" + npc.PlayerId.ToString() + " → (" + npc.GetDisplayRoleAndSubName(npc, false) + ") " + npc.GetRealName();
+                text += $"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false, false)}) " : string.Empty) + npc.GetRealName();
             SendMessage(text, pc.PlayerId);
             return true;
         }
@@ -184,7 +185,6 @@ internal class Retributionist : RoleBase
             else
             {
                 target.RpcMurderPlayer(target);
-                NotifyRoles(NoCache: true);
             }
             target.SetRealKiller(pc);
 

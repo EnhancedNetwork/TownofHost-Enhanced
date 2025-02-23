@@ -14,6 +14,7 @@ internal class AbyssBringer : RoleBase
     const int Id = 31300;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
+    private static OptionItem BlackHoleCountLimit;
     private static OptionItem BlackHolePlaceCooldown;
     private static OptionItem BlackHoleDespawnMode;
     private static OptionItem BlackHoleDespawnTime;
@@ -28,6 +29,8 @@ internal class AbyssBringer : RoleBase
         const TabGroup tab = TabGroup.ImpostorRoles;
         const CustomRoles role = CustomRoles.Abyssbringer;
         Options.SetupRoleOptions(Id, tab, role);
+        BlackHoleCountLimit = IntegerOptionItem.Create(Id + 16, "BlackHoleCountLimit", new(1, 15, 1), 1, tab, false)
+            .SetParent(Options.CustomRoleSpawnChances[role]);
         BlackHolePlaceCooldown = IntegerOptionItem.Create(Id + 10, "BlackHolePlaceCooldown", new(1, 180, 1), 30, tab, false)
             .SetParent(Options.CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Seconds);
@@ -93,6 +96,11 @@ internal class AbyssBringer : RoleBase
         }
         // When no player exists, Instantly spawm and despawn networked object will cause error spam
 
+        if (BlackHoles.Count >= BlackHoleCountLimit.GetInt())
+        {
+            return;
+        }
+
         var pos = shapeshifter.GetCustomPosition();
         var room = shapeshifter.GetPlainShipRoom();
         var roomName = room == null ? string.Empty : Translator.GetString($"{room.RoomId}");
@@ -102,7 +110,7 @@ internal class AbyssBringer : RoleBase
     }
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("AbyssbringerButtonText"));
     // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Black Hole");
-    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var abyssbringer = _Player;
 
@@ -134,8 +142,8 @@ internal class AbyssBringer : RoleBase
                 {
                     var direction = (pos - blackHole.Position).normalized;
                     var newPosition = blackHole.Position + direction * BlackHoleMoveSpeed.GetFloat() * Time.fixedDeltaTime;
-                    blackHole.NetObject.TP(newPosition);
                     blackHole.Position = newPosition;
+                    blackHole.NetObject.Position = newPosition;
                 }
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())
@@ -148,7 +156,7 @@ internal class AbyssBringer : RoleBase
                     nearestPlayer.SetRealKiller(_Player);
                     nearestPlayer.SetDeathReason(PlayerState.DeathReason.Consumed);
                     Main.PlayerStates[nearestPlayer.PlayerId].SetDead();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, false);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, inMeeting: false, fromRole: true);
 
                     if (despawnMode == DespawnMode.After1PlayerEaten)
                     {
