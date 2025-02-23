@@ -8,9 +8,7 @@ namespace TOHE;
 internal class Cloud
 {
     private static string IP;
-    //private static int LOBBY_PORT = 0;
     private static int EAC_PORT = 0;
-    //private static Socket ClientSocket;
     private static Socket EacClientSocket;
     private static long LastRepotTimeStamp = 0;
     public static void Init()
@@ -35,39 +33,6 @@ internal class Cloud
         using StreamReader reader = new(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }
-    /*public static bool ShareLobby(bool command = false)
-    {
-        try
-        {
-            if (!Options.ShareLobby.GetBool() && !command) return false;
-            if (!Main.newLobby || (GameData.Instance.PlayerCount < Options.ShareLobbyMinPlayer.GetInt() && !command) || !GameStates.IsLobby) return false;
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame) return false;
-
-            if (IP == null || LOBBY_PORT == 0) throw new("Has no ip or port");
-
-            Main.newLobby = false;
-            string msg = $"{GameStartManager.Instance.GameRoomNameCode.text}|{Main.PluginVersion}|{GameData.Instance.PlayerCount + 1}|{TranslationController.Instance.currentLanguage.languageID}|{ServerManager.Instance.CurrentRegion.Name}|{DataManager.player.customization.name}";
-
-            if (msg.Length <= 60)
-            {
-                byte[] buffer = Encoding.Default.GetBytes(msg);
-                ClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                ClientSocket.Connect(IP, LOBBY_PORT);
-                ClientSocket.Send(buffer);
-                ClientSocket.Close();
-            }
-
-            Utils.SendMessage(Translator.GetString("Message.LobbyShared"), PlayerControl.LocalPlayer.PlayerId);
-
-        }
-        catch (Exception e)
-        {
-            Utils.SendMessage(Translator.GetString("Message.LobbyShareFailed"), PlayerControl.LocalPlayer.PlayerId);
-            Logger.Exception(e, "SentLobbyToQQ");
-            throw;
-        }
-        return true;
-    }*/
 
     private static bool connecting = false;
     public static void StartConnect()
@@ -118,7 +83,7 @@ internal class Cloud
     {
         public static void Postfix(PlayerControl __instance)
         {
-            if (__instance.AmOwner && LastRepotTimeStamp != 0 && LastRepotTimeStamp + 8 < Utils.TimeStamp
+            if (__instance.AmOwner && LastRepotTimeStamp != 0 && LastRepotTimeStamp + 8 < Utils.TimeStamp)
             {
                 LastRepotTimeStamp = 0;
                 StopConnect();
