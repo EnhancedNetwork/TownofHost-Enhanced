@@ -107,7 +107,7 @@ internal class Jackal : RoleBase
     }
     public override void Add(byte playerId)
     {
-        playerId.SetAbilityUseLimit(0);
+        playerId.SetAbilityUseLimit(SidekickRecruitLimitOpt.GetInt());
         hasConverted = false;
 
         if (!Playerids.Contains(playerId))
@@ -184,11 +184,6 @@ internal class Jackal : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
             Logger.Info("Jackal can not recruit this target", "Jackal");
             return true;
-        }
-        if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-        {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
-            return false;
         }
         if (target.Is(CustomRoles.Loyal)
             || SidekickAssignMode.GetInt() == 2 && (target.Is(CustomRoles.Cleansed) || target.Is(CustomRoles.Stubborn)))
@@ -290,7 +285,7 @@ internal class Jackal : RoleBase
     {
         var role = pc.GetCustomRole();
         return pc != null && !pc.Is(CustomRoles.Sidekick)
-            && !(SidekickAssignMode.GetInt() == 2 && ((pc.Is(CustomRoles.Cleansed) && Cleanser.CantGetAddon()) || pc.Is(CustomRoles.Stubborn)))
+            && !(SidekickAssignMode.GetInt() == 2 && (pc.Is(CustomRoles.Cleansed) || pc.Is(CustomRoles.Stubborn)))
             && ((CanRecruitCoven.GetBool() && role.IsCoven())
             || (CanRecruitNeutral.GetBool() && role.IsNeutral() && !role.IsNA())
             || (CanRecruitImpostor.GetBool() && role.IsImpostor())
