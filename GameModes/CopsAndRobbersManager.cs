@@ -750,6 +750,9 @@ internal static class CopsAndRobbersManager
 
     public static void OnCopAttack(PlayerControl cop, PlayerControl robber)
     {
+        if (PlayerControl.LocalPlayer.Is(CustomRoles.GM))
+            PlayerControl.LocalPlayer.KillFlash();
+        
         if (cop == null || robber == null || Options.CurrentGameMode != CustomGameMode.CandR) return;
         if (!cop.Is(CustomRoles.Cop) || !robber.Is(CustomRoles.Robber)) return;
 
