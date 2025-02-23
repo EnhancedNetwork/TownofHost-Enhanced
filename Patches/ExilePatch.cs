@@ -193,7 +193,6 @@ class ExileControllerWrapUpPatch
                     Utils.DoNotifyRoles();
                 }
 
-                AntiBlackout.ResetAfterMeeting();
                 Main.LastMeetingEnded = Utils.TimeStamp;
             }, 1f, "AfterMeetingDeathPlayers Task");
         }
