@@ -105,7 +105,7 @@ internal class Necromancer : CovenManager
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return string.Format(GetString("NecromancerAbilityCooldown") + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
+        return string.Format(GetString(GeneralOption.AbilityCooldown.ToString()) + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
     }
     public override void UnShapeShiftButton(PlayerControl nm)
     {
