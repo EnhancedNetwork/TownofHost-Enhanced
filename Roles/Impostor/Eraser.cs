@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -61,26 +60,21 @@ internal class Eraser : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = EraseLimitOpt.GetInt();
-
-        var pc = playerId.GetPlayer();
-        pc.AddDoubleTrigger();
+        playerId.SetAbilityUseLimit(EraseLimitOpt.GetInt());
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? EraseCooldown.GetFloat() : DefaultKillCooldown;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = playerId.GetAbilityUseLimit() >= 1 ? EraseCooldown.GetFloat() : DefaultKillCooldown;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        if (AbilityLimit >= 1)
+        if (playerId.GetAbilityUseLimit() >= 1)
             HudManager.Instance.KillButton.OverrideText(GetString("EraserButtonText"));
         else
             HudManager.Instance.KillButton.OverrideText(GetString("KillButtonText"));
     }
-    public override string GetProgressText(byte playerId, bool comms)
-        => ColorString(AbilityLimit >= 1 ? GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (AbilityLimit < 1) return true;
+        if (killer.GetAbilityUseLimit() < 1) return true;
 
         var targetRole = target.GetCustomRole();
         if ((targetRole.IsNeutral() && !CanEraseNeutral.GetBool()) || (targetRole.IsCoven() && (!CanEraseCoven.GetBool() || CovenManager.HasNecronomicon(target))) || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
@@ -94,8 +88,7 @@ internal class Eraser : RoleBase
 
         return killer.CheckDoubleTrigger(target, () =>
         {
-            AbilityLimit--;
-            SendSkillRPC();
+            killer.RpcRemoveAbilityUse();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             killer.Notify(GetString("EraserEraseNotice"));

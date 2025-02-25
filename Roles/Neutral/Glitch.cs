@@ -16,7 +16,7 @@ internal class Glitch : RoleBase
     private const int Id = 16300;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Glitch);
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
@@ -28,23 +28,19 @@ internal class Glitch : RoleBase
     private static OptionItem MimicCooldown;
     private static OptionItem MimicDuration;
     private static OptionItem CanVent;
+    private static OptionItem CanUseSabotageOpt;
     private static OptionItem HasImpostorVision;
 
     public int HackCDTimer;
     public int KCDTimer;
-    public int MimicCDTimer;
-    public int MimicDurTimer;
     public long LastHack;
     public long LastKill;
-    public long LastMimic;
 
     public bool NotSetCD = false;
-    private bool IsShifted = false;
     private long LastRpcSend = 0;
 
     public override void SetupCustomOption()
     {
-        //GlitchÒü»1õ║║Õø║Õ«Ü
         SetupSingleRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Glitch, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 1f), 20, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
@@ -57,23 +53,20 @@ internal class Glitch : RoleBase
         MimicDuration = FloatOptionItem.Create(Id + 16, "Glitch_MimicDuration", new(0f, 60f, 1f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch])
             .SetValueFormat(OptionFormat.Seconds);
         CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
+        CanUseSabotageOpt = BooleanOptionItem.Create(Id + 17, GeneralOption.CanUseSabotage, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
         HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Glitch]);
     }
     public override void Add(byte playerId)
     {
         HackCDTimer = 10;
         KCDTimer = 10;
-        MimicCDTimer = 10;
-        MimicDurTimer = 0;
 
         NotSetCD = false;
-        IsShifted = false;
 
         var ts = Utils.GetTimeStamp();
 
         LastKill = ts;
         LastHack = ts;
-        LastMimic = ts;
         LastRpcSend = ts;
 
         // Double Trigger
@@ -82,33 +75,20 @@ internal class Glitch : RoleBase
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = 1f;
-    public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
-    public void Mimic(PlayerControl pc)
+    public override void ApplyGameOptions(IGameOptions opt, byte id)
     {
-        if (pc == null) return;
-        if (!pc.IsAlive()) return;
-        if (MimicCDTimer > 0) return;
-        if (IsShifted) return;
-
-        var playerlist = Main.AllAlivePlayerControls.Where(a => a.PlayerId != pc.PlayerId).ToList();
-
-        try
-        {
-            pc.RpcShapeshift(playerlist[IRandom.Instance.Next(0, playerlist.Count)], false);
-
-            IsShifted = true;
-            LastMimic = Utils.GetTimeStamp();
-            MimicCDTimer = MimicCooldown.GetInt();
-            MimicDurTimer = MimicDuration.GetInt();
-        }
-        catch (System.Exception ex)
-        {
-            Logger.Error(ex.ToString(), "Glitch.Mimic.RpcShapeshift");
-        }
+        opt.SetVision(HasImpostorVision.GetBool());
+        AURoleOptions.ShapeshifterCooldown = MimicCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = MimicDuration.GetFloat();
+    }
+    public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
+    {
+        shouldAnimate = false;
+        return true;
     }
     public override bool CanUseImpostorVentButton(PlayerControl pc) => CanVent.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    public override bool CanUseSabotage(PlayerControl pc) => true;
+    public override bool CanUseSabotage(PlayerControl pc) => CanUseSabotageOpt.GetBool();
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -140,8 +120,6 @@ internal class Glitch : RoleBase
 
         if (HackCDTimer > 180 || HackCDTimer < 0) HackCDTimer = 0;
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
-        if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
-        if (MimicDurTimer > 180 || MimicDurTimer < 0) MimicDurTimer = 0;
 
         bool change = false;
         foreach (var pc in hackedIdList)
@@ -159,8 +137,6 @@ internal class Glitch : RoleBase
         {
             HackCDTimer = 0;
             KCDTimer = 0;
-            MimicCDTimer = 0;
-            MimicDurTimer = 0;
 
             if (LastRpcSend <= nowTime + 500)
             {
@@ -170,30 +146,7 @@ internal class Glitch : RoleBase
             return;
         }
 
-        if (MimicDurTimer > 0)
-        {
-            try { MimicDurTimer = (int)(MimicDuration.GetInt() - (nowTime - LastMimic)); }
-            catch { MimicDurTimer = 0; }
-            if (MimicDurTimer > 180) MimicDurTimer = 0;
-        }
-        if ((MimicDurTimer <= 0 || !GameStates.IsInTask) && IsShifted)
-        {
-            try
-            {
-                player.RpcShapeshift(player, false);
-                IsShifted = false;
-            }
-            catch (System.Exception ex)
-            {
-                Logger.Error(ex.ToString(), "Glitch.Mimic.RpcRevertShapeshift");
-            }
-            if (!GameStates.IsInTask)
-            {
-                MimicDurTimer = 0;
-            }
-        }
-
-        if (HackCDTimer <= 0 && KCDTimer <= 0 && MimicCDTimer <= 0 && MimicDurTimer <= 0) return;
+        if (HackCDTimer <= 0 && KCDTimer <= 0) return;
 
         try { HackCDTimer = (int)(HackCooldown.GetInt() - (nowTime - LastHack)); }
         catch { HackCDTimer = 0; }
@@ -202,10 +155,6 @@ internal class Glitch : RoleBase
         try { KCDTimer = (int)(KillCooldown.GetInt() - (nowTime - LastKill)); }
         catch { KCDTimer = 0; }
         if (KCDTimer > 180 || KCDTimer < 0) KCDTimer = 0;
-
-        try { MimicCDTimer = (int)(MimicCooldown.GetInt() - (nowTime - LastMimic)); }
-        catch { MimicCDTimer = 0; }
-        if (MimicCDTimer > 180 || MimicCDTimer < 0) MimicCDTimer = 0;
 
         if (!player.IsModded())
         {
@@ -228,8 +177,6 @@ internal class Glitch : RoleBase
 
         var sb = new StringBuilder(string.Empty);
 
-        if (MimicDurTimer > 0) sb.Append($"{string.Format(GetString("Glitch_MimicDur"), MimicDurTimer)}\n");
-        if (MimicCDTimer > 0 && MimicDurTimer <= 0) sb.Append($"{string.Format(GetString("Glitch_MimicCD"), MimicCDTimer)}\n");
         if (HackCDTimer > 0) sb.Append($"{string.Format(GetString("Glitch_HackCD"), HackCDTimer)}\n");
         if (KCDTimer > 0) sb.Append($"{string.Format(GetString("Glitch_KCD"), KCDTimer)}\n");
 
@@ -241,11 +188,8 @@ internal class Glitch : RoleBase
         var timestamp = Utils.GetTimeStamp();
         LastKill = timestamp;
         LastHack = timestamp;
-        LastMimic = timestamp;
         KCDTimer = 10;
         HackCDTimer = 10;
-        MimicCDTimer = 10;
-        MimicDurTimer = 0;
         NotSetCD = true;
         SendRPC();
     }
@@ -282,10 +226,10 @@ internal class Glitch : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton.OverrideText(GetString("KillButtonText"));
-        hud.SabotageButton.OverrideText(GetString("Glitch_MimicButtonText"));
+        hud.AbilityButton.OverrideText(GetString("Glitch_MimicButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("GlitchHack");
-    public override Sprite SabotageButtonSprite => CustomButton.Get("GlitchMimic");
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("GlitchMimic");
 
     private void SendRPC()
     {
@@ -293,8 +237,6 @@ internal class Glitch : RoleBase
         writer.WriteNetObject(_Player);
         writer.Write(HackCDTimer);
         writer.Write(KCDTimer);
-        writer.Write(MimicCDTimer);
-        writer.Write(MimicDurTimer);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
@@ -302,7 +244,5 @@ internal class Glitch : RoleBase
     {
         HackCDTimer = reader.ReadInt32();
         KCDTimer = reader.ReadInt32();
-        MimicCDTimer = reader.ReadInt32();
-        MimicDurTimer = reader.ReadInt32();
     }
 }
