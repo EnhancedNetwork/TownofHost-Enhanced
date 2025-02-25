@@ -12,7 +12,7 @@
   "GitHub": "GitHub",
   "Discord": "Discord",
   "Website": "Webseite",
-  "PlayerNameForRoleInfo": "Hey {0}, deine Rolle ist:-\n",
+  "PlayerNameForRoleInfo": "Hey {0}, deine Rolle ist:- \n",
   "HostIconInMeeting": "HOST: {0}",
   "ModdedClient": "Modifizierter Client",
   "SubText.GM": "Beobachte das Chaos!",
