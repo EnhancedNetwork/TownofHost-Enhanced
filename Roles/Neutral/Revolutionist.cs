@@ -234,7 +234,7 @@ internal class Revolutionist : RoleBase
                     SetDrawPlayerRPC(player, rv_target, true);
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                     ResetCurrentDrawTarget(playerId);
-                    if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt() && rv_target.IsTransformedNeutralApocalypse())
+                    if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt() && !rv_target.IsTransformedNeutralApocalypse())
                     {
                         rvTargetId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(rv_target);

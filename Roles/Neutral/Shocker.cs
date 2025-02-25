@@ -185,11 +185,13 @@ internal class Shocker : RoleBase
         if (!ShockerCanShockHimself.GetBool() && playerId == player.PlayerId)
             return;
 
+        if (player.IsTransformedNeutralApocalypse()) return;
+
         if (isShocking)
         {
             foreach (Collider2D collider in shockedRooms)
             {
-                if (collider.IsTouching(player.Collider) && !player.IsTransformedNeutralApocalypse())
+                if (collider.IsTouching(player.Collider))
                 {
                     Logger.Info($"{player.PlayerId} overlaps {collider.name}", "Shocker.OnUpdate");
                     player.SetDeathReason(PlayerState.DeathReason.Electrocuted);
