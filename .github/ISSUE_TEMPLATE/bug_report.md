@@ -1,7 +1,20 @@
 name: "Bug Report"
 description: "Report a bug or issue with Town of Host: Enhanced."
-labels: [bug]
+title: "[Bug]: "
+labels: ["bug", "triage"]
 body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: input
+    id: contact
+    attributes:
+      label: "Contact Details"
+      description: "How can we get in touch with you if we need more info?"
+      placeholder: "ex. email@example.com"
+    validations:
+      required: false
   - type: textarea
     id: description
     attributes:
@@ -23,13 +36,6 @@ body:
       description: "What should have happened instead?"
     validations:
       required: true
-  - type: textarea
-    id: logs
-    attributes:
-      label: "Logs & Crash Reports"
-      description: "Paste any relevant logs or crash reports here."
-    validations:
-      required: false
   - type: dropdown
     id: platform
     attributes:
@@ -47,3 +53,19 @@ body:
       description: "Which version of TOHE are you using?"
     validations:
       required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs & Crash Reports"
+      description: "Paste any relevant logs or crash reports here."
+      render: shell
+    validations:
+      required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "Code of Conduct"
+      description: "By submitting this issue, you agree to follow our [Code of Conduct](https://weareten.ca/code-of-conduct)."
+      options:
+        - label: "I agree to follow this project's Code of Conduct"
+          required: true
