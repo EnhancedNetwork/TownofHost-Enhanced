@@ -1,20 +1,25 @@
----
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
-assignees: ''
-
----
-
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
-
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
-
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
-
-**Additional context**
-Add any other context or screenshots about the feature request here.
+name: "Feature Request"
+description: "Suggest a new feature or role for Town of Host: Enhanced."
+labels: [enhancement]
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: "Feature Description"
+      description: "Describe the new feature or role."
+    validations:
+      required: true
+  - type: textarea
+    id: potential-benefits
+    attributes:
+      label: "Potential Benefits"
+      description: "How would this feature improve the mod?"
+    validations:
+      required: true
+  - type: textarea
+    id: potential-issues
+    attributes:
+      label: "Potential Issues"
+      description: "Are there any balance concerns or conflicts?"
+    validations:
+      required: false
