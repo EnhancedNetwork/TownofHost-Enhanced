@@ -62,7 +62,7 @@ internal class Eraser : RoleBase
     {
         playerId.SetAbilityUseLimit(EraseLimitOpt.GetInt());
     }
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = playerId.GetAbilityUseLimit() >= 1 ? EraseCooldown.GetFloat() : DefaultKillCooldown;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = id.GetAbilityUseLimit() >= 1 ? EraseCooldown.GetFloat() : DefaultKillCooldown;
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         if (playerId.GetAbilityUseLimit() >= 1)
