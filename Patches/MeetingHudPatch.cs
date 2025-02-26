@@ -312,7 +312,7 @@ class CheckForEndVotingPatch
             if (tie)
             {
                 byte targetId = byte.MaxValue;
-                foreach (var data in VotingData.Where(x => x.Key <= allPlayerCount && x.Value == max).ToArray())
+                foreach (var data in VotingData.Where(x => x.Key < allPlayerCount && x.Value == max).ToArray())
                 {
                     if (Tiebreaker.VoteFor.Contains(data.Key))
                     {
@@ -343,7 +343,7 @@ class CheckForEndVotingPatch
                         exiledPlayer = allPlayers.FirstOrDefault(info => info.PlayerId == exileId);
                         break;
                     case TieMode.All:
-                        var exileIds = VotingData.Where(x => x.Key <= allPlayerCount && x.Value == max).Select(kvp => kvp.Key).ToArray();
+                        var exileIds = VotingData.Where(x => x.Key < allPlayerCount && x.Value == max).Select(kvp => kvp.Key).ToArray();
                         foreach (var playerId in exileIds)
                             GetPlayerById(playerId).SetRealKiller(null);
                         TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Vote, exileIds);
