@@ -306,7 +306,7 @@ class CheckForEndVotingPatch
             voteLog.Info($"Decision to exiled a player: {exileId} ({GetVoteName(exileId)})");
 
             var allPlayers = GameData.Instance.AllPlayers.ToArray();
-            var allPlayerCount = allPlayers?.Count ?? Main.AllPlayerControls?.Length ?? 127;
+            var allPlayerCount = allPlayers.Count;
 
             bool braked = false;
             if (tie)
