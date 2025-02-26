@@ -18,7 +18,6 @@ internal class DarkFairy : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     //==================================================================\\
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     private static OptionItem TaskMarkPerRoundOpt;
     private static OptionItem CanDarkenNeutral;
@@ -112,12 +111,13 @@ internal class DarkFairy : RoleBase
             SendRPC(playerId, clearAll: true);
         }
     }
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
-    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task)
+    public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     {
         if (player == null || _Player == null) return;
         if (!player.IsAlive()) return;

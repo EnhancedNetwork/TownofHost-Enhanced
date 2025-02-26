@@ -15,7 +15,7 @@ internal class SchrodingersCat : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralBenign;
     //==================================================================\\
 
-    public static readonly Dictionary<byte, byte> teammate = [];
+    private static readonly Dictionary<byte, byte> teammate = [];
 
     public override void SetupCustomOption()
     {

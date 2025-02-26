@@ -75,7 +75,7 @@ internal class Solsticer : RoleBase
         AURoleOptions.EngineerCooldown = 1f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
         AURoleOptions.PlayerSpeedMod = !patched ? SolsticerSpeed.GetFloat() : 0.5f;
-    } //Enabled Solsticer can vent
+    } //Enabled Solsticer can Vent
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
@@ -83,7 +83,7 @@ internal class Solsticer : RoleBase
     {
         if (player == null) return true;
 
-        // Sycn for modded clients
+        // Sync for modded clients
         SendRPC();
 
         if (patched)
@@ -152,8 +152,8 @@ internal class Solsticer : RoleBase
                 MurderMessage = string.Format(GetString("SolsticerMurderMessage"), killer.GetRealName(), GetString(killer.GetCustomRole().ToString()));
             else MurderMessage = "";
         }
-        return false; //should be patched before every others
-    } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets cd.
+        return false; //Should be patched before every others
+    } //My idea is to encourage everyone to kill Solsticer and won't waste shoots on it, only resets Cooldown
     public override void AfterMeetingTasks()
     {
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Solsticer)).ToArray())
@@ -236,9 +236,7 @@ internal class Solsticer : RoleBase
     public void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
-        var taskState = pc.GetPlayerTaskState();
-        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-        taskState.CompletedTasksCount = 0;
+        pc.RpcResetTasks(); //Let taskassign patch decide the tasks
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
         Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
@@ -294,25 +292,5 @@ internal class Solsticer : RoleBase
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
             AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
         }
-    }
-    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
-    {
-        if (seer.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.TryGetValue(seer.PlayerId, out var seerTemmateTargetId) && target.PlayerId == seerTemmateTargetId)
-            {
-                if (target.GetCustomRole().IsCrewmate()) return "#8CFFFF";
-                else return Main.roleColors[target.GetCustomRole()];
-            }
-        }
-        if (target.Is(CustomRoles.SchrodingersCat))
-        {
-            if (SchrodingersCat.teammate.TryGetValue(target.PlayerId, out var targetTemmateTargetId) && seer.PlayerId == targetTemmateTargetId)
-            {
-                if (seer.GetCustomRole().IsCrewmate()) return "#8CFFFF";
-                else return Main.roleColors[seer.GetCustomRole()];
-            }
-        }
-        return string.Empty;
     }
 }

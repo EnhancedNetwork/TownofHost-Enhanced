@@ -140,7 +140,7 @@ namespace TOHE.Modules
                     .Write(false)
                     .EndRpc();
                 sender.SendMessage();
-            }, 0.4f);
+            }, 0.4f, "Send RPC FixModdedClientCNOText", shoudLog: false);
 
             MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
             writer.StartMessage(6);
