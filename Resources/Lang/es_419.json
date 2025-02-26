@@ -74,7 +74,7 @@
   "NeutralApocalypseCanGuess": "<color=#ff174f>Apocalipsis</color> <color=#7f8c8d>Neutral</color> puede adivinar",
   "CovenCanGuess": "<color=#ac42f2>Aquelarre</color> puede adivinar",
   "PassiveNeutralsCanGuess": "Los <color=#7f8c8d>Neutrales</color> pasivos pueden adivinar",
-  "CanGuessAddons": "Se pueden adivinar Add-ons",
+  "CanGuessAddons": "Se pueden adivinar Agregados",
   "ShowOnlyEnabledRolesInGuesserUI": "Mostrar solamente roles activos en la interfaz de adivinanzas",
   "CrewCanGuessCrew": "Los <color=#8cffff>Tripulantes</color> pueden adivinar roles de <color=#8cffff>Tripulantes</color>",
   "ImpCanGuessImp": "Los <color=#ff1919>Impostores</color> pueden adivinar roles de <color=#ff1919>Impostor</color>",
