@@ -909,6 +909,7 @@ public enum CustomRoles
     Revenant,
     Revolutionist,
     Romantic,
+    Rulebook,
     RuthlessRomantic,
     SchrodingersCat,
     Seeker,
