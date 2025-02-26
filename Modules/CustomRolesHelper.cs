@@ -201,6 +201,7 @@ public static class CustomRolesHelper
             CustomRoles.Slayer or
             CustomRoles.Contaminator or
             CustomRoles.Massacre or
+            CustomRoles.Rulebook or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -1394,6 +1395,7 @@ public static class CustomRolesHelper
            CustomRoles.Artist => CountTypes.Artist,
            CustomRoles.Slayer => CountTypes.Slayer,
            CustomRoles.Contaminator => CountTypes.Contaminator,
+           CustomRoles.Rulebook => CountTypes.Rulebook,
            CustomRoles.Massacre => CountTypes.Massacre,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
                
@@ -1461,6 +1463,7 @@ public static class CustomRolesHelper
             CustomRoles.Slayer => CustomWinner.Slayer,
             CustomRoles.Contaminator => CustomWinner.Contaminator,
             CustomRoles.Massacre => CustomWinner.Massacre,
+            CustomRoles.Rulebook => CustomWinner.Rulebook,
             _ => throw new NotImplementedException()
 
         };
@@ -1502,6 +1505,7 @@ public static class CustomRolesHelper
             CountTypes.Slayer => CustomRoles.Slayer,
             CountTypes.Contaminator => CustomRoles.Contaminator,
             CountTypes.Massacre => CustomRoles.Massacre,
+            CountTypes.Rulebook => CustomRoles.Rulebook,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1598,5 +1602,6 @@ public enum CountTypes
     Artist,
     Slayer,
     Contaminator,
-    Massacre
+    Massacre,
+    Rulebook
 }
