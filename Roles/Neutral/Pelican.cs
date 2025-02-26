@@ -194,6 +194,11 @@ internal class Pelican : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return true;
+        }
         if (CanEat(killer, target.PlayerId))
         {
             EatPlayer(killer, target);

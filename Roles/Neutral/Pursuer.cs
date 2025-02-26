@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -57,7 +58,12 @@ internal class Pursuer : RoleBase
 
         if (target.Is(CustomRoles.KillingMachine))
         {
-            Logger.Info("target is Killing Machine, ability used count reduced, but target will not die", "Purser");
+            Logger.Info($"target is Killing Machine, ability used count reduced, but target will not die", "Pursuer");
+            return false;
+        }
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            Logger.Info($"target is Stubborn, ability used count reduced, but target will not die", "Pursuer");
             return false;
         }
 

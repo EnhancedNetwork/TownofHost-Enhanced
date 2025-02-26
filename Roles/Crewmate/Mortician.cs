@@ -49,6 +49,11 @@ internal class Mortician : RoleBase
             LocateArrow.RemoveAllTarget(_Player.PlayerId);
 
         if (pc == null || target == null || !pc.Is(CustomRoles.Mortician) || pc.PlayerId == target.PlayerId) return;
+        if (target.Object.Is(CustomRoles.Stubborn))
+        {
+            pc.Notify(GetString("StubbornNotify"));
+            return;
+        }
 
         string name = string.Empty;
         var killer = target.PlayerId.GetRealKillerById();
