@@ -2403,6 +2403,11 @@ internal class ChatCommands
                 Utils.SendMessage(GetString("Message.CovenInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), GetString("CovenInfoTitle")));
                 break;
 
+            case "/anomalyinfo":
+                canceled = true;
+                Utils.SendMessage(GetString("Message.AnomalyInfo"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jester), GetString("AnomalyInfoTitle")));
+                break;
+
             case "/rn":
             case "/rename":
             case "/renomear":
