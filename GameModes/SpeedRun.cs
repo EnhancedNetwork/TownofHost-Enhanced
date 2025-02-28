@@ -1,7 +1,7 @@
 using TOHE.Roles.Core;
 using UnityEngine;
 
-namespace TOHE.GameModes;
+namespace TOHE;
 
 public static class SpeedRun
 {
