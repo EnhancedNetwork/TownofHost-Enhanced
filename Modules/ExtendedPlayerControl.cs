@@ -68,13 +68,18 @@ static class ExtendedPlayerControl
     }
     public static void CheckConflictedAddOnsFromList(this PlayerControl player, ref List<CustomRoles> addOnList)
     {
+        List<CustomRoles> confilctedAddOns = [];
         foreach (var addon in addOnList)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false))
             {
                 Logger.Info($"{addon} have conflict, remove from list", $"{player.GetCustomRole()}");
-                addOnList.Remove(addon);
+                confilctedAddOns.Add(addon);
             }
+        }
+        foreach (var removeAddOns in confilctedAddOns.ToArray())
+        {
+            addOnList.Remove(removeAddOns);
         }
     }
     private static System.Collections.IEnumerator RemoveIncompatibleAddOnsAsync(this PlayerControl player)
