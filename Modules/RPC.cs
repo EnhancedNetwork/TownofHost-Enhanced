@@ -352,7 +352,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
-                CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
+                int roleId = reader.ReadPackedInt32();
+                CustomRoles role = (CustomRoles)roleId;
+                Logger.Info($"playerId: {CustomRoleTargetId} - role: {role}", "CustomRPC.SetCustomRole");
                 RPC.SetCustomRole(CustomRoleTargetId, role);
                 break;
             case CustomRPC.SyncLobbyTimer:
