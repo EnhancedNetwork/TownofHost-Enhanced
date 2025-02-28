@@ -185,6 +185,8 @@ internal class Shocker : RoleBase
         if (!ShockerCanShockHimself.GetBool() && playerId == player.PlayerId)
             return;
 
+        if (player.IsTransformedNeutralApocalypse()) return;
+
         if (isShocking)
         {
             foreach (Collider2D collider in shockedRooms)
