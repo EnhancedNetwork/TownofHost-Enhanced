@@ -68,22 +68,24 @@ internal class Bandit : RoleBase
     public override bool CanUseSabotage(PlayerControl pc) => CanUsesSabotage.GetBool();
     public override bool CanUseKillButton(PlayerControl pc) => true;
 
-    private static CustomRoles? SelectRandomAddon(PlayerControl Target)
+    private static CustomRoles? SelectRandomAddon(PlayerControl killer, PlayerControl Target)
     {
         if (!AmongUsClient.Instance.AmHost) return null;
-        var AllSubRoles = Main.PlayerStates[Target.PlayerId].SubRoles.ToList();
-        for (int i = AllSubRoles.Count - 1; i >= 0; i--)
+
+        var AllSubRoles = Target.GetCustomSubRoles().ToList();
+        killer.CheckConflictedAddOnsFromList(ref AllSubRoles);
+
+        foreach (var subRole in AllSubRoles)
         {
-            var role = AllSubRoles[i];
-            if (role == CustomRoles.Cleansed || // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
-                role == CustomRoles.LastImpostor ||
-                role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
-                (role.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool()) ||
-                (role == CustomRoles.Nimble && CanVent.GetBool()) ||
-                ((role.IsBetrayalAddon() || role is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
+            if (subRole is CustomRoles.Cleansed or // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
+                CustomRoles.LastImpostor or
+                CustomRoles.Lovers or // Causes issues involving Lovers Suicide
+                CustomRoles.Nimble && CanVent.GetBool()
+                || (subRole.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool())
+                || ((subRole.IsBetrayalAddon() || subRole is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
             {
-                Logger.Info($"Removed {role} from list of stealable addons", "Bandit");
-                AllSubRoles.Remove(role);
+                Logger.Info($"Removed {subRole} from list of stealable addons", "Bandit");
+                AllSubRoles.Remove(subRole);
             }
         }
 
@@ -124,14 +126,14 @@ internal class Bandit : RoleBase
     }
     private void StealAddon(PlayerControl killer, PlayerControl target, CustomRoles? SelectedAddOn)
     {
-        target.AddInSwitchAddons(killer, IsAddon: SelectedAddOn);
+        target.AddInSwitchAddons(killer, SelectedAddOn ?? CustomRoles.NotAssigned);
 
         if (StealMode.GetValue() == 1)
         {
             Main.PlayerStates[target.PlayerId].RemoveSubRole((CustomRoles)SelectedAddOn);
             Logger.Info($"Successfully removed {SelectedAddOn} addon from {target.GetNameWithRole()}", "Bandit");
 
-            killer.RpcSetCustomRole((CustomRoles)SelectedAddOn);
+            killer.RpcSetCustomRole((CustomRoles)SelectedAddOn, false, false);
             Logger.Info($"Successfully Added {SelectedAddOn} addon to {killer.GetNameWithRole()}", "Bandit");
         }
         else
@@ -159,7 +161,7 @@ internal class Bandit : RoleBase
         bool flag = false;
         if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
 
-        var SelectedAddOn = SelectRandomAddon(target);
+        var SelectedAddOn = SelectRandomAddon(killer, target);
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.
         {
             killer.Notify(Translator.GetString("Bandit_NoStealableAddons"));
@@ -207,7 +209,7 @@ internal class Bandit : RoleBase
             Logger.Info($"Successfully removed {role} addon from {target.GetNameWithRole()}", "Bandit");
             SendRPC(targetId, role, true);
 
-            _Player.RpcSetCustomRole(role);
+            _Player.RpcSetCustomRole(role, false, false);
             Logger.Info($"Successfully Added {role} addon to {_Player?.GetNameWithRole()}", "Bandit");
         }
     }

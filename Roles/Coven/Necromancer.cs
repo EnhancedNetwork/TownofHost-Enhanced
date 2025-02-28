@@ -143,7 +143,7 @@ internal class Necromancer : CovenManager
         }
         var role = deadRoles.RandomElement();
         nm.RpcChangeRoleBasis(role);
-        nm.RpcSetCustomRole(role, checkAddons: false);
+        nm.RpcSetCustomRole(role, false, false);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
         nm.SyncSettings();
         Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
@@ -179,10 +179,10 @@ internal class Necromancer : CovenManager
         }
         if (nm.IsAlive())
             nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
-        nm.RpcSetCustomRole(CustomRoles.Necromancer, checkAddons: false);
+        nm.RpcSetCustomRole(CustomRoles.Necromancer, false, false);
         foreach (var addon in OldAddons[nm.PlayerId])
         {
-            nm.RpcSetCustomRole(addon, checkAddons: false);
+            nm.RpcSetCustomRole(addon, false, false);
         }
         OldAddons[nm.PlayerId].Clear();
         nm.ResetKillCooldown();
