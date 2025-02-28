@@ -354,7 +354,7 @@ internal class RPCHandlerPatch
                 byte CustomRoleTargetId = reader.ReadByte();
                 int roleId = reader.ReadPackedInt32();
                 CustomRoles role = (CustomRoles)roleId;
-                Logger.Info($"playerId: {CustomRoleTargetId} - role: {role}", "CustomRPC.SetCustomRole");
+                Logger.Info($"playerId: {CustomRoleTargetId} - roleid {roleId} - role: {role}", "CustomRPC.SetCustomRole");
                 RPC.SetCustomRole(CustomRoleTargetId, role);
                 break;
             case CustomRPC.SyncLobbyTimer:
@@ -1073,7 +1073,7 @@ public class StartRpcImmediatelyPatch
         messageWriter.Write(callId);
 
         __result = messageWriter;
-        RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
+        RPC.SendRpcLogger(targetNetId, callId, SendOption.None, targetClientId);
         return false;
     }
 }
