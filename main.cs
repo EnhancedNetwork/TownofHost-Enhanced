@@ -900,6 +900,7 @@ public enum CustomRoles
     Pixie,
     PlagueBearer,
     PlagueDoctor,
+    Predator,
     Provocateur,
     PunchingBag,
     Pursuer,
@@ -1147,6 +1148,7 @@ public enum CustomWinner
     Massacre = CustomRoles.Massacre,
     Sorcerer = CustomRoles.Sorcerer,
     Rulebook = CustomRoles.Rulebook,
+    Predator = CustomRoles.Predator,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

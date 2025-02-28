@@ -4549,7 +4549,12 @@
 
   "Rulebook": "Rulebook",
   "RulebookInfo": "Enforce the standards of Among Us",
-  "RulebookInfoLong": "When the Rulebook single clicks their kill button on a non-impostor player that has a kill button, that player is stripped of their kill button and turned into a vanilla crewmate with no abilities or win condition. If used on a task-based role, nothing happens. If used on a Coven with the necronomicon, transformed neutral apocalypse, or any role that has defense that can kill back, the Rulebook is killed immediately. If the Rulebook lives till the end of the game, they win. The rulebook can double click to kill normally. The rule book can also erase the kill button of the person that killed them.\nAdditionally, the Rulebook cannot be erased by OIIAI.",
+  "RulebookInfoLong": "(Neutrals):\nWhen the Rulebook single clicks their kill button on a non-impostor player that has a kill button, that player is stripped of their kill button and turned into a vanilla crewmate with no abilities or win condition. If used on a task-based role, nothing happens. If used on a Coven with the necronomicon, transformed neutral apocalypse, or any role that has defense that can kill back, the Rulebook is killed immediately. If the Rulebook lives till the end of the game, they win. The rulebook can double click to kill normally. The rule book can also erase the kill button of the person that killed them.\nAdditionally, the Rulebook cannot be erased by OIIAI.",
   "MaxRemovals341": "Maximum removals",
-  "ErasesRole341": "Killer of Rulebook's role gets erased"
+  "ErasesRole341": "Killer of Rulebook's role gets erased",
+
+  "Predator": "Predator",
+  "PredatorInfo": "Eliminate your prey",
+  "PredatorInfoLong": "(Neutrals):\nAs the Predator, you are assigned 3 prey. To hunt for your prey, use your kill button on any player. If their name remains white they are not one of the prey. If their name turns orange they are one of the prey. If you use your kill button on a player with an Orange name, they will die. Eliminate all the prey to win.",
+  "HuntCooldown342": "Hunt cooldown"
 }
