@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -97,6 +98,37 @@ public class Runner : RoleBase
         ProtectState = (false, 0f);
         SpeedBoostState = (false, 0f);
         BasisChanged = false;
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId)
+    {
+        opt.SetVision(true);
+
+        float speed;
+
+        if (BasisChanged)
+        {
+            speed = SpeedRun.SpeedRun_RunnerSpeedAfterFinishTasks.GetFloat();
+        }
+        else
+        {
+            if (SpeedBoostState.Item1)
+            {
+                speed = SpeedRun.SpeedRun_SpeedBoostSpeed.GetFloat();
+            }
+            else
+            {
+                speed = SpeedRun.SpeedRun_RunnerNormalSpeed.GetFloat();
+            }
+        }
+
+        AURoleOptions.PlayerSpeedMod = speed;
+    }
+
+    public override void SetKillCooldown(byte id)
+    {
+        var deadnum = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Runner)) - Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner));
+        Main.AllPlayerKillCooldown[id] = SpeedRun.SpeedRun_RunnerKcd.GetFloat() - SpeedRun.SpeedRun_RunnerKcdPerDeadPlayer.GetFloat() * deadnum;
     }
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
