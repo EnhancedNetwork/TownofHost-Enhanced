@@ -1,3 +1,6 @@
+using TOHE.Roles.Core;
+using UnityEngine;
+
 namespace TOHE.GameModes;
 
 public static class SpeedRun
@@ -23,6 +26,7 @@ public static class SpeedRun
     public static OptionItem SpeedRun_ProtectAfterTask;
     public static OptionItem SpeedRun_ProtectDuration;
     public static OptionItem SpeedRun_ProtectOnlyOnce;
+    public static OptionItem SpeedRun_ProtectKcd;
 
 
     public static void SetupCustomOption()
@@ -67,6 +71,9 @@ public static class SpeedRun
             .SetValueFormat(OptionFormat.Seconds);
         SpeedRun_ProtectOnlyOnce = BooleanOptionItem.Create(Id + 15, "SpeedRun_ProtectOnlyOnce", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun);
+        SpeedRun_ProtectKcd = FloatOptionItem.Create(Id + 16, "SpeedRun_ProtectKcd", new(0.5f, 60f, 0.5f), 5f, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.SpeedRun)
+            .SetValueFormat(OptionFormat.Seconds);
     }
 }
 
@@ -76,4 +83,94 @@ public class Runner : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.None;
     public override bool IsDesyncRole => true;
+
+    public (bool, float) ProtectState = (false, 0f);
+    public (bool, float) SpeedBoostState = (false, 0f);
+    private bool BasisChanged = false;
+
+    public override void Add(byte playerId)
+    {
+        ProtectState = (false, 0f);
+        SpeedBoostState = (false, 0f);
+        BasisChanged = false;
+    }
+
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
+    {
+        if (ProtectState.Item1)
+        {
+            ProtectState.Item2 -= Time.fixedDeltaTime;
+
+            if (ProtectState.Item2 <= 0)
+            {
+                ProtectState = (false, 0f);
+            }
+        }
+
+        if (SpeedBoostState.Item1)
+        {
+            SpeedBoostState.Item2 -= Time.fixedDeltaTime;
+            if (SpeedBoostState.Item2 <= 0)
+            {
+                SpeedBoostState = (false, 0f);
+            }
+        }
+    }
+
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        if (!BasisChanged)
+        {
+            return false;
+        }
+
+        var targetRoleClass = target.GetRoleClass();
+
+        if (targetRoleClass.Role != CustomRoles.Runner)
+        {
+            return false;
+        }
+
+        Runner targetRole = targetRoleClass as Runner;
+
+        if (targetRole.ProtectState.Item1)
+        {
+            if (SpeedRun.SpeedRun_ProtectOnlyOnce.GetBool())
+            {
+                targetRole.ProtectState = (false, 0f);
+            }
+
+            killer.SetKillCooldown(SpeedRun.SpeedRun_ProtectKcd.GetFloat(), target, true);
+            killer.ResetKillCooldown();
+
+            target.RpcGuardAndKill(target);
+            return false;
+        }
+
+        return true;
+    }
+
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    {
+        if (SpeedRun.SpeedRun_SpeedBoostAfterTask.GetBool() && !BasisChanged)
+        {
+            SpeedBoostState = (true, SpeedRun.SpeedRun_SpeedBoostDuration.GetFloat());
+            player.SyncSettings();
+        }
+
+        if (SpeedRun.SpeedRun_ProtectAfterTask.GetBool() && !BasisChanged)
+        {
+            ProtectState = (true, SpeedRun.SpeedRun_ProtectDuration.GetFloat());
+            player.RpcSpecificProtectPlayer(player, player.CurrentOutfit.ColorId);
+        }
+
+        if (completedTaskCount >= totalTaskCount && !BasisChanged)
+        {
+            BasisChanged = true;
+            player.RpcChangeRoleBasis(CustomRoles.Runner);
+            player.SyncSettings();
+        }
+
+        return true;
+    }
 }
