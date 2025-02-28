@@ -513,10 +513,14 @@ internal class RPCHandlerPatch
                 byte paciefID = reader.ReadByte();
                 //playerstate:
                 {
-                    CustomRoles rola = (CustomRoles)reader.ReadPackedInt32();
+                    int rolaId = reader.ReadPackedInt32();
                     bool isdead = reader.ReadBoolean();
                     bool IsDC = reader.ReadBoolean();
-                    PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
+                    int deathReasonId = reader.ReadPackedInt32();
+
+                    CustomRoles rola = (CustomRoles)rolaId;
+                    PlayerState.DeathReason drip = (PlayerState.DeathReason)deathReasonId;
+
                     if (Main.PlayerStates.ContainsKey(paciefID))
                     {
                         var state = Main.PlayerStates[paciefID];
@@ -539,7 +543,8 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();
-                CustomRoles rl = (CustomRoles)reader.ReadPackedInt32();
+                int rlId = reader.ReadPackedInt32();
+                CustomRoles rl = (CustomRoles)rlId;
                 if (Main.PlayerStates.ContainsKey(playerid))
                 {
                     Main.PlayerStates[playerid].MainRole = rl;
