@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Hazel;
 using TOHE.Roles.Core;
 using UnityEngine;
 
@@ -30,6 +31,10 @@ public static class SpeedRun
     public static OptionItem SpeedRun_ProtectOnlyOnce;
     public static OptionItem SpeedRun_ProtectKcd;
 
+    public static long StartedAt = Utils.GetTimeStamp();
+    public static Dictionary<byte, (int, int)> PlayerTaskCounts = [];
+    public static Dictionary<byte, long> PlayerTaskFinishedAt = [];
+    public static Dictionary<byte, byte> PlayerNumKills = [];
 
     public static void SetupCustomOption()
     {
@@ -80,6 +85,85 @@ public static class SpeedRun
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetValueFormat(OptionFormat.Seconds);
     }
+
+    public static void Init()
+    {
+        StartedAt = Utils.GetTimeStamp();
+        PlayerTaskCounts = [];
+        PlayerTaskFinishedAt = [];
+        PlayerNumKills = [];
+    }
+
+    public static void RpcSyncSpeedRunStates(byte specificPlayerId = 255) // Not 255, Sync single single player
+    {
+        if (specificPlayerId != 255)
+        {
+            if (Main.PlayerStates.TryGetValue(specificPlayerId, out var state) && state.MainRole == CustomRoles.Runner)
+            {
+                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+                writer.Write(1);
+                writer.Write(specificPlayerId);
+                writer.Write((byte)PlayerTaskCounts[specificPlayerId].Item1);
+                writer.Write((byte)PlayerTaskCounts[specificPlayerId].Item2);
+                writer.Write(PlayerNumKills[specificPlayerId]);
+                if (PlayerTaskFinishedAt.ContainsKey(specificPlayerId))
+                {
+                    writer.Write(true);
+                    writer.Write(PlayerTaskFinishedAt[specificPlayerId].ToString());
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
+            }
+
+            return;
+        }
+
+        {
+            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+            var amount = Main.PlayerStates.Count(x => x.Value.MainRole == CustomRoles.Runner);
+            writer.Write((byte)amount);
+
+            foreach (var id in Main.PlayerStates.Where(x => x.Value.MainRole == CustomRoles.Runner).Select(x => x.Value.PlayerId))
+            {
+                writer.Write(id);
+                writer.Write((byte)PlayerTaskCounts[id].Item1);
+                writer.Write((byte)PlayerTaskCounts[id].Item2);
+                writer.Write(PlayerNumKills[id]);
+                if (PlayerTaskFinishedAt.ContainsKey(id))
+                {
+                    writer.Write(true);
+                    writer.Write(PlayerTaskFinishedAt[id].ToString());
+                }
+                else
+                {
+                    writer.Write(false);
+                }
+            }
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+    }
+
+    public static void HandleSyncSpeedRunStates(MessageReader reader)
+    {
+        var amount = reader.ReadByte();
+        for (int i = 0; i < amount; i++)
+        {
+            var id = reader.ReadByte();
+            var taskCount = reader.ReadByte();
+            var totalTaskCount = reader.ReadByte();
+            var numKills = reader.ReadByte();
+            var hasFinishedAt = reader.ReadBoolean();
+            if (hasFinishedAt)
+            {
+                PlayerTaskFinishedAt[id] = long.Parse(reader.ReadString());
+            }
+            PlayerTaskCounts[id] = (taskCount, totalTaskCount);
+            PlayerNumKills[id] = numKills;
+        }
+    }
 }
 
 public class Runner : RoleBase
@@ -100,6 +184,10 @@ public class Runner : RoleBase
         SpeedBoostState = (false, 0f);
         LastTaskCount = (0, 0);
         BasisChanged = false;
+
+        SpeedRun.PlayerTaskCounts[playerId] = LastTaskCount;
+        SpeedRun.PlayerTaskFinishedAt.Remove(playerId);
+        SpeedRun.PlayerNumKills[playerId] = 0;
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
