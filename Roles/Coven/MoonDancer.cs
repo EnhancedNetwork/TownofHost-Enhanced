@@ -253,8 +253,12 @@ internal class MoonDancer : CovenManager
                 }
                 addon = harmful.RandomElement();
             }
-            player.RpcSetCustomRole(addon, false, false);
-            Logger.Info("Addon Passed.", "MoonDancer");
+
+            if (addon != 0) // default value
+            {
+                player.RpcSetCustomRole(addon, false, false);
+                Logger.Info("Addon Passed.", "MoonDancer");
+            }
         }
         BatonPassList[md.PlayerId].Clear();
     }
