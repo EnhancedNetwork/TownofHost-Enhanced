@@ -295,9 +295,9 @@ public static class Utils
 
         return InfoLong.Replace(RealRole, $"{ColorName}");
     }
-    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool notShowAddOns = false)
+    public static string GetDisplayRoleAndSubName(byte seerId, byte targetId, bool isMeeting, bool notShowAddOns = false)
     {
-        var TextData = GetRoleAndSubText(seerId, targetId, notShowAddOns);
+        var TextData = GetRoleAndSubText(seerId, targetId, isMeeting, notShowAddOns);
         return ColorString(TextData.Item2, TextData.Item1);
     }
     public static string GetRoleName(CustomRoles role, bool forUser = true)
@@ -467,7 +467,7 @@ public static class Utils
         if (!Main.roleColors.TryGetValue(role, out var hexColor)) hexColor = "#ffffff";
         return hexColor;
     }
-    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool notShowAddOns = false)
+    public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool isMeeting, bool notShowAddOns = false)
     {
         string RoleText = "Invalid Role";
         Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
@@ -508,13 +508,20 @@ public static class Utils
                     var seerPlatform = seer.GetClient()?.PlatformData.Platform;
                     var addBracketsToAddons = Options.AddBracketsToAddons.GetBool();
 
-                    static bool Checkif(string str)
+                    static string GetAddOnName(string str, bool meeting, bool addBracketsToAddons)
                     {
-
-                        string[] strings = ["*Prefix", "INVALID"];
-                        return strings.Any(str.Contains);
+                        switch ((Options.ShortAddOnNamesMode)Options.ShowShortNamesForAddOns.GetValue())
+                        {
+                            case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_Always:
+                            case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_OnlyInMeeting when meeting:
+                            case Options.ShortAddOnNamesMode.ShortAddOnNamesMode_OnlyInGame when !meeting:
+                                return addBracketsToAddons ? $"({GetString(str)[0]}) " : $"{GetString(str)[0]} ";
+                            default:
+                                return addBracketsToAddons ? $"({GetString(str)}) " : $"{GetString(str)} ";
+                        }
                     }
-                    static string Getname(string str) => !Checkif(GetString($"Prefix.{str}")) ? GetString($"Prefix.{str}") : GetString($"{str}");
+
+
 
                     // if the player is playing on a console platform
                     if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
@@ -528,13 +535,13 @@ public static class Utils
 
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
+                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons)) + RoleText;
                     }
                     // default
                     else
                     {
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorString(GetRoleColor(subRole), addBracketsToAddons ? $"({Getname($"{subRole}")}) " : $"{Getname($"{subRole}")} ") + RoleText;
+                            RoleText = ColorString(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons)) + RoleText;
                     }
                 }
 
@@ -697,29 +704,7 @@ public static class Utils
             {
                 ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
-                if (ProgressText.Length == 0)
-                {
-                    var taskState = Main.PlayerStates?[playerId].TaskState;
-                    if (taskState.hasTasks)
-                    {
-                        Color TextColor;
-                        var info = GetPlayerInfoById(playerId);
-                        var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(role).ShadeColor(0.5f);
-                        var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
-
-                        if (Workhorse.IsThisRole(playerId))
-                            NonCompleteColor = Workhorse.RoleColor;
-
-                        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-                        if (Main.PlayerStates.TryGetValue(playerId, out var ps) && ps.MainRole == CustomRoles.Crewpostor)
-                            NormalColor = Color.red;
-
-                        TextColor = comms ? Color.gray : NormalColor;
-                        string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
-                        ProgressText.Append(ColorString(TextColor, $" ({Completed}/{taskState.AllTasksCount})"));
-                    }
-                }
-                else
+                if (ProgressText.Length > 0)
                 {
                     ProgressText.Insert(0, " ");
                 }
@@ -731,6 +716,59 @@ public static class Utils
             ThrowException(error);
             Logger.Error($"PlayerId: {playerId}, Role: {Main.PlayerStates[playerId].MainRole}", "GetProgressText(byte playerId, bool comms = false)");
             return "Error2";
+        }
+    }
+    public static string GetAbilityUseLimitDisplay(byte playerId, bool displayOnlyUseAbility, bool usingAbility = false)
+    {
+        try
+        {
+            float limit = playerId.GetAbilityUseLimit();
+            if (float.IsNaN(limit)) return string.Empty;
+            Color TextColor;
+            if (limit < 1) TextColor = displayOnlyUseAbility ? Color.gray : Color.red;
+            else if (usingAbility) TextColor = Color.green;
+            else TextColor = GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.25f);
+            return (displayOnlyUseAbility ? string.Empty : ColorString(Color.white, " - ")) + ColorString(TextColor, $"({Math.Round(limit, 1)})");
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+
+    public static string GetTaskCount(byte playerId, bool comms)
+    {
+        try
+        {
+            if (playerId == 0 && Main.EnableGM.Value) return string.Empty;
+
+            var taskState = Main.PlayerStates[playerId].TaskState;
+            if (!taskState.hasTasks) return string.Empty;
+
+            var info = GetPlayerInfoById(playerId);
+            var TaskCompleteColor = HasTasks(info) ? Color.green : GetRoleColor(Main.PlayerStates[playerId].MainRole).ShadeColor(0.5f);
+            var NonCompleteColor = HasTasks(info) ? Color.yellow : Color.white;
+
+            if (Workhorse.IsThisRole(playerId))
+                NonCompleteColor = Workhorse.RoleColor;
+
+            var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
+            if (Main.PlayerStates.TryGetValue(playerId, out var ps))
+            {
+                NormalColor = ps.MainRole switch
+                {
+                    CustomRoles.Crewpostor => Color.red,
+                    _ => NormalColor
+                };
+            }
+
+            Color TextColor = comms ? Color.gray : NormalColor;
+            string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
+            return ColorString(TextColor, $"({Completed}/{taskState.AllTasksCount})");
+        }
+        catch
+        {
+            return string.Empty;
         }
     }
     public static void ShowActiveSettingsHelp(byte PlayerId = byte.MaxValue)
@@ -2037,7 +2075,7 @@ public static class Utils
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
                 string SelfTaskText = GetProgressText(seer);
 
-                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, false)}{SelfTaskText}</size>";
+                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, isForMeeting, false)}{SelfTaskText}</size>";
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $"\n<size={fontSizeDeathReason}>『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))}』</size>" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
@@ -2179,7 +2217,7 @@ public static class Utils
                         bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
 
                         string TargetRoleText = KnowRoleTarget
-                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, false)}{GetProgressText(target)}</size>\r\n" : "";
+                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, isForMeeting, false)}{GetProgressText(target)}</size>\r\n" : "";
 
                         string BlankRT = string.Empty;
 
@@ -2640,14 +2678,14 @@ public static class Utils
         else { TaskCount = GetProgressText(id); }
 
         var disconnectedText = playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $"({GetString("Disconnected")})" : string.Empty;
-        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』{disconnectedText}";
+        string summary = $"{ColorString(Main.PlayerColors[id], name)} - {GetDisplayRoleAndSubName(id, id, false, true)}{GetSubRolesText(id, summary: true)}{TaskCount} {GetKillCountText(id)} 『{GetVitalText(id, true)}』{disconnectedText}";
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
                 summary = $"{ColorString(Main.PlayerColors[id], name)} {GetKillCountText(id, ffa: true)}";
                 break;
         }
-        return check && GetDisplayRoleAndSubName(id, id, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
+        return check && GetDisplayRoleAndSubName(id, id, false, true).RemoveHtmlTags().Contains("INVALID:NotAssigned")
             ? "INVALID"
             : disableColor ? summary.RemoveHtmlTags() : summary;
     }
@@ -2720,6 +2758,49 @@ public static class Utils
         float G = (color.g + Weight) / (Darkness + 1);
         float B = (color.b + Weight) / (Darkness + 1);
         return new Color(R, G, B, color.a);
+    }
+
+    public static float GetSettingNameAndValueForRole(CustomRoles role, string settingName)
+    {
+        const BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
+        var types = Assembly.GetExecutingAssembly().GetTypes();
+        var field = types.SelectMany(x => x.GetFields(flags)).FirstOrDefault(x => x.Name == $"{role}{settingName}");
+        if (field == null)
+        {
+            FieldInfo tempField = null;
+            foreach (var x in types)
+            {
+                bool any = false;
+                foreach (var f in x.GetFields(flags))
+                {
+                    if (f.Name.Contains(settingName))
+                    {
+                        any = true;
+                        tempField = f;
+                        break;
+                    }
+                }
+
+                if (any && x.Name == $"{role}")
+                {
+                    field = tempField;
+                    break;
+                }
+            }
+        }
+
+        float add;
+        if (field == null)
+        {
+            add = float.MaxValue;
+        }
+        else
+        {
+            if (field.GetValue(null) is OptionItem optionItem) add = optionItem.GetFloat();
+            else add = float.MaxValue;
+        }
+
+        return add;
     }
 
     public static void SetChatVisibleForEveryone()
