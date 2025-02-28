@@ -91,12 +91,14 @@ public class Runner : RoleBase
 
     public (bool, float) ProtectState = (false, 0f);
     public (bool, float) SpeedBoostState = (false, 0f);
+    private (int, int) LastTaskCount = (0, 0);
     private bool BasisChanged = false;
 
     public override void Add(byte playerId)
     {
         ProtectState = (false, 0f);
         SpeedBoostState = (false, 0f);
+        LastTaskCount = (0, 0);
         BasisChanged = false;
     }
 
@@ -189,6 +191,10 @@ public class Runner : RoleBase
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
+        if (!player.IsAlive()) return true;
+
+        LastTaskCount = (completedTaskCount, totalTaskCount);
+
         if (SpeedRun.SpeedRun_SpeedBoostAfterTask.GetBool() && !BasisChanged)
         {
             SpeedBoostState = (true, SpeedRun.SpeedRun_SpeedBoostDuration.GetFloat());
@@ -201,7 +207,7 @@ public class Runner : RoleBase
             player.RpcSpecificProtectPlayer(player, player.CurrentOutfit.ColorId);
         }
 
-        if (completedTaskCount >= totalTaskCount && !BasisChanged && player.IsAlive())
+        if (completedTaskCount >= totalTaskCount && !BasisChanged)
         {
             BasisChanged = true;
             player.RpcChangeRoleBasis(CustomRoles.Runner);
