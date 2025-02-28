@@ -94,7 +94,7 @@ static class ExtendedPlayerControl
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false, checkConditions: false))
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"{player.GetCustomRole()}");
+                Logger.Msg($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"RemoveIncompatibleAddOnsAsync: {player.GetCustomRole()}");
             }
             yield return new WaitForSeconds(0.2f);
         }
@@ -112,7 +112,7 @@ static class ExtendedPlayerControl
             if (!CustomRolesHelper.CheckAddonConfilct(addOn, player, checkLimitAddons: false, checkConditions: false))
             {
                 Main.PlayerStates[player.PlayerId].RemoveSubRole(addOn);
-                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addOn}, removing addon", $"{player.GetCustomRole()}");
+                Logger.Msg($"{player.GetNameWithRole()} had incompatible addon {addOn}, removing addon", $"CheckAndAssignAddOnAsync: {player.GetCustomRole()}");
             }
             yield return new WaitForSeconds(0.2f);
         }
