@@ -13,6 +13,8 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     FFA = 0x02,
+    
+    SpeedRun = 0x04,
 
     HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other game modes
     All = int.MaxValue
@@ -49,7 +51,9 @@ public static class Options
         => GameMode.GetInt() switch
         {
             1 => CustomGameMode.FFA,
-            2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
+
+            2 => CustomGameMode.SpeedRun,
+            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
     public static readonly string[] gameModes =
@@ -57,6 +61,7 @@ public static class Options
         "Standard",
         "FFA",
 
+        "SpeedRun",
 
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
