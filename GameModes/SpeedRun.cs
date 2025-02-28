@@ -33,7 +33,10 @@ public static class SpeedRun
     public static OptionItem SpeedRun_ProtectOnlyOnce;
     public static OptionItem SpeedRun_ProtectKcd;
 
-    public static long StartedAt = Utils.GetTimeStamp();
+    public static OptionItem SpeedRun_EndGameForTime;
+    public static OptionItem SpeedRun_MaxTimeForTie;
+
+    public static long StartedAt = 0;
     public static Dictionary<byte, (int, int)> PlayerTaskCounts = [];
     public static Dictionary<byte, long> PlayerTaskFinishedAt = [];
     public static Dictionary<byte, byte> PlayerNumKills = [];
@@ -92,11 +95,26 @@ public static class SpeedRun
             .SetParent(SpeedRun_ProtectAfterTask)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetValueFormat(OptionFormat.Seconds);
+
+        SpeedRun_EndGameForTime = BooleanOptionItem.Create(Id + 18, "SpeedRun_EndGameForTime", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.SpeedRun);
+        SpeedRun_MaxTimeForTie = IntegerOptionItem.Create(Id + 19, "SpeedRun_MaxTimeForTie", new(30, 3600, 15), 600, TabGroup.ModSettings, false)
+            .SetParent(SpeedRun_MaxTimeForTie)
+            .SetGameMode(CustomGameMode.SpeedRun)
+            .SetValueFormat(OptionFormat.Seconds);
     }
 
     public static void Init()
     {
-        StartedAt = Utils.GetTimeStamp();
+        StartedAt = GetTimeStamp();
+        PlayerTaskCounts = [];
+        PlayerTaskFinishedAt = [];
+        PlayerNumKills = [];
+    }
+
+    public static void OnGameEnd()
+    {
+        StartedAt = 0;
         PlayerTaskCounts = [];
         PlayerTaskFinishedAt = [];
         PlayerNumKills = [];
@@ -198,6 +216,24 @@ public static class SpeedRun
         }
 
         TargetArrow.RemoveAllTarget(target.PlayerId);
+    }
+}
+
+class SpeedRunGameEndPredicate : GameEndPredicate
+{
+    public override bool CheckForEndGame(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorByKill;
+
+        if (Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner)) <= 1) return true;
+
+        if (SpeedRun.StartedAt != 0 && GetTimeStamp() - SpeedRun.StartedAt >= SpeedRun.SpeedRun_MaxTimeForTie.GetInt())
+        {
+            reason = GameOverReason.HumansByTask;
+            return true;
+        }
+
+        return false;
     }
 }
 

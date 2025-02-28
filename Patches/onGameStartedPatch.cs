@@ -229,6 +229,9 @@ internal class ChangeRoleSettings
             //FFA
             FFAManager.Init();
 
+            //Speed Run
+            SpeedRun.Init();
+
             FallFromLadder.Reset();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -517,6 +520,9 @@ internal class StartGameHostPatch
                     break;
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
+                    break;
+                case CustomGameMode.SpeedRun:
+                    GameEndCheckerForNormal.SetPredicateToSpeedRun();
                     break;
             }
 
