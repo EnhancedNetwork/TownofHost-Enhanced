@@ -254,7 +254,7 @@ internal class MoonDancer : CovenManager
                 addon = harmful.RandomElement();
             }
 
-            if (addon != 0) // default value
+            if (addon != 0) // not default value
             {
                 player.RpcSetCustomRole(addon, false, false);
                 Logger.Info("Addon Passed.", "MoonDancer");
