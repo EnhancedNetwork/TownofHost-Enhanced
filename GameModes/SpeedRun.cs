@@ -208,6 +208,11 @@ public class Runner : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.None;
     public override bool IsDesyncRole => true;
 
+    public override bool CanUseSabotage(PlayerControl pc)
+    {
+        return pc.IsAlive() && BasisChanged;
+    }
+
     public (bool, float) ProtectState = (false, 0f);
     public (bool, float) SpeedBoostState = (false, 0f);
     private (int, int) LastTaskCount = (0, 0);
@@ -318,6 +323,8 @@ public class Runner : RoleBase
         ProtectState = (false, 0f);
         target.MarkDirtySettings();
         SpeedRun.OnMurderPlayer(killer, target); // Disconnect also handled here.
+
+        target.RpcSetRoleDesync(RoleTypes.CrewmateGhost, target.OwnerId);
     }
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
