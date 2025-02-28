@@ -164,6 +164,29 @@ public static class SpeedRun
             PlayerNumKills[id] = numKills;
         }
     }
+
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
+    {
+        PlayerNumKills[killer.PlayerId]++;
+        RpcSyncSpeedRunStates(killer.PlayerId);
+        RpcSyncSpeedRunStates(target.PlayerId);
+        if (!SpeedRun_ArrowPlayers.GetBool()) return;
+
+        var list = Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Runner));
+        if (list.Count() <= SpeedRun_ArrowPlayersPlayerLiving.GetInt())
+        {
+            foreach (var seer in list)
+            {
+                foreach (var seen in list)
+                {
+                    if (seer.PlayerId == seen.PlayerId) continue;
+                    TargetArrow.Add(seer.PlayerId, seen.PlayerId);
+                }
+            }
+        }
+
+        TargetArrow.RemoveAllTarget(target.PlayerId);
+    }
 }
 
 public class Runner : RoleBase
@@ -277,6 +300,14 @@ public class Runner : RoleBase
         return true;
     }
 
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        SpeedBoostState = (false, 0f);
+        ProtectState = (false, 0f);
+        target.MarkDirtySettings();
+        SpeedRun.OnMurderPlayer(killer, target);
+    }
+
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive()) return true;
@@ -300,7 +331,11 @@ public class Runner : RoleBase
             BasisChanged = true;
             player.RpcChangeRoleBasis(CustomRoles.Runner);
             player.MarkDirtySettings();
+            SpeedRun.PlayerTaskFinishedAt[player.PlayerId] = Utils.GetTimeStamp();
         }
+
+        SpeedRun.PlayerTaskCounts[player.PlayerId] = LastTaskCount;
+        SpeedRun.RpcSyncSpeedRunStates(player.PlayerId);
 
         return true;
     }
