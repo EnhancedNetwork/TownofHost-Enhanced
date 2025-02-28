@@ -1402,7 +1402,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
         UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
-            .SetColor(Color.cyan); ;
+            .SetColor(Color.cyan)
+            .SetHeader(true);
 
         CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.ModSettings, false)
             .SetColor(Color.cyan);

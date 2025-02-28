@@ -68,7 +68,7 @@ public static class SpeedRun
 
         SpeedRun_ArrowPlayers = BooleanOptionItem.Create(Id + 9, "SpeedRun_ArrowPlayers", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun);
-        SpeedRun_ArrowPlayersPlayerLiving = IntegerOptionItem.Create(Id + 10, "SpeedRun_ArrowPlayersPlayerLiving", new(1, 127, 1), 1, TabGroup.ModSettings, false)
+        SpeedRun_ArrowPlayersPlayerLiving = IntegerOptionItem.Create(Id + 10, "SpeedRun_ArrowPlayersPlayerLiving", new(2, 127, 1), 1, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun);
 
         SpeedRun_SpeedBoostAfterTask = BooleanOptionItem.Create(Id + 11, "SpeedRun_SpeedBoostAfterTask", true, TabGroup.ModSettings, false)
@@ -212,6 +212,42 @@ public static class SpeedRun
         TargetArrow.RemoveAllTarget(target.PlayerId);
         NotifyRoles();
     }
+
+    public static void AppendGameState(Il2CppSystem.Text.StringBuilder builder)
+    {
+        foreach (var kvp in Main.PlayerStates)
+        {
+            var playerId = kvp.Value.PlayerId;
+            var playerState = kvp.Value;
+
+            if (kvp.Value.MainRole is not CustomRoles.Runner) continue;
+
+            var playerName = ColorString(Main.PlayerColors.GetValueOrDefault(playerId, Color.white), GetPlayerById(playerId)?.GetRealName() ?? "ERROR");
+
+            builder.AppendLine(playerName);
+
+            if (playerState.IsDead)
+            {
+                builder.Append(Utils.ColorString(Color.gray, $"(  {PlayerTaskCounts[playerId].Item1}/{PlayerTaskCounts[playerId].Item2})"));
+            }
+            else
+            {
+                if (PlayerTaskCounts.ContainsKey(playerId))
+                {
+                    var taskCount = PlayerTaskCounts[playerId];
+                    if (taskCount.Item1 >= taskCount.Item2 && taskCount.Item1 != 0)
+                    {
+                        builder.Append($" Tasks completed at: {PlayerTaskFinishedAt[playerId]}");
+                        builder.Append($" Kills: {PlayerNumKills[playerId]}");
+                    }
+                    else
+                    {
+                        builder.Append(ColorString(Color.yellow, $"  ({taskCount.Item1}/{taskCount.Item2})"));
+                    }
+                }
+            }
+        }
+    }
 }
 
 class SpeedRunGameEndPredicate : GameEndPredicate
@@ -256,7 +292,7 @@ public class Runner : RoleBase
     public (bool, float) ProtectState = (false, 0f);
     public (bool, float) SpeedBoostState = (false, 0f);
     private (int, int) LastTaskCount = (0, 0);
-    private bool BasisChanged = false;
+    public bool BasisChanged = false;
 
     public override void Add(byte playerId)
     {
@@ -266,7 +302,7 @@ public class Runner : RoleBase
         BasisChanged = false;
 
         SpeedRun.PlayerTaskCounts[playerId] = LastTaskCount;
-        SpeedRun.PlayerTaskFinishedAt.Remove(playerId);
+        SpeedRun.PlayerTaskFinishedAt[playerId] = 0;
         SpeedRun.PlayerNumKills[playerId] = 0;
     }
 
@@ -295,6 +331,27 @@ public class Runner : RoleBase
         AURoleOptions.PlayerSpeedMod = speed;
     }
 
+    public void SendRPC()
+    {
+        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption);
+        writer.Write(BasisChanged);
+        writer.Write(ProtectState.Item1);
+        writer.Write(ProtectState.Item2);
+        writer.Write(SpeedBoostState.Item1);
+        writer.Write(SpeedBoostState.Item2);
+        writer.Write((byte)LastTaskCount.Item1);
+        writer.Write((byte)LastTaskCount.Item2);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
+    {
+        BasisChanged = reader.ReadBoolean();
+        ProtectState = (reader.ReadBoolean(), reader.ReadSingle());
+        SpeedBoostState = (reader.ReadBoolean(), reader.ReadSingle());
+        LastTaskCount = (reader.ReadByte(), reader.ReadByte());
+    }
+
     public override void SetKillCooldown(byte id)
     {
         var deadnum = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Runner)) - Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner));
@@ -303,6 +360,7 @@ public class Runner : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
+        var changed = false;
         if (ProtectState.Item1)
         {
             ProtectState.Item2 -= Time.fixedDeltaTime;
@@ -310,7 +368,7 @@ public class Runner : RoleBase
             if (ProtectState.Item2 <= 0)
             {
                 ProtectState = (false, 0f);
-                NotifyRoles();
+                changed = true;
             }
         }
 
@@ -321,7 +379,14 @@ public class Runner : RoleBase
             {
                 SpeedBoostState = (false, 0f);
                 player.MarkDirtySettings();
+                changed = true;
             }
+        }
+
+        if (changed)
+        {
+            SendRPC();
+            NotifyRoles();
         }
     }
 
@@ -346,6 +411,7 @@ public class Runner : RoleBase
             if (SpeedRun.SpeedRun_ProtectOnlyOnce.GetBool())
             {
                 targetRole.ProtectState = (false, 0f);
+                targetRole.SendRPC();
             }
 
             killer.SetKillCooldown(SpeedRun.SpeedRun_ProtectKcd.GetFloat(), target, true);
@@ -364,8 +430,9 @@ public class Runner : RoleBase
         ProtectState = (false, 0f);
         target.MarkDirtySettings();
         SpeedRun.OnMurderPlayer(killer, target); // Disconnect also handled here.
+        SendRPC();
 
-        target.RpcSetRoleDesync(RoleTypes.CrewmateGhost, target.OwnerId);
+        target.RpcSetRoleType(RoleTypes.CrewmateGhost, true);
     }
 
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
@@ -397,6 +464,7 @@ public class Runner : RoleBase
         SpeedRun.PlayerTaskCounts[player.PlayerId] = LastTaskCount;
         SpeedRun.RpcSyncSpeedRunStates(player.PlayerId);
 
+        SendRPC();
         return true;
     }
 

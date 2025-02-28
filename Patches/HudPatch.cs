@@ -352,6 +352,28 @@ class TaskPanelBehaviourPatch
                     AllText = $"<size=70%>{AllText}</size>";
 
                     break;
+                case CustomGameMode.SpeedRun:
+                    Il2CppSystem.Text.StringBuilder builder2 = new();
+                    builder2.Append(AllText + "\r\n");
+                    Runner runner = player.GetRoleClass() as Runner;
+
+                    if (runner != null && !runner.BasisChanged)
+                    {
+                        for (int i = 0; i < PlayerControl.LocalPlayer.myTasks.Count; i++)
+                        {
+                            PlayerTask playerTask = PlayerControl.LocalPlayer.myTasks[i];
+                            if (playerTask)
+                            {
+                                playerTask.AppendTaskText(builder2);
+                            }
+                        }
+                    }
+
+                    SpeedRun.AppendGameState(builder2);
+                    AllText = builder2.ToString();
+
+                    break;
+
             }
 
             __instance.taskText.text = AllText;
