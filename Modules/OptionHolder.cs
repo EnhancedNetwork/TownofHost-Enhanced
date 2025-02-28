@@ -1307,6 +1307,9 @@ public static class Options
         //FFA
         FFAManager.SetupCustomOption();
 
+        //Speed Run
+        SpeedRun.SetupCustomOption();
+
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.HidenSeekTOHE)

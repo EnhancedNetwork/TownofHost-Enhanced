@@ -590,6 +590,7 @@ class GameEndCheckerForNormal
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
+    public static void SetPredicateToSpeedRun() => predicate = new SpeedRunGameEndPredicate();
 
 
     // ===== Check Game End =====

@@ -445,7 +445,7 @@ internal class StartGameHostPatch
                 Main.PlayerStates[pc.PlayerId].SetMainRole(role);
             }
 
-            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.SpeedRun)
             {
                 foreach (var pair in RoleAssign.RoleResult)
                 {
