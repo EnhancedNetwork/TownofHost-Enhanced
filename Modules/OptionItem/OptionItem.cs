@@ -141,6 +141,7 @@ public abstract class OptionItem
             ReplacementDictionary.TryAdd(roleName, Utils.ColorString(Utils.GetRoleColor(role.Key), roleName));
             break;
         }
+
         i.Parent = parent;
         parent.SetChild(i);
     });

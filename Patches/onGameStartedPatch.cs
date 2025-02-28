@@ -445,7 +445,7 @@ internal class StartGameHostPatch
                 Main.PlayerStates[pc.PlayerId].SetMainRole(role);
             }
 
-            if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.SpeedRun)
+            if (Options.CurrentGameMode is CustomGameMode.FFA)
             {
                 foreach (var pair in RoleAssign.RoleResult)
                 {
@@ -463,8 +463,11 @@ internal class StartGameHostPatch
 
             try
             {
-                AddonAssign.InitAndStartAssignLovers();
-                AddonAssign.StartSortAndAssign();
+                if (Options.CurrentGameMode is CustomGameMode.Standard)
+                {
+                    AddonAssign.InitAndStartAssignLovers();
+                    AddonAssign.StartSortAndAssign();
+                }
             }
             catch (Exception error)
             {
