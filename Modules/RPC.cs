@@ -16,13 +16,15 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 184/255 USED
+public enum CustomRPC : byte // 174/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
 
     // Adding Role rpcs that overrides TOHE section and changing BetterCheck will be rejected
     // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
+    // NOTE: Set RPC's that are spammed to "ExtendedPlayerControl.RpcSendOption" to prevent kick due innersloth anti-cheat
+
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -41,12 +43,11 @@ public enum CustomRPC : byte // 184/255 USED
     ShowPopUp,
     KillFlash,
     DumpLog,
-    SyncRoleSkill,
     SetNameColorData,
     GuessKill,
     Judge,
-    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     Guess,
+    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     CouncillorJudge,
     NemesisRevenge,
     RetributionistRevenge,
@@ -65,55 +66,47 @@ public enum CustomRPC : byte // 184/255 USED
     SyncAbilityUseLimit,
 
     //Roles 
+    SyncRoleSkill,
     SetBountyTarget,
     SyncPuppet,
-    SyncKami,
     SetKillOrSpell,
     SetKillOrHex,
-    SetKillOrCurse,
     SetDousedPlayer,
     DoSpell,
     DoHex,
-    DoCurse,
     SniperSync,
     SetLoversPlayers,
     SendFireworkerState,
+    SetCurrentDousingTarget,
+    SetEvilTrackerTarget,
+    SetDrawPlayer,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
-    SetCurrentDousingTarget,
-    SetEvilTrackerTarget,
-    SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
-    RpcPassBomb,
-    SyncRomanticTarget,
-    SyncVengefulRomanticTarget,
     SyncJailerData,
     SetInspectorLimit,
     KeeperRPC,
     SetAlchemistTimer,
     UndertakerLocationSync,
     LightningSetGhostPlayer,
-    SetDarkHiderKillCount,
     SetConsigliere,
     SetGreedy,
     BenefactorRPC,
     SetSwapperVotes,
     SetMarkedPlayer,
-    SetConcealerTimer,
     PresidentEnd,
     PresidentReveal,
-    SetBKTimer,
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
     SetChameleonTimer,
     SyncAdmiredList,
-    SetImitateLimit,
     DictatorRPC,
     Necronomicon,
+
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
