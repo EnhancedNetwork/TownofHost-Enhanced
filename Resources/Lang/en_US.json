@@ -4180,8 +4180,8 @@
 
   "Runner": "Runner",
   "ModeSpeedRun": "Gamemode: Speedrun",
-  "RunnerInfo": "Finish your tasks and kill others.\nBe the last one standing!",
-  "RunnerInfoLong": "(Speedrun):\nAs the Runner, you have to finish all your tasks to get your kill button, and kill other runners to win.\nBe the last one standing!",
+  "RunnerInfo": "Complete your tasks and kill others.\nBe the last one standing!",
+  "RunnerInfoLong": "(Speedrun):\nAs the Runner, you have to complete all your tasks to become a Killer, and kill other Runners to win.\nBe the last one standing!",
   "SpeedRun": "Speedrun",
   "SpeedRun_NumCommonTasks": "Number of Common Tasks",
   "SpeedRun_NumShortTasks": "Number of Short Tasks",
