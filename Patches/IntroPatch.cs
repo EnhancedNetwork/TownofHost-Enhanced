@@ -132,7 +132,7 @@ class SetUpRoleTextPatch
             }
             else if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
             {
-                var color = ColorUtility.TryParseHtmlString("#00ffff", out var c) ? c : new(255, 255, 255, 255);
+                var color = ColorUtility.TryParseHtmlString("#fffb00", out var c) ? c : new(255, 255, 255, 255);
                 __instance.YouAreText.transform.gameObject.SetActive(false);
                 __instance.RoleText.text = GetString("SpeedRun");
                 __instance.RoleText.color = color;
@@ -615,7 +615,7 @@ class BeginCrewmatePatch
         if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
         {
             __instance.TeamTitle.text = GetString("SpeedRun");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 251, 0, byte.MaxValue);
             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("RunnerInfo");
