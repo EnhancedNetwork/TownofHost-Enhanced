@@ -106,7 +106,7 @@ internal class Pirate : RoleBase
             return false;
         }
         Logger.Msg($"{killer.GetNameWithRole()} chose a target {target.GetNameWithRole()}", "Pirate");
-        
+
         PirateTarget = target.PlayerId;
         SendRPC(target: target.PlayerId);
 

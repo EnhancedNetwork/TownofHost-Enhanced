@@ -1,7 +1,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;

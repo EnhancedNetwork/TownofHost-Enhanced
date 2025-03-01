@@ -73,7 +73,7 @@ internal class Cleanser : RoleBase
 
         Logger.Info($"{voter.GetNameWithRole()} cleansed {target.GetNameWithRole()}", "Cleansed");
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), targetName), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
-        
+
         return false;
     }
     public override void OnReportDeadBody(PlayerControl baba, NetworkedPlayerInfo lilelam)
@@ -101,10 +101,10 @@ internal class Cleanser : RoleBase
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {
             if (pid == byte.MaxValue) continue;
-            
+
             var targetid = CleanserTarget[pid];
             if (targetid == byte.MaxValue) continue;
-            
+
             var targetpc = targetid.GetPlayer();
             if (targetpc == null) continue;
 

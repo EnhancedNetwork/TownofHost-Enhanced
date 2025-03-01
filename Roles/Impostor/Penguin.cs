@@ -223,7 +223,7 @@ internal class Penguin : RoleBase
                 return;
             }
             if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation() && !AbductVictim.IsTransformedNeutralApocalypse())
-            {              
+            {
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
                 AbductVictim.Data.MarkDirty();

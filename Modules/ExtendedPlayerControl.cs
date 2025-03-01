@@ -1,10 +1,10 @@
 using AmongUs.GameOptions;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
@@ -14,7 +14,7 @@ using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -340,7 +340,7 @@ static class ExtendedPlayerControl
         {
             RpcSetRoleReplacer.RoleMap[(seer.PlayerId, player.PlayerId)] = (roleType, customRole);
         }
-        
+
         if (removeFromDesyncList)
             Main.DesyncPlayerList.Remove(player.PlayerId);
     }
