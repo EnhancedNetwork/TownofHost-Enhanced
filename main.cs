@@ -46,13 +46,13 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0225.230.000010"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2025.0302.230.000010"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.3.0 Alpha 1";
     public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.3.0 Alpha 1
-    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 4
+    public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 1
+    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 4
     public static readonly bool fullRelease = false; // Latest: V2.2.0
 
     public static bool hasAccess = true;
