@@ -1,4 +1,3 @@
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
 using static CosmeticsLayer;
 
