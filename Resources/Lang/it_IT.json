@@ -1658,7 +1658,7 @@
   "NameDisplayAddons": "Mostra i Modificatori vicino al nome del ruolo",
   "BracketAddons": "Aggiungi parentesi ai modificatori",
   "ShowShortNamesForAddOns": "Show Short Names For Add-Ons",
-  "ShortAddOnNamesMode_Disable": "Disable",
+  "ShortAddOnNamesMode_Disable": "Disabilita",
   "ShortAddOnNamesMode_Always": "Always",
   "ShortAddOnNamesMode_OnlyInMeeting": "Only In Meeting",
   "ShortAddOnNamesMode_OnlyInGame": "Only In Game",
