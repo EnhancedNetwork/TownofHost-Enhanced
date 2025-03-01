@@ -52,6 +52,7 @@ public static class GhostRoleAssign
 
         // Roles can win after death, should not get ghost roles
         if (getplrRole is CustomRoles.GM
+            or CustomRoles.Runner
             or CustomRoles.Nemesis
             or CustomRoles.Retributionist
             or CustomRoles.NiceMini
