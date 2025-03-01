@@ -349,6 +349,11 @@ public class SabotageSystemPatch
                     return false;
             }
 
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+            {
+                return false;
+            }
+
             return player.CanUseSabotage();
         }
 

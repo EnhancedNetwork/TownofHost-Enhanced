@@ -67,6 +67,9 @@ public static class CustomRolesHelper
         // this function now always uses current mod role to decide kill button access?
 
         if (player == null) return false;
+
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun) return true;
+
         var customRole = player.GetCustomRole();
         return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
     }
@@ -1327,6 +1330,7 @@ public static class CustomRolesHelper
        => role switch
        {
            CustomRoles.GM => CountTypes.OutOfGame,
+           CustomRoles.Runner => CountTypes.OutOfGame,
            CustomRoles.Jackal => CountTypes.Jackal,
            CustomRoles.Sidekick => CountTypes.Jackal,
            CustomRoles.Doppelganger => CountTypes.Doppelganger,

@@ -117,6 +117,8 @@ public enum CustomRPC : byte // 184/255 USED
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
+    //Speed run
+    SyncSpeedRunStates,
 }
 [Obfuscation(Exclude = true)]
 public enum Sounds
@@ -557,6 +559,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncFFAPlayer:
                 FFAManager.ReceiveRPCSyncFFAPlayer(reader);
+                break;
+            case CustomRPC.SyncSpeedRunStates:
+                SpeedRun.HandleSyncSpeedRunStates(reader);
                 break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames.Clear();
