@@ -5,6 +5,7 @@ using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
 using Il2CppSystem.Text;
+using InnerNet;
 
 namespace TOHE;
 
@@ -115,7 +116,7 @@ public static class SpeedRun
             {
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
                 writer.Write(StartedAt.ToString());
-                writer.Write(1);
+                writer.Write((byte)1);
                 writer.Write(specificPlayerId);
                 writer.Write((byte)PlayerTaskCounts[specificPlayerId].Item1);
                 writer.Write((byte)PlayerTaskCounts[specificPlayerId].Item2);
@@ -163,7 +164,12 @@ public static class SpeedRun
 
     public static void HandleSyncSpeedRunStates(MessageReader reader)
     {
-        StartedAt = long.Parse(reader.ReadString());
+        var start = reader.ReadString();
+        if (!long.TryParse(start, out StartedAt))
+        {
+            Logger.Error("Failed to parse StartedAt timestamp from " + start, "HandleSyncSpeedRunStates");
+        }
+
         var amount = reader.ReadByte();
         for (int i = 0; i < amount; i++)
         {
@@ -174,7 +180,15 @@ public static class SpeedRun
             var hasFinishedAt = reader.ReadBoolean();
             if (hasFinishedAt)
             {
-                PlayerTaskFinishedAt[id] = long.Parse(reader.ReadString());
+                var finish = reader.ReadString();
+                if (!long.TryParse(finish, out var finishedAt))
+                {
+                    Logger.Error($"Failed to parse finishedAt timestamp for player {id} {finish}.", "HandleSyncSpeedRunStates");
+                }
+                else
+                {
+                    PlayerTaskFinishedAt[id] = finishedAt;
+                }
             }
             PlayerTaskCounts[id] = (taskCount, totalTaskCount);
             PlayerNumKills[id] = numKills;
@@ -369,12 +383,14 @@ public class Runner : RoleBase
             }
         }
 
+        Main.AllPlayerSpeed[playerId] = speed;
         AURoleOptions.PlayerSpeedMod = speed;
     }
 
     public void SendRPC()
     {
         var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption);
+        writer.WriteNetObject(_Player);
         writer.Write(BasisChanged);
         writer.Write(ProtectState.Item1);
         writer.Write(ProtectState.Item2);
