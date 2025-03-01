@@ -148,6 +148,7 @@ public class RoleAssign
                 case CustomRoles.NotAssigned:
                 case CustomRoles.NiceMini:
                 case CustomRoles.EvilMini:
+                case CustomRoles.Runner:
                     continue;
             }
 

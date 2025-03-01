@@ -1324,6 +1324,7 @@ public static class CustomRolesHelper
        => role switch
        {
            CustomRoles.GM => CountTypes.OutOfGame,
+           CustomRoles.Runner => CountTypes.OutOfGame,
            CustomRoles.Jackal => CountTypes.Jackal,
            CustomRoles.Sidekick => CountTypes.Jackal,
            CustomRoles.Doppelganger => CountTypes.Doppelganger,
