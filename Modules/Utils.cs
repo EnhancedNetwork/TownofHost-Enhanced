@@ -1681,6 +1681,8 @@ public static class Utils
             }
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
+            if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+                name = $"<color=#fffb00><size=1.7>{GetString("ModeSpeedRun")}</size></color>\r\n" + name;
         }
 
 
