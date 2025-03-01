@@ -36,6 +36,10 @@ internal static class FFAManager
 
     public static void SetupCustomOption()
     {
+        TextOptionItem.Create(10000030, "MenuTitle.FreeForAll", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.FFA)
+            .SetColor(new Color32(0, 255, 165, byte.MaxValue));
+
         FFA_GameTime = IntegerOptionItem.Create(67_223_001, "FFA_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))

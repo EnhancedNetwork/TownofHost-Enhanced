@@ -4202,6 +4202,8 @@
   "SpeedRun_EndGameForTime": "Force end the game after * seconds",
   "SpeedRun_MaxTimeForTie": "* seconds to end the game",
   "TaskFinishedSeconds": "Tasks Finished in {0}s",
+  "MenuTitle.SpeedRun": "★ Speed Run ★",
+  "MenuTitle.FreeForAll": "★ Free For All ★",
 
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can recruit <color=#ff1919>Impostor</color>",
