@@ -69,7 +69,7 @@ static class ExtendedPlayerControl
     }
     public static void CheckConflictedAddOnsFromList(this PlayerControl player, ref List<CustomRoles> addOnList)
     {
-        List<CustomRoles> confilctedAddOns = [];
+        List<CustomRoles> conflictedAddOns = [];
         foreach (var addon in addOnList)
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false))
