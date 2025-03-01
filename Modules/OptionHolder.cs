@@ -1128,9 +1128,6 @@ public static class Options
             .SetParent(EnableKillerLeftCommand);
         ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand)
-            .SetGameMode(CustomGameMode.Standard);
-        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .HideInHnS()
             .SetGameMode(CustomGameMode.Standard);        
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
@@ -1337,7 +1334,8 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .HideInHnS();
+            .HideInHnS()
+            .SetGameMode(CustomGameMode.Standard);
         ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowBetrayalAddonsOnEject", true, TabGroup.SystemSettings, false)
             .HideInHnS();        
 
