@@ -60,7 +60,7 @@ internal class ChatCommands
         if (text.Length >= 4) if (text[..3] == "/up") args[0] = "/up";
 
         if (GuessManager.GuesserMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-        if (PlayerControl.LocalPlayer.GetRoleClass() is Judge jd && jd.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Judge.TrialMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (President.EndMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Inspector.InspectCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Pirate.DuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
@@ -459,26 +459,41 @@ internal class ChatCommands
                         Utils.SendMessage(GetString("DisableUseCommand"), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
-                    var allAlivePlayers = Main.AllAlivePlayerControls;
-                    int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                    int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
-                    int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
-                    int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
-                    int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
 
                     var sub = new StringBuilder();
-                    sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
-                    if (Options.ShowMadmatesInLeftCommand.GetBool())
-                        sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+                    switch (Options.CurrentGameMode)
+                    {
+                        case CustomGameMode.Standard:
+                            var allAlivePlayers = Main.AllAlivePlayerControls;
+                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                            int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                            int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                            int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
+                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
 
-                    if (Options.ShowApocalypseInLeftCommand.GetBool())
-                        sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+                            sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
-                    if (Options.ShowCovenInLeftCommand.GetBool())
-                        sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
+                            if (Options.ShowMadmatesInLeftCommand.GetBool())
+                                sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
 
-                    sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
+                            if (Options.ShowApocalypseInLeftCommand.GetBool())
+                                sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+
+                            if (Options.ShowCovenInLeftCommand.GetBool())
+                                sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
+
+                            sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
+                            break;
+
+                        case CustomGameMode.FFA:
+                            FFAManager.AppendFFAKcount(sub);
+                            break;
+
+                        case CustomGameMode.SpeedRun:
+                            SpeedRun.AppendSpeedRunKcount(sub);
+                            break;
+                    }
 
                     Utils.SendMessage(sub.ToString(), PlayerControl.LocalPlayer.PlayerId);
                     break;
@@ -2154,7 +2169,7 @@ internal class ChatCommands
         //if (text.Length >= 3) if (text[..2] == "/r" && text[..3] != "/rn") args[0] = "/r";
         //   if (SpamManager.CheckSpam(player, text)) return;
         if (GuessManager.GuesserMsg(player, text)) { canceled = true; Logger.Info($"Is Guesser command", "OnReceiveChat"); return; }
-        if (player.GetRoleClass() is Judge jd && jd.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
+        if (Judge.TrialMsg(player, text)) { canceled = true; Logger.Info($"Is Judge command", "OnReceiveChat"); return; }
         if (President.EndMsg(player, text)) { canceled = true; Logger.Info($"Is President command", "OnReceiveChat"); return; }
         if (Inspector.InspectCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Inspector command", "OnReceiveChat"); return; }
         if (Pirate.DuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Pirate command", "OnReceiveChat"); return; }
@@ -2473,26 +2488,39 @@ internal class ChatCommands
                     break;
                 }
 
-                var allAlivePlayers = Main.AllAlivePlayerControls;
-                int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
-                int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
-                int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
-                int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
-
                 var sub = new StringBuilder();
-                sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
+                switch (Options.CurrentGameMode)
+                {
+                    case CustomGameMode.Standard:
+                        var allAlivePlayers = Main.AllAlivePlayerControls;
+                        int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
+                        int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                        int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
+                        int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
+                        int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
 
-                if (Options.ShowMadmatesInLeftCommand.GetBool())
-                    sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
+                        sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
-                if (Options.ShowApocalypseInLeftCommand.GetBool())
-                    sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
+                        if (Options.ShowMadmatesInLeftCommand.GetBool())
+                            sub.Append(string.Format("\n\r" + GetString("Remaining.MadmateCount"), madnum));
 
-                if (Options.ShowCovenInLeftCommand.GetBool())
-                    sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
+                        if (Options.ShowApocalypseInLeftCommand.GetBool())
+                            sub.Append(string.Format("\n\r" + GetString("Remaining.ApocalypseCount"), apocnum));
 
-                sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
+                        if (Options.ShowCovenInLeftCommand.GetBool())
+                            sub.Append(string.Format("\n\r" + GetString("Remaining.CovenCount"), covnum));
+
+                        sub.Append(string.Format("\n\r" + GetString("Remaining.NeutralCount"), neutralnum));
+                        break;
+
+                    case CustomGameMode.FFA:
+                        FFAManager.AppendFFAKcount(sub);
+                        break;
+
+                    case CustomGameMode.SpeedRun:
+                        SpeedRun.AppendSpeedRunKcount(sub);
+                        break;
+                }
 
                 Utils.SendMessage(sub.ToString(), player.PlayerId);
                 break;

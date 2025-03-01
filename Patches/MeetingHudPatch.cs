@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System;
 using System.Text;
 using TMPro;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -304,11 +305,14 @@ class CheckForEndVotingPatch
 
             voteLog.Info($"Decision to exiled a player: {exileId} ({GetVoteName(exileId)})");
 
+            var allPlayers = GameData.Instance.AllPlayers.ToArray();
+            var allPlayerCount = allPlayers.Count;
+
             bool braked = false;
             if (tie)
             {
                 byte targetId = byte.MaxValue;
-                foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
+                foreach (var data in VotingData.Where(x => x.Key < allPlayerCount && x.Value == max).ToArray())
                 {
                     if (Tiebreaker.VoteFor.Contains(data.Key))
                     {
@@ -336,23 +340,23 @@ class CheckForEndVotingPatch
                 switch ((TieMode)Options.WhenTie.GetValue())
                 {
                     case TieMode.Default:
-                        exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == exileId);
+                        exiledPlayer = allPlayers.FirstOrDefault(info => info.PlayerId == exileId);
                         break;
                     case TieMode.All:
-                        var exileIds = VotingData.Where(x => x.Key < 15 && x.Value == max).Select(kvp => kvp.Key).ToArray();
+                        var exileIds = VotingData.Where(x => x.Key < allPlayerCount && x.Value == max).Select(kvp => kvp.Key).ToArray();
                         foreach (var playerId in exileIds)
                             GetPlayerById(playerId).SetRealKiller(null);
                         TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Vote, exileIds);
                         exiledPlayer = null;
                         break;
                     case TieMode.Random:
-                        exiledPlayer = GameData.Instance.AllPlayers.ToArray().OrderBy(_ => Guid.NewGuid()).FirstOrDefault(x => VotingData.TryGetValue(x.PlayerId, out int vote) && vote == max);
+                        exiledPlayer = allPlayers.OrderBy(_ => Guid.NewGuid()).FirstOrDefault(x => VotingData.TryGetValue(x.PlayerId, out int vote) && vote == max);
                         tie = false;
                         break;
                 }
             }
             else if (!braked)
-                exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+                exiledPlayer = allPlayers.FirstOrDefault(info => !tie && info.PlayerId == exileId);
 
             if (Keeper.IsTargetExiled(exileId))
             {
@@ -659,7 +663,6 @@ class CheckForEndVotingPatch
             if (candidate.PlayerId == exiledplayer.PlayerId || Main.AfterMeetingDeathPlayers.ContainsKey(candidate.PlayerId)) continue;
         }
         if (TargetList == null || TargetList.Count == 0) return null;
-        var rand = IRandom.Instance;
         var target = TargetList.RandomElement();
         return target;
     }
@@ -709,8 +712,16 @@ class CastVotePatch
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
             CovenLeader.retrainPlayer.Clear();
-            CustomRoles.CovenLeader.GetStaticRoleClass().AbilityLimit--;
-            CustomRoles.CovenLeader.GetStaticRoleClass().SendSkillRPC();
+
+            if (CovenLeader.List.Any())
+                foreach (var covenLeaderId in CovenLeader.List)
+                {
+                    var covenLeader = covenLeaderId.GetPlayer();
+                    if (covenLeader == null) continue;
+
+                    covenLeader.RpcRemoveAbilityUse();
+                }
+
             __instance.RpcClearVoteDelay(voter.GetClientId());
             return false;
         }
