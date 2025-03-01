@@ -1,10 +1,11 @@
 using System.Text;
-using UnityEngine;
-using TOHE.Roles.Core;
+using TOHE.Modules;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
+using static TOHE.Translator;
 using static TOHE.Utils;
-using static TOHE.Translator; 
 
 namespace TOHE.Roles.Crewmate;
 
@@ -70,12 +71,12 @@ internal class TaskManager : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = LimitGetsAddOns.GetInt();
+        playerId.SetAbilityUseLimit(LimitGetsAddOns.GetInt());
     }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
-        
+
         var randomPlayer = Main.AllAlivePlayerControls.Where(pc => taskManager.PlayerId != pc.PlayerId && pc.Is(Custom_Team.Crewmate) && Utils.HasTasks(pc.Data, false)).ToList().RandomElement();
 
         if (randomPlayer == null)
@@ -103,18 +104,13 @@ internal class TaskManager : RoleBase
         if (!playerIsOverridden)
             VisualTaskIsCompleted(task.TaskType);
 
-        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || AbilityLimit <= 0) return;
+        var abilityLimit = _Player.GetAbilityUseLimit();
+        if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || abilityLimit < 1) return;
 
         var taskManager = _Player;
-        Addons.RemoveAll(taskManager.Is);
 
-        foreach (var addOn in Addons)
-        {
-            if (!CustomRolesHelper.CheckAddonConfilct(addOn, taskManager, checkLimitAddons: false, checkSelfAddOn: false))
-            {
-                Addons.Remove(addOn);
-            }
-        }
+        Addons.RemoveAll(taskManager.Is);
+        taskManager.CheckConflictedAddOnsFromList(ref Addons);
 
         if (Addons.Count == 0)
         {
@@ -122,11 +118,12 @@ internal class TaskManager : RoleBase
         }
         else
         {
-            AbilityLimit--;
+            abilityLimit--;
+            taskManager.RpcRemoveAbilityUse();
             var randomAddOn = Addons.RandomElement();
 
-            taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
-            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), AbilityLimit), time: 10);
+            taskManager.RpcSetCustomRole(randomAddOn, false, false);
+            taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), abilityLimit), time: 10);
         }
     }
     public static bool GetTaskManager(byte targetId, out byte taskManager)
@@ -142,10 +139,10 @@ internal class TaskManager : RoleBase
     {
         if (VisualTasksCompleted.ContainsKey(taskType)) return;
 
-        if (!(taskType is 
-            TaskTypes.EmptyGarbage or 
-            TaskTypes.PrimeShields or 
-            TaskTypes.ClearAsteroids or 
+        if (!(taskType is
+            TaskTypes.EmptyGarbage or
+            TaskTypes.PrimeShields or
+            TaskTypes.ClearAsteroids or
             TaskTypes.SubmitScan)) return;
 
         var taskTypeStr = taskType.ToString();
@@ -179,21 +176,15 @@ internal class TaskManager : RoleBase
     }
     private static string GetVisualTaskList() => string.Join(", ", VisualTasksCompleted.Values.Select(str => GetString(str)));
 
-    public override string GetProgressText(byte PlayerId, bool comms)
+    public override string GetProgressText(byte playerId, bool comms)
     {
         if (!CanSeeAllCompletedTasks.GetBool()) return string.Empty;
 
         var ProgressText = new StringBuilder();
-        var taskState1 = Main.PlayerStates?[PlayerId].TaskState;
-        Color TextColor1;
-        var TaskCompleteColor1 = Color.green;
-        var NonCompleteColor1 = Color.yellow;
-        var NormalColor1 = taskState1.IsTaskFinished ? TaskCompleteColor1 : NonCompleteColor1;
-        TextColor1 = comms ? Color.gray : NormalColor1;
-        string Completed1 = comms ? "?" : $"{taskState1.CompletedTasksCount}";
-        string totalCompleted1 = comms ? "?" : $"{GameData.Instance.CompletedTasks}";
-        ProgressText.Append(ColorString(TextColor1, $"({Completed1}/{taskState1.AllTasksCount})"));
-        ProgressText.Append($" <color=#777777>-</color> <color=#00ffa5>{totalCompleted1}/{GameData.Instance.TotalTasks}</color>");
+        var TextColor = GetRoleColor(CustomRoles.TaskManager);
+
+        ProgressText.Append(GetTaskCount(playerId, comms));
+        ProgressText.Append(ColorString(TextColor, ColorString(Color.white, " - ") + $"({GameData.Instance.CompletedTasks}/{GameData.Instance.TotalTasks})"));
         return ProgressText.ToString();
     }
 }

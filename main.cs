@@ -935,6 +935,9 @@ public enum CustomRoles
     //GM
     GM,
 
+    // Speed run
+    Runner,
+
     // Sub-role after 500
     NotAssigned = 500,
 
