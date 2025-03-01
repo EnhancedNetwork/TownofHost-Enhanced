@@ -1123,9 +1123,11 @@ public static class Options
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .HideInHnS();
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         ShowApocalypseInLeftCommand = BooleanOptionItem.Create(60043, "ShowApocalypseInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand)
             .SetGameMode(CustomGameMode.Standard);        
