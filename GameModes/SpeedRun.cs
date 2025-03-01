@@ -1,11 +1,11 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Roles.Core;
-using UnityEngine;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using Il2CppSystem.Text;
 using InnerNet;
+using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE;
 
@@ -518,7 +518,7 @@ public class Runner : RoleBase
         if (completedTaskCount >= totalTaskCount && !BasisChanged)
         {
             BasisChanged = true;
-            player.RpcSetRoleType(RoleTypes.Impostor, false);
+            player.RpcSetRoleDesync(RoleTypes.Impostor, player.OwnerId);
             player.MarkDirtySettings();
             SpeedRun.PlayerTaskFinishedAt[player.PlayerId] = GetTimeStamp();
         }

@@ -13,7 +13,7 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     FFA = 0x02,
-    
+
     SpeedRun = 0x04,
 
     HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other game modes
@@ -563,7 +563,7 @@ public static class Options
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
     public static OptionItem SpawnOneRandomKillingFraction;
-     
+
     // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
@@ -1962,11 +1962,13 @@ public static class Options
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
+            .HideInSpeedRun()
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 梯子摔死
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
-            .HideInFFA();
+            .HideInFFA()
+            .HideInSpeedRun();
         LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
 
