@@ -79,7 +79,7 @@ internal class Rulebook : RoleBase
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.CheckDoubleTrigger(target, () => { }))
+        if (killer.CheckDoubleTrigger(target, () => {} ))
         {
             return true;
         }
