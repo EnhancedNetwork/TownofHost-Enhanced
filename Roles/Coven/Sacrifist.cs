@@ -74,7 +74,7 @@ internal class Sacrifist : CovenManager
         maxDebuffTimer = DebuffCooldown.GetFloat();
         VisionChange[playerId] = [];
     }
-    public void SendRPC(PlayerControl pc)
+    private static void SendRPC(PlayerControl pc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.Write(DebuffID);

@@ -208,7 +208,7 @@ class SetEverythingUpPatch
         string AdditionalWinnerText = "";
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.SpeedRun)
         {
             var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
             __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
@@ -355,6 +355,12 @@ class SetEverythingUpPatch
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
                         sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
+                    break;
+                }
+            case CustomGameMode.SpeedRun:
+                {
+                    sb.Clear();
+                    sb.Append(SpeedRun.GetGameState(forGameEnd: true));
                     break;
                 }
             default: // Normal game
