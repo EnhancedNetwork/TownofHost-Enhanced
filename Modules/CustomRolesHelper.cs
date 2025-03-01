@@ -1091,7 +1091,10 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Spurt)
                     || pc.Is(CustomRoles.Chameleon)
                     || pc.Is(CustomRoles.Alchemist)
-                    || pc.Is(CustomRoles.Mare))
+                    || pc.Is(CustomRoles.Mare)
+                    || pc.Is(CustomRoles.ShapeMaster)
+                    || pc.Is(CustomRoles.ShapeshifterTOHE)
+                    || pc.Is(CustomRoles.Morphling))
                     return false;
                 break;
 
