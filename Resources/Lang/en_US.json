@@ -4180,6 +4180,7 @@
 
   "Runner": "Runner",
   "ModeSpeedRun": "Gamemode: Speedrun",
+  "ModeDescribe.SpeedRun": "In the Speedrun Gamemode, everything is about speed. Everyone has to complete all tasks as fast as possible, then kill everyone else as fast as possible!\n\nWhen someone completes all their tasks, they become a Killer and can kill everyone else. The last player alive wins!\n\nThis Gamemode is a hybrid of the Free For All Gamemode.",
   "RunnerInfo": "Complete your tasks and kill others.\nBe the last one standing!",
   "RunnerInfoLong": "(Speedrun):\nAs the Runner, you have to complete all your tasks to become a Killer, and kill other Runners to win.\nBe the last one standing!",
   "SpeedRun": "Speedrun",
