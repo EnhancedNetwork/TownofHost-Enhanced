@@ -127,7 +127,7 @@ namespace TOHE.Modules
                 _ = new LateTask(() =>
                 {
                     playerControl.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(false);
-                }, 0.1f);
+                }, 0.1f, "Hide NameText_TMP", shoudLog: false);
                 playerControl.Visible = false;
                 return;
             }
@@ -140,7 +140,7 @@ namespace TOHE.Modules
                     .Write(false)
                     .EndRpc();
                 sender.SendMessage();
-            }, 0.4f);
+            }, 0.4f, "Send RPC FixModdedClientCNOText", shoudLog: false);
 
             MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
             writer.StartMessage(6);
