@@ -53,7 +53,7 @@ internal class Fury : RoleBase
             {
                 return false;
             }
-            if (CanStartMeetingWhenAngry.GetBool() & FuryAngry == true)
+            if (CanStartMeetingWhenAngry.GetBool() && FuryAngry == true)
             {
                 return true;
             }
