@@ -74,10 +74,10 @@ static class ExtendedPlayerControl
         {
             if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false))
             {
-                confilctedAddOns.Add(addon);
+                conflictedAddOns.Add(addon);
             }
         }
-        foreach (var removeAddOns in confilctedAddOns.ToArray())
+        foreach (var removeAddOns in conflictedAddOns.ToArray())
         {
             Logger.Msg($"{removeAddOns} have conflict, remove from list", $"{player.GetCustomRole()}");
             addOnList.Remove(removeAddOns);
