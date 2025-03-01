@@ -48,7 +48,7 @@ internal class AbyssBringer : RoleBase
         BlackHoleRadius = FloatOptionItem.Create(Id + 15, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
             .SetParent(CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Multiplier);
-        CanKillTNA = BooleanOptionItem.Create(Id + 17, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
+        CanKillTNA = BooleanOptionItem.Create(Id + 20, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
