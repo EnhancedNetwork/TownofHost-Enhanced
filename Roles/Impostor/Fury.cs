@@ -49,7 +49,7 @@ internal class Fury : RoleBase
     {
         foreach (PlayerControl playerControl in Main.AllPlayerControls)
         {
-            if (!CanStartMeetingWhenAngry.GetBool() & FuryAngry == true)
+            if (!CanStartMeetingWhenAngry.GetBool() && FuryAngry == true)
             {
                 return false;
             }
