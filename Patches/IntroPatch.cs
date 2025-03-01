@@ -525,6 +525,12 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
                 break;
 
+            case CustomRoles.Dictator:
+            case CustomRoles.Mayor:
+            case CustomRoles.Swapper:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.Chat.warningSound;
+                break;
+
             case CustomRoles.Saboteur:
             case CustomRoles.Inhibitor:
             case CustomRoles.Mechanic:
@@ -537,6 +543,12 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                 break;
 
+            case CustomRoles.ChiefOfPolice:
+            case CustomRoles.Deputy:
+            case CustomRoles.Sheriff:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
+                break;
+
             case CustomRoles.GM:
                 __instance.TeamTitle.text = Utils.GetRoleName(role);
                 __instance.TeamTitle.color = Utils.GetRoleColor(role);
@@ -546,8 +558,6 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.text = GetString("SubText.GM");
                 break;
 
-            case CustomRoles.ChiefOfPolice:
-            case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
             case CustomRoles.Knight:
             case CustomRoles.KillingMachine:
@@ -616,13 +626,12 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = GetString("SpeedRun");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 251, 0, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
             __instance.ImpostorText.gameObject.SetActive(true);
             __instance.ImpostorText.text = GetString("RunnerInfo");
         }
 
         // I hope no one notices this in code
-        // unfortunately niko noticed while fixing others' shxt
         if (Input.GetKey(KeyCode.RightShift))
         {
             __instance.TeamTitle.text = "Damn!!";
