@@ -988,6 +988,10 @@ public static class Utils
                     sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
                 }
                 break;
+            case CustomGameMode.SpeedRun:
+                sb.Clear();
+                sb.Append(SpeedRun.GetGameState(forGameEnd: true));
+                break;
             default: // Normal game
                 foreach (byte id in cloneRoles.ToArray())
                 {

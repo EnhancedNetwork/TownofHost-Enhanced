@@ -130,6 +130,15 @@ class SetUpRoleTextPatch
                 __instance.RoleBlurbText.color = color;
                 __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
             }
+            else if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+            {
+                var color = ColorUtility.TryParseHtmlString("#00ffff", out var c) ? c : new(255, 255, 255, 255);
+                __instance.YouAreText.transform.gameObject.SetActive(false);
+                __instance.RoleText.text = GetString("SpeedRun");
+                __instance.RoleText.color = color;
+                __instance.RoleBlurbText.color = color;
+                __instance.RoleBlurbText.text = GetString("RunnerInfo");
+            }
             else
             {
                 if (!role.IsVanilla())
@@ -603,6 +612,15 @@ class BeginCrewmatePatch
             __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
         }
 
+        if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+        {
+            __instance.TeamTitle.text = GetString("SpeedRun");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("RunnerInfo");
+        }
+
         // I hope no one notices this in code
         // unfortunately niko noticed while fixing others' shxt
         if (Input.GetKey(KeyCode.RightShift))
@@ -846,6 +864,12 @@ class IntroCutsceneDestroyPatch
                         }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
                     }
                 }
+            }
+
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+            {
+                SpeedRun.StartedAt = Utils.GetTimeStamp();
+                SpeedRun.RpcSyncSpeedRunStates();
             }
 
             foreach (var player in Main.AllPlayerControls)

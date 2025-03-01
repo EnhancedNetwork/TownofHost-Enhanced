@@ -4,6 +4,7 @@ using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Utils;
 using static TOHE.Translator;
+using Il2CppSystem.Text;
 
 namespace TOHE;
 
@@ -106,14 +107,6 @@ public static class SpeedRun
         PlayerNumKills = [];
     }
 
-    public static void OnGameEnd()
-    {
-        StartedAt = 0;
-        PlayerTaskCounts = [];
-        PlayerTaskFinishedAt = [];
-        PlayerNumKills = [];
-    }
-
     public static void RpcSyncSpeedRunStates(byte specificPlayerId = 255) // Not 255, Sync single single player
     {
         if (specificPlayerId != 255)
@@ -121,6 +114,7 @@ public static class SpeedRun
             if (Main.PlayerStates.TryGetValue(specificPlayerId, out var state) && state.MainRole == CustomRoles.Runner)
             {
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+                writer.Write(StartedAt.ToString());
                 writer.Write(1);
                 writer.Write(specificPlayerId);
                 writer.Write((byte)PlayerTaskCounts[specificPlayerId].Item1);
@@ -144,6 +138,7 @@ public static class SpeedRun
         {
             var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
             var amount = Main.PlayerStates.Count(x => x.Value.MainRole == CustomRoles.Runner);
+            writer.Write(StartedAt.ToString());
             writer.Write((byte)amount);
 
             foreach (var id in Main.PlayerStates.Where(x => x.Value.MainRole == CustomRoles.Runner).Select(x => x.Value.PlayerId))
@@ -168,6 +163,7 @@ public static class SpeedRun
 
     public static void HandleSyncSpeedRunStates(MessageReader reader)
     {
+        StartedAt = long.Parse(reader.ReadString());
         var amount = reader.ReadByte();
         for (int i = 0; i < amount; i++)
         {
@@ -213,8 +209,11 @@ public static class SpeedRun
         NotifyRoles();
     }
 
-    public static void AppendGameState(Il2CppSystem.Text.StringBuilder builder)
+    public static string GetGameState(bool forGameEnd = false)
     {
+        StringBuilder builder = new();
+        var playerInfoList = new List<(byte playerId, string playerName, bool isAlive, bool finishedTasks, int kills, long finishTime, int completedTasks, int totalTasks)>();
+
         foreach (var kvp in Main.PlayerStates)
         {
             var playerId = kvp.Value.PlayerId;
@@ -222,31 +221,64 @@ public static class SpeedRun
 
             if (kvp.Value.MainRole is not CustomRoles.Runner) continue;
 
-            var playerName = ColorString(Main.PlayerColors.GetValueOrDefault(playerId, Color.white), GetPlayerById(playerId)?.GetRealName() ?? "ERROR");
+            var playerName = ColorString(Main.PlayerColors.GetValueOrDefault(playerId, Color.white), Main.AllPlayerNames[playerId] ?? "ERROR");
+            bool isAlive = !playerState.IsDead;
+            bool finishedTasks = false;
+            int kills = 0;
+            long finishTime = long.MaxValue;
+            int completedTasks = 0;
+            int totalTasks = 0;
 
-            builder.AppendLine(playerName);
-
-            if (playerState.IsDead)
+            if (PlayerTaskCounts.ContainsKey(playerId))
             {
-                builder.Append(Utils.ColorString(Color.gray, $"(  {PlayerTaskCounts[playerId].Item1}/{PlayerTaskCounts[playerId].Item2})"));
+                var taskCount = PlayerTaskCounts[playerId];
+                completedTasks = taskCount.Item1;
+                totalTasks = taskCount.Item2;
+
+                if (taskCount.Item1 >= taskCount.Item2 && taskCount.Item1 != 0)
+                {
+                    finishedTasks = true;
+                    finishTime = PlayerTaskFinishedAt.ContainsKey(playerId) ?
+                        PlayerTaskFinishedAt[playerId] - StartedAt : long.MaxValue;
+                    kills = PlayerNumKills.ContainsKey(playerId) ? PlayerNumKills[playerId] : 0;
+                }
+            }
+
+            playerInfoList.Add((playerId, playerName, isAlive, finishedTasks, kills, finishTime, completedTasks, totalTasks));
+        }
+
+        // Alive > Finish all tasks > Kill num > Time cost to finish all tasks > Not yet finish tasks then task num
+        playerInfoList = playerInfoList.OrderByDescending(p => p.isAlive)
+                                     .ThenByDescending(p => p.finishedTasks)
+                                     .ThenByDescending(p => p.kills)
+                                     .ThenBy(p => p.finishTime)
+                                     .ThenByDescending(p => p.completedTasks)
+                                     .ToList();
+
+        for (int i = 0; i < playerInfoList.Count; i++)
+        {
+            var info = playerInfoList[i];
+            builder.Append((forGameEnd && info.isAlive ? "<#c4aa02>★</color>" : $"{i + 1}. ") + $"{info.playerName} ({(info.isAlive ? ColorString(Color.green, GetString("Alive")) : ColorString(Color.gray, GetString("Death")))})");
+
+            if (info.finishedTasks)
+            {
+                builder.Append(" " + string.Format(GetString("TaskFinishedSeconds"), info.finishTime));
+                builder.Append(" " + string.Format(GetString("KillCount"), info.kills));
             }
             else
             {
-                if (PlayerTaskCounts.ContainsKey(playerId))
-                {
-                    var taskCount = PlayerTaskCounts[playerId];
-                    if (taskCount.Item1 >= taskCount.Item2 && taskCount.Item1 != 0)
-                    {
-                        builder.Append($" Tasks completed at: {PlayerTaskFinishedAt[playerId]}");
-                        builder.Append($" Kills: {PlayerNumKills[playerId]}");
-                    }
-                    else
-                    {
-                        builder.Append(ColorString(Color.yellow, $"  ({taskCount.Item1}/{taskCount.Item2})"));
-                    }
-                }
+                var taskColor = info.isAlive ? Color.yellow : Color.gray;
+                builder.Append(ColorString(taskColor, $" ({info.completedTasks}/{info.totalTasks})"));
+            }
+
+            // 如果不是最后一个玩家，添加换行符
+            if (i < playerInfoList.Count - 1)
+            {
+                builder.AppendLine();
             }
         }
+
+        return builder.ToString();
     }
 }
 
@@ -256,11 +288,20 @@ class SpeedRunGameEndPredicate : GameEndPredicate
     {
         reason = GameOverReason.ImpostorByKill;
 
-        if (Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner)) <= 1) return true;
+        if (Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner)) <= 1)
+        {
+            CustomWinnerHolder.WinnerIds.Clear();
+            Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Runner)).Select(x => x.PlayerId).Do(x => CustomWinnerHolder.WinnerIds.Add(x));
+            Main.DoBlockNameChange = true;
+            return true;
+        }
 
         if (SpeedRun.StartedAt != 0 && GetTimeStamp() - SpeedRun.StartedAt >= SpeedRun.SpeedRun_MaxTimeForTie.GetInt())
         {
             reason = GameOverReason.HumansByTask;
+            CustomWinnerHolder.WinnerIds.Clear();
+            Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Runner)).Select(x => x.PlayerId).Do(x => CustomWinnerHolder.WinnerIds.Add(x));
+            Main.DoBlockNameChange = true;
             return true;
         }
 

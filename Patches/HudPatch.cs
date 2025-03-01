@@ -353,27 +353,26 @@ class TaskPanelBehaviourPatch
 
                     break;
                 case CustomGameMode.SpeedRun:
-                    Il2CppSystem.Text.StringBuilder builder2 = new();
-                    builder2.Append(AllText + "\r\n");
-                    Runner runner = player.GetRoleClass() as Runner;
-
-                    if (runner != null && !runner.BasisChanged)
+                    var lines2 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
+                    StringBuilder sb2 = new();
+                    foreach (var eachLine in lines2)
                     {
-                        for (int i = 0; i < PlayerControl.LocalPlayer.myTasks.Count; i++)
-                        {
-                            PlayerTask playerTask = PlayerControl.LocalPlayer.myTasks[i];
-                            if (playerTask)
-                            {
-                                playerTask.AppendTaskText(builder2);
-                            }
-                        }
+                        var line = eachLine.Trim();
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb2.Length < 1 && !line.Contains('(')) continue;
+                        sb2.Append(line + "\r\n");
                     }
 
-                    SpeedRun.AppendGameState(builder2);
-                    AllText = builder2.ToString();
+                    if (sb2.Length > 1)
+                    {
+                        var text = sb2.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sb2.ToString().Count(s => (s == '\n')) >= 1)
+                            text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
+                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                    }
+
+                    AllText += $"\r\n\r\n<size=70%>{SpeedRun.GetGameState()}</size>";
 
                     break;
-
             }
 
             __instance.taskText.text = AllText;
