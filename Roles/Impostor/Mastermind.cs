@@ -135,7 +135,7 @@ internal class Mastermind : RoleBase
         foreach (var x in ManipulatedPlayers)
         {
             var pc = GetPlayerById(x.Key);
-            if (pc.IsAlive())
+            if (pc.IsAlive() && !pc.IsTransformedNeutralApocalypse())
             {
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);

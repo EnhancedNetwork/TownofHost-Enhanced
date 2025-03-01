@@ -228,9 +228,11 @@ internal class MoonDancer : CovenManager
                 continue;
             }
 
+            player.CheckConflictedAddOnsFromList(ref addons);
+
             var addon = addons.RandomElement();
-            var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
-            var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
+            var helpful = GroupedAddons[AddonTypes.Helpful].Where(addons.Contains).ToList();
+            var harmful = GroupedAddons[AddonTypes.Harmful].Where(addons.Contains).ToList();
             if (player.GetCustomRole().IsCovenTeam() || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
             {
                 if (helpful.Count <= 0)
@@ -251,9 +253,12 @@ internal class MoonDancer : CovenManager
                 }
                 addon = harmful.RandomElement();
             }
-            player.RpcSetCustomRole(addon);
-            player.AddInSwitchAddons(player, addon);
-            Logger.Info("Addon Passed.", "MoonDancer");
+
+            if (addon != 0) // not default value
+            {
+                player.RpcSetCustomRole(addon, false, false);
+                Logger.Info("Addon Passed.", "MoonDancer");
+            }
         }
         BatonPassList[md.PlayerId].Clear();
     }

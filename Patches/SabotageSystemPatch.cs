@@ -3,7 +3,6 @@ using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -349,9 +348,8 @@ public class SabotageSystemPatch
                     return false;
             }
 
-            if (player.GetRoleClass() is Glitch gc)
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
             {
-                gc.Mimic(player);
                 return false;
             }
 
