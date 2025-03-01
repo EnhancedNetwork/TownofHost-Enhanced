@@ -53,6 +53,7 @@ internal class Chameleon : RoleBase
     }
     public static void SendRPC(PlayerControl pc)
     {
+        if (!pc.IsNonHostModdedClient()) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
         writer.Write(pc.PlayerId);
         writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
