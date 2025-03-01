@@ -30,25 +30,25 @@ internal class AbyssBringer : RoleBase
     {
         const TabGroup tab = TabGroup.ImpostorRoles;
         const CustomRoles role = CustomRoles.Abyssbringer;
-        Options.SetupRoleOptions(Id, tab, role);
+        SetupRoleOptions(Id, tab, role);
         BlackHoleCountLimit = IntegerOptionItem.Create(Id + 16, "BlackHoleCountLimit", new(1, 15, 1), 1, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role]);
+            .SetParent(CustomRoleSpawnChances[role]);
         BlackHolePlaceCooldown = IntegerOptionItem.Create(Id + 10, "BlackHolePlaceCooldown", new(1, 180, 1), 30, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role])
+            .SetParent(CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Seconds);
         BlackHoleDespawnMode = StringOptionItem.Create(Id + 11, "BlackHoleDespawnMode", Enum.GetNames<DespawnMode>(), 0, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role]);
+            .SetParent(CustomRoleSpawnChances[role]);
         BlackHoleDespawnTime = IntegerOptionItem.Create(Id + 12, "BlackHoleDespawnTime", new(1, 60, 1), 15, tab, false)
             .SetParent(BlackHoleDespawnMode)
             .SetValueFormat(OptionFormat.Seconds);
         BlackHoleMovesTowardsNearestPlayer = BooleanOptionItem.Create(Id + 13, "BlackHoleMovesTowardsNearestPlayer", true, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role]);
+            .SetParent(CustomRoleSpawnChances[role]);
         BlackHoleMoveSpeed = FloatOptionItem.Create(Id + 14, "BlackHoleMoveSpeed", new(0.25f, 10f, 0.25f), 1f, tab, false)
             .SetParent(BlackHoleMovesTowardsNearestPlayer);
         BlackHoleRadius = FloatOptionItem.Create(Id + 15, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role])
+            .SetParent(CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Multiplier);
-        CanKillTNA = BooleanOptionItem.Create(Id + 16, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
+        CanKillTNA = BooleanOptionItem.Create(Id + 17, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
