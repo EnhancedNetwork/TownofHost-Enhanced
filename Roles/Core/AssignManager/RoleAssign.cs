@@ -351,6 +351,8 @@ public class RoleAssign
                 break;
         }
 
+        playerCount = AllPlayers.Count;
+
         // Impostor Roles
         {
             List<CustomRoles> AlwaysImpRoles = [];

@@ -124,7 +124,7 @@ internal class VoodooMaster : CovenManager
 
         PlayerControl ChoosenTarget = GetPlayerById(Dolls[target.PlayerId].Where(x => GetPlayerById(x).IsAlive()).ToList().RandomElement());
 
-        if (killer.CheckForInvalidMurdering(ChoosenTarget) && killer.RpcCheckAndMurder(ChoosenTarget, check: true))
+        if (killer.CheckForInvalidMurdering(ChoosenTarget) && killer.RpcCheckAndMurder(ChoosenTarget, check: true) && !ChoosenTarget.IsTransformedNeutralApocalypse())
         {
             killer.RpcMurderPlayer(ChoosenTarget);
             ChoosenTarget.SetRealKiller(_Player);
