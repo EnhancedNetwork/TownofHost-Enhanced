@@ -1143,13 +1143,17 @@ public static class Options
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .HideInHnS();
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         ShowApocalypseInLeftCommand = BooleanOptionItem.Create(60043, "ShowApocalypseInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .HideInHnS();
+            .HideInHnS()
+            .SetGameMode(CustomGameMode.Standard);
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)

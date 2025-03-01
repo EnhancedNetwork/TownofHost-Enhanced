@@ -4202,8 +4202,16 @@
   "SpeedRun_EndGameForTime": "Force end the game after * seconds",
   "SpeedRun_MaxTimeForTie": "* seconds to end the game",
   "TaskFinishedSeconds": "Tasks Finished in {0}s",
+  "SpeedRun_LeaderBoard": "★ Cool Runners! ★",
   "MenuTitle.SpeedRun": "★ Speed Run ★",
+
   "MenuTitle.FreeForAll": "★ Free For All ★",
+  "Remaining.FFAKiller": "There are <b>{0}</b> FFA Killer in game!",
+  "Remaining.FFASpectator": "<b>{0}</b> dead killers are spectating...",
+  "Remaining.SpeedRunAliveKiller": "<b>{0}</b> Runner finished their tasks and are murdering others!",
+  "Remaining.SpeedRunAliveRunner": "<b>{0}</b> Runner are rushing for a chance of life.",
+  "Remaining.SpeedRunDeadKiller": "<b>{0}</b> task-finished Runner were killed in the merciless war...",
+  "Remaining.SpeedRunDeadRunner": "<b>{0}</b> Runner died with uncompleted goal...",
 
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can recruit <color=#ff1919>Impostor</color>",

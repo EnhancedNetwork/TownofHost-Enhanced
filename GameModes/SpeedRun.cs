@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppSystem.Text;
+using System.Text;
 using InnerNet;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -297,6 +297,12 @@ public static class SpeedRun
                                      .ThenByDescending(p => p.completedTasks)
                                      .ToList();
 
+        if (forGameEnd)
+        {
+            builder.Append(ColorString(new Color32(255, 251, 0, byte.MaxValue), GetString("SpeedRun_LeaderBoard")));
+            builder.AppendLine();
+        }
+
         for (int i = 0; i < playerInfoList.Count; i++)
         {
             var info = playerInfoList[i];
@@ -321,6 +327,19 @@ public static class SpeedRun
         }
 
         return builder.ToString();
+    }
+
+    public static void AppendSpeedRunKcount(StringBuilder builder)
+    {
+        int aliveKillerCount = Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner) && ((Runner)x.GetRoleClass()).BasisChanged);
+        int aliveRunnerCount = Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner) && !((Runner)x.GetRoleClass()).BasisChanged);
+        int deadKillerCount = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Runner) && ((Runner)x.GetRoleClass()).BasisChanged && !x.IsAlive());
+        int deadRunnerCount = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Runner) && !((Runner)x.GetRoleClass()).BasisChanged && !x.IsAlive());
+
+        builder.Append(string.Format(GetString("Remaining.SpeedRunAliveKiller"), aliveKillerCount));
+        builder.Append(string.Format("\n\r" + GetString("Remaining.SpeedRunAliveRunner"), aliveRunnerCount));
+        builder.Append(string.Format("\n\r" + GetString("Remaining.SpeedRunDeadKiller"), deadKillerCount));
+        builder.Append(string.Format("\n\r" + GetString("Remaining.SpeedRunDeadRunner"), deadRunnerCount));
     }
 }
 

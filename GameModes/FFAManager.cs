@@ -1,4 +1,5 @@
 using Hazel;
+using System.Text;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -414,6 +415,15 @@ internal static class FFAManager
         arrows += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Killer), arrow);
 
         return arrows;
+    }
+
+    public static void AppendFFAKcount(StringBuilder builder)
+    {
+        int AliveFFAKiller = Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Killer));
+        int DeadFFASpectator = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Killer) && !x.IsAlive());
+
+        builder.Append(string.Format(GetString("Remaining.FFAKiller"), AliveFFAKiller));
+        builder.Append(string.Format("\n\r" + GetString("Remaining.FFASpectator"), DeadFFASpectator));
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]

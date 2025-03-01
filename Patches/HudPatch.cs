@@ -370,7 +370,7 @@ class TaskPanelBehaviourPatch
                         AllText += $"\r\n\r\n<size=85%>{text}</size>";
                     }
 
-                    AllText += $"\r\n\r\n<size=70%>{SpeedRun.GetGameState()}</size>";
+                    AllText += $"\r\n\r\n<size=80%>{SpeedRun.GetGameState()}</size>";
 
                     break;
             }
