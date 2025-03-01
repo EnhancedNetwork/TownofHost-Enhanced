@@ -4,6 +4,7 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using System;
 using System.Text;
+using UnityEngine;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
@@ -13,7 +14,7 @@ using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using static TOHE.Translator;
 
 namespace TOHE;
@@ -26,17 +27,26 @@ static class ExtendedPlayerControl
         if (role < CustomRoles.NotAssigned)
         {
             Main.PlayerStates[player.PlayerId].SetMainRole(role);
-            //  player.GetRoleClass()?.OnAdd(player.PlayerId);
-            // Remember to manually add OnAdd if you are setting role mid game
-            if (checkAddons && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
+
+            // Remove incompatible Add-ons
+            if (checkAddons && Options.RemoveIncompatibleAddOnsMidGame.GetBool())
+            {
+                player.StartCoroutine(player.RemoveIncompatibleAddOnsAsync().WrapToIl2Cpp());
+            }
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole 
         {
             if (Cleanser.CantGetAddon() && player.Is(CustomRoles.Cleansed)) return;
 
-            Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
-
-            if (checkAAconflict && Options.RemoveIncompatibleAddOnsMidGame.GetBool()) player.RemoveIncompatibleAddOns();
+            // Check conflict
+            if (checkAAconflict && Options.RemoveIncompatibleAddOnsMidGame.GetBool())
+            {
+                player.StartCoroutine(player.CheckAndAssignAddOnAsync(role).WrapToIl2Cpp());
+            }
+            else
+            {
+                Main.PlayerStates[player.PlayerId].SetSubRole(role, pc: player);
+            }
         }
         if (AmongUsClient.Instance.AmHost)
         {
@@ -57,20 +67,56 @@ static class ExtendedPlayerControl
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
-    public static void RemoveIncompatibleAddOns(this PlayerControl player)
+    public static void CheckConflictedAddOnsFromList(this PlayerControl player, ref List<CustomRoles> addOnList)
     {
-        var roles = player.GetCustomSubRoles().ToList();
-        roles = roles.Where(x => !x.IsAddonAssignedMidGame()).ToList();
-        roles.Shuffle();
-
-        foreach (var addon in roles)
+        List<CustomRoles> conflictedAddOns = [];
+        foreach (var addon in addOnList)
         {
-            if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false, checkSelfAddOn: false))
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false))
             {
-                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
-                Logger.Info($"{player.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", $"{player.GetCustomRole().ToString()}");
+                conflictedAddOns.Add(addon);
             }
         }
+        foreach (var removeAddOns in conflictedAddOns.ToArray())
+        {
+            Logger.Msg($"{removeAddOns} have conflict, remove from list", $"{player.GetCustomRole()}");
+            addOnList.Remove(removeAddOns);
+        }
+    }
+    private static System.Collections.IEnumerator RemoveIncompatibleAddOnsAsync(this PlayerControl player)
+    {
+        var currentAddOns = player.GetCustomSubRoles().Where(x => !x.IsAddonAssignedMidGame()).ToArray();
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var addon in currentAddOns)
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, player, checkLimitAddons: false, checkConditions: false))
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addon);
+                Logger.Msg($"{player.GetNameWithRole()} had incompatible addon {addon}, removing addon", $"RemoveIncompatibleAddOnsAsync: {player.GetCustomRole()}");
+            }
+            yield return new WaitForSeconds(0.2f);
+        }
+    }
+    private static System.Collections.IEnumerator CheckAndAssignAddOnAsync(this PlayerControl player, CustomRoles newAddOn)
+    {
+        var currentAddOns = player.GetCustomSubRoles().Where(x => !x.IsAddonAssignedMidGame()).ToArray();
+
+        Main.PlayerStates[player.PlayerId].SetSubRole(newAddOn, pc: player);
+
+        yield return new WaitForSeconds(0.1f);
+
+        foreach (var addOn in currentAddOns)
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addOn, player, checkLimitAddons: false, checkConditions: false))
+            {
+                Main.PlayerStates[player.PlayerId].RemoveSubRole(addOn);
+                Logger.Msg($"{player.GetNameWithRole()} had incompatible addon {addOn}, removing addon", $"CheckAndAssignAddOnAsync: {player.GetCustomRole()}");
+            }
+            yield return new WaitForSeconds(0.2f);
+        }
+
     }
     public static void SetRole(this PlayerControl player, RoleTypes role, bool canOverride)
     {
@@ -107,7 +153,7 @@ static class ExtendedPlayerControl
         if (player.HasGhostRole())
         {
             player.GetRoleClass().OnRemove(player.PlayerId);
-            player.RpcSetCustomRole(player.GetRoleMap().CustomRole);
+            player.RpcSetCustomRole(player.GetRoleMap().CustomRole, false, false);
             player.GetRoleClass().OnAdd(player.PlayerId);
         }
 
@@ -1291,13 +1337,9 @@ static class ExtendedPlayerControl
             CustomRoles.Contagious;
     }
 
-    public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles Addon = CustomRoles.NotAssigned, CustomRoles? IsAddon = CustomRoles.NotAssigned)
+    public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles addOn = CustomRoles.NotAssigned)
     {
-        if (Addon == CustomRoles.NotAssigned)
-        {
-            Addon = IsAddon ?? CustomRoles.NotAssigned;
-        }
-        if (CustomRoleManager.AddonClasses.TryGetValue(Addon, out var IAddon))
+        if (CustomRoleManager.AddonClasses.TryGetValue(addOn, out var IAddon))
         {
             IAddon?.Remove(Killed.PlayerId);
             IAddon?.Add(target.PlayerId, false);

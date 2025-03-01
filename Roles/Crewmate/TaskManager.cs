@@ -108,15 +108,9 @@ internal class TaskManager : RoleBase
         if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || abilityLimit < 1) return;
 
         var taskManager = _Player;
-        Addons.RemoveAll(taskManager.Is);
 
-        foreach (var addOn in Addons)
-        {
-            if (!CustomRolesHelper.CheckAddonConfilct(addOn, taskManager, checkLimitAddons: false, checkSelfAddOn: false))
-            {
-                Addons.Remove(addOn);
-            }
-        }
+        Addons.RemoveAll(taskManager.Is);
+        taskManager.CheckConflictedAddOnsFromList(ref Addons);
 
         if (Addons.Count == 0)
         {
@@ -128,7 +122,7 @@ internal class TaskManager : RoleBase
             taskManager.RpcRemoveAbilityUse();
             var randomAddOn = Addons.RandomElement();
 
-            taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
+            taskManager.RpcSetCustomRole(randomAddOn, false, false);
             taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), abilityLimit), time: 10);
         }
     }

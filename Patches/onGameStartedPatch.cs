@@ -449,7 +449,7 @@ internal class StartGameHostPatch
             {
                 foreach (var pair in RoleAssign.RoleResult)
                 {
-                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
+                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, false, false);
                 }
                 goto EndOfSelectRolePatch;
             }
