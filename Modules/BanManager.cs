@@ -16,7 +16,7 @@ public static class BanManager
     private const string VIPListPath = "./TOHE-DATA/VIP-List.txt";
     private const string WhiteListListPath = "./TOHE-DATA/WhiteList.txt";
     //private static List<string> EACList = []; // Don't make it read-only
-    public static List<string> TempBanWhiteList = []; //To prevent writing to ban list
+    public static HashSet<string> TempBanWhiteList = []; //To prevent writing to ban list
     public static List<Dictionary<string, System.Text.Json.JsonElement>> EACDict = [];
     public static void Init()
     {
@@ -180,7 +180,6 @@ public static class BanManager
             AmongUsClient.Instance.KickPlayer(player.Id, true);
             //This should not happen
             Logger.Info($"{player.PlayerName} was in temp ban list", "BAN");
-            return;
         }
     }
     public static bool CheckBanList(string code, string hashedpuid = "")

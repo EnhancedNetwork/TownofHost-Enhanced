@@ -107,7 +107,7 @@ internal class Sheriff : RoleBase
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
-    public static bool IsUseKillButton(PlayerControl pc)
+    private static bool IsUseKillButton(PlayerControl pc)
         => (CanKillAllAlive.GetBool() || GameStates.AlreadyDied) && pc.GetAbilityUseLimit() > 0;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
@@ -168,7 +168,7 @@ internal class Sheriff : RoleBase
             _ => cRole.GetCustomRoleTeam() switch
             {
                 Custom_Team.Impostor => CanKillAdmired,
-                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())) && CanKillAdmired,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool()) && CanKillAdmired,
                 Custom_Team.Coven => CanKillCoven.GetBool() && CanKillAdmired,
                 _ => CanKill,
             }

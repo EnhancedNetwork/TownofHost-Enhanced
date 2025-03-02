@@ -13,12 +13,12 @@ public static class TagManager
         CreateIfNotExists();
     }
 
-    public static void CreateIfNotExists()
+    private static void CreateIfNotExists()
     {
         try
         {
             if (!Directory.Exists(@"TOHE-DATA/Tags")) Directory.CreateDirectory(@"TOHE-DATA/Tags");
-            var defaultTagMsg = GetResourcesTxt($"TOHE.Resources.Config.TagTemplate.txt");
+            var defaultTagMsg = GetResourcesTxt("TOHE.Resources.Config.TagTemplate.txt");
             if (!File.Exists(@"./TOHE-DATA/Tags/Tag_Template.txt")) // Default tag
             {
                 using FileStream fs = File.Create(@"./TOHE-DATA/Tags/Tag_Template.txt");
@@ -136,7 +136,7 @@ public static class TagManager
                 break;
             }
         }
-        int.TryParse(temp, out int result);
+        _ = int.TryParse(temp, out int result);
         return result;
     }
 

@@ -119,7 +119,7 @@ internal class Witch : RoleBase
         }
     }
 
-    private static bool IsSpellMode(byte playerId) => SpellMode.TryGetValue(playerId, out var isSpellMode) && isSpellMode;
+    private static bool IsSpellMode(byte playerId) => SpellMode.GetValueOrDefault(playerId, false);
 
     private static bool IsSpelled(byte target) => SpelledPlayer.Any(x => x.Value.Contains(target));
 
@@ -206,8 +206,6 @@ internal class Witch : RoleBase
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        seen ??= seer;
-
         if (isForMeeting && IsSpelled(seen.PlayerId))
         {
             return Utils.ColorString(Palette.ImpostorRed, "†");

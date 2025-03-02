@@ -97,7 +97,7 @@ internal class Bandit : RoleBase
         var addon = AllSubRoles.RandomElement();
         return addon;
     }
-    public void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)
+    private void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
@@ -148,14 +148,11 @@ internal class Bandit : RoleBase
 
         if (!DisableShieldAnimations.GetBool())
             killer.RpcGuardAndKill(target);
-
-        return;
     }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        bool flag = false;
-        if (!target.HasSubRole() || target.Is(CustomRoles.Stubborn)) flag = true;
+        bool flag = !target.HasSubRole() || target.Is(CustomRoles.Stubborn);
 
         var SelectedAddOn = SelectRandomAddon(killer, target);
         if (SelectedAddOn == null || flag) // no stealable addons found on the target.

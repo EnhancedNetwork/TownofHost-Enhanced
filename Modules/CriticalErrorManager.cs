@@ -124,7 +124,7 @@ public static class CriticalErrorManager
                 else
                 {
                     Logger.SendInGame("[Critical Error] Your client is in a unknow state while receiving AntiBlackOut rpcs from others");
-                    Logger.Fatal($"Client is in a unknow state while receiving AntiBlackOut rpcs from others", "Anti-black");
+                    Logger.Fatal("Client is in a unknow state while receiving AntiBlackOut rpcs from others", "Anti-black");
                 }
             }
             else
@@ -149,7 +149,7 @@ public static class CriticalErrorManager
                 else
                 {
                     Logger.SendInGame("Host in a unknow antiblack bugged state");
-                    Logger.Fatal($"Host in a unknow antiblack bugged state", "Anti-black");
+                    Logger.Fatal("Host in a unknow antiblack bugged state", "Anti-black");
                 }
             }
         }
@@ -168,7 +168,7 @@ public static class CriticalErrorManager
                     if (AmongUsClient.Instance.AmConnected)
                     {
                         AmongUsClient.Instance.ExitGame(DisconnectReasons.Custom);
-                        Logger.Fatal($"Disconnected from the game due critical error", "Anti-black");
+                        Logger.Fatal("Disconnected from the game due critical error", "Anti-black");
                     }
                 }, 1.5f, "Anti-Black Exit Game Due Critical Error");
             }

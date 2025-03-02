@@ -84,7 +84,7 @@ internal class Pitfall : RoleBase
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
         //if (!CheckUnshapeshift) return;
-        Logger.Info($"Triggered Pitfall Ability!!!", "Pitfall");
+        Logger.Info("Triggered Pitfall Ability!!!", "Pitfall");
 
 
         // Remove inactive traps so there is room for new traps
@@ -151,7 +151,7 @@ internal class Pitfall : RoleBase
 
             trap.PlayersTrapped.Add(player.PlayerId);
 
-            player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Pitfall), GetString("PitfallTrap")));
+            player.Notify(CustomRoles.Pitfall.GetColoredTextByRole(GetString("PitfallTrap")));
         }
     }
 
@@ -180,9 +180,8 @@ internal class Pitfall : RoleBase
 
     private static void ReducePlayerVision(PlayerControl player)
     {
-        if (ReducedVisionPlayers.Contains(player.PlayerId)) return;
-
-        ReducedVisionPlayers.Add(player.PlayerId);
+        if (!ReducedVisionPlayers.Add(player.PlayerId)) return;
+        
         player.MarkDirtySettings();
 
         _ = new LateTask(() =>

@@ -23,15 +23,15 @@ internal class Chronomancer : RoleBase
     private int FullCharge = 0;
     private bool IsInMassacre;
 
-    public float realcooldown;
+    private float realcooldown;
 
     private float LastNowF = 0;
     private float countnowF = 0;
 
     private string LastCD;
 
-    private static Color32 OrangeColor = new(255, 190, 92, 255); // The lest color
-    private static Color32 GreenColor = new(0, 128, 0, 255); // The final color
+    private static readonly Color32 OrangeColor = new(255, 190, 92, 255); // The lest color
+    private static readonly Color32 GreenColor = new(0, 128, 0, 255); // The final color
 
     private static int Charges;
 
@@ -90,14 +90,14 @@ internal class Chronomancer : RoleBase
         var ChargeToColor = GetChargeToColor();
         var CHcol = IsInMassacre ? "#630303" : "#0cb339";
 
-        sb.Append($"<size=75%>");
+        sb.Append("<size=75%>");
         for (int i = 0; i < Charges; i++)
         {
             string box = ChargeToColor > 0 ? $"<{CHcol}>█ </color>" : "<#666666>█ </color>";
             ChargeToColor--;
             sb.Append(box);
         }
-        sb.Append($"</size>");
+        sb.Append("</size>");
 
         return sb.ToString();
     }
@@ -173,7 +173,7 @@ internal class Chronomancer : RoleBase
         countnowF += Time.deltaTime;
     }
 
-    public void SendChargedTimeRPC()
+    private void SendChargedTimeRPC()
     {
         // Cant directly write Ability Limit, create another method to send it
         // Only send to the target to prevent logging in other's

@@ -24,16 +24,16 @@ public class ModUpdater
     private static bool firstNotify = true;
     public static bool forceUpdate = false;
     public static bool isBroken = false;
-    public static bool isChecked = false;
-    public static bool isFail = false;
-    public static DateTime? latestVersion = null;
-    public static string latestTitleModName = null;
-    public static string latestTitle = null;
-    public static string downloadUrl = null;
+    private static bool isChecked = false;
+    private static bool isFail = false;
+    private static DateTime? latestVersion = null;
+    private static string latestTitleModName = null;
+    private static string latestTitle = null;
+    private static string downloadUrl = null;
     public static string notice = null;
-    public static GenericPopup InfoPopup;
-    public static GenericPopup InfoPopupV2;
-    public static PassiveButton updateButton;
+    private static GenericPopup InfoPopup;
+    private static GenericPopup InfoPopupV2;
+    private static PassiveButton updateButton;
     private static CancellationTokenSource downloadCancellationTokenSource = new();
 
     [HarmonyPatch(typeof(MainMenuManager), nameof(MainMenuManager.Start)), HarmonyPostfix, HarmonyPriority(Priority.VeryLow)]
@@ -46,7 +46,7 @@ public class ModUpdater
         Main.Instance.StartCoroutine(PrefixCoroutine());
     }
 
-    public static IEnumerator PrefixCoroutine()
+    private static IEnumerator PrefixCoroutine()
     {
         CheckCustomRegions();
         NewVersionCheck();
@@ -76,7 +76,7 @@ public class ModUpdater
     const string MiniRegionInstallResource = "TOHE.Resources.Mini.RegionInstall.dll";
     private static void CheckCustomRegions()
     {
-        var regions = ServerManager.Instance.AvailableRegions;
+        var regions = FastDestroyableSingleton<ServerManager>.Instance.AvailableRegions;
         var hasCustomRegions = false;
         var forceUpdate = false;
 
@@ -109,7 +109,6 @@ public class ModUpdater
         {
             Logger.Info("Updating Region file due to it is missing.", "CheckCustomRegions");
             MoveFile();
-            return;
         }
 
         static void MoveFile()
@@ -141,7 +140,7 @@ public class ModUpdater
             }
         }
     }
-    public static void ResetUpdateButton()
+    private static void ResetUpdateButton()
     {
         if (updateButton == null)
         {
@@ -184,7 +183,7 @@ public class ModUpdater
         }
         return result;
     }
-    public static IEnumerator CheckReleaseFromGithub(bool beta = false)
+    private static IEnumerator CheckReleaseFromGithub(bool beta = false)
     {
         Logger.Warn("Start checking for updates from Github", "CheckRelease");
         string url = URL_Github + "/releases/latest";
@@ -223,7 +222,7 @@ public class ModUpdater
             latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : DateTime.MinValue;
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
-            JArray assets = data["assets"].TryCast<JArray>();
+            JArray assets = data["assets"].CastFast<JArray>();
             for (int i = 0; i < assets.Count; i++)
             {
                 string assetName = assets[i]["name"].ToString();
@@ -235,7 +234,7 @@ public class ModUpdater
             }
 
             DateTime pluginTimestamp = DateTime.ParseExact(Main.PluginVersion.Substring(5, 4), "MMdd", System.Globalization.CultureInfo.InvariantCulture);
-            int year = int.Parse(Main.PluginVersion.Substring(0, 4));
+            int year = int.Parse(Main.PluginVersion[..4]);
             pluginTimestamp = pluginTimestamp.AddYears(year - pluginTimestamp.Year);
             Logger.Info($"Day: {pluginTimestamp.Day} Month: {pluginTimestamp.Month} Year: {pluginTimestamp.Year}", "PluginVersion");
             hasUpdate = latestVersion?.Date > pluginTimestamp.Date;
@@ -246,7 +245,7 @@ public class ModUpdater
         Logger.Info("latestVersion: " + latestVersion, "Github");
         Logger.Info("latestTitle: " + latestTitle, "Github");
 
-        if (hasUpdate && (downloadUrl == null || downloadUrl == ""))
+        if (hasUpdate && String.IsNullOrEmpty(downloadUrl))
         {
             Logger.Error("Failed to get download address", "CheckRelease");
             isFail = true;
@@ -262,13 +261,12 @@ public class ModUpdater
         isFail = false;
         yield break;
     }
-    public static void StartUpdate(string url)
+    private static void StartUpdate(string url)
     {
         ShowPopup(GetString("updatePleaseWait"), StringNames.Cancel, false);
         Task.Run(() => DownloadDLLAsync(url));
-        return;
     }
-    public static bool NewVersionCheck()
+    private static void NewVersionCheck()
     {
         try
         {
@@ -283,11 +281,9 @@ public class ModUpdater
         catch (Exception ex)
         {
             Logger.Exception(ex, "NewVersionCheck");
-            return false;
         }
-        return true;
     }
-    public static void StopDownload()
+    private static void StopDownload()
     {
         lock (downloadLock)
         {
@@ -297,7 +293,7 @@ public class ModUpdater
             cachedfileStream = null;
         }
     }
-    public static IEnumerator DeleteFilesAfterCancel()
+    private static IEnumerator DeleteFilesAfterCancel()
     {
         ShowPopupAsync(GetString("deletingFiles"), StringNames.None, false);
         yield return new WaitForSeconds(2f);
@@ -306,7 +302,7 @@ public class ModUpdater
         DeleteOldFiles();
         yield break;
     }
-    public static void DeleteOldFiles()
+    private static void DeleteOldFiles()
     {
         string path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         string searchPattern = "TOHE.dll*";

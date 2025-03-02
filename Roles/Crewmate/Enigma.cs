@@ -135,15 +135,8 @@ internal class Enigma : RoleBase
 
             ShownClues[playerId].Add(clue);
 
-            if (MsgToSend.ContainsKey(playerId))
-                MsgToSend[playerId] = msg;
-            else
-                MsgToSend.Add(playerId, msg);
-
-            if (MsgToSendTitle.ContainsKey(playerId))
-                MsgToSendTitle[playerId] = title;
-            else
-                MsgToSendTitle.Add(playerId, title);
+            MsgToSend[playerId] = msg;
+            MsgToSendTitle[playerId] = title;
         }
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
@@ -153,8 +146,8 @@ internal class Enigma : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (MsgToSend.ContainsKey(pc.PlayerId))
-            AddMsg(MsgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Enigma), MsgToSendTitle[pc.PlayerId]));
+        if (MsgToSend.TryGetValue(pc.PlayerId, out var message))
+            AddMsg(message, pc.PlayerId, CustomRoles.Enigma.GetColoredTextByRole(MsgToSendTitle[pc.PlayerId]));
     }
     public override void MeetingHudClear() => MsgToSend.Clear();
     private abstract class EnigmaClue

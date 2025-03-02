@@ -48,7 +48,7 @@ internal class Ninja : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
         writer.Write(playerId);
-        writer.Write(MarkedPlayer.ContainsKey(playerId) ? MarkedPlayer[playerId] : byte.MaxValue);
+        writer.Write(MarkedPlayer.GetValueOrDefault(playerId, byte.MaxValue));
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
@@ -61,7 +61,7 @@ internal class Ninja : RoleBase
             MarkedPlayer.Add(playerId, targetId);
     }
 
-    private static bool Shapeshifting(byte id) => Main.CheckShapeshift.TryGetValue(id, out bool shapeshifting) && shapeshifting;
+    private static bool Shapeshifting(byte id) => Main.CheckShapeshift.GetValueOrDefault(id, false);
 
     public override void SetKillCooldown(byte id)
         => Main.AllPlayerKillCooldown[id] = Shapeshifting(id) ? DefaultKillCooldown : MarkCooldown.GetFloat();
@@ -77,7 +77,7 @@ internal class Ninja : RoleBase
     {
         if (target.Is(CustomRoles.NiceMini) && Mini.Age < 18)
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Gangster), GetString("CantMark")));
+            killer.Notify(CustomRoles.Gangster.GetColoredTextByRole(GetString("CantMark")));
             return true;
         }
 
@@ -109,14 +109,13 @@ internal class Ninja : RoleBase
         }
 
         // Ninja not marked player
-        if (!MarkedPlayer.ContainsKey(shapeshifter.PlayerId))
+        if (!MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
         {
             resetCooldown = false;
             return false;
         }
-
         // Check and kill marked player
-        if (MarkedPlayer.TryGetValue(shapeshifter.PlayerId, out var targetId))
+        else
         {
             var marketTarget = Utils.GetPlayerById(targetId);
 

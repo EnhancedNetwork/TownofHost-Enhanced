@@ -46,8 +46,7 @@ internal class Oracle : RoleBase
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return true;
-        if (DidVote.Contains(player.PlayerId)) return true;
-        DidVote.Add(player.PlayerId);
+        if (!DidVote.Add(player.PlayerId)) return true;
 
         var abilityUse = player.GetAbilityUseLimit();
         if (abilityUse < 1)

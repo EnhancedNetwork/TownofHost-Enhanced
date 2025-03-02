@@ -52,12 +52,14 @@ class OnGameJoinedPatch
 
             GameStartManagerPatch.GameStartManagerUpdatePatch.exitTimer = -1;
             Main.DoBlockNameChange = false;
-            RoleAssign.SetRoles = [];
+            Main.CachedPlayerControl.Clear();
+            RoleAssign.SetRoles.Clear();
             GhostRoleAssign.forceRole = [];
             EAC.DeNum = new();
             Main.AllPlayerNames.Clear();
             Main.PlayerQuitTimes.Clear();
             KickPlayerPatch.AttemptedKickPlayerList = [];
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             switch (GameOptionsManager.Instance.CurrentGameOptions.GameMode)
             {
@@ -68,7 +70,7 @@ class OnGameJoinedPatch
                     if (Main.NormalOptions.KillCooldown == 0f)
                         Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                    AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                    AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
 
                     if (AURoleOptions.ShapeshifterCooldown == 0f)
                         AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
@@ -144,7 +146,7 @@ class OnGameJoinedPatch
                         Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined Retry");
                         Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined Retry");
                     }
-                    catch { };
+                    catch { }
                 }, 1.5f, "Retry Log Local Client");
             }
         }, 0.7f, "OnGameJoinedPatch");
@@ -177,7 +179,7 @@ public static class OnPlayerJoinedPatch
         return false;
         //When a client disconnects, it is removed from allClients in method amongusclient.removeplayer
     }
-    public static bool HasInvalidFriendCode(string friendcode)
+    private static bool HasInvalidFriendCode(string friendcode)
     {
         if (string.IsNullOrEmpty(friendcode))
         {
@@ -267,10 +269,10 @@ public static class OnPlayerJoinedPatch
                 string msg = string.Format(GetString("MsgKickOtherPlatformPlayer"), client?.PlayerName, platform.ToString());
                 AmongUsClient.Instance.KickPlayer(client.Id, false);
                 Logger.SendInGame(msg);
-                Logger.Info(msg, "Other Platform Kick"); ;
+                Logger.Info(msg, "Other Platform Kick");
             }
         }
-        if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
+        if (FastDestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
         {
             AmongUsClient.Instance.KickPlayer(client.Id, true);
             Logger.Info($"Ban Player => {client?.PlayerName}({client.FriendCode}) has been banned.", "BAN");
@@ -286,9 +288,9 @@ public static class OnPlayerJoinedPatch
             if (client.GetHashedPuid() != "" && Options.TempBanPlayersWhoKeepQuitting.GetBool()
                 && !BanManager.CheckAllowList(client.FriendCode) && !GameStates.IsLocalGame)
             {
-                if (Main.PlayerQuitTimes.ContainsKey(client.GetHashedPuid()))
+                if (Main.PlayerQuitTimes.TryGetValue(client.GetHashedPuid(), out var quitTimes))
                 {
-                    if (Main.PlayerQuitTimes[client.GetHashedPuid()] >= Options.QuitTimesTillTempBan.GetInt())
+                    if (quitTimes >= Options.QuitTimesTillTempBan.GetInt())
                     {
                         if (!BanManager.TempBanWhiteList.Contains(client.GetHashedPuid()))
                             BanManager.TempBanWhiteList.Add(client.GetHashedPuid());
@@ -424,7 +426,7 @@ class OnPlayerLeftPatch
                     msg = GetString("Message.HostLeftGameInLobby");
 
                 player.SetName(title);
-                DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
                 player.SetName(name);
 
                 //On Become Host is called before OnPlayerLeft, so this is safe to use
@@ -472,7 +474,7 @@ class OnPlayerLeftPatch
                         var name = player?.Data?.PlayerName;
                         var msg = string.Format(GetString("Message.HostLeftGameNewHostIsNotMod"), AmongUsClient.Instance.GetHost().Character?.GetRealName() ?? "null");
                         player.SetName(title);
-                        DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+                        FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
                         player.SetName(name);
                     }
                 }, 0.5f, "On Host Disconnected");

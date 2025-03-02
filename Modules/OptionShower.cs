@@ -111,9 +111,9 @@ public class OptionShower : MonoBehaviour
                     {
                         string mode = kvp.Value.GetString();
                         if (kvp.Key is CustomRoles.Lovers) mode = Utils.GetChance(Options.LoverSpawnChances.GetInt());
-                        else if (kvp.Key.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.ContainsKey(kvp.Key))
+                        else if (kvp.Key.IsAdditionRole() && Options.CustomAdtRoleSpawnRate.TryGetValue(kvp.Key, out var spawnRate))
                         {
-                            mode = Utils.GetChance(Options.CustomAdtRoleSpawnRate[kvp.Key].GetFloat());
+                            mode = Utils.GetChance(spawnRate.GetFloat());
 
                         }
                         sb.Append($"{Utils.ColorString(Utils.GetRoleColor(kvp.Key), Utils.GetRoleName(kvp.Key))}: {mode}×{kvp.Key.GetCount()}\n");
@@ -126,7 +126,7 @@ public class OptionShower : MonoBehaviour
                             sb.Clear().Append(GetString("ActiveRolesList")).Append('\n');
                         }
                     }
-                pages.Add(sb.ToString() + "\n\n");
+                pages.Add(sb + "\n\n");
                 sb.Clear();
             }
 

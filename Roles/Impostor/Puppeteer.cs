@@ -78,7 +78,7 @@ internal class Puppeteer : RoleBase
         }
     }
 
-    public static bool PuppetIsActive(byte playerId) => PuppeteerList.ContainsKey(playerId);
+    private static bool PuppetIsActive(byte playerId) => PuppeteerList.ContainsKey(playerId);
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -162,7 +162,8 @@ internal class Puppeteer : RoleBase
     {
         if (target == null || isForMeeting) return string.Empty;
 
-        return (PuppeteerList.ContainsValue(seer.PlayerId) && PuppeteerList.ContainsKey(target.PlayerId)) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Puppeteer), "◆") : "";
+        return (PuppeteerList.ContainsValue(seer.PlayerId) && PuppeteerList.ContainsKey(target.PlayerId))
+            ? CustomRoles.Puppeteer.GetColoredTextByRole("◆") : string.Empty;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

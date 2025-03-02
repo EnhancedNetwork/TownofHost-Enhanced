@@ -33,7 +33,7 @@ internal class Zombie : RoleBase
     public override void SetKillCooldown(byte id)
     {
         Main.AllPlayerKillCooldown[id] = ZombieKillCooldown.GetFloat();
-        Main.AllPlayerSpeed[id] -= (float)Math.Clamp(ZombieSpeedReduce.GetFloat(), 0, (double)Main.AllPlayerSpeed[id] - 0.5);
+        Main.AllPlayerSpeed[id] -= (float)Math.Clamp(ZombieSpeedReduce.GetFloat(), 0, Main.AllPlayerSpeed[id] - 0.5);
     }
 
     public static void CheckRealVotes(PlayerControl target, ref int VoteNum)

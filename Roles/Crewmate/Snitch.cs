@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using System.Text;
 using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
@@ -13,7 +14,7 @@ internal class Snitch : RoleBase
     public override CustomRoles Role => CustomRoles.Snitch;
     private const int Id = 9500;
     private static readonly HashSet<byte> playerIdList = [];
-    public static bool HasEnabled => playerIdList.Any();
+    private static bool HasEnabled => playerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
@@ -135,10 +136,8 @@ internal class Snitch : RoleBase
 
             TargetArrow.Add(snitchId, targetId);
 
-            if (!TargetList.Contains(targetId))
+            if (TargetList.Add(targetId))
             {
-                TargetList.Add(targetId);
-
                 if (CanGetColoredArrow)
                     TargetColorlist.Add(targetId, target.GetRoleColor());
             }
@@ -185,10 +184,8 @@ internal class Snitch : RoleBase
 
                         var targetId = target.PlayerId;
 
-                        if (!TargetList.Contains(targetId))
+                        if (TargetList.Add(targetId))
                         {
-                            TargetList.Add(targetId);
-
                             if (CanGetColoredArrow)
                                 TargetColorlist.Add(targetId, target.GetRoleColor());
                         }
@@ -200,7 +197,7 @@ internal class Snitch : RoleBase
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (seen == seer) return string.Empty;
+        if (seen.PlayerId == seer.PlayerId) return string.Empty;
 
         return IsSnitchTarget(seen) && IsComplete[seer.PlayerId] ? Utils.ColorString(RoleColor, "⚠") : string.Empty;
     }
@@ -209,13 +206,13 @@ internal class Snitch : RoleBase
         if (!EnableTargetArrow || isForMeeting || seer.Is(CustomRoles.Madmate)) return string.Empty;
         if (target != null && seer.PlayerId != target.PlayerId) return string.Empty;
 
-        var arrows = "";
+        var arrows = new StringBuilder();
         foreach (var targetId in TargetList)
         {
             var arrow = TargetArrow.GetArrows(seer, targetId);
-            arrows += CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow;
+            arrows.Append(CanGetColoredArrow ? Utils.ColorString(TargetColorlist[targetId], arrow) : arrow);
         }
-        return arrows;
+        return arrows.ToString();
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)

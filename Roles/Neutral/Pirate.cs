@@ -18,7 +18,6 @@ internal class Pirate : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Pirate;
     private const int Id = 15000;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pirate);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
@@ -285,20 +284,20 @@ internal class Pirate : RoleBase
         return true;
     }
 
-    public static bool CheckCommond(ref string msg, string command)
+    private static bool CheckCommond(ref string msg, string command)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
+        foreach (var com in comList)
         {
             //if (exact)
             //{
-            //    if (msg == "/" + comList[i]) return true;
+            //    if (msg == "/" + com) return true;
             //}
             //else
             //{
-            if (msg.StartsWith("/" + comList[i]))
+            if (msg.StartsWith("/" + com))
             {
-                msg = msg.Replace("/" + comList[i], string.Empty);
+                msg = msg.Replace("/" + com, string.Empty);
                 return true;
             }
             //}
@@ -306,7 +305,7 @@ internal class Pirate : RoleBase
         return false;
     }
 
-    public static void TryHideMsgForDuel()
+    private static void TryHideMsgForDuel()
     {
         ChatUpdatePatch.DoBlockChat = true;
 
@@ -319,27 +318,27 @@ internal class Pirate : RoleBase
 
         List<CustomRoles> roles = CustomRolesHelper.AllRoles.Where(x => x is not CustomRoles.NotAssigned).ToList();
         var rd = IRandom.Instance;
-        string msg;
+        var msg = new System.Text.StringBuilder();
         string[] command = ["duel", "rps"];
         for (int i = 0; i < 20; i++)
         {
-            msg = "/";
+            msg.Clear().Append('/');
             if (rd.Next(1, 100) < 20)
             {
-                msg += "id";
+                msg.Append("id");
             }
             else
             {
-                msg += command[rd.Next(0, command.Length - 1)];
-                msg += " ";
-                msg += rd.Next(0, 3).ToString();
+                msg.Append(command[rd.Next(0, command.Length - 1)]);
+                msg.Append(' ');
+                msg.Append(rd.Next(0, 3));
             }
             var player = Main.AllAlivePlayerControls.RandomElement();
-            DestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg);
+            FastDestroyableSingleton<HudManager>.Instance.Chat.AddChat(player, msg.ToString());
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
             writer.StartRpc(player.NetId, (byte)RpcCalls.SendChat)
-                .Write(msg)
+                .Write(msg.ToString())
                 .EndRpc();
             writer.EndMessage();
             writer.SendMessage();

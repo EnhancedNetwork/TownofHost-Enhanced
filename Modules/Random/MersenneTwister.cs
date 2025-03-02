@@ -31,7 +31,7 @@ public class MersenneTwister : IRandom
     public const string REFERENCE_SOURCE_CODE = "https://github.com/vpmedia/template-unity/blob/master/Framework/Assets/Frameworks/URandom/MersenneTwister.cs";
 
     public MersenneTwister() : this((Int32)DateTime.UtcNow.Ticks) { }
-    public MersenneTwister(Int32 seed)
+    private MersenneTwister(Int32 seed)
     {
         Init((UInt32)seed);
     }
@@ -83,7 +83,7 @@ public class MersenneTwister : IRandom
         }
     }
 
-    public uint Next()
+    private uint Next()
     {
         UInt32 y;
 

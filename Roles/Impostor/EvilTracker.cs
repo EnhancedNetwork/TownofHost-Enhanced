@@ -103,12 +103,12 @@ internal class EvilTracker : RoleBase
     public override bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => CanSeeKillFlash && killer.PlayerId != seer.PlayerId;
 
     private static bool CanTarget(byte playerId)
-        => !Main.PlayerStates[playerId].IsDead && CanSetTarget.TryGetValue(playerId, out var value) && value;
+        => !Main.PlayerStates[playerId].IsDead && CanSetTarget.GetValueOrDefault(playerId, false);
 
     private static byte GetTargetId(byte playerId)
-        => Target.TryGetValue(playerId, out var targetId) ? targetId : byte.MaxValue;
+        => Target.GetValueOrDefault(playerId, byte.MaxValue);
 
-    public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
+    private static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
         && (target.Is(Custom_Team.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
@@ -181,16 +181,13 @@ internal class EvilTracker : RoleBase
     public override string GetProgressText(byte PlayerId, bool comms)
         => CanTarget(PlayerId) ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), "◁") : string.Empty;
 
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        seen ??= seer;
         return Target.ContainsValue(seen.PlayerId)
             ? Utils.ColorString(Palette.ImpostorRed.ShadeColor(0.5f), "◀") : string.Empty;
     }
-    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        seen ??= seer;
-
         if (isForMeeting)
         {
             if (IsTrackTarget(seer, seen) && CanSeeLastRoomInMeeting)
@@ -223,7 +220,7 @@ internal class EvilTracker : RoleBase
             {
                 sb.Append(TargetArrow.GetArrows(target, impostorId));
             }
-            sb.Append($"</color>");
+            sb.Append("</color>");
         }
 
         var targetId = Target[trackerId];

@@ -48,8 +48,8 @@ class CreateOptionsPickerPatch
                     //__instance.MapImage.transform.localScale = new Vector3(-1f, 1f, 1f);
                     //__instance.MapName.transform.localScale = new Vector3(-1f, 1f, 1f);
 
-                    __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
-                    __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
+                    __instance.MapImage.sprite = Utils.LoadSprite("TOHE.Resources.Images.DleksBanner.png", 100f);
+                    __instance.MapName.sprite = Utils.LoadSprite("TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
                 }));
 
                 for (int i = DleksPos; i < AllMapButton.Length; i++)
@@ -72,8 +72,8 @@ class CreateOptionsPickerPatch
                         //__instance.MapImage.transform.localScale = new Vector3(-1f, 1f, 1f);
                         //__instance.MapName.transform.localScale = new Vector3(-1f, 1f, 1f);
 
-                        __instance.MapImage.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner.png", 100f);
-                        __instance.MapName.sprite = Utils.LoadSprite($"TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
+                        __instance.MapImage.sprite = Utils.LoadSprite("TOHE.Resources.Images.DleksBanner.png", 100f);
+                        __instance.MapName.sprite = Utils.LoadSprite("TOHE.Resources.Images.DleksBanner-Wordart.png", 100f);
                     }
                     else
                     {

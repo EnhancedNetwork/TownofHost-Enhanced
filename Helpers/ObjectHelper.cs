@@ -4,7 +4,7 @@ namespace TOHE;
 
 public static class ObjectHelper
 {
-    public static void DestroyTranslator(this GameObject obj)
+    private static void DestroyTranslator(this GameObject obj)
     {
         var translator = obj.GetComponent<TextTranslatorTMP>();
         if (translator != null)

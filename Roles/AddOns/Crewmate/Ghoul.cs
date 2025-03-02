@@ -9,7 +9,7 @@ public class Ghoul : IAddon
     public AddonTypes Type => AddonTypes.Mixed;
 
     public static bool IsEnable;
-    public static readonly HashSet<byte> KillGhoul = [];
+    private static readonly HashSet<byte> KillGhoul = [];
 
     public void SetupCustomOption()
     {

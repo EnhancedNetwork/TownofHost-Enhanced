@@ -1,6 +1,8 @@
 using AmongUs.Data;
+using BepInEx.Unity.IL2CPP.Utils.Collections;
 using TOHE.Modules;
 using TOHE.Roles.Impostor;
+using UnityEngine;
 
 namespace TOHE;
 
@@ -147,23 +149,47 @@ public static class Camouflage
 
         if (oldIsCamouflage != IsCamouflage)
         {
-            foreach (var pc in Main.AllPlayerControls)
+            if (GameStates.IsMeeting)
             {
-                RpcSetSkin(pc);
-
-                if (!IsCamouflage && !pc.IsAlive())
+                foreach (var pc in Main.AllPlayerControls)
                 {
-                    pc.RpcRemovePet();
+                    RpcSetSkin(pc);
+
+                    if (!IsCamouflage && !pc.IsAlive())
+                    {
+                        pc.RpcRemovePet();
+                    }
                 }
-            }
-            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
-            {
-                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
             }
             else
             {
-                Utils.DoNotifyRoles();
+                ShipStatus.Instance.StartCoroutine(CoSetCamouflage().WrapToIl2Cpp());
             }
+        }
+    }
+    private static System.Collections.IEnumerator CoSetCamouflage()
+    {
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+        {
+            Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+        }
+        else
+        {
+            Utils.NotifyRoles();
+        }
+        yield return null;
+
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            RpcSetSkin(pc);
+
+            if (!IsCamouflage && !pc.IsAlive())
+            {
+                pc.RpcRemovePet();
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(GameStates.IsMeeting ? 0f : 0.1f);
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)

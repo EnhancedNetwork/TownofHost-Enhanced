@@ -6,7 +6,7 @@ namespace TOHE.Modules;
 [Obfuscation(Exclude = true, Feature = "renaming", ApplyToMembers = true)]
 public class Dispatcher : MonoBehaviour
 {
-    public static Dispatcher Instance;
+    private static Dispatcher Instance;
     private readonly Queue<Action> _executionQueue = new();
 
     public void Awake()
@@ -25,7 +25,7 @@ public class Dispatcher : MonoBehaviour
         }
     }
 
-    public void m_dispatch(Action action)
+    private void m_dispatch(Action action)
     {
         lock (_executionQueue)
         {

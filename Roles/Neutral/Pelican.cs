@@ -30,7 +30,7 @@ internal class Pelican : RoleBase
 
     private static readonly Dictionary<byte, HashSet<byte>> eatenList = [];
     private static readonly Dictionary<byte, float> originalSpeed = [];
-    public static Dictionary<byte, Vector2> PelicanLastPosition = [];
+    private static readonly Dictionary<byte, Vector2> PelicanLastPosition = [];
 
     private static int Count = 0;
 
@@ -101,7 +101,7 @@ internal class Pelican : RoleBase
                 return true;
         return false;
     }
-    public static bool CanEat(PlayerControl pc, byte id)
+    private static bool CanEat(PlayerControl pc, byte id)
     {
         if (!pc.Is(CustomRoles.Pelican) || GameStates.IsMeeting) return false;
 
@@ -149,7 +149,7 @@ internal class Pelican : RoleBase
         if (pc == null || target == null || !target.CanBeTeleported()) return;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            pc.Notify(ColorString(GetRoleColor(CustomRoles.NiceMini), GetString("CantEat")));
+            pc.Notify(CustomRoles.NiceMini.GetColoredTextByRole(GetString("CantEat")));
             return;
         }
 
@@ -239,7 +239,7 @@ internal class Pelican : RoleBase
             else
                 teleportPosition = pelican.GetCustomPosition();
 
-            foreach (var tar in list)
+            foreach (var tar in list.ToArray())
             {
                 var target = tar.GetPlayer();
                 var player = pelicanId.GetPlayer();

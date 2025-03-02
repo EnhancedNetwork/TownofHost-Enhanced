@@ -100,7 +100,7 @@ public class Statue : IAddon
             {
                 if (Utils.GetDistance(plr.transform.position, victim.transform.position) < 2f && plr != victim)
                 {
-                    if (!CountNearplr.Contains(plr.PlayerId)) CountNearplr.Add(plr.PlayerId);
+                    CountNearplr.Add(plr.PlayerId);
                 }
             }
 
@@ -111,7 +111,6 @@ public class Statue : IAddon
                     Main.AllPlayerSpeed[victim.PlayerId] = SlowDown.GetFloat();
                     victim.MarkDirtySettings();
                 }
-                return;
             }
             else if (Main.AllPlayerSpeed[victim.PlayerId] == SlowDown.GetFloat())
             {

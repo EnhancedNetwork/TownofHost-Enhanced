@@ -13,7 +13,7 @@ internal class Sniper : RoleBase
     public override CustomRoles Role => CustomRoles.Sniper;
     private const int Id = 2400;
     private static readonly HashSet<byte> PlayerIdList = [];
-    public static bool HasEnabled => PlayerIdList.Any();
+    private static bool HasEnabled => PlayerIdList.Any();
 
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
@@ -305,10 +305,9 @@ internal class Sniper : RoleBase
         }
         return false;
     }
-    public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
         if (isForMeeting) return string.Empty;
-        seen ??= seer;
         var sniper = Utils.GetPlayerById(PlayerIdList.First());
         if (!(sniper == seer) || !(sniper == seen)) return string.Empty;
 

@@ -45,9 +45,9 @@ public class Antidote : IAddon
 
     public static void ReduceKCD(PlayerControl player)
     {
-        if (KilledAntidote.ContainsKey(player.PlayerId))
+        if (KilledAntidote.TryGetValue(player.PlayerId, out var count))
         {
-            var kcd = Main.AllPlayerKillCooldown[player.PlayerId] - KilledAntidote[player.PlayerId] * AntidoteCDOpt.GetFloat();
+            var kcd = Main.AllPlayerKillCooldown[player.PlayerId] - count * AntidoteCDOpt.GetFloat();
             if (kcd < 0) kcd = 0;
             Main.AllPlayerKillCooldown[player.PlayerId] = kcd;
             Logger.Info($"kill cd of player set to {Main.AllPlayerKillCooldown[player.PlayerId]}", "Antidote");
@@ -71,15 +71,9 @@ public class Antidote : IAddon
 
     public static void CheckMurder(PlayerControl killer)
     {
-        if (KilledAntidote.ContainsKey(killer.PlayerId))
+        if (!KilledAntidote.TryAdd(killer.PlayerId, 1))
         {
-            // Key already exists, update the value
-            KilledAntidote[killer.PlayerId] += 1;
-        }
-        else
-        {
-            // Key doesn't exist, add the key-value pair
-            KilledAntidote.Add(killer.PlayerId, 1);
+            KilledAntidote[killer.PlayerId]++;
         }
     }
 }

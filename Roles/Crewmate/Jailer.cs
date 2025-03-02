@@ -134,7 +134,7 @@ internal class Jailer : RoleBase
     public override void OnVote(PlayerControl voter, PlayerControl target)
     {
         if (voter == null || target == null) return;
-        if (JailerDidVote.TryGetValue(voter.PlayerId, out var didVote) && didVote) return;
+        if (JailerDidVote.GetValueOrDefault(voter.PlayerId, false)) return;
         if (JailerTarget.TryGetValue(voter.PlayerId, out var jTarget) && jTarget == byte.MaxValue) return;
 
         JailerDidVote[voter.PlayerId] = true;
@@ -152,7 +152,8 @@ internal class Jailer : RoleBase
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting)
     {
-        return seer.PlayerId != seen.PlayerId && JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && seen.PlayerId == targetID ? ColorString(GetRoleColor(CustomRoles.Jailer), "⊠") : string.Empty;
+        return seer.PlayerId != seen.PlayerId && JailerTarget.TryGetValue(seer.PlayerId, out var targetID) && seen.PlayerId == targetID 
+            ? CustomRoles.Jailer.GetColoredTextByRole("⊠") : string.Empty;
     }
 
     private static bool CanBeExecuted(CustomRoles role)

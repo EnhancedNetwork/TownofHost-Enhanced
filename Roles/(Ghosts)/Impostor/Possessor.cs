@@ -131,7 +131,7 @@ internal class Possessor : RoleBase
     {
         if (target.GetCustomRole().IsImpostorTeam())
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Possessor), GetString("DollMaster_CannotPossessImpTeammate")));
+            killer.Notify(CustomRoles.Possessor.GetColoredTextByRole(GetString("DollMaster_CannotPossessImpTeammate")));
             return false;
         }
 

@@ -8,8 +8,8 @@ static class DoubleTrigger
     public static readonly HashSet<byte> PlayerIdList = [];
 
     public static readonly Dictionary<byte, float> FirstTriggerTimer = [];
-    public static readonly Dictionary<byte, byte> FirstTriggerTarget = [];
-    public static readonly Dictionary<byte, Action> FirstTriggerAction = [];
+    private static readonly Dictionary<byte, byte> FirstTriggerTarget = [];
+    private static readonly Dictionary<byte, Action> FirstTriggerAction = [];
 
     public static void Init()
     {

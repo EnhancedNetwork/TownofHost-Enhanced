@@ -124,7 +124,7 @@ public class SabotageSystemPatch
     {
         public static void Postfix()
         {
-            Logger.Info($" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
+            Logger.Info(" IsActive", "MushroomMixupSabotageSystem.UpdateSystem.Postfix");
 
             foreach (var pc in Main.AllAlivePlayerControls)
             {
@@ -170,7 +170,7 @@ public class SabotageSystemPatch
             // if Mushroom Mixup Sabotage is end
             if (__instance.IsActive != __state && !Main.MeetingIsStarted)
             {
-                Logger.Info($" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
+                Logger.Info(" IsEnd", "MushroomMixupSabotageSystem.Deteriorate.Postfix");
 
                 if (AmongUsClient.Instance.AmHost)
                 {

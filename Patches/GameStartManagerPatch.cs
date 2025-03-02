@@ -105,7 +105,7 @@ public class GameStartManagerPatch
                 if (Main.NormalOptions.KillCooldown == 0f)
                     Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
@@ -168,7 +168,6 @@ public class GameStartManagerPatch
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
                         {
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
-                            return;
                         }
 
                         if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp())
@@ -272,9 +271,9 @@ public class GameStartManagerPatch
                     invalidColor.Do(p => AmongUsClient.Instance.KickPlayer(p.GetClientId(), false));
 
                     Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-                    var msg = GetString("Error.InvalidColor");
-                    msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-                    Utils.SendMessage(msg);
+                    var msg = new System.Text.StringBuilder(GetString("Error.InvalidColor"));
+                    msg.Append("\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}")));
+                    Utils.SendMessage(msg.ToString());
                 }
 
                 GameStartManagerBeginGamePatch.DoTasksForBeginGame();
@@ -310,9 +309,9 @@ public class GameStartManagerBeginGamePatch
         if (invalidColor.Any())
         {
             Logger.SendInGame(GetString("Error.InvalidColorPreventStart"));
-            var msg = GetString("Error.InvalidColor");
-            msg += "\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}"));
-            Utils.SendMessage(msg);
+            var msg = new System.Text.StringBuilder(GetString("Error.InvalidColor"));
+            msg.Append("\n" + string.Join(",", invalidColor.Select(p => $"{p.GetRealName()}")));
+            Utils.SendMessage(msg.ToString());
             return false;
         }
 
@@ -360,8 +359,8 @@ public class GameStartManagerBeginGamePatch
         //}
 
         IGameOptions opt = GameStates.IsNormalGame
-            ? Main.NormalOptions.Cast<IGameOptions>()
-            : Main.HideNSeekOptions.Cast<IGameOptions>();
+            ? Main.NormalOptions.CastFast<IGameOptions>()
+            : Main.HideNSeekOptions.CastFast<IGameOptions>();
 
         if (GameStates.IsNormalGame)
         {

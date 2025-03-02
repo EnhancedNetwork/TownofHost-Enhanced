@@ -10,8 +10,8 @@ namespace TOHE;
 
 public static class Translator
 {
-    public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
+    private static Dictionary<string, Dictionary<int, string>> translateMaps;
+    private const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static readonly Dictionary<CustomRoles, HashSet<string>> CrossLangRoleNames = [];
     public static void Init()
@@ -25,10 +25,9 @@ public static class Translator
         try
         {
             // Get the directory containing the JSON files (e.g., TOHE.Resources.Lang)
-            string jsonDirectory = "TOHE.Resources.Lang";
             // Get the assembly containing the resources
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
-            string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
+            var assembly = Assembly.GetExecutingAssembly();
+            string[] jsonFileNames = GetJsonFileNames(assembly, "TOHE.Resources.Lang");
 
             translateMaps = [];
 
@@ -76,10 +75,9 @@ public static class Translator
         {
             Logger.Error($"Error: {ex}", "Translator");
         }
-        //カスタム翻訳ファイルの読み込み
+
         if (!Directory.Exists(LANGUAGE_FOLDER_NAME)) Directory.CreateDirectory(LANGUAGE_FOLDER_NAME);
 
-        // 翻訳テンプレートの作成
         CreateTemplateFile();
 
         //Load vanilla role names into CrossLangRoleNames
@@ -95,10 +93,10 @@ public static class Translator
                 foreach (var role in CustomRolesHelper.AllRoles)
                 {
                     if (ActualRoleNames[lang].ContainsKey(role))
-                        ActualRoleNames[lang][role] = GetString($"{role}", lang);
+                        ActualRoleNames[lang][role] = GetString(role.ToString(), lang);
                     else
                     {
-                        ActualRoleNames[lang].Add(role, GetString($"{role}", lang));
+                        ActualRoleNames[lang].Add(role, GetString(role.ToString(), lang));
                     }
                 }
                 UpdateCustomTranslation($"{lang}.dat"/*, lang*/);
@@ -181,21 +179,20 @@ public static class Translator
     //}
     public static void GetActualRoleName(this CustomRoles role, out string RealName)
     {
-        var currentlang = TranslationController.Instance.currentLanguage.languageID;
+        var currentlang = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         if (ActualRoleNames.TryGetValue(currentlang, out var RoleList))
         {
             if (RoleList.TryGetValue(role, out var RoleString))
                 RealName = RoleString;
             else
             {
-                RealName = GetString($"{role}");
+                RealName = GetString(role.ToString());
                 Logger.Info($"Error while obtaining Rolename for LANG: {currentlang}/{role}", "Translator.GetActualRoleName");
             }
-            return;
         }
         else
         {
-            RealName = GetString($"{role}");
+            RealName = GetString(role.ToString());
         }
     }
     public static string GetActualRoleName(this CustomRoles role)
@@ -211,14 +208,14 @@ public static class Translator
             string nameToFind = s;
             if (Enum.TryParse(nameToFind, out StringNames text))
             {
-                return DestroyableSingleton<TranslationController>.Instance.GetString(text);
+                return FastDestroyableSingleton<TranslationController>.Instance.GetString(text);
             }
             else
             {
                 return showInvalid ? $"<INVALID:{nameToFind}> (vanillaStr)" : nameToFind;
             }
         }
-        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+        var langId = TranslationController.InstanceExists ? FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (console) langId = SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
         string str = GetString(s, langId, showInvalid);
@@ -234,7 +231,7 @@ public static class Translator
         // Basically if you wanna let the user infinitely expand a function to their liking
         // I need to test if this shit works lol, I plan a usecase for it in 2.1.0 (see: https://discord.com/channels/1094344790910455908/1251264307052675134)
 
-        var langId = TranslationController.InstanceExists ? TranslationController.Instance.currentLanguage.languageID : SupportedLangs.English;
+        var langId = TranslationController.InstanceExists ? FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID : SupportedLangs.English;
         if (Main.ForceOwnLanguage.Value) langId = GetUserTrueLang();
         s = [""];
 
@@ -272,17 +269,20 @@ public static class Translator
         return false;
     }
 
-    public static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
+    private static string GetString(string str, SupportedLangs langId, bool showInvalid = true)
     {
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
         {
-            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
+            if (translateMaps.TryGetValue(str, out var dic))
             {
-                if (langId == SupportedLangs.English) res = $"*{str}";
-                else res = GetString(str, SupportedLangs.English);
+                if (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))
+                {
+                    if (langId == SupportedLangs.English) res = $"*{str}";
+                    else res = GetString(str, SupportedLangs.English);
+                }
             }
-            if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
+            else
             {
                 var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
                 if (stringNames != null && stringNames.Any())
@@ -292,22 +292,22 @@ public static class Translator
         catch (Exception Ex)
         {
             Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
-            Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
+            Logger.Error("Here was the error:\n" + Ex, "Translator");
         }
         return res;
     }
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => FastDestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
     public static string GetRoleString(string str, bool forUser = true)
     {
-        var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;
+        var CurrentLanguage = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         var lang = forUser ? CurrentLanguage : SupportedLangs.English;
         if (Main.ForceOwnLanguageRoleName.Value)
             lang = GetUserTrueLang();
 
         return GetString(str, lang);
     }
-    public static SupportedLangs GetUserTrueLang()
+    private static SupportedLangs GetUserTrueLang()
     {
         try
         {
@@ -316,7 +316,7 @@ public static class Translator
             if (name.StartsWith("zh_CHT")) return SupportedLangs.TChinese;
             if (name.StartsWith("zh")) return SupportedLangs.SChinese;
             if (name.StartsWith("ru")) return SupportedLangs.Russian;
-            return TranslationController.Instance.currentLanguage.languageID;
+            return FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         }
         catch
         {
@@ -367,7 +367,7 @@ public static class Translator
             }
         }
     }
-    public static void LoadCustomTranslation(string filename, SupportedLangs lang)
+    private static void LoadCustomTranslation(string filename, SupportedLangs lang)
     {
         string path = @$"./{LANGUAGE_FOLDER_NAME}/{filename}";
         if (File.Exists(path))
@@ -408,10 +408,10 @@ public static class Translator
     {
         LoadLangs();
         var sb = new StringBuilder();
-        var lang = TranslationController.Instance.currentLanguage.languageID;
+        var lang = FastDestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID;
         foreach (var title in translateMaps)
         {
-            if (!title.Value.TryGetValue((int)lang, out var text)) text = "";
+            var text = title.Value.GetValueOrDefault((int)lang, string.Empty);
             sb.Append($"{title.Key}:{text.Replace("\n", "\\n").Replace("\r", "\\r")}\n");
         }
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_{lang}.dat", sb.ToString());

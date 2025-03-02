@@ -24,9 +24,9 @@ internal class Agitater : RoleBase
     private static OptionItem HasImpostorVision;
 
     public static byte CurrentBombedPlayer = byte.MaxValue;
-    public static byte LastBombedPlayer = byte.MaxValue;
-    public static bool AgitaterHasBombed = false;
-    public static long? CurrentBombedPlayerTime = new();
+    private static byte LastBombedPlayer = byte.MaxValue;
+    private static bool AgitaterHasBombed = false;
+    private static long? CurrentBombedPlayerTime = new();
     public static long? AgitaterBombedTime = new();
 
 
@@ -194,7 +194,7 @@ internal class Agitater : RoleBase
         Logger.Msg($"{player.GetNameWithRole()} passed bomb to {target.GetNameWithRole()}", "Agitater Pass");
     }
 
-    public void SendRPC(byte newbomb, byte oldbomb)
+    private void SendRPC(byte newbomb, byte oldbomb)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);

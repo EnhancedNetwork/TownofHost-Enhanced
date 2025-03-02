@@ -26,8 +26,8 @@ class HudManagerUpdatePatch
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;
     public static float FrameRateTimer = 0.0f;
-    public static TextMeshPro LowerInfoText;
-    public static GameObject TempLowerInfoText;
+    private static TextMeshPro LowerInfoText;
+    private static GameObject TempLowerInfoText;
     public static void Postfix(HudManager __instance)
     {
         if (!GameStates.IsModHost || __instance == null) return;
@@ -103,13 +103,14 @@ class HudManagerUpdatePatch
                 {
                     case CustomGameMode.Standard:
                         var roleClass = player.GetRoleClass();
-                        LowerInfoText.text = roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty;
-
-                        LowerInfoText.text += "\n" + Spurt.GetSuffix(player, true, isformeeting: Main.MeetingIsStarted);
+                        var text = new StringBuilder();
+                        text.Append(roleClass?.GetLowerText(player, player, isForMeeting: Main.MeetingIsStarted, isForHud: true) ?? string.Empty);
+                        text.Append("\n" + Spurt.GetSuffix(player, true, isformeeting: Main.MeetingIsStarted));
+                        LowerInfoText.text = text.ToString();
                         break;
                 }
 
-                LowerInfoText.enabled = LowerInfoText.text != "" && LowerInfoText.text != string.Empty;
+                LowerInfoText.enabled = LowerInfoText.text.Length > 0;
 
                 if ((!AmongUsClient.Instance.IsGameStarted && AmongUsClient.Instance.NetworkMode != NetworkModes.FreePlay) || GameStates.IsMeeting)
                 {
@@ -275,6 +276,8 @@ class MapBehaviourShowPatch
 [HarmonyPatch(typeof(TaskPanelBehaviour), nameof(TaskPanelBehaviour.SetTaskText))]
 class TaskPanelBehaviourPatch
 {
+    private static readonly StringBuilder sb = new();
+    private static readonly StringBuilder sbFinal = new();
     public static void Postfix(TaskPanelBehaviour __instance)
     {
         if (!GameStates.IsModHost) return;
@@ -296,42 +299,49 @@ class TaskPanelBehaviourPatch
         // Display Description
         if (!player.GetCustomRole().IsVanilla())
         {
-            var RoleWithInfo = $"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n";
-            RoleWithInfo += player.GetRoleInfo();
+            sb.Clear();
+            sb.Append($"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n");
+            sb.Append(player.GetRoleInfo());
 
-            var AllText = Utils.ColorString(player.GetRoleColor(), RoleWithInfo);
+            var AllText = Utils.ColorString(player.GetRoleColor(), sb.ToString());
+
+            sb.Clear();
+            sb.Append(AllText);
 
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
 
                     var lines = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
-                    StringBuilder sb = new();
+                    StringBuilder sbStandard = new();
                     foreach (var eachLine in lines)
                     {
                         var line = eachLine.Trim();
-                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb.Length < 1 && !line.Contains('(')) continue;
-                        sb.Append(line + "\r\n");
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sbStandard.Length < 1 && !line.Contains('(')) continue;
+                        sbStandard.Append(line + "\r\n");
                     }
 
-                    if (sb.Length > 1)
+                    if (sbStandard.Length > 1)
                     {
-                        var text = sb.ToString().TrimEnd('\n').TrimEnd('\r');
-                        if (!Utils.HasTasks(player.Data, false) && sb.ToString().Count(s => (s == '\n')) >= 1)
+                        var text = sbStandard.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sbStandard.ToString().Any(s => s == '\n'))
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
-                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                        sb.Append($"\r\n\r\n<size=85%>{text}</size>");
                     }
 
                     if (MeetingStates.FirstMeeting)
                     {
-                        AllText += $"\r\n\r\n</color><size=70%>{GetString("PressF1ShowMainRoleDes")}";
+                        sb.Append($"\r\n\r\n</color><size=70%>{GetString("PressF1ShowMainRoleDes")}");
                         if (Main.PlayerStates.TryGetValue(PlayerControl.LocalPlayer.PlayerId, out var ps) && ps.SubRoles.Count >= 1)
-                            AllText += $"\r\n{GetString("PressF2ShowAddRoleDes")}";
-                        AllText += $"\r\n{GetString("PressF3ShowRoleSettings")}";
+                            sb.Append($"\r\n{GetString("PressF2ShowAddRoleDes")}");
+                        sb.Append($"\r\n{GetString("PressF3ShowRoleSettings")}");
                         if (ps.SubRoles.Count >= 1)
-                            AllText += $"\r\n{GetString("PressF4ShowAddOnsSettings")}";
-                        AllText += "</size>";
+                            sb.Append($"\r\n{GetString("PressF4ShowAddOnsSettings")}");
+                        sb.Append("</size>");
                     }
+
+                    sbFinal.Clear();
+                    sbFinal.Append(sb);
                     break;
                 case CustomGameMode.FFA:
                     Dictionary<byte, string> SummaryText2 = [];
@@ -346,35 +356,37 @@ class TaskPanelBehaviourPatch
                     List<(int, byte)> list2 = [];
                     foreach (var id in Main.PlayerStates.Keys) list2.Add((FFAManager.GetRankOfScore(id), id));
                     list2.Sort();
-                    foreach (var id in list2.Where(x => SummaryText2.ContainsKey(x.Item2))) AllText += "\r\n" + SummaryText2[id.Item2];
+                    foreach (var id in list2.Where(x => SummaryText2.ContainsKey(x.Item2))) sb.Append("\r\n" + SummaryText2[id.Item2]);
 
-                    AllText = $"<size=70%>{AllText}</size>";
-
+                    sbFinal.Clear();
+                    sbFinal.Append($"<size=70%>{sb}</size>");
                     break;
                 case CustomGameMode.SpeedRun:
                     var lines2 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
-                    StringBuilder sb2 = new();
+                    StringBuilder sbSpeedRun = new();
                     foreach (var eachLine in lines2)
                     {
                         var line = eachLine.Trim();
-                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb2.Length < 1 && !line.Contains('(')) continue;
-                        sb2.Append(line + "\r\n");
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sbSpeedRun.Length < 1 && !line.Contains('(')) continue;
+                        sbSpeedRun.Append(line + "\r\n");
                     }
 
-                    if (sb2.Length > 1)
+                    if (sbSpeedRun.Length > 1)
                     {
-                        var text = sb2.ToString().TrimEnd('\n').TrimEnd('\r');
-                        if (!Utils.HasTasks(player.Data, false) && sb2.ToString().Count(s => (s == '\n')) >= 1)
+                        var text = sbSpeedRun.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sbSpeedRun.ToString().Any(s => s == '\n'))
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
-                        AllText += $"\r\n\r\n<size=85%>{text}</size>";
+                        sb.Append($"\r\n\r\n<size=85%>{text}</size>");
                     }
 
-                    AllText += $"\r\n\r\n<size=80%>{SpeedRun.GetGameState()}</size>";
+                    sbFinal.Clear();
+                    sbFinal.Append(sb);
+                    sbFinal.Append($"\r\n\r\n<size=80%>{SpeedRun.GetGameState()}</size>");
 
                     break;
             }
 
-            __instance.taskText.text = AllText;
+            __instance.taskText.text = sbFinal.ToString();
         }
 
         // RepairSender display
@@ -386,10 +398,10 @@ class TaskPanelBehaviourPatch
 class RepairSender
 {
     public static bool enabled = false;
-    public static bool TypingAmount = false;
+    private static bool TypingAmount = false;
 
-    public static int SystemType;
-    public static int amount;
+    private static int SystemType;
+    private static int amount;
 
     public static void Input(int num)
     {
@@ -419,7 +431,7 @@ class RepairSender
             Send();
         }
     }
-    public static void Send()
+    private static void Send()
     {
         ShipStatus.Instance.RpcUpdateSystem((SystemTypes)SystemType, (byte)amount);
         Reset();

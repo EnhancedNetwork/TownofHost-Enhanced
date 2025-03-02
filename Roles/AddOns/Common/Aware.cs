@@ -74,7 +74,7 @@ public class Aware : IAddon
                     if (AwareknowRole.GetBool())
                         rolelist = string.Join(", ", list);
 
-                    Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Aware), GetString("AwareTitle")));
+                    Utils.SendMessage(string.Format(GetString("AwareInteracted"), rolelist), pid, CustomRoles.Aware.GetColoredTextByRole(GetString("AwareTitle")));
                     AwareInteracted[pid] = [];
                 }, 0.5f, "Aware Check Msg");
             }

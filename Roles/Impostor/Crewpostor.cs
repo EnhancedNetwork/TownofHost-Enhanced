@@ -111,7 +111,7 @@ internal class Crewpostor : RoleBase
 
         if (!list.Any())
         {
-            Logger.Info($"No target to kill", "Crewpostor");
+            Logger.Info("No target to kill", "Crewpostor");
         }
         else if (TasksDone[player.PlayerId] % KillAfterTask.GetInt() != 0 && TasksDone[player.PlayerId] != 0)
         {

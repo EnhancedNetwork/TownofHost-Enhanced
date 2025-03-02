@@ -28,12 +28,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
     }
 
     public override IGameOptions BasedGameOptions => GameStates.IsNormalGame ?
-            Main.RealOptionsData.Restore(new NormalGameOptionsV08(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV08(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
+            Main.RealOptionsData.Restore(new NormalGameOptionsV08(new UnityLogger().CastFast<ILogger>()).CastFast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV08(new UnityLogger().CastFast<ILogger>()).CastFast<IGameOptions>());
     public override bool IsDirty { get; protected set; }
 
-    public PlayerControl player = player;
+    private PlayerControl player = player;
 
-    public void SetDirty() => IsDirty = true;
+    private void SetDirty() => IsDirty = true;
 
     public override void SendGameOptions()
     {

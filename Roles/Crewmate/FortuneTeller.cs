@@ -49,8 +49,7 @@ internal class FortuneTeller : RoleBase
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
         if (player == null || target == null) return true;
-        if (didVote.Contains(player.PlayerId)) return true;
-        didVote.Add(player.PlayerId);
+        if (!didVote.Add(player.PlayerId)) return true;
 
         var abilityUse = player.GetAbilityUseLimit();
         if (abilityUse < 1)

@@ -9,11 +9,11 @@ namespace TOHE;
 public class CustomRpcSender
 {
     public MessageWriter stream;
-    public readonly string name;
+    private readonly string name;
     public readonly SendOption sendOption;
-    public bool isUnsafe;
-    public delegate void onSendDelegateType();
-    public onSendDelegateType onSendDelegate;
+    private bool isUnsafe;
+    private delegate void onSendDelegateType();
+    private onSendDelegateType onSendDelegate;
 
     public State CurrentState
     {
@@ -27,8 +27,8 @@ public class CustomRpcSender
     private State currentState = State.BeforeInit;
 
     //0~: targetClientId (GameDataTo)
-    //-1: 全プレイヤー (GameData)
-    //-2: 未設定
+    //-1: All players (GameData)
+    //-2: Not set
     private int currentRpcTarget;
 
     private CustomRpcSender() { }

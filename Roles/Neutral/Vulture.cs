@@ -71,7 +71,6 @@ internal class Vulture : RoleBase
                     if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(player);
                     player.Notify(GetString("VultureCooldownUp"));
                 }
-                return;
             }, VultureReportCD.GetFloat() + 8f, "Vulture Cooldown Up In Start");  //for some reason that idk vulture cd completes 8s faster when the game starts, so I added 8f for now 
         }
     }
@@ -120,7 +119,6 @@ internal class Vulture : RoleBase
                             if (!DisableShieldAnimations.GetBool()) reporter.RpcGuardAndKill(reporter);
                             reporter.Notify(GetString("VultureCooldownUp"));
                         }
-                        return;
                     }, VultureReportCD.GetFloat(), "Vulture CD");
                 }
 
@@ -179,7 +177,6 @@ internal class Vulture : RoleBase
                     if (!DisableShieldAnimations.GetBool()) player.RpcGuardAndKill(GetPlayerById(apc));
                     player.Notify(GetString("VultureCooldownUp"));
                 }
-                return;
             }, VultureReportCD.GetFloat(), "Vulture Cooldown Up After Meeting");
         }
     }

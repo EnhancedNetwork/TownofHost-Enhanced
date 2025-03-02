@@ -15,8 +15,7 @@ internal class Trapster : RoleBase
     private static OptionItem TrapConsecutiveTrapsterBodies;
 
     private static readonly HashSet<byte> BoobyTrapBody = [];
-    private static readonly Dictionary<byte, byte> KillerOfBoobyTrapBody = [];
-
+    
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Trapster);
@@ -34,8 +33,6 @@ internal class Trapster : RoleBase
     public override void Init()
     {
         BoobyTrapBody.Clear();
-        KillerOfBoobyTrapBody.Clear();
-
     }
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = TrapsterKillCooldown.GetFloat();

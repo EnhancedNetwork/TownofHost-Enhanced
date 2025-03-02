@@ -16,7 +16,7 @@ internal class CovenLeader : CovenManager
     //==================================================================\\
 
     private static OptionItem RetrainCooldown;
-    public static OptionItem MaxRetrains;
+    private static OptionItem MaxRetrains;
 
     public static readonly HashSet<byte> List = [];
     public static readonly Dictionary<byte, CustomRoles> retrainPlayer = [];

@@ -52,7 +52,7 @@ internal class Mortician : RoleBase
 
         string name = string.Empty;
         var killer = target.PlayerId.GetRealKillerById();
-        if (killer == null)
+        if (killer != null)
         {
             name = killer.GetRealName();
         }
@@ -68,8 +68,8 @@ internal class Mortician : RoleBase
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
-        if (msgToSend.ContainsKey(pc.PlayerId))
-            AddMsg(msgToSend[pc.PlayerId], pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Mortician), GetString("MorticianCheckTitle")));
+        if (msgToSend.TryGetValue(pc.PlayerId, out var message))
+            AddMsg(message, pc.PlayerId, CustomRoles.Mortician.GetColoredTextByRole(GetString("MorticianCheckTitle")));
     }
     public override void MeetingHudClear() => msgToSend.Clear();
 }

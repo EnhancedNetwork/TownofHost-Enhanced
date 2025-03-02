@@ -18,11 +18,11 @@ internal class Bomber : RoleBase
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Bomb");
 
     public static OptionItem BomberRadius;
-    public static OptionItem BomberCanKill;
-    public static OptionItem BomberKillCD;
-    public static OptionItem BombCooldown;
-    public static OptionItem ImpostorsSurviveBombs;
-    public static OptionItem BomberDiesInExplosion;
+    private static OptionItem BomberCanKill;
+    private static OptionItem BomberKillCD;
+    private static OptionItem BombCooldown;
+    private static OptionItem ImpostorsSurviveBombs;
+    private static OptionItem BomberDiesInExplosion;
 
     public override void SetupCustomOption()
     {

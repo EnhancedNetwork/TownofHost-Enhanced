@@ -54,7 +54,7 @@ internal class Witness : RoleBase
             killer.Notify(GetString("WitnessFoundInnocent"));
         return false;
     }
-    public static void OnFixedUpdateLowLoadOthers(PlayerControl player, bool lowLoad, long nowTime)
+    private static void OnFixedUpdateLowLoadOthers(PlayerControl player, bool lowLoad, long nowTime)
     {
         if (!lowLoad && Main.AllKillers.TryGetValue(player.PlayerId, out var ktime) && ktime + WitnessTime.GetInt() < nowTime)
             Main.AllKillers.Remove(player.PlayerId);

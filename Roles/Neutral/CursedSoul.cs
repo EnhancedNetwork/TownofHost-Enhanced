@@ -48,7 +48,7 @@ internal class CursedSoul : RoleBase
         if (killer.GetAbilityUseLimit() < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         if (CanBeSoulless(target))
@@ -56,8 +56,8 @@ internal class CursedSoul : RoleBase
             killer.RpcRemoveAbilityUse();
             target.RpcSetCustomRole(CustomRoles.Soulless);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
+            killer.Notify(CustomRoles.CursedSoul.GetColoredTextByRole(GetString("CursedSoulSoullessPlayer")));
+            target.Notify(CustomRoles.CursedSoul.GetColoredTextByRole(GetString("SoullessByCursedSoul")));
 
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -71,7 +71,7 @@ internal class CursedSoul : RoleBase
             Logger.Info($"{target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Soulless}", $"Assign {CustomRoles.Soulless}");
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulInvalidTarget")));
+        killer.Notify(CustomRoles.CursedSoul.GetColoredTextByRole(GetString("CursedSoulInvalidTarget")));
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl player, PlayerControl target)

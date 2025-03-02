@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -167,15 +168,15 @@ internal class Coroner : RoleBase
     {
         if (seer.PlayerId != target.PlayerId || isForMeeting) return string.Empty;
 
-        if (CoronerTargets.TryGetValue(seer.PlayerId, out var Targets) && Targets.Any())
+        if (CoronerTargets.TryGetValue(seer.PlayerId, out var targets) && targets.Any())
         {
-            var arrows = "";
-            foreach (var targetId in CoronerTargets[seer.PlayerId])
+            var arrows = new StringBuilder();
+            foreach (var targetId in targets)
             {
                 var arrow = TargetArrow.GetArrows(seer, targetId);
-                arrows += ColorString(seer.GetRoleColor(), arrow);
+                arrows.Append(ColorString(seer.GetRoleColor(), arrow));
             }
-            return arrows;
+            return arrows.ToString();
         }
         return ColorString(Color.white, LocateArrow.GetArrows(seer));
     }

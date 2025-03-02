@@ -65,7 +65,7 @@ internal class Cultist : RoleBase
     {
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
@@ -73,8 +73,8 @@ internal class Cultist : RoleBase
             killer.RpcRemoveAbilityUse();
             target.RpcSetCustomRole(CustomRoles.Charmed);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CultistCharmedPlayer")));
+            target.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CharmedByCultist")));
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -88,7 +88,7 @@ internal class Cultist : RoleBase
             Logger.Info(target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));
+        killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CultistInvalidTarget")));
         return false;
     }
     public static bool TargetKnowOtherTargets => TargetKnowOtherTarget.GetBool();

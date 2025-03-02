@@ -51,7 +51,7 @@ internal class Monarch : RoleBase
         if (killer.GetAbilityUseLimit() <= 0) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
+            killer.Notify(CustomRoles.Cultist.GetColoredTextByRole(GetString("CantRecruit")));
             return false;
         }
         if (CanBeKnighted(target))
@@ -59,8 +59,8 @@ internal class Monarch : RoleBase
             killer.RpcRemoveAbilityUse();
             target.RpcSetCustomRole(CustomRoles.Knighted);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchKnightedPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("KnightedByMonarch")));
+            killer.Notify(CustomRoles.Monarch.GetColoredTextByRole(GetString("MonarchKnightedPlayer")));
+            target.Notify(CustomRoles.Monarch.GetColoredTextByRole(GetString("KnightedByMonarch")));
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -72,7 +72,7 @@ internal class Monarch : RoleBase
             return false;
         }
 
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Monarch), GetString("MonarchInvalidTarget")));
+        killer.Notify(CustomRoles.Monarch.GetColoredTextByRole(GetString("MonarchInvalidTarget")));
         return false;
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide)

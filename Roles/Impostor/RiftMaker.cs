@@ -154,7 +154,6 @@ internal class RiftMaker : RoleBase
 
         SendRPC(shapeshifterId, 0);
         //sendrpc for marked location and lasttp
-        return;
     }
 
     public override void OnCoEnterVent(PlayerPhysics physics, int ventId)
@@ -203,7 +202,6 @@ internal class RiftMaker : RoleBase
         //SENDRPC
         SendRPC(playerId, 2);
         player.RpcTeleport(TPto);
-        return;
     }
 
     public override void AfterMeetingTasks()

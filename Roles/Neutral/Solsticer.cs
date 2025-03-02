@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using System.Text;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -108,11 +109,12 @@ internal class Solsticer : RoleBase
         if (IsForMeeting || !warningActived || seer.Is(CustomRoles.Solsticer)) return string.Empty;
         if (seer.PlayerId != target.PlayerId && !target.Is(CustomRoles.Solsticer)) return string.Empty;
 
-        var warning = "⚠";
+        var warning = new StringBuilder();
+        warning.Append('⚠');
         if (IsSolsticerTarget(seer, onlyKiller: true) && !target.Is(CustomRoles.Solsticer))
-            warning += TargetArrow.GetArrows(seer, playerid);
+            warning.Append(TargetArrow.GetArrows(seer, playerid));
 
-        return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), warning);
+        return CustomRoles.Solsticer.GetColoredTextByRole(warning.ToString());
     }
     private void ActiveWarning(PlayerControl pc)
     {
@@ -232,7 +234,7 @@ internal class Solsticer : RoleBase
     {
         return pc.IsAlive() && (!onlyKiller || pc.HasImpKillButton());
     }
-    public void ResetTasks(PlayerControl pc)
+    private void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
         pc.RpcResetTasks(); //Let taskassign patch decide the tasks
@@ -255,7 +257,7 @@ internal class Solsticer : RoleBase
         if (pc.PlayerId == target.PlayerId)
         {
             CanGuess = false;
-            _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
+            _ = new LateTask(() => { Utils.SendMessage(GetString("SolsticerMisGuessed"), dp.PlayerId, CustomRoles.Solsticer.GetColoredTextByRole(GetString("GuessKillTitle")), true); }, 0.6f, "Solsticer MisGuess Msg");
             return true;
         }
         return false;
@@ -289,7 +291,7 @@ internal class Solsticer : RoleBase
             SetShortTasksToAdd();
             if (MurderMessage == "")
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
-            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            AddMsg(MurderMessage, pc.PlayerId, CustomRoles.Solsticer.GetColoredTextByRole(GetString("SolsticerTitle")));
         }
     }
 }

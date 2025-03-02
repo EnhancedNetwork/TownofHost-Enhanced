@@ -13,7 +13,7 @@ namespace TOHE.Patches.Crowded;
 internal static class Crowded
 {
     private static CreateOptionsPicker instance;
-    public static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
+    private static int MaxPlayers => GameStates.IsVanillaServer ? 15 : 127;
     public static int MaxImpostors => MaxPlayers / 2;
 
     [HarmonyPatch(typeof(CreateOptionsPicker), nameof(CreateOptionsPicker.Awake))]
@@ -149,8 +149,8 @@ internal static class Crowded
             __instance.UpdateImpostorsButtons(targetOptions.NumImpostors);
             __instance.UpdateMaxPlayersButtons(targetOptions);
             __instance.UpdateLanguageButton((uint)targetOptions.Keywords);
-            __instance.MapMenu.UpdateMapButtons((int)targetOptions.MapId);
-            __instance.GameModeText.text = DestroyableSingleton<TranslationController>.Instance.GetString(GameModesHelpers.ModeToName[GameOptionsManager.Instance.CurrentGameOptions.GameMode]);
+            __instance.MapMenu.UpdateMapButtons(targetOptions.MapId);
+            __instance.GameModeText.text = FastDestroyableSingleton<TranslationController>.Instance.GetString(GameModesHelpers.ModeToName[GameOptionsManager.Instance.CurrentGameOptions.GameMode]);
             return false;
 
             // Skip maxplayers => max impostors array check here
@@ -348,12 +348,8 @@ internal static class Crowded
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class AbstractPagingBehaviour : MonoBehaviour
+public class AbstractPagingBehaviour(IntPtr ptr) : MonoBehaviour(ptr)
 {
-    public AbstractPagingBehaviour(IntPtr ptr) : base(ptr)
-    {
-    }
-
     public const string PAGE_INDEX_GAME_OBJECT_NAME = "CrowdedMod_PageIndex";
 
     private int _page;
@@ -398,16 +394,12 @@ public class AbstractPagingBehaviour : MonoBehaviour
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
+public class MeetingHudPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
 {
-    public MeetingHudPagingBehaviour(IntPtr ptr) : base(ptr)
-    {
-    }
-
     internal MeetingHud meetingHud = null!;
 
     [HideFromIl2Cpp]
-    public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
+    private IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
     public override int MaxPageIndex
     {
         get
@@ -469,22 +461,18 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 }
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
-public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
+public class ShapeShifterPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
 {
-    public ShapeShifterPagingBehaviour(IntPtr ptr) : base(ptr)
-    {
-    }
-
     public ShapeshifterMinigame shapeshifterMinigame = null!;
     [HideFromIl2Cpp]
-    public IEnumerable<ShapeshifterPanel> Targets => shapeshifterMinigame.potentialVictims.ToArray();
+    private IEnumerable<ShapeshifterPanel> Targets => shapeshifterMinigame.potentialVictims.ToArray();
 
     public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
     private TextMeshPro PageText = null!;
 
     public override void Start()
     {
-        PageText = Instantiate(HudManager.Instance.KillButton.cooldownTimerText, shapeshifterMinigame.transform);
+        PageText = Instantiate(FastDestroyableSingleton<HudManager>.Instance.KillButton.cooldownTimerText, shapeshifterMinigame.transform);
         PageText.name = PAGE_INDEX_GAME_OBJECT_NAME;
         PageText.enableWordWrapping = false;
         PageText.gameObject.SetActive(true);
@@ -526,20 +514,18 @@ public class ShapeShifterPagingBehaviour : AbstractPagingBehaviour
 
 [Obfuscation(Exclude = true, ApplyToMembers = true)]
 
-public class VitalsPagingBehaviour : AbstractPagingBehaviour
+public class VitalsPagingBehaviour(IntPtr ptr) : AbstractPagingBehaviour(ptr)
 {
-    public VitalsPagingBehaviour(IntPtr ptr) : base(ptr) { }
-
     public VitalsMinigame vitalsMinigame = null!;
 
     [HideFromIl2Cpp]
-    public IEnumerable<VitalsPanel> Targets => vitalsMinigame.vitals.ToArray();
+    private IEnumerable<VitalsPanel> Targets => [.. vitalsMinigame.vitals];
     public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
     private TextMeshPro PageText = null!;
 
     public override void Start()
     {
-        PageText = Instantiate(HudManager.Instance.KillButton.cooldownTimerText, vitalsMinigame.transform);
+        PageText = Instantiate(FastDestroyableSingleton<HudManager>.Instance.KillButton.cooldownTimerText, vitalsMinigame.transform);
         PageText.name = PAGE_INDEX_GAME_OBJECT_NAME;
         PageText.enableWordWrapping = false;
         PageText.gameObject.SetActive(true);

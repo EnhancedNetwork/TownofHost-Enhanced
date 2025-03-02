@@ -10,11 +10,11 @@ public class Rebirth : IAddon
     public CustomRoles Role => CustomRoles.Rebirth;
     private const int Id = 29500;
     public AddonTypes Type => AddonTypes.Helpful;
-    public static OptionItem RebirthUses;
-    public static OptionItem OnlyVoted;
+    private static OptionItem RebirthUses;
+    private static OptionItem OnlyVoted;
 
-    public static Dictionary<byte, int> Rebirths = [];
-    public static Dictionary<byte, List<byte>> VotedCount = [];
+    private static readonly Dictionary<byte, int> Rebirths = [];
+    private static readonly Dictionary<byte, List<byte>> VotedCount = [];
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Rebirth, canSetNum: true, teamSpawnOptions: true);

@@ -93,7 +93,7 @@ internal class AbyssBringer : RoleBase
 
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
-        if (!Main.AllAlivePlayerControls.Where(x => x.PlayerId != shapeshifter.PlayerId).Any())
+        if (!Main.AllAlivePlayerControls.Any(x => x.PlayerId != shapeshifter.PlayerId))
         {
             return;
         }

@@ -23,7 +23,7 @@ internal class Guardian : RoleBase
         if (CannotBeKilled(target))
         {
             killer.SetKillCooldown(5f, target, forceAnime: true);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Guardian), GetString("GuardianCantKilled")));
+            killer.Notify(CustomRoles.Guardian.GetColoredTextByRole(GetString("GuardianCantKilled")));
 
             killer.ResetKillCooldown();
             killer.SyncSettings();

@@ -53,16 +53,16 @@ public class Cyber : IAddon
 
             if (inMeeting)
             {
-                Utils.SendMessage(string.Format(Translator.GetString("CyberDead"), target.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), Translator.GetString("CyberNewsTitle")));
+                Utils.SendMessage(string.Format(Translator.GetString("CyberDead"), target.GetRealName()), pc.PlayerId, CustomRoles.Cyber.GetColoredTextByRole(Translator.GetString("CyberNewsTitle")));
             }
             else
             {
                 pc.KillFlash();
-                pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), Translator.GetString("OnCyberDead")));
+                pc.Notify(CustomRoles.Cyber.GetColoredTextByRole(Translator.GetString("OnCyberDead")));
             }
         }
 
-        if (!inMeeting && !CyberDead.Contains(target.PlayerId))
+        if (!inMeeting)
             CyberDead.Add(target.PlayerId);
     }
 }

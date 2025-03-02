@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -13,6 +14,7 @@ internal class Devourer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Devourer;
     private const int Id = 5500;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Devourer);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
@@ -90,8 +92,8 @@ internal class Devourer : RoleBase
             }
 
             PlayerSkinsCosumed[shapeshifter.PlayerId].Add(target.PlayerId);
-            shapeshifter.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Devourer), GetString("DevourerEatenSkin")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Devourer), GetString("EatenByDevourer")));
+            shapeshifter.Notify(CustomRoles.Devourer.GetColoredTextByRole(GetString("DevourerEatenSkin")));
+            target.Notify(CustomRoles.Devourer.GetColoredTextByRole(GetString("EatenByDevourer")));
 
             OriginalPlayerSkins.Add(target.PlayerId, Camouflage.PlayerSkins[target.PlayerId]);
             Camouflage.PlayerSkins[target.PlayerId] = ConsumedOutfit;

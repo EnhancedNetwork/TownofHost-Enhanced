@@ -92,7 +92,7 @@ internal class Godfather : RoleBase
     public override bool CheckVote(PlayerControl votePlayer, PlayerControl voteTarget)
     {
         if (votePlayer == null || voteTarget == null) return true;
-        if (Didvote == true) return false;
+        if (Didvote) return false;
         Didvote = true;
 
         GodfatherTarget.Add(voteTarget.PlayerId);

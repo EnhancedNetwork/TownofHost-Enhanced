@@ -57,7 +57,7 @@ internal class Spy : RoleBase
         writer.Write(SpyRedNameList[susId].ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public void SendRPC(byte susId, bool changeColor)
+    private void SendRPC(byte susId, bool changeColor)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);

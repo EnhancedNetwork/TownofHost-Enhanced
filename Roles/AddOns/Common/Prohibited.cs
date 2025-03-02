@@ -63,7 +63,7 @@ public class Prohibited : IAddon
             _ => 0
         };
     }
-    public static void SetBlockedVents(byte playerId)
+    private static void SetBlockedVents(byte playerId)
     {
         var coutBlokedVents = GetCountBlokedVents();
 

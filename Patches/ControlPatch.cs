@@ -1,3 +1,4 @@
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using System.Text;
 using TOHE.Modules;
@@ -36,7 +37,7 @@ internal class ControllerManagerUpdatePatch
                 EndGameManagerPatch.IsRestarting = false;
             }
             // Do next page
-            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.InstanceExists && DestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
+            if (GameStates.IsLobby && DestroyableSingleton<HudManager>.InstanceExists && FastDestroyableSingleton<HudManager>.Instance.Chat.IsClosedOrClosing)
             {
                 if (Input.GetKeyDown(KeyCode.Tab))
                 {
@@ -48,7 +49,6 @@ internal class ControllerManagerUpdatePatch
                         OptionShower.currentPage = i;
                 }
             }
-
             //捕捉全屏快捷键
             //if (GetKeysDown(KeyCode.LeftAlt, KeyCode.Return))
             //{
@@ -66,7 +66,7 @@ internal class ControllerManagerUpdatePatch
                     sb.Append(GetString(role.ToString()) + Utils.GetRoleMode(role) + lp.GetRoleInfo(true));
                     //if (Options.CustomRoleSpawnChances.TryGetValue(role, out var opt))
                     //    Utils.ShowChildrenSettings(Options.CustomRoleSpawnChances[role], ref sb, command: true);
-                    HudManager.Instance.ShowPopUp(sb.ToString() + "<size=0%>tohe</size>");
+                    FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(sb.ToString() + "<size=0%>tohe</size>");
                 }
                 catch (Exception ex)
                 {
@@ -85,12 +85,12 @@ internal class ControllerManagerUpdatePatch
                     List<string> addDes = [];
                     foreach (var subRole in Main.PlayerStates[lp.PlayerId].SubRoles.Where(x => x is not CustomRoles.Charmed).ToArray())
                     {
-                        addDes.Add(GetString($"{subRole}") + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
+                        addDes.Add(GetString(subRole.ToString()) + Utils.GetRoleMode(subRole) + GetString($"{subRole}InfoLong"));
                     }
 
                     addonInfoIndex++;
                     if (addonInfoIndex >= addDes.Count) addonInfoIndex = 0;
-                    HudManager.Instance.ShowPopUp(addDes[addonInfoIndex] + "<size=0%>tohe</size>");
+                    FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(addDes[addonInfoIndex] + "<size=0%>tohe</size>");
                 }
                 catch (Exception ex)
                 {
@@ -107,7 +107,7 @@ internal class ControllerManagerUpdatePatch
                     var sb = new StringBuilder();
                     if (Options.CustomRoleSpawnChances.TryGetValue(role, out var soi))
                         Utils.ShowChildrenSettings(soi, ref sb, command: false);
-                    HudManager.Instance.ShowPopUp(sb.ToString().Trim());
+                    FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(sb.ToString().Trim());
                 }
                 catch (Exception ex)
                 {
@@ -134,7 +134,7 @@ internal class ControllerManagerUpdatePatch
 
                     addonSettingsIndex++;
                     if (addonSettingsIndex >= addSett.Count) addonSettingsIndex = 0;
-                    HudManager.Instance.ShowPopUp(addSett[addonSettingsIndex] + "<size=0%>tohe</size>");
+                    FastDestroyableSingleton<HudManager>.Instance.ShowPopUp(addSett[addonSettingsIndex] + "<size=0%>tohe</size>");
                 }
                 catch (Exception ex)
                 {
@@ -179,7 +179,7 @@ internal class ControllerManagerUpdatePatch
             // Show chat
             if (GetKeysDown(KeyCode.Return, KeyCode.C, KeyCode.LeftShift))
             {
-                HudManager.Instance.Chat.SetVisible(true);
+                FastDestroyableSingleton<HudManager>.Instance.Chat.SetVisible(true);
             }
 
             if (DebugModeManager.IsDebugMode && GetKeysDown(KeyCode.F8) && HudManager.Instance && !GameStates.IsMeeting && (GameStates.IsInGame || GameStates.IsLobby))
@@ -203,7 +203,7 @@ internal class ControllerManagerUpdatePatch
             if (GetKeysDown(KeyCode.Return, KeyCode.L, KeyCode.LeftShift) && GameStates.IsInGame)
             {
                 NameNotifyManager.Notice.Clear();
-                //Utils.DoNotifyRoles(ForceLoop: true);
+                //Utils.NotifyRoles(ForceLoop: true);
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Draw);
                 GameManager.Instance.LogicFlow.CheckEndCriteria();
                 GameEndCheckerForNormal.GameIsEnded = true;
@@ -214,7 +214,7 @@ internal class ControllerManagerUpdatePatch
             }
 
             //Search Bar In Menu "Press Enter" alternative function
-            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled == true)
+            if (GetKeysDown(KeyCode.Return) && GameSettingMenuPatch.Instance != null && GameSettingMenuPatch.Instance.isActiveAndEnabled)
             {
                 GameSettingMenuPatch._SearchForOptions?.Invoke();
             }
@@ -226,16 +226,17 @@ internal class ControllerManagerUpdatePatch
 
                 if (GameStates.IsMeeting)
                 {
-                    foreach (var pva in MeetingHud.Instance.playerStates)
+                    var meetingHud = MeetingHud.Instance;
+                    foreach (var pva in meetingHud.playerStates)
                     {
                         if (pva == null) continue;
 
                         if (pva.VotedFor < 253)
-                            MeetingHud.Instance.RpcClearVote(pva.TargetPlayerId);
+                            meetingHud.RpcClearVote(pva.TargetPlayerId);
                     }
                     List<MeetingHud.VoterState> statesList = [];
-                    MeetingHud.Instance.RpcVotingComplete(statesList.ToArray(), null, true);
-                    MeetingHud.Instance.RpcClose();
+                    meetingHud.RpcVotingComplete(statesList.ToArray(), null, true);
+                    meetingHud.RpcClose();
                 }
                 else
                 {
@@ -244,7 +245,7 @@ internal class ControllerManagerUpdatePatch
                 }
             }
             // Forse start game       
-            if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !HudManager.Instance.Chat.IsOpenOrOpening)
+            if (Input.GetKeyDown(KeyCode.LeftShift) && GameStates.IsCountDown && !FastDestroyableSingleton<HudManager>.Instance.Chat.IsOpenOrOpening)
             {
                 var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId).ToArray();
                 if (invalidColor.Any())
@@ -303,8 +304,8 @@ internal class ControllerManagerUpdatePatch
             // Show intro
             if (GetKeysDown(KeyCode.Return, KeyCode.G, KeyCode.LeftShift) && GameStates.IsInGame && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug)
             {
-                HudManager.Instance.StartCoroutine(HudManager.Instance.CoFadeFullScreen(Color.clear, Color.black));
-                HudManager.Instance.StartCoroutine(DestroyableSingleton<HudManager>.Instance.CoShowIntro());
+                FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(FastDestroyableSingleton<HudManager>.Instance.CoFadeFullScreen(Color.clear, Color.black));
+                FastDestroyableSingleton<HudManager>.Instance.StartCoroutine(FastDestroyableSingleton<HudManager>.Instance.CoShowIntro());
             }
 
             // Whether the toggle log is also output in the game
@@ -370,7 +371,7 @@ internal class ControllerManagerUpdatePatch
             if (Input.GetKeyDown(KeyCode.Equals))
             {
                 Main.VisibleTasksCount = !Main.VisibleTasksCount;
-                DestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage($"VisibleTaskCount has been changed to {Main.VisibleTasksCount}");
+                FastDestroyableSingleton<HudManager>.Instance.Notifier.AddDisconnectMessage($"VisibleTaskCount has been changed to {Main.VisibleTasksCount}");
             }
 
             // All players enter vent
@@ -457,13 +458,13 @@ internal class HandleHUDPatch
         PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
         PlayerControl.LocalPlayer.CanUseKillButton())
         {
-            DestroyableSingleton<HudManager>.Instance.KillButton.DoClick();
+            FastDestroyableSingleton<HudManager>.Instance.KillButton.DoClick();
         }
         if (player.GetButtonDown(50) && // 50:インポスターのベントボタンのactionId
         PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
         PlayerControl.LocalPlayer.CanUseImpostorVentButton())
         {
-            DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
+            FastDestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
         }
     }
 }

@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -11,8 +12,8 @@ public abstract class RoleBase
     public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
-    public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
+    public PlayerControl _Player => _state != null ? _state.PlayerId.GetPlayer() ?? null : null;
+    public List<byte> _playerIdList => [.. Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId)];
 #pragma warning restore IDE1006
 
     public virtual bool IsEnable { get; set; } = false;
@@ -307,13 +308,13 @@ public abstract class RoleBase
     /// <summary>
     /// Check exile Role
     /// </summary>
-    public virtual void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExile(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref StringBuilder name)
     { }
 
     /// <summary>
     /// Check exile Target
     /// </summary>
-    public virtual void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref string name)
+    public virtual void CheckExileTarget(NetworkedPlayerInfo exiled, ref bool DecidedWinner, bool isMeetingHud, ref StringBuilder name)
     { }
 
     /// <summary>
