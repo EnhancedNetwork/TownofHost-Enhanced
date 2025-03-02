@@ -20,7 +20,7 @@ public static class GhostRoleAssign
     public static void GhostAssignPatch(PlayerControl player)
     {
         if (GameStates.IsHideNSeek
-            || Options.CurrentGameMode == CustomGameMode.FFA
+            || Options.CurrentGameMode != CustomGameMode.Standard
             || player == null
             || player.Data == null
             || player.Data.Disconnected
@@ -52,7 +52,6 @@ public static class GhostRoleAssign
 
         // Roles can win after death, should not get ghost roles
         if (getplrRole is CustomRoles.GM
-            or CustomRoles.Runner
             or CustomRoles.Nemesis
             or CustomRoles.Retributionist
             or CustomRoles.NiceMini
