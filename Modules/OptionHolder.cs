@@ -180,7 +180,6 @@ public static class Options
     public static OptionItem ShowMadmatesInLeftCommand;
     public static OptionItem ShowApocalypseInLeftCommand;
     public static OptionItem ShowCovenInLeftCommand;
-    public static OptionItem SeeEjectedRolesInMeeting;
 
     public static OptionItem KickLowLevelPlayer;
     public static OptionItem TempBanLowLevelPlayer;
@@ -291,6 +290,8 @@ public static class Options
     public static OptionItem ShowTeamNextToRoleNameOnEject;
     public static OptionItem ConfirmEgoistOnEject;
     public static OptionItem ConfirmLoversOnEject;
+    public static OptionItem SeeEjectedRolesInMeeting;
+    public static OptionItem ShowBetrayalAddonsOnEject;
     //public static OptionItem ConfirmSidekickOnEject;
     //public static OptionItem ExtendedEjections;
 
@@ -1151,9 +1152,6 @@ public static class Options
         ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand)
             .SetGameMode(CustomGameMode.Standard);
-        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .HideInHnS()
-            .SetGameMode(CustomGameMode.Standard);
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
@@ -1361,6 +1359,12 @@ public static class Options
         ConfirmLoversOnEject = BooleanOptionItem.Create(60445, "ConfirmLoversOnEject", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
+            .HideInHnS()
+            .SetGameMode(CustomGameMode.Standard);
+        ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowBetrayalAddonsOnEject", true, TabGroup.SystemSettings, false)
+            .HideInHnS()
+            .SetGameMode(CustomGameMode.Standard);
 
         TextOptionItem.Create(10000028, "MenuTitle.Guessers", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
