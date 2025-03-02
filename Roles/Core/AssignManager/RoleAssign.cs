@@ -300,7 +300,7 @@ public class RoleAssign
                 readyNonNeutralKillingNum++;
             }
 
-            readyRoleNum++;
+            //readyRoleNum++;
 
             Logger.Warn($"Pre-Set Role Assigned: {pc.GetRealName()} => {item.Value}", "RoleAssign");
         }
@@ -906,7 +906,7 @@ public class RoleAssign
             RoleAssignInfo[] CrewRoleCounts = AlwaysCrewRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceCrewRoles.Distinct().Select(GetAssignInfo).ToArray());
             Crews = CrewRoleCounts;
 
-            // Assign roles set to ALWAYS
+            // Assign roles set to 100%
             if (readyRoleNum < playerCount)
             {
                 while (AlwaysCrewRoles.Any())
