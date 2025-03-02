@@ -99,7 +99,7 @@ public static class Utils
             case SystemTypes.Electrical:
                 {
                     if (mapName is MapNames.Fungle) return false; // if The Fungle return false
-                    var SwitchSystem = ShipStatus.Instance.Systems[type].TryCast<SwitchSystem>();
+                    var SwitchSystem = ShipStatus.Instance.Systems[type].CastFast<SwitchSystem>();
                     return SwitchSystem != null && SwitchSystem.IsActive;
                 }
             case SystemTypes.Reactor:
@@ -107,45 +107,45 @@ public static class Utils
                     if (mapName is MapNames.Polus) return false; // if Polus return false
                     else
                     {
-                        var ReactorSystemType = ShipStatus.Instance.Systems[type].TryCast<ReactorSystemType>();
+                        var ReactorSystemType = ShipStatus.Instance.Systems[type].CastFast<ReactorSystemType>();
                         return ReactorSystemType != null && ReactorSystemType.IsActive;
                     }
                 }
             case SystemTypes.Laboratory:
                 {
                     if (mapName is not MapNames.Polus) return false; // Only Polus
-                    var ReactorSystemType = ShipStatus.Instance.Systems[type].TryCast<ReactorSystemType>();
+                    var ReactorSystemType = ShipStatus.Instance.Systems[type].CastFast<ReactorSystemType>();
                     return ReactorSystemType != null && ReactorSystemType.IsActive;
                 }
             case SystemTypes.HeliSabotage:
                 {
                     if (mapName is not MapNames.Airship) return false; // Only Airhip
-                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<HeliSabotageSystem>();
+                    var HeliSabotageSystem = ShipStatus.Instance.Systems[type].CastFast<HeliSabotageSystem>();
                     return HeliSabotageSystem != null && HeliSabotageSystem.IsActive;
                 }
             case SystemTypes.LifeSupp:
                 {
                     if (mapName is MapNames.Polus or MapNames.Airship or MapNames.Fungle) return false; // Only Skeld & Dleks & Mira HQ
-                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].TryCast<LifeSuppSystemType>();
+                    var LifeSuppSystemType = ShipStatus.Instance.Systems[type].CastFast<LifeSuppSystemType>();
                     return LifeSuppSystemType != null && LifeSuppSystemType.IsActive;
                 }
             case SystemTypes.Comms:
                 {
                     if (mapName is MapNames.Mira or MapNames.Fungle) // Only Mira HQ & The Fungle
                     {
-                        var HqHudSystemType = ShipStatus.Instance.Systems[type].TryCast<HqHudSystemType>();
+                        var HqHudSystemType = ShipStatus.Instance.Systems[type].CastFast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
                     }
                     else
                     {
-                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].TryCast<HudOverrideSystemType>();
+                        var HudOverrideSystemType = ShipStatus.Instance.Systems[type].CastFast<HudOverrideSystemType>();
                         return HudOverrideSystemType != null && HudOverrideSystemType.IsActive;
                     }
                 }
             case SystemTypes.MushroomMixupSabotage:
                 {
                     if (mapName is not MapNames.Fungle) return false; // Only The Fungle
-                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].TryCast<MushroomMixupSabotageSystem>();
+                    var MushroomMixupSabotageSystem = ShipStatus.Instance.Systems[type].CastFast<MushroomMixupSabotageSystem>();
                     return MushroomMixupSabotageSystem != null && MushroomMixupSabotageSystem.IsActive;
                 }
             default:
@@ -1496,8 +1496,6 @@ public static class Utils
 
         return [.. result];
     }
-    private static string TryRemove(this string text) => text.Length >= 1200 ? text.Remove(0, 1200) : string.Empty;
-
 
     public static void SendSpesificMessage(string text, byte sendTo = byte.MaxValue, string title = "")
     {
@@ -2395,7 +2393,7 @@ public static class Utils
     }
     public static void SetAllVentInteractions()
     {
-        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>());
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>());
     }
     public static void CheckAndSetVentInteractions()
     {
@@ -2549,7 +2547,7 @@ public static class Utils
         CustomNetObject.AfterMeetingTasks();
 
         // Empty Deden bug support Empty vent after meeting
-        var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.TryCast<VentilationSystem>() : null;
+        var ventilationSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) ? systemType.CastFast<VentilationSystem>() : null;
         if (ventilationSystem != null)
         {
             ventilationSystem.PlayersInsideVents.Clear();

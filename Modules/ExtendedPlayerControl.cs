@@ -767,7 +767,7 @@ static class ExtendedPlayerControl
     /// </summary>
     public static void RpcSetVentInteraction(this PlayerControl player)
     {
-        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>(), player);
+        VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>(), player);
     }
     public static void RpcSetSpecificScanner(this PlayerControl target, PlayerControl seer, bool IsActive)
     {
@@ -1578,7 +1578,7 @@ static class ExtendedPlayerControl
     public static int GetPlayerVentId(this PlayerControl player)
     {
         if (!(ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType) &&
-              systemType.TryCast<VentilationSystem>() is VentilationSystem ventilationSystem))
+              systemType.CastFast<VentilationSystem>() is VentilationSystem ventilationSystem))
             return 99;
 
         return ventilationSystem.PlayersInsideVents.TryGetValue(player.PlayerId, out var playerIdVentId) ? playerIdVentId : 99;

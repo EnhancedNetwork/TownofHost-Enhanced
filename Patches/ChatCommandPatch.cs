@@ -3569,7 +3569,7 @@ class ChatUpdatePatch
 
         if (Main.DarkTheme.Value)
         {
-            var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
+            var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
             chatBubble.TextArea.overrideColorTags = false;
             chatBubble.TextArea.color = Color.white;
             chatBubble.Background.color = Color.black;

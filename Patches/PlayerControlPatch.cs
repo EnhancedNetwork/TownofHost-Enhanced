@@ -1938,7 +1938,7 @@ public static class PlayerControlDiePatch
         // Fix bug when player was dead due RpcExile while camera uses
         if (reason is DeathReason.Exile)
         {
-            var securityCameraSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.TryCast<SecurityCameraSystemType>() : null;
+            var securityCameraSystem = ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Security, out var systemType) ? systemType.CastFast<SecurityCameraSystemType>() : null;
             if (securityCameraSystem != null && securityCameraSystem.PlayersUsing.Contains(playerId))
             {
                 securityCameraSystem.PlayersUsing.Remove(playerId);
