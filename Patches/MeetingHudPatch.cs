@@ -1076,12 +1076,17 @@ class MeetingHudStartPatch
 
         foreach (var pva in __instance.playerStates)
         {
-            var pc = GetPlayerById(pva.TargetPlayerId);
-            if (pc == null) continue;
+            var player = PlayerControl.LocalPlayer;
+            var target = pva.TargetPlayerId.GetPlayer();
+            if (target == null || player == null) continue;
+
+            var playerId = player.PlayerId;
+            var targetId = pva.TargetPlayerId;
+
             var textTemplate = pva.NameText;
 
             // Create role text in meeting
-            var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId, isMeeting: true);
+            var RoleTextData = GetRoleAndSubText(playerId, targetId, isMeeting: true);
             var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
             if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
                 UnityEngine.Object.Destroy(roleTextMeeting.transform.FindChild("DeathReasonTextMeeting").gameObject);
@@ -1089,11 +1094,11 @@ class MeetingHudStartPatch
             roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
             roleTextMeeting.fontSize = 1.6f;
             roleTextMeeting.text = RoleTextData.Item1;
-            if (Main.VisibleTasksCount) roleTextMeeting.text += GetProgressText(pc);
+            if (Main.VisibleTasksCount) roleTextMeeting.text += GetProgressText(target);
             roleTextMeeting.color = RoleTextData.Item2;
             roleTextMeeting.gameObject.name = "RoleTextMeeting";
             roleTextMeeting.enableWordWrapping = false;
-            roleTextMeeting.enabled = pc.AmOwner || ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, pc);
+            roleTextMeeting.enabled = target.AmOwner || ExtendedPlayerControl.KnowRoleTarget(player, target);
 
             // Create death reason text in meeting
             var deathReasonText = UnityEngine.Object.Instantiate(textTemplate);
@@ -1102,11 +1107,11 @@ class MeetingHudStartPatch
             deathReasonText.transform.transform.SetParent(textTemplate.transform);
             deathReasonText.transform.localPosition = new Vector3(0f, +0.18f, 0f);
             deathReasonText.fontSize = 1.4f;
-            deathReasonText.text = $"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(pc.PlayerId))}』";
+            deathReasonText.text = $"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(targetId))}』";
             deathReasonText.color = Color.white;
             deathReasonText.gameObject.name = "DeathReasonTextMeeting";
             deathReasonText.enableWordWrapping = false;
-            deathReasonText.enabled = PlayerControl.LocalPlayer.KnowDeathReason(pc);
+            deathReasonText.enabled = player.KnowDeathReason(target);
 
             // Thanks BAU (By D1GQ)
             var PlayerLevel = pva.transform.Find("PlayerLevel");
@@ -1123,44 +1128,40 @@ class MeetingHudStartPatch
             IdLabel.name = "IdLabel";
             IdNumber.name = "IdNumber";
 
-            var myRole = PlayerControl.LocalPlayer.GetRoleClass();
+            var myRole = player.GetRoleClass();
             var enable = true;
 
-            string BlankRT = string.Empty;
-
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster))
+            if (player.IsAlive() && Overseer.IsRevealedPlayer(player, target))
             {
-                BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
-                BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
-                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
-            }
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsCovIllusioned(pc.PlayerId))
-            {
-                BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
-                BlankRT += TaskState.GetTaskState();
-                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
-            }
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsNonCovIllusioned(pc.PlayerId))
-            {
-                var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
-                if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
+                var blankRT = new StringBuilder();
+                var result = new StringBuilder(roleTextMeeting.text);
+                if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(targetId))
                 {
-                    BlankRT += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                    blankRT.Clear().Append(Overseer.GetRandomRole(playerId));
+                    blankRT.Append(TaskState.GetTaskState());
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
-                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
+                if (Illusionist.IsNonCovIllusioned(targetId))
+                {
+                    var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                    blankRT.Clear().Append(ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString())));
+                    if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
+                    {
+                        blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(playerId, false));
+                    }
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
+                roleTextMeeting.text = result.ToString();
             }
 
             var suffixBuilder = new StringBuilder(32);
             if (myRole != null)
             {
-                suffixBuilder.Append(myRole.GetSuffix(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+                suffixBuilder.Append(myRole.GetSuffix(player, target, isForMeeting: true));
             }
-            suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+            suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(player, target, isForMeeting: true));
 
             // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-            var player = PlayerControl.LocalPlayer;
-            var target = GetPlayerById(pva.TargetPlayerId);
 
             if (suffixBuilder.Length > 0)
             {
@@ -1172,7 +1173,7 @@ class MeetingHudStartPatch
         if (Options.SyncButtonMode.GetBool())
         {
             SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
-            Logger.Info("紧急会议剩余 " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount) + " 次使用次数", "SyncButtonMode");
+            Logger.Info("Number of remaining buttons: " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount), "SyncButtonMode");
         }
 
         // AntiBlackout Message
@@ -1236,10 +1237,11 @@ class MeetingHudStartPatch
         foreach (var pva in __instance.playerStates)
         {
             if (pva == null) continue;
+            PlayerControl target = pva.TargetPlayerId.GetPlayer();
+            if (target == null) continue;
+
             PlayerControl seer = PlayerControl.LocalPlayer;
             var seerRoleClass = seer.GetRoleClass();
-            PlayerControl target = GetPlayerById(pva.TargetPlayerId);
-            if (target == null) continue;
 
             // if based role is Shapeshifter and is Desync Shapeshifter
             if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
@@ -1269,7 +1271,7 @@ class MeetingHudStartPatch
             if (seer.GetCustomRole().IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
             {
                 if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
-                    sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
+                    sb.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
             }
 
 
@@ -1279,17 +1281,6 @@ class MeetingHudStartPatch
                 pva.NameText.text = tempNemeText;
             }
 
-            //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
-            //{
-            //    switch (SeerSubRole)
-            //    {
-            //        case CustomRoles.Guesser:
-            //            if (!seer.Data.IsDead && !target.Data.IsDead)
-            //                pva.NameText.text = ColorString(GetRoleColor(CustomRoles.Guesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
-            //            break;
-            //    }
-            //}
-
             //bool isLover = false;
             foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
@@ -1298,12 +1289,12 @@ class MeetingHudStartPatch
                     case CustomRoles.Lovers:
                         if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
                         {
-                            sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
+                            sb.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
                             //isLover = true;
                         }
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
-                        sb.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                        sb.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
                         break;
                 }
             }
