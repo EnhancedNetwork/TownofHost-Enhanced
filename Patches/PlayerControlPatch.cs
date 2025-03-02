@@ -336,15 +336,6 @@ class CheckMurderPatch
                             Main.PlayerStates[target.PlayerId].RemoveSubRole(CustomRoles.Gambler);
                             return false;
                         }
-                        else
-                        {
-                            target.RpcSetCustomRole(CustomRoles.Bankrupt);
-                            var AllSubRoles2 = Main.PlayerStates[target.PlayerId].SubRoles.ToList();
-                            foreach (var role in AllSubRoles2)
-                            {
-                                AllSubRoles2.Remove(role);
-                            }
-                        }
                         break;
 
                     case CustomRoles.Cyber when killer.PlayerId != target.PlayerId:

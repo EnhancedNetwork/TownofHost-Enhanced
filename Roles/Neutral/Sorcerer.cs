@@ -11,7 +11,6 @@ internal class Sorcerer : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //==================================================================\\
 
-    private static float MarkRange = 2.5f; // How close you need to be 
     private bool usedSecondChance = false; // Checking if respawn has been used
     private List<PlayerControl> markedPlayers = [];
 
