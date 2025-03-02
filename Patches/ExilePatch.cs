@@ -188,7 +188,7 @@ class ExileControllerWrapUpPatch
                 }
                 else
                 {
-                    Utils.DoNotifyRoles();
+                    Utils.NotifyRoles();
                 }
 
                 Main.LastMeetingEnded = Utils.TimeStamp;

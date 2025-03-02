@@ -591,7 +591,7 @@ class GameEndCheckerForNormal
             if (winnerPC == null) continue;
 
             // Update winner name
-            Utils.DoNotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
+            Utils.NotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
         }
 
         // Start End Game
