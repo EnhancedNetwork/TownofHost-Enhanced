@@ -138,8 +138,8 @@ internal class Alchemist : RoleBase
 
     private static void SendRPC(PlayerControl pc)
     {
-        if (pc.IsHost()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
+        if (!pc.IsNonHostModdedClient()) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
         writer.Write(FixNextSabo);
         writer.Write(PotionID);
         writer.Write(InvisTime.GetValueOrDefault(pc.PlayerId, -1).ToString());

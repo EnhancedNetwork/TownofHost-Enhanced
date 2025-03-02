@@ -111,7 +111,7 @@ internal class Necromancer : CovenManager
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return string.Format(GetString("NecromancerAbilityCooldown") + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
+        return string.Format(GetString(GeneralOption.AbilityCooldown.ToString()) + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
     }
     public override void UnShapeShiftButton(PlayerControl nm)
     {
@@ -141,7 +141,7 @@ internal class Necromancer : CovenManager
         }
         var role = deadRoles.RandomElement();
         nm.RpcChangeRoleBasis(role);
-        nm.RpcSetCustomRole(role, checkAddons: false);
+        nm.RpcSetCustomRole(role, false, false);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
         nm.SyncSettings();
         foreach (var addon in nm.GetCustomSubRoles().ToArray())
@@ -171,10 +171,10 @@ internal class Necromancer : CovenManager
         }
         if (nm.IsAlive())
             nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
-        nm.RpcSetCustomRole(CustomRoles.Necromancer, checkAddons: false);
+        nm.RpcSetCustomRole(CustomRoles.Necromancer, false, false);
         foreach (var addon in OldAddons[nm.PlayerId])
         {
-            nm.RpcSetCustomRole(addon, checkAddons: false);
+            nm.RpcSetCustomRole(addon, false, false);
         }
         OldAddons[nm.PlayerId].Clear();
         nm.ResetKillCooldown();

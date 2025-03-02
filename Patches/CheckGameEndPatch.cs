@@ -66,6 +66,19 @@ class GameEndCheckerForNormal
             return false;
         }
 
+        // Speed Run
+        if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+        {
+            if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
+            {
+                SpeedRun.RpcSyncSpeedRunStates();
+                ShipStatus.Instance.enabled = false;
+                StartEndGame(reason);
+                predicate = null;
+            }
+            return false;
+        }
+
         // Start end game
         if (WinnerTeam != CustomWinner.Default)
         {
@@ -588,6 +601,7 @@ class GameEndCheckerForNormal
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
+    public static void SetPredicateToSpeedRun() => predicate = new SpeedRunGameEndPredicate();
 
 
     // ===== Check Game End =====

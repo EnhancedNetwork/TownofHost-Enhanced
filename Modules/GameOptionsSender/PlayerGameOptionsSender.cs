@@ -121,7 +121,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         if (Main.AllPlayerSpeed.TryGetValue(player.PlayerId, out var speed))
         {
-            AURoleOptions.PlayerSpeedMod = Mathf.Clamp(speed, Main.MinSpeed, 3f);
+            AURoleOptions.PlayerSpeedMod = Mathf.Clamp(speed, Main.MinSpeed, 10f);
         }
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);

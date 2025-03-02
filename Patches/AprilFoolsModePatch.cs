@@ -122,7 +122,14 @@ public static class LongBoiPatches
         }
         return false;
     }
-
+    // Fix System.IndexOutOfRangeException: Index was outside the bounds of the array
+    // When colorIndex is 255 them heightsPerColor[255] gets exception
+    [HarmonyPatch(nameof(LongBoiPlayerBody.SetHeightFromColor))]
+    [HarmonyPrefix]
+    public static bool SetHeightFromColor_Prefix(int colorIndex)
+    {
+        return colorIndex != byte.MaxValue;
+    }
     [HarmonyPatch(nameof(LongBoiPlayerBody.SetHeighFromDistanceHnS))]
     [HarmonyPrefix]
     public static bool LongBoyNeckSize_Prefix(LongBoiPlayerBody __instance, ref float distance)

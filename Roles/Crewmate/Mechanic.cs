@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
-using static TOHE.Utils;
-using static TOHE.Options;
 using TOHE.Modules;
+using TOHE.Roles.Core;
+using static TOHE.Options;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 

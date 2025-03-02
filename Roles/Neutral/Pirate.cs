@@ -105,7 +105,7 @@ internal class Pirate : RoleBase
             return false;
         }
         Logger.Msg($"{killer.GetNameWithRole()} chose a target {target.GetNameWithRole()}", "Pirate");
-        
+
         PirateTarget = target.PlayerId;
         SendRPC(target: target.PlayerId);
 
@@ -139,14 +139,14 @@ internal class Pirate : RoleBase
             if (targetChose == pirateChose)
             {
                 _Player.RpcIncreaseAbilityUseLimitBy(1);
-                if (pirateTarget.IsAlive())
+                if (pirateTarget.IsAlive() && !pirateTarget.IsTransformedNeutralApocalypse())
                 {
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
                     pirateTarget.SetRealKiller(_Player);
                 }
             }
         }
-        else if (pirateTarget.IsAlive())
+        else if (pirateTarget.IsAlive() && !pirateTarget.IsTransformedNeutralApocalypse())
         {
             CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Pirate, PirateTarget);
             pirateTarget.SetRealKiller(_Player);

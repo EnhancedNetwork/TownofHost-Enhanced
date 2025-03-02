@@ -20,6 +20,7 @@ internal class Kamikaze : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem OptMaxMarked;
+    private static OptionItem CanKillTNA;
 
     private readonly HashSet<byte> KamikazedList = [];
 
@@ -28,8 +29,9 @@ internal class Kamikaze : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Kamikaze);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 25f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze])
             .SetValueFormat(OptionFormat.Seconds);
-        OptMaxMarked = IntegerOptionItem.Create(Id + 11, "KamikazeMaxMarked", new(1, 14, 1), 14, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Kamikaze])
+        OptMaxMarked = IntegerOptionItem.Create(Id + 11, "KamikazeMaxMarked", new(1, 14, 1), 14, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze])
            .SetValueFormat(OptionFormat.Times);
+        CanKillTNA = BooleanOptionItem.Create(Id + 12, "CanKillTNA", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Kamikaze]);
 
     }
     public override void Add(byte playerId)
@@ -79,6 +81,7 @@ internal class Kamikaze : RoleBase
         {
             var pc = Utils.GetPlayerById(BABUSHKA);
             if (!pc.IsAlive()) continue;
+            if (pc.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
 
             pc.SetDeathReason(PlayerState.DeathReason.Targeted);
             if (!inMeeting)

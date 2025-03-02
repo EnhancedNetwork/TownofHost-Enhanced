@@ -133,6 +133,7 @@ internal class Fireworker : RoleBase
                     {
                         var dis = Utils.GetDistance(pos, player.transform.position);
                         if (dis > fireworkerRadius) continue;
+                        if (player.IsTransformedNeutralApocalypse()) continue;
 
                         if (player == shapeshifter)
                         {

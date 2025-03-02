@@ -1,8 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Text;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
+using System.Text;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;

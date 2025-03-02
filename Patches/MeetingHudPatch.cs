@@ -296,11 +296,14 @@ class CheckForEndVotingPatch
 
             voteLog.Info($"Decision to exiled a player: {exileId} ({GetVoteName(exileId)})");
 
+            var allPlayers = GameData.Instance.AllPlayers.ToArray();
+            var allPlayerCount = allPlayers.Count;
+
             bool braked = false;
             if (tie)
             {
                 byte targetId = byte.MaxValue;
-                foreach (var data in VotingData.Where(x => x.Key < 15 && x.Value == max).ToArray())
+                foreach (var data in VotingData.Where(x => x.Key < allPlayerCount && x.Value == max).ToArray())
                 {
                     if (Tiebreaker.VoteFor.Contains(data.Key))
                     {
@@ -328,23 +331,23 @@ class CheckForEndVotingPatch
                 switch ((TieMode)Options.WhenTie.GetValue())
                 {
                     case TieMode.Default:
-                        exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == exileId);
+                        exiledPlayer = allPlayers.FirstOrDefault(info => info.PlayerId == exileId);
                         break;
                     case TieMode.All:
-                        var exileIds = VotingData.Where(x => x.Key < 15 && x.Value == max).Select(kvp => kvp.Key).ToArray();
+                        var exileIds = VotingData.Where(x => x.Key < allPlayerCount && x.Value == max).Select(kvp => kvp.Key).ToArray();
                         foreach (var playerId in exileIds)
                             GetPlayerById(playerId).SetRealKiller(null);
                         TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Vote, exileIds);
                         exiledPlayer = null;
                         break;
                     case TieMode.Random:
-                        exiledPlayer = GameData.Instance.AllPlayers.ToArray().OrderBy(_ => Guid.NewGuid()).FirstOrDefault(x => VotingData.TryGetValue(x.PlayerId, out int vote) && vote == max);
+                        exiledPlayer = allPlayers.OrderBy(_ => Guid.NewGuid()).FirstOrDefault(x => VotingData.TryGetValue(x.PlayerId, out int vote) && vote == max);
                         tie = false;
                         break;
                 }
             }
             else if (!braked)
-                exiledPlayer = GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => !tie && info.PlayerId == exileId);
+                exiledPlayer = allPlayers.FirstOrDefault(info => !tie && info.PlayerId == exileId);
 
             if (Keeper.IsTargetExiled(exileId))
             {

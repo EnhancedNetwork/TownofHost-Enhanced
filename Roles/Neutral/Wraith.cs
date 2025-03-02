@@ -50,7 +50,7 @@ internal class Wraith : RoleBase
     private void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
         writer.WriteNetObject(_Player);//SetWraithTimer
         writer.Write(InvisTime.GetValueOrDefault(pc.PlayerId, -1).ToString());
         writer.Write(lastTime.GetValueOrDefault(pc.PlayerId, -1).ToString());

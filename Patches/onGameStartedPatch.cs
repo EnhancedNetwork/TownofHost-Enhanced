@@ -230,6 +230,9 @@ internal class ChangeRoleSettings
             //FFA
             FFAManager.Init();
 
+            //Speed Run
+            SpeedRun.Init();
+
             FallFromLadder.Reset();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -441,11 +444,11 @@ internal class StartGameHostPatch
                 Main.PlayerStates[pc.PlayerId].SetMainRole(role);
             }
 
-            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            if (Options.CurrentGameMode is CustomGameMode.FFA)
             {
                 foreach (var pair in RoleAssign.RoleResult)
                 {
-                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
+                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, false, false);
                 }
                 goto EndOfSelectRolePatch;
             }
@@ -459,8 +462,11 @@ internal class StartGameHostPatch
 
             try
             {
-                AddonAssign.InitAndStartAssignLovers();
-                AddonAssign.StartSortAndAssign();
+                if (Options.CurrentGameMode is CustomGameMode.Standard)
+                {
+                    AddonAssign.InitAndStartAssignLovers();
+                    AddonAssign.StartSortAndAssign();
+                }
             }
             catch (Exception error)
             {
@@ -516,6 +522,9 @@ internal class StartGameHostPatch
                     break;
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
+                    break;
+                case CustomGameMode.SpeedRun:
+                    GameEndCheckerForNormal.SetPredicateToSpeedRun();
                     break;
             }
 

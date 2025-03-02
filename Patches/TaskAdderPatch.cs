@@ -96,7 +96,7 @@ class AddTaskButtonPatch
             if ((int)__instance.Role.Role >= 1000)
             {
                 CustomRoles FileCustomRole = (CustomRoles)__instance.Role.Role - 1000;
-                PlayerControl.LocalPlayer.RpcSetCustomRole(FileCustomRole);
+                PlayerControl.LocalPlayer.RpcSetCustomRole(FileCustomRole, false, false);
                 PlayerControl.LocalPlayer.RpcSetRole(FileCustomRole.GetRoleTypes(), true);
                 return false;
             }

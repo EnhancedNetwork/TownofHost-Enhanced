@@ -101,17 +101,15 @@ internal class Cleanser : RoleBase
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {
             if (pid == byte.MaxValue) continue;
+
             var targetid = CleanserTarget[pid];
             if (targetid == byte.MaxValue) continue;
-            var targetpc = Utils.GetPlayerById(targetid);
+
+            var targetpc = targetid.GetPlayer();
             if (targetpc == null) continue;
-            //var allAddons = targetpc.GetCustomSubRoles();
-            targetpc.RpcSetCustomRole(CustomRoles.Cleansed);
+
+            targetpc.RpcSetCustomRole(CustomRoles.Cleansed, false, false);
             Logger.Info($"Removed all the add ons of {targetpc.GetNameWithRole()}", "Cleanser");
-            //foreach (var role in allAddons)
-            //{
-            //    Main.PlayerStates[targetid].RemoveSubRole(role);
-            //}
         }
         Utils.MarkEveryoneDirtySettings();
     }

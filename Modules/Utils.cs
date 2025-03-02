@@ -986,6 +986,10 @@ public static class Utils
                     sb.Append("\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
                 }
                 break;
+            case CustomGameMode.SpeedRun:
+                sb.Clear();
+                sb.Append(SpeedRun.GetGameState(forGameEnd: true));
+                break;
             default: // Normal game
                 foreach (byte id in cloneRoles.ToArray())
                 {
@@ -1490,10 +1494,15 @@ public static class Utils
             if (Options.CurrentGameMode == CustomGameMode.FFA)
             {
                 string oldname = name.ToString();
-                name.Clear();
-                name.Append("<color=#00ffff><size=1.7>");
-                name.Append(GetString("ModeFFA"));
-                name.Append("</size></color>\r\n");
+                name.Clear().Append("<color=#00ffff><size=1.7>");
+                name.Append(GetString("ModeFFA")).Append("</size></color>\r\n");
+                name.Append(oldname);
+            }
+            if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+            {
+                string oldname = name.ToString();
+                name.Clear().Append("<color=#00ffff><size=1.7>");
+                name.Append(GetString("ModeSpeedRun")).Append("</size></color>\r\n");
                 name.Append(oldname);
             }
         }

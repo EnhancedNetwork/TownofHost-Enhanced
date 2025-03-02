@@ -1,4 +1,3 @@
-using System;
 using System.Text;
 using TMPro;
 using TOHE.Roles.AddOns.Common;
@@ -229,7 +228,7 @@ class SetHudActivePatch
         if (GameStates.IsLobby || !isActive) return;
         if (player == null) return;
 
-        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
+        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine) || Options.CurrentGameMode is not CustomGameMode.Standard)
             __instance.ReportButton.ToggleVisible(false);
 
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))
@@ -314,18 +313,18 @@ class TaskPanelBehaviourPatch
                 case CustomGameMode.Standard:
 
                     var lines = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
-                    StringBuilder sb2 = new();
+                    StringBuilder sbStandard = new();
                     foreach (var eachLine in lines)
                     {
                         var line = eachLine.Trim();
-                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sb2.Length < 1 && !line.Contains('(')) continue;
-                        sb2.Append(line + "\r\n");
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sbStandard.Length < 1 && !line.Contains('(')) continue;
+                        sbStandard.Append(line + "\r\n");
                     }
 
-                    if (sb2.Length > 1)
+                    if (sbStandard.Length > 1)
                     {
-                        var text = sb2.ToString().TrimEnd('\n').TrimEnd('\r');
-                        if (!Utils.HasTasks(player.Data, false) && sb2.ToString().Any(s => s == '\n'))
+                        var text = sbStandard.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sbStandard.ToString().Any(s => s == '\n'))
                             text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
                         sb.Append($"\r\n\r\n<size=85%>{text}</size>");
                     }
@@ -361,6 +360,29 @@ class TaskPanelBehaviourPatch
 
                     sbFinal.Clear();
                     sbFinal.Append($"<size=70%>{sb}</size>");
+                    break;
+                case CustomGameMode.SpeedRun:
+                    var lines2 = taskText.Split("\r\n</color>\n")[0].Split("\r\n\n")[0].Split("\r\n");
+                    StringBuilder sbSpeedRun = new();
+                    foreach (var eachLine in lines2)
+                    {
+                        var line = eachLine.Trim();
+                        if ((line.StartsWith("<color=#FF1919FF>") || line.StartsWith("<color=#FF0000FF>")) && sbSpeedRun.Length < 1 && !line.Contains('(')) continue;
+                        sbSpeedRun.Append(line + "\r\n");
+                    }
+
+                    if (sbSpeedRun.Length > 1)
+                    {
+                        var text = sbSpeedRun.ToString().TrimEnd('\n').TrimEnd('\r');
+                        if (!Utils.HasTasks(player.Data, false) && sbSpeedRun.ToString().Any(s => s == '\n'))
+                            text = $"{Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()).ShadeColor(0.2f), GetString("FakeTask"))}\r\n{text}";
+                        sb.Append($"\r\n\r\n<size=85%>{text}</size>");
+                    }
+
+                    sbFinal.Clear();
+                    sbFinal.Append(sb);
+                    sbFinal.Append($"\r\n\r\n<size=80%>{SpeedRun.GetGameState()}</size>");
+
                     break;
             }
 

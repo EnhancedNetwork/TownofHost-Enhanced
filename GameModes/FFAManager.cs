@@ -1,5 +1,4 @@
 using Hazel;
-using System;
 using System.Text;
 using TOHE.Modules;
 using UnityEngine;
@@ -38,6 +37,10 @@ internal static class FFAManager
 
     public static void SetupCustomOption()
     {
+        TextOptionItem.Create(10000030, "MenuTitle.FreeForAll", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.FFA)
+            .SetColor(new Color32(0, 255, 165, byte.MaxValue));
+
         FFA_GameTime = IntegerOptionItem.Create(67_223_001, "FFA_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
@@ -138,7 +141,7 @@ internal static class FFAManager
     {
         var name = reader.ReadString();
         NameNotify.Remove(PlayerControl.LocalPlayer.PlayerId);
-        if (!String.IsNullOrEmpty(name))
+        if (!string.IsNullOrEmpty(name))
             NameNotify.Add(PlayerControl.LocalPlayer.PlayerId, (name, 0));
     }
     private static Dictionary<byte, (string TEXT, long TIMESTAMP)> NameNotify = [];
@@ -411,6 +414,15 @@ internal static class FFAManager
         arrows.Append(CustomRoles.Killer.GetColoredTextByRole(arrow));
 
         return arrows.ToString();
+    }
+
+    public static void AppendFFAKcount(StringBuilder builder)
+    {
+        int AliveFFAKiller = Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Killer));
+        int DeadFFASpectator = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Killer) && !x.IsAlive());
+
+        builder.Append(string.Format(GetString("Remaining.FFAKiller"), AliveFFAKiller));
+        builder.Append(string.Format("\n\r" + GetString("Remaining.FFASpectator"), DeadFFASpectator));
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]

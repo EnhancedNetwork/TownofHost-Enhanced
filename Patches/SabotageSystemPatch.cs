@@ -3,7 +3,6 @@ using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -347,6 +346,11 @@ public class SabotageSystemPatch
             {
                 if (Camouflager.CantPressCommsSabotageButton(player))
                     return false;
+            }
+
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+            {
+                return false;
             }
 
             return player.CanUseSabotage();

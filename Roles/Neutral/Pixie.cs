@@ -1,12 +1,12 @@
 using Hazel;
 using InnerNet;
 using System.Text;
-using UnityEngine;
+using TOHE.Modules;
 using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using TOHE.Modules;
 
 namespace TOHE.Roles.Neutral;
 internal class Pixie : RoleBase
@@ -125,7 +125,7 @@ internal class Pixie : RoleBase
         NotifyRoles(SpecifySeer: killer, ForceLoop: true);
         if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
         SetKillCooldown(killer.PlayerId);
-        
+
         return false;
     }
 

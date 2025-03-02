@@ -216,6 +216,7 @@ internal class Deathpact : RoleBase
     {
         if (deathpact == null || target == null || target.Data.Disconnected) return;
         if (!target.IsAlive()) return;
+        if (target.IsTransformedNeutralApocalypse()) return;
 
         target.SetDeathReason(PlayerState.DeathReason.Suicide);
         target.RpcMurderPlayer(target);

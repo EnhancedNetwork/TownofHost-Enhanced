@@ -169,11 +169,9 @@ internal class Merchant : RoleBase
 
             PlayerControl target = AllAlivePlayer.RandomElement();
 
-            target.RpcSetCustomRole(addon);
+            target.RpcSetCustomRole(addon, false, false);
             target.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantAddonSell")));
             player.Notify(CustomRoles.Merchant.GetColoredTextByRole(GetString("MerchantAddonDelivered")));
-
-            target.AddInSwitchAddons(target, addon);
 
             addonsSold[player.PlayerId] += 1;
         }

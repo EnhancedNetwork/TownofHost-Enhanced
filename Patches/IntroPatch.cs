@@ -130,6 +130,15 @@ class SetUpRoleTextPatch
                 __instance.RoleBlurbText.color = color;
                 __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
             }
+            else if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+            {
+                var color = ColorUtility.TryParseHtmlString("#fffb00", out var c) ? c : new(255, 255, 255, 255);
+                __instance.YouAreText.transform.gameObject.SetActive(false);
+                __instance.RoleText.text = GetString("SpeedRun");
+                __instance.RoleText.color = color;
+                __instance.RoleBlurbText.color = color;
+                __instance.RoleBlurbText.text = GetString("RunnerInfo");
+            }
             else
             {
                 if (!role.IsVanilla())
@@ -516,6 +525,12 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.VentEnterSound;
                 break;
 
+            case CustomRoles.Dictator:
+            case CustomRoles.Mayor:
+            case CustomRoles.Swapper:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HudManager>.Instance.Chat.warningSound;
+                break;
+
             case CustomRoles.Saboteur:
             case CustomRoles.Inhibitor:
             case CustomRoles.Mechanic:
@@ -528,6 +543,12 @@ class BeginCrewmatePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = FastDestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                 break;
 
+            case CustomRoles.ChiefOfPolice:
+            case CustomRoles.Deputy:
+            case CustomRoles.Sheriff:
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherYeehawSfx;
+                break;
+
             case CustomRoles.GM:
                 __instance.TeamTitle.text = Utils.GetRoleName(role);
                 __instance.TeamTitle.color = Utils.GetRoleColor(role);
@@ -537,8 +558,6 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.text = GetString("SubText.GM");
                 break;
 
-            case CustomRoles.ChiefOfPolice:
-            case CustomRoles.Sheriff:
             case CustomRoles.Veteran:
             case CustomRoles.Knight:
             case CustomRoles.KillingMachine:
@@ -603,8 +622,16 @@ class BeginCrewmatePatch
             __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
         }
 
+        if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+        {
+            __instance.TeamTitle.text = GetString("SpeedRun");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 251, 0, byte.MaxValue);
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("RunnerInfo");
+        }
+
         // I hope no one notices this in code
-        // unfortunately niko noticed while fixing others' shxt
         if (Input.GetKey(KeyCode.RightShift))
         {
             __instance.TeamTitle.text = "Damn!!";
@@ -846,6 +873,12 @@ class IntroCutsceneDestroyPatch
                         }, 2f, $"Fix Kill Cooldown Task for playerId {pc.PlayerId}");
                     }
                 }
+            }
+
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+            {
+                SpeedRun.StartedAt = Utils.GetTimeStamp();
+                SpeedRun.RpcSyncSpeedRunStates();
             }
 
             foreach (var player in Main.AllPlayerControls)
