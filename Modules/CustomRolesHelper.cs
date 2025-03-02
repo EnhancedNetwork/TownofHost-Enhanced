@@ -68,7 +68,7 @@ public static class CustomRolesHelper
 
         if (player == null) return false;
 
-        if (Options.CurrentGameMode is CustomGameMode.SpeedRun) return true;
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun or CustomGameMode.ShapeshiftWars) return true;
 
         var customRole = player.GetCustomRole();
         return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
