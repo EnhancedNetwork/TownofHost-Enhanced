@@ -89,8 +89,7 @@ internal class Admirer : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        bool recruit = AbilityLimit > 0;
-        if (!recruit) return false;
+        if (killer.GetAbilityUseLimit() < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
@@ -100,7 +99,7 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (recruit)
+        if (killer.GetAbilityUseLimit() > 0)
         {
             if (target.CanBeRecruitedBy(killer))
             {
