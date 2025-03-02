@@ -121,39 +121,40 @@ class SetUpRoleTextPatch
         {
             PlayerControl localPlayer = PlayerControl.LocalPlayer;
             CustomRoles role = localPlayer.GetCustomRole();
-            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            Color color;
+            switch (Options.CurrentGameMode)
             {
-                var color = ColorUtility.TryParseHtmlString("#00ffff", out var c) ? c : new(255, 255, 255, 255);
-                __instance.YouAreText.transform.gameObject.SetActive(false);
-                __instance.RoleText.text = "FREE FOR ALL";
-                __instance.RoleText.color = color;
-                __instance.RoleBlurbText.color = color;
-                __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
-            }
-            else if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
-            {
-                var color = ColorUtility.TryParseHtmlString("#fffb00", out var c) ? c : new(255, 255, 255, 255);
-                __instance.YouAreText.transform.gameObject.SetActive(false);
-                __instance.RoleText.text = GetString("SpeedRun");
-                __instance.RoleText.color = color;
-                __instance.RoleBlurbText.color = color;
-                __instance.RoleBlurbText.text = GetString("RunnerInfo");
-            }
-            else
-            {
-                if (!role.IsVanilla())
-                {
-                    __instance.YouAreText.color = Utils.GetRoleColor(role);
-                    __instance.RoleText.text = Utils.GetRoleName(role);
-                    __instance.RoleText.color = Utils.GetRoleColor(role);
-                    __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
-                    __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
-                }
+                case CustomGameMode.FFA:
+                    color = ColorUtility.TryParseHtmlString("#00ffff", out var newColorFFA) ? newColorFFA : new(255, 255, 255, 255);
+                    __instance.YouAreText.transform.gameObject.SetActive(false);
+                    __instance.RoleText.text = "FREE FOR ALL";
+                    __instance.RoleText.color = color;
+                    __instance.RoleBlurbText.color = color;
+                    __instance.RoleBlurbText.text = "KILL EVERYONE TO WIN";
+                    break;
+                case CustomGameMode.SpeedRun:
+                    color = ColorUtility.TryParseHtmlString("#fffb00", out var newColorSpeedRun) ? newColorSpeedRun : new(255, 255, 255, 255);
+                    __instance.YouAreText.transform.gameObject.SetActive(false);
+                    __instance.RoleText.text = GetString("SpeedRun");
+                    __instance.RoleText.color = color;
+                    __instance.RoleBlurbText.color = color;
+                    __instance.RoleBlurbText.text = GetString("RunnerInfo");
+                    break;
+                default:
+                    if (!role.IsVanilla())
+                    {
+                        __instance.YouAreText.color = Utils.GetRoleColor(role);
+                        __instance.RoleText.text = Utils.GetRoleName(role);
+                        __instance.RoleText.color = Utils.GetRoleColor(role);
+                        __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
+                        __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
+                    }
 
-                foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
-                    __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
+                    foreach (var subRole in Main.PlayerStates[localPlayer.PlayerId].SubRoles.ToArray())
+                        __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(subRole), GetString($"{subRole}Info"));
 
-                __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
+                    __instance.RoleText.text += Utils.GetSubRolesText(localPlayer.PlayerId, false, true);
+                    break;
             }
         }, 0.0001f, "Override Role Text");
 
@@ -613,22 +614,22 @@ class BeginCrewmatePatch
             __instance.ImpostorText.text = GetString("SubText.Madmate");
         }
 
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            __instance.TeamTitle.text = "FREE FOR ALL";
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
-        }
-
-        if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
-        {
-            __instance.TeamTitle.text = GetString("SpeedRun");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 251, 0, byte.MaxValue);
-            PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
-            __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = GetString("RunnerInfo");
+            case CustomGameMode.FFA:
+                __instance.TeamTitle.text = "FREE FOR ALL";
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(0, 255, 255, byte.MaxValue);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = "KILL EVERYONE TO WIN";
+                break;
+            case CustomGameMode.SpeedRun:
+                __instance.TeamTitle.text = GetString("SpeedRun");
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 251, 0, byte.MaxValue);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = GetString("RunnerInfo");
+                break;
         }
 
         // I hope no one notices this in code

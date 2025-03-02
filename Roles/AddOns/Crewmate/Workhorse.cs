@@ -61,10 +61,10 @@ public class Workhorse : IAddon
     public static (bool, int, int) TaskData => (false, NumLongTasks, NumShortTasks);
     private static bool IsAssignTarget(PlayerControl pc)
     {
+        if (CurrentGameMode != CustomGameMode.Standard) return false;
         if (!pc.IsAlive() || IsThisRole(pc.PlayerId)) return false;
         if (pc.Is(CustomRoles.Snitch) && !OptionSnitchCanBeWorkhorse.GetBool()) return false;
         if (pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.Lazy)) return false;
-        if (pc.Is(CustomRoles.Runner)) return false;
 
         var taskState = pc.GetPlayerTaskState();
         if (taskState.CompletedTasksCount < taskState.AllTasksCount) return false;
