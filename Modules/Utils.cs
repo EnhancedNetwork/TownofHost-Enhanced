@@ -2201,9 +2201,9 @@ public static class Utils
                         if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
-                        if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
+                        if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && (CovenManager.HasNecronomicon(target)))
                         {
-                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
+                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Coven), "♣"));
                         }
 
                         if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
