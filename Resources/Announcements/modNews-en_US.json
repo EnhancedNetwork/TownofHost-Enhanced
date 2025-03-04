@@ -362,6 +362,41 @@
         "\n\n★ Welcome to Town of Host: Enhanced v2.1.0 ★"
       ],
       "Date": "2024-11-3T12:50:00Z"
+    },
+    {
+      "Number": "100014",
+      "Title": "Town of Host Optimized v1.5.0",
+      "Subtitle": "Update with the newest roles and features",
+      "Short": "TOHO v1.5.0",
+      "Body": [
+        "<b>Based on Town of Host Optimized v1.4.2</b>",
+        "\n\n<b><u>★ New Roles ★</b></u>",
+        "\n<b>Sentinel</b> (Crewmate Killing)",
+        "\n<b>Sorcerer</b> (Neutral Evil)",
+        "\n<b>Witch Doctor</b> (Coven Power) TOHO's first Coven role!",
+        "\n<b>Rulebook</b> (Neutral Killing)",
+        "\n<b>Predator</b> (Neutral Evil)",
+        "\n\n<b><u>★ New Features ★</b></u>",
+        "\n<b>Anomalies</b> (/anomalyinfo)",
+        "\n<b>Discord Status Icon</b> (will be customizeable in v1.7.0)",
+        "\n<b>Medic role base changer</b> (from TOHE, ported by PEPPERcula)",
+        "\n<b>Task Manager rework</b> (from TOHE, ported by PEPPERcula)",
+        "\n\n<b><u>★ Bug Fixes ★</b></u>",
+        "\n<b>/spectate fix</b>",
+        "\n<b>Multiple Cops & Robbers fixes</b>",
+        "\n<b>Sacrificist X Rebirth incompatible now</b>",
+        "\n<b>Gambler not dying when Gamble fails</b>",
+        "\n<b>EAC banning Bankrupt for sabotaging</b>",
+        "\n\n<b><u>★ In Case you Missed It ★</b></u> (roles in the LAST major release)",
+        "\n<b>Gambler</b> (Mixed Add-on)",
+        "\n<b>Fragile Hunter</b> (Misc Add-on)",
+        "\n<b>Investor</b> (Madmate)",
+        "\n<b>Astral</b> (Crewmate Support)",
+        "\n<b>Slayer</b> (Neutral Killer)",
+        "\n<b>Contaminator</b> (Neutral Killer)",
+        "\n\n★ Welcome to Town of Host Optimized v1.5.0 ★"
+      ],
+      "Date": "2025-3-3T13:00:00Z"
     }
   ]
 }
