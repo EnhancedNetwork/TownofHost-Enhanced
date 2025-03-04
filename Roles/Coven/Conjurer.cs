@@ -47,7 +47,7 @@ internal class Conjurer : CovenManager
         NecroRadius = FloatOptionItem.Create(Id + 12, "ConjurerNecroRadius", new(0.5f, 100f, 0.5f), 3f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Conjurer])
             .SetValueFormat(OptionFormat.Multiplier);
         CovenDiesInBlast = BooleanOptionItem.Create(Id + 13, "ConjurerCovenDies", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Conjurer]);
-        ResetTargetAfterMeeting = BooleanOptionItem.Create(Id + 13, "ConjurerResetTarget", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Conjurer]);
+        ResetTargetAfterMeeting = BooleanOptionItem.Create(Id + 15, "ConjurerResetTarget", false, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Conjurer]);
     }
     public override void Init()
     {
