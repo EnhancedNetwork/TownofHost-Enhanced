@@ -1904,7 +1904,7 @@ public static class Options
 
 
         // Meeting Settings
-        TextOptionItem.Create(10000030, "MenuTitle.Meeting", TabGroup.ModSettings)
+        TextOptionItem.Create(10000034, "MenuTitle.Meeting", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));
         // Sync Button
