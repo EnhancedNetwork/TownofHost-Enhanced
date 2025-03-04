@@ -4027,7 +4027,7 @@
   "Remaining.SpeedRunAliveKiller": "<b>{0}</b> Runner finished their tasks and are murdering others!",
   "Remaining.SpeedRunAliveRunner": "<b>{0}</b> Runner are rushing for a chance of life.",
   "Remaining.SpeedRunDeadKiller": "<b>{0}</b> task-finished Runner were killed in the merciless war...",
-  "Remaining.SpeedRunDeadRunner": "<b>{0}</b> Runner died with uncompleted goal...",
+  "Remaining.SpeedRunDeadRunner": "<b>{0}</b> Runner est mort avec un objectif inachevé...",
   "ChiefOfPoliceSkillCooldown": "Cooldown for recruiting <color=#ffb347>Sheriffs</color>",
   "PolicCanImpostor": "Can recruit <color=#ff1919>Impostor</color>",
   "PolicCanNeutral": "Can recruit <color=#7f8c8d>Neutral</color>",
