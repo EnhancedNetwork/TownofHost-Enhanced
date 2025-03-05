@@ -56,15 +56,25 @@ class GameEndCheckerForNormal
         predicate.CheckForEndGame(out reason);
 
         // FFA
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
-            {
-                ShipStatus.Instance.enabled = false;
-                StartEndGame(reason);
-                predicate = null;
-            }
-            return false;
+            case CustomGameMode.FFA:
+                if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
+                {
+                    ShipStatus.Instance.enabled = false;
+                    StartEndGame(reason);
+                    predicate = null;
+                }
+                return false;
+            case CustomGameMode.SpeedRun:
+                if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
+                {
+                    SpeedRun.RpcSyncSpeedRunStates();
+                    ShipStatus.Instance.enabled = false;
+                    StartEndGame(reason);
+                    predicate = null;
+                }
+                return false;
         }
 
         // Start end game
@@ -590,6 +600,7 @@ class GameEndCheckerForNormal
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
+    public static void SetPredicateToSpeedRun() => predicate = new SpeedRunGameEndPredicate();
 
 
     // ===== Check Game End =====

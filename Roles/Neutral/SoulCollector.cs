@@ -5,7 +5,6 @@ using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -65,7 +64,7 @@ internal class SoulCollector : RoleBase
     {
         byte target = reader.ReadByte();
 
-        TargetId =  target;
+        TargetId = target;
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)

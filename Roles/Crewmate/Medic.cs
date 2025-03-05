@@ -191,7 +191,7 @@ internal class Medic : RoleBase
     private void ChangeToCrewmate()
     {
         if (_Player == null) return;
-        
+
         var medic = _Player;
         GiveTasks = true;
 
