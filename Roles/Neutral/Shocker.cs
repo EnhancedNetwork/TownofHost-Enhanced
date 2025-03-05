@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -184,6 +183,8 @@ internal class Shocker : RoleBase
 
         if (!ShockerCanShockHimself.GetBool() && playerId == player.PlayerId)
             return;
+
+        if (player.IsTransformedNeutralApocalypse()) return;
 
         if (isShocking)
         {

@@ -208,13 +208,24 @@ class SetEverythingUpPatch
         string AdditionalWinnerText = "";
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
-            __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
-            WinnerText.text = Main.AllPlayerNames[winnerId] + " wins!";
-            WinnerText.color = Main.PlayerColors[winnerId];
-            goto EndOfText;
+            case CustomGameMode.FFA:
+            {
+                var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+                __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
+                WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
+                WinnerText.color = Main.PlayerColors[winnerId];
+                goto EndOfText;
+            }
+            case CustomGameMode.SpeedRun:
+            {
+                var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+                __instance.BackgroundBar.material.color = new Color32(255, 251, 0, 255);
+                WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
+                WinnerText.color = Main.PlayerColors[winnerId];
+                goto EndOfText;
+            }
         }
 
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
@@ -355,6 +366,12 @@ class SetEverythingUpPatch
                     listFFA.Sort();
                     foreach (var id in listFFA.Where(x => EndGamePatch.SummaryText.ContainsKey(x.Item2)))
                         sb.Append($"\n  ").Append(EndGamePatch.SummaryText[id.Item2]);
+                    break;
+                }
+            case CustomGameMode.SpeedRun:
+                {
+                    sb.Clear();
+                    sb.Append(SpeedRun.GetGameState(forGameEnd: true));
                     break;
                 }
             default: // Normal game

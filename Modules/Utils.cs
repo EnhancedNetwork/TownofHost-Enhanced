@@ -988,6 +988,10 @@ public static class Utils
                     sb.Append($"\n　 ").Append(EndGamePatch.SummaryText[id.Item2]);
                 }
                 break;
+            case CustomGameMode.SpeedRun:
+                sb.Clear();
+                sb.Append(SpeedRun.GetGameState(forGameEnd: true));
+                break;
             default: // Normal game
                 foreach (byte id in cloneRoles.ToArray())
                 {
@@ -1677,6 +1681,8 @@ public static class Utils
             }
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
+            if (Options.CurrentGameMode == CustomGameMode.SpeedRun)
+                name = $"<color=#fffb00><size=1.7>{GetString("ModeSpeedRun")}</size></color>\r\n" + name;
         }
 
 
@@ -2086,7 +2092,7 @@ public static class Utils
                 }
 
                 bool IsDisplayInfo = false;
-                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode != CustomGameMode.FFA)
+                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode is not CustomGameMode.FFA and not CustomGameMode.SpeedRun)
                 {
                     IsDisplayInfo = true;
                     var SeerRoleInfo = seer.GetRoleInfo();
