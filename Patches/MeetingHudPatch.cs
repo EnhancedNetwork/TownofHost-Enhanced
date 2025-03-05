@@ -736,8 +736,10 @@ class CastVotePatch
         }
 
         // Coven Necronomicon Voting
-
-        if (suspectPlayerId == 253 && voter.IsPlayerCoven())
+        if (voter.IsPlayerCoven() && Main.AllAlivePlayerControls.Where(x => x.IsPlayerCoven()).Count() == 1) {
+            Logger.Info("Solo Coven, Necronomicon Votes will not Activate", "CastVotePatch");
+        }
+        else if (suspectPlayerId == 253 && voter.IsPlayerCoven())
         {
             if (!voter.GetRoleClass().HasVoted)
             {
