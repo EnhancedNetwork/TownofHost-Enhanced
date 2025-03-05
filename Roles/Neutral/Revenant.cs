@@ -26,6 +26,7 @@ internal class Revenant : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         CustomRoles role = killer.GetCustomRole();
+        if (role.IsTNA()) return false;
 
         if (killer.Is(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
 

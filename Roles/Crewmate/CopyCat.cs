@@ -68,7 +68,7 @@ internal class CopyCat : RoleBase
             {
                 if (!pc.HasGhostRole())
                 {
-                    pc.RpcSetCustomRole(CustomRoles.CopyCat);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat, false, false);
                 }
                 continue;
             }
@@ -81,10 +81,10 @@ internal class CopyCat : RoleBase
                 {
                     pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcChangeRoleBasis(CustomRoles.CopyCat);
-                    pc.RpcSetCustomRole(CustomRoles.CopyCat, checkAddons: false);
+                    pc.RpcSetCustomRole(CustomRoles.CopyCat, false, false);
                     foreach (var addon in OldAddons[pc.PlayerId])
                     {
-                        pc.RpcSetCustomRole(addon, checkAddons: false);
+                        pc.RpcSetCustomRole(addon, false, false);
                     }
                 }
             }
@@ -157,7 +157,7 @@ internal class CopyCat : RoleBase
             if (role != CustomRoles.CopyCat)
             {
                 killer.RpcChangeRoleBasis(role);
-                killer.RpcSetCustomRole(role, checkAddons: false);
+                killer.RpcSetCustomRole(role, false, false);
                 killer.GetRoleClass()?.OnAdd(killer.PlayerId);
                 killer.SyncSettings();
                 Dictionary<byte, List<CustomRoles>> CurrentAddons = new();

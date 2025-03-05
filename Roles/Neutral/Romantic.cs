@@ -356,7 +356,7 @@ internal class VengefulRomantic : RoleBase
         hud.KillButton.OverrideText(GetString("VengefulRomanticButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticKill");
-    
+
     public override string GetProgressText(byte playerId, bool cooms)
     {
         var player = Utils.GetPlayerById(playerId);
