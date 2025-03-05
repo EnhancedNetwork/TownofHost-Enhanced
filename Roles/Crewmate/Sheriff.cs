@@ -104,7 +104,7 @@ internal class Sheriff : RoleBase
         KillTargetOptions[role].ReplacementDictionary = replacementDic;
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = IsUseKillButton(Utils.GetPlayerById(id)) ? CurrentKillCooldown : 300f;
+    public override void SetKillCooldown(byte id) => KillCooldown.GetFloat();
 
     public override bool CanUseKillButton(PlayerControl pc) => IsUseKillButton(pc);
     public static bool IsUseKillButton(PlayerControl pc)
