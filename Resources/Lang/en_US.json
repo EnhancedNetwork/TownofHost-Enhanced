@@ -4556,5 +4556,6 @@
   "Predator": "Predator",
   "PredatorInfo": "Eliminate your prey",
   "PredatorInfoLong": "(Neutrals):\nAs the Predator, you are assigned 3 prey. To hunt for your prey, use your kill button on any player. If their name remains white they are not one of the prey. If their name turns orange they are one of the prey. If you use your kill button on a player with an Orange name, they will die. Eliminate all the prey to win.",
-  "HuntCooldown342": "Hunt cooldown"
+  "HuntCooldown342": "Hunt cooldown",
+  "ValkyrieBInfo": "Come back to life with your protect button"
 }
