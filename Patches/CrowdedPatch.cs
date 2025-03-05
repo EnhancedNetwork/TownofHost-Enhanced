@@ -408,9 +408,25 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 
     [HideFromIl2Cpp]
     public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
-    public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
+    public override int MaxPageIndex
+    {
+        get
+        {
+            if (maxPageIndex == -1)
+            {
+                maxPageIndex = (Targets.Count() - 1) / MaxPerPage;
+            }
+            return maxPageIndex;
+        }
+    }
 
-    public override void Start() => OnPageChanged();
+    private int maxPageIndex = -1;
+
+    public override void Start()
+    {
+        maxPageIndex = -1;
+        OnPageChanged();
+    }
 
     public override void Update()
     {

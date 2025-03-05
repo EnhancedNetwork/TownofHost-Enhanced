@@ -3508,7 +3508,7 @@
   "ShieldIsOneTimeUse": "Shield breaks after one kill attempt",
   "BenefactorTaskMarked": "Task marked successfully",
   "BenefactorTargetGotShield": "You got a shield by Benefactor",
-  "PirateTryHideMsg": "",
+  "PirateTryHideMsg": "Hide <color=#EDC240>Pirate</color>'s commands",
   "SuccessfulDuelsToWin": "Number of successful duels needed to win",
   "PirateMeetingMsg": "Duel with your target.\n\nDuel command:\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\n\nYou win the Duel if you choose the same option as the target",
   "PirateTargetMeetingMsg": "The <color=#EDC240>Pirate</color> chose t' duel ye!\nDuel wit' <color=#00a5ff>honor</color> or <color=#ff1919>die</color> o' shame.\n\n Duel command:\n⦿ /duel 0\n⦿ /duel 1\n⦿ /duel 2\n\nIf the <color=#EDC240>Pirate</color> chooses the same option as you or you don't participate, <b>you'll <color=#ff1919>die</color></b>",
