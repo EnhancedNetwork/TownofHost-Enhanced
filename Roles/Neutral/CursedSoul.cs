@@ -88,7 +88,7 @@ internal class CursedSoul : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : string.Empty;
 
-    private static bool CanBeSoulless(PlayerControl pc)
+    public static bool CanBeSoulless(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
