@@ -2001,7 +2001,7 @@ public static class Utils
                                     TargetMark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
 
 
-                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && (CovenManager.HasNecronomicon(target)))
+                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && CovenManager.HasNecronomicon(target))
                                 {
                                     TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                                 }
