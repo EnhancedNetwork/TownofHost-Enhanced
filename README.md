@@ -88,6 +88,7 @@
 > 
 ### :star: [EHR (Formerly TOHE+)](https://github.com/Gurge44/EndlessHostRoles)
 >
+> - /spectate command
 > - Provided roles: Pyromaniac, Necromancer, Head Hunter (Huntsman), Alchemist, and others
 > - Game Mode: FFA
 > - Improved Role Summary
