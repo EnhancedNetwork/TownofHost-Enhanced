@@ -443,6 +443,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
+        int badnum = Main.AllAlivePlayerControls.Count(x => x != exiledPlayer.Object && !Main.AfterMeetingDeathPlayers.ContainsKey(x.PlayerId) && x.GetCountTypes() is not CountTypes.None and not CountTypes.OutOfGame and not CountTypes.Crew); //Number of alive players that keep game going
 
 
         if (CustomRoles.Bard.RoleExist())
@@ -457,7 +458,7 @@ class CheckForEndVotingPatch
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var pc_role = pc.GetCustomRole();
-            if (pc_role.IsImpostor() && pc != exiledPlayer.Object)
+            if (pc_role.IsImpostorTeamV3() && pc != exiledPlayer.Object)
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
@@ -472,13 +473,25 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee))
+                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                {
+                    if (player.Is(CustomRoles.Madmate))
+                        name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
+                    else if (player.Is(CustomRoles.Admired))
+                        name = string.Format(GetString("IsGood"), realName);
+                    else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
+                        name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
+                    else if (player.Is(CustomRoles.Enchanted))
+                        name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+                }
+
+                else if (player.GetCustomRole().IsImpostorTeamV3())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor))
+                else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 else if (player.GetCustomRole().IsCoven())
@@ -486,17 +499,29 @@ class CheckForEndVotingPatch
 
                 break;
             case 2:
-                name = string.Format(GetString("PlayerIsRole"), realName, coloredRole);
+                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() ? coloredRole : player.GetCustomRole().ToColoredString();
+                name = string.Format(GetString("PlayerIsRole"), realName, ejectedRoleText);
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Madmate))
+                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                    {
+                        if (player.Is(CustomRoles.Madmate))
+                            name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
+                        else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
+                            name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
+                        else if (player.Is(CustomRoles.Admired))
+                            name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
+                        else if (player.Is(CustomRoles.Enchanted))
+                            name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
+                    }
+                    else if (player.GetCustomRole().IsImpostorTeamV3())
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Charmed))
+                    else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.GetCustomRole().IsCrewmate())
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
-                    else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
+                    else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }
@@ -512,21 +537,43 @@ class CheckForEndVotingPatch
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
             name += "\n";
-            string comma = neutralnum > 0 ? "" : "";
-            if (impnum == 0) name += GetString("NoImpRemain") + comma;
-            if (impnum == 1) name += GetString("OneImpRemain") + comma;
-            if (impnum == 2) name += GetString("TwoImpRemain") + comma;
-            if (impnum == 3) name += GetString("ThreeImpRemain") + comma;
-            //    else name += string.Format(GetString("ImpRemain"), impnum) + comma;
-            if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
-                if (neutralnum == 1)
-                    name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
-                else
-                    name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
-            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                name += string.Format(GetString("ApocRemain"), apocnum) + comma;
-            if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
-                name += string.Format(GetString("CovenRemain"), covennum) + comma;
+            if (badnum <= 0)
+                name += GetString("NoImpRemain");
+            else
+            {
+                name += impnum switch
+                {
+                    1 => GetString("OneImpRemain"),
+                    > 1 => string.Format(GetString("ImpRemain"), impnum),
+                    _ => string.Empty
+                };
+                if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
+                    name += "\n" + neutralnum switch
+                    {
+                        1 => GetString("OneNeutralRemain"),
+                        > 1 => string.Format(GetString("NeutralRemain"), neutralnum),
+                        _ => string.Empty
+                    };
+                if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                    name += "\n" + apocnum switch
+                    {
+                        1 => GetString("OneApocRemain"),
+                        > 1 => string.Format(GetString("ApocRemain"), apocnum),
+                        _ => string.Empty
+                    };
+                if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
+                    name += "\n" + covennum switch
+                    {
+                        1 => GetString("OneCovenRemain"),
+                        > 1 => string.Format(GetString("CovenRemain"), covennum),
+                        _ => string.Empty
+                    };
+                if (impnum <= 0
+                    && (neutralnum <= 0 || !Options.ShowNKRemainOnEject.GetBool())
+                    && (apocnum <= 0 || !Options.ShowNARemainOnEject.GetBool())
+                    && (covennum <= 0 || !Options.ShowCovenRemainOnEject.GetBool()))
+                    name += GetString("NoImpRemain") + "\n" + GetString("PotentialThreat");
+            }
         }
 
     EndOfSession:
