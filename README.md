@@ -33,7 +33,8 @@
 **Credit to these mods and their developers for the code and help:**
 ### :star: [TOH: Enhanced](https://github.com/EnhancedNetwork/TownofHost-Enhanced)
 >
-> - TOHO was forked from Town of Host: Enhacned.
+> - TOHO was forked from Town of Host: Enhacned.=
+> - Game Mode: Cops & Robbers (Ryuk but unmerged PR)
 >
 ### :star: [TOHRE](https://github.com/Loonie-Toons/) 
 > 
@@ -91,7 +92,6 @@
 > - Game Mode: FFA
 > - Improved Role Summary
 > - Dark Theme
-> - Game Mode: Cops & Robbers
 > - Improved Role Spawns
 > - Improve text box (TextBoxPatch.cs)
 > - Some ideas to improve performance
