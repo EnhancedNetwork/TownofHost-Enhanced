@@ -2093,7 +2093,7 @@ public static class Utils
                 }
 
                 bool IsDisplayInfo = false;
-                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode is not CustomGameMode.FFA and not CustomGameMode.SpeedRun)
+                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode == CustomGameMode.Standard)
                 {
                     IsDisplayInfo = true;
                     var SeerRoleInfo = seer.GetRoleInfo();
