@@ -2030,10 +2030,18 @@ internal class ChatCommands
     }
     public static void SendRolesInfo(string role, byte playerId, bool isDev = false, bool isUp = false)
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
-            return;
+            case CustomGameMode.FFA:
+            {
+                Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+                return;
+            }
+            case CustomGameMode.SpeedRun:
+            {
+                Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
+                return;
+            }
         }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) _ = role.Replace("/r", string.Empty);
@@ -3561,7 +3569,7 @@ class ChatUpdatePatch
 
         if (Main.DarkTheme.Value)
         {
-            var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
+            var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
             chatBubble.TextArea.overrideColorTags = false;
             chatBubble.TextArea.color = Color.white;
             chatBubble.Background.color = Color.black;
