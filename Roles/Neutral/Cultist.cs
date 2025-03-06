@@ -97,7 +97,7 @@ internal class Cultist : RoleBase
             Logger.Info(target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
             return false;
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CultistInvalidTarget")));
+        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));
         return false;
     }
     public static bool TargetKnowOtherTargets => TargetKnowOtherTarget.GetBool();
@@ -117,7 +117,7 @@ internal class Cultist : RoleBase
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
             (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven()))
-            && (!pc.Is(CustonRoles.Cultist) || pc.GetBetrayalAddon(true) != CustomRoles.Charmed);
+            && (!pc.Is(CustomRoles.Cultist) || pc.GetBetrayalAddon(true) != CustomRoles.Charmed);
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {
