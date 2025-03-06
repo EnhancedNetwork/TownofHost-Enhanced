@@ -1,4 +1,5 @@
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -88,8 +89,8 @@ internal class Godfather : RoleBase
 
             if (ChangeAddon is CustomRoles.Admired)
             {
-                AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                SendRPC(killer.PlayerId, target.PlayerId);// make sure Admired Godfather can see Sheriff/Admired
+                Admirer.AdmiredList[godfather.PlayerId].Add(killer.PlayerId);
+                Admirer.SendRPC(godfather.PlayerId, killer.PlayerId);// make sure Admired Godfather can see Sheriff/Admired
             }
 
             killer.RpcGuardAndKill();
