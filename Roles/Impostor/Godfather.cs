@@ -96,7 +96,7 @@ internal class Godfather : RoleBase
             killer.RpcGuardAndKill();
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
-            killer.Notify(ColorString(GetRoleColor(addon), GetString("GodfatherRefugeeMsg")));
+            killer.Notify(ColorString(GetRoleColor(ChangeAddon), GetString("GodfatherRefugeeMsg")));
             NotifyRoles(killer);
         }
     }
