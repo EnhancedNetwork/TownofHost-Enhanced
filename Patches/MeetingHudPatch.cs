@@ -443,7 +443,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
-        int badnum = Main.AllAlivePlayerControls.Count(x => x != exiledPlayer.Object && x.GetCountTypes() is not CountTypes.None and not CountTypes.OutOfGame and not CountTypes.Crew);//Number of alive players that keep game going
+        int badnum = Main.AllAlivePlayerControls.Count(x => x != exiledPlayer.Object && !Main.AfterMeetingDeathPlayers.ContainsKey(x.PlayerId) && x.GetCountTypes() is not CountTypes.None and not CountTypes.OutOfGame and not CountTypes.Crew); //Number of alive players that keep game going
 
 
         if (CustomRoles.Bard.RoleExist())
@@ -483,8 +483,8 @@ class CheckForEndVotingPatch
                         name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
                     else if (player.Is(CustomRoles.Enchanted))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
-                }           
-                
+                }
+
                 else if (player.GetCustomRole().IsImpostorTeamV3())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
@@ -535,11 +535,11 @@ class CheckForEndVotingPatch
 
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
-        {            
+        {
             name += "\n";
             if (badnum <= 0)
                 name += GetString("NoImpRemain");
-            else 
+            else
             {
                 name += impnum switch
                 {
