@@ -54,7 +54,7 @@ internal class CursedSoul : RoleBase
         }
         if (target.CanBeRecruitedBy(killer))
         {
-            var addon = killer.GetBetrayalAddon(true))
+            var addon = killer.GetBetrayalAddon(true);
             killer.RpcRemoveAbilityUse();
             target.RpcSetCustomRole(addon);
 
