@@ -168,7 +168,7 @@ internal class Infectious : RoleBase
             || pc.GetCustomRole().IsImpostorTeamV3()
             || pc.GetCustomRole().IsNK()
             || pc.GetCustomRole().IsCoven())
-            (&& !pc.Is(CustomRoles.Infectious) || pc.GetBetrayalAddon(true) != CustomRoles.Infected) 
+            && !pc.Is(CustomRoles.Infectious)
             && !pc.IsTransformedNeutralApocalypse();
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
