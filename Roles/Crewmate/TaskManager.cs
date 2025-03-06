@@ -26,6 +26,8 @@ internal class TaskManager : RoleBase
     private static OptionItem CanGetMixedAddons;
     private static OptionItem CanSeeAllCompletedTasks;
 
+    private int LastTarget = byte.MaxValue;
+
     private static List<CustomRoles> Addons = [];
     private static readonly Dictionary<int, byte> Target = [];
     private static readonly Dictionary<TaskTypes, string> VisualTasksCompleted = [];
@@ -54,6 +56,8 @@ internal class TaskManager : RoleBase
         Target.Clear();
         VisualTasksCompleted.Clear();
 
+        LastTarget = byte.MaxValue;
+
         if (CanGetHelpfulAddons.GetBool())
         {
             Addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
@@ -73,6 +77,11 @@ internal class TaskManager : RoleBase
     {
         playerId.SetAbilityUseLimit(LimitGetsAddOns.GetInt());
     }
+    public override void Remove(byte playerId)
+    {
+        Target.Remove(LastTarget);
+        LastTarget = byte.MaxValue;
+    }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
@@ -89,7 +98,8 @@ internal class TaskManager : RoleBase
 
         if (allNotCompletedTasks.Count > 0)
         {
-            Target[randomPlayer.PlayerId] = taskManager.PlayerId;
+            LastTarget = randomPlayer.PlayerId;
+            Target[LastTarget] = taskManager.PlayerId;
             randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
 
             taskManager.Notify(GetString("TaskManager_YouCompletedRandomTask"));
@@ -99,7 +109,7 @@ internal class TaskManager : RoleBase
     }
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     {
-        if (!_Player.IsAlive()) return;
+        if (!_Player.IsAlive() || !_Player.Is(CustomRoles.TaskManager)) return;
 
         if (!playerIsOverridden)
             VisualTaskIsCompleted(task.TaskType);

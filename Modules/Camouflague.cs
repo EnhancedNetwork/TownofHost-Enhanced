@@ -162,7 +162,7 @@ public static class Camouflage
             }
             else
             {
-                Utils.DoNotifyRoles();
+                Utils.NotifyRoles();
             }
         }
     }
