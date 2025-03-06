@@ -193,8 +193,8 @@ internal class Dreamweaver : CovenManager
             {
                 foreach (var target in DreamwovenList[player])
                 {
-                    DreamwovenList[player].Remove(target);
                     SetInsomnia(GetPlayerById(player), GetPlayerById(target));
+                    DreamwovenList[player].Remove(target);
                 }
             }   
         }
@@ -209,7 +209,7 @@ internal class Dreamweaver : CovenManager
                 continue; 
             }
             if (targetPc.GetAbilityUseLimit() > 0) targetPc.SetAbilityUseLimit(0);
-            if (target.GetKillTimer() > 0) targetPc.SetKillCooldownV3(999);
+            if (targetPc.GetKillTimer() < 1) targetPc.SetKillCooldownV3(999);
         }
     }
     private void ResetInsomnia(byte dreamweaver)
