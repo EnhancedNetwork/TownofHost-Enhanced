@@ -314,7 +314,7 @@ public static class CustomRoleManager
     /// <summary>
     /// Tasks after killer murder target
     /// </summary>
-    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting)
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target, bool inMeeting, bool fromRole)
     {
         // ############-INFO-##############
         // When using this code, keep in mind that killer and target can be equal (Suicide)
@@ -346,7 +346,7 @@ public static class CustomRoleManager
                         Cyber.AfterCyberDeadTask(target, inMeeting);
                         break;
 
-                    case CustomRoles.Bait when !inMeeting:
+                    case CustomRoles.Bait when !inMeeting && !fromRole:
                         Bait.BaitAfterDeathTasks(trueDMKiller, target); // Use trueDMKiller to any roles that needs the Dollmaster to be the killer!
                         break;
 
@@ -409,9 +409,8 @@ public static class CustomRoleManager
     /// <summary>
     /// Check if this task is marked by a role and do something.
     /// </summary>
-    public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task)
-        => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task)); //
-
+    public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
+        => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task, playerIsOverridden, realPlayer));
 
     public static HashSet<Action<PlayerControl, PlayerControl, bool>> CheckDeadBodyOthers = [];
     /// <summary>
@@ -433,7 +432,7 @@ public static class CustomRoleManager
     /// For interfering with other roles
     /// Registered with OnFixedUpdateOthers+= at initialization
     /// </summary>
-    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime,int timerLowLoad)
+    public static void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         player.GetRoleClass()?.OnFixedUpdate(player, lowLoad, nowTime, timerLowLoad);
 

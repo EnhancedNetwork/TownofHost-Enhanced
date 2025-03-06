@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Il2CppInterop.Runtime.Attributes;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
 using TMPro;
 using UnityEngine;
@@ -279,7 +280,7 @@ internal static class Crowded
     {
         public static void Postfix(ref SecurityLogger __instance)
         {
-            __instance.Timers = new float[127];
+            __instance.Timers = new Il2CppStructArray<float>(127);
         }
     }
 
@@ -407,9 +408,25 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 
     [HideFromIl2Cpp]
     public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
-    public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
+    public override int MaxPageIndex
+    {
+        get
+        {
+            if (maxPageIndex == -1)
+            {
+                maxPageIndex = (Targets.Count() - 1) / MaxPerPage;
+            }
+            return maxPageIndex;
+        }
+    }
 
-    public override void Start() => OnPageChanged();
+    private int maxPageIndex = -1;
+
+    public override void Start()
+    {
+        maxPageIndex = -1;
+        OnPageChanged();
+    }
 
     public override void Update()
     {

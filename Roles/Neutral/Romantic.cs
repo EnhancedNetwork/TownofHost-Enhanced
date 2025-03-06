@@ -254,7 +254,12 @@ internal class Romantic : RoleBase
         if (romantic == 0x73) return;
         var pc = Utils.GetPlayerById(romantic);
         if (pc == null) return;
-        if (player.GetCustomRole().IsImpostorTeamV3())
+        if (player.GetRealKiller() == pc)
+        {
+            pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
+            pc.RpcMurderPlayer(pc);
+        }
+        else if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
@@ -279,7 +284,10 @@ internal class Romantic : RoleBase
             {
                 Logger.Info($"Crew/nnk Romantic Partner Died changing {pc.GetNameWithRole().RemoveHtmlTags()} to Vengeful romantic", "Romantic");
                 var killer = player.GetRealKiller();
-                if (killer == null) //change role to RuthlessRomantic if there is no killer for partner in game
+                if (killer == null //if no killer
+                    || Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Vote //or if partner is ejected
+                    || killer == player //or if partner dies by suicide
+                    || !killer.IsAlive()) //or if killer is dead,romantic will become ruthless romantic
                 {
                     pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
@@ -343,6 +351,12 @@ internal class VengefulRomantic : RoleBase
             return false;
         }
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("VengefulRomanticButtonText"));
+    }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticKill");
+
     public override string GetProgressText(byte playerId, bool cooms)
     {
         var player = Utils.GetPlayerById(playerId);

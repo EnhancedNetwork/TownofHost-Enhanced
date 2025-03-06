@@ -127,7 +127,7 @@ class UpdateSystemPatch
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
-            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].CastFast<SwitchSystem>();
             if (SwitchSystem != null && SwitchSystem.IsActive)
             {
                 player.GetRoleClass()?.SwitchSystemUpdate(SwitchSystem, amount, player);
@@ -161,7 +161,8 @@ class ShipStatusCloseDoorsPatch
         Logger.Info($"Trying to close the door in the room: {room}", "CloseDoorsOfType");
 
         bool allow;
-        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()
+            || Options.CurrentGameMode == CustomGameMode.SpeedRun && !SpeedRun.SpeedRun_AllowCloseDoor.GetBool()) allow = false;
         else allow = true;
 
         if (allow)
@@ -292,7 +293,11 @@ class ShipStatusSpawnPlayerPatch
         Vector2 direction = Vector2.up.Rotate((player.PlayerId - 1) * (360f / numPlayers));
         Vector2 position = __instance.MeetingSpawnCenter + direction * __instance.SpawnRadius + new Vector2(0.0f, 0.3636f);
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"ShipStatus Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
@@ -311,7 +316,11 @@ class PolusShipStatusSpawnPlayerPatch
             ? __instance.MeetingSpawnCenter2 + Vector2.right * (num2 - num1) * 0.6f
             : __instance.MeetingSpawnCenter + Vector2.right * num2 * 0.6f;
 
-        player.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        // Delay teleport because the map will stop updating player positions too late
+        _ = new LateTask(() =>
+        {
+            player?.RpcTeleport(position, isRandomSpawn: true, sendInfoInLogs: false);
+        }, 1.5f, $"PolusShipStatus Spawn Player {player.PlayerId}", shoudLog: false);
         return false;
     }
 }
@@ -369,7 +378,7 @@ class ShipStatusSerializePatch
                 }
             }
 
-            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
                 // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");

@@ -56,8 +56,8 @@ internal class MoonDancer : CovenManager
     }
     public override void Add(byte playerId)
     {
-        BatonPassList.Add(playerId, []);
-        BlastedOffList.Add(playerId, []);
+        BatonPassList[playerId] = [];
+        BlastedOffList[playerId] = [];
     }
     private void SyncBlastList()
     {
@@ -204,13 +204,18 @@ internal class MoonDancer : CovenManager
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
+        if (_Player == null) return;
+
         KillBlastedOff();
         foreach (var md in BatonPassList.Keys)
         {
-            DistributeAddOns(GetPlayerById(md));
+            var player = GetPlayerById(md);
+            if (player == null) continue;
+
+            DistributeAddOns(player);
         }
     }
-    private void DistributeAddOns(PlayerControl md)
+    private static void DistributeAddOns(PlayerControl md)
     {
         var rd = IRandom.Instance;
         foreach (var pc in BatonPassList[md.PlayerId])
@@ -223,9 +228,11 @@ internal class MoonDancer : CovenManager
                 continue;
             }
 
+            player.CheckConflictedAddOnsFromList(ref addons);
+
             var addon = addons.RandomElement();
-            var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
-            var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
+            var helpful = GroupedAddons[AddonTypes.Helpful].Where(addons.Contains).ToList();
+            var harmful = GroupedAddons[AddonTypes.Harmful].Where(addons.Contains).ToList();
             if (player.GetCustomRole().IsCovenTeam() || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
             {
                 if (helpful.Count <= 0)
@@ -246,9 +253,12 @@ internal class MoonDancer : CovenManager
                 }
                 addon = harmful.RandomElement();
             }
-            player.RpcSetCustomRole(addon);
-            player.AddInSwitchAddons(player, addon);
-            Logger.Info("Addon Passed.", "MoonDancer");
+
+            if (addon != 0) // not default value
+            {
+                player.RpcSetCustomRole(addon, false, false);
+                Logger.Info("Addon Passed.", "MoonDancer");
+            }
         }
         BatonPassList[md.PlayerId].Clear();
     }
@@ -270,15 +280,15 @@ internal class MoonDancer : CovenManager
                 MurderPlayerPatch.AfterPlayerDeathTasks(killer, target, true);
                 Logger.Info($"{killer.GetRealName()} Blasted Off {target.GetRealName()}", "MoonDancer");
             }
+            BlastedOffList[pc.Key].Clear();
         }
-        BlastedOffList.Clear();
         SyncBlastList();
     }
     public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl moonDancer, bool inMeeting, bool isSuicide)
     {
-        if (inMeeting) return;
+        if (inMeeting || !BlastedOffList.TryGetValue(moonDancer.PlayerId, out var blastedOff)) return;
 
-        foreach (var bl in BlastedOffList[moonDancer.PlayerId])
+        foreach (var bl in blastedOff)
         {
             var pc = GetPlayerById(bl);
             pc.SetRealKiller(moonDancer);

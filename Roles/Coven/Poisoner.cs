@@ -118,7 +118,7 @@ internal class Poisoner : CovenManager
     private static void KillPoisoned(PlayerControl poisoner, PlayerControl target, bool isButton = false)
     {
         if (poisoner == null || target == null || target.Data.Disconnected) return;
-        if (target.IsAlive())
+        if (target.IsAlive() && !target.IsTransformedNeutralApocalypse())
         {
             target.SetDeathReason(PlayerState.DeathReason.Poison);
             target.RpcMurderPlayer(target);
@@ -163,14 +163,24 @@ internal class Poisoner : CovenManager
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl pc, PlayerControl _)  // Target of Pursuer attempt to murder someone
     {
-        if (!IsRoleblocked(pc.PlayerId) && pc.GetCustomRole() is not CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false; // I was told these roles should be roleblock immune
         if (pc == null) return false;
+        if (IsRoleblocked(pc.PlayerId))
+        {
+            if (pc.GetCustomRole() is
+                CustomRoles.SerialKiller or
+                CustomRoles.Pursuer or
+                CustomRoles.Deputy or
+                CustomRoles.Deceiver or
+                CustomRoles.Poisoner)
+                return false;
 
-        pc.ResetKillCooldown();
-        pc.SetKillCooldown();
+            pc.ResetKillCooldown();
+            pc.SetKillCooldown();
 
-        Logger.Info($"{pc.GetRealName()} fail ability because roleblocked", "Poisoner");
-        return true;
+            Logger.Info($"{pc.GetRealName()} fail ability because roleblocked", "Poisoner");
+            return true;
+        }
+        return false;
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

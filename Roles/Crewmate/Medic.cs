@@ -16,8 +16,8 @@ internal class Medic : RoleBase
     public override CustomRoles Role => CustomRoles.Medic;
     private const int Id = 8600;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Medic);
-    public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override bool IsDesyncRole => !GiveTasks;
+    public override CustomRoles ThisRoleBase => GiveTasks ? CustomRoles.Crewmate : CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
@@ -33,6 +33,7 @@ internal class Medic : RoleBase
 
     private readonly HashSet<byte> ProtectedList = [];
     private readonly HashSet<byte> TempMarkProtected = [];
+    private bool GiveTasks = false;
 
     [Obfuscation(Exclude = true)]
     private enum SelectOptionsList
@@ -73,17 +74,17 @@ internal class Medic : RoleBase
         ProtectedPlayers.Clear();
         ProtectedList.Clear();
         TempMarkProtected.Clear();
+        GiveTasks = false;
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
         ProtectedPlayers[playerId] = [];
     }
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(TempMarkProtected.Count);
         foreach (var markProtected in TempMarkProtected)
         {
@@ -98,9 +99,6 @@ internal class Medic : RoleBase
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        float Limit = reader.ReadSingle();
-        AbilityLimit = Limit;
-
         int countMarkProtected = reader.ReadInt32();
         TempMarkProtected.Clear();
         for (int i = 0; i < countMarkProtected; i++)
@@ -118,17 +116,16 @@ internal class Medic : RoleBase
     private bool IsProtect(byte id)
         => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    public bool CheckKillButton() => AbilityLimit > 0;
+    public bool CheckKillButton() => _state.PlayerId.GetAbilityUseLimit() > 0;
 
     public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton();
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton() ? 5f : 300f;
-    public override string GetProgressText(byte playerId, bool comms) => ColorString(CheckKillButton() ? GetRoleColor(CustomRoles.Medic).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (!CheckKillButton() || ProtectedList.Contains(target.PlayerId)) return false;
+        if (ProtectedList.Contains(target.PlayerId)) return false;
 
-        AbilityLimit--;
+        killer.RpcRemoveAbilityUse();
         ProtectedPlayers[killer.PlayerId].Add(target.PlayerId);
         GlobalProtectedList.Add(target.PlayerId);
         ProtectedList.Add(target.PlayerId);
@@ -153,10 +150,10 @@ internal class Medic : RoleBase
                 break;
         }
 
+        ChangeToCrewmate();
+
         NotifyRoles(SpecifySeer: killer, SpecifyTarget: target);
         NotifyRoles(SpecifySeer: target, SpecifyTarget: killer);
-
-        Logger.Info($"{killer.GetNameWithRole()} : {AbilityLimit} shields left", "Medic");
         return false;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
@@ -191,6 +188,16 @@ internal class Medic : RoleBase
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Medic", "Medic");
         return true;
     }
+    private void ChangeToCrewmate()
+    {
+        if (_Player == null) return;
+
+        var medic = _Player;
+        GiveTasks = true;
+
+        medic.RpcSetRoleType(RoleTypes.Crewmate, removeFromDesyncList: true);
+        medic.RpcResetTasks();
+    }
     public override void AfterMeetingTasks()
     {
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
@@ -203,7 +210,6 @@ internal class Medic : RoleBase
     }
     private void AfterMedicDeadTask(PlayerControl target)
     {
-        if (!target.Is(CustomRoles.Medic)) return;
         if (!ShieldDeactivatesWhenMedicDies.GetBool()) return;
 
         if (ProtectedPlayers.TryGetValue(target.PlayerId, out var protectedList))
@@ -233,6 +239,7 @@ internal class Medic : RoleBase
         AfterMedicDeadTask(target);
     }
 
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => GiveTasks;
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)

@@ -23,6 +23,7 @@ internal class ChangeRoleSettings
             SetUpRoleTextPatch.IsInIntro = true;
 
         Main.OverrideWelcomeMsg = "";
+        CriticalErrorManager.Initialize();
 
         Logger.Msg("Is Started", "Initialization");
 
@@ -51,6 +52,8 @@ internal class ChangeRoleSettings
             Main.PlayerStates = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
+            AbilityUseManager.Initializate();
+
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
@@ -91,6 +94,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             VentSystemDeterioratePatch.LastClosestVent.Clear();
             VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime.Clear();
@@ -137,7 +141,7 @@ internal class ChangeRoleSettings
                     sb.Append($" {string.Join(", ", invalidColor.Where(pc => pc != null).Select(p => $"{Main.AllPlayerNames.GetValueOrDefault(p.PlayerId, "PlayerNotFound")}"))}");
                     var msg = sb.ToString();
                     Utils.SendMessage(msg);
-                    CriticalErrorManager.SetCreiticalError("Player Have Invalid Color", true);
+                    CriticalErrorManager.SetCriticalError("Player Have Invalid Color", true);
                     Logger.Error(msg, "CoStartGame");
                 }
             }
@@ -226,6 +230,9 @@ internal class ChangeRoleSettings
             //FFA
             FFAManager.Init();
 
+            //Speed Run
+            SpeedRun.Init();
+
             FallFromLadder.Reset();
             CustomWinnerHolder.Reset();
             AntiBlackout.Reset();
@@ -247,7 +254,7 @@ internal class ChangeRoleSettings
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Change Role Setting Postfix", true, ex.ToString());
+            CriticalErrorManager.SetCriticalError("Change Role Setting Postfix", true, ex.ToString());
             Utils.ThrowException(ex);
         }
     }
@@ -402,19 +409,19 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Select Role Prefix - Building Role Sender", true, ex.ToString());
+            CriticalErrorManager.SetCriticalError("Select Role Prefix - Building Role Sender", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }
 
-        if (!Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+        if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
         {
-            // Send all Rpc for modded region
-            RpcSetRoleReplacer.Release();
+            yield return RpcSetRoleReplacer.ReleaseVanilla();
         }
         else
         {
-            yield return RpcSetRoleReplacer.ReleaseVanilla();
+            // Send all Rpc for modded region
+            RpcSetRoleReplacer.Release();
         }
 
         try
@@ -439,11 +446,11 @@ internal class StartGameHostPatch
                 Main.PlayerStates[pc.PlayerId].SetMainRole(role);
             }
 
-            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            if (Options.CurrentGameMode is CustomGameMode.FFA)
             {
                 foreach (var pair in RoleAssign.RoleResult)
                 {
-                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
+                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, false, false);
                 }
                 goto EndOfSelectRolePatch;
             }
@@ -457,8 +464,11 @@ internal class StartGameHostPatch
 
             try
             {
-                AddonAssign.InitAndStartAssignLovers();
-                AddonAssign.StartSortAndAssign();
+                if (Options.CurrentGameMode is CustomGameMode.Standard)
+                {
+                    AddonAssign.InitAndStartAssignLovers();
+                    AddonAssign.StartSortAndAssign();
+                }
             }
             catch (Exception error)
             {
@@ -496,13 +506,6 @@ internal class StartGameHostPatch
 
         EndOfSelectRolePatch:
 
-            try
-            {
-                if (!AmongUsClient.Instance.IsGameOver)
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-            }
-            catch { }
-
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 pc.ResetKillCooldown();
 
@@ -522,6 +525,9 @@ internal class StartGameHostPatch
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
+                case CustomGameMode.SpeedRun:
+                    GameEndCheckerForNormal.SetPredicateToSpeedRun();
+                    break;
             }
 
             EAC.LogAllRoles();
@@ -531,7 +537,7 @@ internal class StartGameHostPatch
         }
         catch (Exception ex)
         {
-            CriticalErrorManager.SetCreiticalError("Select Role Prefix - Building Role classes", true, ex.ToString());
+            CriticalErrorManager.SetCriticalError("Select Role Prefix - Building Role classes", true, ex.ToString());
             Utils.ThrowException(ex);
             yield break;
         }
