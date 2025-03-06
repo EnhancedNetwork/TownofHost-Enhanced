@@ -470,7 +470,7 @@ public static class Utils
     }
     public static (string, Color) GetRoleAndSubText(byte seerId, byte targetId, bool isMeeting, bool notShowAddOns = false)
     {
-        string RoleText = "Invalid Role";
+        var RoleText = new StringBuilder("Invalid Role");
         Color RoleColor = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 
         var targetMainRole = Main.PlayerStates[targetId].MainRole;
@@ -488,7 +488,7 @@ public static class Utils
             }
         }
 
-        RoleText = GetRoleName(targetMainRole);
+        RoleText.Clear().Append(GetRoleName(targetMainRole));
         RoleColor = GetRoleColor(targetMainRole);
 
         try
@@ -498,11 +498,15 @@ public static class Utils
                 var seer = GetPlayerById(seerId);
                 var target = GetPlayerById(targetId);
 
-                if (seer == null || target == null) return (RoleText, RoleColor);
+                if (seer == null || target == null) return (RoleText.ToString(), RoleColor);
+
+                var oldRoleText = RoleText.ToString();
 
                 // if player last imp
                 if (LastImpostor.currentId == targetId)
-                    RoleText = GetRoleString("Last-") + RoleText;
+                {
+                    RoleText.Clear().Append(GetRoleString("Last-") + oldRoleText);
+                }
 
                 if (Options.NameDisplayAddons.GetBool() && !notShowAddOns)
                 {
@@ -522,27 +526,31 @@ public static class Utils
                         }
                     }
 
-
-
+                    oldRoleText = RoleText.ToString();
                     // if the player is playing on a console platform
                     if (seerPlatform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)
                     {
                         // By default, censorship is enabled on consoles
                         // Need to set add-ons colors without endings "</color>"
 
-
                         // colored role
-                        RoleText = ColorStringWithoutEnding(GetRoleColor(targetMainRole), RoleText);
+                        RoleText.Clear().Append(ColorString(GetRoleColor(targetMainRole), oldRoleText, withoutEnding: true));
 
                         // colored add-ons
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorStringWithoutEnding(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons)) + RoleText;
+                        {
+                            oldRoleText = RoleText.ToString();
+                            RoleText.Clear().Append(ColorString(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons), withoutEnding: true) + oldRoleText);
+                        }
                     }
                     // default
                     else
                     {
                         foreach (var subRole in targetSubRoles.Where(subRole => subRole.ShouldBeDisplayed() && seer.ShowSubRoleTarget(target, subRole)).ToArray())
-                            RoleText = ColorString(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons)) + RoleText;
+                        {
+                            oldRoleText = RoleText.ToString();
+                            RoleText.Clear().Append(ColorString(GetRoleColor(subRole), GetAddOnName(subRole.ToString(), isMeeting, addBracketsToAddons)) + oldRoleText);
+                        }
                     }
                 }
 
@@ -560,18 +568,19 @@ public static class Utils
                             case CustomRoles.Admired:
                             case CustomRoles.Enchanted:
                                 RoleColor = GetRoleColor(subRole);
-                                RoleText = GetRoleString($"{subRole}-") + RoleText;
+                                oldRoleText = RoleText.ToString();
+                                RoleText.Clear().Append(GetRoleString($"{subRole}-") + oldRoleText);
                                 break;
 
                         }
                 }
             }
 
-            return (RoleText, RoleColor);
+            return (RoleText.ToString(), RoleColor);
         }
         catch
         {
-            return (RoleText, RoleColor);
+            return (RoleText.ToString(), RoleColor);
         }
     }
     public static string GetKillCountText(byte playerId, bool ffa = false)
@@ -1181,240 +1190,34 @@ public static class Utils
         text = text.ToLowerInvariant();
         text = text.Replace("色", string.Empty);
         int color;
-        try { color = int.Parse(text); } catch { color = -1; }
-        switch (text)
-        {
-            case "0":
-            case "红":
-            case "紅":
-            case "red":
-            case "Red":
-            case "vermelho":
-            case "Vermelho":
-            case "крас":
-            case "Крас":
-            case "красн":
-            case "Красн":
-            case "красный":
-            case "Красный":
-                color = 0; break;
-            case "1":
-            case "蓝":
-            case "藍":
-            case "深蓝":
-            case "blue":
-            case "Blue":
-            case "azul":
-            case "Azul":
-            case "син":
-            case "Син":
-            case "синий":
-            case "Синий":
-                color = 1; break;
-            case "2":
-            case "绿":
-            case "綠":
-            case "深绿":
-            case "green":
-            case "Green":
-            case "verde-escuro":
-            case "Verde-Escuro":
-            case "Зел":
-            case "зел":
-            case "Зелёный":
-            case "Зеленый":
-            case "зелёный":
-            case "зеленый":
-                color = 2; break;
-            case "3":
-            case "粉红":
-            case "pink":
-            case "Pink":
-            case "rosa":
-            case "Rosa":
-            case "Роз":
-            case "роз":
-            case "Розовый":
-            case "розовый":
-                color = 3; break;
-            case "4":
-            case "橘":
-            case "orange":
-            case "Orange":
-            case "laranja":
-            case "Laranja":
-            case "оранж":
-            case "Оранж":
-            case "оранжевый":
-            case "Оранжевый":
-                color = 4; break;
-            case "5":
-            case "黄":
-            case "黃":
-            case "yellow":
-            case "Yellow":
-            case "amarelo":
-            case "Amarelo":
-            case "Жёлт":
-            case "Желт":
-            case "жёлт":
-            case "желт":
-            case "Жёлтый":
-            case "Желтый":
-            case "жёлтый":
-            case "желтый":
-                color = 5; break;
-            case "6":
-            case "黑":
-            case "black":
-            case "Black":
-            case "preto":
-            case "Preto":
-            case "Чёрн":
-            case "Черн":
-            case "Чёрный":
-            case "Черный":
-            case "чёрный":
-            case "черный":
-                color = 6; break;
-            case "7":
-            case "白":
-            case "white":
-            case "White":
-            case "branco":
-            case "Branco":
-            case "Белый":
-            case "белый":
-                color = 7; break;
-            case "8":
-            case "紫":
-            case "purple":
-            case "Purple":
-            case "roxo":
-            case "Roxo":
-            case "Фиол":
-            case "фиол":
-            case "Фиолетовый":
-            case "фиолетовый":
-                color = 8; break;
-            case "9":
-            case "棕":
-            case "brown":
-            case "Brown":
-            case "marrom":
-            case "Marrom":
-            case "Корич":
-            case "корич":
-            case "Коричневый":
-            case "коричевый":
-                color = 9; break;
-            case "10":
-            case "青":
-            case "cyan":
-            case "Cyan":
-            case "ciano":
-            case "Ciano":
-            case "Голуб":
-            case "голуб":
-            case "Голубой":
-            case "голубой":
-                color = 10; break;
-            case "11":
-            case "黄绿":
-            case "黃綠":
-            case "浅绿":
-            case "lime":
-            case "Lime":
-            case "verde-claro":
-            case "Verde-Claro":
-            case "Лайм":
-            case "лайм":
-            case "Лаймовый":
-            case "лаймовый":
-                color = 11; break;
-            case "12":
-            case "红褐":
-            case "紅褐":
-            case "深红":
-            case "maroon":
-            case "Maroon":
-            case "bordô":
-            case "Bordô":
-            case "vinho":
-            case "Vinho":
-            case "Борд":
-            case "борд":
-            case "Бордовый":
-            case "бордовый":
-                color = 12; break;
-            case "13":
-            case "玫红":
-            case "玫紅":
-            case "浅粉":
-            case "rose":
-            case "Rose":
-            case "rosa-claro":
-            case "Rosa-Claro":
-            case "Светло роз":
-            case "светло роз":
-            case "Светло розовый":
-            case "светло розовый":
-            case "Сирень":
-            case "сирень":
-            case "Сиреневый":
-            case "сиреневый":
-                color = 13; break;
-            case "14":
-            case "焦黄":
-            case "焦黃":
-            case "淡黄":
-            case "banana":
-            case "Banana":
-            case "Банан":
-            case "банан":
-            case "Банановый":
-            case "банановый":
-                color = 14; break;
-            case "15":
-            case "灰":
-            case "gray":
-            case "Gray":
-            case "cinza":
-            case "Cinza":
-            case "grey":
-            case "Grey":
-            case "Сер":
-            case "сер":
-            case "Серый":
-            case "серый":
-                color = 15; break;
-            case "16":
-            case "茶":
-            case "tan":
-            case "Tan":
-            case "bege":
-            case "Bege":
-            case "Загар":
-            case "загар":
-            case "Загаровый":
-            case "загаровый":
-                color = 16; break;
-            case "17":
-            case "珊瑚":
-            case "coral":
-            case "Coral":
-            case "salmão":
-            case "Salmão":
-            case "Корал":
-            case "корал":
-            case "Коралл":
-            case "коралл":
-            case "Коралловый":
-            case "коралловый":
-                color = 17; break;
 
-            case "18": case "隐藏": case "?": color = 18; break;
-        }
+        try { color = int.Parse(text); }
+        catch { color = -1; }
+
+        color = text switch
+        {
+            "0" or "红" or "紅" or "red" or "Red" or "крас" or "Крас" or "красн" or "Красн" or "красный" or "Красный" or "Vermelho" or "vermelho" => 0,
+            "1" or "蓝" or "藍" or "深蓝" or "blue" or "Blue" or "син" or "Син" or "синий" or "Синий" or "Azul" or "azul" => 1,
+            "2" or "绿" or "綠" or "深绿" or "green" or "Green" or "Зел" or "зел" or "Зелёный" or "Зеленый" or "зелёный" or "зеленый" or "Verde" or "verde" or "Verde-Escuro" or "verde-escuro" => 2,
+            "3" or "粉红" or "pink" or "Pink" or "Роз" or "роз" or "Розовый" or "розовый" or "Rosa" or "rosa" => 3,
+            "4" or "橘" or "orange" or "Orange" or "оранж" or "Оранж" or "оранжевый" or "Оранжевый" or "Laranja" or "laranja" => 4,
+            "5" or "黄" or "黃" or "yellow" or "Yellow" or "Жёлт" or "Желт" or "жёлт" or "желт" or "Жёлтый" or "Желтый" or "жёлтый" or "желтый" or "Amarelo" or "amarelo" => 5,
+            "6" or "黑" or "black" or "Black" or "Чёрный" or "Черный" or "чёрный" or "черный" or "Preto" or "preto" => 6,
+            "7" or "白" or "white" or "White" or "Белый" or "белый" or "Branco" or "branco" => 7,
+            "8" or "紫" or "purple" or "Purple" or "Фиол" or "фиол" or "Фиолетовый" or "фиолетовый" or "Roxo" or "roxo" => 8,
+            "9" or "棕" or "brown" or "Brown" or "Корич" or "корич" or "Коричневый" or "коричевый" or "Marrom" or "marrom" => 9,
+            "10" or "青" or "cyan" or "Cyan" or "Голуб" or "голуб" or "Голубой" or "голубой" or "Ciano" or "ciano" => 10,
+            "11" or "黄绿" or "黃綠" or "浅绿" or "lime" or "Lime" or "Лайм" or "лайм" or "Лаймовый" or "лаймовый" or "Lima" or "lima" or "Verde-Claro" or "verde-claro" => 11,
+            "12" or "红褐" or "紅褐" or "深红" or "maroon" or "Maroon" or "Борд" or "борд" or "Бордовый" or "бордовый" or "Bordô" or "bordô" or "Vinho" or "vinho" => 12,
+            "13" or "玫红" or "玫紅" or "浅粉" or "rose" or "Rose" or "Светло роз" or "светло роз" or "Светло розовый" or "светло розовый" or "Сирень" or "сирень" or "Сиреневый" or "сиреневый" or "Rosê" or "rosê" or "rosinha" or "Rosinha" or "Rosa-Claro" or "rosa-claro" => 13,
+            "14" or "焦黄" or "焦黃" or "淡黄" or "banana" or "Banana" or "Банан" or "банан" or "Банановый" or "банановый" or "Amarelo-Claro" or "amarelo-claro" => 14,
+            "15" or "灰" or "gray" or "Gray" or "Сер" or "сер" or "Серый" or "серый" or "Cinza" or "cinza" => 15,
+            "16" or "茶" or "tan" or "Tan" or "Загар" or "загар" or "Загаровый" or "загаровый" or "bege" or "bege" or "Creme" or "creme" => 16,
+            "17" or "珊瑚" or "coral" or "Coral" or "Корал" or "корал" or "Коралл" or "коралл" or "Коралловый" or "коралловый" => 17,
+            "18" or "隐藏" or "?" or "Fortegreen" or "fortegreen" or "Фортегрин" or "фортегрин" => 18,
+            _ => color
+        };
+
         return !isHost && color == 18 ? byte.MaxValue : color is < 0 or > 18 ? byte.MaxValue : Convert.ToByte(color);
     }
 
@@ -1638,6 +1441,10 @@ public static class Utils
     {
         Color32 color32 = (Color32)color;
         return $"{color32.r:X2}{color32.g:X2}{color32.b:X2}{color32.a:X2}";
+    }
+    public static string GetColoredTextByRole(this CustomRoles role, string text)
+    {
+        return ColorString(GetRoleColor(role), text);
     }
     public static void ApplySuffix(PlayerControl player)
     {
@@ -1950,14 +1757,24 @@ public static class Utils
 
     public static NetworkedPlayerInfo GetPlayerInfoById(int PlayerId) =>
         GameData.Instance.AllPlayers.ToArray().FirstOrDefault(info => info.PlayerId == PlayerId);
+
+    // Self
+    private static readonly StringBuilder SelfName = new();
+    private static readonly StringBuilder SelfRoleName = new();
+    private static readonly StringBuilder SelfDeathReason = new();
+    private static readonly StringBuilder SelfTaskText = new();
     private static readonly StringBuilder SelfSuffix = new();
     private static readonly StringBuilder SelfMark = new(20);
+    // Target
+    private static readonly StringBuilder TargetPlayerName = new();
+    private static readonly StringBuilder TargetRoleName = new();
+    private static readonly StringBuilder TargetDeathReason = new();
     private static readonly StringBuilder TargetSuffix = new();
     private static readonly StringBuilder TargetMark = new(20);
-    public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
+    public static void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
-        if (GameStates.IsMeeting)
+        if (MeetingHud.Instance)
         {
             // When the meeting window is active and game is not ended
             if (!GameEndCheckerForNormal.GameIsEnded) return;
@@ -1968,39 +1785,17 @@ public static class Utils
             if (Main.MeetingIsStarted && !isForMeeting) return;
         }
 
-        //var caller = new System.Diagnostics.StackFrame(1, false);
-        //var callerMethod = caller.GetMethod();
-        //string callerMethodName = callerMethod.Name;
-        //string callerClassName = callerMethod.DeclaringType.FullName;
-        //Logger.Info($" Was called from: {callerClassName}.{callerMethodName}", "NotifyRoles");
-
-        await DoNotifyRoles(SpecifySeer, SpecifyTarget, isForMeeting, NoCache, ForceLoop, CamouflageIsForMeeting, MushroomMixupIsActive);
-    }
-    public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
-    {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
-        if (MeetingHud.Instance)
-        {
-            // When the meeting window is active and game is not ended
-            if (!GameEndCheckerForNormal.GameIsEnded) return Task.CompletedTask;
-        }
-        else
-        {
-            // When some one press report button but NotifyRoles is not for meeting
-            if (Main.MeetingIsStarted && !isForMeeting) return Task.CompletedTask;
-        }
-
         //var logger = Logger.Handler("DoNotifyRoles");
 
         HudManagerUpdatePatch.NowCallNotifyRolesCount++;
         HudManagerUpdatePatch.LastSetNameDesyncCount = 0;
 
         PlayerControl[] seerList = SpecifySeer != null
-            ? ([SpecifySeer])
+            ? [SpecifySeer]
             : Main.AllPlayerControls;
 
         PlayerControl[] targetList = SpecifyTarget != null
-            ? ([SpecifyTarget])
+            ? [SpecifyTarget]
             : Main.AllPlayerControls;
 
         if (!MushroomMixupIsActive)
@@ -2022,10 +1817,10 @@ public static class Utils
             // Only non-modded players or player left
             if (seer.IsModded() || seer.PlayerId == OnPlayerLeftPatch.LeftPlayerId || seer.Data.Disconnected) continue;
 
-            // Size of player roles
-            string fontSize = isForMeeting ? "1.6" : "1.8";
-            string fontSizeDeathReason = "1.6";
-            if (isForMeeting && (seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch)) fontSize = "70%";
+            const string fontSizeDeathReason = "1.6";
+            string fontSize = isForMeeting
+                ? seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Xbox or Platforms.Switch ? "70%" : "1.6"
+                : "1.8";
 
             //logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
@@ -2041,125 +1836,128 @@ public static class Utils
             {
                 // Clear marker after name seer
                 SelfMark.Clear();
-
-                // ====== Add SelfMark for seer ======
-                SelfMark.Append(seerRoleClass?.GetMark(seer, seer, isForMeeting: isForMeeting));
-                SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, seer, isForMeeting: isForMeeting));
-
-                if (seer.Is(CustomRoles.Lovers))
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
-
-                if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                    SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
-
-
-                // ====== Add SelfSuffix for seer ======
-
                 SelfSuffix.Clear();
-
-                SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
-
-                SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
-
-                SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
-                SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
-
 
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.FFA:
                         SelfSuffix.Append(FFAManager.GetPlayerArrow(seer));
                         break;
+
+                    default:
+                        SelfMark.Append(seerRoleClass?.GetMark(seer, seer, isForMeeting: isForMeeting));
+                        SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, seer, isForMeeting: isForMeeting));
+
+                        if (seer.Is(CustomRoles.Lovers))
+                            SelfMark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+
+                        if (seer.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
+                            SelfMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
+
+                        SelfSuffix.Append(seerRoleClass?.GetLowerText(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, seer, isForMeeting: isForMeeting));
+
+                        SelfSuffix.Append(seerRoleClass?.GetSuffix(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
+
+                        SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
+                        break;
                 }
 
 
                 // ====== Get SeerRealName ======
 
-                string SeerRealName = seer.GetRealName(isForMeeting);
+                var SeerRealName = new StringBuilder(seer.GetRealName(isForMeeting));
 
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for seer ======
-                string SelfTaskText = GetProgressText(seer);
 
-                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, isForMeeting, false)}{SelfTaskText}</size>";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"\n<size={fontSizeDeathReason}>『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))}』</size>" : string.Empty;
-                string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
+                SelfTaskText.Clear().Append(GetProgressText(seer));
+                SelfRoleName.Clear().Append($"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, isForMeeting, false)}{SelfTaskText}</size>");
+                SelfDeathReason.Clear().Append(seer.KnowDeathReason(seer) ? $"\n<size={fontSizeDeathReason}>『{CustomRoles.Doctor.GetColoredTextByRole(GetVitalText(seer.PlayerId))}』</size>" : string.Empty);
+                SelfName.Clear().Append($"{ColorString(seer.GetRoleColor(), SeerRealName.ToString())}{SelfDeathReason}{SelfMark}");
 
                 // Add protected player icon from ShieldPersonDiedFirst
                 if (seer.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting)
                 {
-                    SelfName = $"{ColorString(seer.GetRoleColor(), $"<color=#4fa1ff><u></color>{SeerRealName}</u>")}{SelfDeathReason}<color=#4fa1ff>✚</color>{SelfMark}";
+                    SelfName.Clear().Append($"{ColorString(seer.GetRoleColor(), $"<color=#4fa1ff><u></color>{SeerRealName}</u>")}{SelfDeathReason}<color=#4fa1ff>✚</color>{SelfMark}");
                 }
 
                 bool IsDisplayInfo = false;
-                if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting && Options.CurrentGameMode == CustomGameMode.Standard)
+
+                if (Options.CurrentGameMode is CustomGameMode.Standard)
                 {
-                    IsDisplayInfo = true;
-                    var SeerRoleInfo = seer.GetRoleInfo();
-                    string RoleText = string.Empty;
-                    string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                    if (MeetingStates.FirstMeeting && Options.ChangeNameToRoleInfo.GetBool() && !isForMeeting)
+                    {
+                        IsDisplayInfo = true;
+                        var SeerRoleInfo = seer.GetRoleInfo();
+                        string RoleText = string.Empty;
+                        const string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
 
-                    if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
-                    else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
-                    else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
-                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
-                    else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
+                        if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                        else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
+                        else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
+                        else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
+                        else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
-                    SelfName = $"{SelfName}<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n";
+                        SelfName.Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
+                    }
+
+                    if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
+                        SelfName.Clear().Append($"{CustomRoles.Pelican.GetColoredTextByRole(GetString("EatenByPelican"))}");
+
+                    else if (Deathpact.HasEnabled && Deathpact.IsInActiveDeathpact(seer))
+                        SelfName.Clear().Append(Deathpact.GetDeathpactString(seer));
+
+                    else if (Devourer.HasEnabled && Devourer.HideNameOfTheDevoured(seer.PlayerId) && !CamouflageIsForMeeting)
+                        SelfName.Clear().Append(GetString("DevouredName"));
+
+                    // Dollmaster, Prevent seeing self in mushroom cloud
+                    if (seerRole != CustomRoles.DollMaster && DollMaster.IsDoll(seer.PlayerId))
+                    {
+                        SelfName.Clear().Append("<size=10000%><color=#000000>■</color></size>");
+                    }
                 }
 
-                if (NameNotifyManager.GetNameNotify(seer, out var name))
-                {
-                    SelfName = name;
-                }
-
-                if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
-                    SelfName = $"{ColorString(GetRoleColor(CustomRoles.Pelican), GetString("EatenByPelican"))}";
-
-                if (CustomRoles.Deathpact.HasEnabled() && Deathpact.IsInActiveDeathpact(seer))
-                    SelfName = Deathpact.GetDeathpactString(seer);
-
-                // Devourer
-                if (CustomRoles.Devourer.HasEnabled())
-                {
-                    bool playerDevoured = Devourer.HideNameOfTheDevoured(seer.PlayerId);
-                    if (playerDevoured && !CamouflageIsForMeeting)
-                        SelfName = GetString("DevouredName");
-                }
-
-                // Dollmaster, Prevent seeing self in mushroom cloud
-                if (CustomRoles.DollMaster.HasEnabled() && seerRole != CustomRoles.DollMaster)
-                {
-                    if (DollMaster.IsDoll(seer.PlayerId))
-                        SelfName = "<size=10000%><color=#000000>■</color></size>";
-                }
+                if (NameNotifyManager.GetNameNotify(seer, out var notifyName))
+                    SelfName.Clear().Append(notifyName);
 
                 // Camouflage
                 if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
-                    SelfName = $"<size=0%>{SelfName}</size>";
+                {
+                    string oldName = SelfName.ToString();
+                    SelfName.Clear().Append($"<size=0%>{oldName}</size>");
+                }
 
-                if (!Regex.IsMatch(SelfName, seer.GetRealName()))
+                if (!Regex.IsMatch(SelfName.ToString(), seer.GetRealName()))
                     IsDisplayInfo = false;
 
                 switch (Options.CurrentGameMode)
                 {
                     case CustomGameMode.FFA:
-                        FFAManager.GetNameNotify(seer, ref SelfName);
-                        SelfName = $"<size={fontSize}>{SelfTaskText}</size>\r\n{SelfName}";
+                        string FFAName = string.Empty;
+                        FFAManager.GetNameNotify(seer, ref FFAName);
+                        SelfName.Clear().Append($"<size={fontSize}>{SelfTaskText}</size>\r\n{FFAName}");
                         break;
                     default:
+                        var oldSelfName = SelfName.ToString();
                         if (!IsDisplayInfo)
-                            SelfName = SelfRoleName + "\r\n" + SelfName;
+                        {
+                            SelfName.Clear().Append(SelfRoleName + "\r\n" + oldSelfName);
+                        }
                         else
-                            SelfName = "<size=425%>\n \n</size>" + SelfRoleName + "\r\n" + SelfName;
+                        {
+                            SelfName.Clear().Append("<size=425%>\n \n</size>" + SelfRoleName + "\r\n" + oldSelfName);
+                        }
                         break;
                 }
-                SelfName += SelfSuffix.Length == 0 ? string.Empty : "\r\n " + SelfSuffix.ToString();
 
-                if (!isForMeeting) SelfName += "\r\n";
+                SelfName.Append(SelfSuffix.Length == 0 ? string.Empty : $"\r\n {SelfSuffix}");
 
-                seer.RpcSetNamePrivate(SelfName, force: NoCache);
+                if (!isForMeeting)
+                    SelfName.Append("\r\n");
+
+                seer.RpcSetNamePrivate(SelfName.ToString(), force: NoCache);
             }
 
             // Start run loop for target only when condition is "true"
@@ -2192,177 +1990,209 @@ public static class Utils
                     }
                     else
                     {
-                        // ====== Add TargetMark for target ======
-
                         TargetMark.Clear();
-
-                        TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
-                        TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
-
-                        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
-
-                        if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
-                        {
-                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
-                        }
-
-                        if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
-
-                        if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
-                        else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
-
-                        // ====== Seer know target role ======
-
-                        bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
-
-                        string TargetRoleText = KnowRoleTarget
-                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, isForMeeting, false)}{GetProgressText(target)}</size>\r\n" : "";
-
-                        string BlankRT = string.Empty;
-
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Trickster))
-                        {
-                            BlankRT = Overseer.GetRandomRole(seer.PlayerId); // Random trickster role
-                            BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                        }
-                        // Same thing as Trickster but for Illusioned Coven
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsCovIllusioned(target.PlayerId))
-                        {
-                            BlankRT = Overseer.GetRandomRole(seer.PlayerId);
-                            BlankRT += TaskState.GetTaskState();
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                        }
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && Illusionist.IsNonCovIllusioned(target.PlayerId))
-                        {
-                            var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                            BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
-                            if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
-                            {
-                                BlankRT += randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false);
-                            }
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                        }
-
-                        // ====== Target player name ======
-
-                        string TargetPlayerName = target.GetRealName(isForMeeting);
-
-                        var tempNameText = seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName, isForMeeting);
-                        if (tempNameText != string.Empty)
-                            TargetPlayerName = tempNameText;
-
-                        // ========= Only During Meeting =========
-                        if (isForMeeting)
-                        {
-                            // Guesser Mode is On ID
-                            if (Options.GuesserMode.GetBool())
-                            {
-                                // seer & target is alive
-                                if (seer.IsAlive() && target.IsAlive())
-                                {
-                                    var GetTragetId = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
-
-                                    //Crewmates
-                                    if (Options.CrewmatesCanGuess.GetBool() && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Judge) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Lookout) && !seer.Is(CustomRoles.Swapper))
-                                        TargetPlayerName = GetTragetId;
-
-                                    else if (seer.Is(CustomRoles.NiceGuesser) && !Options.CrewmatesCanGuess.GetBool())
-                                        TargetPlayerName = GetTragetId;
-
-
-
-                                    //Impostors
-                                    if (Options.ImpostorsCanGuess.GetBool() && (seer.GetCustomRole().IsImpostor() || seer.GetCustomRole().IsMadmate()) && !seer.Is(CustomRoles.Councillor) && !seer.Is(CustomRoles.Nemesis))
-                                        TargetPlayerName = GetTragetId;
-
-                                    else if (seer.Is(CustomRoles.EvilGuesser) && !Options.ImpostorsCanGuess.GetBool())
-                                        TargetPlayerName = GetTragetId;
-
-
-
-                                    // Neutrals
-                                    if (Options.NeutralKillersCanGuess.GetBool() && seer.GetCustomRole().IsNK())
-                                        TargetPlayerName = GetTragetId;
-
-                                    if (Options.NeutralApocalypseCanGuess.GetBool() && seer.GetCustomRole().IsNA())
-                                        TargetPlayerName = GetTragetId;
-
-                                    if (Options.PassiveNeutralsCanGuess.GetBool() && seer.GetCustomRole().IsNonNK() && !seer.Is(CustomRoles.Doomsayer))
-                                        TargetPlayerName = GetTragetId;
-
-                                    if (Options.CovenCanGuess.GetBool() && seer.GetCustomRole().IsCoven())
-                                        TargetPlayerName = GetTragetId;
-                                }
-                            }
-                            else // Guesser Mode is Off ID
-                            {
-                                if (seer.IsAlive() && target.IsAlive())
-                                {
-                                    if (seer.Is(CustomRoles.NiceGuesser) || seer.Is(CustomRoles.EvilGuesser) ||
-                                        (seer.Is(CustomRoles.Guesser) && !seer.Is(CustomRoles.Inspector) && !seer.Is(CustomRoles.Swapper) && !seer.Is(CustomRoles.Lookout)))
-                                        TargetPlayerName = ColorString(GetRoleColor(seer.GetCustomRole()), target.PlayerId.ToString()) + " " + TargetPlayerName;
-                                }
-                            }
-                        }
-
-                        TargetPlayerName = TargetPlayerName.ApplyNameColorData(seer, target, isForMeeting);
-
-                        // ====== Add TargetSuffix for target (TargetSuffix visible ​​only to the seer) ======
                         TargetSuffix.Clear();
 
-                        TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
+                        switch (Options.CurrentGameMode)
+                        {
+                            case CustomGameMode.Standard:
+                                TargetMark.Append(seerRoleClass?.GetMark(seer, target, isForMeeting));
+                                TargetMark.Append(CustomRoleManager.GetMarkOthers(seer, target, isForMeeting));
 
-                        TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
-                        TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+                                if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
+                                    TargetMark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
+
+                                if (seer.IsPlayerCoven() && target.IsPlayerCoven() && CovenManager.HasNecronomicon(target))
+                                {
+                                    TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
+                                }
+
+                                if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
+                                    TargetMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
+
+                                if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
+                                {
+                                    TargetMark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                                }
+                                else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
+                                {
+                                    TargetMark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                                }
+
+                                TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
+
+                                TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+
+                                break;
+                        }
 
                         if (TargetSuffix.Length > 0)
                         {
                             TargetSuffix.Insert(0, "\r\n");
                         }
 
+                        // ====== Seer know target role ======
+
+                        bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
+
+                        TargetRoleName.Clear().Append(KnowRoleTarget
+                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, isForMeeting, false)}{GetProgressText(target)}</size>\r\n" : string.Empty);
+
+
+                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target))
+                        {
+                            var blankRT = new StringBuilder();
+                            if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(target.PlayerId))
+                            {
+                                blankRT.Clear().Append(Overseer.GetRandomRole(seer.PlayerId)); // Random trickster role
+                                blankRT.Append(TaskState.GetTaskState()); // Random task count for revealed trickster
+                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                            }
+                            if (Illusionist.IsNonCovIllusioned(target.PlayerId))
+                            {
+                                var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                                blankRT.Clear().Append(randomRole.GetColoredTextByRole(GetString(randomRole.ToString())));
+                                if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
+                                {
+                                    blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false));
+                                }
+                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                            }
+                        }
+
+                        // ====== Target player name ======
+
+                        TargetPlayerName.Clear().Append(target.GetRealName(isForMeeting));
+
+                        var tempNameText = new StringBuilder(seer.GetRoleClass()?.NotifyPlayerName(seer, target, TargetPlayerName.ToString(), isForMeeting));
+                        if (tempNameText.Length > 0)
+                        {
+                            TargetPlayerName.Clear().Append(tempNameText);
+                        }
+
+                        seerRole = seer.GetCustomRole();
+
+                        // ========= Only During Meeting =========
+                        if (isForMeeting)
+                        {
+                            var GetTragetId = new StringBuilder($"{seerRole.GetColoredTextByRole(target.PlayerId.ToString())} {TargetPlayerName}");
+
+                            // Guesser Mode is On ID
+                            if (Options.GuesserMode.GetBool())
+                            {
+                                // seer & target is alive
+                                if (seer.IsAlive() && target.IsAlive())
+                                {
+                                    //Crewmates
+                                    if (Options.CrewmatesCanGuess.GetBool() && seerRole.IsCrewmate() && !(seerRole is CustomRoles.Judge or CustomRoles.Inspector or CustomRoles.Lookout or CustomRoles.Swapper))
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+                                    else if (seer.Is(CustomRoles.NiceGuesser) && !Options.CrewmatesCanGuess.GetBool())
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+
+                                    //Impostors
+                                    if (Options.ImpostorsCanGuess.GetBool() && (seerRole.IsImpostor() || seerRole.IsMadmate()) && !(seerRole is CustomRoles.Councillor or CustomRoles.Nemesis))
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+                                    else if (seer.Is(CustomRoles.EvilGuesser) && !Options.ImpostorsCanGuess.GetBool())
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+
+                                    // Neutrals
+                                    if (Options.NeutralKillersCanGuess.GetBool() && seerRole.IsNK())
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+
+                                    if (Options.NeutralApocalypseCanGuess.GetBool() && seerRole.IsNA())
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+
+                                    if (Options.PassiveNeutralsCanGuess.GetBool() && seerRole.IsNonNK() && seerRole is not CustomRoles.Doomsayer)
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+
+                                    if (Options.CovenCanGuess.GetBool() && seerRole.IsCoven())
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+                                }
+                            }
+                            else // Guesser Mode is Off ID
+                            {
+                                if (seer.IsAlive() && target.IsAlive())
+                                {
+                                    if (seerRole is CustomRoles.NiceGuesser or CustomRoles.EvilGuesser || (seer.Is(CustomRoles.Guesser)
+                                        && !(seerRole is CustomRoles.Inspector or CustomRoles.Swapper or CustomRoles.Lookout)))
+                                    {
+                                        TargetPlayerName.Clear().Append(GetTragetId);
+                                    }
+                                }
+                            }
+                        }
+
+                        var nameColor = new StringBuilder(TargetPlayerName.ToString().ApplyNameColorData(seer, target, isForMeeting));
+                        TargetPlayerName.Clear().Append(nameColor);
+
                         // ====== Target Death Reason for target (Death Reason visible ​​only to the seer) ======
-                        string TargetDeathReason = seer.KnowDeathReason(target)
-                            ? $"\n<size={fontSizeDeathReason}>『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))}』</size>" : string.Empty;
+                        TargetDeathReason.Clear().Append(seer.KnowDeathReason(target)
+                            ? $"\n<size={fontSizeDeathReason}>『{CustomRoles.Doctor.GetColoredTextByRole(GetVitalText(target.PlayerId))}』</size>" : string.Empty);
 
                         // Devourer
-                        if (CustomRoles.Devourer.HasEnabled())
+                        if (Devourer.HasEnabled)
                         {
                             bool targetDevoured = Devourer.HideNameOfTheDevoured(target.PlayerId);
                             if (targetDevoured && !CamouflageIsForMeeting)
-                                TargetPlayerName = GetString("DevouredName");
+                                TargetPlayerName.Clear().Append(GetString("DevouredName"));
                         }
 
                         // Camouflage
                         if (!CamouflageIsForMeeting && Camouflage.IsCamouflage)
-                            TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
+                        {
+                            var oldName = TargetPlayerName.ToString();
+                            TargetPlayerName.Clear().Append($"<size=0%>{oldName}</size>");
+                        }
 
                         // Target Name
-                        string TargetName = $"{TargetRoleText}{TargetPlayerName}{TargetDeathReason}{TargetMark}{TargetSuffix}";
-                        //TargetName += TargetSuffix.ToString() == "" ? "" : ("\r\n" + TargetSuffix.ToString());
+                        var TargetName = new StringBuilder();
 
                         // Add protected player icon from ShieldPersonDiedFirst
                         if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting && Options.ShowShieldedPlayerToAll.GetBool())
                         {
-                            TargetName = $"{TargetRoleText}<color=#4fa1ff><u></color>{TargetPlayerName}</u>{TargetDeathReason}<color=#4fa1ff>✚</color>{TargetMark}{TargetSuffix}";
+                            TargetName.Append(TargetRoleName)
+                                .Append("<color=#4fa1ff><u></color>")
+                                .Append(TargetPlayerName)
+                                .Append("</u>")
+                                .Append(TargetDeathReason)
+                                .Append("<color=#4fa1ff>✚</color>")
+                                .Append(TargetMark)
+                                .Append(TargetSuffix);
+                        }
+                        else
+                        {
+                            TargetName
+                                .Append(TargetRoleName)
+                                .Append(TargetPlayerName)
+                                .Append(TargetDeathReason)
+                                .Append(TargetMark)
+                                .Append(TargetSuffix);
                         }
 
-                        realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
+                        realTarget.RpcSetNamePrivate(TargetName.ToString(), seer, force: NoCache);
                     }
                 }
             }
         }
         //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
-        Logger.Info($" END", "DoNotifyRoles");
-        return Task.CompletedTask;
+        Logger.Info(" END", "DoNotifyRoles");
     }
     public static void MarkEveryoneDirtySettings()
     {
@@ -2753,8 +2583,13 @@ public static class Utils
         }
         return null;
     }
-    public static string ColorString(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}</color>";
-    public static string ColorStringWithoutEnding(Color32 color, string str) => $"<color=#{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>{str}";
+    public static string ColorString(Color32 color, string str, bool withoutEnding = false)
+    {
+        var sb = new StringBuilder();
+        sb.Append("<color=#").Append($"{color.r:x2}{color.g:x2}{color.b:x2}{color.a:x2}>").Append(str);
+        if (!withoutEnding) sb.Append("</color>");
+        return sb.ToString();
+    }
     /// <summary>
     /// Darkness:１の比率で黒色と元の色を混ぜる。マイナスだと白色と混ぜる。
     /// </summary>

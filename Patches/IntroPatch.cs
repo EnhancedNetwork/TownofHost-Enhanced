@@ -86,7 +86,7 @@ class SetUpRoleTextPatch
         {
             // After showing team for non-modded clients update player names.
             IsInIntro = false;
-            Utils.DoNotifyRoles(ForceLoop: false, NoCache: true);
+            Utils.NotifyRoles(ForceLoop: false, NoCache: true);
         }
 
         if (GameStates.IsNormalGame)
@@ -929,7 +929,7 @@ class IntroCutsceneDestroyPatch
             }
             else
             {
-                Utils.DoNotifyRoles();
+                Utils.NotifyRoles();
             }
         }
 
