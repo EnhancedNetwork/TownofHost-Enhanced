@@ -5,6 +5,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
+using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using static TOHE.Roles.Core.CustomRoleManager;
@@ -317,11 +318,22 @@ public static class CustomRolesHelper
 
     public static bool IsRecruitingRole(this CustomRoles role)
         => role is
-            CustomRoles.Jackal or
+            //Crewmate
+            CustomRoles.Admirer or
+            CustomRoles.ChiefOfPolice or
+
+            //Impostor
+            CustomRoles.Gangster or
+            CustomRoles.Godfather or
+
+            //Neutral
             CustomRoles.Cultist or
-            CustomRoles.Necromancer or
+            CustomRoles.Infectious or
+            CustomRoles.Jackal or
             CustomRoles.Virus or
             CustomRoles.Spiritcaller or
+
+            //Coven
             CustomRoles.Ritualist;
 
     public static bool IsMadmate(this CustomRoles role)
@@ -412,6 +424,64 @@ public static class CustomRolesHelper
             CustomRoles.Circumvent or
             CustomRoles.Swift;
     }
+
+    public static CustomRoles GetBetrayalAddon(this PlayerControl pc, bool forRecruiter = false)
+    {
+        //Soulless and Egoist are excluded because they don't actually change player's team.
+        List<CustomRoles> BTAddonList = pc.GetCustomSubRoles().Where(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Egoist).ToList();
+
+        //Get player's betrayal add-on,NotAssigned if player doesn't have betrayal addon
+        var addon = BTAddonList.Any() ? BTAddonList.FirstOrDefault() : CustomRoles.NotAssigned;
+
+        //for recruiting roles to get their respective betrayal add-on
+        if (forRecruiter)
+        { 
+            if (addon is CustomRoles.NotAssigned)
+                return pc.GetCustomRole() switch //default addon for recruiting roles
+                {
+                    CustomRoles.Admirer => CustomRoles.Admired,
+                    CustomRoles.Gangster or CustomRoles.Godfather => CustomRoles.Madmate,
+                    CustomRoles.CursedSoul => CustomRoles.Soulless,
+                    CustomRoles.Cultist => CustomRoles.Charmed,
+                    CustomRoles.Infectious => CustomRoles.Infected,
+                    CustomRoles.Jackal => CustomRoles.Recruit,
+                    CustomRoles.Virus => CustomRoles.Contagious,
+                    CustomRoles.Ritualist => CustomRoles.Enchanted,
+                    _ => addon
+                };
+        }
+        
+        return addon;
+    }
+
+    public static bool CanBeRecruitedBy(this PlayerControl target, PlayerControl recruiter)
+    {
+        var addon = recruiter.GetBetrayalAddon(forRecruiter: true);
+        //Mini shouldn't be recruited
+        if (target.GetCustomRole() is CustomRoles.NiceMini or CustomRoles.EvilMini && Mini.Age < 18) return false;
+
+        //loyal can't be recruited
+        if (target.Is(CustomRoles.Loyal)) return false;
+                         
+        //target already has this addon
+        else if (target.Is(addon)) return false;
+
+        //settings disabled,hurried cant be recruited
+        else if (target.Is(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) return false;
+        
+        return addon switch
+        {
+            CustomRoles.Charmed => Cultist.CanBeCharmed(target),
+            CustomRoles.Madmate => recruiter.Is(CustomRoles.Gangster) ? target.CanBeMadmate(forGangster: true) : target.CanBeMadmate(forAdmirer: true),
+            CustomRoles.Admired => Admirer.CanBeAdmired(target, recruiter),
+            CustomRoles.Enchanted => Ritualist.CanBeConverted(target),
+            CustomRoles.Recruit => Jackal.CanBeSidekick(target),
+            CustomRoles.Infected => Infectious.CanBeBitten(target),
+            CustomRoles.Contagious => target.CanBeInfected(),
+            CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),//Cursed Soul recruits players to Soulless by default
+            _ => false
+        };
+    }    
 
     public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
