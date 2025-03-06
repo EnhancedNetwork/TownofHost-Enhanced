@@ -105,8 +105,8 @@ internal class Virus : RoleBase
             
             if (addon is CustomRoles.Admired)
             {
-                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                Admirer.SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+                Admirer.AdmiredList[_Player.PlayerId].Add(repprter.PlayerId);
+                Admirer.SendRPC(_Player.PlayerId, reporter.PlayerId); //Sync playerId list
             }             
         }
 
