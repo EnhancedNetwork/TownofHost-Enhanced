@@ -2294,7 +2294,7 @@
   "ShowCovenInLeftCommand": "Show <color=#ac42f2>Coven</color>",
   "SeeEjectedRolesInMeeting": "Ver los roles de los exiliados en las reuniones",
   "ThankYouForUsingTOHE": "Thank you for using TOHE!",
-  "ShowBetrayalAddonsOnEject": "Show Betrayal Add-ons of ejected players",
+  "ShowBetrayalAddonsOnEject": "Mostrar los complementos de traición de los jugadores expulsados",
   "SkillUsedLeft": "Has activado tu habilidad para llamar una reunión. \nUsos restantes:",
   "NemesisDeadMsg": "The death of the Nemesis means the beginning of the revenge. \nPlease use /rv + [player ID] to kill the specified player \nYou can see player ID's in front of their names. \nOr type /rv to get a list of player ID's",
   "NemesisAliveKill": "Revenge for the Nemesis can only begin after their death.",
