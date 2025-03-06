@@ -11,7 +11,7 @@ internal class Celebrity : RoleBase
     public override CustomRoles Role => CustomRoles.Celebrity;
     private const int Id = 6500;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateBasic;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
     //==================================================================\\
 
     private static OptionItem ImpKnowCelebrityDead;
