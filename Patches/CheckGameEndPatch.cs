@@ -142,7 +142,8 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Cultist:
-                        if ((pc.Is(CustomRoles.Charmed) || pc.Is(CustomRoles.Cultist)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Cultist) && (countType == CountTypes.Cultist || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
+                            pc.Is(CustomRoles.Charmed) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -154,7 +155,8 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Infectious:
-                        if ((pc.Is(CustomRoles.Infected) || pc.Is(CustomRoles.Infectious)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Infectious) && (countType == CountTypes.Infectious || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
+                            pc.Is(CustomRoles.Infected) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -166,13 +168,15 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Virus:
-                        if ((pc.Is(CustomRoles.Contagious) || pc.Is(CustomRoles.Virus)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Virus) && (countType == CountTypes.Virus || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
+                            pc.Is(CustomRoles.Contagious) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Jackal:
-                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit) || pc.Is(CustomRoles.Jackal)) && !WinnerIds.Contains(pc.PlayerId))
+                        if (((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Jackal)) && (countType == CountTypes.Cultist || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
+                            pc.Is(CustomRoles.Recruit) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
