@@ -59,12 +59,6 @@ internal class Rulebook : RoleBase
             killer.RpcChangeRoleBasis(CustomRoles.Bankrupt);
             killer.RpcSetCustomRole(CustomRoles.Bankrupt);
         }
-        if (killer.GetCustomRole().IsImpostor())
-        {
-            killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.RpcChangeRoleBasis(CustomRoles.Crewmate);
-            killer.RpcSetCustomRole(CustomRoles.Crewmate);
-        }
         if (killer.GetCustomRole().IsCoven())
         {
             if (HasNecronomicon(killer))
