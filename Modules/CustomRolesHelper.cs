@@ -654,6 +654,8 @@ public static class CustomRolesHelper
             case CustomRoles.FragileHunter:
                 if (!pc.CanUseKillButton())
                     return false;
+                if (pc.Is(CustomRoles.Fragile))
+                    return false;
                 break;
 
             case CustomRoles.Underclocked:
