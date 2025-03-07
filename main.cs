@@ -704,6 +704,7 @@ public enum CustomRoles
     CursedWolf,
     Dazzler,
     Deathpact,
+    Detonator,
     Devourer,
     Disperser,
     Diviner,

@@ -4557,5 +4557,13 @@
   "PredatorInfo": "Eliminate your prey",
   "PredatorInfoLong": "(Neutrals):\nAs the Predator, you are assigned 3 prey. To hunt for your prey, use your kill button on any player. If their name remains white they are not one of the prey. If their name turns orange they are one of the prey. If you use your kill button on a player with an Orange name, they will die. Eliminate all the prey to win.",
   "HuntCooldown342": "Hunt cooldown",
-  "ValkyrieBInfo": "Come back to life with your protect button"
+  "ValkyrieBInfo": "Come back to life with your protect button",
+
+  "Detonator": "Detonator",
+  "DetonatorInfo": "Turn players into bombs",
+  "DetonatorInfoLong": "As the Detonator, you can use your kill button to freeze a player. Using the unshift button you can kill the player and everyone around them. If you do not shapeshift in time, your target will be released. Double click to kill normally.",
+  "AbilityUses343": "Ability uses",
+  "FreezeTime343": "Freeze Time",
+  "ExplosionRadius343": "Explosion radius",
+  "DetonatorButtonText": "Freeze"
 }
