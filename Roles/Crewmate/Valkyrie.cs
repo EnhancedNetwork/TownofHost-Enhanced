@@ -24,7 +24,6 @@ internal class Valkyrie : RoleBase
     {
         new LateTask(() =>
         {
-            target.RpcChangeRoleBasis(CustomRoles.ValkyrieB);
             target.RpcSetCustomRole(CustomRoles.ValkyrieB, true);
         }, 1f, "Valkyrie Set Role");
         return true;
