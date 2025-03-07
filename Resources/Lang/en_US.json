@@ -2049,6 +2049,7 @@
   "CovenLeaderRetrain": "Retrain offered",
   "CovenLeaderNoRetrain": "You have ran out of Retrains!",
   "CovenLeaderRetrainNonCoven": "You can't retrain a non-Coven!",
+  "CovenLeaderRetrainNonHelper": "You can't retrain someone who isn't helping you!",
   "CovenLeaderAcceptRetrain": "The player you attempted to retrain has accepted your training and is now a <b>{0}</b>!",
   "CovenLeaderDeclineRetrain": "The player you attempted to retrain has declined your offer to retrain them into a <b>{0}</b>...",
   "RetrainNotification": "The <b>{0}</b> has requested to retrain you into a <b>{1}</b>.<br>Vote yourself to accept the offer, vote someone else to decline.",

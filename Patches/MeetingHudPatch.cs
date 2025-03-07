@@ -746,7 +746,7 @@ class CastVotePatch
 
 
         // Coven Leader Retraining
-        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId))
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
 
