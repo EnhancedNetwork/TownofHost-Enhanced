@@ -265,3 +265,71 @@ internal class DirtyAllDataPatch
         return false;
     }
 }
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.Serialize))]
+internal class NetworkedPlayerInfoSerializePatch
+{
+    public static bool Prefix(NetworkedPlayerInfo __instance, MessageWriter writer, bool initialState, ref bool __result)
+    {
+        writer.Write(__instance.PlayerId);
+        writer.WritePacked(__instance.ClientId);
+        writer.Write((byte)__instance.Outfits.Count);
+        foreach (Il2CppSystem.Collections.Generic.KeyValuePair<PlayerOutfitType, NetworkedPlayerInfo.PlayerOutfit> keyValuePair in __instance.Outfits)
+        {
+            writer.Write((byte)keyValuePair.Key);
+
+            if (initialState)
+            {
+                var oldOutfit = keyValuePair.Value;
+                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
+                playerOutfit.Set("", oldOutfit.ColorId, oldOutfit.HatId, oldOutfit.SkinId, oldOutfit.VisorId, oldOutfit.PetId, oldOutfit.NamePlateId);
+                playerOutfit.Serialize(writer);
+            }
+            else
+            {
+                keyValuePair.Value.Serialize(writer);
+            }
+        }
+        writer.WritePacked(__instance.PlayerLevel);
+        byte b = 0;
+        if (__instance.Disconnected)
+        {
+            b |= 1;
+        }
+        if (__instance.IsDead)
+        {
+            b |= 4;
+        }
+        writer.Write(b);
+        writer.Write((ushort)__instance.Role.Role);
+        writer.Write(__instance.RoleWhenAlive != null);
+        if (__instance.RoleWhenAlive != null)
+        {
+            writer.Write((ushort)__instance.RoleWhenAlive.Value);
+        }
+        if (__instance.Tasks != null)
+        {
+            writer.Write((byte)__instance.Tasks.Count);
+            for (int i = 0; i < __instance.Tasks.Count; i++)
+            {
+                __instance.Tasks[i].Serialize(writer);
+            }
+        }
+        else
+        {
+            writer.Write(0);
+        }
+        writer.Write(__instance.FriendCode ?? string.Empty);
+
+        if (GameStates.IsVanillaServer) // we can serialize empty puid safely on custom servers
+        {
+            writer.Write(__instance.Puid ?? string.Empty);
+        }
+        else
+        {
+            writer.Write(string.Empty);
+        }
+
+        return false;
+    }
+}
