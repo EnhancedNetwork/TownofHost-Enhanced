@@ -34,6 +34,7 @@ class OnGameJoinedPatch
         ErrorText.Instance.Clear();
         EAC.Init();
         Main.AllClientRealNames.Clear();
+        FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
