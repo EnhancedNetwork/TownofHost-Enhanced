@@ -3998,7 +3998,7 @@
   "BypassRateLimitAC": "Experimental Changes to Bypass RateLimit Anticheat",
   "Runner": "Runner",
   "ModeSpeedRun": "Mode Game: Speedrun",
-  "ModeDescribe.SpeedRun": "In the Speedrun Gamemode, everything is about speed. Everyone has to complete all tasks as fast as possible, then kill everyone else as fast as possible!\n\nWhen someone completes all their tasks, they become a Killer and can kill everyone else. The last player alive wins!\n\nThis Gamemode is a hybrid of the Free For All Gamemode.",
+  "ModeDescribe.SpeedRun": "Dans le mode Speedrun, tout est de vitesse. Tout le monde doit accomplir toutes les tâches aussi vite que possible, puis tuer tout le monde aussi vite que possible.",
   "RunnerInfo": "Complétez vos quêtes et tuez les autres.\nSoyez le dernier debout !",
   "RunnerInfoLong": "(Speedrun):\nEn tant que Exécuteur, vous devez compléter toutes vos quêtes pour devenir un Tueur et tuer d'autres Exécuteurs pour gagner.\nSoyez le dernier debout !",
   "SpeedRun": "Speedrun",
