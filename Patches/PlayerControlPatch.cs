@@ -1379,7 +1379,7 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (Options.ShowShieldedPlayerToAll.GetBool() || localPlayerId == playerId)
                     {
-                        oldRealName = RealName;
+                        oldRealName.Clear().Append(RealName);
                         RealName.Clear().Append("<color=#4fa1ff><u></color>").Append(oldRealName).Append("</u>");
                         Mark.Append("<color=#4fa1ff>✚</color>");
                     }
