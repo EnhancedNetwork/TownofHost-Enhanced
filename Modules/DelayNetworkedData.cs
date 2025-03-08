@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System;
@@ -302,11 +303,10 @@ internal class NetworkedPlayerInfoSerializePatch
         }
         writer.Write(b);
         writer.Write((ushort)__instance.Role.Role);
-        writer.Write(__instance.RoleWhenAlive != null);
-        if (__instance.RoleWhenAlive != null)
-        {
-            writer.Write((ushort)__instance.RoleWhenAlive.Value);
-        }
+
+        writer.Write(false); // for some very cool reason you cant get_RoleWhenAlive. It throws an exception.
+        // Serializing false here does not influence game play
+
         if (__instance.Tasks != null)
         {
             writer.Write((byte)__instance.Tasks.Count);
