@@ -22,8 +22,7 @@ internal class Harvester : CovenManager
     private static OptionItem MaxAddonsCoven;
     private static OptionItem MaxAddonsSelf;
 
-    private static readonly Dictionary<byte, List<byte>> SwapPlayers = [];
-
+    private static readonly Dictionary<byte, List<byte>> SwapPlayers = new Dictionary<byte, List<byte>>();
 
     public override void SetupCustomOption()
     {
