@@ -17,7 +17,7 @@ internal class Detonator : RoleBase
     //==================================================================\\
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {
-        hud.AbilityButton.buttonLabelText.text = GetString("DetonatorButtonText");
+        hud.KillButton.buttonLabelText.text = GetString("DetonatorButtonText");
     }
 
     private static OptionItem DetonatorKillCooldown;

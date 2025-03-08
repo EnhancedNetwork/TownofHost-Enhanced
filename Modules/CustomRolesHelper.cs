@@ -202,6 +202,7 @@ public static class CustomRolesHelper
             CustomRoles.Contaminator or
             CustomRoles.Massacre or
             CustomRoles.Rulebook or
+            CustomRoles.Volatile or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -1399,6 +1400,7 @@ public static class CustomRolesHelper
            CustomRoles.Contaminator => CountTypes.Contaminator,
            CustomRoles.Rulebook => CountTypes.Rulebook,
            CustomRoles.Massacre => CountTypes.Massacre,
+           CustomRoles.Volatile => CountTypes.Volatile,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
                
        };
@@ -1466,6 +1468,7 @@ public static class CustomRolesHelper
             CustomRoles.Contaminator => CustomWinner.Contaminator,
             CustomRoles.Massacre => CustomWinner.Massacre,
             CustomRoles.Rulebook => CustomWinner.Rulebook,
+            CustomRoles.Volatile => CustomWinner.Volatile,
             _ => throw new NotImplementedException()
 
         };
@@ -1508,6 +1511,7 @@ public static class CustomRolesHelper
             CountTypes.Contaminator => CustomRoles.Contaminator,
             CountTypes.Massacre => CustomRoles.Massacre,
             CountTypes.Rulebook => CustomRoles.Rulebook,
+            CountTypes.Volatile => CustomRoles.Volatile,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1605,5 +1609,6 @@ public enum CountTypes
     Slayer,
     Contaminator,
     Massacre,
-    Rulebook
+    Rulebook,
+    Volatile
 }

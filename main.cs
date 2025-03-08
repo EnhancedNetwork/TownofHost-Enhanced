@@ -936,6 +936,7 @@ public enum CustomRoles
     Vaporizer,
     Vector,
     VengefulRomantic,
+    Volatile,
     Virus,
     Vulture,
     War,
@@ -1150,6 +1151,7 @@ public enum CustomWinner
     Sorcerer = CustomRoles.Sorcerer,
     Rulebook = CustomRoles.Rulebook,
     Predator = CustomRoles.Predator,
+    Volatile = CustomRoles.Volatile,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
