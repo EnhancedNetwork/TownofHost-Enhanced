@@ -1,7 +1,7 @@
-using MS.Internal.Xml.XPath;
 using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -55,8 +55,7 @@ internal class CovenLeader : CovenManager
         if (killer.CheckDoubleTrigger(target, () => { Retrain(killer, target); }))
         {
             if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
-            {
-                
+            {                
                 return true;
             }
             killer.Notify(GetString("CovenDontKillOtherCoven"));
@@ -86,16 +85,26 @@ internal class CovenLeader : CovenManager
         // if every enabled coven role is already in the game then use one of them anyways
         if (retrainPlayer[target.PlayerId] == CustomRoles.Crewmate || retrainPlayer[target.PlayerId] == CustomRoles.CrewmateTOHE)
             retrainPlayer[target.PlayerId] = CustomRolesHelper.AllRoles.Where(role => (role.IsCoven() && (role.IsEnable()))).ToList().RandomElement();
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
+        if (IsHelper(killer, target)) {
+            target.Notify(string.Format(GetString("CovenLeaderRetrainInGameNotif"), CustomRoles.CovenLeader.ToColoredString(), retrainPlayer[target.PlayerId].ToColoredString()));
+            killer.Notify(string.Format(GetString("CovenLeaderRetrainInGameNotif"), target.GetRealName(), retrainPlayer[target.PlayerId].ToColoredString()));
+            target.GetRoleClass()?.OnRemove(target.PlayerId);
+            target.RpcChangeRoleBasis(retrainPlayer[target.PlayerId]);
+            target.RpcSetCustomRole(retrainPlayer[target.PlayerId]);
+            target.GetRoleClass()?.OnAdd(target.PlayerId);
+            retrainPlayer.Remove(target.PlayerId);
+            return;
+        }
+        killer.Notify(GetString("CovenLeaderRetrain"));
         foreach (byte cov in retrainPlayer.Keys)
         {
             SendMessage(string.Format(GetString("RetrainNotification"), CustomRoles.CovenLeader.ToColoredString(), retrainPlayer[cov].ToColoredString()), cov);
         }
-        killer.Notify(GetString("CovenLeaderRetrain"));
-        killer.ResetKillCooldown();
-        killer.SetKillCooldown();
     }
     private bool IsHelper(PlayerControl covenLeader, PlayerControl target)
     {
-        return target.IsPlayerCovenTeam() || (target.Is(CustomRoles.Romantic) && Romantic.BetPlayer[target.PlayerId] == covenLeader.PlayerId) || (target.Is(CustomRoles.Lawyer) && Lawyer.TargetList.Contains(covenLeader.PlayerId)) || (target.Is(CustomRoles.Medic) && Medic.IsProtected(covenLeader.PlayerId)) || (target.Is(CustomRoles.Lovers) && covenLeader.Is(CustomRoles.Lovers)) || (target.Is(CustomRoles.Monarch) && covenLeader.Is(CustomRoles.Knighted)) || (target.Is(CustomRoles.Follower) && Follower.BetPlayer[target.PlayerId] == covenLeader.PlayerId) || (target.Is(CustomRoles.SchrodingersCat) || SchrodingersCat.teammate[target.PlayerId] == covenLeader.PlayerId) || (target.Is(CustomRoles.CursedSoul) && covenLeader.Is(CustomRoles.Soulless)) || (target.Is(CustomRoles.Admirer) && covenLeader.Is(CustomRoles.Admired)) || (target.Is(CustomRoles.Cultist) && covenLeader.Is(CustomRoles.Charmed)) || (target.Is(CustomRoles.Jackal) && covenLeader.Is(CustomRoles.Recruit)) || (target.Is(CustomRoles.Gangster) && covenLeader.Is(CustomRoles.Madmate)) || (target.Is(CustomRoles.Infectious) && covenLeader.Is(CustomRoles.Infected)) || (target.Is(CustomRoles.Virus) && covenLeader.Is(CustomRoles.Contagious));
+        return target.Is(CustomRoles.Enchanted) || (target.Is(CustomRoles.Romantic) && Romantic.BetPlayer[target.PlayerId] == covenLeader.PlayerId) || (target.Is(CustomRoles.Lawyer) && Lawyer.TargetList.Contains(covenLeader.PlayerId)) || (target.Is(CustomRoles.Medic) && Medic.IsProtected(covenLeader.PlayerId)) || (target.Is(CustomRoles.Lovers) && covenLeader.Is(CustomRoles.Lovers)) || (target.Is(CustomRoles.Monarch) && covenLeader.Is(CustomRoles.Knighted)) || (target.Is(CustomRoles.Follower) && Follower.BetPlayer[target.PlayerId] == covenLeader.PlayerId) || (target.Is(CustomRoles.SchrodingersCat) || SchrodingersCat.teammate[target.PlayerId] == covenLeader.PlayerId) || (target.Is(CustomRoles.CursedSoul) && covenLeader.Is(CustomRoles.Soulless)) || (target.Is(CustomRoles.Admirer) && covenLeader.Is(CustomRoles.Admired)) || (target.Is(CustomRoles.Cultist) && covenLeader.Is(CustomRoles.Charmed)) || (target.Is(CustomRoles.Jackal) && covenLeader.Is(CustomRoles.Recruit)) || (target.Is(CustomRoles.Gangster) && covenLeader.Is(CustomRoles.Madmate)) || (target.Is(CustomRoles.Infectious) && covenLeader.Is(CustomRoles.Infected)) || (target.Is(CustomRoles.Virus) && covenLeader.Is(CustomRoles.Contagious));
     }
 }

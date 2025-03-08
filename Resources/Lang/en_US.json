@@ -2055,6 +2055,8 @@
   "RetrainNotification": "The <b>{0}</b> has requested to retrain you into a <b>{1}</b>.<br>Vote yourself to accept the offer, vote someone else to decline.",
   "RetrainAcceptOffer": "You have accepted the <b>{0}</b>'s retraining and you are now a <b>{1}</b>!",
   "RetrainDeclineOffer": "You declined the <b>{0}</b>'s retraining and your role has not been changed...",
+  "CovenLeaderRetrainInGame": "{0} has been retrained into a {1}!",
+  "CovenLeaderRetrainInGameNotif": "You have been retrained by the {0} into a {1}!",
 
   "RitualistMaxRitsPerRound": "Maximum Blood Rituals per Round",
   "RitualistTryHideMsg": "Try to hide Ritualist's commands",
