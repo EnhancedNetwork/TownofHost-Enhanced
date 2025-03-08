@@ -95,6 +95,7 @@ internal class CovenLeader : CovenManager
             target.RpcSetCustomRole(retrainPlayer[target.PlayerId]);
             target.GetRoleClass()?.OnAdd(target.PlayerId);
             retrainPlayer.Remove(target.PlayerId);
+            killer.RpcRemoveAbilityUse();
             return;
         }
         killer.Notify(GetString("CovenLeaderRetrain"));
