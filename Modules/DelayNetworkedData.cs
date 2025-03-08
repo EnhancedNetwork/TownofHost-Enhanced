@@ -330,6 +330,11 @@ internal class NetworkedPlayerInfoSerializePatch
             writer.Write(string.Empty);
         }
 
+        if (!initialState)
+        {
+            __instance.ClearDirtyBits();
+        }
+        __result = true;
         return false;
     }
 }
