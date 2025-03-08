@@ -283,7 +283,8 @@ internal class NetworkedPlayerInfoSerializePatch
             {
                 var oldOutfit = keyValuePair.Value;
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
-                playerOutfit.Set("", oldOutfit.ColorId, oldOutfit.HatId, oldOutfit.SkinId, oldOutfit.VisorId, oldOutfit.PetId, oldOutfit.NamePlateId);
+                Main.AllClientRealNames.TryGetValue(__instance.ClientId, out var name);
+                playerOutfit.Set(name ?? " ", oldOutfit.ColorId, oldOutfit.HatId, oldOutfit.SkinId, oldOutfit.VisorId, oldOutfit.PetId, oldOutfit.NamePlateId);
                 playerOutfit.Serialize(writer);
             }
             else
