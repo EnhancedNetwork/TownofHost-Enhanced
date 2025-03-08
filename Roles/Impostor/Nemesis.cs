@@ -192,7 +192,6 @@ internal class Nemesis : RoleBase
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckCanUseKillButton() ? DefaultKillCooldown : 300f;
     public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton();
 
     public static bool CheckCanUseKillButton()

@@ -138,14 +138,17 @@ public abstract class OptionItem
     public OptionItem HideInSpeedRun(CustomGameMode value = CustomGameMode.SpeedRun) => Do(i => i.HideOptionInSpeedRun = value);
     public OptionItem HideInShapeshiftWars(CustomGameMode value = CustomGameMode.ShapeshiftWars) => Do(i => i.HideOptionInShapeshiftWars = value);
 
-    public OptionItem SetParent(OptionItem parent) => Do(i =>
+    public OptionItem SetParent(OptionItem parent, bool OverrideRoleName = true) => Do(i =>
     {
-        foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name).ToArray())
+        if (OverrideRoleName)
         {
-            var roleName = Translator.GetString(Enum.GetName(typeof(CustomRoles), role.Key));
-            ReplacementDictionary ??= [];
-            ReplacementDictionary.TryAdd(roleName, Utils.ColorString(Utils.GetRoleColor(role.Key), roleName));
-            break;
+            foreach (var role in Options.CustomRoleSpawnChances.Where(x => x.Value.Name == parent.Name).ToArray())
+            {
+                var roleName = Translator.GetString(Enum.GetName(typeof(CustomRoles), role.Key));
+                ReplacementDictionary ??= [];
+                ReplacementDictionary.TryAdd(roleName, Utils.ColorString(Utils.GetRoleColor(role.Key), roleName));
+                break;
+            }
         }
 
         i.Parent = parent;
