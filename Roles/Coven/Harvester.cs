@@ -139,7 +139,7 @@ internal class Harvester : CovenManager
     }
     private void SwapAddons(PlayerControl player1, PlayerControl player2)
     {
-        if (SwapPlayers[_Player.PlayerId].Count() >= 2) return;
+        if (SwapPlayers[_Player.PlayerId].Count() != 2) return;
         if (player1 == null || player2 == null) return;
         List<CustomRoles> addons1 = new(player1.GetCustomSubRoles());
         List<CustomRoles> addons2 = new(player2.GetCustomSubRoles());
