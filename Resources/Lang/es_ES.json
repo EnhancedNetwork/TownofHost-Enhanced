@@ -4004,7 +4004,7 @@
   "SpeedRun": "Speedrun",
   "SpeedRun_NumCommonTasks": "Number of Common Tasks",
   "SpeedRun_NumShortTasks": "Number of Short Tasks",
-  "SpeedRun_NumLongTasks": "Number of Long Tasks",
+  "SpeedRun_NumLongTasks": "Número de tareas largas",
   "SpeedRun_RunnerNormalSpeed": "Initial Speed for Runner",
   "SpeedRun_RunnerKcd": "Initial Kill Cooldown after finishing tasks",
   "SpeedRun_RunnerKcdPerDeadPlayer": "Reduce Kill Cooldown per dead player",
