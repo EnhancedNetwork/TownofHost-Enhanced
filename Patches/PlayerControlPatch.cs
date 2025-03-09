@@ -1407,7 +1407,7 @@ class FixedUpdateInNormalGamePatch
                             if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
                                 Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                         }
-                        if (localPlayer.IsPlayerCoven() && player.IsPlayerCoven() && CovenManager.HasNecronomicon(player))
+                        if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
                         {
                             Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                         }

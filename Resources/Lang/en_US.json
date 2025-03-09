@@ -2073,6 +2073,7 @@
   "ConjurerRadius": "Blast Radius",
   "ConjurerNecroRadius": "Necronomicon Blast Radius",
   "ConjurerCovenDies": "<color=#ac42f2>Coven</color> can die in blast",
+  "ConjurerResetTarget": "Reset Target After Meeting",
   "ConjurerMark": "Location marked",
   "ConjurerMeteor": "Meteor summoned",
   "ConjurerNecroMark": "Player marked",

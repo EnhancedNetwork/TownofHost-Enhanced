@@ -2000,11 +2000,11 @@ public static class Utils
                                 if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                                     TargetMark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
 
-                                if (seer.IsPlayerCoven() && target.IsPlayerCoven() && CovenManager.HasNecronomicon(target))
+
+                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && CovenManager.HasNecronomicon(target))
                                 {
                                     TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                                 }
-
                                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                                     TargetMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
