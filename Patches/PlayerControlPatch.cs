@@ -258,7 +258,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start", "FirstDied.CheckMurder");
 
-        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (target.Puid != null && target.Puid.Length > 1 && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
             killer.SetKillCooldown(5f);
             killer.RpcGuardAndKill(target);
