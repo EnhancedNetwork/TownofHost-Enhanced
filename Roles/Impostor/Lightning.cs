@@ -72,6 +72,7 @@ internal class Lightning : RoleBase
     {
         if (killer == null || target == null || !killer.Is(CustomRoles.Lightning)) return false;
         if (IsGhost(target)) return false;
+        if (target.IsTransformedNeutralApocalypse()) return false;
 
         killer.RpcGuardAndKill();
         target.RpcGuardAndKill();

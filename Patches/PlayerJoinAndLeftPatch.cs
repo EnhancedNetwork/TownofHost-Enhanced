@@ -34,6 +34,7 @@ class OnGameJoinedPatch
         ErrorText.Instance.Clear();
         EAC.Init();
         Main.AllClientRealNames.Clear();
+        FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
         if (AmongUsClient.Instance.AmHost) // Execute the following only on the host
         {
@@ -68,7 +69,7 @@ class OnGameJoinedPatch
                     if (Main.NormalOptions.KillCooldown == 0f)
                         Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                    AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                    AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
 
                     if (AURoleOptions.ShapeshifterCooldown == 0f)
                         AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;

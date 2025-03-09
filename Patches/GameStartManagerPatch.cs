@@ -105,7 +105,7 @@ public class GameStartManagerPatch
                 if (Main.NormalOptions.KillCooldown == 0f)
                     Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
@@ -360,8 +360,8 @@ public class GameStartManagerBeginGamePatch
         //}
 
         IGameOptions opt = GameStates.IsNormalGame
-            ? Main.NormalOptions.Cast<IGameOptions>()
-            : Main.HideNSeekOptions.Cast<IGameOptions>();
+            ? Main.NormalOptions.CastFast<IGameOptions>()
+            : Main.HideNSeekOptions.CastFast<IGameOptions>();
 
         if (GameStates.IsNormalGame)
         {

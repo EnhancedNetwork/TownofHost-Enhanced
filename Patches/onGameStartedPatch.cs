@@ -52,6 +52,8 @@ internal class ChangeRoleSettings
             Main.PlayerStates = [];
             RoleAssign.RoleResult = [];
             KillTimerManager.Initializate();
+            AbilityUseManager.Initializate();
+
             Main.AllPlayerKillCooldown.Clear();
             Main.AllPlayerSpeed.Clear();
             Main.AllPlayerCustomRoles.Clear();
@@ -80,7 +82,7 @@ internal class ChangeRoleSettings
 
             Main.LastNotifyNames.Clear();
 
-            Main.FirstDiedPrevious = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDiedPrevious = Options.CurrentGameMode is CustomGameMode.Standard && Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -92,6 +94,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             VentSystemDeterioratePatch.LastClosestVent.Clear();
             VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime.Clear();
@@ -226,6 +229,9 @@ internal class ChangeRoleSettings
 
             //FFA
             FFAManager.Init();
+
+            //Speed Run
+            SpeedRun.Init();
 
             FallFromLadder.Reset();
             CustomWinnerHolder.Reset();
@@ -440,11 +446,11 @@ internal class StartGameHostPatch
                 Main.PlayerStates[pc.PlayerId].SetMainRole(role);
             }
 
-            if (Options.CurrentGameMode == CustomGameMode.FFA)
+            if (Options.CurrentGameMode is CustomGameMode.FFA)
             {
                 foreach (var pair in RoleAssign.RoleResult)
                 {
-                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
+                    pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, false, false);
                 }
                 goto EndOfSelectRolePatch;
             }
@@ -458,8 +464,11 @@ internal class StartGameHostPatch
 
             try
             {
-                AddonAssign.InitAndStartAssignLovers();
-                AddonAssign.StartSortAndAssign();
+                if (Options.CurrentGameMode is CustomGameMode.Standard)
+                {
+                    AddonAssign.InitAndStartAssignLovers();
+                    AddonAssign.StartSortAndAssign();
+                }
             }
             catch (Exception error)
             {
@@ -497,13 +506,6 @@ internal class StartGameHostPatch
 
         EndOfSelectRolePatch:
 
-            try
-            {
-                if (!AmongUsClient.Instance.IsGameOver)
-                    DestroyableSingleton<HudManager>.Instance.SetHudActive(true);
-            }
-            catch { }
-
             foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
                 pc.ResetKillCooldown();
 
@@ -522,6 +524,9 @@ internal class StartGameHostPatch
                     break;
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
+                    break;
+                case CustomGameMode.SpeedRun:
+                    GameEndCheckerForNormal.SetPredicateToSpeedRun();
                     break;
             }
 

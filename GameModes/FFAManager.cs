@@ -1,4 +1,5 @@
 using Hazel;
+using System.Text;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
@@ -36,6 +37,10 @@ internal static class FFAManager
 
     public static void SetupCustomOption()
     {
+        TextOptionItem.Create(10000030, "MenuTitle.FreeForAll", TabGroup.ModSettings)
+            .SetGameMode(CustomGameMode.FFA)
+            .SetColor(new Color32(0, 255, 165, byte.MaxValue));
+
         FFA_GameTime = IntegerOptionItem.Create(67_223_001, "FFA_GameTime", new(30, 600, 10), 300, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
@@ -410,6 +415,15 @@ internal static class FFAManager
         arrows += Utils.ColorString(Utils.GetRoleColor(CustomRoles.Killer), arrow);
 
         return arrows;
+    }
+
+    public static void AppendFFAKcount(StringBuilder builder)
+    {
+        int AliveFFAKiller = Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Killer));
+        int DeadFFASpectator = Main.AllPlayerControls.Count(x => x.Is(CustomRoles.Killer) && !x.IsAlive());
+
+        builder.Append(string.Format(GetString("Remaining.FFAKiller"), AliveFFAKiller));
+        builder.Append(string.Format("\n\r" + GetString("Remaining.FFASpectator"), DeadFFASpectator));
     }
 
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
