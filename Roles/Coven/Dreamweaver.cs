@@ -145,6 +145,7 @@ internal class Dreamweaver : CovenManager
         target.Notify(GetString("Dreamweaver.InsomniaNotification"));
         target.SetAbilityUseLimit(0);
         target.SetKillCooldownV3(999);
+        target.ResetKillCooldown();
     }
     private static bool IsDreamwoven(byte target)
     {
