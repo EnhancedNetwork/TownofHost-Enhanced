@@ -164,7 +164,7 @@ internal class Infectious : RoleBase
             && !pc.Is(CustomRoles.Loyal)
             && !pc.Is(CustomRoles.Cultist)
             && !pc.Is(CustomRoles.Enchanted)
-            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus) && !pc.IsTransformedNeutralApocalypse();
+            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus) && !pc.IsTransformedNeutralApocalypse() && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
