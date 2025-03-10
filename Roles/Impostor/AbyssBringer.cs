@@ -22,6 +22,7 @@ internal class AbyssBringer : RoleBase
     private static OptionItem BlackHoleMovesTowardsNearestPlayer;
     private static OptionItem BlackHoleMoveSpeed;
     private static OptionItem BlackHoleRadius;
+    private static OptionItem CanKillImpostors;
     private static OptionItem CanKillTNA;
 
     private readonly Dictionary<byte, BlackHoleData> BlackHoles = [];
@@ -48,6 +49,7 @@ internal class AbyssBringer : RoleBase
         BlackHoleRadius = FloatOptionItem.Create(Id + 15, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
             .SetParent(CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Multiplier);
+        CanKillImpostors = BooleanOptionItem.Create(Id + 19, "CanKillImpostors", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
         CanKillTNA = BooleanOptionItem.Create(Id + 20, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
     }
 
@@ -112,7 +114,6 @@ internal class AbyssBringer : RoleBase
         Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, blackHoleId, pos, roomName);
     }
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("AbyssbringerButtonText"));
-    // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Black Hole");
     public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var abyssbringer = _Player;
@@ -151,7 +152,7 @@ internal class AbyssBringer : RoleBase
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())
                 {
-                    if (nearestPlayer.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
+                    if (nearestPlayer.Is(Custom_Team.Impostor) && !CanKillImpostors.GetBool() || nearestPlayer.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
                     blackHole.PlayersConsumed++;
                     Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, id, (byte)blackHole.PlayersConsumed);
                     Notify();
