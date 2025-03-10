@@ -302,7 +302,7 @@ internal class StartGameHostPatch
         if (!ShipStatus.Instance)
         {
             int num = Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.MapId, 0, Constants.MapNames.Length - 1);
-            // Don't need this because Dleks Map sets in settings
+            // Don't need this because Dleks map sets in settings
             /* try
             {
                 if (num == 0 && AprilFoolsMode.ShouldFlipSkeld())
