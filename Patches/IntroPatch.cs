@@ -679,7 +679,7 @@ class BeginImpostorPatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
         // Be careful while you are doing this part
-        // This part occurs when local player got impostor base but may need to change to BeginCrewmate
+        // This part occurs when local player got Impostor base but may need to change to BeginCrewmate
         // or BeginCrewmate return false and call BeginImpostor
         // Do not make them call each other!
 
@@ -909,12 +909,25 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => true,
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
+                _ => false
+            };
+            bool shouldAntiBlackOut = Options.CurrentGameMode switch
+            {
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             try
             {
                 if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (shouldAntiBlackOut)
+                {
+                    _ = new LateTask(() =>
+                    {
+                        AntiBlackout.SetIsDead();
+                        Logger.Warn("Set is dead", "IntroPatch");
+                    }, 5f, "anti blackout");
+                }
             }
             catch (Exception error)
             {
