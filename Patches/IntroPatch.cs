@@ -637,15 +637,15 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = "Damn!!";
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "You Found The Secret Intro";
+            __instance.ImpostorText.text = "You found the Secret Intro";
             __instance.TeamTitle.color = new Color32(186, 3, 175, byte.MaxValue);
             StartFadeIntro(__instance, Color.yellow, Color.cyan);
         }
         if (Input.GetKey(KeyCode.RightControl))
         {
-            __instance.TeamTitle.text = "Warning!";
+            __instance.TeamTitle.text = "Warning!!";
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "Please stay away from all impostor based players";
+            __instance.ImpostorText.text = "Please stay away from all Impostor based players";
             __instance.TeamTitle.color = new Color32(241, 187, 2, byte.MaxValue);
             StartFadeIntro(__instance, new Color32(241, 187, 2, byte.MaxValue), Color.red);
         }
@@ -912,26 +912,22 @@ class IntroCutsceneDestroyPatch
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 _ => false
             };
-            bool shouldAntiBlackOut = Options.CurrentGameMode switch
-            {
-                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                _ => false
-            };
             try
             {
-                if (chatVisible) Utils.SetChatVisibleForEveryone();
-                if (shouldAntiBlackOut)
+                if (chatVisible)
                 {
+                    Utils.SetChatVisibleForEveryone();
+                    
                     _ = new LateTask(() =>
                     {
                         AntiBlackout.SetIsDead();
                         Logger.Warn("Set is dead", "IntroPatch");
-                    }, 5f, "anti blackout");
-                }
+                    }, 5f, "Anti Blackout");
+                }                
             }
             catch (Exception error)
             {
-                Logger.Error($"Error: {error}", "FFA chat visible");
+                Logger.Error($"Error: {error}", "Gamemode chat visible");
             }
 
             Utils.CheckAndSetVentInteractions();
