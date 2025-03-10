@@ -84,7 +84,7 @@ class SetUpRoleTextPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            // After showing team for non-modded clients update player names.
+            // After showing team for non-modded clients update player names
             IsInIntro = false;
             Utils.NotifyRoles(ForceLoop: false, NoCache: true);
         }
@@ -637,15 +637,15 @@ class BeginCrewmatePatch
         {
             __instance.TeamTitle.text = "Damn!!";
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "You Found The Secret Intro";
+            __instance.ImpostorText.text = "You found the Secret Intro";
             __instance.TeamTitle.color = new Color32(186, 3, 175, byte.MaxValue);
             StartFadeIntro(__instance, Color.yellow, Color.cyan);
         }
         if (Input.GetKey(KeyCode.RightControl))
         {
-            __instance.TeamTitle.text = "Warning!";
+            __instance.TeamTitle.text = "Warning!!";
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = "Please stay away from all impostor based players";
+            __instance.ImpostorText.text = "Please stay away from all Impostor based players";
             __instance.TeamTitle.color = new Color32(241, 187, 2, byte.MaxValue);
             StartFadeIntro(__instance, new Color32(241, 187, 2, byte.MaxValue), Color.red);
         }
@@ -679,7 +679,7 @@ class BeginImpostorPatch
     public static bool Prefix(IntroCutscene __instance, ref Il2CppSystem.Collections.Generic.List<PlayerControl> yourTeam)
     {
         // Be careful while you are doing this part
-        // This part occurs when local player got impostor base but may need to change to BeginCrewmate
+        // This part occurs when local player got Impostor base but may need to change to BeginCrewmate
         // or BeginCrewmate return false and call BeginImpostor
         // Do not make them call each other!
 
@@ -803,7 +803,7 @@ class IntroCutsceneDestroyPatch
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
 
-                    // When target is impostor, set name color as white
+                    // When target is Impostor, set name color as white
                     target.cosmetics.SetNameColor(Color.white);
                     target.Data.Role.NameColor = Color.white;
                 }
@@ -832,7 +832,7 @@ class IntroCutsceneDestroyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            // Set roleAssigned as false for override role for modded players
+            // Set roleAssigned as false for override role for modded clients
             // For override role for vanilla clients we use "Data.Disconnected" while assign
             pc.roleAssigned = false;
 
@@ -891,7 +891,6 @@ class IntroCutsceneDestroyPatch
                 }
             }
 
-
             if (GhostRoleAssign.forceRole.Any()) // Incase user has /up access
             {
                 // Needs to be delayed for the game to load it properly
@@ -909,16 +908,25 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => true,
+                CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             try
             {
-                if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (chatVisible)
+                {
+                    Utils.SetChatVisibleForEveryone();
+                    
+                    _ = new LateTask(() =>
+                    {
+                        AntiBlackout.SetIsDead();
+                        Logger.Warn("Set is dead", "IntroPatch");
+                    }, 5f, "Anti Blackout");
+                }
             }
             catch (Exception error)
             {
-                Logger.Error($"Error: {error}", "FFA chat visible");
+                Logger.Error($"Error: {error}", "Gamemode chat visible");
             }
 
             Utils.CheckAndSetVentInteractions();
