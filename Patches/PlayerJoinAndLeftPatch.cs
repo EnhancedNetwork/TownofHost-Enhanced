@@ -217,7 +217,7 @@ public static class OnPlayerJoinedPatch
                 {
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
                     AmongUsClient.Instance.KickPlayer(client.Id, false);
-                    Logger.Info($"Kicked client {client.Id}/{client.PlayerName} bcz PlayerControl is not spawned in time.", "OnPlayerJoinedPatchPostfix");
+                    Logger.Info($"Kicked client {client.Id}/{client.PlayerName} because PlayerControl is not spawned in time.", "OnPlayerJoinedPatchPostfix");
                     return;
                 }
 
@@ -228,7 +228,7 @@ public static class OnPlayerJoinedPatch
                 }
             }
             catch { }
-        }, 4.5f, "green bean kick late task", false);
+        }, 4.5f, "Green Bean Kick LateTask", false);
 
 
         if (AmongUsClient.Instance.AmHost && HasInvalidFriendCode(client.FriendCode) && Options.KickPlayerFriendCodeInvalid.GetBool() && !GameStates.IsLocalGame)
@@ -448,7 +448,7 @@ class OnPlayerLeftPatch
                     writer.SendMessage();
                 }
                 Main.HostClientId = AmongUsClient.Instance.HostId;
-                // We won't notify vanilla players for Host's quit bcz Niko doesn't know how to prevent message spamming
+                // We won't notify vanilla players for Host's quit because Niko doesn't know how to prevent message spamming
                 _ = new LateTask(() =>
                 {
                     if (!GameStates.IsOnlineGame) return;
