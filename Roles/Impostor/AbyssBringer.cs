@@ -11,10 +11,13 @@ namespace TOHE.Roles.Impostor;
 //EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/Impostor/Abyssbringer.cs
 internal class AbyssBringer : RoleBase
 {
+    //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Abyssbringer;
     const int Id = 31300;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
+    //==================================================================\\
+    
     private static OptionItem BlackHoleCountLimit;
     private static OptionItem BlackHolePlaceCooldown;
     private static OptionItem BlackHoleDespawnMode;
