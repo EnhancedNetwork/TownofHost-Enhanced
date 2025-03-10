@@ -923,7 +923,7 @@ class IntroCutsceneDestroyPatch
                         AntiBlackout.SetIsDead();
                         Logger.Warn("Set is dead", "IntroPatch");
                     }, 5f, "Anti Blackout");
-                }                
+                }
             }
             catch (Exception error)
             {
