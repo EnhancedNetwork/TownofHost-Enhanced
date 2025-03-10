@@ -82,7 +82,7 @@ internal class ChangeRoleSettings
 
             Main.LastNotifyNames.Clear();
 
-            Main.FirstDiedPrevious = Options.CurrentGameMode is CustomGameMode.Standard && Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDiedPrevious = Options.CurrentGameMode == CustomGameMode.Standard && Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -464,7 +464,7 @@ internal class StartGameHostPatch
 
             try
             {
-                if (Options.CurrentGameMode is CustomGameMode.Standard)
+                if (Options.CurrentGameMode == CustomGameMode.Standard)
                 {
                     AddonAssign.InitAndStartAssignLovers();
                     AddonAssign.StartSortAndAssign();
