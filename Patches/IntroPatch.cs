@@ -84,7 +84,7 @@ class SetUpRoleTextPatch
 
         if (AmongUsClient.Instance.AmHost)
         {
-            // After showing team for non-modded clients update player names.
+            // After showing team for non-modded clients update player names
             IsInIntro = false;
             Utils.NotifyRoles(ForceLoop: false, NoCache: true);
         }
@@ -803,7 +803,7 @@ class IntroCutsceneDestroyPatch
                     // Set all players as killable players
                     target.Data.Role.CanBeKilled = true;
 
-                    // When target is impostor, set name color as white
+                    // When target is Impostor, set name color as white
                     target.cosmetics.SetNameColor(Color.white);
                     target.Data.Role.NameColor = Color.white;
                 }
@@ -832,7 +832,7 @@ class IntroCutsceneDestroyPatch
 
         foreach (var pc in Main.AllPlayerControls)
         {
-            // Set roleAssigned as false for override role for modded players
+            // Set roleAssigned as false for override role for modded clients
             // For override role for vanilla clients we use "Data.Disconnected" while assign
             pc.roleAssigned = false;
 
