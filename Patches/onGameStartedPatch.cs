@@ -302,7 +302,7 @@ internal class StartGameHostPatch
         if (!ShipStatus.Instance)
         {
             int num = Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.MapId, 0, Constants.MapNames.Length - 1);
-            // No need this becouse Dleks map sets in settings
+            // Don't need this because Dleks Map sets in settings
             /* try
             {
                 if (num == 0 && AprilFoolsMode.ShouldFlipSkeld())
@@ -374,7 +374,7 @@ internal class StartGameHostPatch
 
         try
         {
-            // Block "RpcSetRole" for set desync roles for some players
+            // Block "RpcSetRole" for set Desync Roles for some players
             RpcSetRoleReplacer.Initialize();
 
             // Select custom Roles/Add-ons
