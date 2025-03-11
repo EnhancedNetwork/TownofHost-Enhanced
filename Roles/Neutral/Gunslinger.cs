@@ -313,38 +313,3 @@ internal class Gunslinger : RoleBase
         _ = new LateTask(() => { ShootoutCountdown(seconds - 1, pc); }, 1.01f, "Shootout Countdown");
     }
 }
-
-
-//  main.cs
-//  Gunslinger,
-//  Gunslinger = CustomRoles.Gunslinger
-
-//  en_US.json
-//  "Gunslinger": "Gunslinger",
-//  "GunslingerInfo": "It's high noon",
-//  "GunslingerInfoLong": "(Neutral): As the <color=#ffd700>Gunslinger</color>, use your kill button to mark a target each round. You will shootout duel your target the next meeting.\n\nWhen the meeting starts, the target gets a text notification and <size=3><color=#ffd700>¤</size></color> symbol. A configurable shootout countdown will instantly start.\n\nWhen the countdown reaches 0, a system message saying <color=#ff1919>SHOOT!!</color> is sent to the <color=#ffd700>Gunslinger</color> and target simultaneously. The first to type the <color=#007FFF>/shoot</color> command after the <color=#ff1919>SHOOT!!</color> indicator, wins the duel. The loser dies.\n\nTyping <color=#007FFF>/shoot</color> before the indicator kills you.\nWinning as the <color=#ffd700>Gunslinger</color> gives you a point.\n\nTIP: Pretype the /shoot message.",
-//  "TimeBeforeShootout": "Time Before Shootout",
-//  "GunslingerTryHideMsg": "Hide Gunslinger's Commands",
-//  "PointsNeededToWin": "Points Needed To Win",
-//  "GunslingerCanVent": "Gunslinger Can Vent",
-//  "GunslingerHasImpostorVision": "Gunslinger Has Impostor Vision",
-//  "GunslingerTargetAlreadyChosen": "Quick fingers huh? You already have a target.",
-//  "GunslingerDuelButtonText": "Duel",
-//  "GunslingerMeetingMsg": "You have initiated a duel.\nAfter <color=#ff1919>{0}</color> seconds, a shootout will emerge.\nThe shootout indicator, is a system message saying <size=3><color=#ff1919>SHOOT!!</size></color>\n\nWhen the shootout begins, send the <color=#007FFF>/shoot</color> command ASAP.\n<color=#ff1919><size=1.5>Typing /shoot before the shootout indicator kills you</color></size>\n\nIf you type /shoot before your target, you win the shootout and gain a point. Losing means you die.",
-//  "GunslingerTargetMeetingMsg": "The <color=#ffd700>Gunslinger</color> has dueled you.\nAfter <color=#ff1919>{0}</color> seconds, a shootout will emerge.\nThe shootout indicator, is a system message saying <size=3><color=#ff1919>SHOOT!!</size></color>\n\nWhen the shootout begins, send the <color=#007FFF>/shoot</color> command ASAP\n<color=#ff1919><size=1.5>Typing /shoot before the shootout indicator kills you</color></size>\n\nIf you type /shoot before the <color=#ffd700>Gunslinger</color>, you win the shootout. Losing means you die.",
-//  "GunslingerShotTooEarly": "You used /shoot too early, making you accidentally shoot yourself and die.",
-//  "GunslingerLostDuelBySpeed": "Your opponent used /shoot quicker, killing you.",
-//  "GunslingerShoot": "<color=#ffd1919><size=3>SHOOT!!!></color></color>",
-//  "WinnerRoleText.Gunslinger": "Gunslinger Wins!",
-
-
-//  roleColor.json
-//  "Gunslinger": "#FFD700"
-
-//  CustomRolesHelper.cs
-//  CustomRoles.Gunslinger => CustomWinner.Gunslinger,
-//  CustomRoles.Gunslinger or
-
-//  ChatCommandPatch.cs
-//  if (Gunslinger.GunslingerDuelCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
-//  if (Gunslinger.GunslingerDuelCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Gunslinger command", "OnReceiveChat"); return; }
