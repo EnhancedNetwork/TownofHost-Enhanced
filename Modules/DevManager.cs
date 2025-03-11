@@ -43,8 +43,10 @@ public static class DevManager
             // Lime
             new(code: "closebroom#5902", color: "#00ff00", tag: "The entire circus", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Lime"),
 
-            // Ape
+            // Ape old
             new(code: "simianpair#1270", color: "#0e2f44", tag: "Executive", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Ape"),
+            // Ape new
+            new(code: "apemv#5959", color: "#0e2f44", tag: "Executive", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "MV"),
 
             // Dailyhare
             new(code: "noshsame#8116", color: "#011efe", tag: "Bait Killer", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Dailyhare"),

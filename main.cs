@@ -943,6 +943,7 @@ public enum CustomRoles
     Werewolf,
     Workaholic,
     Wraith,
+    Gunslinger,
 
     //Coven
     Coven,
@@ -1152,6 +1153,7 @@ public enum CustomWinner
     Rulebook = CustomRoles.Rulebook,
     Predator = CustomRoles.Predator,
     Volatile = CustomRoles.Volatile,
+    Gunslinger = CustomRoles.Gunslinger,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

@@ -139,6 +139,7 @@ public static class CustomRolesHelper
             CustomRoles.Repellant or
             CustomRoles.Laborer or
             CustomRoles.Narc or
+            CustomRoles.Gunslinger or
             CustomRoles.Follower;
     }
     public static bool IsAmneCrew(this PlayerControl target)
@@ -1469,6 +1470,7 @@ public static class CustomRolesHelper
             CustomRoles.Massacre => CustomWinner.Massacre,
             CustomRoles.Rulebook => CustomWinner.Rulebook,
             CustomRoles.Volatile => CustomWinner.Volatile,
+            CustomRoles.Gunslinger => CustomWinner.Gunslinger,
             _ => throw new NotImplementedException()
 
         };
