@@ -83,8 +83,6 @@ public enum CustomRPC : byte // 185/255 USED
     BetterCheck = 150,
 
     SetCrewpostorTasksDone,
-    SetEvilTrackerTarget,
-    SetDrawPlayer,
     SetCurrentDrawTarget,
     RpcPassBomb,
     SyncRomanticTarget,
