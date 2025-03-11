@@ -196,7 +196,7 @@ public static class CustomRoleManager
         var killerRoleClass = killer.GetRoleClass();
         var killerSubRoles = killer.GetCustomSubRoles();
 
-        // If Target is possessed by Dollmaster swap controllers.
+        // If Target is possessed by Dollmaster swap controllers
         target = DollMaster.SwapPlayerInfo(target);
 
         Logger.Info("Start", "PlagueBearer.CheckAndInfect");
@@ -333,10 +333,10 @@ public static class CustomRoleManager
         // Check suicide
         var isSuicide = killer.PlayerId == target.PlayerId;
 
-        // target was murder by killer
+        // target was murder by Killer
         targetRoleClass.OnMurderPlayerAsTarget(killer, target, inMeeting, isSuicide);
 
-        // Check target add-ons
+        // Check target Add-ons
         if (targetSubRoles.Any())
             foreach (var subRole in targetSubRoles.ToArray())
             {
@@ -350,19 +350,19 @@ public static class CustomRoleManager
                         Bait.BaitAfterDeathTasks(trueDMKiller, target); // Use trueDMKiller to any roles that needs the Dollmaster to be the killer!
                         break;
 
-                    case CustomRoles.Trapper when !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
+                    case CustomRoles.Trapper when !inMeeting && !fromRole && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
                         killer.TrapperKilled(target);
                         break;
 
-                    case CustomRoles.Avanger when !inMeeting && !isSuicide:
+                    case CustomRoles.Avanger when !inMeeting && !fromRole && !isSuicide:
                         Avanger.OnMurderPlayer(target);
                         break;
 
-                    case CustomRoles.Burst when killer.IsAlive() && !inMeeting && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
+                    case CustomRoles.Burst when killer.IsAlive() && !inMeeting && !fromRole && !isSuicide && !killer.Is(CustomRoles.KillingMachine):
                         Burst.AfterBurstDeadTasks(killer, target);
                         break;
 
-                    case CustomRoles.Oiiai when !isSuicide:
+                    case CustomRoles.Oiiai when !fromRole && !isSuicide:
                         Oiiai.OnMurderPlayer(killer, target);
                         break;
 
@@ -380,7 +380,7 @@ public static class CustomRoleManager
         // Killer murder target
         killerRoleClass.OnMurderPlayerAsKiller(killer, target, inMeeting, isSuicide);
 
-        // Check killer add-ons
+        // Check Killer Add-ons
         if (killerSubRoles.Any())
             foreach (var subRole in killerSubRoles.ToArray())
             {
@@ -407,7 +407,7 @@ public static class CustomRoleManager
     }
 
     /// <summary>
-    /// Check if this task is marked by a role and do something.
+    /// Check if this task is marked by a role and do something
     /// </summary>
     public static void OthersCompleteThisTask(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
         => AllEnabledRoles.Do(RoleClass => RoleClass.OnOthersTaskComplete(player, task, playerIsOverridden, realPlayer));
@@ -516,8 +516,7 @@ public static class CustomRoleManager
         OtherCollectionsSet = true;
     }
 
-    // ADDONS ////////////////////////////
-
+    // ADDONS //
     public static void OnFixedAddonUpdate(this PlayerControl pc, bool lowload) => pc.GetCustomSubRoles().Do(x =>
     {
         if (AddonClasses.TryGetValue(x, out var IAddon) && IAddon != null)
