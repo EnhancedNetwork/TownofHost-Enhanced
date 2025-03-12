@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
-using System;
-using System.Text;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
+using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -22,24 +22,23 @@ internal class Ventguard : RoleBase
     private static OptionItem BlockVentCooldown;
     private static OptionItem BlockDoesNotAffectCrew;
     private static OptionItem BlocksResetOnMeeting;
-    public static OptionItem AbilityUseGainWithEachTaskCompleted;
 
     private readonly HashSet<int> BlockedVents = [];
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Ventguard);
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Ventguard);
         MaxGuards = IntegerOptionItem.Create(Id + 10, "Ventguard_MaxGuards", new(1, 30, 1), 3, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Ventguard]);
         BlockVentCooldown = IntegerOptionItem.Create(Id + 11, "Ventguard_BlockVentCooldown", new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Ventguard])
             .SetValueFormat(OptionFormat.Seconds);
         BlockDoesNotAffectCrew = BooleanOptionItem.Create(Id + 12, "Ventguard_BlockDoesNotAffectCrew", true, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Ventguard]);
         BlocksResetOnMeeting = BooleanOptionItem.Create(Id + 13, "Ventguard_BlocksResetOnMeeting", true, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard]);
-        AbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ventguard])
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Ventguard]);
+        VentguardAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 14, "AbilityUseGainWithEachTaskCompleted", new(0f, 5f, 0.05f), 1f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Ventguard])
             .SetValueFormat(OptionFormat.Times);
     }
 
@@ -49,7 +48,7 @@ internal class Ventguard : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxGuards.GetInt();
+        playerId.SetAbilityUseLimit(MaxGuards.GetInt());
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -66,10 +65,9 @@ internal class Ventguard : RoleBase
 
     public override void OnEnterVent(PlayerControl ventguard, Vent vent)
     {
-        if (AbilityLimit >= 1)
+        if (ventguard.GetAbilityUseLimit() > 0)
         {
-            AbilityLimit--;
-            SendSkillRPC();
+            ventguard.RpcRemoveAbilityUse();
 
             var ventId = vent.Id;
             BlockedVents.Add(ventId);
@@ -121,22 +119,5 @@ internal class Ventguard : RoleBase
                 }
             }
         }
-    }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor;
-        var TaskCompleteColor = Color.green;
-        var NonCompleteColor = Color.yellow;
-        var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-        TextColor = comms ? Color.gray : NormalColor;
-        string Completed2 = comms ? "?" : $"{taskState.CompletedTasksCount}";
-        Color TextColor21;
-        if (AbilityLimit < 1) TextColor21 = Color.red;
-        else TextColor21 = Color.white;
-        ProgressText.Append(Utils.ColorString(TextColor, $"({Completed2}/{taskState.AllTasksCount})"));
-        ProgressText.Append(Utils.ColorString(TextColor21, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
     }
 }
