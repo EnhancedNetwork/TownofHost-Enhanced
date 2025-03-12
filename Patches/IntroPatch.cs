@@ -884,7 +884,7 @@ class IntroCutsceneDestroyPatch
 
             foreach (var player in Main.AllPlayerControls)
             {
-                if (player.Is(CustomRoles.GM))
+                if (player.Is(CustomRoles.GM) && !AntiBlackout.IsCached)
                 {
                     player.RpcExile();
                     Main.PlayerStates[player.PlayerId].SetDead();
@@ -909,7 +909,10 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
+                /*
                 CustomGameMode.FFA => FFAManager.FFA_ShowChatInGame.GetBool(),
+                CustomGameMode.SpeedRun => SpeedRun.SpeedRun_ShowChatInGame.GetBool(),
+                */
                 _ => false
             };
             try
@@ -917,12 +920,6 @@ class IntroCutsceneDestroyPatch
                 if (chatVisible)
                 {
                     Utils.SetChatVisibleForEveryone();
-
-                    _ = new LateTask(() =>
-                    {
-                        AntiBlackout.SetIsDead();
-                        Logger.Warn("Set is dead", "IntroPatch");
-                    }, 5f, "Anti Blackout");
                 }
             }
             catch (Exception error)

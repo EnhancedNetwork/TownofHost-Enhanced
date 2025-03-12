@@ -4224,6 +4224,7 @@
   "TaskFinishedSeconds": "Tasks Finished in {0}s",
   "SpeedRun_LeaderBoard": "★ Cool Runners! ★",
   "MenuTitle.SpeedRun": "★ Speedrun ★",
+  "SpeedRun_ShowChatInGame": "Show Chat in Game",
 
   "MenuTitle.FreeForAll": "★ Free For All ★",
   "Remaining.FFAKiller": "There are <b>{0}</b> FFA Killer in game!",
