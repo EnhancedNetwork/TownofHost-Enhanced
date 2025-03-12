@@ -909,16 +909,25 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => true,
+                CustomGameMode.FFA => FFAManager.FFA_ShowChatInGame.GetBool(),
                 _ => false
             };
             try
             {
-                if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (chatVisible)
+                {
+                    Utils.SetChatVisibleForEveryone();
+
+                    _ = new LateTask(() =>
+                    {
+                        AntiBlackout.SetIsDead();
+                        Logger.Warn("Set is dead", "IntroPatch");
+                    }, 5f, "Anti Blackout");
+                }
             }
             catch (Exception error)
             {
-                Logger.Error($"Error: {error}", "FFA chat visible");
+                Logger.Error($"Error: {error}", "Gamemode chat visible");
             }
 
             Utils.CheckAndSetVentInteractions();
