@@ -746,7 +746,7 @@ class CastVotePatch
 
 
         // Coven Leader Retraining
-        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId))
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
 
@@ -783,8 +783,10 @@ class CastVotePatch
         }
 
         // Coven Necronomicon Voting
-
-        if (suspectPlayerId == 253 && voter.IsPlayerCoven())
+        if (voter.IsPlayerCoven() && Main.AllAlivePlayerControls.Count(x => x.IsPlayerCoven()) == 1) {
+            Logger.Info("Solo Coven, Necronomicon Votes will not Activate", "CastVotePatch");
+        }
+        else if (suspectPlayerId == 253 && voter.IsPlayerCoven())
         {
             if (!voter.GetRoleClass().HasVoted)
             {
@@ -916,6 +918,7 @@ static class ExtendedMeetingHud
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
 
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.VoidBallot)) VoteNum = 0;
+                if (Dreamweaver.IsInsomnia(ps.TargetPlayerId)) VoteNum = 0;
 
                 if (Jailer.IsTarget(ps.VotedFor) || Jailer.IsTarget(ps.TargetPlayerId)) VoteNum = 0; //jailed can't vote and can't get voted
 

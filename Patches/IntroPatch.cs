@@ -884,7 +884,7 @@ class IntroCutsceneDestroyPatch
 
             foreach (var player in Main.AllPlayerControls)
             {
-                if (player.Is(CustomRoles.GM))
+                if (player.Is(CustomRoles.GM) && !AntiBlackout.IsCached)
                 {
                     player.RpcExile();
                     Main.PlayerStates[player.PlayerId].SetDead();
@@ -909,16 +909,22 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => true,
+                /*
+                CustomGameMode.FFA => FFAManager.FFA_ShowChatInGame.GetBool(),
+                CustomGameMode.SpeedRun => SpeedRun.SpeedRun_ShowChatInGame.GetBool(),
+                */
                 _ => false
             };
             try
             {
-                if (chatVisible) Utils.SetChatVisibleForEveryone();
+                if (chatVisible)
+                {
+                    Utils.SetChatVisibleForEveryone();
+                }
             }
             catch (Exception error)
             {
-                Logger.Error($"Error: {error}", "FFA chat visible");
+                Logger.Error($"Error: {error}", "Gamemode chat visible");
             }
 
             Utils.CheckAndSetVentInteractions();
