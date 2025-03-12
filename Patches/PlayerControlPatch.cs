@@ -258,7 +258,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start", "FirstDied.CheckMurder");
 
-        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (target.Puid != null && target.Puid.Length > 1 && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
         {
             killer.SetKillCooldown(5f);
             killer.RpcGuardAndKill(target);
@@ -1379,7 +1379,7 @@ class FixedUpdateInNormalGamePatch
                 {
                     if (Options.ShowShieldedPlayerToAll.GetBool() || localPlayerId == playerId)
                     {
-                        oldRealName = RealName;
+                        oldRealName.Clear().Append(RealName);
                         RealName.Clear().Append("<color=#4fa1ff><u></color>").Append(oldRealName).Append("</u>");
                         Mark.Append("<color=#4fa1ff>✚</color>");
                     }
@@ -1407,7 +1407,7 @@ class FixedUpdateInNormalGamePatch
                             if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
                                 Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                         }
-                        if (localPlayer.IsPlayerCoven() && player.IsPlayerCoven() && CovenManager.HasNecronomicon(player))
+                        if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
                         {
                             Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                         }
@@ -1833,9 +1833,33 @@ class PlayerControlCheckNamePatch
         {
             if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModded())
             {
-                var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
-                AmongUsClient.Instance.FinishRpcImmediately(sender);
+                var version = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
+                AmongUsClient.Instance.FinishRpcImmediately(version);
             }
+
+            var sender = CustomRpcSender.Create("LobbyTagsSender", SendOption.Reliable);
+            foreach (var player in Main.AllPlayerControls)
+            {
+                if (player == null || player.PlayerId == __instance.PlayerId || player.Data == null || player.Data.Disconnected) continue;
+
+                Main.AllClientRealNames.TryGetValue(player.OwnerId, out var rName);
+                
+                if (rName != null && rName != player.Data.PlayerName)
+                {
+                    sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, __instance.OwnerId);
+                    sender.Write(player.Data.NetId);
+                    sender.Write(player.Data.PlayerName);
+                    sender.EndRpc();
+                }
+
+                if (sender.Length > 800)
+                {
+                    sender.SendMessage();
+                    sender = CustomRpcSender.Create("LobbyTagsSenderSub", SendOption.Reliable);
+                }
+            }
+            sender.SendMessage();
+
         }, 0.6f, "Retry Version Check", false);
     }
 }
