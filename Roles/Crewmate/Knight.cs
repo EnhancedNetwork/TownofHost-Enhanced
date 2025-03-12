@@ -112,5 +112,6 @@ internal class Requiter : RoleBase
     { 
         if (inMeeting || isSuicide) return;
         killer.RpcRemoveAbilityUse();
+        target.SetDeathReason(PlayerState.DeathReason.Retribution);
     }
 }
