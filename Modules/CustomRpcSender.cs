@@ -35,7 +35,6 @@ public class CustomRpcSender
     public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe)
     {
         stream = MessageWriter.Get(sendOption);
-
         this.name = name;
         this.sendOption = sendOption;
         this.isUnsafe = isUnsafe;
@@ -182,6 +181,8 @@ public class CustomRpcSender
         Logger.Info($"\"{name}\" is finished", "CustomRpcSender");
         stream.Recycle();
     }
+
+    public int Length => stream.Length;
 
     // Write
     #region PublicWriteMethods
