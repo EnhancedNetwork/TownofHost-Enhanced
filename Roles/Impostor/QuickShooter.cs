@@ -39,7 +39,7 @@ internal class QuickShooter : RoleBase
 
     public override void Add(byte playerId)
     {
-       playerId.SetAbilityUseLimit(0);
+        playerId.SetAbilityUseLimit(0);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)

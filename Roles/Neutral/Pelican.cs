@@ -2,14 +2,14 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
-using static TOHE.Utils;
+using UnityEngine;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 
@@ -181,6 +181,7 @@ internal class Pelican : RoleBase
                 if (killer == null || target == null) continue;
                 Main.AllPlayerSpeed[tar] = Main.AllPlayerSpeed[tar] - 0.5f + originalSpeed[tar];
                 ReportDeadBodyPatch.CanReport[tar] = true;
+                if (target.IsTransformedNeutralApocalypse()) continue;
                 target.RpcExileV2();
                 target.SetRealKiller(killer);
                 tar.SetDeathReason(PlayerState.DeathReason.Eaten);

@@ -380,9 +380,10 @@ public class AbstractPagingBehaviour : MonoBehaviour
 
     public virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.mouseScrollDelta.y > 0f)
+        bool chatIsOpen = HudManager.Instance.Chat.IsOpenOrOpening;
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || (!chatIsOpen && Input.mouseScrollDelta.y > 0f))
             Cycle(false);
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.mouseScrollDelta.y < 0f)
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || (!chatIsOpen && Input.mouseScrollDelta.y < 0f))
             Cycle(true);
     }
 
@@ -408,9 +409,25 @@ public class MeetingHudPagingBehaviour : AbstractPagingBehaviour
 
     [HideFromIl2Cpp]
     public IEnumerable<PlayerVoteArea> Targets => meetingHud.playerStates.OrderBy(p => p.AmDead);
-    public override int MaxPageIndex => (Targets.Count() - 1) / MaxPerPage;
+    public override int MaxPageIndex
+    {
+        get
+        {
+            if (maxPageIndex == -1)
+            {
+                maxPageIndex = (Targets.Count() - 1) / MaxPerPage;
+            }
+            return maxPageIndex;
+        }
+    }
 
-    public override void Start() => OnPageChanged();
+    private int maxPageIndex = -1;
+
+    public override void Start()
+    {
+        maxPageIndex = -1;
+        OnPageChanged();
+    }
 
     public override void Update()
     {

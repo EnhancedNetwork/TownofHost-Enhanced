@@ -56,15 +56,25 @@ class GameEndCheckerForNormal
         predicate.CheckForEndGame(out reason);
 
         // FFA
-        if (Options.CurrentGameMode == CustomGameMode.FFA)
+        switch (Options.CurrentGameMode)
         {
-            if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
-            {
-                ShipStatus.Instance.enabled = false;
-                StartEndGame(reason);
-                predicate = null;
-            }
-            return false;
+            case CustomGameMode.FFA:
+                if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
+                {
+                    ShipStatus.Instance.enabled = false;
+                    StartEndGame(reason);
+                    predicate = null;
+                }
+                return false;
+            case CustomGameMode.SpeedRun:
+                if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
+                {
+                    SpeedRun.RpcSyncSpeedRunStates();
+                    ShipStatus.Instance.enabled = false;
+                    StartEndGame(reason);
+                    predicate = null;
+                }
+                return false;
         }
 
         // Start end game
@@ -581,7 +591,7 @@ class GameEndCheckerForNormal
             if (winnerPC == null) continue;
 
             // Update winner name
-            Utils.DoNotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
+            Utils.NotifyRoles(SpecifyTarget: winnerPC, NoCache: true);
         }
 
         // Start End Game
@@ -590,6 +600,7 @@ class GameEndCheckerForNormal
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
+    public static void SetPredicateToSpeedRun() => predicate = new SpeedRunGameEndPredicate();
 
 
     // ===== Check Game End =====
@@ -818,7 +829,7 @@ public abstract class GameEndPredicate
         var systems = ShipStatus.Instance.Systems;
         LifeSuppSystemType LifeSupp;
         if (systems.ContainsKey(SystemTypes.LifeSupp) && // Confirmation of the existence of sabotage
-            (LifeSupp = systems[SystemTypes.LifeSupp].TryCast<LifeSuppSystemType>()) != null && // Castable Confirmation
+            (LifeSupp = systems[SystemTypes.LifeSupp].CastFast<LifeSuppSystemType>()) != null && // Castable Confirmation
             LifeSupp.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
@@ -835,7 +846,7 @@ public abstract class GameEndPredicate
 
         ICriticalSabotage critical;
         if (sys != null && // Confirmation of the existence of sabotage
-            (critical = sys.TryCast<ICriticalSabotage>()) != null && // Castable Confirmation
+            (critical = sys.CastFast<ICriticalSabotage>()) != null && // Castable Confirmation
             critical.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
