@@ -1554,7 +1554,8 @@ static class ExtendedPlayerControl
             || player.inMovingPlat // Moving Platform on Airhip and Zipline on Fungle
             || player.MyPhysics.Animations.IsPlayingEnterVentAnimation()
             || player.onLadder || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation()
-            || Pelican.IsEaten(player.PlayerId))
+            || Pelican.IsEaten(player.PlayerId)
+            || MoonDancer.IsBlasted(player.PlayerId))
         {
             return false;
         }
