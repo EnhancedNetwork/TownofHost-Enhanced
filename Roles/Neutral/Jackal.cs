@@ -223,12 +223,6 @@ internal class Jackal : RoleBase
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(role), GetString("GangsterSuccessfullyRecruited")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(role), GetString("BeRecruitedByJackal")));
 
-                if (role is CustomRoles.Sheriff)
-                {
-                    Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                    Admirer.SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-                } // if this doesnt exist ,Admired Jackal may not be able to see Sheriff recruited by them
-
                 if (role is CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned)
                     target.RpcSetCustomRole(addon);
 
