@@ -750,6 +750,7 @@ public enum CustomRoles
     Sniper,
     SoulCatcher,
     Stealth,
+    Sun,
     YinYanger,
     Swooper,
     TimeThief,

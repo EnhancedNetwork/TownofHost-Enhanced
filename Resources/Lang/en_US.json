@@ -4581,7 +4581,7 @@
 
   "Gunslinger": "Gunslinger",
   "GunslingerInfo": "It's high noon",
-  "GunslingerInfoLong": "(Neutral): As the <color=#ffd700>Gunslinger</color>, use your kill button to mark a target each round. You will shootout duel your target the next meeting.\n\nWhen the meeting starts, the target gets a text notification and <size=3><color=#ffd700>¤</size></color> symbol. A configurable shootout countdown will instantly start.\n\nWhen the countdown reaches 0, a system message saying <color=#ff1919>SHOOT!!</color> is sent to the <color=#ffd700>Gunslinger</color> and target simultaneously. The first to type the <color=#007FFF>/shoot</color> command after the <color=#ff1919>SHOOT!!</color> indicator, wins the duel. The loser dies.\n\nTyping <color=#007FFF>/shoot</color> before the indicator kills you.\nWinning as the <color=#ffd700>Gunslinger</color> gives you a point.\n\nTIP: Pretype the /shoot message.",
+  "GunslingerInfoLong": "(Neutrals):\nAs the <color=#ffd700>Gunslinger</color>, use your kill button to mark a target each round. You will shootout duel your target the next meeting.\n\nWhen the meeting starts, the target gets a text notification and <size=3><color=#ffd700>¤</size></color> symbol. A configurable shootout countdown will instantly start.\n\nWhen the countdown reaches 0, a system message saying <color=#ff1919>SHOOT!!</color> is sent to the <color=#ffd700>Gunslinger</color> and target simultaneously. The first to type the <color=#007FFF>/shoot</color> command after the <color=#ff1919>SHOOT!!</color> indicator, wins the duel. The loser dies.\n\nTyping <color=#007FFF>/shoot</color> before the indicator kills you.\nWinning as the <color=#ffd700>Gunslinger</color> gives you a point.\n\nTIP: Pretype the /shoot message.",
   "TimeBeforeShootout": "Time Before Shootout",
   "GunslingerTryHideMsg": "Hide Gunslinger's Commands",
   "PointsNeededToWin": "Points Needed To Win",
@@ -4594,5 +4594,10 @@
   "GunslingerShotTooEarly": "You used /shoot too early, making you accidentally shoot yourself and die.",
   "GunslingerLostDuelBySpeed": "Your opponent used /shoot quicker, killing you.",
   "GunslingerShoot": "<color=#ffd1919><size=3>SHOOT!!!></color></color>",
-  "WinnerRoleText.Gunslinger": "Gunslinger Wins!"
+  "WinnerRoleText.Gunslinger": "Gunslinger Wins!",
+
+  "Sun": "Sun",
+  "SunInfo": "Burn players while you are risen!",
+  "SunInfoLong": "(Impostors):\nAs the Sun, when you are alive, after every meeting a random non-Impostor player will die. If you run out of ability uses, a player will not die. You gain a certian amount of ability uses with each kill.",
+  "AbilityUses346": "Ability uses"
 }
