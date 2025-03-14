@@ -57,6 +57,7 @@ internal class Vector : RoleBase
     {
         pc.RpcIncreaseAbilityUseLimitBy(1);
         NotifyRoles(SpecifySeer: pc, ForceLoop: false);
+        pc.RPCPlayCustomSound("MarioJump");
 
         var count = pc.GetAbilityUseLimit();
         Logger.Info($"Vent count {count}", "Vector");
@@ -65,23 +66,12 @@ internal class Vector : RoleBase
         {
             if (!CustomWinnerHolder.CheckForConvertedWinner(pc.PlayerId))
             {
+                pc.RPCPlayCustomSound("MarioCoin");
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vector);
                 CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
             }
         }
     }
-    //public override void OnFixedUpdateLowLoad(PlayerControl player)
-    //{
-    //    if (VectorVentCount[player.PlayerId] >= VectorVentNumWin.GetInt())
-    //    {
-    //        VectorVentCount[player.PlayerId] = VectorVentNumWin.GetInt();
-    //        if (!CustomWinnerHolder.CheckForConvertedWinner(player.PlayerId))
-    //        {
-    //            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vector);
-    //            CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
-    //        }
-    //    }
-    //}
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Happy");
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
