@@ -139,6 +139,7 @@ internal class Vulture : RoleBase
     }
     private static void OnEatDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
     {
+        pc.RPCPlayCustomSound("Eat");
         pc.RpcIncreaseAbilityUseLimitBy(1);
         AbilityLeftInRound[pc.PlayerId]--;
         Logger.Msg($"target is null? {target == null}", "VultureNull");
