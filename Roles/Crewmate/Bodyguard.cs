@@ -11,7 +11,7 @@ internal class Bodyguard : RoleBase
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Bodyguard);
 
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateProtective;
     //==================================================================\\
 
     private static OptionItem ProtectRadiusOpt;

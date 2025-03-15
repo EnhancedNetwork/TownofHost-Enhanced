@@ -16,7 +16,7 @@ internal class Coroner : RoleBase
     private const int Id = 7700;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Coroner);
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static readonly Dictionary<byte, HashSet<byte>> CoronerTargets = [];

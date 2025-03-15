@@ -14,7 +14,7 @@ internal class Witness : RoleBase
     private const int Id = 10100;
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateInvestigative;
     //==================================================================\\
 
     private static OptionItem WitnessCD;
