@@ -69,6 +69,7 @@ internal class AnomalyManager
         {
             var role = former.Value;
             var player = Utils.GetPlayer(former.Key);
+            if (!player.IsAlive()) continue;
             player.RpcChangeRoleBasis(role);
             player.RpcSetCustomRole(role);
             FormerRoles.Remove(former.Key);
