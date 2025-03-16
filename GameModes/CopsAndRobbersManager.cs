@@ -411,7 +411,7 @@ internal static class CopsAndRobbersManager
                 finalRoles[pc.PlayerId] = CustomRoles.Cop;
                 RoleType.Cop.Add(pc.PlayerId);
                 pc.RpcSetCustomRole(CustomRoles.Cop);
-                pc.RpcChangeRoleBasis(CustomRoles.Cop);
+                pc.RpcChangeRoleBasis(CustomRoles.Shapeshifter);
                 optImpNum--;
             }
             else
@@ -419,7 +419,7 @@ internal static class CopsAndRobbersManager
                 finalRoles[pc.PlayerId] = CustomRoles.Robber;
                 RoleType.Robber.Add(pc.PlayerId);
                 pc.RpcSetCustomRole(CustomRoles.Robber);
-                pc.RpcChangeRoleBasis(CustomRoles.Robber);
+                pc.RpcChangeRoleBasis(CustomRoles.Engineer);
             }
             Logger.Msg($"set role for {pc.PlayerId}: {finalRoles[pc.PlayerId]}", "SetRoles");
         }
@@ -962,20 +962,20 @@ internal static class CopsAndRobbersManager
             }
             opt.SetInt(Int32OptionNames.KillDistance, killDistance);
         }
-        if (flashTrigger.ContainsKey(player.PlayerId) || smokeBombTriggered.ContainsKey(player.PlayerId))
+        if (flashTrigger.ContainsKey(player.PlayerId) && player.Is(CustomRoles.Robber))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, 0.05f);
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.05f);
             Logger.Warn($"vision for {player.PlayerId} set to 0.05f", "blind vision");
         }
-        else
+        if (smokeBombTriggered.ContainsKey(player.PlayerId) && player.Is(CustomRoles.Cop))
         {
-            opt.SetVision(player.Is(CustomRoles.Cop));
-            opt.SetFloat(FloatOptionNames.CrewLightMod, Main.DefaultCrewmateVision);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, Main.DefaultImpostorVision);
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, 0.05f);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 0.05f);
+            Logger.Warn($"vision for {player.PlayerId} set to 0.05f", "blind vision");
         }
-        return;
     }
 
     public static void AbilityDescription(string ability, byte playerId = byte.MaxValue)
