@@ -50,7 +50,7 @@ internal static class CopsAndRobbersManager
     public static int RoundTime;
 
     private static OptionItem GameTime;
-    public static OptionItem ShowChatInGame;
+    public static OptionItem CandR_ShowChatInGame;
 
     public static OptionItem CandR_NumCops;
     private static OptionItem CandR_CaptureCooldown;
@@ -94,7 +94,7 @@ internal static class CopsAndRobbersManager
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
 
-        ShowChatInGame = CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 1, "ShowChatInGame", false, TabGroup.ModSettings, false)
+        CandR_ShowChatInGame = CandR_NotifyRobbersWhenCaptured = BooleanOptionItem.Create(Id + 1, "ShowChatInGame", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.CandR);
 
         /*********** Cops ***********/
