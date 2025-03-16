@@ -580,16 +580,7 @@ public static class Utils
     {
         var state = Main.PlayerStates[playerId];
         string deathReason = state.IsDead ? state.deathReason == PlayerState.DeathReason.etc && state.Disconnected ? GetString("Disconnected") : GetString("DeathReason." + state.deathReason) : GetString("Alive");
-        if (Options.CurrentGameMode is CustomGameMode.CandR)
-        {
-            if (deathReason == GetString("Alive"))
-            {
-                if (CopsAndRobbersManager.captured.ContainsKey(playerId))
-                    deathReason = ColorString(GetRoleColor(CustomRoles.Robber), GetString("Captured"));
-                else deathReason = ColorString(Color.cyan, deathReason);
-            }
-            return deathReason;
-        }
+        
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
@@ -629,7 +620,6 @@ public static class Utils
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
-        if (Options.CurrentGameMode == CustomGameMode.CandR) return CopsAndRobbersManager.HasTasks(role); //C&R
 
         if (States.RoleClass != null && States.RoleClass.HasTasks(playerData, role, ForRecompute) == false)
             hasTasks = false;
@@ -708,9 +698,6 @@ public static class Utils
                 case CustomGameMode.FFA:
                     if (role is CustomRoles.Killer)
                         ProgressText.Append(FFAManager.GetDisplayScore(playerId));
-                    break;
-                case CustomGameMode.CandR:
-                    ProgressText.Append(CopsAndRobbersManager.GetProgressText(playerId));
                     break;
                 default:
                     ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
@@ -1678,8 +1665,6 @@ public static class Utils
             }
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
-            else if (Options.CurrentGameMode == CustomGameMode.CandR)
-                name = $"<color=#007bff><size=1.7>{GetString("ModeC&R")}</size></color>\r\n" + name;
         }
 
         var modtag = "";
@@ -2056,9 +2041,6 @@ public static class Utils
                 {
                     case CustomGameMode.FFA:
                         SelfSuffix.Append(FFAManager.GetPlayerArrow(seer));
-                        break;
-                    case CustomGameMode.CandR:
-                        SelfSuffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, seer));
                         break;
                 }
 
@@ -2634,7 +2616,7 @@ public static class Utils
 
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
-        if (Options.CurrentGameMode is CustomGameMode.CandR) return CopsAndRobbersManager.SummaryTexts(id, disableColor, check);
+        
         string name;
         try
         {

@@ -74,7 +74,6 @@ class CoBeginPatch
         RPC.RpcVersionCheck();
 
         FFAManager.SetData();
-        CopsAndRobbersManager.SetData();
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
@@ -135,13 +134,7 @@ class SetUpRoleTextPatch
                     __instance.RoleBlurbText.color = color;
                     __instance.RoleBlurbText.text = GetString("KillerInfo");
                     break;
-                case CustomGameMode.CandR: //C&R
-                    __instance.YouAreText.color = Utils.GetRoleColor(role);
-                    __instance.RoleText.text = Utils.GetRoleName(role);
-                    __instance.RoleText.color = Utils.GetRoleColor(role);
-                    __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
-                    __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
-                    break;
+                
                 default:
                     if (!role.IsVanilla())
                     {
@@ -441,23 +434,7 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("KillerInfo");
                 break;
-            case CustomGameMode.CandR: //C&R
-                __instance.TeamTitle.text = $"<size=75%>{GetString("C&R")}</size>";
-                __instance.ImpostorText.gameObject.SetActive(true);
-                __instance.ImpostorText.text = GetString("C&RShortInfo");
-                __instance.TeamTitle.color = Color.blue;
-                __instance.BackgroundBar.material.color = Color.blue;
-                StartFadeIntro(__instance, Color.blue, Color.red, changeInterval: 400);
-                switch (role)
-                {
-                    case CustomRoles.Cop:
-                        PlayerControl.LocalPlayer.Data.Role.IntroSound = ShipStatus.Instance.SabotageSound;
-                        break;
-                    case CustomRoles.Robber:
-                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                        break;
-                }
-                break;
+            
             default:
                 switch (role.GetCustomRoleTeam())
                 {
@@ -938,13 +915,12 @@ class IntroCutsceneDestroyPatch
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
+                
                 _ => false
             };
             bool shouldAntiBlackOut = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
                 _ => false
             };
             try

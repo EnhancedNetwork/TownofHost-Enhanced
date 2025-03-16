@@ -1697,10 +1697,6 @@ internal class ChatCommands
                     ChatManager.SendQuickChatSpam();
                     ChatManager.SendPreviousMessagesToAll();
                     break;
-                case "/ability":
-                    subArgs = args.Length < 2 ? "" : args[1];
-                    CopsAndRobbersManager.AbilityDescription(subArgs);
-                    break;  
             }
         }
         goto Skip;
@@ -2095,43 +2091,6 @@ internal class ChatCommands
         {
             case CustomGameMode.FFA:
                 Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
-                return;
-            case CustomGameMode.CandR:
-                var copName = GetString(CustomRoles.Cop.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
-                var robberName = GetString(CustomRoles.Robber.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
-                var Conf1 = new StringBuilder();
-
-                CustomRoles rl1;
-                if (role == copName) rl1 = CustomRoles.Cop;
-                else if (role == robberName) rl1 = CustomRoles.Robber;
-                else
-                {
-                    Utils.SendMessage(GetString("ModeDescribe.C&R"), playerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cop), GetString("ModeC&R")));
-                    return;
-                }
-
-                var description = rl1.GetInfoLong();
-                var title1 = Utils.ColorString(Utils.GetRoleColor(rl1), GetString($"{rl1}"));
-                string rlHex1 = Utils.GetRoleColorCode(rl1);
-                var Setting = $"<size={Csize}><color={rlHex1}>{GetString(rl1.ToString())} {GetString("Settings:")}</color>\n";
-                Conf1.Clear().Append(Setting);
-
-                foreach (OptionItem opt in CopsAndRobbersManager.roleSettings[rl1])
-                {
-                    Conf1.Append($"{opt.GetName(true)}: {opt.GetString()}\n");
-                    int deep = 0;
-                    if (opt.Children.Any()) deep = 1;
-                    Utils.ShowChildrenSettings(opt, ref Conf1, deep: deep);
-                    var cleared = Conf1.ToString();
-                    Conf1.Clear().Append($"<color=#ffffff>{cleared}</color>");
-                }
-                Conf1.Append("</size>");
-
-                // Show Role Info
-                Utils.SendMessage(description, playerId, title1, noReplay: true);
-
-                // Show Role Settings
-                Utils.SendMessage("", playerId, Conf1.ToString(), noReplay: true);
                 return;
         }
         if (role.StartsWith("/up")) _ = role.Replace("/up", string.Empty);
@@ -3593,10 +3552,6 @@ internal class ChatCommands
                     MurderPlayerPatch.AfterPlayerDeathTasks(target, target, GameStates.IsMeeting);
                     Utils.SendMessage(string.Format(GetString("Message.ExecutedNonHost"), target.Data.PlayerName, player.Data.PlayerName));
                 }
-                break;
-            case "/ability":
-                subArgs = args.Length < 2 ? "" : args[1];
-                CopsAndRobbersManager.AbilityDescription(subArgs, player.PlayerId);
                 break;
 
             default:
