@@ -92,6 +92,7 @@ internal class Solsticer : RoleBase
         var taskState = player.GetPlayerTaskState();
         if (taskState.IsTaskFinished)
         {
+            player.RPCPlayCustomSound("Congrats");
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Solsticer);
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
