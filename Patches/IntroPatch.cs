@@ -915,7 +915,6 @@ class IntroCutsceneDestroyPatch
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                
                 _ => false
             };
             bool shouldAntiBlackOut = Options.CurrentGameMode switch
