@@ -21,12 +21,14 @@ internal class Revenant : RoleBase
     {
         CustomRoles role = killer.GetCustomRole();
 
-        killer.RpcMurderPlayer(killer);
-        killer.SetRealKiller(target);
+        
 
         target.RpcChangeRoleBasis(role);
         target.RpcSetCustomRole(role);
         target.GetRoleClass()?.OnAdd(target.PlayerId);
+
+        killer.RpcMurderPlayer(killer);
+        killer.SetRealKiller(target);
 
         target.Notify(string.Format(GetString("RevenantTargeted"), Utils.GetRoleName(role)));
 
