@@ -103,10 +103,10 @@ internal class Predator : RoleBase
         }
         if (AlivePrey.Count == 0)
         {
-            if (!CheckForConvertedWinner(killer.PlayerId))
+            if (!CheckForConvertedWinner(_Player.PlayerId))
             {
                 ResetAndSetWinner(CustomWinner.Predator);
-                WinnerIds.Add(killer.PlayerId);
+                WinnerIds.Add(_Player.PlayerId);
             }
         }
     }
