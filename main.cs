@@ -857,6 +857,7 @@ public enum CustomRoles
     Follower,
     Glitch,
     God,
+    Gunslinger,
     Hater,
     Huntsman,
     Imitator,
@@ -1093,6 +1094,7 @@ public enum CustomWinner
     Shocker = CustomRoles.Shocker,
     Apocalypse = CustomRoles.Apocalypse,
     Coven = CustomRoles.Coven,
+    Gunslinger = CustomRoles.Gunslinger,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
