@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
+using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
@@ -35,7 +36,6 @@ internal class Doomsayer : RoleBase
     private static OptionItem DoomsayerTryHideMsg;
     private static OptionItem ImpostorVision;
     private static OptionItem EasyMode;
-    private static OptionItem EvenEasierMode;
     private static OptionItem ObserveCooldown;
 
     private readonly HashSet<CustomRoles> GuessedRoles = [];
@@ -68,8 +68,7 @@ internal class Doomsayer : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         ObserveCooldown = FloatOptionItem.Create(Id + 29, "DoomsayerObserveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(EasyMode)
             .SetValueFormat(OptionFormat.Seconds);
-        EvenEasierMode = BooleanOptionItem.Create(Id + 28, "DoomsayerEvenEasierMode", false, TabGroup.NeutralRoles, true)
-            .SetParent(EasyMode).SetHidden(true);
+        
 
         AdvancedSettings = BooleanOptionItem.Create(Id + 16, "DoomsayerAdvancedSettings", true, TabGroup.NeutralRoles, true)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doomsayer]);
@@ -274,8 +273,7 @@ internal class Doomsayer : RoleBase
     {
         if (killer == null || target == null) return false;
         if (!EasyMode.GetBool()) return false;
-        if (!EvenEasierMode.GetBool()) MsgToSend[killer.PlayerId].Add(string.Format(ObserveRiddleMsg(target), target.GetRealName()));
-        else MsgToSend[killer.PlayerId].Add(string.Format(ObserveRiddleMsg(target), target.GetRealName()) + "<br><size=1>" + ObserveRolesMsg(target) + "</size>");
+        MsgToSend[killer.PlayerId].Add(string.Format(ObserveRiddleMsg(target), target.GetRealName()));
         killer.Notify(string.Format(GetString("DoomsayerObserveNotif"), target.GetRealName()));
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
@@ -291,509 +289,70 @@ internal class Doomsayer : RoleBase
     {
         string result = "DoomsayerObserve.";
         var role = player.GetCustomRole();
+        if (role == CustomRoles.GM)
+        {
+            return GetString(result + "GM");
+        }
         if (role.IsGhostRole())
         {
             return GetString(result + "Dead");
         }
-        if (Main.PlayerStates[player.PlayerId].IsNecromancer)
+        if (Main.PlayerStates[player.PlayerId].IsNecromancer || Illusionist.IsNonCovIllusioned(player.PlayerId)|| role is CustomRoles.SchrodingersCat or CustomRoles.Glitch)
         {
-            return GetString(result + "Bodies");
+            return GetString(result + "Unknown");
         }
-        if (role.IsVanilla())
+        if (role.IsVanilla() || Illusionist.IsCovIllusioned(player.PlayerId) || role == CustomRoles.Trickster)
         {
             return GetString(result + "Basic");
         }
-        if (role.IsRevealingRole(player))
+        if (role.IsRevealingRole(player) || role == CustomRoles.Solsticer)
         {
             return GetString(result + "Obvious");
         }
-        switch (role)
+        if (DCanGuessAdt.GetBool() && player.IsAnySubRole(sub => sub.IsConverted()))
         {
-            case CustomRoles.Arrogance:
-            case CustomRoles.Berserker:
-            case CustomRoles.Blackmailer:
-            case CustomRoles.Bomber:
-            case CustomRoles.Captain:
-            case CustomRoles.ChiefOfPolice:
-            case CustomRoles.Councillor:
-            case CustomRoles.CovenLeader:
-            case CustomRoles.Death:
-            case CustomRoles.Demon:
-            case CustomRoles.Dictator:
-            case CustomRoles.God:
-            case CustomRoles.Godfather:
-            case CustomRoles.Famine:
-            case CustomRoles.Infectious:
-            case CustomRoles.Instigator:
-            case CustomRoles.Jailer:
-            case CustomRoles.Judge:
-            case CustomRoles.Mayor:
-            case CustomRoles.Marshall:
-            case CustomRoles.Monarch:
-            case CustomRoles.Parasite:
-            case CustomRoles.Pestilence:
-            case CustomRoles.Pitfall:
-            case CustomRoles.Poisoner:
-            case CustomRoles.President:
-            case CustomRoles.SerialKiller:
-            case CustomRoles.Shocker:
-            case CustomRoles.Sheriff:
-            case CustomRoles.Twister:
-            case CustomRoles.Vampire:
-            case CustomRoles.Vindicator:
-            case CustomRoles.Virus:
-            case CustomRoles.War:
+            return GetString(result + "Secret");
+        }
+        if (role == CustomRoles.God)
+        {
+            return GetString(result + "Fear");
+        }
+        switch (role.GetCustomRoleType())
+        {
+            case Custom_RoleType.CrewmateVanilla:          
+            case Custom_RoleType.CrewmateBasic:          
+            case Custom_RoleType.NeutralBenign:          
+            case Custom_RoleType.ImpostorVanilla:   
+                result += "Basic";
+                break;
+            case Custom_RoleType.CrewmatePower:
+            case Custom_RoleType.CovenPower:
+            case Custom_RoleType.NeutralApocalypse:
                 result += "Fear";
                 break;
-            case CustomRoles.Abyssbringer:
-            case CustomRoles.Chameleon:
-            case CustomRoles.Chronomancer:
-            case CustomRoles.Conjurer:
-            case CustomRoles.Deathpact:
-            case CustomRoles.Eraser:
-            case CustomRoles.Guardian:
-            case CustomRoles.FortuneTeller:
-            case CustomRoles.HexMaster:
-            case CustomRoles.Lightning:
-            case CustomRoles.Medusa:
-            case CustomRoles.MoonDancer:
-            case CustomRoles.Observer:
-            case CustomRoles.Oracle:
-            case CustomRoles.Overseer:
-            case CustomRoles.Pixie:
-            case CustomRoles.Psychic:
-            case CustomRoles.RiftMaker:
-            case CustomRoles.ShapeMaster:
-            case CustomRoles.SoulCatcher:
-            case CustomRoles.Specter:
-            case CustomRoles.Swooper:
-            case CustomRoles.TimeMaster:
-            case CustomRoles.Transporter:
-            case CustomRoles.Warlock:
-            case CustomRoles.Wildling:
-            case CustomRoles.Witch:
-            case CustomRoles.Wraith:
-            case CustomRoles.YinYanger:
-                result += "Magic";
-                break;
-            case CustomRoles.Alchemist:
-            case CustomRoles.Baker:
-            case CustomRoles.Camouflager:
-            case CustomRoles.Celebrity:
-            case CustomRoles.Cleanser:
-            case CustomRoles.Consigliere:
-            case CustomRoles.CopyCat:
-            case CustomRoles.Dazzler:
-            case CustomRoles.Deputy:
-            case CustomRoles.Doomsayer:
-            case CustomRoles.EvilGuesser:
-            case CustomRoles.EvilHacker:
-            case CustomRoles.EvilTracker:
-            case CustomRoles.Inspector:
-            case CustomRoles.Investigator:
-            case CustomRoles.Keeper:
-            case CustomRoles.Knight:
-            case CustomRoles.Lookout:
-            case CustomRoles.Mechanic:
-            case CustomRoles.Medic:
-            case CustomRoles.Merchant:
-            case CustomRoles.NiceGuesser:
-            case CustomRoles.Pickpocket:
-            case CustomRoles.PlagueDoctor:
-            case CustomRoles.PlagueBearer:
-            case CustomRoles.PotionMaster:
-            case CustomRoles.QuickShooter:
-            case CustomRoles.Ritualist:
-            case CustomRoles.Sniper:
-            case CustomRoles.Stealth:
-            case CustomRoles.TaskManager:
-            case CustomRoles.Telecommunication:
-            case CustomRoles.TimeThief:
-            case CustomRoles.Veteran:
-            case CustomRoles.Visionary:
-                result += "Skilled";
-                break;
-            case CustomRoles.Agitater:
-            case CustomRoles.AntiAdminer:
-            case CustomRoles.Bandit:
-            case CustomRoles.Benefactor:
-            case CustomRoles.Bodyguard:
-            case CustomRoles.BountyHunter:
-            case CustomRoles.Disperser:
-            case CustomRoles.DoubleAgent:
-            case CustomRoles.Escapist:
-            case CustomRoles.Fireworker:
-            case CustomRoles.Huntsman:
-            case CustomRoles.Imitator:
-            case CustomRoles.Jackal:
-            case CustomRoles.KillingMachine:
-            case CustomRoles.Lawyer:
-            case CustomRoles.Lighter:
-            case CustomRoles.Maverick:
-            case CustomRoles.Miner:
-            case CustomRoles.Ninja:
-            case CustomRoles.Opportunist:
-            case CustomRoles.Quizmaster:
-            case CustomRoles.Seeker:
-            case CustomRoles.TimeManager:
-            case CustomRoles.Vector:
-            case CustomRoles.Ventguard:
-            case CustomRoles.Workaholic:
+            case Custom_RoleType.CrewmateSupport:
+            case Custom_RoleType.CovenUtility:
+            case Custom_RoleType.ImpostorSupport:
+            case Custom_RoleType.NeutralEvil:
+            case Custom_RoleType.NeutralChaos:
                 result += "Dedicated";
                 break;
-            case CustomRoles.Addict:
-            case CustomRoles.Cultist:
-            case CustomRoles.Deceiver:
-            case CustomRoles.Devourer:
-            case CustomRoles.Doppelganger:
-            case CustomRoles.Follower:
-            case CustomRoles.Gangster:
-            case CustomRoles.Greedy:
-            case CustomRoles.Hangman:
-            case CustomRoles.Hater:
-            case CustomRoles.Inhibitor:
-            case CustomRoles.Jinx:
-            case CustomRoles.Kamikaze:
-            case CustomRoles.LazyGuy:
-            case CustomRoles.Ludopath:
-            case CustomRoles.Lurker:
-            case CustomRoles.Mini:
-            case CustomRoles.Mole:
-            case CustomRoles.Nemesis:
-            case CustomRoles.Pacifist:
-            case CustomRoles.Provocateur:
-            case CustomRoles.PunchingBag:
-            case CustomRoles.Puppeteer:
-            case CustomRoles.Pyromaniac:
-            case CustomRoles.Revolutionist:
-            case CustomRoles.Saboteur:
-            case CustomRoles.Sacrifist:
-            case CustomRoles.Snitch:
-            case CustomRoles.Spy:
-            case CustomRoles.Stalker:
-            case CustomRoles.Swapper:
-            case CustomRoles.Taskinator:
-            case CustomRoles.Terrorist:
-            case CustomRoles.Traitor:
-            case CustomRoles.Troller:
-            case CustomRoles.Vigilante:
-                result += "Shunned";
+            case Custom_RoleType.Madmate:
+            case Custom_RoleType.CovenTrickery:
+            case Custom_RoleType.ImpostorHindering:
+            case Custom_RoleType.ImpostorConcealing:
+                result += "Secret";
                 break;
-            case CustomRoles.Altruist:
-            case CustomRoles.Amnesiac:
-            case CustomRoles.Anonymous:
-            case CustomRoles.Butcher:
-            case CustomRoles.Cleaner:
-            case CustomRoles.Coroner:
-            case CustomRoles.CursedSoul:
-            case CustomRoles.Detective:
-            case CustomRoles.Doctor:
-            case CustomRoles.Medium:
-            case CustomRoles.Mortician:
-            case CustomRoles.Necromancer:
-            case CustomRoles.Pelican:
-            case CustomRoles.Scavenger:
-            case CustomRoles.SoulCollector:
-            case CustomRoles.Spiritcaller:
-            case CustomRoles.Spiritualist:
-            case CustomRoles.Tracefinder:
-            case CustomRoles.Trapster:
-            case CustomRoles.Undertaker:
-            case CustomRoles.Vulture:
-            case CustomRoles.Witness:
-            case CustomRoles.Zombie:
-                result += "Bodies";
-                break;
-            case CustomRoles.Admirer:
-            case CustomRoles.Bard:
-            case CustomRoles.Bastion:
-            case CustomRoles.Collector:
-            case CustomRoles.Crewpostor:
-            case CustomRoles.Crusader:
-            case CustomRoles.CursedWolf:
-            case CustomRoles.DollMaster:
-            case CustomRoles.Enigma:
-            case CustomRoles.Grenadier:
-            case CustomRoles.Innocent:
-            case CustomRoles.Jester:
-            case CustomRoles.Mastermind:
-            case CustomRoles.Mercenary:
-            case CustomRoles.Penguin:
-            case CustomRoles.Pursuer:
-            case CustomRoles.Randomizer:
-            case CustomRoles.Refugee:
-            case CustomRoles.Retributionist:
-            case CustomRoles.Revenant:
-            case CustomRoles.Reverie:
-            case CustomRoles.Romantic:
-            case CustomRoles.RuthlessRomantic:
-            case CustomRoles.VengefulRomantic:
-            case CustomRoles.Shaman:
-            case CustomRoles.Underdog:
-            case CustomRoles.VoodooMaster:
-            case CustomRoles.Werewolf:
-                result += "Misunderstood";
-                break;
-            case CustomRoles.Solsticer:
-                result += "Obvious";
+            case Custom_RoleType.NeutralKilling:
+            case Custom_RoleType.CovenKilling:
+            case Custom_RoleType.ImpostorKilling:
+            case Custom_RoleType.CrewmateKilling:
+                result += "Skilled";
                 break;
             default:
                 result += "Unknown";
                 break;
         }
-        return GetString(result);
-    }
-    public static string ObserveRolesMsg(PlayerControl player) {
-        string result = "DoomsayerRoles.";
-        var role = player.GetCustomRole();
-        if (role.IsRevealingRole(player))
-        {
-            return string.Empty;
-        }
-        if (role.IsGhostRole())
-        {
-            return GetString(result + "Dead");
-        }
-        if (Main.PlayerStates[player.PlayerId].IsNecromancer)
-        {
-            return GetString(result + "Bodies");
-        }
-        if (role.IsVanilla())
-        {
-            return GetString(result + "Basic");
-        }
-        switch (role)
-        {
-            case CustomRoles.Arrogance:
-            case CustomRoles.Berserker:
-            case CustomRoles.Blackmailer:
-            case CustomRoles.Bomber:
-            case CustomRoles.Captain:
-            case CustomRoles.ChiefOfPolice:
-            case CustomRoles.Councillor:
-            case CustomRoles.CovenLeader:
-            case CustomRoles.Death:
-            case CustomRoles.Demon:
-            case CustomRoles.Dictator:
-            case CustomRoles.God:
-            case CustomRoles.Godfather:
-            case CustomRoles.Famine:
-            case CustomRoles.Infectious:
-            case CustomRoles.Instigator:
-            case CustomRoles.Jailer:
-            case CustomRoles.Judge:
-            case CustomRoles.Mayor:
-            case CustomRoles.Marshall:
-            case CustomRoles.Monarch:
-            case CustomRoles.Parasite:
-            case CustomRoles.Pestilence:
-            case CustomRoles.Pitfall:
-            case CustomRoles.Poisoner:
-            case CustomRoles.President:
-            case CustomRoles.SerialKiller:
-            case CustomRoles.Shocker:
-            case CustomRoles.Sheriff:
-            case CustomRoles.Twister:
-            case CustomRoles.Vampire:
-            case CustomRoles.Vindicator:
-            case CustomRoles.Virus:
-            case CustomRoles.War:
-                result += "Fear";
-                break;
-            case CustomRoles.Abyssbringer:
-            case CustomRoles.Chameleon:
-            case CustomRoles.Chronomancer:
-            case CustomRoles.Conjurer:
-            case CustomRoles.Deathpact:
-            case CustomRoles.Eraser:
-            case CustomRoles.Guardian:
-            case CustomRoles.FortuneTeller:
-            case CustomRoles.HexMaster:
-            case CustomRoles.Lightning:
-            case CustomRoles.Medusa:
-            case CustomRoles.MoonDancer:
-            case CustomRoles.Observer:
-            case CustomRoles.Oracle:
-            case CustomRoles.Overseer:
-            case CustomRoles.Pixie:
-            case CustomRoles.Psychic:
-            case CustomRoles.RiftMaker:
-            case CustomRoles.ShapeMaster:
-            case CustomRoles.SoulCatcher:
-            case CustomRoles.Specter:
-            case CustomRoles.Swooper:
-            case CustomRoles.TimeMaster:
-            case CustomRoles.Transporter:
-            case CustomRoles.Warlock:
-            case CustomRoles.Wildling:
-            case CustomRoles.Witch:
-            case CustomRoles.Wraith:
-            case CustomRoles.YinYanger:
-                result += "Magic";
-                break;
-            case CustomRoles.Alchemist:
-            case CustomRoles.Baker:
-            case CustomRoles.Camouflager:
-            case CustomRoles.Celebrity:
-            case CustomRoles.Cleanser:
-            case CustomRoles.Consigliere:
-            case CustomRoles.CopyCat:
-            case CustomRoles.Dazzler:
-            case CustomRoles.Deputy:
-            case CustomRoles.Doomsayer:
-            case CustomRoles.EvilGuesser:
-            case CustomRoles.EvilHacker:
-            case CustomRoles.EvilTracker:
-            case CustomRoles.Inspector:
-            case CustomRoles.Investigator:
-            case CustomRoles.Keeper:
-            case CustomRoles.Knight:
-            case CustomRoles.Lookout:
-            case CustomRoles.Mechanic:
-            case CustomRoles.Medic:
-            case CustomRoles.Merchant:
-            case CustomRoles.NiceGuesser:
-            case CustomRoles.Pickpocket:
-            case CustomRoles.PlagueDoctor:
-            case CustomRoles.PlagueBearer:
-            case CustomRoles.PotionMaster:
-            case CustomRoles.QuickShooter:
-            case CustomRoles.Ritualist:
-            case CustomRoles.Sniper:
-            case CustomRoles.Stealth:
-            case CustomRoles.TaskManager:
-            case CustomRoles.Telecommunication:
-            case CustomRoles.TimeThief:
-            case CustomRoles.Veteran:
-            case CustomRoles.Visionary:
-                result += "Skilled";
-                break;
-            case CustomRoles.Agitater:
-            case CustomRoles.AntiAdminer:
-            case CustomRoles.Bandit:
-            case CustomRoles.Benefactor:
-            case CustomRoles.Bodyguard:
-            case CustomRoles.BountyHunter:
-            case CustomRoles.Disperser:
-            case CustomRoles.DoubleAgent:
-            case CustomRoles.Escapist:
-            case CustomRoles.Fireworker:
-            case CustomRoles.Huntsman:
-            case CustomRoles.Imitator:
-            case CustomRoles.Jackal:
-            case CustomRoles.KillingMachine:
-            case CustomRoles.Lawyer:
-            case CustomRoles.Lighter:
-            case CustomRoles.Maverick:
-            case CustomRoles.Miner:
-            case CustomRoles.Ninja:
-            case CustomRoles.Opportunist:
-            case CustomRoles.Quizmaster:
-            case CustomRoles.Seeker:
-            case CustomRoles.TimeManager:
-            case CustomRoles.Vector:
-            case CustomRoles.Ventguard:
-            case CustomRoles.Workaholic:
-                result += "Dedicated";
-                break;
-            case CustomRoles.Addict:
-            case CustomRoles.Cultist:
-            case CustomRoles.Deceiver:
-            case CustomRoles.Devourer:
-            case CustomRoles.Doppelganger:
-            case CustomRoles.Follower:
-            case CustomRoles.Gangster:
-            case CustomRoles.Greedy:
-            case CustomRoles.Hangman:
-            case CustomRoles.Hater:
-            case CustomRoles.Inhibitor:
-            case CustomRoles.Jinx:
-            case CustomRoles.Kamikaze:
-            case CustomRoles.LazyGuy:
-            case CustomRoles.Ludopath:
-            case CustomRoles.Lurker:
-            case CustomRoles.Mini:
-            case CustomRoles.Mole:
-            case CustomRoles.Nemesis:
-            case CustomRoles.Pacifist:
-            case CustomRoles.Provocateur:
-            case CustomRoles.PunchingBag:
-            case CustomRoles.Puppeteer:
-            case CustomRoles.Pyromaniac:
-            case CustomRoles.Revolutionist:
-            case CustomRoles.Saboteur:
-            case CustomRoles.Sacrifist:
-            case CustomRoles.Snitch:
-            case CustomRoles.Spy:
-            case CustomRoles.Stalker:
-            case CustomRoles.Swapper:
-            case CustomRoles.Taskinator:
-            case CustomRoles.Terrorist:
-            case CustomRoles.Traitor:
-            case CustomRoles.Troller:
-            case CustomRoles.Vigilante:
-                result += "Shunned";
-                break;
-            case CustomRoles.Altruist:
-            case CustomRoles.Amnesiac:
-            case CustomRoles.Anonymous:
-            case CustomRoles.Butcher:
-            case CustomRoles.Cleaner:
-            case CustomRoles.Coroner:
-            case CustomRoles.CursedSoul:
-            case CustomRoles.Detective:
-            case CustomRoles.Doctor:
-            case CustomRoles.Medium:
-            case CustomRoles.Mortician:
-            case CustomRoles.Necromancer:
-            case CustomRoles.Pelican:
-            case CustomRoles.Scavenger:
-            case CustomRoles.SoulCollector:
-            case CustomRoles.Spiritcaller:
-            case CustomRoles.Spiritualist:
-            case CustomRoles.Tracefinder:
-            case CustomRoles.Trapster:
-            case CustomRoles.Undertaker:
-            case CustomRoles.Vulture:
-            case CustomRoles.Witness:
-            case CustomRoles.Zombie:
-                result += "Bodies";
-                break;
-            case CustomRoles.Admirer:
-            case CustomRoles.Bard:
-            case CustomRoles.Bastion:
-            case CustomRoles.Collector:
-            case CustomRoles.Crewpostor:
-            case CustomRoles.Crusader:
-            case CustomRoles.CursedWolf:
-            case CustomRoles.DollMaster:
-            case CustomRoles.Enigma:
-            case CustomRoles.Grenadier:
-            case CustomRoles.Innocent:
-            case CustomRoles.Jester:
-            case CustomRoles.Mastermind:
-            case CustomRoles.Mercenary:
-            case CustomRoles.Penguin:
-            case CustomRoles.Pursuer:
-            case CustomRoles.Randomizer:
-            case CustomRoles.Refugee:
-            case CustomRoles.Retributionist:
-            case CustomRoles.Revenant:
-            case CustomRoles.Reverie:
-            case CustomRoles.Romantic:
-            case CustomRoles.RuthlessRomantic:
-            case CustomRoles.VengefulRomantic:
-            case CustomRoles.Shaman:
-            case CustomRoles.Underdog:
-            case CustomRoles.VoodooMaster:
-            case CustomRoles.Werewolf:
-                result += "Misunderstood";
-                break;
-            default: // also includes schrodinger's cat, glitch, illusionist, and trickster
-                result += "Unknown";
-                break;
-        }
-        if (result.Contains("Unknown")) return string.Empty;
         return GetString(result);
     }
     public override void OnMeetingHudStart(PlayerControl pc)
