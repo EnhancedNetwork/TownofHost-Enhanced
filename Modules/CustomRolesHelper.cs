@@ -156,7 +156,8 @@ public static class CustomRolesHelper
             CustomRoles.VengefulRomantic or
             CustomRoles.Doppelganger or
             CustomRoles.SchrodingersCat or
-            CustomRoles.Follower;
+            CustomRoles.Follower or
+            CustomRoles.Gunslinger;
     }
     public static bool IsAmneCrew(this PlayerControl target)
     {
@@ -1428,6 +1429,7 @@ public static class CustomRolesHelper
             CustomRoles.Mini => CustomWinner.NiceMini,
             CustomRoles.Doppelganger => CustomWinner.Doppelganger,
             CustomRoles.Shocker => CustomWinner.Shocker,
+            CustomRoles.Gunslinger => CustomWinner.Gunslinger,
             _ => throw new NotImplementedException()
 
         };
