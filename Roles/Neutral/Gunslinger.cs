@@ -14,6 +14,7 @@ namespace TOHE.Roles.Neutral;
 internal class Gunslinger : RoleBase
 {
     //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Gunslinger;
     private const int Id = 31700;
     private static readonly HashSet<byte> playerIdList = [];
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Gunslinger);
