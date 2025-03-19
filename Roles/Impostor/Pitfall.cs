@@ -174,6 +174,7 @@ internal class Pitfall : RoleBase
         {
             Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
             ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
+            RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
             player.MarkDirtySettings();
         }, TrapFreezeTime.GetFloat(), "Pitfall Trap Player Freeze");
     }

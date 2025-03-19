@@ -118,7 +118,7 @@ internal class CopyCat : RoleBase
         {
             role = role switch
             {
-                CustomRoles.Stealth => CustomRoles.Grenadier,
+                CustomRoles.Stealth or CustomRoles.Medusa => CustomRoles.Grenadier,
                 CustomRoles.TimeThief => CustomRoles.TimeManager,
                 CustomRoles.Consigliere => CustomRoles.Overseer,
                 CustomRoles.Mercenary => CustomRoles.Addict,
@@ -135,7 +135,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.EvilTracker => CustomRoles.TrackerTOHE,
                 CustomRoles.AntiAdminer => CustomRoles.Telecommunication,
                 CustomRoles.Pursuer => CustomRoles.Deceiver,
-                CustomRoles.CursedWolf or CustomRoles.Jinx => CustomRoles.Veteran,
+                CustomRoles.CursedWolf => CustomRoles.Veteran,
                 CustomRoles.Swooper or CustomRoles.Wraith => CustomRoles.Chameleon,
                 CustomRoles.Vindicator or CustomRoles.Pickpocket => CustomRoles.Mayor,
                 CustomRoles.Opportunist or CustomRoles.BloodKnight or CustomRoles.Wildling => CustomRoles.Guardian,
@@ -149,6 +149,7 @@ internal class CopyCat : RoleBase
                 CustomRoles.Sacrifist => CustomRoles.Alchemist,
                 CustomRoles.MoonDancer => CustomRoles.Merchant,
                 CustomRoles.Ritualist => CustomRoles.Admirer,
+                CustomRoles.Jinx => CustomRoles.Crusader,
                 CustomRoles.Trickster or CustomRoles.Illusionist => CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate() && !BlackList(role)).ToList().RandomElement(),
                 _ => role
             };

@@ -17,6 +17,8 @@ public static class SpeedRun
     public static OptionItem SpeedRun_NumShortTasks;
     public static OptionItem SpeedRun_NumLongTasks;
 
+    public static OptionItem SpeedRun_ShowChatInGame;
+
     public static OptionItem SpeedRun_RunnerNormalSpeed;
     public static OptionItem SpeedRun_RunnerKcd;
     public static OptionItem SpeedRun_RunnerKcdPerDeadPlayer;
@@ -59,6 +61,12 @@ public static class SpeedRun
         SpeedRun_NumLongTasks = IntegerOptionItem.Create(Id + 3, "SpeedRun_NumLongTasks", new(0, 15, 1), 1, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
+
+        /*
+        SpeedRun_ShowChatInGame = BooleanOptionItem.Create(Id + 20, "SpeedRun_ShowChatInGame", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.SpeedRun)
+            .SetColor(new Color32(255, 251, 0, byte.MaxValue));
+        */
 
         SpeedRun_RunnerNormalSpeed = FloatOptionItem.Create(Id + 4, "SpeedRun_RunnerNormalSpeed", new(0.25f, 5f, 0.25f), 1.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
@@ -380,9 +388,9 @@ class SpeedRunGameEndPredicate : GameEndPredicate
 public class Runner : RoleBase
 {
     public override CustomRoles Role => CustomRoles.Runner;
-    public override CustomRoles ThisRoleBase => BasisChanged ? CustomRoles.Impostor : CustomRoles.Crewmate;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.None;
-    public override bool IsDesyncRole => true;
+    public override bool IsDesyncRole => false;
 
     public override bool CanUseSabotage(PlayerControl pc)
     {
