@@ -429,6 +429,7 @@ public static class Options
 
     public static OptionItem KillFlashDuration;
     public static OptionItem NonCrewRandomCommonTasks;
+    public static OptionItem UniqueNeutralRevealScreen;
 
     // Ghost
     public static OptionItem GhostIgnoreTasks;
@@ -2016,6 +2017,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
         NonCrewRandomCommonTasks = BooleanOptionItem.Create(60791, "NonCrewRandomCommonTasks", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
+        UniqueNeutralRevealScreen = BooleanOptionItem.Create(60792, "UniqueNeutralRevealScreen", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定
