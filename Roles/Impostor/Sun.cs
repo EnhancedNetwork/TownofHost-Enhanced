@@ -10,7 +10,7 @@ internal class Sun : RoleBase
     public override CustomRoles Role => CustomRoles.Sun;
     private const int Id = 34600;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
 
     private static OptionItem KillCooldown;

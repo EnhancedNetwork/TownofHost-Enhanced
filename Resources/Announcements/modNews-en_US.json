@@ -397,6 +397,39 @@
         "\n\n★ Welcome to Town of Host Optimized v1.5.0 ★"
       ],
       "Date": "2025-3-3T13:00:00Z"
+    },
+    {
+      "Number": "100015",
+      "Title": "Town of Host Optimized v1.6.0",
+      "Subtitle": "Update with the newest roles and features",
+      "Short": "TOHO v1.6.0",
+      "Body": [
+        "<b>Based on Town of Host Optimized v1.5.1</b>",
+        "\n\n<b><u>★ New Roles ★</b></u>",
+        "\n<b>Detonator</b> (Impostor Support)",
+        "\n<b>Volatile</b> (Neutral Killer)",
+        "\n<b>Gunslinger</b> (Neutral Chaos) - ApeMV",
+        "\n<b>Sun</b> (Impostor Killing)",
+        "\n<b>Druid</b> (Crewmate Killing)",
+        "\n\n<b><u>★ Bug Fixes ★</b></u>",
+        "\n<b>Valkyrie being half dead</b>",
+        "\n<b>Rulebook erasing Impostors</b>",
+        "\n<b>Fix Clown anomaly reviving players</b>",
+        "\n<b>Revenant causing crewmates to win when last killer kills them</b>",
+        "\n<b>Predator win condition</b>",
+        "\n<b>ValkyrieB being stringless, and renamed to Reedeemer</b>",
+        "\n<b>Keymaster is now incompatible with Rainbow</b>",
+        "\n\n<b><u>★ Removals ★</b></u>",
+        "\n<b>Cops & Robbers game mode (this is temporary, it will return)</b>",
+        "\n\n<b><u>★ In Case you Missed It ★</b></u> (roles in the LAST major release)",
+        "\n<b>Sentinel</b> (Crewmate Killing)",
+        "\n<b>Sorcerer</b> (Neutral Evil)",
+        "\n<b>Witch Doctor</b> (Coven Power) TOHO's first Coven role!",
+        "\n<b>Rulebook</b> (Neutral Killing)",
+        "\n<b>Predator</b> (Neutral Evil)",
+        "\n\n★ Welcome to Town of Host Optimized v1.6.0 ★"
+      ],
+      "Date": "2025-3-3T13:00:00Z"
     }
   ]
 }
