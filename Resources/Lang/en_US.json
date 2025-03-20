@@ -4533,7 +4533,7 @@
 
   "Druid": "Druid",
   "DruidInfo": "Shapeshift into players to maybe kill them",
-  "DruidInfoLong": "As the Druid, you can select a player with your kill button, then vent to temporarily transform into them. You can kill the same player after shapeshifting into them, but after doing so, you are stuck in their skin and if they are innocent your role turns to a vanilla crewmate.",
+  "DruidInfoLong": "As the Druid, you can select a player with your kill button, then vent to temporarily transform into them. You can kill the same player after shapeshifting into them, but after doing so, you are stuck in their skin and if they are innocent you can no longer kill players.",
   "AbilityUses347": "Ability uses",
   "AbilityDuration347": "Shapeshift duration"
 }

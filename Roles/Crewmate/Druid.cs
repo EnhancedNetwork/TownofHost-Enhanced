@@ -21,6 +21,7 @@ internal class Druid : RoleBase
 
     public static PlayerControl TargetPlayer;
     public static bool IsTargetMurdered = false;
+    public static bool CanFormallyKill = true;
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Druid);
@@ -43,10 +44,14 @@ internal class Druid : RoleBase
     {
         if (target == TargetPlayer)
         {
+            if (CanFormallyKill == false)
+            {
+                killer.RpcGuardAndKill(killer);
+                return false;
+            }
             if (target.GetCustomRole().IsCrewmate())
             {
-                killer.RpcChangeRoleBasis(CustomRoles.CrewmateTOHO);
-                killer.RpcSetCustomRole(CustomRoles.CrewmateTOHO);
+                CanFormallyKill = false;
             }
             IsTargetMurdered = true;
             return true;
