@@ -4529,5 +4529,11 @@
   "Sun": "Sun",
   "SunInfo": "Burn players while you are risen!",
   "SunInfoLong": "(Impostors):\nAs the Sun, when you are alive, after every meeting a random non-Impostor player will die. If you run out of ability uses, a player will not die. You gain a certian amount of ability uses with each kill.",
-  "AbilityUses346": "Ability uses"
+  "AbilityUses346": "Ability uses",
+
+  "Druid": "Druid",
+  "DruidInfo": "Shapeshift into players to maybe kill them",
+  "DruidInfoLong": "As the Druid, you can select a player with your kill button, then vent to temporarily transform into them. You can kill the same player after shapeshifting into them, but after doing so, you are stuck in their skin and if they are innocent your role turns to a vanilla crewmate.",
+  "AbilityUses347": "Ability uses",
+  "AbilityDuration347": "Shapeshift duration"
 }

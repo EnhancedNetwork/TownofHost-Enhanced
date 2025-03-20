@@ -795,6 +795,7 @@ public enum CustomRoles
     Detective,
     Dictator,
     Doctor,
+    Druid,
     Enigma,
     FortuneTeller,
     Grenadier,
