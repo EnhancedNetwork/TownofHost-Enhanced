@@ -401,7 +401,7 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Shaman);
                                 break;
-                            case CustomRoles.Taskinator when pc.IsAlive() && WinnerTeam != CustomWinner.Crewmate:
+                            case CustomRoles.Taskinator when WinnerTeam != CustomWinner.Crewmate:
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Taskinator);
                                 break;
@@ -479,7 +479,7 @@ class GameEndCheckerForNormal
                                 }
                                 break;
                             case CustomRoles.Laborer:
-                                if (pc.Is(CustomRoles.Laborer) && pc.IsAlive() && WinnerTeam != CustomWinner.Crewmate)
+                                if (pc.Is(CustomRoles.Laborer) && WinnerTeam != CustomWinner.Crewmate)
                                 {
                                     WinnerIds.Add(pc.PlayerId);
                                     AdditionalWinnerTeams.Add(AdditionalWinners.Laborer);
