@@ -4451,7 +4451,8 @@
 
   "Sentinel": "Sentinel",
   "SentinelInfo": "Report bodies to kill killers",
-  "SentinelInfoLong": "(Crewmates):\nAs the Sentinel, you can report a body to kill the body's killer one time. After their tasks are complete, they can do this one more time.",
+  "SentinelInfoLong": "(Crewmates):\nAs the Sentinel, you can report a body to kill the body's killer. You will report normally after your ability uses are used.",
+  "AbilityUses337": "Ability uses",
 
   "ClownFest": "Clown Fest",
   "Retrial": "Retrial",

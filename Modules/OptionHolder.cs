@@ -160,6 +160,7 @@ public static class Options
     public static OptionItem ContaminatorAbilityUseGainWithEachTaskCompleted;
     public static OptionItem CoronerAbilityUseGainWithEachTaskCompleted;
     public static OptionItem FortuneTellerAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem SentinelAbilityUseGainWithEachTaskCompleted;
     public static OptionItem GrenadierAbilityUseGainWithEachTaskCompleted;
     public static OptionItem InspectorAbilityUseGainWithEachTaskCompleted;
     public static OptionItem LighterAbilityUseGainWithEachTaskCompleted;
