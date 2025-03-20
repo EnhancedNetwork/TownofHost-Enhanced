@@ -7,22 +7,31 @@ public class Gambler : IAddon
     public CustomRoles Role => CustomRoles.Gambler;
     private const int Id = 33100;
     public AddonTypes Type => AddonTypes.Mixed;
+
+    public static Dictionary<byte, int> Gambles = [];
     private static readonly Dictionary<byte, bool> Gamble = [];
+
+    public static OptionItem GambleUses;
 
     public void SetupCustomOption()
     {
         SetupAdtRoleOptions(Id, CustomRoles.Gambler, canSetNum: true, teamSpawnOptions: true);
+        GambleUses = IntegerOptionItem.Create(Id + 10, "GambleUses", new(1, 4, 1), 1, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Gambler])
+           .SetValueFormat(OptionFormat.Times);
     }
     public void Init()
     {
+        Gambles.Clear();
         Gamble.Clear();
     }
     public void Add(byte playerId, bool gameIsLoading = true)
     {
+        Gambles[playerId] = GambleUses.GetInt();
         Gamble[playerId] = false;
     }
     public void Remove(byte player)
     {
+        Gambles.Remove(player);
         Gamble.Remove(player);
     }
     private static void AvoidDeathChance(PlayerControl killer, PlayerControl target)

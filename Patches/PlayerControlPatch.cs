@@ -327,7 +327,9 @@ class CheckMurderPatch
                         if (!Gambler.OnCheckMurder(killer, target))
                         {
                             target.RpcMurderPlayer(killer);
-                            Main.PlayerStates[target.PlayerId].RemoveSubRole(CustomRoles.Gambler);
+                            Gambler.Gambles[target.PlayerId] -= 1;
+                            if (Gambler.Gambles[target.PlayerId] < 1)
+                                Main.PlayerStates[target.PlayerId].RemoveSubRole(CustomRoles.Gambler);
                             return false;
                         }
                         break;
