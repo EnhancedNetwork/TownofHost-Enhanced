@@ -29,7 +29,7 @@ internal class Druid : RoleBase
         AbilityUses = IntegerOptionItem.Create(Id + 11, "AbilityUses347", new (1, 5, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Druid]).SetValueFormat(OptionFormat.Times);
         AbilityDuration = FloatOptionItem.Create(Id + 12, "AbilityDuration347", new(5f, 25f, 2f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Druid])
             .SetValueFormat(OptionFormat.Seconds);
-        CanBeGuessed = BooleanOptionItem.Create(Id + 13, "CanBeGuessed347", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Druid]);
+        CanBeGuessed = BooleanOptionItem.Create(Id + 13, "CanBeGuessed347", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Druid]);
     }
     public override void Add(byte playerId)
     {
