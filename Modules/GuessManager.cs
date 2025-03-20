@@ -1045,6 +1045,7 @@ public static class GuessManager
                     or CustomRoles.Sloth
                     or CustomRoles.Apocalypse
                     or CustomRoles.Coven
+                    || role is CustomRoles.Druid && !Druid.CanBeGuessed.GetBool()
                     || (role.IsTNA() && !Options.TransformedNeutralApocalypseCanBeGuessed.GetBool())) continue;
 
                 if (role is CustomRoles.NiceMini && Mini.Age < 18) continue;
