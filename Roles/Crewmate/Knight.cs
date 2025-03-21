@@ -96,9 +96,13 @@ internal class Requiter : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        // options disabled,requiter doesn't ignore protections
+        if (!Knight.RequiterIgnoresShields.GetBool()) return true;
+
+        // requiter should never ignore Solsticer and Mini protections
         if (target.Is(CustomRoles.Solsticer)) return true;
         if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18) return true;
-        if (!Knight.RequiterIgnoresShields.GetBool()) return true;
+        
         killer.RpcMurderPlayer(target);
         killer.ResetKillCooldown();
         return false;
