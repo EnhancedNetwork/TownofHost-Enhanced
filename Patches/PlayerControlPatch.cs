@@ -1585,6 +1585,13 @@ class CoEnterVentPatch
             KillTimerManager.AllKillTimers[__instance.myPlayer.PlayerId] = timer + 0.5f;
         }
 
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Warn($"AntiBlackout SkipTasks is enabled, {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()} can't enter vent", "CoEnterVent");
+            _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
+            return true;
+        }
+
         // Check others enter to vent
         if (CustomRoleManager.OthersCoEnterVent(__instance, id))
         {
@@ -1642,7 +1649,8 @@ class EnterVentPatch
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
 
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || AntiBlackout.SkipTasks) return;
+
 
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
