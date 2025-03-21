@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using static TOHE.Options;
 
@@ -35,7 +34,7 @@ internal class Knight : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Knight])
             .SetValueFormat(OptionFormat.Percent);
         RequiterCanKillTNA = BooleanOptionItem.Create(Id + 13, "CanKillTNA", false, TabGroup.CrewmateRoles, false)
-            .SetParent(RequiterChance);        
+            .SetParent(RequiterChance);
     }
     public override void Add(byte playerId)
     {
@@ -89,7 +88,7 @@ internal class Requiter : RoleBase
         => pc.GetAbilityUseLimit() > 0;
 
     public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
-    { 
+    {
         if (exiled == null || exiled.Object == null || exiled.Object == player || !player.IsAlive()) return;
         if (exiled.Object.IsPlayerCrewmateTeam())
             player.RpcIncreaseAbilityUseLimitBy(1);
@@ -109,7 +108,7 @@ internal class Requiter : RoleBase
     }
 
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
-    { 
+    {
         if (inMeeting || isSuicide) return;
         killer.RpcRemoveAbilityUse();
         target.SetDeathReason(PlayerState.DeathReason.Retribution);
