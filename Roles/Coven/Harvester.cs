@@ -62,15 +62,16 @@ internal class Harvester : CovenManager
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         shouldAnimate = false;
-        if (SwapPlayers[shapeshifter.PlayerId].Count() >= 2) {
+        if (SwapPlayers[shapeshifter.PlayerId].Count() >= 2)
+        {
             shapeshifter.Notify(GetString("Harvester.SwapListFull"));
-            return false; 
+            return false;
         }
         if (shapeshifter == null || target == null) return false;
 
         if (SwapPlayers[shapeshifter.PlayerId].Count() == 0)
         {
-            SwapPlayers[shapeshifter.PlayerId].Add(target.PlayerId); 
+            SwapPlayers[shapeshifter.PlayerId].Add(target.PlayerId);
             Logger.Info($"{target.GetRealName()} is SwapPlayer1", "Harvester");
         }
         else

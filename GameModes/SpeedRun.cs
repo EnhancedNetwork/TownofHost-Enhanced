@@ -651,6 +651,6 @@ public class Runner : RoleBase
     }
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Runner);
-    
+
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Main.roleColors[target.GetCustomRole()];
 }

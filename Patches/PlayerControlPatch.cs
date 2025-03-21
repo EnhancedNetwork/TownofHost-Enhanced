@@ -4,7 +4,6 @@ using InnerNet;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
@@ -1857,7 +1856,7 @@ class PlayerControlCheckNamePatch
                 if (player == null || player.PlayerId == __instance.PlayerId || player.Data == null || player.Data.Disconnected) continue;
 
                 Main.AllClientRealNames.TryGetValue(player.OwnerId, out var rName);
-                
+
                 if (rName != null && rName != player.Data.PlayerName)
                 {
                     sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, __instance.OwnerId);

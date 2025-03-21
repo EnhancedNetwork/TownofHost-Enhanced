@@ -2036,15 +2036,15 @@ internal class ChatCommands
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-            {
-                Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
-                return;
-            }
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+                    return;
+                }
             case CustomGameMode.SpeedRun:
-            {
-                Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
-                return;
-            }
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
+                    return;
+                }
         }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) _ = role.Replace("/r", string.Empty);
