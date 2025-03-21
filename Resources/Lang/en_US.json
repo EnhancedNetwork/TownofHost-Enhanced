@@ -2204,6 +2204,7 @@
   "Dreamweaver.AlreadyDreamwoven": "You have already Dreamwoven this player!",
   "Dreamweaver.DreamwovenWarning": "You have been Dreamwoven by the Dreamweaver! If the Dreamweaver does not die after this meeting, you will be <b>unable to use your abilities</b> and your <b>vote will not count</b> until they die!",
 
+  "RequiterIgnoresShields": "Requiter Ignores Shields(Excluding Mini and Solsticer)",
 
   "LuckyProbability": "Probability of surviving a kill",
   "ImpCanBeDoubleShot": "<color=#ff1919>Impostors</color> can have <color=#19fa8d>Double Shot</color>",
