@@ -424,6 +424,7 @@ public static class Options
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem ShowShieldedPlayerToAll;
     public static OptionItem RemoveShieldOnFirstDead;
+    public static OptionItem PreventFirstDeadShapeShift;
     public static OptionItem ShieldedCanUseKillButton;
     public static OptionItem EveryoneCanSeeDeathReason;
 
@@ -2007,6 +2008,10 @@ public static class Options
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
         RemoveShieldOnFirstDead = BooleanOptionItem.Create(60872, "RemoveShieldOnFirstDead", false, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
+        PreventFirstDeadShapeShift = BooleanOptionItem.Create(60873, "PreventFirstDeadShapeShift", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 

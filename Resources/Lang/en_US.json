@@ -1439,6 +1439,7 @@
   "RemoveShieldOnFirstDead": "Remove shield on first death",
   "ShieldedCanUseKillButton": "Shielded player can use ability/Kill button",
   "PlayerIsShieldedByGame": "Player is protected by the game!",
+  "PreventFirstDeadShapeShift": "Prevent Shielded player from using Shapeshift ability",
 
   "LegacyNemesis": "Use Legacy Version",
   "LegacyParasite": "Use Legacy Version",
