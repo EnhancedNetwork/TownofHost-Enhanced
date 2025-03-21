@@ -13,10 +13,13 @@ class GameManagerSerializeFix
             GameLogicComponent logicComponent = __instance.LogicComponents[index];
             if (initialState || logicComponent.IsDirty)
             {
-                flag = true;
                 writer.StartMessage((byte)index);
                 var hasBody = logicComponent.Serialize(writer, initialState);
-                if (hasBody) writer.EndMessage();
+                if (hasBody)
+                {
+                    flag = true;
+                    writer.EndMessage();
+                }
                 else writer.CancelMessage();
                 logicComponent.ClearDirtyFlag();
             }

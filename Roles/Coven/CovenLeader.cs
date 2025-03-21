@@ -109,6 +109,15 @@ internal class CovenLeader : CovenManager
             SendMessage(string.Format(GetString("RetrainNotification"), CustomRoles.CovenLeader.ToColoredString(), retrainPlayer[cov].ToColoredString()), cov);
         }
     }
+
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (!HasNecronomicon(playerId))
+        {
+            hud.KillButton.OverrideText(GetString("CovenLeaderKillButton"));
+        }
+    }
+
     private bool IsHelper(PlayerControl covenLeader, PlayerControl target)
     {
         var covenList = Main.AllPlayerControls.Where(x => x.IsPlayerCovenTeam()).ToList();

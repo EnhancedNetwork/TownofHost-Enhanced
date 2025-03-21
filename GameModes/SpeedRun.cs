@@ -304,7 +304,7 @@ public static class SpeedRun
             playerInfoList.Add((playerId, playerName, isAlive, finishedTasks, kills, finishTime, completedTasks, totalTasks));
         }
 
-        // Alive > Finish all tasks > Kill num > Time cost to finish all tasks > Not yet finish tasks then task num
+        // Alive > Finish all tasks > Kill number > Time cost to finish all tasks > Not yet finish tasks then task number
         playerInfoList = playerInfoList.OrderByDescending(p => p.isAlive)
                                      .ThenByDescending(p => p.finishedTasks)
                                      .ThenByDescending(p => p.kills)
@@ -649,4 +649,8 @@ public class Runner : RoleBase
             return ColorString(Color.red, string.Format(GetString("KillCount"), SpeedRun.PlayerNumKills[playerId]));
         }
     }
+
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Runner);
+
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Main.roleColors[target.GetCustomRole()];
 }

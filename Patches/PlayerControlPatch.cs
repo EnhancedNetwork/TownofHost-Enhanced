@@ -4,7 +4,6 @@ using InnerNet;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
@@ -258,7 +257,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start", "FirstDied.CheckMurder");
 
-        if (target.Puid != null && target.Puid.Length > 1 && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (target.CheckFirstDied() && MeetingStates.FirstMeeting)
         {
             killer.SetKillCooldown(5f);
             killer.RpcGuardAndKill(target);
@@ -474,6 +473,12 @@ class MurderPlayerPatch
         {
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
+            if (Main.FirstDied == "e3b0cb855")
+            {
+                // null puid on custom servers
+                Main.FirstDied = target.FriendCode ?? "";
+            }
+
             if (Options.RemoveShieldOnFirstDead.GetBool() && Main.FirstDiedPrevious != "")
             {
                 Main.FirstDiedPrevious = "";
@@ -640,7 +645,7 @@ public static class CheckShapeshiftPatch
             Logger.Info("Checking while AntiBlackOut protect, shapeshift was canceled", "CheckShapeshift");
             return false;
         }
-        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.CheckFirstDied() && MeetingStates.FirstMeeting && Options.PreventFirstDeadShapeShift.GetBool())
         {
             instance.RpcGuardAndKill(instance);
             instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
@@ -1375,7 +1380,7 @@ class FixedUpdateInNormalGamePatch
                 Suffix.Clear();
 
                 // Add protected player icon from ShieldPersonDiedFirst
-                if (player.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+                if (player.CheckFirstDied() && MeetingStates.FirstMeeting)
                 {
                     if (Options.ShowShieldedPlayerToAll.GetBool() || localPlayerId == playerId)
                     {
@@ -1585,6 +1590,13 @@ class CoEnterVentPatch
             KillTimerManager.AllKillTimers[__instance.myPlayer.PlayerId] = timer + 0.5f;
         }
 
+        if (AntiBlackout.SkipTasks)
+        {
+            Logger.Warn($"AntiBlackout SkipTasks is enabled, {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()} can't enter vent", "CoEnterVent");
+            _ = new LateTask(() => __instance?.RpcBootFromVent(id), 0.5f, "Prevent Enter Vents");
+            return true;
+        }
+
         // Check others enter to vent
         if (CustomRoleManager.OthersCoEnterVent(__instance, id))
         {
@@ -1642,7 +1654,8 @@ class EnterVentPatch
         Main.LastEnteredVentLocation.Remove(pc.PlayerId);
         Main.LastEnteredVentLocation.Add(pc.PlayerId, pc.GetCustomPosition());
 
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || AntiBlackout.SkipTasks) return;
+
 
         pc.GetRoleClass()?.OnEnterVent(pc, __instance);
 
@@ -1843,7 +1856,7 @@ class PlayerControlCheckNamePatch
                 if (player == null || player.PlayerId == __instance.PlayerId || player.Data == null || player.Data.Disconnected) continue;
 
                 Main.AllClientRealNames.TryGetValue(player.OwnerId, out var rName);
-                
+
                 if (rName != null && rName != player.Data.PlayerName)
                 {
                     sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName, __instance.OwnerId);

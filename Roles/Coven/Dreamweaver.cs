@@ -1,12 +1,12 @@
 using Hazel;
+using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using InnerNet;
+using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using UnityEngine;
 
 namespace TOHE.Roles.Coven;
 
@@ -89,7 +89,7 @@ internal class Dreamweaver : CovenManager
         if (IsDreamwoven(seen.PlayerId))
         {
             isForMeeting = true;
-            return ColorString(new Color32(255,255,255,255), "☁");
+            return ColorString(new Color32(255, 255, 255, 255), "☁");
         }
         return string.Empty;
     }
@@ -197,7 +197,7 @@ internal class Dreamweaver : CovenManager
                     SetInsomnia(GetPlayerById(player), GetPlayerById(target));
                     DreamwovenList[player].Remove(target);
                 }
-            }   
+            }
         }
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
@@ -205,14 +205,16 @@ internal class Dreamweaver : CovenManager
         foreach (var target in InsomniaList[player.PlayerId])
         {
             var targetPc = GetPlayerById(target);
-            if (targetPc == null || !targetPc.IsAlive()) {
+            if (targetPc == null || !targetPc.IsAlive())
+            {
                 InsomniaList[player.PlayerId].Remove(target);
-                continue; 
+                continue;
             }
             if (targetPc.GetAbilityUseLimit() > 0) targetPc.SetAbilityUseLimit(0);
-            if (targetPc.GetKillTimer() < 1) { 
-                targetPc.SetKillCooldownV3(999); 
-                targetPc.ResetKillCooldown(); 
+            if (targetPc.GetKillTimer() < 1)
+            {
+                targetPc.SetKillCooldownV3(999);
+                targetPc.ResetKillCooldown();
             }
         }
     }

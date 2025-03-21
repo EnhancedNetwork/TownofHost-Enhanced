@@ -303,7 +303,7 @@ class CheckForEndVotingPatch
                 voteLog.Info($"Exiled ID: {exileId} ({GetVoteName(exileId)}), max: {max} votes");
             }
 
-            voteLog.Info($"Decision to exiled a player: {exileId} ({GetVoteName(exileId)})");
+            voteLog.Info($"Decision to exiled a player: tie: {tie}, {exileId} ({GetVoteName(exileId)})");
 
             var allPlayers = GameData.Instance.AllPlayers.ToArray();
             var allPlayerCount = allPlayers.Count;
@@ -783,7 +783,8 @@ class CastVotePatch
         }
 
         // Coven Necronomicon Voting
-        if (voter.IsPlayerCoven() && Main.AllAlivePlayerControls.Count(x => x.IsPlayerCoven()) == 1) {
+        if (voter.IsPlayerCoven() && Main.AllAlivePlayerControls.Count(x => x.IsPlayerCoven()) == 1)
+        {
             Logger.Info("Solo Coven, Necronomicon Votes will not Activate", "CastVotePatch");
         }
         else if (suspectPlayerId == 253 && voter.IsPlayerCoven())
