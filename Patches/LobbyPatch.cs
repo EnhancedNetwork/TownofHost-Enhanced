@@ -91,9 +91,13 @@ public class LobbyBehaviourPatch
 public static class HostInfoPanelUpdatePatch
 {
     private static TextMeshPro HostText;
-    public static bool Prefix()
+    public static bool Prefix(HostInfoPanel __instance)
     {
-        return GameStates.IsLobby;
+        if (!GameStates.IsLobby) return false;
+
+        // Fix System.IndexOutOfRangeException: Index was outside the bounds of the array.
+        // When __instance.player.ColorId is 255 them ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[255]) gets exception
+        return __instance.player.ColorId != byte.MaxValue;
     }
     public static void Postfix(HostInfoPanel __instance)
     {

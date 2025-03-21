@@ -251,6 +251,7 @@ internal class Arsonist : RoleBase
                     foreach (var pc in Main.AllAlivePlayerControls)
                     {
                         if (!IsDousedPlayer(__instance.myPlayer, pc)) continue;
+                        if (pc.IsTransformedNeutralApocalypse()) continue;
                         pc.KillFlash();
                         pc.SetDeathReason(PlayerState.DeathReason.Torched);
                         pc.RpcMurderPlayer(pc);

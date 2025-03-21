@@ -672,13 +672,13 @@ public static class StringOptionPatch
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
-                if (Options.GameMode.GetInt() == 2 && !GameStates.IsHideNSeek) //Hide And Seek
+                if (Options.GameMode.GetInt() == 3 && !GameStates.IsHideNSeek) //Hide And Seek
                 {
                     Options.GameMode.SetValue(0);
                 }
-                else if (Options.GameMode.GetInt() != 2 && GameStates.IsHideNSeek)
+                else if (Options.GameMode.GetInt() != 3 && GameStates.IsHideNSeek)
                 {
-                    Options.GameMode.SetValue(2);
+                    Options.GameMode.SetValue(3);
                 }
                 GameOptionsMenuPatch.ReOpenSettings(item.Name != "GameMode" ? 1 : 4);
             }

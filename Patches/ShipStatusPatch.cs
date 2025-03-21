@@ -127,7 +127,7 @@ class UpdateSystemPatch
 
         if (systemType == SystemTypes.Electrical && 0 <= amount && amount <= 4)
         {
-            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].Cast<SwitchSystem>();
+            var SwitchSystem = ShipStatus.Instance.Systems[SystemTypes.Electrical].CastFast<SwitchSystem>();
             if (SwitchSystem != null && SwitchSystem.IsActive)
             {
                 player.GetRoleClass()?.SwitchSystemUpdate(SwitchSystem, amount, player);
@@ -161,7 +161,8 @@ class ShipStatusCloseDoorsPatch
         Logger.Info($"Trying to close the door in the room: {room}", "CloseDoorsOfType");
 
         bool allow;
-        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()) allow = false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()
+            || Options.CurrentGameMode == CustomGameMode.SpeedRun && !SpeedRun.SpeedRun_AllowCloseDoor.GetBool()) allow = false;
         else allow = true;
 
         if (allow)
@@ -377,7 +378,7 @@ class ShipStatusSerializePatch
                 }
             }
 
-            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>();
+            var ventilationSystem = __instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>();
             if (ventilationSystem != null && ventilationSystem.IsDirty)
             {
                 // Logger.Info("customVentilation: " + customVentilation, "ShipStatusSerializePatch");
