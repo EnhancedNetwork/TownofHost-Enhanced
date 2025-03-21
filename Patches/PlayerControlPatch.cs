@@ -258,7 +258,7 @@ class CheckMurderPatch
 
         Logger.Info($"Start", "FirstDied.CheckMurder");
 
-        if (target.Puid != null && target.Puid.Length > 1 && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (target.CheckFirstDied() && MeetingStates.FirstMeeting)
         {
             killer.SetKillCooldown(5f);
             killer.RpcGuardAndKill(target);
@@ -474,6 +474,12 @@ class MurderPlayerPatch
         {
             Main.FirstDied = target.GetClient().GetHashedPuid();
 
+            if (Main.FirstDied == "e3b0cb855")
+            {
+                // null puid on custom servers
+                Main.FirstDied = target.FriendCode ?? "";
+            }
+
             if (Options.RemoveShieldOnFirstDead.GetBool() && Main.FirstDiedPrevious != "")
             {
                 Main.FirstDiedPrevious = "";
@@ -640,7 +646,7 @@ public static class CheckShapeshiftPatch
             Logger.Info("Checking while AntiBlackOut protect, shapeshift was canceled", "CheckShapeshift");
             return false;
         }
-        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+        if (!(instance.Is(CustomRoles.ShapeshifterTOHE) || instance.Is(CustomRoles.Shapeshifter)) && target.CheckFirstDied() && MeetingStates.FirstMeeting)
         {
             instance.RpcGuardAndKill(instance);
             instance.Notify(Utils.ColorString(Utils.GetRoleColor(instance.GetCustomRole()), GetString("PlayerIsShieldedByGame")));
@@ -1375,7 +1381,7 @@ class FixedUpdateInNormalGamePatch
                 Suffix.Clear();
 
                 // Add protected player icon from ShieldPersonDiedFirst
-                if (player.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
+                if (player.CheckFirstDied() && MeetingStates.FirstMeeting)
                 {
                     if (Options.ShowShieldedPlayerToAll.GetBool() || localPlayerId == playerId)
                     {

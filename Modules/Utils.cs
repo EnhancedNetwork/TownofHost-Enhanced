@@ -2201,6 +2201,19 @@ public static class Utils
         PlayerGameOptionsSender.SetDirtyToAll();
         GameOptionsSender.SendAllGameOptions();
     }
+
+    public static bool CheckFirstDied(this PlayerControl pc)
+    {
+        if (pc.GetClient().GetHashedPuid() == Main.FirstDied) return true;
+
+        if (!Main.FirstDied.IsNullOrWhiteSpace() && Main.FirstDied.Contains('#'))
+        {
+            if (pc.GetClient().FriendCode.ToLower() == Main.FirstDied.ToLower()) return true;
+        }
+
+        return false;
+    }
+
     public static void SendGameData()
     {
         foreach (var playerinfo in GameData.Instance.AllPlayers)
