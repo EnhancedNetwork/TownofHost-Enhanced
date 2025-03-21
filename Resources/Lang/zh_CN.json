@@ -2847,7 +2847,7 @@
   "PlayerExiled": "{0} 被驱逐了...",
   "NoImpRemain": "已经没有<color=#ff1919>内鬼</color>啦~",
   "OneImpRemain": "还剩余最后1个<color=#ff1919>内鬼</color>",
-  "ImpRemain": "还剩余0个<color=#ff1919>内鬼</color>",
+  "ImpRemain": "还剩余{0}个<color=#ff1919>内鬼</color>",
   "NeutralRemain": "还剩余{0}个<color=#7f8c8d>带刀中立</color>",
   "OneNeutralRemain": "还剩余1个<color=#7f8c8d>带刀中立</color>",
   "ApocRemain": "还剩余{0}个<#ff174f>灾厄</color><color=#7f8c8d>中立</color>",
