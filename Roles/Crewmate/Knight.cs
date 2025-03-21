@@ -20,7 +20,7 @@ internal class Knight : RoleBase
     public static OptionItem CanVent;
     public static OptionItem KillCooldown;
     public static OptionItem RequiterChance;
-    public static OptionItem RequiterCanKillTNA;
+    public static OptionItem RequiterIgnoresShields;
 
     public override void SetupCustomOption()
     {
@@ -33,7 +33,7 @@ internal class Knight : RoleBase
         RequiterChance = IntegerOptionItem.Create(Id + 12, "RequiterChance", new(0, 100, 5), 0, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Knight])
             .SetValueFormat(OptionFormat.Percent);
-        RequiterCanKillTNA = BooleanOptionItem.Create(Id + 13, "CanKillTNA", false, TabGroup.CrewmateRoles, false)
+        RequiteIgnoresShields = BooleanOptionItem.Create(Id + 13, "RequiterIgnoresShields", false, TabGroup.CrewmateRoles, false)
             .SetParent(RequiterChance);
     }
     public override void Add(byte playerId)
@@ -98,13 +98,10 @@ internal class Requiter : RoleBase
     {
         if (target.Is(CustomRoles.Solsticer)) return true;
         if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18) return true;
-        if (Knight.RequiterCanKillTNA.GetBool())
-        {
-            killer.RpcMurderPlayer(target);
-            killer.ResetKillCooldown();
-            return false;
-        }
-        return true;
+        if (!Knight.RequiterIgnoresShields.GetBool()) return true;
+        killer.RpcMurderPlayer(target);
+        killer.ResetKillCooldown();
+        return false;
     }
 
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
