@@ -2847,7 +2847,7 @@
   "PlayerExiled": "{0} 被逐出了...",
   "NoImpRemain": "已經沒有<color=#ff1919>偽裝者</color>啦",
   "OneImpRemain": "剩餘 1 名<color=#ff1919>偽裝者</color>",
-  "ImpRemain": "已經沒有偽裝者啦",
+  "ImpRemain": "剩餘 {0} 名<color=#ff1919>偽裝者</color>",
   "NeutralRemain": "剩下 {0} 個<color=#7f8c8d>帶刀中立</color>",
   "OneNeutralRemain": "剩下 1 個<color=#7f8c8d>帶刀中立</color>",
   "ApocRemain": "剩下 {0} 個 <color=#ff174f>災厄</color> <color=#7f8c8d>中立</color>",
