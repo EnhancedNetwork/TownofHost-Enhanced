@@ -1160,7 +1160,10 @@ internal class ChatCommands
                     canceled = true;
                     if (GameStates.IsMeeting)
                     {
-                        MeetingHud.Instance.RpcClose();
+                        if (MeetingHud.Instance)
+                        {
+                            MeetingHud.Instance.RpcClose();
+                        }
                     }
                     else
                     {

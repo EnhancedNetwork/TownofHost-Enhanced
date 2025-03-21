@@ -303,7 +303,7 @@ class CheckForEndVotingPatch
                 voteLog.Info($"Exiled ID: {exileId} ({GetVoteName(exileId)}), max: {max} votes");
             }
 
-            voteLog.Info($"Decision to exiled a player: {exileId} ({GetVoteName(exileId)})");
+            voteLog.Info($"Decision to exiled a player: tie: {tie}, {exileId} ({GetVoteName(exileId)})");
 
             var allPlayers = GameData.Instance.AllPlayers.ToArray();
             var allPlayerCount = allPlayers.Count;
