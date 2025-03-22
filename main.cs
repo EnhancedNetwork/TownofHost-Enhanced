@@ -821,6 +821,7 @@ public enum CustomRoles
     Reverie,
     Sheriff,
     Snitch,
+    Socialite,
     SpeedBooster,
     Spiritualist,
     Spy,
