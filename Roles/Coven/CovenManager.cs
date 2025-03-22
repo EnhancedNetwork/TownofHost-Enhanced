@@ -109,6 +109,8 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 
     public static void GiveNecronomicon(byte target)
     {
+        if (GetPlayerById(target).Is(CustomRoles.Summoned)) return; // Prevent assignment to Summoned players
+
         necroHolder = target;
         GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
         SendRPC(necroHolder);

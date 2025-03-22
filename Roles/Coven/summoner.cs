@@ -1,30 +1,23 @@
-﻿using TOHE.Roles.Core;
+﻿using Hazel;
+using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Utils;
-using Hazel;
-using UnityEngine.Playables;
+using static TOHE.Translator;
+
 namespace TOHE.Roles.Coven;
 
-internal class Summoner : RoleBase
+internal class Summoner : CovenManager
 {
     //===========================SETUP================================\\
-    private const int Id = 920000;
-    private static readonly HashSet<byte> playerIdList = new(); // Initialize properly
-    public static bool HasEnabled => playerIdList.Any();
-    public override bool IsDesyncRole => true;
-
-
-    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenUtility;
-
     public override CustomRoles Role => CustomRoles.Summoner;
+    private const int Id = 31800;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Summoner);
+    public override bool IsDesyncRole => true;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;
     //================================================================\\
 
-    public override bool CanUseKillButton(PlayerControl pc)
-    {
-        return CovenManager.HasNecronomicon(pc); // Summoner can only kill with the Necronomicon
-    }
 
     public static OptionItem SummonedKillRequirement;
     private static OptionItem ReviveDelayOption;
@@ -57,41 +50,41 @@ internal class Summoner : RoleBase
         SetupRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Summoner);
 
         // Revive Delay
-        ReviveDelayOption = FloatOptionItem.Create(Id + 10, "Revive Delay", new(1f, 30f, 1f), 5f, TabGroup.CovenRoles, false)
+        ReviveDelayOption = FloatOptionItem.Create(Id + 10, "SummonerSettings.ReviveDelay", new(1f, 30f, 1f), 5f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
         // Death Timer
-        DeathTimerOption = FloatOptionItem.Create(Id + 11, "Summoned Player Duration", new(5f, 120f, 5f), 30f, TabGroup.CovenRoles, false)
+        DeathTimerOption = FloatOptionItem.Create(Id + 11, "SummonerSettings.SummonDuration", new(5f, 120f, 5f), 30f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
         // Kill Cooldown
-        KillCooldownOption = FloatOptionItem.Create(Id + 12, "Summoned Player Kill Cooldown", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
+        KillCooldownOption = FloatOptionItem.Create(Id + 12, "SummonerSettings.SummonedKillCooldown", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
-        NecroKillCooldownOption = FloatOptionItem.Create(Id + 19, "Summoner Kill Cooldown with necronomicon", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
+        NecroKillCooldownOption = FloatOptionItem.Create(Id + 19, "SummonerSettings.SummonerKillCooldown", new(5f, 60f, 1f), 15f, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
         .SetValueFormat(OptionFormat.Seconds);
 
-        KnowSummonedRoles = BooleanOptionItem.Create(Id + 13, "Summoned knows other coven members", true, TabGroup.CovenRoles, false)
+        KnowSummonedRoles = BooleanOptionItem.Create(Id + 13, "SummonerSettings.SummonedKnowsCoven", true, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        RevealSummonedPlayer = BooleanOptionItem.Create(Id + 14, "Reveal Summoned Player", true, TabGroup.CovenRoles, false)
+        RevealSummonedPlayer = BooleanOptionItem.Create(Id + 14, "SummonerSettings.RevealSummoned", true, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        SummonedKillRequirement = IntegerOptionItem.Create(Id + 15, "Summoned Kill Requirement", new(0, 2, 1), 0, TabGroup.CovenRoles, false)
+        SummonedKillRequirement = IntegerOptionItem.Create(Id + 15, "SummonerSettings.SummonedKillRequirement", new(0, 2, 1), 0, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner])
        .SetValueFormat(OptionFormat.Times);
 
-        AllowSummoningRevivedPlayers = BooleanOptionItem.Create(Id + 16, "AllowSummoningRevivedPlayers", false, TabGroup.CovenRoles, false)
+        AllowSummoningRevivedPlayers = BooleanOptionItem.Create(Id + 16, "SummonerSettings.AllowResummon", false, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        HasAbilityUses = BooleanOptionItem.Create(Id + 17, "Summoner_HasAbilityUses", true, TabGroup.CovenRoles, false)
+        HasAbilityUses = BooleanOptionItem.Create(Id + 17, "SummonerSettings.HasAbilityUses", true, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
-        MaxSummonsAllowed = IntegerOptionItem.Create(Id + 18, "Summoner_MaxSummonsAllowed", new(3, 15, 1), 5, TabGroup.CovenRoles, false)
+        MaxSummonsAllowed = IntegerOptionItem.Create(Id + 18, GeneralOption.SkillLimitTimes, new(3, 15, 1), 5, TabGroup.CovenRoles, false)
        .SetParent(HasAbilityUses).SetValueFormat(OptionFormat.Times);
     }
 
@@ -103,15 +96,14 @@ internal class Summoner : RoleBase
         var playerState = Main.PlayerStates[playerId];
         playerState.SetMainRole(CustomRoles.Summoner);
         playerState.IsSummoner = true;
-        playerIdList.Add(playerId);
         SummonsUsed = 0;
+        CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
     public override void Init()
     {
         SummonedHealth.Clear();
         LastUpdateTimes.Clear();
-        playerIdList.Clear();
         SummonsUsed = 0;
     }
 
@@ -122,6 +114,7 @@ internal class Summoner : RoleBase
 
         return ColorString(GetRoleColor(CustomRoles.Summoner), $" {seen.Data.PlayerId}");
     }
+    public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
 
     public static bool SummonerCheckMsg(PlayerControl pc, string msg, bool isUI = false, bool isSystemMessage = false)
     {
@@ -188,7 +181,7 @@ internal class Summoner : RoleBase
 
         if (targetPlayer.IsAlive())
         {
-            Logger.Warn("Target player is already alive.", "Summoner");
+            Logger.Warn($"{targetPlayer.GetRealName()} is already alive.", "Summoner");
             pc.Notify("Target is invalid or already alive.");
             return true;
         }
@@ -237,21 +230,21 @@ internal class Summoner : RoleBase
     {
         ChatUpdatePatch.DoBlockChat = true;
 
-      
+
         string[] decoyCommands = { "/summon" };
         var random = IRandom.Instance;
 
-        for (int i = 0; i < 20; i++) 
+        for (int i = 0; i < 20; i++)
         {
             string decoyMessage = decoyCommands[random.Next(0, decoyCommands.Length)];
 
-          
+
             var randomPlayer = Main.AllAlivePlayerControls.RandomElement();
 
             // Add the decoy message to the chat
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(randomPlayer, decoyMessage);
 
-        
+
             var writer = CustomRpcSender.Create("MessagesToSend", SendOption.None);
             writer.StartMessage(-1);
             writer.StartRpc(randomPlayer.NetId, (byte)RpcCalls.SendChat)
@@ -379,10 +372,10 @@ internal class Summoner : RoleBase
         }
     }
 
-    
 
 
-    
+
+
 
 
     public void OnRoleRemove(byte playerId)
@@ -436,22 +429,23 @@ internal class Summoner : RoleBase
         if (!killer.Is(CustomRoles.Summoner)) return true;
 
         // Prevent killing summoned players or other coven members
-        if (target.Is(CustomRoles.Summoned) || target.IsPlayerCoven())
+        if (target.Is(CustomRoles.Summoned) || target.IsPlayerCovenTeam())
         {
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), "You cannot kill Summoned players or other Coven members!"));
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Summoner), GetString("CovenDontKillOtherCoven")));
             return false; // Cancel the kill
         }
 
         return true; // Allow the kill otherwise
     }
+    /* Unsure why this is needed at all
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (!killer.Is(CustomRoles.Summoner)) return;
 
-        
+
 
         // Reset the kill cooldown to NecroKillCooldownOption if Summoner has the Necronomicon
-        if (CovenManager.HasNecronomicon(killer))
+        if (HasNecronomicon(killer))
         {
             killer.SetKillCooldown(NecroKillCooldownOption.GetFloat());
             Logger.Info($"Summoner {killer.PlayerId} reset kill cooldown to {NecroKillCooldownOption.GetFloat()} seconds.", "Summoner");
@@ -459,6 +453,7 @@ internal class Summoner : RoleBase
 
         Logger.Info($"Summoner {killer.PlayerId} killed player {target.PlayerId}.", "Summoner");
     }
+    */
 
 
     public override string GetProgressText(byte playerId, bool comms)
@@ -473,7 +468,18 @@ internal class Summoner : RoleBase
         return ColorString(color, $"{remainingSummons}/{maxSummons}");
     }
 
+    private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
+    {
+        if (killer.Is(CustomRoles.Summoned))
+        {
+            SummonedKillCounts[killer.PlayerId]++;
 
+            if (killer.GetRoleClass() is Summoned summoned)
+            {
+                summoned.NumKills = SummonedKillCounts[killer.PlayerId];
+            }
+        }
+    }
 
 
     public static bool CheckSummoned(PlayerControl player)
@@ -488,16 +494,10 @@ internal class Summoner : RoleBase
         {
             if (player.Is(CustomRoles.Summoned) && player.IsAlive())
             {
-
                 Summoned.KillSummonedPlayer(player);
             }
         }
     }
-
-
-
-
-
 
     private void PerformRevive(PlayerControl targetPlayer, float reviveDelay)
     {
@@ -517,6 +517,10 @@ internal class Summoner : RoleBase
             targetPlayer.RpcChangeRoleBasis(CustomRoles.Summoned);
             targetPlayer.RpcSetCustomRole(CustomRoles.Summoned);
             SummonedPlayerIds.Add(targetPlayer.PlayerId);
+            if (!SummonedKillCounts.ContainsKey(targetPlayer.PlayerId))
+            {
+                SummonedKillCounts[targetPlayer.PlayerId] = 0;
+            }
 
             // Initialize tasks and cooldowns
             var playerState = Main.PlayerStates[targetPlayer.PlayerId];
@@ -531,7 +535,6 @@ internal class Summoner : RoleBase
         }, reviveDelay, "SummonerRevive");
     }
 
-
     public void SaveSummonedKillCount(PlayerControl summonedPlayer)
     {
         if (summonedPlayer.GetRoleClass() is Summoned summoned)
@@ -541,14 +544,10 @@ internal class Summoner : RoleBase
         }
     }
 
-
     public static void UpdateWinCondition(bool won)
     {
         HasWon = won;
     }
-
-
-
 
     public static float GetDeathTimer(byte playerId)
     {
@@ -561,12 +560,6 @@ internal class Summoner : RoleBase
         // Fallback to the configured default death timer
         return DeathTimerOption?.GetFloat() ?? 40f; // Default to 40 seconds if not set
     }
-
-
-
-
-
-
 
     public static bool KnowRole(PlayerControl player, PlayerControl target)
     {
@@ -592,13 +585,6 @@ internal class Summoner : RoleBase
             player.Notify(ColorString(GetRoleColor(CustomRoles.Summoned), $"Time Remaining: {health}s"));
         }
     }
-
-
-
-
-
-
-
 
 
     public override void AfterMeetingTasks()
@@ -628,9 +614,9 @@ internal class Summoner : RoleBase
         if (KnowRole(seer, target))
         {
             if (target.Is(CustomRoles.Summoner))
-                return ColorString(GetRoleColor(CustomRoles.Summoner), "Summoner");
+                return CustomRoles.Summoner.ToColoredString();
             if (target.Is(CustomRoles.Summoned))
-                return ColorString(GetRoleColor(CustomRoles.Summoned), "Summoned");
+                return CustomRoles.Summoned.ToColoredString();
         }
 
         // Default behavior

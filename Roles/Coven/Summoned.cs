@@ -49,7 +49,7 @@ internal class Summoned : RoleBase
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
     {
-        if (lowLoad || GameStates.IsMeeting) || player.Data.IsDead) return; // Skip if low-load or during meetings
+        if ((lowLoad || GameStates.IsMeeting) || player.Data.IsDead) return; // Skip if low-load or during meetings
 
         var playerId = player.PlayerId;
 
@@ -139,7 +139,7 @@ internal class Summoned : RoleBase
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.Is(CustomRoles.Summoned) && (target.Is(CustomRoles.Summoner) || target.Is(CustomRoles.Summoned) || target.Is(Custom_Team.Coven)))
+        if (killer.Is(CustomRoles.Summoned) && (target.Is(CustomRoles.Summoner) || target.Is(CustomRoles.Summoned) || target.IsPlayerCoven()))
         {
             string errorMessage = "You cannot kill the Summoner or other summoned players!";
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), errorMessage));
@@ -152,14 +152,7 @@ internal class Summoned : RoleBase
     {
         if (killer.Is(CustomRoles.Summoned))
         {
-            if (!Summoner.SummonedKillCounts.ContainsKey(killer.PlayerId))
-            {
-                Summoner.SummonedKillCounts[killer.PlayerId] = 0;
-            }
-
-            Summoner.SummonedKillCounts[killer.PlayerId]++;
-
-
+           
             // Update the role's NumKills property for UI purposes
             if (killer.GetRoleClass() is Summoned summoned)
             {
