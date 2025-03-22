@@ -1,4 +1,5 @@
-﻿using Hazel;
+using Hazel;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -12,7 +13,6 @@ internal class Summoner : CovenManager
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Summoner;
     private const int Id = 31800;
-    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Summoner);
     public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CovenPower;
@@ -35,7 +35,6 @@ internal class Summoner : CovenManager
 
     private readonly List<byte> SummonedPlayerIds = new List<byte>();
 
-    private static int SummonsUsed = 0;
     public static readonly Dictionary<byte, int> SummonedKillCounts = new();
     private static readonly Dictionary<byte, CustomRoles> SavedStates = new();
     public static readonly Dictionary<byte, float> SummonedTimers = new();
@@ -47,7 +46,7 @@ internal class Summoner : CovenManager
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = NecroKillCooldownOption.GetFloat();
     public override void SetupCustomOption()
     {
-        SetupRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Summoner);
+        SetupSingleRoleOptions(Id, TabGroup.CovenRoles, Role, 1, zeroOne: false);
 
         // Revive Delay
         ReviveDelayOption = FloatOptionItem.Create(Id + 10, "SummonerSettings.ReviveDelay", new(1f, 30f, 1f), 5f, TabGroup.CovenRoles, false)
@@ -96,7 +95,7 @@ internal class Summoner : CovenManager
         var playerState = Main.PlayerStates[playerId];
         playerState.SetMainRole(CustomRoles.Summoner);
         playerState.IsSummoner = true;
-        SummonsUsed = 0;
+        playerId.SetAbilityUseLimit(MaxSummonsAllowed.GetInt());
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
@@ -104,7 +103,6 @@ internal class Summoner : CovenManager
     {
         SummonedHealth.Clear();
         LastUpdateTimes.Clear();
-        SummonsUsed = 0;
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
@@ -173,7 +171,7 @@ internal class Summoner : CovenManager
         }
 
         // Check summon use limit
-        if (HasAbilityUses.GetBool() && SummonsUsed >= MaxSummonsAllowed.GetInt())
+        if (HasAbilityUses.GetBool() && pc.GetAbilityUseLimit() <= 0)
         {
             pc.Notify("You have reached the maximum number of summons.");
             return true;
@@ -201,7 +199,7 @@ internal class Summoner : CovenManager
         // Increment summon count if allowed
         if (!isAlreadySummoned || !allowResummoning)
         {
-            SummonsUsed++;
+            pc.RpcRemoveAbilityUse();
         }
 
         summonerInstance.HasSummonedThisMeeting = true;
@@ -315,7 +313,7 @@ internal class Summoner : CovenManager
     public bool CanSummon()
     {
         if (!HasAbilityUses.GetBool()) return true; // Unlimited summons if ability uses are disabled
-        return SummonsUsed < MaxSummonsAllowed.GetInt(); // Check remaining summons
+        return _Player.GetAbilityUseLimit() > 0; // Check remaining summons
     }
 
     public void SummonPlayer(PlayerControl targetPlayer)
@@ -341,8 +339,8 @@ internal class Summoner : CovenManager
 
             NotifySummonedHealth((PlayerControl)targetPlayer.PlayerId); // Notify the player
 
-            SummonsUsed++;
-            Logger.Info($"Summoned player {targetPlayer.PlayerId}. Remaining summons: {MaxSummonsAllowed.GetInt() - SummonsUsed}", "Summoner");
+            _Player.RpcRemoveAbilityUse();
+            Logger.Info($"Summoned player {targetPlayer.PlayerId}. Remaining summons: {_Player.GetAbilityUseLimit()}", "Summoner");
         }
     }
 
@@ -462,7 +460,7 @@ internal class Summoner : CovenManager
         if (!HasAbilityUses.GetBool()) return string.Empty;
 
         int maxSummons = MaxSummonsAllowed.GetInt();
-        int remainingSummons = maxSummons - SummonsUsed;
+        float remainingSummons = playerId.GetAbilityUseLimit();
         Color color = remainingSummons > 0 ? Color.green : Color.red;
 
         return ColorString(color, $"{remainingSummons}/{maxSummons}");
