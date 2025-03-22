@@ -114,10 +114,11 @@ internal class Cultist : RoleBase
     }
     public static bool CanBeCharmed(PlayerControl pc)
     {
-            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Charmed)
-            && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Loyal) && !pc.Is(CustomRoles.Infectious)
-            && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Enchanted)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
+        return pc != null && (
+            (CanCharmCoven.GetBool() && pc.GetCustomRole().IsCoven())
+            || (CanCharmNeutral.GetBool() && pc.GetCustomRole().IsNeutral())
+            || pc.GetCustomRole().IsImpostorTeamV3() || pc.GetCustomRole().IsCrewmate()
+            );
     }
     public static bool NameRoleColor(PlayerControl seer, PlayerControl target)
     {

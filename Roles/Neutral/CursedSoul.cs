@@ -90,9 +90,9 @@ internal class CursedSoul : RoleBase
 
     public static bool CanBeSoulless(PlayerControl pc)
     {
-        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
+        return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostorTeamV3() ||
             (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
-            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Loyal) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
+            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Soulless);
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
