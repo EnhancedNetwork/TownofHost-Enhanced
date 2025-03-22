@@ -18,6 +18,7 @@ internal class Doomsayer : RoleBase
     public override CustomRoles Role => CustomRoles.Doomsayer;
     private const int Id = 14100;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Doomsayer);
+    public override bool IsDesyncRole => EasyMode.GetBool();
     public override CustomRoles ThisRoleBase => EasyMode.GetBool() ? CustomRoles.Impostor : CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralEvil;
     //==================================================================\\
