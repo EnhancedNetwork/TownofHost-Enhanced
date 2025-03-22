@@ -147,7 +147,7 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Coven:
                         if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
-                            || pc.Is(CustomRoles.Enchanted) && !WinnerIds.Contains(pc.PlayerId))
+                            || (pc.Is(CustomRoles.Enchanted) || Summoner.CheckWinCondition(pc.PlayerId)) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -336,7 +336,7 @@ class GameEndCheckerForNormal
                 }
                 if (Main.AllAlivePlayerControls.All(p => p.IsPlayerCoven() || p.Is(CustomRoles.Enchanted)))
                 {
-                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsPlayerCoven() || x.Is(CustomRoles.Enchanted) || Main.PlayerStates[x.PlayerId].IsNecromancer))
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.IsPlayerCoven() || x.Is(CustomRoles.Enchanted) || Main.PlayerStates[x.PlayerId].IsNecromancer || Summoner.CheckWinCondition(x.PlayerId)))
                     {
                         if (!WinnerIds.Contains(pc.PlayerId))
                             WinnerIds.Add(pc.PlayerId);
@@ -486,15 +486,27 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                                 break;
+                                /*
                             case CustomRoles.Summoned:
                                 // Ensure Coven has won
                                 if (WinnerTeam == CustomWinner.Coven)
                                 {
+                                    
                                     var summonedState = Main.PlayerStates[pc.PlayerId].RoleClass as Summoned;
 
                                     // Check if Summoned has met the kill requirement
                                     if (Summoner.SummonedKillRequirement.GetInt() == 0 ||
                                         (summonedState != null && summonedState.NumKills >= Summoner.SummonedKillRequirement.GetInt()))
+                                    {
+                                        WinnerIds.Add(pc.PlayerId);
+                                        Logger.Info($"Summoned {pc.PlayerId} has won with the Coven, meeting all conditions.", "Summoner");
+                                    }
+                                    else
+                                    {
+                                        Logger.Info($"Summoned {pc.PlayerId} did not meet the kill requirement and does not win.", "Summoner");
+                                    }
+                                    
+                                    if (Summoner.CheckWinCondition(pc.PlayerId))
                                     {
                                         WinnerIds.Add(pc.PlayerId);
                                         Logger.Info($"Summoned {pc.PlayerId} has won with the Coven, meeting all conditions.", "Summoner");
@@ -509,11 +521,12 @@ class GameEndCheckerForNormal
                                     Logger.Info($"Summoned {pc.PlayerId} does not win as Coven has not won.", "Summoner");
                                 }
                                 break;
+                        */
 
 
 
 
-                }
+                        }
                     }
 
                     //Lovers follow winner

@@ -1,10 +1,12 @@
-﻿using UnityEngine;
 using TOHE.Roles.Core;
+using UnityEngine;
+using static TOHE.Translator;
+using static TOHE.Utils;
+
 namespace TOHE.Roles.Coven;
 
 internal class Summoned : RoleBase
 {
-    private const int Id = 921000;
 
     // Dictionaries to track remaining time and last update time for each player
     private readonly Dictionary<byte, int> PlayerDie = new(); // Tracks remaining time (in seconds)
@@ -34,7 +36,7 @@ internal class Summoned : RoleBase
             PlayerDie[playerId] = deathTimer;
         }
 
-        LastTime[playerId] = Utils.GetTimeStamp(); // Set the initial timestamp
+        LastTime[playerId] = GetTimeStamp(); // Set the initial timestamp
         NotifySummonedHealth(playerId); // Notify player of their timer
     }
 
@@ -47,7 +49,7 @@ internal class Summoned : RoleBase
 
 
 
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if ((lowLoad || GameStates.IsMeeting) || player.Data.IsDead) return; // Skip if low-load or during meetings
 
@@ -101,13 +103,13 @@ internal class Summoned : RoleBase
             var player = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == playerId);
             if (player != null)
             {
-                player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoned), $"Time Remaining: {timeRemaining}s"));
+                player.Notify(ColorString(GetRoleColor(CustomRoles.Summoned), $"Time Remaining: {timeRemaining}s"));
             }
         }
     }
 
     // Kill the summoned player when their timer runs out
-   
+
     public static void KillSummonedPlayer(PlayerControl player)
     {
         if (player == null || player.Data == null) return;
@@ -134,15 +136,14 @@ internal class Summoned : RoleBase
         int kills = summonedInstance.NumKills;
         Color color = kills >= killRequirement ? Color.green : Color.red;
 
-        return Utils.ColorString(color, $"({kills}/{killRequirement})");
+        return ColorString(color, $"({kills}/{killRequirement})");
     }
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.Is(CustomRoles.Summoned) && (target.Is(CustomRoles.Summoner) || target.Is(CustomRoles.Summoned) || target.IsPlayerCoven()))
+        if (killer.Is(CustomRoles.Summoned) && (target.Is(CustomRoles.Summoner) || target.Is(CustomRoles.Summoned) || target.IsPlayerCovenTeam()))
         {
-            string errorMessage = "You cannot kill the Summoner or other summoned players!";
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Summoner), errorMessage));
+            killer.Notify(ColorString(GetRoleColor(CustomRoles.Summoner), GetString("CovenDontKillOtherCoven")));
             return false; // Cancel the kill
         }
 
@@ -152,7 +153,6 @@ internal class Summoned : RoleBase
     {
         if (killer.Is(CustomRoles.Summoned))
         {
-           
             // Update the role's NumKills property for UI purposes
             if (killer.GetRoleClass() is Summoned summoned)
             {

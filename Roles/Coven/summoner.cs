@@ -1,10 +1,11 @@
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Coven;
 
@@ -123,22 +124,22 @@ internal class Summoner : CovenManager
         msg = msg.ToLower().Trim();
         Logger.Info($"Received command: {msg} from {pc.PlayerId}, Host: {AmongUsClient.Instance.AmHost}", "Summoner");
 
-        if (!CheckCommand(ref msg, "summon")) return false;
+        if (!CheckCommand(ref msg, "summon|sm")) return false;
 
         // Always try hiding the message if the command is intercepted
-        HideSummonCommand(pc);
+        HideSummonCommand();
 
         if (!pc.IsAlive())
         {
             Logger.Warn("Summoner is dead and cannot use commands.", "Summoner");
-            pc.Notify("You cannot summon players while dead.");
+            SendMessage(GetString("Summoner.SummonerDead"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
         if (!byte.TryParse(msg, out var targetId))
         {
             Logger.Warn("Invalid target ID for /summon command.", "Summoner");
-            pc.Notify("Invalid target ID! Use /summon <ID>");
+            SendMessage(GetString("Summoner.InvalidID"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
@@ -147,7 +148,7 @@ internal class Summoner : CovenManager
         if (targetPlayer == null)
         {
             Logger.Warn("Target player is invalid or does not exist.", "Summoner");
-            pc.Notify("Target player not found.");
+            SendMessage(GetString("Summoner.NullPlayer"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
@@ -164,7 +165,7 @@ internal class Summoner : CovenManager
             // Send global message only if required
             if (RevealSummonedPlayer.GetBool())
             {
-                AddMsg($"The SUMMONER has reactivated {targetPlayer.GetRealName()}! \nKillers beware!", byte.MaxValue, "Summoner Announcement");
+                SendMessage(string.Format(GetString("Summoner.SummonAnnouncementAgain"), targetPlayer.GetRealName()), byte.MaxValue, CustomRoles.Summoner.ToColoredString().ToUpper());
             }
 
             return true;
@@ -173,14 +174,14 @@ internal class Summoner : CovenManager
         // Check summon use limit
         if (HasAbilityUses.GetBool() && pc.GetAbilityUseLimit() <= 0)
         {
-            pc.Notify("You have reached the maximum number of summons.");
+            SendMessage(GetString("Summoner.NoUses"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
         if (targetPlayer.IsAlive())
         {
             Logger.Warn($"{targetPlayer.GetRealName()} is already alive.", "Summoner");
-            pc.Notify("Target is invalid or already alive.");
+            SendMessage(GetString("Summoner.PlayerAlive"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
@@ -188,12 +189,12 @@ internal class Summoner : CovenManager
         if (summonerInstance.HasSummonedThisMeeting)
         {
             Logger.Warn("Summoner has already summoned a player this meeting.", "Summoner");
-            pc.Notify("You can only summon one player per meeting.");
+            SendMessage(GetString("Summoner.SummonedThisMeeting"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
         // Normal summoning logic
-        HideSummonCommand(pc);
+        HideSummonCommand();
         summonerInstance.RevivePlayer(targetPlayer);
 
         // Increment summon count if allowed
@@ -206,17 +207,14 @@ internal class Summoner : CovenManager
 
         // Send global message
         string summonMessage = RevealSummonedPlayer.GetBool()
-            ? $"The SUMMONER has brought {targetPlayer.GetRealName()} back to life! \nKillers beware!"
-            : "The SUMMONER has brought someone back to life! \nKillers beware!";
-        AddMsg(summonMessage, byte.MaxValue, "Summoner Announcement");
+            ? string.Format(GetString("Summoner.SummonAnnouncement"), targetPlayer.GetRealName())
+            : GetString("Summoner.SummonAnnoucementNameless");
+        SendMessage(summonMessage, byte.MaxValue, CustomRoles.Summoner.ToColoredString().ToUpper());
 
         // Send private message to the summoned player if hidden
         if (!RevealSummonedPlayer.GetBool())
         {
-            SendMessage(
-                "The summoner has chosen to revive you! \nHunt down the killers!",
-                targetPlayer.PlayerId
-            );
+            SendMessage(GetString("Summoned.Notification"), targetPlayer.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
         }
 
         Logger.Info($"Summoner {pc.PlayerId} has summoned player {targetPlayer.PlayerId}. System message sent: {summonMessage}", "Summoner");
@@ -224,12 +222,17 @@ internal class Summoner : CovenManager
     }
 
 
-    private static void HideSummonCommand(PlayerControl summoner)
+    private static void HideSummonCommand()
     {
         ChatUpdatePatch.DoBlockChat = true;
+        if (ChatManager.quickChatSpamMode != QuickChatSpamMode.QuickChatSpam_Disabled)
+        {
+            ChatManager.SendQuickChatSpam();
+            ChatUpdatePatch.DoBlockChat = false;
+            return;
+        }
 
-
-        string[] decoyCommands = { "/summon" };
+        string[] decoyCommands = { "/summon", "/sm" };
         var random = IRandom.Instance;
 
         for (int i = 0; i < 20; i++)
@@ -254,23 +257,6 @@ internal class Summoner : CovenManager
 
         ChatUpdatePatch.DoBlockChat = false;
     }
-
-    private static void AddMsg(string message, byte playerId, string title)
-    {
-
-
-        // Send the actual message
-        SendMessage(
-            ColorString(GetRoleColor(CustomRoles.Summoner), title) + "\n" + message,
-            playerId
-        );
-
-        Logger.Info($"Message sent to all: {message} with title {title}", "Summoner");
-    }
-
-
-
-
 
 
     public static bool CheckCommand(ref string msg, string command)
@@ -404,7 +390,8 @@ internal class Summoner : CovenManager
 
         foreach (var summonedId in SummonedPlayerIds.ToList())
         {
-            PlayerControl summonedPlayer = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == summonedId);
+            // PlayerControl summonedPlayer = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == summonedId);
+            PlayerControl summonedPlayer = GetPlayerById(summonedId);
             if (summonedPlayer != null)
             {
                 // Restore the player's original role
@@ -414,7 +401,7 @@ internal class Summoner : CovenManager
                 summonedPlayer.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
 
                 // Force sync their death
-                summonedPlayer.RpcMurderPlayer(summonedPlayer);
+                Summoned.KillSummonedPlayer(summonedPlayer);
             }
         }
 
@@ -479,13 +466,6 @@ internal class Summoner : CovenManager
         }
     }
 
-
-    public static bool CheckSummoned(PlayerControl player)
-    {
-        return player.Is(CustomRoles.Summoned);
-    }
-
-
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo bodyInfo)
     {
         foreach (var player in PlayerControl.AllPlayerControls)
@@ -545,6 +525,22 @@ internal class Summoner : CovenManager
     public static void UpdateWinCondition(bool won)
     {
         HasWon = won;
+    }
+
+    public static bool CheckWinCondition(byte playerId)
+    {
+        if (SummonedKillCounts.ContainsKey(playerId))
+        {
+            if (SummonedKillRequirement.GetInt() == 0)
+            {
+                return true;
+            }
+            if (SummonedKillCounts[playerId] >= SummonedKillRequirement.GetInt())
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static float GetDeathTimer(byte playerId)
