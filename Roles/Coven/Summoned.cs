@@ -1,3 +1,4 @@
+using MS.Internal.Xml.XPath;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -11,8 +12,6 @@ internal class Summoned : RoleBase
     // Dictionaries to track remaining time and last update time for each player
     private readonly Dictionary<byte, int> PlayerDie = new(); // Tracks remaining time (in seconds)
     private readonly Dictionary<byte, long> LastTime = new(); // Tracks the last update time (timestamp)
-
-    public int NumKills { get; set; } = 0;
 
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
@@ -46,7 +45,6 @@ internal class Summoned : RoleBase
         PlayerDie.Clear();
         LastTime.Clear();
     }
-
 
 
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
@@ -133,7 +131,7 @@ internal class Summoned : RoleBase
 
         if (Main.PlayerStates[playerId].RoleClass is not Summoned summonedInstance) return string.Empty;
 
-        int kills = summonedInstance.NumKills;
+        int kills = Summoner.SummonedKillCounts[playerId];
         Color color = kills >= killRequirement ? Color.green : Color.red;
 
         return ColorString(color, $"({kills}/{killRequirement})");
@@ -148,22 +146,5 @@ internal class Summoned : RoleBase
         }
 
         return true; // Allow other kills
-    }
-    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
-    {
-        if (killer.Is(CustomRoles.Summoned))
-        {
-            // Update the role's NumKills property for UI purposes
-            if (killer.GetRoleClass() is Summoned summoned)
-            {
-                summoned.NumKills = Summoner.SummonedKillCounts[killer.PlayerId];
-            }
-        }
-    }
-    public void OnRemove(byte playerId)
-    {
-        base.OnRemove(playerId);
-        PlayerDie.Remove(playerId);
-        LastTime.Remove(playerId);
     }
 }
