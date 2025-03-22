@@ -33,7 +33,7 @@ internal class Knight : RoleBase
         RequiterChance = IntegerOptionItem.Create(Id + 12, "RequiterChance", new(0, 100, 5), 0, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Knight])
             .SetValueFormat(OptionFormat.Percent);
-        RequiteIgnoresShields = BooleanOptionItem.Create(Id + 13, "RequiterIgnoresShields", false, TabGroup.CrewmateRoles, false)
+        RequiterIgnoresShields = BooleanOptionItem.Create(Id + 13, "RequiterIgnoresShields", false, TabGroup.CrewmateRoles, false)
             .SetParent(RequiterChance);
     }
     public override void Add(byte playerId)
