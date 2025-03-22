@@ -424,11 +424,13 @@ public static class Options
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem ShowShieldedPlayerToAll;
     public static OptionItem RemoveShieldOnFirstDead;
+    public static OptionItem PreventFirstDeadShapeShift;
     public static OptionItem ShieldedCanUseKillButton;
     public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
     public static OptionItem NonCrewRandomCommonTasks;
+    public static OptionItem UniqueNeutralRevealScreen;
 
     // Ghost
     public static OptionItem GhostIgnoreTasks;
@@ -702,7 +704,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 31000 last id for roles/add-ons (Next use 31100)
+        // 31600 last id for roles/add-ons (Next use 31700)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -789,6 +791,14 @@ public static class Options
         NeutralWinTogether = BooleanOptionItem.Create(60018, "NeutralWinTogether", false, TabGroup.NeutralRoles, false)
             .SetParent(NeutralRoleWinTogether)
             .SetGameMode(CustomGameMode.Standard);
+
+        SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60036, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+
+        TextOptionItem.Create(10000015, "CovenInfo", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
 
         CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1365,10 +1375,10 @@ public static class Options
         ConfirmLoversOnEject = BooleanOptionItem.Create(60445, "ConfirmLoversOnEject", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
+        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.ModSettings, false)
             .HideInHnS()
             .SetGameMode(CustomGameMode.Standard);
-        ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowBetrayalAddonsOnEject", true, TabGroup.SystemSettings, false)
+        ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowBetrayalAddonsOnEject", true, TabGroup.ModSettings, false)
             .HideInHnS()
             .SetGameMode(CustomGameMode.Standard);
 
@@ -2001,6 +2011,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
+        PreventFirstDeadShapeShift = BooleanOptionItem.Create(60873, "PreventFirstDeadShapeShift", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
         ShieldedCanUseKillButton = BooleanOptionItem.Create(60782, "ShieldedCanUseKillButton", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
@@ -2016,6 +2030,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
         NonCrewRandomCommonTasks = BooleanOptionItem.Create(60791, "NonCrewRandomCommonTasks", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
+        UniqueNeutralRevealScreen = BooleanOptionItem.Create(60792, "UniqueNeutralRevealScreen", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定

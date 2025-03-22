@@ -380,9 +380,10 @@ public class AbstractPagingBehaviour : MonoBehaviour
 
     public virtual void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.mouseScrollDelta.y > 0f)
+        bool chatIsOpen = HudManager.Instance.Chat.IsOpenOrOpening;
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.LeftArrow) || (!chatIsOpen && Input.mouseScrollDelta.y > 0f))
             Cycle(false);
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || Input.mouseScrollDelta.y < 0f)
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.RightArrow) || (!chatIsOpen && Input.mouseScrollDelta.y < 0f))
             Cycle(true);
     }
 

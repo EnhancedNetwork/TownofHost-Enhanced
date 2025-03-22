@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -962,6 +963,7 @@ public class RoleAssign
 
         if (Sunnyboy.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
+        if (Requiter.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Knight)) FinalRolesList.Add(CustomRoles.Requiter);
 
         if (Romantic.HasEnabled)
         {

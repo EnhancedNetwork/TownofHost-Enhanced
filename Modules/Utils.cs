@@ -11,7 +11,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Patches;
@@ -1876,7 +1875,7 @@ public static class Utils
                 SelfName.Clear().Append($"{ColorString(seer.GetRoleColor(), SeerRealName.ToString())}{SelfDeathReason}{SelfMark}");
 
                 // Add protected player icon from ShieldPersonDiedFirst
-                if (seer.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting)
+                if (seer.CheckFirstDied() && MeetingStates.FirstMeeting && !isForMeeting)
                 {
                     SelfName.Clear().Append($"{ColorString(seer.GetRoleColor(), $"<color=#4fa1ff><u></color>{SeerRealName}</u>")}{SelfDeathReason}<color=#4fa1ff>✚</color>{SelfMark}");
                 }
@@ -2000,11 +1999,11 @@ public static class Utils
                                 if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                                     TargetMark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
 
-                                if (seer.IsPlayerCoven() && target.IsPlayerCoven() && CovenManager.HasNecronomicon(target))
+
+                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && CovenManager.HasNecronomicon(target))
                                 {
                                     TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                                 }
-
                                 if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
                                     TargetMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
@@ -2163,7 +2162,7 @@ public static class Utils
                         var TargetName = new StringBuilder();
 
                         // Add protected player icon from ShieldPersonDiedFirst
-                        if (target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting && !isForMeeting && Options.ShowShieldedPlayerToAll.GetBool())
+                        if (target.CheckFirstDied() && MeetingStates.FirstMeeting && !isForMeeting && Options.ShowShieldedPlayerToAll.GetBool())
                         {
                             TargetName.Append(TargetRoleName)
                                 .Append("<color=#4fa1ff><u></color>")
@@ -2201,6 +2200,19 @@ public static class Utils
         PlayerGameOptionsSender.SetDirtyToAll();
         GameOptionsSender.SendAllGameOptions();
     }
+
+    public static bool CheckFirstDied(this PlayerControl pc)
+    {
+        if (pc.GetClient().GetHashedPuid() == Main.FirstDiedPrevious) return true;
+
+        if (!Main.FirstDied.IsNullOrWhiteSpace() && Main.FirstDiedPrevious.Contains('#'))
+        {
+            if (pc.GetClient().FriendCode.ToLower() == Main.FirstDiedPrevious.ToLower()) return true;
+        }
+
+        return false;
+    }
+
     public static void SendGameData()
     {
         foreach (var playerinfo in GameData.Instance.AllPlayers)
