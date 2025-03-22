@@ -18,10 +18,12 @@ internal class Dictator : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
     public static OptionItem ChangeCommandToExpel;
+    public static OptionItem StayAliveWhenVoteEvil;
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Dictator);
         ChangeCommandToExpel = BooleanOptionItem.Create(Id + 10, "DictatorChangeCommandToExpel", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Dictator]);
+        StayAliveWhenVoteEvil = BooleanOptionItem.Create(Id + 11, "DictatorAliveWhenVoteEvil", true, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Dictator]);
     }
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)
@@ -88,7 +90,12 @@ internal class Dictator : RoleBase
             states = [.. statesList];
             var exiled = target.Data;
             var isBlackOut = AntiBlackout.BlackOutIsActive;
-            CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
+
+            if (exiled.GetCustomRole().IsCrewmate() || !StayAliveWhenVoteEvil.GetBool())
+            {
+                CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Overthrown, pc.PlayerId);
+            }
+
             ExileControllerWrapUpPatch.AntiBlackout_LastExiled = exiled;
             Main.LastVotedPlayerInfo = exiled;
             AntiBlackout.ExilePlayerId = exiled.PlayerId;

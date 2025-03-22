@@ -395,6 +395,7 @@ public class PlayerState(byte playerId)
         Vaporized,
         Toxined,
         Arrested,
+        Overthrown,
 
         //Please add all new Roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,

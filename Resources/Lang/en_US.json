@@ -862,7 +862,7 @@
   "SnitchInfoLong": "(Crewmates):\nAfter the Snitch completes all tasks, they can see the Impostor's names displayed in red on the meeting. When the Snitch has only one task left, the Impostors will see a「⚠」mark next to the name of themselves and the Snitch. When a Snitch becomes a Madmate, the「⚠」mark turns red.",
   "MarshallInfoLong": "(Crewmates):\nAs the Marshall, complete your tasks to reveal yourself to the rest of the Crewmates.\nOther teams will not be able to see you.\nHowever, Madmates CAN see you.",
   "DoctorInfoLong": "(Crewmates):\nAs the Doctor, you can see the cause of death for all players. In addition, the Doctor can access Vitals wherever you are while he still has battery left.",
-  "DictatorInfoLong": "(Crewmates):\nWhen the Dictator votes for someone, the meeting will end on the spot, and the player they voted for will be ejected from the meeting. The moment the Dictator votes someone out, the Dictator will also die.\nIf the setting to use the command is on, the Dictator will have to use '/exp id' in order to exile someone. The Dictator will be able to vote normally.",
+  "DictatorInfoLong": "(Crewmates):\nWhen the Dictator votes for someone, the meeting will end on the spot, and the player they voted for will be ejected from the meeting. The moment the Dictator votes someone out, the Dictator will also die.\nIf the setting to use the command is on, the Dictator will have to use '/exp id' in order to exile someone. The Dictator will be able to vote normally.\nThe Dictator can survive after voting an Evil player if the setting is on.",
   "DetectiveInfoLong": "(Crewmate):\nAs the Detective, when you report a body, they will receive a clue message, which will tell the Detective what the victim's role is. According to the Host's settings, the Detective may know what the murderer's role is. Note: Detective won't be Oblivious.",
   "UndercoverInfoLong": "(Crewmates):\nAs the Undercover, the Impostors knows who you are and sees them as a teammate, but the Undercover themself does not know who the Impostors are.",
   "NiceGuesserInfoLong": "(Crewmates):\nAs the Nice Guesser, you can guess the role of a certain player during the meeting. If it is correct, it will kill the target, and if it is wrong, Nice Guesser will suicide.\nThe guessing command is: /bt [player id] [role]\nYou can see the player's id before the player's name or use the /id command to view the id of all players.\nNice Guesser can guess Crewmate when become Madmate.",
@@ -4537,5 +4537,8 @@
   "DruidInfo": "Shapeshift into players to maybe kill them",
   "DruidInfoLong": "As the Druid, you can select a player with your kill button, then vent to temporarily transform into them. You can kill the same player after shapeshifting into them, but after doing so, you are stuck in their skin and if they are innocent you can no longer kill players.",
   "AbilityUses347": "Ability uses",
-  "AbilityDuration347": "Shapeshift duration"
+  "AbilityDuration347": "Shapeshift duration",
+
+  "DeathReason.Overthrown": "Overthrown",
+  "DictatorAliveWhenVoteEvil": "Dictator stays alive when they vote an Evil"
 }

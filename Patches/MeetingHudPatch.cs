@@ -61,7 +61,10 @@ class CheckForEndVotingPatch
                 if (Dictator.CheckVotingForTarget(pc, pva) && !Dictator.ChangeCommandToExpel.GetBool())
                 {
                     var voteTarget = GetPlayerById(pva.VotedFor);
-                    TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Suicide, pc.PlayerId);
+                    if (voteTarget.GetCustomRole().IsCrewmate() || !Dictator.StayAliveWhenVoteEvil.GetBool())
+                    {
+                        TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Overthrown, pc.PlayerId);
+                    }
 
                     statesList.Add(new()
                     {
