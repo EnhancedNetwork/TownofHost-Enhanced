@@ -325,11 +325,11 @@ internal class Quizmaster : RoleBase
             => hud.KillButton.OverrideText(GetString(allowedKilling ? "KillButtonText" : "QuizmasterKillButtonText"));
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
-        => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+        => (!isForMeeting && seer.PlayerId != target.PlayerId && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ？！") : string.Empty;
 
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
-            => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ?!") : string.Empty;
+            => (isForMeeting && MarkedPlayer == target.PlayerId) ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Quizmaster), " ？！") : string.Empty;
 
 
     public static void OnSabotageCall(SystemTypes systemType)
@@ -372,6 +372,7 @@ internal class Quizmaster : RoleBase
 
     private static void KillPlayer(PlayerControl plrToKill)
     {
+        if (!plrToKill.IsAlive() || plrToKill.IsTransformedNeutralApocalypse()) return;
         plrToKill.SetDeathReason(PlayerState.DeathReason.WrongAnswer);
         Main.PlayerStates[plrToKill.PlayerId].SetDead();
         plrToKill.Data.IsDead = true;

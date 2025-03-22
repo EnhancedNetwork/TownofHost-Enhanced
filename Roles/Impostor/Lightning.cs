@@ -72,6 +72,7 @@ internal class Lightning : RoleBase
     {
         if (killer == null || target == null || !killer.Is(CustomRoles.Lightning)) return false;
         if (IsGhost(target)) return false;
+        if (target.IsTransformedNeutralApocalypse()) return false;
 
         killer.RpcGuardAndKill();
         target.RpcGuardAndKill();
@@ -96,7 +97,7 @@ internal class Lightning : RoleBase
                 if (!killer.inVent)
                     killer.RpcGuardAndKill(killer);
 
-                Utils.NotifyRoles();
+                Utils.NotifyRoles(SpecifyTarget: target);
                 Logger.Info($"{target.GetNameWithRole()} transformed into a quantum ghost", "Lightning");
             }
         }, ConvertTime.GetFloat(), "Lightning Convert Player To Ghost");
@@ -110,7 +111,7 @@ internal class Lightning : RoleBase
         RealKiller.TryAdd(killer.PlayerId, target);
         StartConvertCountDown(target, killer);
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !GhostPlayer.Any()) return;
 
@@ -144,7 +145,6 @@ internal class Lightning : RoleBase
         {
             GhostPlayer.RemoveAll(deList.Contains);
             foreach (var gs in deList.ToArray()) SendRPC(gs);
-            Utils.NotifyRoles();
         }
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
@@ -159,7 +159,6 @@ internal class Lightning : RoleBase
         }
         GhostPlayer.Clear();
         SendRPC(byte.MaxValue);
-        Utils.NotifyRoles();
     }
 
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)

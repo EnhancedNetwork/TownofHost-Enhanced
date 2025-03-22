@@ -76,7 +76,6 @@ class PingTrackerUpdatePatch
 
             __instance.aspectPosition.DistanceFromEdge = GetPingPosition();
             __instance.text.text = sb.ToString();
-
             return false;
         }
         catch
@@ -213,7 +212,6 @@ class ModManagerLateUpdatePatch
         __instance.ShowModStamp();
 
         LateTask.Update(Time.deltaTime);
-        CheckMurderPatch.Update();
     }
     public static void Postfix(ModManager __instance)
     {

@@ -77,7 +77,7 @@ internal class Mastermind : RoleBase
         });
     }
 
-    public override void OnFixedUpdate(PlayerControl mastermind, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl mastermind, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad) return;
         if (ManipulatedPlayers.Count == 0 && ManipulateDelays.Count == 0) return;
@@ -135,7 +135,7 @@ internal class Mastermind : RoleBase
         foreach (var x in ManipulatedPlayers)
         {
             var pc = GetPlayerById(x.Key);
-            if (pc.IsAlive())
+            if (pc.IsAlive() && !pc.IsTransformedNeutralApocalypse())
             {
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);

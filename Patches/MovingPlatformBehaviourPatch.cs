@@ -15,7 +15,7 @@ public static class MovingPlatformBehaviourPatch
         if (isDisabled)
         {
             __instance.transform.localPosition = __instance.DisabledPosition;
-            ShipStatus.Instance.Cast<AirshipStatus>().outOfOrderPlat.SetActive(true);
+            ShipStatus.Instance.CastFast<AirshipStatus>().outOfOrderPlat.SetActive(true);
         }
     }
     [HarmonyPatch(nameof(MovingPlatformBehaviour.IsDirty), MethodType.Getter), HarmonyPrefix]
@@ -29,7 +29,15 @@ public static class MovingPlatformBehaviourPatch
         return true;
     }
     [HarmonyPatch(nameof(MovingPlatformBehaviour.Use), typeof(PlayerControl)), HarmonyPrefix]
-    public static bool Use_Prefix() => !isDisabled;
+    public static bool UsePrefix([HarmonyArgument(0)] PlayerControl player)
+    {
+        // Block use moving platform
+        if (Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && !state.CanUseMovingPlatform)
+        {
+            return false;
+        }
+        return !isDisabled;
+    }
     [HarmonyPatch(nameof(MovingPlatformBehaviour.SetSide)), HarmonyPrefix]
     public static bool SetSide_Prefix() => !isDisabled;
 }

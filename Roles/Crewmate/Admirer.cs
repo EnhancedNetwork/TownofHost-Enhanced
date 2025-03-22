@@ -1,11 +1,11 @@
 using Hazel;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -43,20 +43,12 @@ internal class Admirer : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = SkillLimit.GetInt();
+        playerId.SetAbilityUseLimit(SkillLimit.GetInt());
         AdmiredList[playerId] = [];
     }
     public override void Remove(byte playerId)
     {
         AdmiredList.Remove(playerId);
-    }
-
-    private void SendRPC(byte playerId)
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredAbility, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(AbilityLimit);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRPC(byte playerId, byte targetId)
     {
@@ -65,31 +57,22 @@ internal class Admirer : RoleBase
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void ReceiveRPC(MessageReader reader, bool isList)
+    public static void ReceiveRPC(MessageReader reader)
     {
         byte playerId = reader.ReadByte();
-        byte targetId;
-        float Limit;
-        if (!isList)
-        {
-            Limit = reader.ReadSingle();
-            Main.PlayerStates[playerId].RoleClass.AbilityLimit = Limit;
-        }
-        else
-        {
-            targetId = reader.ReadByte();
-            if (!AdmiredList.ContainsKey(playerId))
-                AdmiredList.Add(playerId, []);
-            else AdmiredList[playerId].Add(targetId);
-        }
+        byte targetId = reader.ReadByte();
+
+        if (!AdmiredList.ContainsKey(playerId))
+            AdmiredList.Add(playerId, []);
+        else AdmiredList[playerId].Add(targetId);
     }
 
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityLimit >= 1 ? AdmireCooldown.GetFloat() : 300f;
-    public override bool CanUseKillButton(PlayerControl player) => AbilityLimit >= 1;
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = id.GetAbilityUseLimit() >= 1 ? AdmireCooldown.GetFloat() : 300f;
+    public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() >= 1;
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (AbilityLimit < 1) return false;
+        if (killer.GetAbilityUseLimit() < 1) return false;
         if (Mini.Age < 18 && (target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
         {
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
@@ -99,7 +82,6 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        if (AbilityLimit < 1) return false;
         if (CanBeAdmired(target, killer))
         {
             if (KnowTargetRole.GetBool())
@@ -160,8 +142,7 @@ internal class Admirer : RoleBase
             }
             else goto AdmirerFailed;
 
-            AbilityLimit--;
-            SendRPC(killer.PlayerId); //Sync skill
+            killer.RpcRemoveAbilityUse();
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -172,22 +153,18 @@ internal class Admirer : RoleBase
             target.ResetKillCooldown();
             target.SetKillCooldown(forceAnime: true);
 
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
-            Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
+            Logger.Info(target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Admirer.ToString(), "Assign " + CustomRoles.Admirer.ToString());
 
             return false;
         }
 
     AdmirerFailed:
-        SendRPC(killer.PlayerId); //Sync skill
 
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Admirer), GetString("AdmirerInvalidTarget")));
-
-        Logger.Info($"{killer.GetNameWithRole()} : 剩余{AbilityLimit}次仰慕机会", "Admirer");
         return false;
     }
 
-    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => CheckKnowRoleTarget(seer, target);
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => CheckKnowRoleTarget(seer, target) && !Main.PlayerStates[seer.PlayerId].IsNecromancer;
 
     public static bool CheckKnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
@@ -205,9 +182,6 @@ internal class Admirer : RoleBase
         else return false;
     }
 
-    public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Admirer).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
     public static bool CanBeAdmired(PlayerControl pc, PlayerControl admirer)
     {
         if (AdmiredList.ContainsKey(admirer.PlayerId))
@@ -220,7 +194,7 @@ internal class Admirer : RoleBase
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsCoven())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)

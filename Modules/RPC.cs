@@ -16,13 +16,15 @@ using static TOHE.Translator;
 namespace TOHE;
 
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 185/255 USED
+public enum CustomRPC : byte // 174/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
 
     // Adding Role rpcs that overrides TOHE section and changing BetterCheck will be rejected
     // Sync Role Skill can be used under most cases so you should not make a new rpc unless it's necessary
+    // NOTE: Set RPC's that are spammed to "ExtendedPlayerControl.RpcSendOption" to prevent kick due innersloth anti-cheat
+
     VersionCheck = 80,
     RequestRetryVersionCheck = 81,
     SyncCustomSettings = 100, // AUM use 101 rpc
@@ -41,12 +43,11 @@ public enum CustomRPC : byte // 185/255 USED
     ShowPopUp,
     KillFlash,
     DumpLog,
-    SyncRoleSkill,
     SetNameColorData,
     GuessKill,
     Judge,
-    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     Guess,
+    KNChat = 119, // Kill network chat, may conflicts with judge and guess calls
     CouncillorJudge,
     NemesisRevenge,
     RetributionistRevenge,
@@ -62,64 +63,55 @@ public enum CustomRPC : byte // 185/255 USED
     Arrow,
     NotificationPopper,
     SyncDeadPassedMeetingList,
+    SyncAbilityUseLimit,
 
     //Roles 
+    SyncRoleSkill,
     SetBountyTarget,
     SyncPuppet,
-    SyncKami,
     SetKillOrSpell,
     SetKillOrHex,
-    SetKillOrCurse,
     SetDousedPlayer,
     DoSpell,
     DoHex,
-    DoCurse,
     SniperSync,
     SetLoversPlayers,
     SendFireworkerState,
     SetCurrentDousingTarget,
+    SetEvilTrackerTarget,
+    SetDrawPlayer,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
-    SetEvilTrackerTarget,
-    SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
-    RpcPassBomb,
-    SyncRomanticTarget,
-    SyncVengefulRomanticTarget,
-    SetJailerTarget,
-    SetJailerExeLimit,
+    SyncJailerData,
     SetInspectorLimit,
     KeeperRPC,
     SetAlchemistTimer,
     UndertakerLocationSync,
     LightningSetGhostPlayer,
-    SetDarkHiderKillCount,
     SetConsigliere,
     SetGreedy,
     BenefactorRPC,
     SetSwapperVotes,
     SetMarkedPlayer,
-    SetConcealerTimer,
     PresidentEnd,
     PresidentReveal,
-    SetBKTimer,
-    SetCursedSoulCurseLimit,
     SetInvestgatorLimit,
     SetOverseerRevealedPlayer,
     SetOverseerTimer,
-    SyncVultureBodyAmount,
     SetChameleonTimer,
     SyncAdmiredList,
-    SyncAdmiredAbility,
-    SetImitateLimit,
     DictatorRPC,
     Necronomicon,
+
     //FFA
     SyncFFAPlayer,
     SyncFFANameNotify,
+    //Speed run
+    SyncSpeedRunStates,
 }
 [Obfuscation(Exclude = true)]
 public enum Sounds
@@ -355,7 +347,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetCustomRole:
                 byte CustomRoleTargetId = reader.ReadByte();
-                CustomRoles role = (CustomRoles)reader.ReadPackedInt32();
+                int roleId = reader.ReadPackedInt32();
+                CustomRoles role = (CustomRoles)roleId;
+                Logger.Info($"playerId: {CustomRoleTargetId} - roleid {roleId} - role: {role}", "CustomRPC.SetCustomRole");
                 RPC.SetCustomRole(CustomRoleTargetId, role);
                 break;
             case CustomRPC.SyncLobbyTimer:
@@ -378,6 +372,12 @@ internal class RPCHandlerPatch
                     var key = OptionItem.AllOptions[item];
 
                     NotificationPopperPatch.AddSettingsChangeMessage(item, key, playSound);
+                }
+                break;
+            case CustomRPC.SyncAbilityUseLimit:
+                {
+                    var pc = Utils.GetPlayerById(reader.ReadByte());
+                    pc.SetAbilityUseLimit(reader.ReadSingle(), rpc: false);
                 }
                 break;
             case CustomRPC.SetBountyTarget:
@@ -477,20 +477,14 @@ internal class RPCHandlerPatch
             //case CustomRPC.SetTrackerTarget:
             //    Tracker.ReceiveRPC(reader);
             //    break;
-            case CustomRPC.SetJailerExeLimit:
-                Jailer.ReceiveRPC(reader, setTarget: false);
-                break;
-            case CustomRPC.SetJailerTarget:
-                Jailer.ReceiveRPC(reader, setTarget: true);
+            case CustomRPC.SyncJailerData:
+                Jailer.ReceiveRPC(reader);
                 break;
             case CustomRPC.SetCrewpostorTasksDone:
                 Crewpostor.ReceiveRPC(reader);
                 break;
             case CustomRPC.SyncAdmiredList:
-                Admirer.ReceiveRPC(reader, true);
-                break;
-            case CustomRPC.SyncAdmiredAbility:
-                Admirer.ReceiveRPC(reader, false);
+                Admirer.ReceiveRPC(reader);
                 break;
             case CustomRPC.PlayCustomSound:
                 CustomSoundsManager.ReceiveRPC(reader);
@@ -514,10 +508,14 @@ internal class RPCHandlerPatch
                 byte paciefID = reader.ReadByte();
                 //playerstate:
                 {
-                    CustomRoles rola = (CustomRoles)reader.ReadPackedInt32();
+                    int rolaId = reader.ReadPackedInt32();
                     bool isdead = reader.ReadBoolean();
                     bool IsDC = reader.ReadBoolean();
-                    PlayerState.DeathReason drip = (PlayerState.DeathReason)reader.ReadPackedInt32();
+                    int deathReasonId = reader.ReadPackedInt32();
+
+                    CustomRoles rola = (CustomRoles)rolaId;
+                    PlayerState.DeathReason drip = (PlayerState.DeathReason)deathReasonId;
+
                     if (Main.PlayerStates.ContainsKey(paciefID))
                     {
                         var state = Main.PlayerStates[paciefID];
@@ -540,7 +538,8 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncPlayerSetting:
                 byte playerid = reader.ReadByte();
-                CustomRoles rl = (CustomRoles)reader.ReadPackedInt32();
+                int rlId = reader.ReadPackedInt32();
+                CustomRoles rl = (CustomRoles)rlId;
                 if (Main.PlayerStates.ContainsKey(playerid))
                 {
                     Main.PlayerStates[playerid].MainRole = rl;
@@ -553,6 +552,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncFFAPlayer:
                 FFAManager.ReceiveRPCSyncFFAPlayer(reader);
+                break;
+            case CustomRPC.SyncSpeedRunStates:
+                SpeedRun.HandleSyncSpeedRunStates(reader);
                 break;
             case CustomRPC.SyncAllPlayerNames:
                 Main.AllPlayerNames.Clear();
@@ -597,9 +599,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SetAlchemistTimer:
                 Alchemist.ReceiveRPC(reader);
                 break;
-            case CustomRPC.SetCursedSoulCurseLimit:
-                CursedSoul.ReceiveRPC(reader);
-                break;
             case CustomRPC.SetConsigliere:
                 Consigliere.ReceiveRPC(reader);
                 break;
@@ -621,10 +620,11 @@ internal class RPCHandlerPatch
             case CustomRPC.FixModdedClientCNO:
                 var CNO = reader.ReadNetObject<PlayerControl>();
                 bool active = reader.ReadBoolean();
-                CNO?.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
-                break;
-            case CustomRPC.SyncVultureBodyAmount:
-                Vulture.ReceiveBodyRPC(reader);
+                if (CNO != null)
+                {
+                    CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+                    CNO.Collider.enabled = false;
+                }
                 break;
             case CustomRPC.SetInspectorLimit:
                 Inspector.ReceiveRPC(reader);
@@ -695,7 +695,7 @@ internal class PlayerPhysicsRPCHandlerPatch
 
         if (!Main.MeetingIsStarted)
         {
-            __instance.myPlayer.walkingToVent = true;
+            //__instance.myPlayer.walkingToVent = true;
             VentSystemDeterioratePatch.ForceUpadate = true;
         }
 
@@ -832,7 +832,7 @@ internal static class RPC
     public static void SetFriendCode(PlayerControl target, string fc)
     {
         if (GameStates.IsVanillaServer) return;
-        if (target.GetClient() != null && target.GetClient().ProductUserId != string.Empty) return;
+        if (target.GetClient() != null && target.GetClient().FriendCode != string.Empty) return;
         // On Niko233's region this is not needed lol
         target.FriendCode = fc;
         target.Data.FriendCode = fc;
@@ -1000,7 +1000,7 @@ internal static class RPC
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public static void SendRpcLogger(uint targetNetId, byte callId, int targetClientId = -1)
+    public static void SendRpcLogger(uint targetNetId, byte callId, SendOption sendOption, int targetClientId = -1)
     {
         if (!DebugModeManager.AmDebugger) return;
         string rpcName = GetRpcName(callId);
@@ -1013,7 +1013,7 @@ internal static class RPC
         }
         catch { }
 
-        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName})", "SendRPC");
+        Logger.Info($"FromNetID:{targetNetId}({from}) TargetClientID:{targetClientId}({target}) CallID:{callId}({rpcName}) SendOption:{sendOption}", "SendRPC");
     }
     public static string GetRpcName(byte callId)
     {
@@ -1040,16 +1040,16 @@ internal static class RPC
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpc))]
 internal class StartRpcPatch
 {
-    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId)
+    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option = SendOption.Reliable)
     {
-        RPC.SendRpcLogger(targetNetId, callId);
+        RPC.SendRpcLogger(targetNetId, callId, option);
     }
 }
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
-internal class StartRpcImmediatelyPatch
+public class StartRpcImmediatelyPatch
 {
-    public static void Prefix(/*InnerNet.InnerNetClient __instance,*/ [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(3)] int targetClientId = -1)
+    public static void Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId)
     {
-        RPC.SendRpcLogger(targetNetId, callId, targetClientId);
+        RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
     }
 }

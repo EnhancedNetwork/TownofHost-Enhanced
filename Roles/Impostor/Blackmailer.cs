@@ -45,6 +45,10 @@ internal class Blackmailer : RoleBase
             }
         }
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("BlackmailerButtonText"));
+    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
@@ -81,6 +85,12 @@ internal class Blackmailer : RoleBase
         DoBlackmaile(blackmailer, target);
         blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
         return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoBlackmaile(shapeshifter, target);
     }
     private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {

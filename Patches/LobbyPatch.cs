@@ -91,9 +91,13 @@ public class LobbyBehaviourPatch
 public static class HostInfoPanelUpdatePatch
 {
     private static TextMeshPro HostText;
-    public static bool Prefix()
+    public static bool Prefix(HostInfoPanel __instance)
     {
-        return GameStates.IsLobby;
+        if (!GameStates.IsLobby) return false;
+
+        // Fix System.IndexOutOfRangeException: Index was outside the bounds of the array.
+        // When __instance.player.ColorId is 255 them ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[255]) gets exception
+        return __instance.player.ColorId != byte.MaxValue;
     }
     public static void Postfix(HostInfoPanel __instance)
     {
@@ -109,7 +113,7 @@ public static class HostInfoPanelUpdatePatch
                 string youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
 
                 // Set text in host info panel
-                HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">({youLabel})";
+                HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">{youLabel}";
             }
         }
         catch

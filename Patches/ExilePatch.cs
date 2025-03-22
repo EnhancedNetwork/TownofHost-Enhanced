@@ -76,7 +76,7 @@ class ExileControllerWrapUpPatch
     {
         if (AntiBlackout.BlackOutIsActive) exiled = AntiBlackout_LastExiled;
 
-        // Still not springing up in airships
+        // Still not springing up in Airship
         if (!GameStates.AirshipIsActive)
         {
             foreach (var state in Main.PlayerStates.Values)
@@ -119,19 +119,22 @@ class ExileControllerWrapUpPatch
         {
             player.GetRoleClass()?.OnPlayerExiled(player, exiled);
 
-            // Check for remove pet
+            // Check for remove Pet
             player.RpcRemovePet();
+
+            // Set UnShift after meeting
+            player.DoUnShiftState();
         }
 
         Main.MeetingIsStarted = false;
         Main.MeetingsPassed++;
 
-        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode is CustomGameMode.Standard);
+        Utils.CountAlivePlayers(sendLog: true, checkGameEnd: Options.CurrentGameMode == CustomGameMode.Standard);
     }
 
     private static void WrapUpFinalizer(NetworkedPlayerInfo exiled)
     {
-        // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably.
+        // Even if an exception occurs in WrapUpPostfix, this is the only part that will be executed reliably
         if (AmongUsClient.Instance.AmHost)
         {
             _ = new LateTask(() =>
@@ -143,12 +146,14 @@ class ExileControllerWrapUpPatch
                 AntiBlackout.SetRealPlayerRoles();
 
                 if (AntiBlackout.BlackOutIsActive && // State in which the expulsion target is overwritten (need not be executed if the expulsion target is not overwritten)
-                    exiled != null && // exiled is not null
+                    exiled != null && // Exiled is not null
                     exiled.Object != null) //exiled.Object is not null
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, 0.7f, "Restore IsDead Task");
+            }, Options.CurrentGameMode is CustomGameMode.Standard ? 0.5f : 0.8f, "Restore IsDead Task");
+
+            _ = new LateTask(AntiBlackout.ResetAfterMeeting, 0.6f, "ResetAfterMeeting");
 
             _ = new LateTask(() =>
             {
@@ -176,20 +181,22 @@ class ExileControllerWrapUpPatch
                 Utils.AfterMeetingTasks();
                 Utils.SyncAllSettings();
                 Utils.CheckAndSetVentInteractions();
-                Utils.NotifyRoles(NoCache: true);
-            }, 1.2f, "AfterMeetingDeathPlayers Task");
 
-            _ = new LateTask(() =>
-            {
-                if (GameStates.IsEnded) return;
+                if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+                {
+                    Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+                }
+                else
+                {
+                    Utils.NotifyRoles();
+                }
 
-                AntiBlackout.ResetAfterMeeting();
-                Main.LastMeetingEnded = Utils.GetTimeStamp();
-            }, 2f, "Reset Cooldown After Meeting");
+                Main.LastMeetingEnded = Utils.TimeStamp;
+            }, 1f, "AfterMeetingDeathPlayers Task");
         }
 
         //This should happen shortly after the Exile Controller wrap up finished for clients
-        //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ.
+        //For Certain Laggy clients 0.8f delay is still not enough. The finish time can differ
         //If the delay is too long, it will influence other normal players' view
 
         GameStates.AlreadyDied |= !Utils.IsAllAlive;

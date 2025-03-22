@@ -28,7 +28,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
     }
 
     public override IGameOptions BasedGameOptions => GameStates.IsNormalGame ?
-            Main.RealOptionsData.Restore(new NormalGameOptionsV08(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV08(new UnityLogger().Cast<ILogger>()).Cast<IGameOptions>());
+            Main.RealOptionsData.Restore(new NormalGameOptionsV08(new UnityLogger().CastFast<ILogger>()).CastFast<IGameOptions>()) : Main.RealOptionsData.Restore(new HideNSeekGameOptionsV08(new UnityLogger().CastFast<ILogger>()).CastFast<IGameOptions>());
     public override bool IsDirty { get; protected set; }
 
     public PlayerControl player = player;
@@ -55,7 +55,7 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
         byte logicOptionsIndex = 0;
         foreach (var logicComponent in GameManager.Instance.LogicComponents.GetFastEnumerator())
         {
-            if (logicComponent.TryCast<LogicOptions>(out _))
+            if (logicComponent.CastFast<LogicOptions>() != null)
             {
                 SendOptionsArray(optionArray, logicOptionsIndex, player.GetClientId());
             }
@@ -116,12 +116,12 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killCooldown))
         {
-            AURoleOptions.KillCooldown = Mathf.Max(0.01f, killCooldown);
+            AURoleOptions.KillCooldown = Mathf.Max(0.02f, killCooldown);
         }
 
         if (Main.AllPlayerSpeed.TryGetValue(player.PlayerId, out var speed))
         {
-            AURoleOptions.PlayerSpeedMod = Mathf.Clamp(speed, Main.MinSpeed, 3f);
+            AURoleOptions.PlayerSpeedMod = Mathf.Clamp(speed, Main.MinSpeed, 10f);
         }
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);

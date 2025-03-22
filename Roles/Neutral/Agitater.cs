@@ -63,7 +63,7 @@ internal class Agitater : RoleBase
         LastBombedPlayer = byte.MaxValue;
         AgitaterHasBombed = false;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && CurrentBombedPlayer == 254)
         {
@@ -100,7 +100,7 @@ internal class Agitater : RoleBase
             if (CurrentBombedPlayer != byte.MaxValue && GameStates.IsInTask)
             {
                 var pc = Utils.GetPlayerById(CurrentBombedPlayer);
-                if (pc != null && pc.IsAlive() && killer != null)
+                if (pc != null && pc.IsAlive() && killer != null && !pc.IsTransformedNeutralApocalypse())
                 {
                     CurrentBombedPlayer.SetDeathReason(PlayerState.DeathReason.Bombed);
                     pc.RpcMurderPlayer(pc);

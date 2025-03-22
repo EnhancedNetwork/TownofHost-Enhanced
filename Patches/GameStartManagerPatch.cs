@@ -21,6 +21,7 @@ public static class GameStartManagerMinPlayersPatch
 public class GameStartManagerPatch
 {
     public static float timer = 600f;
+    public static long joinedTime = Utils.GetTimeStamp();
     private static Vector3 GameStartTextlocalPosition;
     private static TextMeshPro warningText;
     private static TextMeshPro timerText;
@@ -35,6 +36,7 @@ public class GameStartManagerPatch
             __instance.GameRoomNameCode.text = GameCode.IntToGameName(AmongUsClient.Instance.GameId);
             // Reset lobby countdown timer
             timer = 600f;
+            joinedTime = Utils.GetTimeStamp();
 
             HideName = Object.Instantiate(__instance.GameRoomNameCode, __instance.GameRoomNameCode.transform);
             HideName.text = ColorUtility.TryParseHtmlString(Main.HideColor.Value, out _)
@@ -103,7 +105,7 @@ public class GameStartManagerPatch
                 if (Main.NormalOptions.KillCooldown == 0f)
                     Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
@@ -164,6 +166,12 @@ public class GameStartManagerPatch
                         }
 
                         if ((GameData.Instance.PlayerCount >= minPlayer && timer <= minWait) || timer <= maxWait)
+                        {
+                            BeginGameAutoStart(Options.AutoStartTimer.GetInt());
+                            return;
+                        }
+
+                        if (joinedTime + Options.StartWhenTimePassed.GetInt() < Utils.GetTimeStamp())
                         {
                             BeginGameAutoStart(Options.AutoStartTimer.GetInt());
                             return;
@@ -352,8 +360,8 @@ public class GameStartManagerBeginGamePatch
         //}
 
         IGameOptions opt = GameStates.IsNormalGame
-            ? Main.NormalOptions.Cast<IGameOptions>()
-            : Main.HideNSeekOptions.Cast<IGameOptions>();
+            ? Main.NormalOptions.CastFast<IGameOptions>()
+            : Main.HideNSeekOptions.CastFast<IGameOptions>();
 
         if (GameStates.IsNormalGame)
         {

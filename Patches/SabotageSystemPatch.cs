@@ -1,8 +1,8 @@
+using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
-using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
@@ -177,10 +177,14 @@ public class SabotageSystemPatch
                     _ = new LateTask(() =>
                     {
                         // After MushroomMixup sabotage, shapeshift cooldown sets to 0
-                        foreach (var pc in Main.AllAlivePlayerControls)
+                        foreach (PlayerControl pc in Main.AllAlivePlayerControls)
                         {
-                            // Reset Ability Cooldown To Default For Alive Players
-                            pc.RpcResetAbilityCooldown();
+                            // Do Unshift, because mushroom mixup revert all shapeshifted players
+                            pc.DoUnShiftState(true);
+
+                            // Reset Ability Cooldown To Default For Living Players
+                            if (pc.GetCustomRole().GetRoleTypes() != RoleTypes.Engineer)
+                                pc.RpcResetAbilityCooldown();
                         }
                     }, 1.2f, "Reset Ability Cooldown Arter Mushroom Mixup");
 
@@ -259,21 +263,46 @@ public class SabotageSystemPatch
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Initialize))]
     public static class ElectricTaskInitializePatch
     {
+        private static long LastUpdate;
         public static void Postfix()
         {
+            long now = Utils.TimeStamp;
+            if (LastUpdate >= now) return;
+            LastUpdate = now;
+
             Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
+
+            if (GameStates.IsInTask)
+            {
+                foreach (var pc in Main.AllAlivePlayerControls)
+                    if (pc.Is(CustomRoles.Mare))
+                        Utils.NotifyRoles(SpecifyTarget: pc);
+            }
+
+            Logger.Info("Lights sabotage called", "ElectricTask");
         }
     }
     [HarmonyPatch(typeof(ElectricTask), nameof(ElectricTask.Complete))]
     public static class ElectricTaskCompletePatch
     {
+        private static long LastUpdate;
+
         public static void Postfix()
         {
+            long now = Utils.TimeStamp;
+            if (LastUpdate >= now) return;
+            LastUpdate = now;
+
             Utils.MarkEveryoneDirtySettings();
-            if (!GameStates.IsMeeting)
-                Utils.NotifyRoles(ForceLoop: true);
+
+            if (GameStates.IsInTask)
+            {
+                foreach (PlayerControl pc in Main.AllAlivePlayerControls)
+                    if (pc.Is(CustomRoles.Mare))
+                        Utils.NotifyRoles(SpecifyTarget: pc);
+            }
+
+            Logger.Info("Lights sabotage fixed", "ElectricTask");
         }
     }
     // https://github.com/tukasa0001/TownOfHost/blob/357f7b5523e4bdd0bb58cda1e0ff6cceaa84813d/Patches/SabotageSystemPatch.cs
@@ -319,9 +348,8 @@ public class SabotageSystemPatch
                     return false;
             }
 
-            if (player.GetRoleClass() is Glitch gc)
+            if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
             {
-                gc.Mimic(player);
                 return false;
             }
 

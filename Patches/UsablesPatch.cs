@@ -18,7 +18,7 @@ class EmergencyMinigamePatch
 {
     public static void Postfix(EmergencyMinigame __instance)
     {
-        if (Options.DisableMeeting.GetBool() || Options.CurrentGameMode == CustomGameMode.FFA)
+        if (Options.DisableMeeting.GetBool() || Options.CurrentGameMode != CustomGameMode.Standard)
             __instance.Close();
         return;
     }
@@ -39,7 +39,7 @@ class CanUseVentPatch
 
         // Determine if vent is available based on custom role
         // always true for engineer-based roles
-        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.Cast<IUsable>()));
+        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.CastFast<IUsable>()));
 
         canUse = couldUse;
         // Not available if custom roles are not available
@@ -51,7 +51,7 @@ class CanUseVentPatch
         // Mod's own processing up to this point
         // Replace vanilla processing from here
 
-        IUsable usableVent = __instance.Cast<IUsable>();
+        IUsable usableVent = __instance.CastFast<IUsable>();
         // Distance between vent and player
         float actualDistance = float.MaxValue;
 
@@ -67,7 +67,7 @@ class CanUseVentPatch
         // Check vent cleaning
         if (ShipStatus.Instance.Systems.TryGetValue(SystemTypes.Ventilation, out var systemType))
         {
-            VentilationSystem ventilationSystem = systemType.TryCast<VentilationSystem>();
+            VentilationSystem ventilationSystem = systemType.CastFast<VentilationSystem>();
             // If someone is cleaning a vent, you can't get into that vent
             if (ventilationSystem != null && ventilationSystem.IsVentCurrentlyBeingCleaned(__instance.Id))
             {
