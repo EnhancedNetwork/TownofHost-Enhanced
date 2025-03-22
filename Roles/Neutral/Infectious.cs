@@ -167,9 +167,12 @@ internal class Infectious : RoleBase
         return pc != null && (pc.GetCustomRole().IsCrewmate()
             || pc.GetCustomRole().IsImpostorTeamV3()
             || pc.GetCustomRole().IsNK()
-            || pc.GetCustomRole().IsCoven())
-            && !pc.Is(CustomRoles.Infectious)
-            && !pc.IsTransformedNeutralApocalypse();
+            || pc.GetCustomRole().IsCoven()) && !pc.Is(CustomRoles.Infected)
+            && !pc.Is(CustomRoles.Admired)
+            && !pc.Is(CustomRoles.Loyal)
+            && !pc.Is(CustomRoles.Cultist)
+            && !pc.Is(CustomRoles.Enchanted)
+            && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Virus) && !pc.IsTransformedNeutralApocalypse() && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
