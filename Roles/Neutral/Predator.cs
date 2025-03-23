@@ -92,6 +92,7 @@ internal class Predator : RoleBase
 
     public void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool InMeeting)
     {
+        if (!_Player.IsAlive()) return;
         List<PlayerControl> AlivePrey = [];
         foreach (var preyID in TargetList)
         {
