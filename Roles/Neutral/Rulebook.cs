@@ -56,8 +56,8 @@ internal class Rulebook : RoleBase
             {
                 return true;
             }
-            killer.RpcChangeRoleBasis(CustomRoles.Bankrupt);
-            killer.RpcSetCustomRole(CustomRoles.Bankrupt);
+            killer.RpcChangeRoleBasis(CustomRoles.Opportunist);
+            killer.RpcSetCustomRole(CustomRoles.Opportunist);
         }
         if (killer.GetCustomRole().IsCoven())
         {
@@ -94,8 +94,8 @@ internal class Rulebook : RoleBase
                 killer.RpcGuardAndKill(killer);
                 return false;
             }
-            target.RpcChangeRoleBasis(CustomRoles.Bankrupt);
-            target.RpcSetCustomRole(CustomRoles.Bankrupt);
+            target.RpcChangeRoleBasis(CustomRoles.Opportunist);
+            target.RpcSetCustomRole(CustomRoles.Opportunist);
         }
         if (target.GetCustomRole().IsImpostor())
         {

@@ -134,6 +134,7 @@ public static class CustomRolesHelper
             CustomRoles.Laborer or
             CustomRoles.Narc or
             CustomRoles.Gunslinger or
+            CustomRoles.Bankrupt or 
             CustomRoles.Follower;
     }
     public static bool IsAmneCrew(this PlayerControl target)

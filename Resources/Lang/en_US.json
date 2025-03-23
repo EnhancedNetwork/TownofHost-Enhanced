@@ -4481,7 +4481,7 @@
 
   "Rulebook": "Rulebook",
   "RulebookInfo": "Enforce the standards of Among Us",
-  "RulebookInfoLong": "(Neutrals):\nWhen the Rulebook single clicks their kill button on a non-impostor player that has a kill button, that player is stripped of their kill button and turned into a vanilla crewmate with no abilities or win condition. If used on a task-based role, nothing happens. If used on a Coven with the necronomicon, transformed neutral apocalypse, or any role that has defense that can kill back, the Rulebook is killed immediately. If the Rulebook lives till the end of the game, they win. The rulebook can double click to kill normally. The rule book can also erase the kill button of the person that killed them.\nAdditionally, the Rulebook cannot be erased by OIIAI.",
+  "RulebookInfoLong": "(Neutrals):\nWhen the Rulebook single clicks their kill button on a non-impostor player that has a kill button, that player is stripped of their kill button and turned into a vanilla crewmate or Opportunist. If used on a task-based role, nothing happens. If used on a Coven with the necronomicon, transformed neutral apocalypse, or any role that has defense that can kill back, the Rulebook is killed immediately. If the Rulebook lives till the end of the game, they win. The rulebook can double click to kill normally. The rule book can also erase the kill button of the person that killed them.\nAdditionally, the Rulebook cannot be erased by OIIAI.",
   "MaxRemovals341": "Maximum removals",
   "ErasesRole341": "Killer of Rulebook's role gets erased",
 
@@ -4538,6 +4538,7 @@
   "DruidInfoLong": "As the Druid, you can select a player with your kill button, then vent to temporarily transform into them. You can kill the same player after shapeshifting into them, but after doing so, you are stuck in their skin and if they are innocent you can no longer kill players.",
   "AbilityUses347": "Ability uses",
   "AbilityDuration347": "Shapeshift duration",
+  "CanBeGuessed347": "Druid can be guessed",
 
   "DeathReason.Overthrown": "Overthrown",
   "DictatorAliveWhenVoteEvil": "Dictator stays alive when they vote an Evil"
