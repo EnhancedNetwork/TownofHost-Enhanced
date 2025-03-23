@@ -51,7 +51,6 @@
   "YouAreCoven": "You are a Coven member",
   "YouAreMadmate": "You are a Madmate",
 
-
   "Role_Crewmate": "<color=#8cffff>Crewmate</color>",
   "Role_Jester": "<color=#ec62a5>Jester</color>",
   "Role_Opportunist": "<color=#4dff4d>Opportunist</color>",
@@ -93,7 +92,6 @@
   "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "CovenCanGuessCoven": "<color=#ac42f2>Coven</color> Can Guess <color=#ac42f2>Coven</color> Roles",
   "GuessImmune": "Sorry, but target is immune to being guessed!",
-
 
   "GM": "Game Master",
   "Sunnyboy": "Sunnyboy",
@@ -1444,9 +1442,7 @@
   "PlayerIsShieldedByGame": "Player is protected by the game!",
   "PreventFirstDeadShapeShift": "Prevent Shielded player from using Shapeshift ability",
 
-  "LegacyNemesis": "Use Legacy Version",
-  "LegacyParasite": "Use Legacy Version",
-  "LegacyTraitor": "Use Legacy Version",
+  "UseLegacyVersion": "Use Legacy Version",
   "ArsonistKeepsGameGoing": "<color=#ff6633>Arsonist</color> keeps the game going",
   "ArsonistCanIgniteAnytime": "Can Ignite Anytime",
   "ArsonistMinPlayersToIgnite": "Minimum doused needed for ignite",
@@ -2262,7 +2258,6 @@
   "EndCommandEnded": "The game has been ended by {0}!",
   "ExecuteCommandNoAccess": "You do not have access to the execute command.",
 
-
   "WarnCommandWarnMod": "You are not permitted to warn other Moderators.",
   "WarnCommandWarned": "has been warned. There will be no more warnings given and appropriate action will be taken \n ",
   "WarnExample": "Use /warn [id] [reason] in future. \nExample :-\n /warn 5 lava chatting",
@@ -2694,8 +2689,6 @@
   "Warning.ShowAntiBlackExiledPlayer": "<b>Last meeting triggered Black Screen Prevention!\nFollowing is the information of the player exiled in the last meeting.</b>\n",
   "DisableAntiBlackoutProtects": "Disable AntiBlackout Protects (Recommended for testing)",
 
-
-
   "Warning.InvalidRpc": "Kicked <b>{0}</b> because an invalid RPC was received.\nPlease check that no Mods other than TOHE are installed.",
   "Warning.NoModHost": "TOHE is not installed on the Host",
   "Warning.MismatchedVersion": "<b>{0}</b> has a different version of <b>{1}</b>",
@@ -2937,7 +2930,7 @@
   "KickBecauseDiffrentVersionOrMod": "<b>{0}</b> was kicked because they had a different version of the mod",
 
   "FFADisplayScore": "Ranking: {0} Score: {1}",
-  "FFATimeRemain": "<color=#00ffa5>Time Remaining:</color> {0} second(s)",
+  "FFATimeRemain": "<color=#00ffa5>Time Remaining:</color> <b>{0}</b>s",
 
   "GameOver": "Game Over",
   "TOHEOptions": "TOHE Options",
@@ -4007,7 +4000,6 @@
   "HorseMode": "Enable to become a horse",
   "LongMode": "Enable to have a long neck",
   "InfluencedChangeVote": "Oops! You are so influenced by others!\nYou can not contain your fear that you change voted {0}!",
-
 
   "FFA": "Free For All",
   "ModeFFA": "Gamemode: FFA",
