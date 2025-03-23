@@ -20,7 +20,7 @@ internal class Assassin : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Assassin);
-        AssassinKillCooldown = FloatOptionItem.Create(Id + 2, GeneralOption.KillCooldown, new(5f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false)
+        AssassinKillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(5f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Assassin])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -41,7 +41,7 @@ internal class Assassin : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.GetAbilityUseLimit() < 1) return false;
+        if (killer.GetAbilityUseLimit() < 1) return true;
         if (killer.Is(CustomRoles.Madmate)) return true;
         if (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
         {
