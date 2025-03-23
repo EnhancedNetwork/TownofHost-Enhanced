@@ -41,7 +41,6 @@ internal class Savior : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (!CheckKillButton(killer.PlayerId)) return false;
         if (ProtectList.Contains(target.PlayerId)) return false;
         if (killer.GetAbilityUseLimit() <= 0) return false;
 
@@ -51,14 +50,10 @@ internal class Savior : RoleBase
 
         if (!Options.DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill();
 
-        return true;
+        return false;
     }
 
-    public bool CheckKillButton(byte playerId)
-           => !Main.PlayerStates[playerId].IsDead
-           && playerId.GetAbilityUseLimit() > 0;
-
-    public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton(pc.PlayerId);
+    public override bool CanUseKillButton(PlayerControl pc) => true;
 
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
