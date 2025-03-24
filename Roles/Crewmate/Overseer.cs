@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -29,8 +30,6 @@ internal class Overseer : RoleBase
     private static OptionItem OverseerCooldown;
     private static OptionItem OverseerRevealTime;
     private static OptionItem Vision;
-
-    //private static byte CurrentRevealTarget = byte.MaxValue;
 
     private static readonly List<CustomRoles> randomRolesForTrickster =
     [
@@ -61,7 +60,6 @@ internal class Overseer : RoleBase
         CustomRoles.FortuneTeller,
         CustomRoles.Oracle,
         CustomRoles.Tracefinder,
-  //      CustomRoles.Glitch,
         CustomRoles.Judge,
         CustomRoles.Mortician,
         CustomRoles.Medium,
@@ -71,7 +69,6 @@ internal class Overseer : RoleBase
         CustomRoles.Retributionist,
         CustomRoles.Guardian,
         CustomRoles.Spiritualist,
-        //CustomRoles.Tracker,
     ];
 
     public override void SetupCustomOption()
@@ -140,6 +137,7 @@ internal class Overseer : RoleBase
     }
     private static void SetRevealtPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
     {
+        player.RPCPlayCustomSound("SonicRing");
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerRevealedPlayer, SendOption.Reliable, -1);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
