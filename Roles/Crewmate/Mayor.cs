@@ -1,7 +1,9 @@
 ﻿using AmongUs.GameOptions;
+using System.Text;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -20,13 +22,16 @@ internal partial class Mayor : RoleBase
     private static OptionItem MayorNumOfUseButton;
     private static OptionItem MayorHideVote;
     public static OptionItem MayorRevealWhenDoneTasks;
+    public static OptionItem MayorVoteGainWithEachTaskCompleted;
 
     private static readonly Dictionary<byte, int> MayorUsedButtonCount = [];
+
+    public static int AdditionalVotes;
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mayor);
-        MayorAdditionalVote = IntegerOptionItem.Create(Id + 10, "MayorAdditionalVote", new(1, 20, 1), 3, TabGroup.CrewmateRoles, false)
+        MayorAdditionalVote = IntegerOptionItem.Create(Id + 10, "MayorAdditionalVote", new(0, 20, 1), 1, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor])
             .SetValueFormat(OptionFormat.Votes);
         MayorHasPortableButton = BooleanOptionItem.Create(Id + 11, "MayorHasPortableButton", false, TabGroup.CrewmateRoles, false)
@@ -38,6 +43,9 @@ internal partial class Mayor : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
         MayorRevealWhenDoneTasks = BooleanOptionItem.Create(Id + 14, "MayorRevealWhenDoneTasks", false, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor]);
+        MayorVoteGainWithEachTaskCompleted = IntegerOptionItem.Create(Id + 16, "VoteGainMayor", new(0, 3, 1), 1, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Mayor])
+            .SetValueFormat(OptionFormat.Times);
         OverrideTasksData.Create(Id + 15, TabGroup.CrewmateRoles, CustomRoles.Mayor);
     }
 
@@ -48,19 +56,26 @@ internal partial class Mayor : RoleBase
     public override void Add(byte playerId)
     {
         MayorUsedButtonCount[playerId] = 0;
+        AdditionalVotes = MayorAdditionalVote.GetInt();
     }
     public override void Remove(byte playerId)
     {
         MayorUsedButtonCount[playerId] = 0;
     }
 
-    public override int AddRealVotesNum(PlayerVoteArea PVA) => MayorAdditionalVote.GetInt();
+    public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
+    {
+        AdditionalVotes += MayorVoteGainWithEachTaskCompleted.GetInt();
+        return true;
+    }
+
+    public override int AddRealVotesNum(PlayerVoteArea PVA) => AdditionalVotes;
 
     public override void AddVisualVotes(PlayerVoteArea votedPlayer, ref List<MeetingHud.VoterState> statesList)
     {
         if (MayorHideVote.GetBool()) return;
 
-        for (var i = 0; i < MayorAdditionalVote.GetFloat(); i++)
+        for (var i = 0; i < AdditionalVotes; i++)
         {
             statesList.Add(new MeetingHud.VoterState()
             {
@@ -119,4 +134,13 @@ internal partial class Mayor : RoleBase
         hud.AbilityButton.buttonLabelText.text = GetString("MayorVentButtonText");
     }
     public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("EmergencyButton");
+
+    public override string GetProgressText(byte playerId, bool coooms)
+    {
+        var voteNum = AdditionalVotes;
+        var ProgressText = new StringBuilder();
+
+        ProgressText.Append(ColorString(voteNum < 1 ? Color.gray : GetRoleColor(CustomRoles.Mayor), $"({voteNum})"));
+        return ProgressText.ToString();
+    }
 }

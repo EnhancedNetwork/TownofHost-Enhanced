@@ -40,6 +40,7 @@ internal class President : RoleBase
         PresidentAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 17, "AbilityUseGainWithEachTaskCompleted", new(0f, 2f, 0.5f), 1f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.President])
             .SetValueFormat(OptionFormat.Times);
+        OverrideTasksData.Create(Id + 18, TabGroup.CrewmateRoles, CustomRoles.President);
     }
     public override void Init()
     {
