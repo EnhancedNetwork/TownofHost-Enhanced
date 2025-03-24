@@ -4542,5 +4542,10 @@
   "CanBeGuessed347": "Druid can be guessed",
 
   "DeathReason.Overthrown": "Overthrown",
-  "DictatorAliveWhenVoteEvil": "Dictator stays alive when they vote an Evil"
+  "DictatorAliveWhenVoteEvil": "Dictator stays alive when they vote an Evil",
+
+  "Mutant": "Mutant",
+  "MutantInfo": "Shift like an Impostor",
+  "MutantInfoLong": "As the Mutant, you can shapeshift into any target.",
+  "WinnerRoleText.Mutant": "Mutant Wins!"
 }

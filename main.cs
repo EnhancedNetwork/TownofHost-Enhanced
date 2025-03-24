@@ -894,6 +894,7 @@ public enum CustomRoles
     Lawyer,
     Maverick,
     Massacre,
+    Mutant,
     Narc,
     Opportunist,
     Pelican,
@@ -1156,6 +1157,7 @@ public enum CustomWinner
     Predator = CustomRoles.Predator,
     Volatile = CustomRoles.Volatile,
     Gunslinger = CustomRoles.Gunslinger,
+    Mutant = CustomRoles.Mutant,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
