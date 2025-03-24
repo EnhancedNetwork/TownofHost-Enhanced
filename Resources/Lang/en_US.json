@@ -1560,7 +1560,7 @@
   "Cooldown": "Cooldown",
   "AbilityCooldown": "Ability Cooldown",
   "AbilityDuration": "Ability Duration",
-  "SkillLimitTimes": "Maximum Number of Ability Uses",
+  "SkillLimitTimes": "Number of Ability Uses",
   "CanKill": "Can Kill",
   "KillCooldown": "Kill Cooldown",
   "CanVent": "Can Vent",
