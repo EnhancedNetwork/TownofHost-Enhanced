@@ -212,7 +212,7 @@
         "\n     - Fixed Avenger when they try to kill Necromancer (By TommyXL)",
         "\n     - Fixed Bodyguard/Crusader when they killed Bodyguard/Crusader, Taskinator and Veteran (By TommyXL)",
         "\n     - Fixed «Quizmaster.None» (By TommyXL)",
-        "\n     - Fixed missed string «*MayorHideVote» for Vindicator (By TommyXL)",
+        "\n     - Chaîne manquée «*MayorHideVote» pour Vindicator (Par TommyXL)",
         "\n     - Fixed bug when Madmate assign Neutrals (Does not apply to Admirer - By TommyXL)",
         "\n     - Fixed bug when Camouflage did not disappear after Camouflager was erased (By TommyXL)",
         "\n     - Probably fixed the bug when Kamikaze killed players during exile (By TommyXL)",
