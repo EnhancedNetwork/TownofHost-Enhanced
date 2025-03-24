@@ -28,7 +28,9 @@ internal class Keeper : RoleBase
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Keeper);
         KeeperUsesOpt = IntegerOptionItem.Create(Id + 10, "MaxProtections", new(1, 14, 1), 3, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Keeper])
             .SetValueFormat(OptionFormat.Times);
-
+        KeeperAbilityUseGainWithEachTaskCompleted = FloatOptionItem.Create(Id + 17, "AbilityUseGainWithEachTaskCompleted", new(0f, 2f, 0.5f), 1f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Keeper])
+            .SetValueFormat(OptionFormat.Times);
     }
     public override void Init()
     {

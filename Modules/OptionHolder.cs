@@ -173,6 +173,7 @@ public static class Options
     public static OptionItem VeteranAbilityUseGainWithEachTaskCompleted;
     public static OptionItem TimeMasterAbilityUseGainWithEachTaskCompleted;
     public static OptionItem PresidentAbilityUseGainWithEachTaskCompleted;
+    public static OptionItem KeeperAbilityUseGainWithEachTaskCompleted;
 
     //public static OptionItem EnableGM;
     public static float DefaultKillCooldown = Main.NormalOptions?.KillCooldown ?? 20;
