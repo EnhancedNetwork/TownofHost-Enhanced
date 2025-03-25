@@ -1115,8 +1115,7 @@ public static class GuessManager
             return;
         }
 
-        PlayerControl.LocalPlayer.RPCPlayCustomSound("Gunload");
-
+        CustomSoundsManager.Play("Gunload");
     }
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.OnDestroy))]

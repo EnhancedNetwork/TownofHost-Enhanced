@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -67,6 +68,7 @@ internal class Mastermind : RoleBase
 
         return killer.CheckDoubleTrigger(target, () =>
         {
+            killer.RPCPlayCustomSound("Line");
             killer.SetKillCooldown(time: ManipulateCD);
             if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
             {

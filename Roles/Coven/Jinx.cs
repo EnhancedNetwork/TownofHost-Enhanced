@@ -18,12 +18,8 @@ internal class Jinx : CovenManager
     //==================================================================\\
 
     private static OptionItem KillCooldown;
-    //private static OptionItem CanVent;
-    //private static OptionItem HasImpostorVision;
     private static OptionItem JinxSpellTimes;
-    //private static OptionItem killAttacker;
     private static OptionItem CovenCanDieToJinx;
-
 
     private static readonly Dictionary<byte, List<byte>> JinxedPlayers = [];
 
@@ -32,14 +28,10 @@ internal class Jinx : CovenManager
         SetupSingleRoleOptions(Id, TabGroup.CovenRoles, CustomRoles.Jinx, 1, zeroOne: false);
         KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx])
             .SetValueFormat(OptionFormat.Seconds);
-        //CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
-        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
         JinxSpellTimes = IntegerOptionItem.Create(Id + 14, "JinxSpellTimes", new(1, 100, 1), 10, TabGroup.CovenRoles, false)
         .SetParent(CustomRoleSpawnChances[CustomRoles.Jinx])
         .SetValueFormat(OptionFormat.Times);
-        //killAttacker = BooleanOptionItem.Create(Id + 15, GeneralOption.KillAttackerWhenAbilityRemaining, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
         CovenCanDieToJinx = BooleanOptionItem.Create(Id + 16, "JinxCovenCanDieToJinx", true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Jinx]);
-
     }
     public override void Init()
     {
@@ -50,31 +42,7 @@ internal class Jinx : CovenManager
         playerId.SetAbilityUseLimit(JinxSpellTimes.GetInt());
         JinxedPlayers[playerId] = [];
         playerId.GetPlayer()?.AddDoubleTrigger();
-    }
-    /*
-    public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
-    {
-        if (AbilityLimit <= 0) return true;
-        if (killer.IsTransformedNeutralApocalypse()) return true;
-        if (killer == target) return true;
-        
-        killer.RpcGuardAndKill(target);
-        target.RpcGuardAndKill(target);
-       
-        AbilityLimit -= 1;
-        SendSkillRPC();
-
-        if (killAttacker.GetBool() && target.RpcCheckAndMurder(killer, true))
-        {
-            Logger.Info($"{target.GetNameWithRole()}: ability left {AbilityLimit}", "Jinx");
-            killer.SetDeathReason(PlayerState.DeathReason.Jinx);
-            killer.RpcMurderPlayer(killer);
-            killer.SetRealKiller(target);
-        }
-        return false;
-    }
-    */
-    //public override void ApplyGameOptions(IGameOptions opt, byte babushka) => opt.SetVision(HasImpostorVision.GetBool());
+    }    
     private static bool IsJinxed(byte target)
     {
         if (JinxedPlayers.Count < 1) return false;
@@ -107,6 +75,7 @@ internal class Jinx : CovenManager
         if (jinx.GetAbilityUseLimit() > 0)
         {
             JinxedPlayers[jinx.PlayerId].Add(target.PlayerId);
+            jinx.RPCPlayCustomSound("Clothe");
             jinx.ResetKillCooldown();
             jinx.SetKillCooldown();
             jinx.RpcRemoveAbilityUse();
@@ -166,8 +135,6 @@ internal class Jinx : CovenManager
             JinxedPlayers[jinx.PlayerId].Remove(target.PlayerId);
             return false;
         }
-
-
         return false;
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -184,5 +151,4 @@ internal class Jinx : CovenManager
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
-    //public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 }

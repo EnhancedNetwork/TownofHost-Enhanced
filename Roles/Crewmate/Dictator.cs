@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -17,17 +18,23 @@ internal class Dictator : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
     //==================================================================\\
+
     public static OptionItem ChangeCommandToExpel;
+
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Dictator);
-        ChangeCommandToExpel = BooleanOptionItem.Create(Id + 10, "DictatorChangeCommandToExpel", false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Dictator]);
+        ChangeCommandToExpel = BooleanOptionItem.Create(Id + 10, "DictatorChangeCommandToExpel", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Dictator]);
     }
 
     public static bool CheckVotingForTarget(PlayerControl pc, PlayerVoteArea pva)
-        => pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead;
+    {
+        CustomSoundsManager.RPCPlayCustomSoundAll("SonicTally");
+        return pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead;
+    }
     public bool ExilePlayer(PlayerControl pc, string msg, bool isUI = false)
     {
+        CustomSoundsManager.RPCPlayCustomSoundAll("SonicTally");
         if (!ChangeCommandToExpel.GetBool()) return false;
         if (!AmongUsClient.Instance.AmHost) return false;
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false;
@@ -43,9 +50,7 @@ internal class Dictator : RoleBase
 
         if (operate == 1)
         {
-            Utils.SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
-            // GuessManager.TryHideMsg();
-            // ChatManager.SendPreviousMessagesToAll();
+            SendMessage(GuessManager.GetFormatString(), pc.PlayerId);
             return true;
         }
         if (operate == 2)
@@ -56,7 +61,7 @@ internal class Dictator : RoleBase
             {
                 targetid = Convert.ToByte(num);
             }
-            var target = Utils.GetPlayerById(targetid);
+            var target = GetPlayerById(targetid);
             if (target == pc)
             {
                 pc.ShowInfoMessage(isUI, GetString("DictatorExpelSelf"));
@@ -202,10 +207,8 @@ internal class Dictator : RoleBase
             renderer.sprite = CustomButton.Get("JudgeIcon");
 
             button.OnClick.RemoveAllListeners();
-            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
-            {
-                DictatorOnClick(pva.TargetPlayerId, __instance);
-            }));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => DictatorOnClick(pva.TargetPlayerId, __instance)));
+            button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() => CustomSoundsManager.Play("SonicRing")));
         }
     }
 }
