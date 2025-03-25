@@ -144,7 +144,6 @@ public static class MainMenuManagerPatch
 
         spriteRenderer.sprite = Utils.LoadSprite($"TOHE.Resources.Background.CurrentArtWinner.toho_140.png", 150f);
 
-
         //__instance.playLocalButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color(0.1647f, 0f, 0.7765f);
         //__instance.PlayOnlineButton.inactiveSprites.GetComponent<SpriteRenderer>().color = new Color(0.1647f, 0f, 0.7765f);
         //__instance.playLocalButton.transform.position = new Vector3(2.095f, -0.25f, 520f);
