@@ -32,7 +32,7 @@ internal class Dictator : RoleBase
         CustomSoundsManager.RPCPlayCustomSoundAll("SonicTally");
         return pc.Is(CustomRoles.Dictator) && pva.DidVote && pc.PlayerId != pva.VotedFor && pva.VotedFor < 253 && !pc.Data.IsDead;
     }
-    public static bool ExilePlayer(PlayerControl pc, string msg, bool isUI = false)
+    public bool ExilePlayer(PlayerControl pc, string msg, bool isUI = false)
     {
         CustomSoundsManager.RPCPlayCustomSoundAll("SonicTally");
         if (!ChangeCommandToExpel.GetBool()) return false;
@@ -147,8 +147,8 @@ internal class Dictator : RoleBase
         byte pid = reader.ReadByte();
         if (pc.Is(CustomRoles.Dictator) && pc.IsAlive() && GameStates.IsVoting)
         {
-            if (pc.GetRoleClass() is Dictator)
-                ExilePlayer(pc, $"/exp {pid}", true);
+            if (pc.GetRoleClass() is Dictator dictator)
+                dictator.ExilePlayer(pc, $"/exp {pid}", true);
         }
     }
 
