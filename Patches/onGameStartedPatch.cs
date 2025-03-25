@@ -263,7 +263,7 @@ internal class StartGameHostPatch
 {
     private static AmongUsClient auclient;
 
-    private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
+    private static RoleOptionsCollectionV09 RoleOpt => Main.NormalOptions.roleOptions;
     private static Dictionary<RoleTypes, int> RoleTypeNums = [];
     public static void UpdateRoleTypeNums()
     {
