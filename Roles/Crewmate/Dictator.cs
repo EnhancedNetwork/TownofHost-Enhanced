@@ -113,12 +113,12 @@ internal class Dictator : RoleBase
             }
             else
             {
-                MeetingHud.Instance.RpcVotingComplete(states, exiled, false);
-
                 if (exiled != null)
                 {
                     CheckForEndVotingPatch.ConfirmEjections(exiled);
                 }
+
+                MeetingHud.Instance.RpcVotingComplete(states, exiled, false);
             }
 
             Logger.Info($"{target.GetNameWithRole()} expelled by Dictator", "Dictator");
