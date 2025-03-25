@@ -1,7 +1,6 @@
 using Hazel;
 using InnerNet;
 using System.Text;
-using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -22,6 +21,8 @@ internal class PotionMaster : CovenManager
     private static OptionItem KillCooldown;
     private static OptionItem RevealMaxCount;
     private static OptionItem BarrierMaxCount;
+    //private static OptionItem CanVent;
+    //private static OptionItem HasImpostorVision;
 
     private static readonly Dictionary<byte, HashSet<byte>> RevealList = [];
     private static readonly Dictionary<byte, HashSet<byte>> BarrierList = [];
@@ -40,6 +41,8 @@ internal class PotionMaster : CovenManager
             .SetValueFormat(OptionFormat.Times);
         BarrierMaxCount = IntegerOptionItem.Create(Id + 15, "PotionMasterMaxBarriers", new(1, 100, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster])
             .SetValueFormat(OptionFormat.Times);
+        //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
+        //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
     }
     public override void Init()
     {
@@ -90,8 +93,11 @@ internal class PotionMaster : CovenManager
                 break;
         }
     }
+    //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
+    //public override bool CanUseSabotage(PlayerControl pc) => true;
+
 
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -127,7 +133,6 @@ internal class PotionMaster : CovenManager
                 }
                 else if (!IsReveal(killer.PlayerId, target.PlayerId) && RevealLimit[killer.PlayerId] > 0)
                 {
-                    killer.RPCPlayCustomSound("SonicRing");
                     RevealLimit[killer.PlayerId]--;
                     RevealList[killer.PlayerId].Add(target.PlayerId);
                     Logger.Info($"{killer.GetNameWithRole()}: Divined divination destination -> {target.GetNameWithRole()} || remaining {RevealLimit[killer.PlayerId]} times", "PotionMaster");
@@ -146,7 +151,6 @@ internal class PotionMaster : CovenManager
             case 1:
                 if (!IsBarriered(killer.PlayerId, target.PlayerId) && BarrierLimit[killer.PlayerId] > 0)
                 {
-                    killer.RPCPlayCustomSound("Bet");
                     BarrierLimit[killer.PlayerId]--;
                     BarrierList[killer.PlayerId].Add(target.PlayerId);
                     Logger.Info($"{killer.GetNameWithRole()}: Barrier destination -> {target.GetNameWithRole()} || remaining {BarrierLimit[killer.PlayerId]} times", "PotionMaster");

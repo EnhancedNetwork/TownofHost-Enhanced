@@ -1,12 +1,12 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
+
 
 namespace TOHE.Roles.Neutral;
 
@@ -92,7 +92,6 @@ internal class Shroud : RoleBase
         ShroudList[target.PlayerId] = killer.PlayerId;
         SendRPC(killer.PlayerId, target.PlayerId, 1);
 
-        killer.RPCPlayCustomSound("Line");
         killer.SetKillCooldown();
 
         Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);

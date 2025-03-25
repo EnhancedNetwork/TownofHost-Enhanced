@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using TOHE.Modules;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Neutral;
@@ -54,8 +53,6 @@ internal class Stalker : RoleBase
     public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
     {
         if (Utils.IsActive(SystemTypes.Electrical) || inMeeting || isSuicide) return;
-
-        CustomSoundsManager.RPCPlayCustomSoundAll("FlashBang");
 
         // Code from AU: SabotageSystemType.UpdateSystem switch SystemTypes.Electrical
         byte switchId = 4;

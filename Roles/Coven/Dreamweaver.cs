@@ -134,7 +134,6 @@ internal class Dreamweaver : CovenManager
         DreamwovenList[killer.PlayerId].Add(target.PlayerId);
         SendRPC(0, killer, target);
 
-        killer.RPCPlayCustomSound("Clothe");
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         killer.Notify(string.Format(GetString("Dreamweaver.DreamweaveSuccess"), target.GetRealName()));

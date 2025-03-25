@@ -73,7 +73,6 @@ internal class Consigliere : RoleBase
     {
         if (IsDivination(killer.PlayerId, target.PlayerId)) return;
 
-        killer.RPCPlayCustomSound("SonicRing");
         killer.RpcRemoveAbilityUse();
         DivinationTarget[killer.PlayerId].Add(target.PlayerId);
 
