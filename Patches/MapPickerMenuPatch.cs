@@ -26,7 +26,7 @@ class CreateOptionsPickerPatch
                 dlekS_ehT.transform.SetSiblingIndex(DleksPos + 2);
                 MapSelectButton dlekS_ehT_MapButton = dlekS_ehT.GetComponent<MapSelectButton>();
                 DleksButton = dlekS_ehT_MapButton;
-                dlekS_ehT_MapButton.MapIcon.transform.localScale = new Vector3(-1f, 1f, 1f);
+                dlekS_ehT_MapButton.MapIcon[0].transform.localScale = new Vector3(-1f, 1f, 1f);
                 dlekS_ehT_MapButton.Button.OnClick.RemoveAllListeners();
                 dlekS_ehT_MapButton.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
