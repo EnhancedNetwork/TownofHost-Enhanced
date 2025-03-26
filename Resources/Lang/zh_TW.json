@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "船員完成了任務",
   "GameOverReason.HumansDisconnect": "船員斷線",
   "GameOverReason.ImpostorByVote": "船員被逐出",
-  "GameOverReason.ImpostorByKill": "偽裝者人數占優",
+  "GameOverReason.ImpostorsByKill": "偽裝者人數占優",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "偽裝者斷線",
   "FortuneTellerCheck.TaskDone": "【{0}】的職業是【{1}】",

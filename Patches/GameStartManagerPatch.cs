@@ -179,81 +179,77 @@ public class GameStartManagerPatch
         }
         public static void Postfix(GameStartManager __instance)
         {
-            if (!AmongUsClient.Instance) return;
+            try
+            {
+                if (AmongUsClient.Instance == null || AmongUsClient.Instance.IsGameStarted || GameStates.IsInGame || __instance == null || __instance.startState == GameStartManager.StartingStates.Starting) return;
 
-            string warningMessage = "";
-            if (AmongUsClient.Instance.AmHost)
-            {
-                bool canStartGame = true;
+                var canStartGame = true;
+                var mismatchedClientName = string.Empty;
                 List<string> mismatchedPlayerNameList = [];
-                foreach (var client in AmongUsClient.Instance.allClients.ToArray())
+
+                string warningMessage = "";
+
+                if (AmongUsClient.Instance.AmHost)
                 {
-                    if (client.Character == null) continue;
-                    var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
-                    if (dummyComponent != null && dummyComponent.enabled)
-                        continue;
-                    if (!MatchVersions(client.Id, true))
+                    foreach (ClientData client in AmongUsClient.Instance.allClients)
                     {
-                        canStartGame = false;
-                        mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
+                        if (client.Character == null) continue;
+
+                        var dummyComponent = client.Character.GetComponent<DummyBehaviour>();
+                        if (dummyComponent != null && dummyComponent.enabled) continue;
+
+                        if (!MatchVersions(client.Character.PlayerId, true))
+                        {
+                            canStartGame = false;
+                            mismatchedPlayerNameList.Add(Utils.ColorString(Palette.PlayerColors[client.ColorId], client.Character.Data.PlayerName));
+                        }
                     }
+
+                    if (!canStartGame) __instance.StartButton.gameObject.SetActive(false);
                 }
-                if (!canStartGame)
-                {
-                    __instance.StartButton.gameObject.SetActive(false);
-                    warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.MismatchedVersion"), string.Join(" ", mismatchedPlayerNameList), $"<color={Main.ModColor}>{Main.ModName}</color>"));
-                }
-                cancelButton.gameObject.SetActive(__instance.startState == GameStartManager.StartingStates.Countdown);
-            }
-            else
-            {
-                if (MatchVersions(AmongUsClient.Instance.HostId, true) || Main.VersionCheat.Value || Main.IsHostVersionCheating)
-                    exitTimer = 0;
                 else
                 {
-                    exitTimer += Time.deltaTime;
-                    if (exitTimer >= 5)
-                    {
+                    if (MatchVersions(0, true))
                         exitTimer = 0;
-                        AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
-                        SceneChanger.ChangeScene("MainMenu");
+                    else
+                    {
+                        exitTimer += Time.deltaTime;
+
+                        if (exitTimer >= 5)
+                        {
+                            exitTimer = 0;
+                            AmongUsClient.Instance.ExitGame(DisconnectReasons.ExitGame);
+                            SceneChanger.ChangeScene("MainMenu");
+                        }
+
+                        if (exitTimer != 0)
+                            warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                     }
-                    if (exitTimer != 0)
-                        warningMessage = Utils.ColorString(Color.red, string.Format(GetString("Warning.AutoExitAtMismatchedVersion"), $"<color={Main.ModColor}>{Main.ModName}</color>", Math.Round(5 - exitTimer).ToString()));
                 }
-            }
-            if (warningMessage == "")
-            {
-                warningText.gameObject.SetActive(false);
-            }
-            else
-            {
-                warningText.text = warningMessage;
-                warningText.gameObject.SetActive(true);
-            }
 
-            if (AmongUsClient.Instance.AmHost)
-            {
-                __instance.GameStartText.transform.localPosition = new Vector3(__instance.GameStartText.transform.localPosition.x, 2f, __instance.GameStartText.transform.localPosition.z);
+                if (warningMessage == "") { warningText.gameObject.SetActive(false); }
+                else
+                {
+                    warningText.text = warningMessage;
+                    warningText.gameObject.SetActive(true);
+                }
+
+                __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
+
+                // Lobby timer
+                if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
+
+                if (update) currentText = __instance.PlayerCounter.text;
+
+                timer = Mathf.Max(0f, timer -= Time.deltaTime);
+                int minutes = (int)timer / 60;
+                int seconds = (int)timer % 60;
+                string countDown = $"{minutes:00}:{seconds:00}";
+                if (timer <= 60) countDown = Utils.ColorString((int)timer % 2 == 0 ? Color.yellow : Color.red, countDown);
+                timerText.text = countDown;
             }
-            else
-            {
-                __instance.GameStartText.transform.localPosition = GameStartTextlocalPosition;
-            }
-
-            __instance.RulesPresetText.text = GetString($"Preset_{OptionItem.CurrentPreset + 1}");
-
-            // Lobby Timer
-            if (!GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame || !GameStates.IsVanillaServer) return;
-
-            if (update) currentText = __instance.PlayerCounter.text;
-
-            timer = Mathf.Max(0f, timer -= Time.deltaTime);
-            int minutes = (int)timer / 60;
-            int seconds = (int)timer % 60;
-            string countDown = $"{minutes:00}:{seconds:00}";
-            if (timer <= 60) countDown = Utils.ColorString((int)timer % 2 == 0 ? Color.yellow : Color.red, countDown);
-            timerText.text = countDown;
+            catch (NullReferenceException) { }
+            catch (Exception e) { Logger.Error(e.ToString(), "GameStartManagerUpdatePatch.Postfix (3)"); }
         }
         private static void BeginGameAutoStart(float countdown)
         {

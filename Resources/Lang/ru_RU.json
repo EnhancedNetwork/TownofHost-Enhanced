@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "<b><color=#8cffff>Члены Экипажа</color> выполнили задания</b>",
   "GameOverReason.HumansDisconnect": "<b><color=#8cffff>Члены Экипажа</color> вышли из игры</b>",
   "GameOverReason.ImpostorByVote": "<b><color=#8cffff>Члены Экипажа</color> были изгнаны</b>",
-  "GameOverReason.ImpostorByKill": "<b><color=#ff1919>Предатели</color> убили всех</b>",
+  "GameOverReason.ImpostorsByKill": "<b><color=#ff1919>Предатели</color> убили всех</b>",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "<b><color=#ff1919>Предатели</color> вышли из игры</b>",
   "FortuneTellerCheck.TaskDone": "[{0}]Роль -[{1}]",

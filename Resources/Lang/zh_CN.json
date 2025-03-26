@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "船员完成了任务",
   "GameOverReason.HumansDisconnect": "船员断线",
   "GameOverReason.ImpostorByVote": "船员被驱逐",
-  "GameOverReason.ImpostorByKill": "内鬼人数占优",
+  "GameOverReason.ImpostorsByKill": "内鬼人数占优",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "内鬼断线",
   "FortuneTellerCheck.TaskDone": "<b>{0}</b>的职业是\n<b>{1}</b>\n",

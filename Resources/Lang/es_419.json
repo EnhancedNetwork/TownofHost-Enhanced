@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "Los Tripulantes completaron sus tareas",
   "GameOverReason.HumansDisconnect": "Los Tripulantes se desconectaron",
   "GameOverReason.ImpostorByVote": "Los Tripulantes fueron exiliados",
-  "GameOverReason.ImpostorByKill": "Los Impostores mataron a todos",
+  "GameOverReason.ImpostorsByKill": "Los Impostores mataron a todos",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "Los Impostores se desconectaron",
   "FortuneTellerCheck.TaskDone": "[{0}]Role -[{1}]",

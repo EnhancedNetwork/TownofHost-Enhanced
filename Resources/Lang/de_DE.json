@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "Die Besatzungsmitglieder haben alle Aufgaben erledigt",
   "GameOverReason.HumansDisconnect": "Besatzungsmitglieder getrennt",
   "GameOverReason.ImpostorByVote": "Die Besatzungsmitglieder wurden rausgeworfen",
-  "GameOverReason.ImpostorByKill": "Die Verräter haben alle gekillt",
+  "GameOverReason.ImpostorsByKill": "Die Verräter haben alle gekillt",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "Verräter getrennt",
   "FortuneTellerCheck.TaskDone": "[{0}]Rolle -[{1}]",
