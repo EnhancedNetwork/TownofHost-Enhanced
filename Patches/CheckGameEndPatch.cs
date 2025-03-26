@@ -51,7 +51,7 @@ class GameEndCheckerForNormal
         if (Options.NoGameEnd.GetBool() && WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
 
         GameIsEnded = false;
-        var reason = GameOverReason.ImpostorByKill;
+        var reason = GameOverReason.ImpostorsByKill;
         predicate.CheckForEndGame(out reason);
 
         // FFA
@@ -83,9 +83,9 @@ class GameEndCheckerForNormal
             Logger.Info($"WinnerTeam on enter: {WinnerTeam}", "CheckEndCriteriaForNormal.Prefix");
             Logger.Info($"WinnerIds: {string.Join(", ", WinnerIds)}", "CheckEndCriteriaForNormal.Prefix");
 
-            if (reason == GameOverReason.ImpostorBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() || (x.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1)))
+            if (reason == GameOverReason.ImpostorsBySabotage && (CustomRoles.Jackal.RoleExist() || CustomRoles.Sidekick.RoleExist()) && Jackal.CanWinBySabotageWhenNoImpAlive.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() || (x.Is(CustomRoles.Madmate) && Madmate.MadmateCountMode.GetInt() == 1)))
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 WinnerIds.Clear();
                 ResetAndSetWinner(CustomWinner.Jackal);
                 WinnerRoles.Add(CustomRoles.Jackal);
@@ -102,9 +102,9 @@ class GameEndCheckerForNormal
                             pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
-                            if (reason is not GameOverReason.HumansByVote and not GameOverReason.HumansByTask)
+                            if (reason is not GameOverReason.CrewmatesByVote and not GameOverReason.CrewmatesByTask)
                             {
-                                reason = GameOverReason.HumansByVote;
+                                reason = GameOverReason.CrewmatesByVote;
                             }
                             WinnerIds.Add(pc.PlayerId);
                         }
@@ -187,17 +187,17 @@ class GameEndCheckerForNormal
                 {
                     switch (pc.GetCustomRole())
                     {
-                        case CustomRoles.Stalker when pc.IsAlive() && ((WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorBySabotage)) || WinnerTeam == CustomWinner.Stalker
-                            || (WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.HumansByTask) && Stalker.IsWinKill[pc.PlayerId] && Stalker.SnatchesWins)):
+                        case CustomRoles.Stalker when pc.IsAlive() && ((WinnerTeam == CustomWinner.Impostor && !reason.Equals(GameOverReason.ImpostorsBySabotage)) || WinnerTeam == CustomWinner.Stalker
+                            || (WinnerTeam == CustomWinner.Crewmate && !reason.Equals(GameOverReason.CrewmatesByTask) && Stalker.IsWinKill[pc.PlayerId] && Stalker.SnatchesWins)):
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
-                                reason = GameOverReason.ImpostorByKill;
+                                reason = GameOverReason.ImpostorsByKill;
                                 ResetAndSetWinner(CustomWinner.Stalker);
                                 WinnerIds.Add(pc.PlayerId);
                             }
                             break;
                         case CustomRoles.Specter when pc.GetPlayerTaskState().IsTaskFinished && !pc.IsAlive() && Specter.SnatchesWin.GetBool():
-                            reason = GameOverReason.ImpostorByKill;
+                            reason = GameOverReason.ImpostorsByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
                                 ResetAndSetWinner(CustomWinner.Specter);
@@ -205,7 +205,7 @@ class GameEndCheckerForNormal
                             }
                             break;
                         case CustomRoles.Quizmaster when pc.IsAlive() && !Quizmaster.CanKillsAfterMark() && WinnerTeam == CustomWinner.Default:
-                            reason = GameOverReason.ImpostorByKill;
+                            reason = GameOverReason.ImpostorsByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
                                 ResetAndSetWinner(CustomWinner.Quizmaster);
@@ -213,7 +213,7 @@ class GameEndCheckerForNormal
                             }
                             break;
                         case CustomRoles.CursedSoul when pc.IsAlive() && WinnerTeam == CustomWinner.Default:
-                            reason = GameOverReason.ImpostorByKill;
+                            reason = GameOverReason.ImpostorsByKill;
                             if (!CheckForConvertedWinner(pc.PlayerId))
                             {
                                 ResetAndSetWinner(CustomWinner.CursedSoul);
@@ -232,7 +232,7 @@ class GameEndCheckerForNormal
 
                     if (egoistCrewArray.Length > 0)
                     {
-                        reason = GameOverReason.ImpostorByKill;
+                        reason = GameOverReason.ImpostorsByKill;
                         ResetAndSetWinner(CustomWinner.Egoist);
 
                         foreach (var egoistCrew in egoistCrewArray)
@@ -249,7 +249,7 @@ class GameEndCheckerForNormal
 
                     if (egoistImpArray.Length > 0)
                     {
-                        reason = GameOverReason.ImpostorByKill;
+                        reason = GameOverReason.ImpostorsByKill;
                         ResetAndSetWinner(CustomWinner.Egoist);
 
                         foreach (var egoistImp in egoistImpArray)
@@ -282,7 +282,7 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                if (CustomRoles.Lovers.RoleExist() && !reason.Equals(GameOverReason.HumansByTask))
+                if (CustomRoles.Lovers.RoleExist() && !reason.Equals(GameOverReason.CrewmatesByTask))
                 {
                     if (!(!Main.LoversPlayers.ToArray().All(p => p.IsAlive()) && Options.LoverSuicide.GetBool()))
                     {
@@ -367,7 +367,7 @@ class GameEndCheckerForNormal
                     }
                 }
 
-                void CheckAdditionalWinners()
+                static void CheckAdditionalWinners()
                 {
                     foreach (var pc in Main.AllPlayerControls)
                     {
@@ -526,7 +526,7 @@ class GameEndCheckerForNormal
             }
             bool canWin = WinnerIds.Contains(pc.PlayerId) ||
                     WinnerRoles.Contains(pc.GetCustomRole());
-            bool isCrewmateWin = reason.Equals(GameOverReason.HumansByVote) || reason.Equals(GameOverReason.HumansByTask);
+            bool isCrewmateWin = reason.Equals(GameOverReason.CrewmatesByVote) || reason.Equals(GameOverReason.CrewmatesByTask);
             SetGhostRole(ToGhostImpostor: canWin ^ isCrewmateWin);
             continue;
 
@@ -597,7 +597,7 @@ class GameEndCheckerForNormal
     {
         public override bool CheckForEndGame(out GameOverReason reason)
         {
-            reason = GameOverReason.ImpostorByKill;
+            reason = GameOverReason.ImpostorsByKill;
             if (WinnerTeam != CustomWinner.Default) return false;
             if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason) || CheckGameEndBySabotage(out reason)) return true;
             return false;
@@ -605,7 +605,7 @@ class GameEndCheckerForNormal
 
         public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
         {
-            reason = GameOverReason.ImpostorByKill;
+            reason = GameOverReason.ImpostorsByKill;
 
             if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
@@ -649,14 +649,14 @@ class GameEndCheckerForNormal
 
             if (crewCount == 0 && impCount == 0 && totalNKAlive == 0 && covenCount == 0) // Everyone is dead
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 ResetAndSetWinner(CustomWinner.None);
                 return true;
             }
 
             else if (Main.AllAlivePlayerControls.Length > 0 && Main.AllAlivePlayerControls.All(p => p.Is(CustomRoles.Lovers))) // if lover is alive lover wins
             {
-                reason = GameOverReason.ImpostorByKill;
+                reason = GameOverReason.ImpostorsByKill;
                 ResetAndSetWinner(CustomWinner.Lovers);
                 return true;
             }
@@ -666,13 +666,13 @@ class GameEndCheckerForNormal
             {
                 if (crewCount <= impCount) // Crew less than or equal to Imps, Imp wins
                 {
-                    reason = GameOverReason.ImpostorByKill;
+                    reason = GameOverReason.ImpostorsByKill;
                     ResetAndSetWinner(CustomWinner.Impostor);
                 }
 
                 else if (impCount == 0) // Remaining Imps are 0, Crew wins (neutral is already dead)
                 {
-                    reason = GameOverReason.HumansByVote;
+                    reason = GameOverReason.CrewmatesByVote;
                     ResetAndSetWinner(CustomWinner.Crewmate);
                 }
 
@@ -689,7 +689,7 @@ class GameEndCheckerForNormal
 
                 if (crewCount <= covenCount && totalNKAlive == 0) // Imps dead, NK dead, Crew <= Coven, Coven wins
                 {
-                    reason = GameOverReason.ImpostorByKill;
+                    reason = GameOverReason.ImpostorsByKill;
                     ResetAndSetWinner(CustomWinner.Coven);
                     return true;
                 }
@@ -704,7 +704,7 @@ class GameEndCheckerForNormal
                         try
                         {
                             var winnerRole = winners.First().Key.GetNeutralCustomRoleFromCountType();
-                            reason = GameOverReason.ImpostorByKill;
+                            reason = GameOverReason.ImpostorsByKill;
                             ResetAndSetWinner(winnerRole.GetNeutralCustomWinnerFromRole());
                             WinnerRoles.Add(winnerRole);
                         }
@@ -733,7 +733,7 @@ class FFAGameEndPredicate : GameEndPredicate
 {
     public override bool CheckForEndGame(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
         if (WinnerIds.Count > 0) return false;
         if (CheckGameEndByLivingPlayers(out reason)) return true;
         return false;
@@ -741,7 +741,7 @@ class FFAGameEndPredicate : GameEndPredicate
 
     public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
 
         if (FFAManager.RoundTime <= 0)
         {
@@ -791,7 +791,7 @@ public abstract class GameEndPredicate
     /// <summary>Determine if a task win is possible based on GameData.TotalTasks and CompletedTasks</summary>
     public virtual bool CheckGameEndByTask(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
         if (Options.DisableTaskWin.GetBool() || TaskState.InitialTotalTasks == 0) return false;
         if (Options.DisableTaskWinIfAllCrewsAreDead.GetBool() && !Main.AllAlivePlayerControls.Any(x => x.Is(Custom_Team.Crewmate))) return false;
         if (Options.DisableTaskWinIfAllCrewsAreConverted.GetBool() && Main.AllPlayerControls
@@ -800,7 +800,7 @@ public abstract class GameEndPredicate
 
         if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
         {
-            reason = GameOverReason.HumansByTask;
+            reason = GameOverReason.CrewmatesByTask;
             ResetAndSetWinner(CustomWinner.Crewmate);
             Logger.Info($"Game End By Completed All Tasks", "CheckGameEndBySabotage");
             return true;
@@ -810,7 +810,7 @@ public abstract class GameEndPredicate
     /// <summary>Determines if a sabotage win is possible based on the elements in ShipStatus.Systems</summary>
     public virtual bool CheckGameEndBySabotage(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
         if (ShipStatus.Instance.Systems == null) return false;
 
         // TryGetValue is not available
@@ -821,7 +821,7 @@ public abstract class GameEndPredicate
             LifeSupp.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
-            reason = GameOverReason.ImpostorBySabotage;
+            reason = GameOverReason.ImpostorsBySabotage;
             LifeSupp.Countdown = 10000f;
             Logger.Info($"Game End By LifeSupp Sabotage", "CheckGameEndBySabotage");
             return true;
@@ -838,7 +838,7 @@ public abstract class GameEndPredicate
             critical.Countdown < 0f) // Time-up confirmation
         {
             ResetAndSetWinner(CustomWinner.Impostor);
-            reason = GameOverReason.ImpostorBySabotage;
+            reason = GameOverReason.ImpostorsBySabotage;
             critical.ClearSabotage();
             Logger.Info($"Game End By Critical Sabotage", "CheckGameEndBySabotage");
             return true;
