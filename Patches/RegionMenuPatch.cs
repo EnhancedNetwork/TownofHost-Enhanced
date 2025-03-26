@@ -47,20 +47,18 @@ public static class ServerDropDownPatch
     [HarmonyPostfix]
     public static void AdjustButtonPositions(ServerDropdown __instance)
     {
-        if (FindAGameManager.Instance != null && FindAGameManager.Instance.isActiveAndEnabled)
+        List<ServerListButton> allButtons = __instance.GetComponentsInChildren<ServerListButton>().ToList();
+
+        if (allButtons.Count == 0)
+            return;
+
+        float buttonSpacing = 0.6f;
+        float columnSpacing = 4.25f;
+
+        if (SceneManager.GetActiveScene().name == "FindAGame")
         {
-            // 每列5个按钮
+            // 每列7个按钮
             const int buttonsPerColumn = 7;
-            // 按钮间的垂直间距，可根据实际需求调整
-            float buttonSpacing = 0.6f;
-            // 列之间的水平间距，可根据实际需求调整
-            float columnSpacing = 4.25f;
-
-            // 获取所有服务器按钮
-            List<ServerListButton> allButtons = __instance.GetComponentsInChildren<ServerListButton>().ToList();
-
-            if (allButtons.Count == 0)
-                return;
 
             // 计算总列数
             int columnCount = (allButtons.Count + buttonsPerColumn - 1) / buttonsPerColumn;
@@ -74,6 +72,48 @@ public static class ServerDropDownPatch
                 int col = i / buttonsPerColumn;
                 int row = i % buttonsPerColumn;
                 allButtons[i].transform.localPosition = startPosition + new Vector3(col * columnSpacing, -row * buttonSpacing, 0f);
+            }
+        }
+        else
+        {
+            const int buttonsInFirstColumn = 5;
+
+            // 计算第二列的按钮数量
+            int buttonsInSecondColumn = allButtons.Count - buttonsInFirstColumn;
+
+            // 确保至少有一个按钮在第一列
+            if (buttonsInFirstColumn <= 0 || buttonsInSecondColumn <= 0)
+            {
+                // 如果按钮总数少于等于5，就直接一列显示
+                for (int i = 0; i < allButtons.Count; i++)
+                {
+                    allButtons[i].transform.localPosition = new Vector3(0, -i * buttonSpacing, 0);
+                }
+                return;
+            }
+
+            // 从左上角开始的起始位置
+            Vector3 startPosition = new Vector3(0, -buttonSpacing, 0);
+
+            // 为第一列的按钮设置位置（0到4）
+            for (int i = 0; i < buttonsInFirstColumn; i++)
+            {
+                allButtons[i].transform.localPosition = startPosition + new Vector3(0, -i * buttonSpacing, 0);
+            }
+
+            // 计算第二列按钮的起始y位置，以确保最后一个按钮与第一列最后一个按钮对齐
+            float secondColumnStartY = 0;
+            if (buttonsInSecondColumn > 1)
+            {
+                // 计算第二列起始Y位置，使最后一个按钮与第一列最后一个按钮对齐
+                secondColumnStartY = (buttonsInFirstColumn - buttonsInSecondColumn) * buttonSpacing;
+            }
+
+            // 为第二列的按钮设置位置
+            for (int i = 0; i < buttonsInSecondColumn; i++)
+            {
+                int buttonIndex = buttonsInFirstColumn + i;
+                allButtons[buttonIndex].transform.localPosition = startPosition + new Vector3(columnSpacing, secondColumnStartY - i * buttonSpacing, 0);
             }
         }
     }
