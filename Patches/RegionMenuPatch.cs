@@ -98,7 +98,7 @@ public static class ServerDropDownPatch
             if (buttonsInSecondColumn > 1)
             {
                 // Last button in second column should be at the same height as the last button in the first column
-                secondColumnStartY = (buttonsInFirstColumn - buttonsInSecondColumn) * buttonSpacing;
+                secondColumnStartY = -(buttonsInFirstColumn - buttonsInSecondColumn) * buttonSpacing;
             }
 
             for (int i = 0; i < buttonsInSecondColumn; i++)
