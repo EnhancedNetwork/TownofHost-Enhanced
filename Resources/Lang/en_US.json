@@ -2996,7 +2996,7 @@
   "GameOverReason.CrewmatesByVote": "All Impostors and Neutral Killers and Coven were ejected or killed",
   "GameOverReason.CrewmatesByTask": "The Crewmates completed all tasks",
   "GameOverReason.CrewmateDisconnect": "Crewmates disconnected",
-  "GameOverReason.ImpostorByVote": "The Crewmates were ejected",
+  "GameOverReason.ImpostorsByVote": "The Crewmates were ejected",
   "GameOverReason.ImpostorsByKill": "The Impostors killed everyone",
   "GameOverReason.ImpostorsBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "Impostors disconnected",
