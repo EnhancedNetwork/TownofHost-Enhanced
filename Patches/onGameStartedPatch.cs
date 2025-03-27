@@ -466,16 +466,20 @@ internal class StartGameHostPatch
                 Logger.Warn($"Error after addons assign - error: {error}", "AddonAssign");
             }
 
+            var setCustomRoleSender = CustomRpcSender.Create("SetCustomRole Release Sender", SendOption.Reliable);
+
             // Sync for non-host modded clients by RPC
             foreach (var pair in Main.PlayerStates)
             {
                 // Set roles
-                ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                setCustomRoleSender.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
                 // Set add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
-                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
+                    setCustomRoleSender.RpcSetCustomRole(pair.Key, subRole);
             }
+
+            setCustomRoleSender.SendMessage();
 
             GhostRoleAssign.Add();
 
