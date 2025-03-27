@@ -11,10 +11,10 @@ namespace TOHE.Patches;
  * So not used, execpt vanilla Hide&Seek
 */
 
-[HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__32), nameof(AmongUsClient._CoStartGameHost_d__32.MoveNext))]
+[HarmonyPatch(typeof(AmongUsClient._CoStartGameHost_d__37), nameof(AmongUsClient._CoStartGameHost_d__37.MoveNext))]
 public static class DleksPatch
 {
-    private static bool Prefix(AmongUsClient._CoStartGameHost_d__32 __instance, ref bool __result)
+    private static bool Prefix(AmongUsClient._CoStartGameHost_d__37 __instance, ref bool __result)
     {
         if (GameStates.IsNormalGame) return true;
 

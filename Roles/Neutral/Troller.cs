@@ -141,7 +141,7 @@ internal class Troller : RoleBase
                 {
                     case MapNames.Skeld:
                     case MapNames.Dleks:
-                    case MapNames.Mira:
+                    case MapNames.MiraHQ:
                         allSabotage.Add(SystemTypes.Reactor);
                         allSabotage.Add(SystemTypes.LifeSupp);
                         allSabotage.Add(SystemTypes.Comms);

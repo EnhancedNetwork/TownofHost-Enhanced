@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "Gli Astronauti hanno completato tutti gli incarichi",
   "GameOverReason.HumansDisconnect": "Gli Astronauti si sono disconnessi",
   "GameOverReason.ImpostorByVote": "Gli Astronauti sono stati espulsi",
-  "GameOverReason.ImpostorByKill": "Gli Impostori hanno ucciso tutti",
+  "GameOverReason.ImpostorsByKill": "Gli Impostori hanno ucciso tutti",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "Gli Impostori si sono disconnessi",
   "FortuneTellerCheck.TaskDone": "[{0}]Ruolo -[{1}]",

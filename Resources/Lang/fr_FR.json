@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "Les Coéquipiers ont Accompli toutes les Tâches",
   "GameOverReason.HumansDisconnect": "Les Coéquipiers se sont Déconnectés",
   "GameOverReason.ImpostorByVote": "Les Coéquipiers ont été Éjectés",
-  "GameOverReason.ImpostorByKill": "Les Imposteurs ont Exécuté tout le monde",
+  "GameOverReason.ImpostorsByKill": "Les Imposteurs ont Exécuté tout le monde",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "Les Imposteurs se sont Déconnectés",
   "FortuneTellerCheck.TaskDone": "[{0}]Rôle - [{1}]",

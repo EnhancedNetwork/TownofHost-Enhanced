@@ -2831,7 +2831,7 @@
   "GameOverReason.HumansByTask": "クルーメイトがすべてのタスクを完了しました",
   "GameOverReason.HumansDisconnect": "クルーメイトが切断されました",
   "GameOverReason.ImpostorByVote": "クルーメイトが追放されました",
-  "GameOverReason.ImpostorByKill": "インポスターが誰もかれもを殺しました",
+  "GameOverReason.ImpostorsByKill": "インポスターが誰もかれもを殺しました",
   "GameOverReason.ImpostorBySabotage": "Crewmates failed to fix a Critical Sabotage",
   "GameOverReason.ImpostorDisconnect": "インポスターが切断されました",
   "FortuneTellerCheck.TaskDone": "[{0}]の役職 - [{1}]",
