@@ -29,7 +29,7 @@ internal class ChangeRoleSettings
 
         try
         {
-            // Note: No positions are set at this time.
+            // Note: No positions are set at this time
             if (GameStates.IsNormalGame)
             {
                 Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
@@ -82,7 +82,7 @@ internal class ChangeRoleSettings
 
             Main.LastNotifyNames.Clear();
 
-            Main.FirstDiedPrevious = Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
+            Main.FirstDiedPrevious = Options.CurrentGameMode == CustomGameMode.Standard && Options.ShieldPersonDiedFirst.GetBool() ? Main.FirstDied : "";
             Main.FirstDied = "";
             Main.MadmateNum = 0;
             Main.BardCreations = 0;
@@ -94,6 +94,7 @@ internal class ChangeRoleSettings
             GameEndCheckerForNormal.GameIsEnded = false;
             GameStartManagerPatch.GameStartManagerUpdatePatch.AlredyBegin = false;
             OnPlayerLeftPatch.LeftPlayerId = byte.MaxValue;
+            FixedUpdateInNormalGamePatch.RoleTextCache.Clear();
 
             VentSystemDeterioratePatch.LastClosestVent.Clear();
             VentSystemDeterioratePatch.PlayerHadBlockedVentLastTime.Clear();
@@ -209,14 +210,14 @@ internal class ChangeRoleSettings
                 Main.RefixCooldownDelay = 0;
             }
 
-            // Initialize all roles
+            // Initialize all Roles
             foreach (var role in EnumHelper.GetAllValues<CustomRoles>().Where(role => role < CustomRoles.NotAssigned).ToArray())
             {
                 var RoleClass = role.GetStaticRoleClass();
                 RoleClass?.OnInit();
             }
 
-            // Initialize all add-ons
+            // Initialize all Add-ons
             foreach (var addOn in CustomRoleManager.AddonClasses.Values)
             {
                 addOn?.Init();
@@ -301,7 +302,7 @@ internal class StartGameHostPatch
         if (!ShipStatus.Instance)
         {
             int num = Mathf.Clamp(GameOptionsManager.Instance.CurrentGameOptions.MapId, 0, Constants.MapNames.Length - 1);
-            // No need this becouse Dleks map sets in settings
+            // Don't need this because Dleks map sets in settings
             /* try
             {
                 if (num == 0 && AprilFoolsMode.ShouldFlipSkeld())
@@ -373,19 +374,19 @@ internal class StartGameHostPatch
 
         try
         {
-            // Block "RpcSetRole" for set desync roles for some players
+            // Block "RpcSetRole" for set Desync Roles for some players
             RpcSetRoleReplacer.Initialize();
 
-            // Select custom roles / add-ons
+            // Select custom Roles/Add-ons
             EAC.OriginalRoles = [];
             RoleAssign.StartSelect();
             AddonAssign.StartSelect();
 
-            // Set count vanilla roles
+            // Set count Vanilla Roles
             RoleAssign.CalculateVanillaRoleCount();
 
             UpdateRoleTypeNums();
-            // Set Rate For Vanilla Roles
+            // Set rate for Vanilla Roles
             foreach (var roleType in RoleTypeNums)
             {
                 int roleNum = Options.DisableVanillaRoles.GetBool() ? 0 : RoleOpt.GetNumPerGame(roleType.Key);
@@ -398,11 +399,11 @@ internal class StartGameHostPatch
             //Start CustomRpcSender
             RpcSetRoleReplacer.StartReplace();
 
-            // Assign roles and create role map for desync roles
+            // Assign Roles and create Role Map for Desync Roles
             RpcSetRoleReplacer.AssignDesyncRoles();
             RpcSetRoleReplacer.SendRpcForDesync();
 
-            // Assign roles and create role map for normal roles
+            // Assign Roles and create Role Map for Normal Roles
             RpcSetRoleReplacer.AssignNormalRoles();
             RpcSetRoleReplacer.SendRpcForNormal();
         }
@@ -419,7 +420,7 @@ internal class StartGameHostPatch
         }
         else
         {
-            // Send all Rpc for modded region
+            // Send all RPC for modded region
             RpcSetRoleReplacer.Release();
         }
 
@@ -463,7 +464,7 @@ internal class StartGameHostPatch
 
             try
             {
-                if (Options.CurrentGameMode is CustomGameMode.Standard)
+                if (Options.CurrentGameMode == CustomGameMode.Standard)
                 {
                     AddonAssign.InitAndStartAssignLovers();
                     AddonAssign.StartSortAndAssign();
@@ -477,10 +478,10 @@ internal class StartGameHostPatch
             // Sync for non-host modded clients by RPC
             foreach (var pair in Main.PlayerStates)
             {
-                // Set roles
+                // Set Roles
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
-                // Set add-ons
+                // Set Add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
             }
@@ -499,7 +500,7 @@ internal class StartGameHostPatch
 
                 roleClass?.OnAdd(pc.PlayerId);
 
-                // if based role is Shapeshifter
+                // If based role is Shapeshifter
                 if (roleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter) Main.CheckShapeshift.Add(pc.PlayerId, false);
             }
 
@@ -569,7 +570,7 @@ internal class StartGameHostPatch
         var selfRole = isHost ? BaseRole == RoleTypes.Shapeshifter ? RoleTypes.Shapeshifter : hostBaseRole : BaseRole;
         var othersRole = isHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
 
-        // Set Desync role for self and for others
+        // Set Desync Role for self and for others
         foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             var targetRoleType = othersRole;
@@ -581,14 +582,14 @@ internal class StartGameHostPatch
             rolesMap[(player.PlayerId, target.PlayerId)] = player.PlayerId != target.PlayerId ? (targetRoleType, targetCustomRole) : (selfRole, role);
         }
 
-        // Set Desync role for others
+        // Set Desync Role for others
         foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
             rolesMap[(seer.PlayerId, player.PlayerId)] = (othersRole, role);
 
 
         RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
-        // Set role for host, but not self
-        // canOverride should be false for the host during assign
+        // Set Role for Host, but not self
+        // canOverride should be false for the Host during assign
         if (!isHost)
         {
             player.SetRole(othersRole, false);
@@ -659,7 +660,7 @@ internal class StartGameHostPatch
         {
             if (disconnected)
             {
-                // if player left the game, remember current data
+                // If player left the game, remember current data
                 DataDisconnected[playerInfo.PlayerId] = playerInfo.Disconnected;
 
                 playerInfo.Disconnected = true;
@@ -795,7 +796,7 @@ public static class RpcSetRoleReplacer
 
             if (playerId != PlayerControl.LocalPlayer.PlayerId)
             {
-                // canOverride should be false for the host during assign
+                // canOverride should be false for the Host during assign
                 player.SetRole(roleType, false);
             }
 
@@ -822,7 +823,7 @@ public static class RpcSetRoleReplacer
                     var targetClientId = target.GetClientId();
                     if (targetClientId == -1) continue;
 
-                    // send rpc set role for others clients
+                    // Send RPC set Role for others clients
                     sender.AutoStartRpc(seer.NetId, (byte)RpcCalls.SetRole, targetClientId)
                         .Write((ushort)roleType)
                         .Write(true) // canOverride

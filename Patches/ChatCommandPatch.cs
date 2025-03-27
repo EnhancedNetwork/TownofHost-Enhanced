@@ -1160,7 +1160,10 @@ internal class ChatCommands
                     canceled = true;
                     if (GameStates.IsMeeting)
                     {
-                        MeetingHud.Instance.RpcClose();
+                        if (MeetingHud.Instance)
+                        {
+                            MeetingHud.Instance.RpcClose();
+                        }
                     }
                     else
                     {
@@ -2033,15 +2036,15 @@ internal class ChatCommands
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-            {
-                Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
-                return;
-            }
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+                    return;
+                }
             case CustomGameMode.SpeedRun:
-            {
-                Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
-                return;
-            }
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
+                    return;
+                }
         }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) _ = role.Replace("/r", string.Empty);
@@ -3569,7 +3572,7 @@ class ChatUpdatePatch
 
         if (Main.DarkTheme.Value)
         {
-            var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
+            var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
             chatBubble.TextArea.overrideColorTags = false;
             chatBubble.TextArea.color = Color.white;
             chatBubble.Background.color = Color.black;

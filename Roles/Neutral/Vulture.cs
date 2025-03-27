@@ -139,6 +139,7 @@ internal class Vulture : RoleBase
     }
     private static void OnEatDeadBody(PlayerControl pc, NetworkedPlayerInfo target)
     {
+        pc.RPCPlayCustomSound("Eat");
         pc.RpcIncreaseAbilityUseLimitBy(1);
         AbilityLeftInRound[pc.PlayerId]--;
         Logger.Msg($"target is null? {target == null}", "VultureNull");
@@ -185,15 +186,11 @@ internal class Vulture : RoleBase
     }
     private void CheckDeadBody(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (inMeeting || target.IsDisconnected()) return;
+        var vulture = _Player;
+        if (!vulture.IsAlive() || inMeeting || target.IsDisconnected()) return;
         if (!ArrowsPointingToDeadBody.GetBool()) return;
 
-        foreach (var pc in playerIdList.ToArray())
-        {
-            var player = pc.GetPlayer();
-            if (player == null || !player.IsAlive()) continue;
-            LocateArrow.Add(pc, target.Data.GetDeadBody().transform.position);
-        }
+        LocateArrow.Add(vulture.PlayerId, target.Data.GetDeadBody().transform.position);
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {

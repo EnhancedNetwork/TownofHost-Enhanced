@@ -276,6 +276,7 @@ internal class Alchemist : RoleBase
         {
             case 1: // Shield
                 IsProtected = true;
+                player.RPCPlayCustomSound("Shield");
                 player.Notify(GetString("AlchemistShielded"), ShieldDuration.GetInt());
 
                 _ = new LateTask(() =>
@@ -426,10 +427,15 @@ internal class Alchemist : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null || !GameStates.IsInTask) return string.Empty;
+        var player = playerId.GetPlayer();
+        if (player == null) return string.Empty;
 
         var str = new StringBuilder();
+        str.Append(Utils.GetTaskCount(playerId, comms));
+
+        if (PotionID != 10 || FixNextSabo)
+            str.Append(Utils.ColorString(Color.white, " - "));
+
         switch (PotionID)
         {
             case 1: // Shield

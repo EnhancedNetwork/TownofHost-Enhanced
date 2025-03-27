@@ -17,6 +17,8 @@ public static class SpeedRun
     public static OptionItem SpeedRun_NumShortTasks;
     public static OptionItem SpeedRun_NumLongTasks;
 
+    public static OptionItem SpeedRun_ShowChatInGame;
+
     public static OptionItem SpeedRun_RunnerNormalSpeed;
     public static OptionItem SpeedRun_RunnerKcd;
     public static OptionItem SpeedRun_RunnerKcdPerDeadPlayer;
@@ -60,6 +62,12 @@ public static class SpeedRun
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
 
+        /*
+        SpeedRun_ShowChatInGame = BooleanOptionItem.Create(Id + 20, "SpeedRun_ShowChatInGame", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.SpeedRun)
+            .SetColor(new Color32(255, 251, 0, byte.MaxValue));
+        */
+
         SpeedRun_RunnerNormalSpeed = FloatOptionItem.Create(Id + 4, "SpeedRun_RunnerNormalSpeed", new(0.25f, 5f, 0.25f), 1.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetValueFormat(OptionFormat.Multiplier)
@@ -87,6 +95,7 @@ public static class SpeedRun
             .SetHeader(true);
         SpeedRun_ArrowPlayersPlayerLiving = IntegerOptionItem.Create(Id + 10, "SpeedRun_ArrowPlayersPlayerLiving", new(2, 127, 1), 1, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
+            .SetParent(SpeedRun_ArrowPlayers, false)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
 
         SpeedRun_SpeedBoostAfterTask = BooleanOptionItem.Create(Id + 11, "SpeedRun_SpeedBoostAfterTask", true, TabGroup.ModSettings, false)
@@ -96,10 +105,12 @@ public static class SpeedRun
         SpeedRun_SpeedBoostSpeed = FloatOptionItem.Create(Id + 12, "SpeedRun_SpeedBoostSpeed", new(0.25f, 5f, 0.25f), 2.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue))
+            .SetParent(SpeedRun_SpeedBoostAfterTask, false)
             .SetValueFormat(OptionFormat.Multiplier);
         SpeedRun_SpeedBoostDuration = FloatOptionItem.Create(Id + 13, "SpeedRun_SpeedBoostDuration", new(0.5f, 60f, 0.5f), 2.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue))
+            .SetParent(SpeedRun_SpeedBoostAfterTask, false)
             .SetValueFormat(OptionFormat.Seconds);
 
         SpeedRun_ProtectAfterTask = BooleanOptionItem.Create(Id + 14, "SpeedRun_ProtectAfterTask", true, TabGroup.ModSettings, false)
@@ -109,13 +120,16 @@ public static class SpeedRun
         SpeedRun_ProtectDuration = FloatOptionItem.Create(Id + 15, "SpeedRun_ProtectDuration", new(0.5f, 60f, 0.5f), 2.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue))
+            .SetParent(SpeedRun_ProtectAfterTask, false)
             .SetValueFormat(OptionFormat.Seconds);
         SpeedRun_ProtectOnlyOnce = BooleanOptionItem.Create(Id + 16, "SpeedRun_ProtectOnlyOnce", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
-            .SetColor(new Color32(255, 251, 0, byte.MaxValue));
+            .SetColor(new Color32(255, 251, 0, byte.MaxValue))
+            .SetParent(SpeedRun_ProtectAfterTask, false);
         SpeedRun_ProtectKcd = FloatOptionItem.Create(Id + 17, "SpeedRun_ProtectKcd", new(0.5f, 60f, 0.5f), 5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue))
+            .SetParent(SpeedRun_ProtectAfterTask, false)
             .SetValueFormat(OptionFormat.Seconds);
 
         SpeedRun_EndGameForTime = BooleanOptionItem.Create(Id + 18, "SpeedRun_EndGameForTime", false, TabGroup.ModSettings, false)
@@ -125,6 +139,7 @@ public static class SpeedRun
         SpeedRun_MaxTimeForTie = IntegerOptionItem.Create(Id + 19, "SpeedRun_MaxTimeForTie", new(30, 3600, 15), 600, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue))
+            .SetParent(SpeedRun_EndGameForTime, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
 
@@ -289,7 +304,7 @@ public static class SpeedRun
             playerInfoList.Add((playerId, playerName, isAlive, finishedTasks, kills, finishTime, completedTasks, totalTasks));
         }
 
-        // Alive > Finish all tasks > Kill num > Time cost to finish all tasks > Not yet finish tasks then task num
+        // Alive > Finish all tasks > Kill number > Time cost to finish all tasks > Not yet finish tasks then task number
         playerInfoList = playerInfoList.OrderByDescending(p => p.isAlive)
                                      .ThenByDescending(p => p.finishedTasks)
                                      .ThenByDescending(p => p.kills)
@@ -373,9 +388,9 @@ class SpeedRunGameEndPredicate : GameEndPredicate
 public class Runner : RoleBase
 {
     public override CustomRoles Role => CustomRoles.Runner;
-    public override CustomRoles ThisRoleBase => BasisChanged ? CustomRoles.Impostor : CustomRoles.Crewmate;
+    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.None;
-    public override bool IsDesyncRole => true;
+    public override bool IsDesyncRole => false;
 
     public override bool CanUseSabotage(PlayerControl pc)
     {
@@ -634,4 +649,8 @@ public class Runner : RoleBase
             return ColorString(Color.red, string.Format(GetString("KillCount"), SpeedRun.PlayerNumKills[playerId]));
         }
     }
+
+    public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.Runner);
+
+    public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => Main.roleColors[target.GetCustomRole()];
 }

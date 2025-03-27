@@ -303,7 +303,7 @@ class CheckForEndVotingPatch
                 voteLog.Info($"Exiled ID: {exileId} ({GetVoteName(exileId)}), max: {max} votes");
             }
 
-            voteLog.Info($"Decision to exiled a player: {exileId} ({GetVoteName(exileId)})");
+            voteLog.Info($"Decision to exiled a player: tie: {tie}, {exileId} ({GetVoteName(exileId)})");
 
             var allPlayers = GameData.Instance.AllPlayers.ToArray();
             var allPlayerCount = allPlayers.Count;
@@ -443,6 +443,7 @@ class CheckForEndVotingPatch
         int neutralnum = 0;
         int apocnum = 0;
         int covennum = 0;
+        int badnum = Main.AllAlivePlayerControls.Count(x => x != exiledPlayer.Object && !Main.AfterMeetingDeathPlayers.ContainsKey(x.PlayerId) && x.GetCountTypes() is not CountTypes.None and not CountTypes.OutOfGame and not CountTypes.Crew); //Number of alive players that keep game going
 
 
         if (CustomRoles.Bard.RoleExist())
@@ -457,7 +458,7 @@ class CheckForEndVotingPatch
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var pc_role = pc.GetCustomRole();
-            if (pc_role.IsImpostor() && pc != exiledPlayer.Object)
+            if (pc_role.IsImpostorTeamV3() && pc != exiledPlayer.Object)
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
@@ -472,13 +473,25 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Parasite) || player.Is(CustomRoles.Crewpostor) || player.Is(CustomRoles.Refugee))
+                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                {
+                    if (player.Is(CustomRoles.Madmate))
+                        name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
+                    else if (player.Is(CustomRoles.Admired))
+                        name = string.Format(GetString("IsGood"), realName);
+                    else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
+                        name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
+                    else if (player.Is(CustomRoles.Enchanted))
+                        name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
+                }
+
+                else if (player.GetCustomRole().IsImpostorTeamV3())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
                 else if (player.GetCustomRole().IsCrewmate())
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.Is(CustomRoles.Parasite) && !player.Is(CustomRoles.Refugee) && !player.Is(CustomRoles.Crewpostor))
+                else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
                 else if (player.GetCustomRole().IsCoven())
@@ -486,17 +499,29 @@ class CheckForEndVotingPatch
 
                 break;
             case 2:
-                name = string.Format(GetString("PlayerIsRole"), realName, coloredRole);
+                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() ? coloredRole : player.GetCustomRole().ToColoredString();
+                name = string.Format(GetString("PlayerIsRole"), realName, ejectedRoleText);
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (player.GetCustomRole().IsImpostor() || player.Is(CustomRoles.Madmate))
+                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                    {
+                        if (player.Is(CustomRoles.Madmate))
+                            name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
+                        else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
+                            name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
+                        else if (player.Is(CustomRoles.Admired))
+                            name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
+                        else if (player.Is(CustomRoles.Enchanted))
+                            name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
+                    }
+                    else if (player.GetCustomRole().IsImpostorTeamV3())
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Charmed))
+                    else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                     else if (player.GetCustomRole().IsCrewmate())
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
-                    else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
+                    else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     name += ")";
                 }
@@ -512,21 +537,43 @@ class CheckForEndVotingPatch
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
             name += "\n";
-            string comma = neutralnum > 0 ? "" : "";
-            if (impnum == 0) name += GetString("NoImpRemain") + comma;
-            if (impnum == 1) name += GetString("OneImpRemain") + comma;
-            if (impnum == 2) name += GetString("TwoImpRemain") + comma;
-            if (impnum == 3) name += GetString("ThreeImpRemain") + comma;
-            //    else name += string.Format(GetString("ImpRemain"), impnum) + comma;
-            if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
-                if (neutralnum == 1)
-                    name += string.Format(GetString("OneNeutralRemain"), neutralnum) + comma;
-                else
-                    name += string.Format(GetString("NeutralRemain"), neutralnum) + comma;
-            if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
-                name += string.Format(GetString("ApocRemain"), apocnum) + comma;
-            if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
-                name += string.Format(GetString("CovenRemain"), covennum) + comma;
+            if (badnum <= 0)
+                name += GetString("NoImpRemain");
+            else
+            {
+                name += impnum switch
+                {
+                    1 => GetString("OneImpRemain"),
+                    > 1 => string.Format(GetString("ImpRemain"), impnum),
+                    _ => string.Empty
+                };
+                if (Options.ShowNKRemainOnEject.GetBool() && neutralnum > 0)
+                    name += "\n" + neutralnum switch
+                    {
+                        1 => GetString("OneNeutralRemain"),
+                        > 1 => string.Format(GetString("NeutralRemain"), neutralnum),
+                        _ => string.Empty
+                    };
+                if (Options.ShowNARemainOnEject.GetBool() && apocnum > 0)
+                    name += "\n" + apocnum switch
+                    {
+                        1 => GetString("OneApocRemain"),
+                        > 1 => string.Format(GetString("ApocRemain"), apocnum),
+                        _ => string.Empty
+                    };
+                if (Options.ShowCovenRemainOnEject.GetBool() && covennum > 0)
+                    name += "\n" + covennum switch
+                    {
+                        1 => GetString("OneCovenRemain"),
+                        > 1 => string.Format(GetString("CovenRemain"), covennum),
+                        _ => string.Empty
+                    };
+                if (impnum <= 0
+                    && (neutralnum <= 0 || !Options.ShowNKRemainOnEject.GetBool())
+                    && (apocnum <= 0 || !Options.ShowNARemainOnEject.GetBool())
+                    && (covennum <= 0 || !Options.ShowCovenRemainOnEject.GetBool()))
+                    name += GetString("NoImpRemain") + "\n" + GetString("PotentialThreat");
+            }
         }
 
     EndOfSession:
@@ -699,7 +746,7 @@ class CastVotePatch
 
 
         // Coven Leader Retraining
-        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId) && CovenLeader.retrainPlayer[voter.PlayerId].IsCoven())
+        if (CustomRoles.CovenLeader.RoleExist() && target == voter && CovenLeader.retrainPlayer.ContainsKey(voter.PlayerId))
         {
             PlayerControl CL = CustomRoles.CovenLeader.GetPlayerListByRole().First();
 
@@ -736,8 +783,11 @@ class CastVotePatch
         }
 
         // Coven Necronomicon Voting
-
-        if (suspectPlayerId == 253 && voter.IsPlayerCoven())
+        if (voter.IsPlayerCoven() && Main.AllAlivePlayerControls.Count(x => x.IsPlayerCoven()) == 1)
+        {
+            Logger.Info("Solo Coven, Necronomicon Votes will not Activate", "CastVotePatch");
+        }
+        else if (suspectPlayerId == 253 && voter.IsPlayerCoven())
         {
             if (!voter.GetRoleClass().HasVoted)
             {
@@ -869,6 +919,7 @@ static class ExtendedMeetingHud
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
 
                 if (CheckForEndVotingPatch.CheckRole(ps.TargetPlayerId, CustomRoles.VoidBallot)) VoteNum = 0;
+                if (Dreamweaver.IsInsomnia(ps.TargetPlayerId)) VoteNum = 0;
 
                 if (Jailer.IsTarget(ps.VotedFor) || Jailer.IsTarget(ps.TargetPlayerId)) VoteNum = 0; //jailed can't vote and can't get voted
 
@@ -1076,12 +1127,17 @@ class MeetingHudStartPatch
 
         foreach (var pva in __instance.playerStates)
         {
-            var pc = GetPlayerById(pva.TargetPlayerId);
-            if (pc == null) continue;
+            var player = PlayerControl.LocalPlayer;
+            var target = pva.TargetPlayerId.GetPlayer();
+            if (target == null || player == null) continue;
+
+            var playerId = player.PlayerId;
+            var targetId = pva.TargetPlayerId;
+
             var textTemplate = pva.NameText;
 
             // Create role text in meeting
-            var RoleTextData = GetRoleAndSubText(PlayerControl.LocalPlayer.PlayerId, pc.PlayerId, isMeeting: true);
+            var RoleTextData = GetRoleAndSubText(playerId, targetId, isMeeting: true);
             var roleTextMeeting = UnityEngine.Object.Instantiate(textTemplate);
             if (roleTextMeeting.transform.FindChild("DeathReasonTextMeeting") != null)
                 UnityEngine.Object.Destroy(roleTextMeeting.transform.FindChild("DeathReasonTextMeeting").gameObject);
@@ -1089,11 +1145,11 @@ class MeetingHudStartPatch
             roleTextMeeting.transform.localPosition = new Vector3(0f, -0.18f, 0f);
             roleTextMeeting.fontSize = 1.6f;
             roleTextMeeting.text = RoleTextData.Item1;
-            if (Main.VisibleTasksCount) roleTextMeeting.text += GetProgressText(pc);
+            if (Main.VisibleTasksCount) roleTextMeeting.text += GetProgressText(target);
             roleTextMeeting.color = RoleTextData.Item2;
             roleTextMeeting.gameObject.name = "RoleTextMeeting";
             roleTextMeeting.enableWordWrapping = false;
-            roleTextMeeting.enabled = pc.AmOwner || ExtendedPlayerControl.KnowRoleTarget(PlayerControl.LocalPlayer, pc);
+            roleTextMeeting.enabled = target.AmOwner || ExtendedPlayerControl.KnowRoleTarget(player, target);
 
             // Create death reason text in meeting
             var deathReasonText = UnityEngine.Object.Instantiate(textTemplate);
@@ -1102,11 +1158,11 @@ class MeetingHudStartPatch
             deathReasonText.transform.transform.SetParent(textTemplate.transform);
             deathReasonText.transform.localPosition = new Vector3(0f, +0.18f, 0f);
             deathReasonText.fontSize = 1.4f;
-            deathReasonText.text = $"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(pc.PlayerId))}』";
+            deathReasonText.text = $"『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(targetId))}』";
             deathReasonText.color = Color.white;
             deathReasonText.gameObject.name = "DeathReasonTextMeeting";
             deathReasonText.enableWordWrapping = false;
-            deathReasonText.enabled = PlayerControl.LocalPlayer.KnowDeathReason(pc);
+            deathReasonText.enabled = player.KnowDeathReason(target);
 
             // Thanks BAU (By D1GQ)
             var PlayerLevel = pva.transform.Find("PlayerLevel");
@@ -1123,44 +1179,40 @@ class MeetingHudStartPatch
             IdLabel.name = "IdLabel";
             IdNumber.name = "IdNumber";
 
-            var myRole = PlayerControl.LocalPlayer.GetRoleClass();
+            var myRole = player.GetRoleClass();
             var enable = true;
 
-            string BlankRT = string.Empty;
-
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && pc.Is(CustomRoles.Trickster))
+            if (player.IsAlive() && Overseer.IsRevealedPlayer(player, target))
             {
-                BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId); // random role for revealed trickster
-                BlankRT += TaskState.GetTaskState(); // Random task count for revealed trickster
-                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
-            }
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsCovIllusioned(pc.PlayerId))
-            {
-                BlankRT = Overseer.GetRandomRole(PlayerControl.LocalPlayer.PlayerId);
-                BlankRT += TaskState.GetTaskState();
-                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
-            }
-            if (!PlayerControl.LocalPlayer.Data.IsDead && Overseer.IsRevealedPlayer(PlayerControl.LocalPlayer, pc) && Illusionist.IsNonCovIllusioned(pc.PlayerId))
-            {
-                var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                BlankRT = ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString()));
-                if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
+                var blankRT = new StringBuilder();
+                var result = new StringBuilder(roleTextMeeting.text);
+                if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(targetId))
                 {
-                    BlankRT += randomRole.GetStaticRoleClass().GetProgressText(PlayerControl.LocalPlayer.PlayerId, false);
+                    blankRT.Clear().Append(Overseer.GetRandomRole(playerId));
+                    blankRT.Append(TaskState.GetTaskState());
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
-                roleTextMeeting.text = $"<size={roleTextMeeting.fontSize}>{BlankRT}</size>";
+                if (Illusionist.IsNonCovIllusioned(targetId))
+                {
+                    var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                    blankRT.Clear().Append(ColorString(GetRoleColor(randomRole), GetString(randomRole.ToString())));
+                    if (randomRole.GetStaticRoleClass().IsMethodOverridden("GetProgressText")) // Roles with Ability Uses
+                    {
+                        blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(playerId, false));
+                    }
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
+                roleTextMeeting.text = result.ToString();
             }
 
             var suffixBuilder = new StringBuilder(32);
             if (myRole != null)
             {
-                suffixBuilder.Append(myRole.GetSuffix(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+                suffixBuilder.Append(myRole.GetSuffix(player, target, isForMeeting: true));
             }
-            suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(PlayerControl.LocalPlayer, pc, isForMeeting: true));
+            suffixBuilder.Append(CustomRoleManager.GetSuffixOthers(player, target, isForMeeting: true));
 
             // If Doppelganger.CurrentVictimCanSeeRolesAsDead is disabled and player is the most recent victim from the doppelganger hide role information for player.
-            var player = PlayerControl.LocalPlayer;
-            var target = GetPlayerById(pva.TargetPlayerId);
 
             if (suffixBuilder.Length > 0)
             {
@@ -1172,7 +1224,7 @@ class MeetingHudStartPatch
         if (Options.SyncButtonMode.GetBool())
         {
             SendMessage(string.Format(GetString("Message.SyncButtonLeft"), Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount));
-            Logger.Info("紧急会议剩余 " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount) + " 次使用次数", "SyncButtonMode");
+            Logger.Info("Number of remaining buttons: " + (Options.SyncedButtonCount.GetFloat() - Options.UsedButtonCount), "SyncButtonMode");
         }
 
         // AntiBlackout Message
@@ -1236,10 +1288,11 @@ class MeetingHudStartPatch
         foreach (var pva in __instance.playerStates)
         {
             if (pva == null) continue;
+            PlayerControl target = pva.TargetPlayerId.GetPlayer();
+            if (target == null) continue;
+
             PlayerControl seer = PlayerControl.LocalPlayer;
             var seerRoleClass = seer.GetRoleClass();
-            PlayerControl target = GetPlayerById(pva.TargetPlayerId);
-            if (target == null) continue;
 
             // if based role is Shapeshifter and is Desync Shapeshifter
             if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
@@ -1269,7 +1322,7 @@ class MeetingHudStartPatch
             if (seer.GetCustomRole().IsImpostor() && target.GetPlayerTaskState().IsTaskFinished)
             {
                 if (target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate))
-                    sb.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
+                    sb.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
             }
 
 
@@ -1279,17 +1332,6 @@ class MeetingHudStartPatch
                 pva.NameText.text = tempNemeText;
             }
 
-            //foreach (var SeerSubRole in seer.GetCustomSubRoles().ToArray())
-            //{
-            //    switch (SeerSubRole)
-            //    {
-            //        case CustomRoles.Guesser:
-            //            if (!seer.Data.IsDead && !target.Data.IsDead)
-            //                pva.NameText.text = ColorString(GetRoleColor(CustomRoles.Guesser), target.PlayerId.ToString()) + " " + pva.NameText.text;
-            //            break;
-            //    }
-            //}
-
             //bool isLover = false;
             foreach (var TargetSubRole in target.GetCustomSubRoles().ToArray())
             {
@@ -1298,12 +1340,12 @@ class MeetingHudStartPatch
                     case CustomRoles.Lovers:
                         if (seer.Is(CustomRoles.Lovers) || seer.Data.IsDead)
                         {
-                            sb.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♥"));
+                            sb.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
                             //isLover = true;
                         }
                         break;
                     case CustomRoles.Cyber when Cyber.CyberKnown.GetBool():
-                        sb.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                        sb.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
                         break;
                 }
             }

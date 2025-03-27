@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using System.Data;
 using System.Text;
 using TOHE.Roles.AddOns.Common;
+using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
@@ -15,7 +16,7 @@ internal class Deathpact : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Deathpact;
     private const int Id = 1200;
-
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Deathpact);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
