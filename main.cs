@@ -27,6 +27,11 @@ namespace TOHE;
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
+[BepInIncompatibility("com.slushiegoose.townofus")]
+[BepInIncompatibility("com.gurge44.endlesshostroles")]
+[BepInIncompatibility("com.emptybottle.townofhost")]
+[BepInIncompatibility("me.eisbison.theotherroles")]
+[BepInIncompatibility("com.discussions.LotusContinued")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
