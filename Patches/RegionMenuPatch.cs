@@ -1,5 +1,7 @@
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using InnerNet;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -154,5 +156,105 @@ public static class ServerDropDownPatch
             0f);
         __instance.background.size = new Vector2(backgroundWidth, backgroundHeight);
         __instance.background.transform.localPosition += new Vector3(4f, 0, 0);
+    }
+}
+
+[HarmonyPatch(typeof(FindAGameManager))]
+public static class FindAGameManagerPatch
+{
+    // 10+ Listing ported from BetterAmongUs, coded by D1GQ
+    // HostName and gamecode coded by Pietro
+    public static Scroller Scroller;
+
+    [HarmonyPatch(nameof(FindAGameManager.HandleList))]
+    [HarmonyPostfix]
+    public static void HandleList_Postfix(FindAGameManager __instance)
+    {
+        foreach (var container in __instance.gameContainers)
+        {
+            var child = container.transform.Find("Container");
+            var tmproObject = child.Find("TrueHostName_TMP");
+            TMP_Text tmpro;
+            if (tmproObject == null)
+            {
+                tmproObject = new GameObject("TrueHostName_TMP").transform;
+                tmproObject.transform.SetParent(child.transform, true);
+                tmproObject.transform.localPosition = new(8.5f, -2.21f, -1f);
+                tmpro = tmproObject.gameObject.AddComponent<TextMeshPro>();
+            }
+            else
+            {
+                tmpro = tmproObject.GetComponent<TextMeshPro>();
+            }
+            tmpro.fontSize = 2.5f;
+            tmpro.text = @$"<font=""LiberationSans SDF"" material=""LiberationSans SDF RadialMenu Material"">{container.gameListing.TrueHostName}<br>{GameCode.IntToGameNameV2(container.gameListing.GameId)}";
+        }
+    }
+
+    [HarmonyPatch(nameof(FindAGameManager.Start))]
+    [HarmonyPrefix]
+    internal static void Start_Prefix(FindAGameManager __instance)
+    {
+        GameContainer gameContainer = __instance.gameContainers[4];
+        GameObject gameObject = new GameObject("GameListScroller");
+        gameObject.transform.SetParent(gameContainer.transform.parent);
+        Scroller = gameObject.AddComponent<Scroller>();
+        Scroller.Inner = gameObject.transform;
+        Scroller.MouseMustBeOverToScroll = true;
+        BoxCollider2D boxCollider2D = gameContainer.transform.parent.gameObject.AddComponent<BoxCollider2D>();
+        boxCollider2D.size = new Vector2(100f, 100f);
+        Scroller.ClickMask = boxCollider2D;
+        Scroller.ScrollWheelSpeed = 0.3f;
+        Scroller.SetYBoundsMin(0f);
+        Scroller.SetYBoundsMax(3.5f);
+        Scroller.allowY = true;
+        foreach (GameContainer gameContainer2 in __instance.gameContainers)
+        {
+            gameContainer2.transform.SetParent(gameObject.transform);
+            Vector3 position = gameContainer2.transform.position;
+            gameContainer2.transform.position = new Vector3(position.x, position.y, 25f);
+        }
+        List<GameContainer> list = __instance.gameContainers.ToList<GameContainer>();
+        for (int i = 0; i < 5; i++)
+        {
+            GameContainer gameContainer3 = UnityEngine.Object.Instantiate<GameContainer>(gameContainer, gameObject.transform);
+            Vector3 position2 = gameContainer3.transform.position;
+            gameContainer3.transform.position = new Vector3(position2.x, position2.y - 0.75f * (float)(i + 1), 25f);
+            list.Add(gameContainer3);
+        }
+        __instance.gameContainers = list.ToArray();
+        SpriteRenderer spriteRenderer = CreateBlackSquareSprite();
+        spriteRenderer.transform.SetParent(gameObject.transform.parent);
+        spriteRenderer.transform.localPosition = new Vector3(0f, 3f, 1f);
+        spriteRenderer.transform.localScale = new Vector3(1500f, 200f, 100f);
+    }
+
+    [HarmonyPatch(nameof(FindAGameManager.RefreshList))]
+    [HarmonyPostfix]
+    internal static void RefreshList_Postfix()
+    {
+        Scroller scroller = Scroller;
+        if (scroller != null)
+        {
+            scroller.ScrollRelative(new Vector2(0f, -100f));
+        }
+    }
+
+    private static SpriteRenderer CreateBlackSquareSprite()
+    {
+        GameObject gameObject = new GameObject("CutOffTop");
+        SpriteRenderer spriteRenderer = gameObject.AddComponent<SpriteRenderer>();
+        Texture2D texture2D = new Texture2D(100, 100);
+        Color[] array = texture2D.GetPixels();
+        for (int i = 0; i < array.Length; i++)
+        {
+            array[i] = Color.black;
+        }
+        texture2D.SetPixels(array);
+        texture2D.Apply();
+        Sprite sprite = Sprite.Create(texture2D, new Rect(0f, 0f, 1f, 1f), Vector2.one * 0.5f);
+        spriteRenderer.sprite = sprite;
+        gameObject.transform.localScale = new Vector3(100f, 100f, 1f);
+        return spriteRenderer;
     }
 }
