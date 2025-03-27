@@ -175,15 +175,17 @@ internal class Baker : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        foreach (var playerId in BreadList.Keys)
+        foreach (var playerId in BreadList.Keys.ToList())
         {
+            var baker = GetPlayerById(playerId);
             if (HasBread(playerId, deadPlayer.PlayerId))
             {
                 BreadList[playerId].Remove(deadPlayer.PlayerId);
+                Logger.Info($"{deadPlayer.GetNameWithRole()} died, remove them from BreadList", "Baker");
                 if (RegenBread.GetBool())
                 {
                     CanUseAbility = true;
-                    GetPlayerById(playerId).Notify(string.Format(GetString("BakerBreadDied"), deadPlayer.GetRealName()));
+                    baker.Notify(string.Format(GetString("BakerBreadDied"), deadPlayer.GetRealName()));
                 }
             }
         }
