@@ -292,14 +292,6 @@ public class GameStartManagerPatch
                 && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
         }
     }
-    [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
-    public static class HiddenTextPatch
-    {
-        private static void Postfix(TextBoxTMP __instance)
-        {
-            if (__instance.name == "GameIdText") __instance.outputText.text = new string('*', __instance.text.Length);
-        }
-    }
 }
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public class GameStartManagerBeginGamePatch
