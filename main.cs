@@ -27,6 +27,7 @@ namespace TOHE;
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
+[BepInIncompatibility("com.gurge44.endlesshostroles")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
@@ -46,8 +47,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0326.221.00010"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.1 Alpha 1";
+    public const string PluginVersion = "2025.0327.221.00020"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.2.1 Alpha 2";
     public const string SupportedVersionAU = "2025.3.25"; // 16.0.0
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -192,7 +193,16 @@ public class Main : BasePlugin
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
-    public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
+    public static bool IsAprilFools
+    {
+        get
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            return utcNow >= t && utcNow <= t2;
+        }
+    }
     public static bool ResetOptions = true;
     public static string FirstDied = ""; //Store with hash puid so things can pass through different round
     public static string FirstDiedPrevious = "";
