@@ -8,6 +8,17 @@ namespace TOHE;
 class ExileControllerWrapUpPatch
 {
     public static NetworkedPlayerInfo AntiBlackout_LastExiled;
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+    class ExileControllerBeginPatch
+    {
+        // This patch is to show exile string for host
+        public static void Postfix(ExileController __instance, [HarmonyArgument(0)] ExileController.InitProperties init)
+        {
+            if (Options.CurrentGameMode is CustomGameMode.Standard && init != null && init.outfit != null)
+                __instance.completeString = CheckForEndVotingPatch.TempExileMsg;
+        }
+    }
+
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
