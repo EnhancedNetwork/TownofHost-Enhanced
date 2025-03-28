@@ -323,7 +323,7 @@ internal class ChatCommands
                         case "船员":
                             GameManager.Instance.enabled = false;
                             Utils.NotifyGameEnding();
-                            GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
+                            GameManager.Instance.RpcEndGame(GameOverReason.CrewmateDisconnect, false);
                             break;
 
                         case "imp":

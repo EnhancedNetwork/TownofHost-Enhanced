@@ -57,16 +57,6 @@ static class ExtendedPlayerControl
         }
 
     }
-    public static void RpcSetCustomRole(byte PlayerId, CustomRoles role)
-    {
-        if (AmongUsClient.Instance.AmHost)
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
-            writer.Write(PlayerId);
-            writer.WritePacked((int)role);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
-    }
     public static void CheckConflictedAddOnsFromList(this PlayerControl player, ref List<CustomRoles> addOnList)
     {
         List<CustomRoles> conflictedAddOns = [];
@@ -1090,6 +1080,10 @@ static class ExtendedPlayerControl
     {
         return UnityEngine.Object.FindObjectsOfType<DeadBody>().FirstOrDefault(bead => bead.ParentId == playerData.PlayerId);
     }
+
+    public static float GetKillDistances(bool ovverideValue = false, int newValue = 2)
+        => NormalGameOptionsV09.KillDistances[Mathf.Clamp(ovverideValue ? newValue : Main.NormalOptions.KillDistance, 0, 2)];
+
     public static void MarkDirtySettings(this PlayerControl player)
     {
         PlayerGameOptionsSender.SetDirty(player.PlayerId);

@@ -1,4 +1,6 @@
 using AmongUs.GameOptions;
+using Epic.OnlineServices.Presence;
+using Hazel;
 using System;
 using System.Text;
 using TMPro;
@@ -21,6 +23,7 @@ namespace TOHE;
 class CheckForEndVotingPatch
 {
     public static string TempExileMsg;
+    public static NetworkedPlayerInfo TempExiledPlayer;
     public static bool Prefix(MeetingHud __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return true;
@@ -81,25 +84,26 @@ class CheckForEndVotingPatch
                         // Need check BlackOutIsActive again
                         var isBlackOut = AntiBlackout.BlackOutIsActive;
 
-                        if (isBlackOut)
-                            __instance.AntiBlackRpcVotingComplete(states, exiled, false);
-                        else
-                            __instance.RpcVotingComplete(states, exiled, false);
-
                         if (exiled != null)
                         {
                             AntiBlackout.ShowExiledInfo = isBlackOut;
                             ConfirmEjections(exiled, isBlackOut);
                         }
+
+                        if (isBlackOut)
+                            __instance.AntiBlackRpcVotingComplete(states, exiled, false);
+                        else
+                            __instance.RpcVotingComplete(states, exiled, false);
                     }
                     else
                     {
-                        __instance.RpcVotingComplete(states, exiled, false);
 
                         if (exiled != null)
                         {
                             ConfirmEjections(exiled);
                         }
+
+                        __instance.RpcVotingComplete(states, exiled, false);
                     }
 
                     Logger.Info($"{voteTarget.GetNameWithRole()} expelled by Dictator", "Dictator");
@@ -380,25 +384,25 @@ class CheckForEndVotingPatch
                 // Need check BlackOutIsActive again
                 var isBlackOut = AntiBlackout.BlackOutIsActive;
 
-                if (isBlackOut)
-                    __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
-                else
-                    __instance.RpcVotingComplete(states, exiledPlayer, tie);
-
                 if (exiledPlayer != null)
                 {
                     AntiBlackout.ShowExiledInfo = isBlackOut;
                     ConfirmEjections(exiledPlayer, isBlackOut);
                 }
+
+                if (isBlackOut)
+                    __instance.AntiBlackRpcVotingComplete(states, exiledPlayer, tie);
+                else
+                    __instance.RpcVotingComplete(states, exiledPlayer, tie);
             }
             else
             {
-                __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
-
                 if (exiledPlayer != null)
                 {
                     ConfirmEjections(exiledPlayer);
                 }
+
+                __instance.RpcVotingComplete(states, exiledPlayer, tie); // Normal processing
             }
 
             CheckForDeathOnExile(PlayerState.DeathReason.Vote, exileId);
@@ -578,45 +582,9 @@ class CheckForEndVotingPatch
 
     EndOfSession:
         name += "<size=0>";
+        Logger.Info(name, "ConfirmEjections");
         TempExileMsg = name;
-
-        _ = new LateTask(() =>
-        {
-            try
-            {
-                if (GameStates.IsInGame)
-                {
-                    exiledPlayer.UpdateName(name, GetClientById(exiledPlayer.ClientId));
-                    player?.RpcSetName(name);
-                }
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error after change exiled player name: {error}", "ConfirmEjections");
-            }
-        }, 4f, "Change Exiled Player Name");
-
-        _ = new LateTask(() =>
-        {
-            try
-            {
-                if (GameStates.IsInGame && !player.Data.Disconnected)
-                {
-                    player?.RpcSetName(realName);
-                }
-
-                if (GameStates.IsInGame && player.Data.Disconnected)
-                {
-                    player.Data.PlayerName = realName;
-                    exiledPlayer.UpdateName(realName, GetClientById(exiledPlayer.ClientId));
-                    //Await Next Send Data or Next Meeting
-                }
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error after change exiled player name back: {error}", "ConfirmEjections");
-            }
-        }, 7f, "Change Exiled Player Name Back");
+        TempExiledPlayer = exiledPlayer;
 
         if (AntiBlackoutStore)
         {
@@ -1116,6 +1084,9 @@ class MeetingHudStartPatch
         GameStates.AlreadyDied |= !IsAllAlive;
         Main.AllPlayerControls.Do(x => ReportDeadBodyPatch.WaitReport[x.PlayerId].Clear());
         MeetingStates.MeetingCalled = true;
+
+        CheckForEndVotingPatch.TempExiledPlayer = null;
+        CheckForEndVotingPatch.TempExileMsg = string.Empty;
     }
     public static void Postfix(MeetingHud __instance)
     {
@@ -1365,6 +1336,28 @@ class MeetingHudUpdatePatch
     private static void ClearShootButton(MeetingHud __instance, bool forceAll = false)
      => __instance.playerStates.ToList().ForEach(x => { if ((forceAll || (!Main.PlayerStates.TryGetValue(x.TargetPlayerId, out var ps) || ps.IsDead)) && x.transform.FindChild("ShootButton") != null) UnityEngine.Object.Destroy(x.transform.FindChild("ShootButton").gameObject); });
 
+    // Force call RpcClose here
+    public static bool Prefix(MeetingHud __instance)
+    {
+        if (__instance.CurrentState != MeetingHud.VoteStates.Results)
+        {
+            return true;
+        }
+
+        __instance.discussionTimer += Time.deltaTime;
+
+        float num4 = __instance.discussionTimer - __instance.resultsStartedAt;
+        float num5 = Mathf.Max(0f, 5f - num4);
+        __instance.UpdateTimerText(StringNames.MeetingProceeds, Mathf.CeilToInt(num5));
+        if (AmongUsClient.Instance.AmHost && num5 <= 0f)
+        {
+            __instance.state = MeetingHud.VoteStates.Proceeding;
+            __instance.RpcClose();
+        }
+
+        return false;
+    }
+
     public static void Postfix(MeetingHud __instance)
     {
         if (__instance == null || !GameStates.IsInGame) return;
@@ -1447,5 +1440,99 @@ class MeetingHudOnDestroyPatch
             Main.LastVotedPlayerInfo = null;
             EAC.ReportTimes = [];
         }
+    }
+}
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.RpcClose))]
+class MeetingHudRpcClosePatch
+{
+    public static bool Prefix(MeetingHud __instance)
+    {
+        Logger.Info("MeetingHud.RpcClose is being called", "MeetingHudRpcClosePatch");
+        // Send SetName rpc together with Close rpc
+        if (Options.CurrentGameMode is CustomGameMode.Standard)
+        {
+            if (AmongUsClient.Instance.AmClient)
+            {
+                __instance.Close();
+            }
+
+            var writer = MessageWriter.Get(SendOption.Reliable);
+
+            writer.StartMessage(5);
+            writer.Write(AmongUsClient.Instance.GameId);
+
+            if (CheckForEndVotingPatch.TempExiledPlayer != null)
+            {
+                var info = CheckForEndVotingPatch.TempExiledPlayer;
+                var player = info.Object;
+
+                if (player != null)
+                {
+                    writer.StartMessage(2);
+                    writer.WritePacked(player.NetId);
+                    writer.Write((byte)RpcCalls.SetName);
+                    writer.Write(info.NetId);
+                    writer.Write(CheckForEndVotingPatch.TempExileMsg);
+                    writer.EndMessage();
+                }
+            }
+
+            writer.StartMessage(2);
+            writer.WritePacked(__instance.NetId);
+            writer.Write((byte)RpcCalls.CloseMeeting);
+            writer.Write(CheckForEndVotingPatch.TempExileMsg);
+            writer.EndMessage();
+
+            writer.EndMessage();
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
+
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.HandleRpc))]
+class MeetingHudHandleRpcPatch
+{
+    public static bool Prefix(MeetingHud __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
+    {
+        if (callId == (byte)RpcCalls.CloseMeeting)
+        {
+            if (AmongUsClient.Instance.AmHost)
+            {
+                EAC.WarnHost(4);
+                Logger.Warn("MeetingHud.HandleRpc CloseMeeting is being called, impossible to receive as host.", "MeetingHudHandleRpcPatch");
+                return false;
+            }
+            else
+            {
+                Logger.Info("Received Close Meeting Rpc", "MeetingHudHandleRpcPatch");
+
+                if (reader.BytesRemaining > 6)
+                {
+                    try
+                    {
+                        var temp = reader.ReadString();
+
+                        if (temp.Contains("<size"))
+                        {
+                            Logger.Info($"Read Name From Rpc: {temp}", "MeetingHudHandleRpcPatch");
+                            CheckForEndVotingPatch.TempExileMsg = temp;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 }

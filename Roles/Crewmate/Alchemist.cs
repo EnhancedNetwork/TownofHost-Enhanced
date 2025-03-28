@@ -192,7 +192,7 @@ internal class Alchemist : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
                 if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat)
                 {
                     if (player.RpcCheckAndMurder(target, true))

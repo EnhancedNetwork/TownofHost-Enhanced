@@ -4,7 +4,6 @@ using System.Text;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -195,7 +194,7 @@ internal class Deathpact : RoleBase
 
         foreach (var player in playerList)
         {
-            float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+            float range = ExtendedPlayerControl.GetKillDistances(ovverideValue: player.Is(Reach.IsReach), newValue: 2) + 0.5f;
             foreach (var otherPlayerInPact in playerList.Where(a => a.PlayerId != player.PlayerId).ToArray())
             {
                 float dis = GetDistance(player.transform.position, otherPlayerInPact.transform.position);
