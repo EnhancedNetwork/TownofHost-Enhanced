@@ -75,9 +75,11 @@ internal class Summoned : RoleBase
                 // Check if the timer has expired
                 if (Summoner.SummonedHealth[playerId] <= 0)
                 {
-                    KillSummonedPlayer(player); // Kill the player
+                    KillSummonedPlayer(player); // Kill the player                    
                     Summoner.SummonedHealth.Remove(playerId); // Remove them from the timer list
                     Summoner.LastUpdateTimes.Remove(playerId); // Remove the timestamp entry
+                    var sumner = new Summoner();
+                    sumner.RestoreOriginalRole(player);
                 }
             }
         }

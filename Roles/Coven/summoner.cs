@@ -300,7 +300,7 @@ internal class Summoner : CovenManager
             Logger.Info($"Saved original role for player {player.PlayerId}: {originalRole}.", "Summoner");
         }
     }
-    private void RestoreOriginalRole(PlayerControl player)
+    public void RestoreOriginalRole(PlayerControl player)
     {
         if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
@@ -377,6 +377,7 @@ internal class Summoner : CovenManager
             if (player.Is(CustomRoles.Summoned) && player.IsAlive())
             {
                 Summoned.KillSummonedPlayer(player);
+                RestoreOriginalRole(player); // Restore their original role on report
             }
         }
     }
