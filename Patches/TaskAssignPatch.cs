@@ -192,7 +192,7 @@ class RpcSetTasksPatch
             // when Crewpostor has Last Impostor,their kills wont be limited
             // and they will only need 1 task for each kill
             // so let the total number of alive players decide how many tasks Crewpostor will get
-            int CPTaskNum = LastImpostor.currentId == pc.PlayerId ? Main.AllAlivePlayerControls.Length : Crewpostor.KillAfterTasks.GetInt() * Crewpostor.KillsPerRound.GetInt();
+            int CPTaskNum = LastImpostor.currentId == pc.PlayerId ? Main.AllAlivePlayerControls.Length : Crewpostor.KillAfterTask.GetInt() * Crewpostor.KillsPerRound.GetInt();
             
             hasCommonTasks = false;
             NumLongTasks = 0;

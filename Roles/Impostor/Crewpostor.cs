@@ -99,10 +99,10 @@ internal class Crewpostor : RoleBase
         var color = comms ? Color.gray : Color.red;
         string TaskCompleted = comms ? "?" : $"{TasksDone[playerId]}";
         string DisplayTaskProgress = LastImpostor.currentId == playerId ? 
-                                string.Empty : ColorString(color, $" ({TaskCompleted}/{KillAfterTask.GetInt()})");
+                                string.Empty : Utils.ColorString(color, $" ({TaskCompleted}/{KillAfterTask.GetInt()})");
 
         int NumKillsLeft = KillsPerRound.GetInt() - Main.MurderedThisRound.Count(ded => ded.GetRealKillerById() == playerId.GetPlayer());
-        string DisplayKillsLeft = ColorString(Color.red, LastImpostor.currentId == playerId ? $"({Main.AllAlivePlayerControls.Length})" : $"({NumKillsLeft})");
+        string DisplayKillsLeft = Utils.ColorString(Color.red, LastImpostor.currentId == playerId ? $"({Main.AllAlivePlayerControls.Length})" : $"({NumKillsLeft})");
 
         return DisplayTaskProgress + " - " + DisplayKillsLeft;
     }
