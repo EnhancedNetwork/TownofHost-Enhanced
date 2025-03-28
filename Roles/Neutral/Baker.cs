@@ -24,6 +24,7 @@ internal class Baker : RoleBase
     public static OptionItem FamineStarveCooldown;
     private static OptionItem BTOS2Baker;
     private static OptionItem TransformNoMoreBread;
+    private static OptionItem RegenBread;
     public static OptionItem CanVent;
     private static byte BreadID = 0;
 
@@ -45,6 +46,7 @@ internal class Baker : RoleBase
         BTOS2Baker = BooleanOptionItem.Create(Id + 12, "BakerBreadGivesEffects", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         TransformNoMoreBread = BooleanOptionItem.Create(Id + 13, "BakerTransformNoMoreBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         CanVent = BooleanOptionItem.Create(Id + 14, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        RegenBread = BooleanOptionItem.Create(Id + 15, "BakerRegenBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
     }
     public override void Init()
     {
@@ -173,11 +175,18 @@ internal class Baker : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        foreach (var playerId in BreadList.Keys.ToArray())
+        foreach (var playerId in BreadList.Keys.ToList())
         {
-            if (deadPlayer.PlayerId == playerId)
+            var baker = GetPlayerById(playerId);
+            if (HasBread(playerId, deadPlayer.PlayerId))
             {
-                BreadList[playerId].Remove(playerId);
+                BreadList[playerId].Remove(deadPlayer.PlayerId);
+                Logger.Info($"{deadPlayer.GetNameWithRole()} died, remove them from BreadList", "Baker");
+                if (RegenBread.GetBool())
+                {
+                    CanUseAbility = true;
+                    baker.Notify(string.Format(GetString("BakerBreadDied"), deadPlayer.GetRealName()));
+                }
             }
         }
     }
