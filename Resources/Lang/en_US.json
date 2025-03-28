@@ -807,7 +807,7 @@
   "ButcherInfoLong": "(Impostors):\nThe Butcher's kills, including passive ones, leave multiple dead bodies on targets, which can be a bit confusing when reporting. Here's the rule: the killed target must repeatedly display the animation of being killed, which cannot be skipped, and they cannot participate in the meeting normally during this period. And if the Butcher kills the Avenger, the Avenger will revenge everyone in anger.",
   "HangmanInfoLong": "(Impostors):\nAs the Hangman, during the Shapeshifting, you use a unique killing method-strangling. This method ignores any status of the target, such as the shield of the Medic, the Bodyguard's protection, the Super Star's skills, etc. The strangled player will not leave a dead body, nor will it trigger any of its skills. For example, Veteran kill back (including additional roles), and Seer will not be prompted.",
   "SwooperInfoLong": "(Impostors):\nAs the Swooper, you can Vent to Vanish temporarily. You will still appear visible on your screen. Vent again to become visible.",
-  "CrewpostorInfoLong": "(Team Impostor):\nYou kill the nearest player whenever you finish a task.",
+  "CrewpostorInfoLong": "(Madmates):\nWhen Crewpostor finishes the required number of tasks,they will kill the player nearest to them.\nCrewpostor's tasks is reset every meeting.\n\nIf Crewpostor is Last Impostor,they will only need to do one task for each kill.",
   "WildlingInfoLong": "(Impostors):\nAs the Wildling, you can Shapeshift but cannot Vent.\nWhen you kill, you temporarily become immune to attacks.",
   "TricksterInfoLong": "(Impostors):\nAs the Trickster, you function as a regular Impostor but with one key difference.\nYou appear as a Crewmate to Crewmate roles.\n\nThe Sheriff cannot kill you.\nPsychic does not see you as evil.\nSnitch cannot find you.",
   "VindicatorInfoLong": "(Impostors):\nAs the Vindicator, you have extra votes like a <color=#204d42>Mayor</color>.",
@@ -1494,6 +1494,7 @@
   "AlliesKnowCrewpostor": "Known to <color=#ff1919>Impostors</color>",
   "CrewpostorLungeKill": "Crewpostor lunges on kill",
   "CrewpostorKillAfterTask": "Number of tasks completed to make one kill",
+  "CrewpostorKillsPerRound": "Number of kills Crewpostor can make per round",
 
   "NonNeutralKillingRolesMinPlayer": "<color=#00ffff>Minimum</color> amount of <color=#ffff00>Non-Killing</color> <color=#7f8c8d>Neutrals</color>",
   "NonNeutralKillingRolesMaxPlayer": "<color=#00a5ff>Maximum</color> amount of <color=#ffff00>Non-Killing</color> <color=#7f8c8d>Neutrals</color>",

@@ -762,14 +762,6 @@ public static class Utils
                 NonCompleteColor = Workhorse.RoleColor;
 
             var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-            if (Main.PlayerStates.TryGetValue(playerId, out var ps))
-            {
-                NormalColor = ps.MainRole switch
-                {
-                    CustomRoles.Crewpostor => Color.red,
-                    _ => NormalColor
-                };
-            }
 
             Color TextColor = comms ? Color.gray : NormalColor;
             string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
