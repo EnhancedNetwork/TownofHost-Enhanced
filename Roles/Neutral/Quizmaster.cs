@@ -704,7 +704,7 @@ class SabotageQuestion : QuizQuestionBase
         {
             MapNames.Skeld => SkeldSabotages.ConvertAll(f => f.ToString()),
             MapNames.Dleks => SkeldSabotages.ConvertAll(f => f.ToString()),
-            MapNames.Mira => MiraSabotages.ConvertAll(f => f.ToString()),
+            MapNames.MiraHQ => MiraSabotages.ConvertAll(f => f.ToString()),
             MapNames.Polus => PolusSabotages.ConvertAll(f => f.ToString()),
             MapNames.Airship => AirshitSabotages.ConvertAll(f => f.ToString()),
             MapNames.Fungle => FungleSabotages.ConvertAll(f => f.ToString()),
