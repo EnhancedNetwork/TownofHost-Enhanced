@@ -25,6 +25,16 @@ public class InnerNetClientPatch
             HashSet<GameObject> hashSet = [];
             for (int i = 0; i < __instance.allObjects.Count; i++)
             {
+                if (messageWriter.Length > 800)
+                {
+                    messageWriter.EndMessage();
+                    __instance.SendOrDisconnect(messageWriter);
+                    messageWriter.Clear(SendOption.Reliable);
+                    messageWriter.StartMessage(6);
+                    messageWriter.Write(__instance.GameId);
+                    messageWriter.WritePacked(clientId);
+                }
+
                 InnerNetObject innerNetObject = __instance.allObjects[i];
                 if (innerNetObject && (innerNetObject.OwnerId != -4 || __instance.AmModdedHost) && hashSet.Add(innerNetObject.gameObject))
                 {
@@ -35,8 +45,7 @@ public class InnerNetClientPatch
                     }
                     else
                     {
-                        if (innerNetObject is not NetworkedPlayerInfo)
-                            __instance.WriteSpawnMessage(innerNetObject, innerNetObject.OwnerId, innerNetObject.SpawnFlags, messageWriter);
+                        __instance.WriteSpawnMessage(innerNetObject, innerNetObject.OwnerId, innerNetObject.SpawnFlags, messageWriter);
                     }
                 }
             }
@@ -45,38 +54,7 @@ public class InnerNetClientPatch
             __instance.SendOrDisconnect(messageWriter);
             messageWriter.Recycle();
         }
-        DelaySpawnPlayerInfo(__instance, clientId);
         return false;
-    }
-
-    private static void DelaySpawnPlayerInfo(InnerNetClient __instance, int clientId)
-    {
-        List<NetworkedPlayerInfo> players = GameData.Instance.AllPlayers.ToArray().ToList();
-
-        // We send 5 players at a time to prevent too huge packet
-        while (players.Count > 0)
-        {
-            var batch = players.Take(5).ToList();
-
-            MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
-            messageWriter.StartMessage(6);
-            messageWriter.Write(__instance.GameId);
-            messageWriter.WritePacked(clientId);
-
-            foreach (var player in batch)
-            {
-                if (messageWriter.Length > 500) break;
-                if (player != null && player.ClientId != clientId && !player.Disconnected)
-                {
-                    __instance.WriteSpawnMessage(player, player.OwnerId, player.SpawnFlags, messageWriter);
-                }
-                players.Remove(player);
-            }
-            messageWriter.EndMessage();
-            // Logger.Info($"send delayed network data to {clientId} , size is {messageWriter.Length}", "SendInitialDataPrefix");
-            __instance.SendOrDisconnect(messageWriter);
-            messageWriter.Recycle();
-        }
     }
 
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
@@ -283,6 +261,15 @@ internal class NetworkedPlayerInfoSerializePatch
                 var oldOutfit = keyValuePair.Value;
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
                 Main.AllClientRealNames.TryGetValue(__instance.ClientId, out var name);
+
+                if (CheckForEndVotingPatch.TempExiledPlayer != null)
+                {
+                    if (CheckForEndVotingPatch.TempExiledPlayer.ClientId == __instance.ClientId)
+                    {
+                        name = CheckForEndVotingPatch.TempExileMsg;
+                    }
+                }
+
                 playerOutfit.Set(name ?? " ", oldOutfit.ColorId, oldOutfit.HatId, oldOutfit.SkinId, oldOutfit.VisorId, oldOutfit.PetId, oldOutfit.NamePlateId);
                 playerOutfit.Serialize(writer);
             }

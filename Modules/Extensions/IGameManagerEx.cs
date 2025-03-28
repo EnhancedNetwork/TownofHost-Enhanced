@@ -7,7 +7,7 @@ public static class IGameManagerEx
     public static void Set(this BoolOptionNames name, bool value, IGameOptions opt) => opt.SetBool(name, value);
     public static void Set(this BoolOptionNames name, bool value, NormalGameOptionsV09 opt)
     {
-        if (name != BoolOptionNames.GhostsDoTasks) opt.SetBool(name, value);
+        if (name is not BoolOptionNames.GhostsDoTasks and not BoolOptionNames.Roles) opt.SetBool(name, value);
     }
     public static void Set(this BoolOptionNames name, bool value, HideNSeekGameOptionsV09 opt) => opt.SetBool(name, value);
 

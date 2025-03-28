@@ -144,7 +144,7 @@ public static class ServerDropDownPatch
             allButtons[i].transform.localPosition = startPosition + new Vector3(col * columnSpacing, -row * buttonSpacing, 0f);
         }
 
-        int maxRows  = Math.Min(buttonsPerColumn, allButtons.Count);
+        int maxRows = Math.Min(buttonsPerColumn, allButtons.Count);
         float backgroundHeight = 1.2f + buttonSpacing * (maxRows - 1);
         float backgroundWidth = (columnCount > 1) ?
             (columnSpacing * (columnCount - 1) + 5) : 5;

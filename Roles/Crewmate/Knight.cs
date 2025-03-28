@@ -102,7 +102,7 @@ internal class Requiter : RoleBase
         // requiter should never ignore Solsticer and Mini protections
         if (target.Is(CustomRoles.Solsticer)) return true;
         if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18) return true;
-        
+
         killer.RpcMurderPlayer(target);
         killer.ResetKillCooldown();
         return false;
