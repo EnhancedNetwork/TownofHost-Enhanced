@@ -131,7 +131,7 @@ public static class Utils
                 }
             case SystemTypes.Comms:
                 {
-                    if (mapName is MapNames.Mira or MapNames.Fungle) // Only Mira HQ & The Fungle
+                    if (mapName is MapNames.MiraHQ or MapNames.Fungle) // Only Mira HQ & The Fungle
                     {
                         var HqHudSystemType = ShipStatus.Instance.Systems[type].CastFast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
