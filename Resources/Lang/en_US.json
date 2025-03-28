@@ -2766,7 +2766,7 @@
   "updateRestart": "Update finished!\nPlease restart the game.",
   "CanNotJoinPublicRoomNoLatest": "You can't join public rooms without the latest version.\nPlease update.",
   "ModBrokenMessage": "The MOD file is damaged.\nPlease reinstall.",
-  "UnsupportedVersion": "Unsupported Among Us version.\nPlease Update Among Us",
+  "UnsupportedVersion": "This version of Among Us is not supported by current TOHE.\nIf you believe this is a mistake, please open bug-reports in our discord channel.",
   "DisabledByProgram": "The program has disabled public rooms",
   "EnterVentToWin": "Enter a Vent to Win!!",
   "EatenByPelican": "You're swallowed, waiting for the Pelican to die or a meeting",
