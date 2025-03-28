@@ -6,6 +6,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Coven;
 
@@ -304,7 +305,7 @@ internal class Summoner : CovenManager
     {
         if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
-            player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
+            if (player.IsAlive())player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
             player.RpcSetCustomRole(originalRole.Role);
             Logger.Info($"Restored player {player.PlayerId} to their original role: {originalRole}.", "Summoner");
         }
@@ -558,8 +559,13 @@ internal class Summoned : RoleBase
                     KillSummonedPlayer(player); // Kill the player                    
                     Summoner.SummonedHealth.Remove(playerId); // Remove them from the timer list
                     Summoner.LastUpdateTimes.Remove(playerId); // Remove the timestamp entry
-                    var sumner = new Summoner();
-                    sumner.RestoreOriginalRole(player);
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        if (pc.GetRoleClass() is Summoner summonerInstance)
+                        {
+                            summonerInstance.RestoreOriginalRole(player);
+                        }
+                    }
                 }
             }
         }
@@ -628,6 +634,16 @@ internal class Summoned : RoleBase
         }
 
         return true; // Allow other kills
+    }
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.GetRoleClass() is Summoner summonerInstance)
+            {
+                summonerInstance.RestoreOriginalRole(target);
+            }
+        }
     }
 }
 
