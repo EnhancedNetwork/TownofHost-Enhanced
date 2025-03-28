@@ -31,7 +31,7 @@ internal class Summoner : CovenManager
     private static OptionItem HasAbilityUses;
     private static OptionItem MaxSummonsAllowed;
 
-    private readonly Dictionary<byte, RoleBase> SummonedOriginalRoles = new();
+    private readonly Dictionary<byte, CustomRoles> SummonedOriginalRoles = new();
 
     private readonly List<byte> SummonedPlayerIds = new List<byte>();
 
@@ -295,17 +295,17 @@ internal class Summoner : CovenManager
     {
         if (!SummonedOriginalRoles.ContainsKey(player.PlayerId))
         {
-            var originalRole = player.GetRoleClass();
+            var originalRole = player.GetCustomRole();
             SummonedOriginalRoles[player.PlayerId] = originalRole;
             Logger.Info($"Saved original role for player {player.PlayerId}: {originalRole}.", "Summoner");
         }
     }
     public void RestoreOriginalRole(PlayerControl player)
     {
-        if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
+        if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out CustomRoles originalRole))
         {
-            player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
-            player.RpcSetCustomRole(originalRole.Role);
+            player.RpcChangeRoleBasis(originalRole);
+            player.RpcSetCustomRole(originalRole);
             Logger.Info($"Restored player {player.PlayerId} to their original role: {originalRole}.", "Summoner");
         }
     }
@@ -368,10 +368,6 @@ internal class Summoner : CovenManager
         {
             SummonedKillCounts[killer.PlayerId]++;
         }
-        if (deadPlayer.Is(CustomRoles.Summoned))
-        {
-            RestoreOriginalRole(deadPlayer);
-        }
     }
 
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo bodyInfo)
@@ -417,7 +413,7 @@ internal class Summoner : CovenManager
             targetPlayer.ResetKillCooldown();
             targetPlayer.SyncSettings();
 
-            Logger.Info($"Player {targetPlayer.PlayerId} revived and assigned Summoned role.", "Summoner");
+            Logger.Info($"Player {targetPlayer.PlayerId}({targetPlayer.GetRealName()}) revived and assigned Summoned role.", "Summoner");
 
         }, reviveDelay, "SummonerRevive");
     }
@@ -558,8 +554,13 @@ internal class Summoned : RoleBase
                     KillSummonedPlayer(player); // Kill the player                    
                     Summoner.SummonedHealth.Remove(playerId); // Remove them from the timer list
                     Summoner.LastUpdateTimes.Remove(playerId); // Remove the timestamp entry
-                    var sumner = new Summoner();
-                    sumner.RestoreOriginalRole(player);
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        if (pc.GetRoleClass() is Summoner summonerInstance)
+                        {
+                            summonerInstance.RestoreOriginalRole(player);
+                        }
+                    }
                 }
             }
         }
@@ -628,6 +629,16 @@ internal class Summoned : RoleBase
         }
 
         return true; // Allow other kills
+    }
+    public override void OnMurderPlayerAsTarget(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        foreach (var pc in Main.AllPlayerControls)
+        {
+            if (pc.GetRoleClass() is Summoner summonerInstance)
+            {
+                summonerInstance.RestoreOriginalRole(target);
+            }
+        }
     }
 }
 
