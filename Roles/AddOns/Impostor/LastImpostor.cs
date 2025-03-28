@@ -1,3 +1,5 @@
+using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
@@ -47,6 +49,9 @@ public class LastImpostor : IAddon
                 SetKillCooldown();
                 pc.SyncSettings();
                 Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
+
+                // reset Crewpostor's tasks upon getting Last Impostor
+                if (pc.Is(CustomRoles.Crewpostor)) pc.GetRoleClass().AfterMeetingTasks();
                 break;
             }
         }
