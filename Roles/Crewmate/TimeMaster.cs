@@ -16,7 +16,7 @@ internal class TimeMaster : RoleBase
     private const int Id = 9900;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.TimeMaster);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateProtective;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
