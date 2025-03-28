@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE;
@@ -184,6 +185,18 @@ class RpcSetTasksPatch
             var taskState = pc.GetPlayerTaskState();
             taskState.AllTasksCount = NumShortTasks + NumLongTasks;
             hasCommonTasks = false;
+        }
+
+        if (pc.Is(CustomRoles.Crewpostor))
+        {
+            // when Crewpostor has Last Impostor,their kills wont be limited
+            // and they will only need 1 task for each kill
+            // so let the total number of alive players decide how many tasks Crewpostor will get
+            int CPTaskNum = LastImpostor.currentId == pc.PlayerId ? Main.AllAlivePlayerControls.Length : Crewpostor.KillAfterTasks.GetInt() * Crewpostor.KillsPerRound.GetInt();
+            
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = CPTaskNum;
         }
 
         // Above is override task num
