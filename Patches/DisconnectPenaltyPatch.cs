@@ -7,15 +7,11 @@ namespace TOHE.Patches
     {
         public static bool Prefix(PlayerBanData __instance, ref int __result)
         {
-            if (!DebugModeManager.AmDebugger)
-            {
-                return true;
-            }
             if (__instance.BanPoints != 0f)
             {
                 __instance.BanPoints = 0f;
                 __result = 0;
-                Logger.Info("Debug Removed Disconnect ban", "PenaltyPatch");
+                Logger.Info("Removed Disconnect ban", "PenaltyPatch");
                 return false;
             }
             return true;
