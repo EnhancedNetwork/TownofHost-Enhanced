@@ -50,7 +50,7 @@ public class LastImpostor : IAddon
                 Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
 
                 // reset Crewpostor's tasks upon getting Last Impostor
-                if (pc.Is(CustomRoles.Crewpostor) pc.GetRoleClass().AfterMeetingTasks();
+                if (pc.Is(CustomRoles.Crewpostor)) pc.GetRoleClass().AfterMeetingTasks();
                 break;
             }
         }
