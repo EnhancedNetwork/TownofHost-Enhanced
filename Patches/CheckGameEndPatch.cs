@@ -584,7 +584,7 @@ class GameEndCheckerForNormal
                 AmongUsClient.Instance.SendAllStreamedObjects();
             }
             // sync game data
-            Utils.SendGameData();
+            Utils.SendGameDataAll();
             // Delay to ensure that the end of the game is delivered at the end of the game
             yield return new WaitForSeconds(0.3f);
         }

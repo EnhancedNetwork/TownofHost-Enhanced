@@ -8,12 +8,25 @@ namespace TOHE;
 class ExileControllerWrapUpPatch
 {
     public static NetworkedPlayerInfo AntiBlackout_LastExiled;
+    [HarmonyPatch(typeof(ExileController), nameof(ExileController.Begin))]
+    class ExileControllerBeginPatch
+    {
+        // This patch is to show exile string for modded players
+        public static void Postfix(ExileController __instance, [HarmonyArgument(0)] ExileController.InitProperties init)
+        {
+            if (Options.CurrentGameMode is CustomGameMode.Standard && init != null && init.outfit != null)
+                __instance.completeString = CheckForEndVotingPatch.TempExileMsg;
+            // TempExileMsg for client is sent in RpcClose
+        }
+    }
+
     [HarmonyPatch(typeof(ExileController), nameof(ExileController.WrapUp))]
     class BaseExileControllerPatch
     {
         public static void Prefix()
         {
             CheckAndDoRandomSpawn();
+            CheckForEndVotingPatch.TempExiledPlayer = null;
         }
         public static void Postfix(ExileController __instance)
         {

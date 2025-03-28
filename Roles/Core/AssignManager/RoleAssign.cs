@@ -353,6 +353,8 @@ public class RoleAssign
                 break;
         }
 
+        Logger.Info($"Spawn NK: {spawnNK}, Spawn NA: {spawnNA}, Spawn Coven: {spawnCoven}", "SpawnKillingFractions");
+
         playerCount = AllPlayers.Count;
 
         // Impostor Roles
