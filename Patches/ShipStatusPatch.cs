@@ -220,7 +220,7 @@ class StartPatch
                 if (birthdayDecorationIsActive)
                     __instance.transform.FindChild("BirthdayDecorSkeld")?.gameObject.SetActive(true);
                 break;
-            case MapNames.Mira when Options.HalloweenDecorationsMira.GetBool():
+            case MapNames.MiraHQ when Options.HalloweenDecorationsMira.GetBool():
                 __instance.transform.FindChild("Halloween")?.gameObject.SetActive(true);
                 break;
             case MapNames.Dleks when Options.HalloweenDecorationsDleks.GetBool():
