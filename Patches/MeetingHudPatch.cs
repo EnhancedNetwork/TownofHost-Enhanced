@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Epic.OnlineServices.Presence;
 using Hazel;
 using System;
 using System.Text;
@@ -1451,6 +1452,11 @@ class MeetingHudRpcClosePatch
         // Send SetName rpc together with Close rpc
         if (Options.CurrentGameMode is CustomGameMode.Standard)
         {
+            if (AmongUsClient.Instance.AmClient)
+            {
+                __instance.Close();
+            }
+
             var writer = MessageWriter.Get(SendOption.Reliable);
 
             writer.StartMessage(5);
@@ -1460,16 +1466,6 @@ class MeetingHudRpcClosePatch
             {
                 var info = CheckForEndVotingPatch.TempExiledPlayer;
                 var player = info.Object;
-
-                var tempName = info.PlayerName;
-                info.PlayerName = CheckForEndVotingPatch.TempExileMsg;
-
-                writer.StartMessage(1);
-                writer.WritePacked(info.NetId);
-                info.Serialize(writer, false);
-                writer.EndMessage();
-
-                info.PlayerName = tempName;
 
                 if (player != null)
                 {
@@ -1485,16 +1481,12 @@ class MeetingHudRpcClosePatch
             writer.StartMessage(2);
             writer.WritePacked(__instance.NetId);
             writer.Write((byte)RpcCalls.CloseMeeting);
+            writer.Write(CheckForEndVotingPatch.TempExileMsg);
             writer.EndMessage();
 
             writer.EndMessage();
             AmongUsClient.Instance.SendOrDisconnect(writer);
             writer.Recycle();
-
-            if (AmongUsClient.Instance.AmClient)
-            {
-                __instance.Close();
-            }
 
             return false;
         }
@@ -1521,6 +1513,23 @@ class MeetingHudHandleRpcPatch
             else
             {
                 Logger.Info("Received Close Meeting Rpc", "MeetingHudHandleRpcPatch");
+
+                if (reader.BytesRemaining > 6)
+                {
+                    try
+                    {
+                        var temp = reader.ReadString();
+
+                        if (temp.Contains("<size"))
+                        {
+                            Logger.Info($"Read Name From Rpc: {temp}", "MeetingHudHandleRpcPatch");
+                            CheckForEndVotingPatch.TempExileMsg = temp;
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
             }
         }
 
