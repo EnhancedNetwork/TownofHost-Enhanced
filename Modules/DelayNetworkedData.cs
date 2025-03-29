@@ -29,7 +29,8 @@ public class InnerNetClientPatch
                 {
                     messageWriter.EndMessage();
                     __instance.SendOrDisconnect(messageWriter);
-                    messageWriter.Clear(SendOption.Reliable);
+                    messageWriter.Recycle();
+                    messageWriter = MessageWriter.Get(SendOption.Reliable);
                     messageWriter.StartMessage(6);
                     messageWriter.Write(__instance.GameId);
                     messageWriter.WritePacked(clientId);
