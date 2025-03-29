@@ -45,6 +45,11 @@ internal class Imitator : RoleBase
     public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(Translator.GetString("StubbornNotify"));
+            return true;
+        }
         var role = target.GetCustomRole();
 
         if (role is CustomRoles.Jackal

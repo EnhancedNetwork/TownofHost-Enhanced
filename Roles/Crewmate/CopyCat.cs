@@ -107,6 +107,11 @@ internal class CopyCat : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         CustomRoles role = target.GetCustomRole();
+        if (target.Is(CustomRoles.Stubborn))
+        {
+            killer.Notify(GetString("StubbornNotify"));
+            return false;
+        }
         if (BlackList(role))
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));

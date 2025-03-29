@@ -4,6 +4,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Roles.Core.CustomRoleManager;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -102,6 +103,11 @@ internal class Amnesiac : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl __instance, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (__instance.PlayerId != _Player.PlayerId) return true;
+        if (deadBody.Object.Is(CustomRoles.Stubborn))
+        {
+            __instance.Notify(GetString("StubbornNotify"));
+            return false;
+        }
 
         bool isSuccess = false;
         if (Main.PlayerStates.TryGetValue(deadBody.PlayerId, out var targetPlayerStates))
