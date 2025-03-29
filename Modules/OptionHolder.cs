@@ -14,6 +14,8 @@ public enum CustomGameMode
     Standard = 0x01,
     FFA = 0x02,
 
+    SpeedRun = 0x04,
+
     HidenSeekTOHE = 0x08, // HidenSeekTOHE must be after other game modes
     All = int.MaxValue
 }
@@ -49,7 +51,9 @@ public static class Options
         => GameMode.GetInt() switch
         {
             1 => CustomGameMode.FFA,
-            2 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
+
+            2 => CustomGameMode.SpeedRun,
+            3 => CustomGameMode.HidenSeekTOHE, // HidenSeekTOHE must be after other game modes
             _ => CustomGameMode.Standard
         };
     public static readonly string[] gameModes =
@@ -57,6 +61,7 @@ public static class Options
         "Standard",
         "FFA",
 
+        "SpeedRun",
 
         "Hide&SeekTOHE", // HidenSeekTOHE must be after other game modes
     ];
@@ -175,7 +180,6 @@ public static class Options
     public static OptionItem ShowMadmatesInLeftCommand;
     public static OptionItem ShowApocalypseInLeftCommand;
     public static OptionItem ShowCovenInLeftCommand;
-    public static OptionItem SeeEjectedRolesInMeeting;
 
     public static OptionItem KickLowLevelPlayer;
     public static OptionItem TempBanLowLevelPlayer;
@@ -286,6 +290,8 @@ public static class Options
     public static OptionItem ShowTeamNextToRoleNameOnEject;
     public static OptionItem ConfirmEgoistOnEject;
     public static OptionItem ConfirmLoversOnEject;
+    public static OptionItem SeeEjectedRolesInMeeting;
+    public static OptionItem ShowBetrayalAddonsOnEject;
     //public static OptionItem ConfirmSidekickOnEject;
     //public static OptionItem ExtendedEjections;
 
@@ -418,11 +424,13 @@ public static class Options
     public static OptionItem ShieldPersonDiedFirst;
     public static OptionItem ShowShieldedPlayerToAll;
     public static OptionItem RemoveShieldOnFirstDead;
+    public static OptionItem PreventFirstDeadShapeShift;
     public static OptionItem ShieldedCanUseKillButton;
     public static OptionItem EveryoneCanSeeDeathReason;
 
     public static OptionItem KillFlashDuration;
     public static OptionItem NonCrewRandomCommonTasks;
+    public static OptionItem UniqueNeutralRevealScreen;
 
     // Ghost
     public static OptionItem GhostIgnoreTasks;
@@ -558,7 +566,7 @@ public static class Options
     public static OptionItem NeutralRoleWinTogether;
     public static OptionItem NeutralWinTogether;
     public static OptionItem SpawnOneRandomKillingFraction;
-     
+
     // Neutral Apocalypse
     public static OptionItem NeutralApocalypseRolesMinPlayer;
     public static OptionItem NeutralApocalypseRolesMaxPlayer;
@@ -696,7 +704,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 31000 last id for roles/add-ons (Next use 31100)
+        // 31600 last id for roles/add-ons (Next use 31700)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -783,6 +791,10 @@ public static class Options
         SpawnOneRandomKillingFraction = BooleanOptionItem.Create(60036, "SpawnOneRandomKillingFraction", true, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true);
+
+        TextOptionItem.Create(10000015, "CovenInfo", TabGroup.CovenRoles)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(172, 66, 242, byte.MaxValue));
 
         CovenRolesMinPlayer = IntegerOptionItem.Create(60026, "CovenRolesMinPlayer", new(0, 15, 1), 0, TabGroup.CovenRoles, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1138,13 +1150,14 @@ public static class Options
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .HideInHnS();
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         ShowApocalypseInLeftCommand = BooleanOptionItem.Create(60043, "ShowApocalypseInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
         ShowCovenInLeftCommand = BooleanOptionItem.Create(60044, "ShowCovenInLeftCommand", true, TabGroup.SystemSettings, false)
-            .SetParent(EnableKillerLeftCommand);
-        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
-            .HideInHnS();
+            .SetParent(EnableKillerLeftCommand)
+            .SetGameMode(CustomGameMode.Standard);
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
@@ -1273,6 +1286,12 @@ public static class Options
         SendRoleDescriptionFirstMeeting = BooleanOptionItem.Create(60370, "SendRoleDescriptionFirstMeeting", false, TabGroup.SystemSettings, false)
             .HideInHnS();
 
+        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.SystemSettings, false)
+            .SetColor(Color.cyan)
+            .SetHeader(true);
+        CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.SystemSettings, false)
+            .SetColor(Color.cyan);
+
         NoGameEnd = BooleanOptionItem.Create(60380, "NoGameEnd", false, TabGroup.SystemSettings, false)
             .SetColor(Color.red)
             .SetHeader(true);
@@ -1301,6 +1320,9 @@ public static class Options
         #region Game Settings
         //FFA
         FFAManager.SetupCustomOption();
+
+        //Speed Run
+        SpeedRun.SetupCustomOption();
 
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
@@ -1349,6 +1371,12 @@ public static class Options
         ConfirmLoversOnEject = BooleanOptionItem.Create(60445, "ConfirmLoversOnEject", true, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.ModSettings, false)
+            .HideInHnS()
+            .SetGameMode(CustomGameMode.Standard);
+        ShowBetrayalAddonsOnEject = BooleanOptionItem.Create(60045, "ShowBetrayalAddonsOnEject", true, TabGroup.ModSettings, false)
+            .HideInHnS()
+            .SetGameMode(CustomGameMode.Standard);
 
         TextOptionItem.Create(10000028, "MenuTitle.Guessers", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
@@ -1392,12 +1420,6 @@ public static class Options
         CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
-
-        UseQuickChatSpamCheat = StringOptionItem.Create(60695, "UseQuickChatSpamCheat", EnumHelper.GetAllNames<QuickChatSpamMode>(), 0, TabGroup.ModSettings, false)
-            .SetColor(Color.cyan); ;
-
-        CrossLanguageGetRole = BooleanOptionItem.Create(60260, "CrossLanguageGetRole", false, TabGroup.ModSettings, false)
-            .SetColor(Color.cyan);
 
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
@@ -1891,7 +1913,7 @@ public static class Options
 
 
         // Meeting Settings
-        TextOptionItem.Create(10000030, "MenuTitle.Meeting", TabGroup.ModSettings)
+        TextOptionItem.Create(10000034, "MenuTitle.Meeting", TabGroup.ModSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(147, 241, 240, byte.MaxValue));
         // Sync Button
@@ -1953,11 +1975,13 @@ public static class Options
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
+            .HideInSpeedRun()
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 梯子摔死
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
-            .HideInFFA();
+            .HideInFFA()
+            .HideInSpeedRun();
         LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
 
@@ -1983,6 +2007,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
 
+        PreventFirstDeadShapeShift = BooleanOptionItem.Create(60873, "PreventFirstDeadShapeShift", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
         ShieldedCanUseKillButton = BooleanOptionItem.Create(60782, "ShieldedCanUseKillButton", true, TabGroup.ModSettings, false).SetParent(ShieldPersonDiedFirst)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
@@ -1998,6 +2026,10 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard);
 
         NonCrewRandomCommonTasks = BooleanOptionItem.Create(60791, "NonCrewRandomCommonTasks", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(193, 255, 209, byte.MaxValue));
+
+        UniqueNeutralRevealScreen = BooleanOptionItem.Create(60792, "UniqueNeutralRevealScreen", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 幽灵相关设定

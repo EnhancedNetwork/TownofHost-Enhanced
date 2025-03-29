@@ -25,8 +25,14 @@ namespace TOHE;
 
 [BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
+[BepInIncompatibility("com.ten.betteramongus")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
+[BepInIncompatibility("com.slushiegoose.townofus")]
+[BepInIncompatibility("com.gurge44.endlesshostroles")]
+[BepInIncompatibility("com.emptybottle.townofhost")]
+[BepInIncompatibility("me.eisbison.theotherroles")]
+[BepInIncompatibility("com.discussions.LotusContinued")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
@@ -46,13 +52,16 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0225.230.000010"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.3.0 Alpha 1";
-    public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
+    public const string PluginVersion = "2025.0329.230.00050"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.3.0 Alpha 5";
+    public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU = 
+        [
+            (2024, 8, 11, 0) // 2025.3.25 & 16.0.0
+        ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = true; // Latest: V2.3.0 Alpha 1
-    public static readonly bool canaryRelease = false; // Latest: V2.2.0 Beta 4
+    public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 2 Hotfix 2
+    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 4
     public static readonly bool fullRelease = false; // Latest: V2.2.0
 
     public static bool hasAccess = true;
@@ -81,8 +90,8 @@ public class Main : BasePlugin
     public static string credentialsText;
     public Coroutines coroutines;
     public Dispatcher dispatcher;
-    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV09 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV09 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -192,7 +201,16 @@ public class Main : BasePlugin
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
-    public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
+    public static bool IsAprilFools
+    {
+        get
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            return utcNow >= t && utcNow <= t2;
+        }
+    }
     public static bool ResetOptions = true;
     public static string FirstDied = ""; //Store with hash puid so things can pass through different round
     public static string FirstDiedPrevious = "";
@@ -634,9 +652,9 @@ public class Main : BasePlugin
         ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
 
-        NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
-        NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
-        HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        NormalGameOptionsV09.RecommendedImpostors = NormalGameOptionsV09.MaxImpostors = Enumerable.Repeat(128, 128).ToArray();
+        NormalGameOptionsV09.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
+        HideNSeekGameOptionsV09.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
         DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
@@ -816,6 +834,7 @@ public enum CustomRoles
     President,
     Psychic,
     Randomizer,
+    Requiter,
     Retributionist,
     Reverie,
     Sheriff,
@@ -914,6 +933,8 @@ public enum CustomRoles
     Coven,
     Conjurer,
     CovenLeader,
+    Harvester,
+    Dreamweaver,
     HexMaster,
     Illusionist,
     Jinx,
@@ -934,6 +955,9 @@ public enum CustomRoles
 
     //GM
     GM,
+
+    // Speed run
+    Runner,
 
     // Sub-role after 500
     NotAssigned = 500,

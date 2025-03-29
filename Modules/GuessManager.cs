@@ -218,7 +218,7 @@ public static class GuessManager
                     Logger.Info($"Guess Disabled for this player {pc.PlayerId}", "GuessManager");
                     pc.ShowInfoMessage(isUI, GetString("GuessDisabled"));
                     return true;
-                }        
+                }
                 if (Jailer.IsTarget(pc.PlayerId) && role != CustomRoles.Jailer)
                 {
                     pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
@@ -244,7 +244,7 @@ public static class GuessManager
                 {
                     pc.ShowInfoMessage(isUI, string.Format(GetString("GuessRoleNotEnabled"), role.ToString()));
                     return true;
-                }              
+                }
                 if (role == CustomRoles.Bait && target.Is(CustomRoles.Bait) && Bait.BaitNotification.GetBool())
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessNotifiedBait"));
@@ -281,7 +281,7 @@ public static class GuessManager
                 {
                     pc.ShowInfoMessage(isUI, GetString("GuessImmune"));
                     return true;
-                }            
+                }
 
                 // Guesser (add-on) Cant Guess Addons
                 if (role.IsAdditionRole() && pc.Is(CustomRoles.Guesser) && !Guesser.GCanGuessAdt.GetBool())

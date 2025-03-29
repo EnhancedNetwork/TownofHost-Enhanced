@@ -1,11 +1,11 @@
-using System;
 using AmongUs.GameOptions;
+using System;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static TOHE.MeetingHudStartPatch;
-using TOHE.Modules;
 
 namespace TOHE.Roles.Neutral;
 
@@ -117,7 +117,7 @@ internal class Virus : RoleBase
         foreach (var infectedId in InfectedPlayer)
         {
             var infected = infectedId.GetPlayer();
-            if (virus.IsAlive() && infected != null)
+            if (virus.IsAlive() && infected != null && !infected.IsTransformedNeutralApocalypse())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(infectedId))
                 {
@@ -161,6 +161,6 @@ public static class VirusPlayerControls
     {
         return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal)
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Specter)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
 }

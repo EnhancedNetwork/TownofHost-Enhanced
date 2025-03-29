@@ -47,7 +47,7 @@ internal class Deceiver : RoleBase
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.SerialKiller)) return false;
+        if (target.Is(CustomRoles.SerialKiller)) return false;
 
         if (!(CanBeClient(target) && killer.GetAbilityUseLimit() > 0)) return false;
 
@@ -56,6 +56,11 @@ internal class Deceiver : RoleBase
         if (target.Is(CustomRoles.KillingMachine) || target.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"target is {target.GetCustomRole().ToString()}, ability used count reduced, but target will not die", "Deceiver");
+            return false;
+        }
+        if (target.IsTransformedNeutralApocalypse())
+        {
+            Logger.Info("target is Transformed Neutral Apocalypse, ability used count reduced, but target will not die", "Deceiver");
             return false;
         }
 

@@ -1,8 +1,8 @@
-using UnityEngine;
+using TOHE.Modules;
 using TOHE.Roles.Double;
+using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using TOHE.Modules;
 
 namespace TOHE.Roles.Neutral;
 
@@ -84,7 +84,7 @@ internal class CursedSoul : RoleBase
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||
-            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Loyal);
+            (CanCurseCoven.GetBool() && pc.GetCustomRole().IsCoven())) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Loyal) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {

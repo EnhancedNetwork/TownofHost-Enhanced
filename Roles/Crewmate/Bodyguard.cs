@@ -35,6 +35,10 @@ internal class Bodyguard : RoleBase
             or CustomRoles.Veteran
             or CustomRoles.Deputy)
             return false;
+        if (killer.IsTransformedNeutralApocalypse())
+        {
+            Logger.Info($"{bodyguard.GetRealName()} was too scared of {killer.GetRealName()}'s power, so they could not protect {target.GetRealName()}", "Bodyguard");
+        }
 
         var pos = target.transform.position;
         var dis = Utils.GetDistance(pos, bodyguard.transform.position);
