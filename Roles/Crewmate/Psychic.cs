@@ -87,9 +87,9 @@ internal class Psychic : RoleBase
     }
     private void GetRedName()
     {
-        if (!_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
+        if (_Player == null || !_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
-        List<PlayerControl> BadListPc = Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
+        List<PlayerControl> BadListPc = [.. Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
         (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
@@ -99,7 +99,7 @@ internal class Psychic : RoleBase
         (x.GetCustomRole().IsNK() && NKshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNA() && NAshowEvil.GetBool()) ||
         (x.GetCustomRole().IsCoven() && CovshowEvil.GetBool())
-        ).ToList();
+        )];
 
         var randomBadPlayer = BadListPc.RandomElement();
         List<byte> AllList = [];

@@ -105,7 +105,7 @@ internal class RunLoginPatch
         }
         try
         {
-            if (Main.canaryRelease ||  Main.fullRelease)
+            if (Main.canaryRelease || Main.fullRelease)
                 ModUpdater.ShowAvailableUpdate();
         }
         catch (System.Exception error)
