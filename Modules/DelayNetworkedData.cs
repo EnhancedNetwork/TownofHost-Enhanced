@@ -249,7 +249,7 @@ public class InnerNetClientPatch
         }
         else if (msg.Length > 1000)
         {
-            Logger.Info($"Large Packet({msg.Length})", "SendOrDisconnectPatch");
+            Logger.Info($"Large {msg.SendOption} Packet({msg.Length})", "SendOrDisconnectPatch");
         }
     }
 }

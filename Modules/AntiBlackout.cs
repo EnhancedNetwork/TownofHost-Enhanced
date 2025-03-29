@@ -274,6 +274,7 @@ public static class AntiBlackout
         var hasValue = false;
 
         var sender = CustomRpcSender.Create("AntiBlackout.SetRealPlayerRoles", SendOption.Reliable);
+        List<PlayerControl> selfExiled = [];
 
         foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
         {
@@ -293,9 +294,7 @@ public static class AntiBlackout
             {
                 if (isSelf)
                 {
-                    sender.AutoStartRpc(target.NetId, (byte)RpcCalls.Exiled);
-                    sender.EndRpc();
-                    hasValue = true;
+                    selfExiled.Add(seer);
 
                     if (target.HasGhostRole()) changedRoleType = RoleTypes.GuardianAngel;
                     else if (target.Is(Custom_Team.Impostor) || target.HasDesyncRole()) changedRoleType = RoleTypes.ImpostorGhost;
@@ -312,6 +311,13 @@ public static class AntiBlackout
             if (!isDead && isSelf && seer.HasImpKillButton()) continue;
 
             sender.RpcSetRole(target, changedRoleType, seer.OwnerId);
+            hasValue = true;
+        }
+
+        foreach (var pc in selfExiled)
+        {
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.Exiled, -1);
+            sender.EndRpc();
             hasValue = true;
         }
 

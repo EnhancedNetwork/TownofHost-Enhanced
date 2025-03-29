@@ -136,6 +136,8 @@ static class ExtendedPlayerControl
         var newVanillaRole = newCustomRole.GetVNRole();
         var newDesyncRole = newCustomRole.GetDYRole();
 
+        var sender = CustomRpcSender.Create("Change Role Basis", SendOption.Reliable);
+
         switch (oldRoleIsDesync, newRoleIsDesync)
         {
             // Desync role to normal role
@@ -154,7 +156,7 @@ static class ExtendedPlayerControl
 
                         // Set role type for seer
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        player.RpcSetRoleDesync(remeberRoleType, seerClientId);
+                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
 
                         if (self) continue;
 
@@ -172,13 +174,13 @@ static class ExtendedPlayerControl
                             if (!newCustomRole.IsImpostor() && seer.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
 
                             RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.IsDesyncRole() ? seerIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist : seerRoleType, seerCustomRole);
-                            seer.RpcSetRoleDesync(remeberRoleType, playerClientId);
+                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                             continue;
                         }
 
                         // Set role type for player
                         RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (remeberRoleType, seerCustomRole);
-                        seer.RpcSetRoleDesync(remeberRoleType, playerClientId);
+                        sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                     }
 
                     break;
@@ -207,7 +209,7 @@ static class ExtendedPlayerControl
                         }
 
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        player.RpcSetRoleDesync(remeberRoleType, seerClientId);
+                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
 
                         if (self) continue;
 
@@ -220,13 +222,13 @@ static class ExtendedPlayerControl
                         {
                             remeberRoleType = RoleTypes.CrewmateGhost;
                             RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist, seerCustomRole);
-                            seer.RpcSetRoleDesync(remeberRoleType, playerClientId);
+                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                             continue;
                         }
 
                         // Set role type for player
                         RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (remeberRoleType, seerCustomRole);
-                        seer.RpcSetRoleDesync(remeberRoleType, playerClientId);
+                        sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                     }
 
                     break;
@@ -246,12 +248,14 @@ static class ExtendedPlayerControl
                         else remeberRoleType = newRoleType;
 
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        player.RpcSetRoleDesync(remeberRoleType, seerClientId);
+                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
                     }
 
                     break;
                 }
         }
+
+        sender.SendMessage();
 
         if (loggerRoleMap)
         {
