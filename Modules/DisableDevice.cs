@@ -34,7 +34,7 @@ class DisableDevice
         return Map switch
         {
             MapNames.Skeld => 1.8f,
-            MapNames.Mira => 2.4f,
+            MapNames.MiraHQ => 2.4f,
             MapNames.Polus => 1.8f,
             MapNames.Dleks => 1.5f,
             MapNames.Airship => 1.8f,

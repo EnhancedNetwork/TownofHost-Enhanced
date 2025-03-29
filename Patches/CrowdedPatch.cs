@@ -172,6 +172,11 @@ internal static class Crowded
                     {
                         GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
                     }
+
+                    if (GameOptionsManager.Instance.GameHostOptions.NumImpostors > 3)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.NumImpostors, 3);
+                    }
                 }
                 if (instance)
                 {
@@ -212,10 +217,10 @@ internal static class Crowded
         }
     }
 
-    [HarmonyPatch(typeof(NormalGameOptionsV08), nameof(NormalGameOptionsV08.AreInvalid))]
-    public static class NormalGameOptionsV08_AreInvalid
+    [HarmonyPatch(typeof(NormalGameOptionsV09), nameof(NormalGameOptionsV09.AreInvalid))]
+    public static class NormalGameOptions_AreInvalid
     {
-        public static bool Prefix(NormalGameOptionsV08 __instance, ref bool __result)
+        public static bool Prefix(NormalGameOptionsV09 __instance, ref bool __result)
         {
             __result = __instance.NumImpostors < 0 || __instance.KillDistance < 0 || __instance.KillCooldown < 0 || __instance.PlayerSpeedMod <= 0;
 
@@ -343,6 +348,32 @@ internal static class Crowded
         public static void Postfix(VitalsMinigame __instance)
         {
             __instance.gameObject.AddComponent<VitalsPagingBehaviour>().vitalsMinigame = __instance;
+        }
+    }
+
+    [HarmonyPatch(typeof(PSManager), nameof(PSManager.CreateGame))]
+    [HarmonyPatch(typeof(CreateGameOptions), nameof(CreateGameOptions.ContinueStart))]
+    public static class BeforeHostGamePatch
+    {
+        public static void Prefix()
+        {
+            Logger.Info("Host Game is being called!", "CrowdedPatch");
+
+            if (GameStates.IsVanillaServer && !GameStates.IsLocalGame)
+            {
+                if (GameOptionsManager.Instance.GameHostOptions != null)
+                {
+                    if (GameOptionsManager.Instance.GameHostOptions.MaxPlayers > 15)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.MaxPlayers, 15);
+                    }
+
+                    if (GameOptionsManager.Instance.GameHostOptions.NumImpostors > 3)
+                    {
+                        GameOptionsManager.Instance.GameHostOptions.SetInt(Int32OptionNames.NumImpostors, 3);
+                    }
+                }
+            }
         }
     }
 }
