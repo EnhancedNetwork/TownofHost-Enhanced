@@ -538,7 +538,7 @@ internal class Summoned : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Summoned;
-    // public override bool IsDesyncRole => true;
+    public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //================================================================\\
