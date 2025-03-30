@@ -2226,7 +2226,8 @@ public static class Utils
             {
                 writer.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(writer);
-                writer.Clear(SendOption.Reliable);
+                writer.Recycle();
+                writer = MessageWriter.Get(SendOption.Reliable);
                 hasValue = false;
                 writer.StartMessage(5);
                 writer.Write(AmongUsClient.Instance.GameId);

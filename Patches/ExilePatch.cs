@@ -164,7 +164,7 @@ class ExileControllerWrapUpPatch
                 {
                     exiled.Object.RpcExileV2();
                 }
-            }, Options.CurrentGameMode is CustomGameMode.Standard ? 0.5f : 0.8f, "Restore IsDead Task");
+            }, Options.CurrentGameMode is CustomGameMode.Standard ? 0.5f : 1.4f, "Restore IsDead Task");
 
             _ = new LateTask(AntiBlackout.ResetAfterMeeting, 0.6f, "ResetAfterMeeting");
 

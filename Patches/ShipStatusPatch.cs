@@ -162,7 +162,7 @@ class ShipStatusCloseDoorsPatch
 
         bool allow;
         if (Options.CurrentGameMode == CustomGameMode.FFA || Options.DisableCloseDoor.GetBool()
-            || Options.CurrentGameMode == CustomGameMode.SpeedRun && !SpeedRun.SpeedRun_AllowCloseDoor.GetBool()) allow = false;
+                    || Options.CurrentGameMode == CustomGameMode.SpeedRun && !SpeedRun.SpeedRun_AllowCloseDoor.GetBool()) allow = false;
         else allow = true;
 
         if (allow)
@@ -330,6 +330,8 @@ class ShipStatusSerializePatch
 {
     // Patch the global way of Serializing ShipStatus
     // If we are patching any other systemTypes, just add below like Ventilation.
+    public static List<int> ReactorFlashList = [];
+
     public static bool Prefix(ShipStatus __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
     {
         __result = false;
@@ -348,6 +350,17 @@ class ShipStatusSerializePatch
                 // Further new systems should skip original methods here and add new patches below.
                 num++;
                 continue;
+            }
+
+            if (ReactorFlashList.Count > 0)
+            {
+                var sysSkip = Utils.GetCriticalSabotageSystemType();
+
+                if (systemTypes == sysSkip)
+                {
+                    num++;
+                    continue;
+                }
             }
 
             if (__instance.Systems.TryGetValue(systemTypes, out ISystemType systemType) && systemType.IsDirty) // initialState used here in vanilla code. Removed it.
@@ -410,6 +423,53 @@ class ShipStatusSerializePatch
             }
         }
 
+        // Reactor Flash
+        {
+            var rwriter = MessageWriter.Get(SendOption.Reliable);
+            var reactor = Utils.GetCriticalSabotageSystemType();
+
+            foreach (var player in Main.AllPlayerControls)
+            {
+                rwriter.StartMessage(6);
+                rwriter.Write(AmongUsClient.Instance.GameId);
+                rwriter.WritePacked(player.OwnerId);
+
+                rwriter.StartMessage(1);
+                rwriter.WritePacked(__instance.NetId);
+                rwriter.StartMessage((byte)reactor);
+
+                if (ReactorFlashList.Contains(player.OwnerId))
+                {
+                    switch (reactor)
+                    {
+                        case SystemTypes.Reactor:
+                        case SystemTypes.Laboratory:
+                            rwriter.Write((float)1f);
+                            rwriter.WritePacked(0);
+                            break;
+                        case SystemTypes.HeliSabotage:
+                            rwriter.Write((float)1f);
+                            rwriter.Write((float)1f);
+                            rwriter.WritePacked(0);
+                            rwriter.WritePacked(0);
+                            break;
+                    }
+
+                }
+                else
+                {
+                    __instance.Systems.TryGetValue(reactor, out ISystemType systemType);
+                    systemType.Serialize(rwriter, false);
+                }
+                rwriter.EndMessage();
+                rwriter.EndMessage();
+
+                rwriter.EndMessage();
+            }
+
+            AmongUsClient.Instance.SendOrDisconnect(rwriter);
+            rwriter.Recycle();
+        }
         return false;
     }
 }
