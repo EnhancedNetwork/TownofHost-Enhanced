@@ -1,3 +1,4 @@
+using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
@@ -112,7 +113,6 @@ internal class Summoner : CovenManager
         SummonedOriginalRoles.Clear();
         SummonedPlayerIds.Clear();
         PendingRevives.Clear();
-        LastUpdateTimes.Clear();
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
@@ -133,9 +133,9 @@ internal class Summoner : CovenManager
         }
         return true;
     }
-    public static bool SummonerCheckMsg(PlayerControl pc, string msg, bool isUI = false, bool isSystemMessage = false)
+    public static bool SummonerCheckMsg(PlayerControl pc, string msg, bool isUI = false)
     {
-        if (isSystemMessage || !AmongUsClient.Instance.AmHost) return false; // Skip if system message or not host
+        if (!AmongUsClient.Instance.AmHost) return false; // Skip if system message or not host
         if (!GameStates.IsMeeting || pc == null || GameStates.IsExilling) return false; // Only during meetings
         if (!pc.Is(CustomRoles.Summoner) || !(pc.GetRoleClass() is Summoner summonerInstance)) return false;
 
@@ -146,6 +146,7 @@ internal class Summoner : CovenManager
 
         // Always try hiding the message if the command is intercepted
         HideSummonCommand();
+        ChatManager.SendPreviousMessagesToAll();
 
         if (!pc.IsAlive())
         {
@@ -170,7 +171,7 @@ internal class Summoner : CovenManager
             return true;
         }
 
-        bool isAlreadySummoned = targetPlayer.Is(CustomRoles.Summoned);
+        bool isAlreadySummoned = summonerInstance.SummonedPlayerIds.Contains(targetPlayer.PlayerId);
         bool allowResummoning = AllowSummoningRevivedPlayers.GetBool();
 
         // Handle the case where reviving already summoned players is allowed
@@ -213,6 +214,7 @@ internal class Summoner : CovenManager
 
         // Normal summoning logic
         HideSummonCommand();
+        ChatManager.SendPreviousMessagesToAll();
         summonerInstance.RevivePlayer(targetPlayer);
 
         // Increment summon count if allowed
@@ -279,13 +281,13 @@ internal class Summoner : CovenManager
     public static bool CheckCommand(ref string msg, string command)
     {
         var comList = command.Split('|');
-        for (int i = 0; i < comList.Length; i++)
+        foreach (var comm in comList)
         {
-            if (msg.StartsWith("/" + comList[i]))
+            if (msg.StartsWith("/" + comm))
             {
-                msg = msg.Replace("/" + comList[i], string.Empty).Trim();
+                msg = msg.Replace("/" + comm, string.Empty).Trim();
                 return true;
-            }
+            }            
         }
         return false;
     }
@@ -333,6 +335,16 @@ internal class Summoner : CovenManager
         if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
             if (player.IsAlive()) player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
+            else { 
+                if (originalRole.HasTasks(player.Data, originalRole.Role, false))
+                {
+                    player.RpcSetRoleType(RoleTypes.CrewmateGhost, true);
+                }
+                else
+                {
+                    player.RpcSetRoleType(RoleTypes.ImpostorGhost, false);
+                }
+            }
             player.RpcSetCustomRole(originalRole.Role);
             Logger.Info($"Restored player {player.PlayerId} to their original role: {originalRole}.", "Summoner");
         }
@@ -448,7 +460,7 @@ internal class Summoner : CovenManager
 
             // Initialize tasks and cooldowns
             var playerState = Main.PlayerStates[targetPlayer.PlayerId];
-            playerState.InitTask(targetPlayer);
+            //playerState.InitTask(targetPlayer);
             playerState.ResetSubRoles();
 
             targetPlayer.SetKillCooldownV3(KillCooldownOption.GetFloat());
@@ -526,7 +538,7 @@ internal class Summoned : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Summoned;
-    public override bool IsDesyncRole => true;
+    // public override bool IsDesyncRole => true;
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralKilling;
     //================================================================\\
@@ -681,6 +693,8 @@ internal class Summoned : RoleBase
                 summonerInstance.RestoreOriginalRole(target);
             }
         }
+        Summoner.SummonedHealth.Remove(target.PlayerId); // Remove them from the timer list
+        Summoner.LastUpdateTimes.Remove(target.PlayerId); // Remove the timestamp entry
     }
 }
 
