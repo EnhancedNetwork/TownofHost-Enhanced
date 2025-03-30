@@ -126,7 +126,7 @@ internal class Summoner : CovenManager
     public override bool OnCheckStartMeeting(PlayerControl reporter)
     {
         if (!NoMeetingWhileSummoned.GetBool()) return true; // Skip if the option is disabled
-        if (Main.AllAlivePlayerControls.Any(player => player.Is(CustomRoles.Summoned)))
+        if (Main.AllPlayerControls.Any(player => player.Is(CustomRoles.Summoned)))
         {
             reporter.Notify(ColorString(GetRoleColor(CustomRoles.Summoner), GetString("Summoner.NoMeetingWhileSummoned")), 20f);
             return false; // Prevent starting the meeting

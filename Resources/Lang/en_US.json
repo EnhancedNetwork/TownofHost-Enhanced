@@ -2215,6 +2215,7 @@
   "SummonerSettings.SummonedKillRequirement": "Summoned Kill Requirement",
   "SummonerSettings.AllowResummon": "Re-summoning players takes a use",
   "SummonerSettings.SummonedKillsCountToSummoner": "Summoned kills count towards Summoner's kills",
+  "SummonerSettings.NoMeetingWhileSummoned": "Disallow Meetings when a Summoned player is alive",
   "SummonerSettings.HasAbilityUses": "Summoner has ability limit",
   "SummonerSettings.SummonedKnowsCoven": "Summoned players know who summoner is",
   "Summoner.SummonerDead": "You can't summon players while dead.",
