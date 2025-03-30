@@ -884,9 +884,9 @@ static class ExtendedPlayerControl
     }
     public static void RpcDesyncUpdateSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
-        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, RpcSendOption, target.GetClientId());
+        var messageWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
         messageWriter.Write((byte)systemType);
-        messageWriter.WriteNetObject(target);
+        messageWriter.WriteNetObject(PlayerControl.LocalPlayer);
         messageWriter.Write((byte)amount);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
     }
@@ -1175,10 +1175,16 @@ static class ExtendedPlayerControl
         var systemtypes = Utils.GetCriticalSabotageSystemType();
         float FlashDuration = Options.KillFlashDuration.GetFloat();
 
+        if (!ShipStatusSerializePatch.ReactorFlashList.Contains(pc.OwnerId))
+        {
+            ShipStatusSerializePatch.ReactorFlashList.Add(pc.OwnerId);
+        }
+
         pc.RpcDesyncUpdateSystem(systemtypes, 128);
 
         _ = new LateTask(() =>
         {
+            ShipStatusSerializePatch.ReactorFlashList.Remove(pc.OwnerId);
             pc.RpcDesyncUpdateSystem(systemtypes, 16);
 
             if (GameStates.AirshipIsActive)
