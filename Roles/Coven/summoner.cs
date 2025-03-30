@@ -6,7 +6,6 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Coven;
 
@@ -29,6 +28,8 @@ internal class Summoner : CovenManager
     public static OptionItem NecroKillCooldownOption;
     private static OptionItem RevealSummonedPlayer;
     private static OptionItem AllowSummoningRevivedPlayers;
+    public static OptionItem SummonedKillsCountToSummoner;
+    public static OptionItem NoMeetingWhileSummoned;
     private static OptionItem HasAbilityUses;
     private static OptionItem MaxSummonsAllowed;
 
@@ -79,6 +80,12 @@ internal class Summoner : CovenManager
         AllowSummoningRevivedPlayers = BooleanOptionItem.Create(Id + 16, "SummonerSettings.AllowResummon", false, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
+        SummonedKillsCountToSummoner = BooleanOptionItem.Create(Id + 20, "SummonerSettings.SummonedKillsCountToSummoner", false, TabGroup.CovenRoles, false)
+       .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
+
+        NoMeetingWhileSummoned = BooleanOptionItem.Create(Id + 21, "SummonerSettings.NoMeetingWhileSummoned", false, TabGroup.CovenRoles, false)
+       .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
+
         HasAbilityUses = BooleanOptionItem.Create(Id + 17, "SummonerSettings.HasAbilityUses", true, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
 
@@ -102,6 +109,10 @@ internal class Summoner : CovenManager
     {
         SummonedHealth.Clear();
         LastUpdateTimes.Clear();
+        SummonedOriginalRoles.Clear();
+        SummonedPlayerIds.Clear();
+        PendingRevives.Clear();
+        LastUpdateTimes.Clear();
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
@@ -112,7 +123,16 @@ internal class Summoner : CovenManager
         return ColorString(GetRoleColor(CustomRoles.Summoner), $" {seen.Data.PlayerId}");
     }
     public override bool CanUseKillButton(PlayerControl pc) => HasNecronomicon(pc);
-
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+    {
+        if (!NoMeetingWhileSummoned.GetBool()) return true; // Skip if the option is disabled
+        if (Main.AllAlivePlayerControls.Any(player => player.Is(CustomRoles.Summoned)))
+        {
+            reporter.Notify(ColorString(GetRoleColor(CustomRoles.Summoner), GetString("Summoner.NoMeetingWhileSummoned")), 20f);
+            return false; // Prevent starting the meeting
+        }
+        return true;
+    }
     public static bool SummonerCheckMsg(PlayerControl pc, string msg, bool isUI = false, bool isSystemMessage = false)
     {
         if (isSystemMessage || !AmongUsClient.Instance.AmHost) return false; // Skip if system message or not host
@@ -292,6 +312,13 @@ internal class Summoner : CovenManager
             PerformRevive(targetPlayer, reviveDelay);
         }
     }
+    public void CancelPendingRevives()
+    {
+        foreach (var (player, delay) in PendingRevives.ToList())
+        {
+            PendingRevives.Remove((player, delay));
+        }
+    }
     private void SaveOriginalRole(PlayerControl player)
     {
         if (!SummonedOriginalRoles.ContainsKey(player.PlayerId))
@@ -305,7 +332,7 @@ internal class Summoner : CovenManager
     {
         if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
-            if (player.IsAlive())player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
+            if (player.IsAlive()) player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
             player.RpcSetCustomRole(originalRole.Role);
             Logger.Info($"Restored player {player.PlayerId} to their original role: {originalRole}.", "Summoner");
         }
@@ -331,8 +358,12 @@ internal class Summoner : CovenManager
 
                 // Force sync their death
                 Summoned.KillSummonedPlayer(summonedPlayer);
+
             }
         }
+
+        // Cancel any pending revives
+        CancelPendingRevives();
 
         // Clear tracking
         SummonedPlayerIds.Clear();
@@ -368,6 +399,10 @@ internal class Summoner : CovenManager
         if (killer.Is(CustomRoles.Summoned))
         {
             SummonedKillCounts[killer.PlayerId]++;
+            if (SummonedKillsCountToSummoner.GetBool())
+            {
+                deadPlayer.SetRealKiller(_Player);
+            }
         }
         if (deadPlayer.Is(CustomRoles.Summoned))
         {
@@ -397,6 +432,7 @@ internal class Summoner : CovenManager
 
             // Revive the player
             targetPlayer.RpcRevive();
+            targetPlayer.RpcRandomVentTeleport();
 
             // Save their original role
             SaveOriginalRole(targetPlayer);
@@ -415,6 +451,7 @@ internal class Summoner : CovenManager
             playerState.InitTask(targetPlayer);
             playerState.ResetSubRoles();
 
+            targetPlayer.SetKillCooldownV3(KillCooldownOption.GetFloat());
             targetPlayer.ResetKillCooldown();
             targetPlayer.SyncSettings();
 

@@ -2211,9 +2211,10 @@
   "SummonerSettings.SummonDuration": "Summoned player duration",
   "SummonerSettings.SummonedKillCooldown": "Summoned kill cooldown",
   "SummonerSettings.SummonerKillCooldown": "Summoner kill cooldown",
-  "SummonerSettings.RevealSummoned": "Reveal summoned player",
+  "SummonerSettings.RevealSummoned": "Reveal Summoned player",
   "SummonerSettings.SummonedKillRequirement": "Summoned Kill Requirement",
   "SummonerSettings.AllowResummon": "Re-summoning players takes a use",
+  "SummonerSettings.SummonedKillsCountToSummoner": "Summoned kills count towards Summoner's kills",
   "SummonerSettings.HasAbilityUses": "Summoner has ability limit",
   "SummonerSettings.SummonedKnowsCoven": "Summoned players know who summoner is",
   "Summoner.SummonerDead": "You can't summon players while dead.",
@@ -2225,6 +2226,7 @@
   "Summoner.SummonAnnouncement": "<size=3><b>The SUMMONER has brought {0} back to life!\nKillers beware!</b></size>",
   "Summoner.SummonAnnouncementNameless": "<size=3><b>The SUMMONER has brought someone back to life!\nKillers beware!</b></size>",
   "Summoner.SummonAnnouncementAgain": "<size=3><b>The SUMMONER has reactivated {0}!\nKillers beware!</b></size>",
+  "Summoner.NoMeetingWhileSummoned": "You thought you could just call a meeting to get rid of the Summoned?\nWait until there are no more Summoned players!",
   "Summoned.Notification": "The Summoner has choses to revive you! Join the Coven and hunt those who wronged you!",
 
 
