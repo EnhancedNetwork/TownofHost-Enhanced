@@ -257,7 +257,7 @@ internal class NetworkedPlayerInfoSerializePatch
         {
             writer.Write((byte)keyValuePair.Key);
 
-            if (initialState)
+            if (keyValuePair.Key is PlayerOutfitType.Default)
             {
                 var oldOutfit = keyValuePair.Value;
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
