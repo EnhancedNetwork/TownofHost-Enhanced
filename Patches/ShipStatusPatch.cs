@@ -3,6 +3,7 @@ using System;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
@@ -352,7 +353,7 @@ class ShipStatusSerializePatch
                 continue;
             }
 
-            if (ReactorFlashList.Count > 0)
+            if (ReactorFlashList.Count > 0 && !Saboteur.IsCriticalSabotage())
             {
                 var sysSkip = Utils.GetCriticalSabotageSystemType();
 
