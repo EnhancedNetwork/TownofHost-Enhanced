@@ -959,6 +959,9 @@ public enum CustomRoles
     // Speed run
     Runner,
 
+    // Shapeshift War
+    Shifter,
+
     // Sub-role after 500
     NotAssigned = 500,
 
