@@ -258,3 +258,38 @@ public static class FindAGameManagerPatch
         return spriteRenderer;
     }
 }
+
+[HarmonyPatch(typeof(EnterCodeManager), nameof(EnterCodeManager.FindGameResult))]
+public static class EnterCodeManagerPatch
+{
+    public static IRegionInfo tempRegion;
+    public static int tempGameId;
+    [HarmonyPostfix]
+    public static void FindGameResult_Postfix(HttpMatchmakerManager.FindGameByCodeResponse response)
+    {
+        if (response != null && ServerManager.InstanceExists)
+        {
+            IRegionInfo region;
+            if (response.Region != StringNames.NoTranslation)
+            {
+                region = ServerManager.DefaultRegions.FirstOrDefault(r => r.TranslateName == response.Region);
+
+                if (region != null)
+                {
+                    tempRegion = region;
+                    tempGameId = response.Game.GameId;
+                    Logger.Info($"Caching Official Region {tempRegion.Name} for {tempGameId}", "EnterCodeManager.FindGameResult");
+                    return;
+                }
+            }
+
+            region = ServerManager.Instance.AvailableRegions.FirstOrDefault(r => r.Name == response.UntranslatedRegion);
+            if (region != null)
+            {
+                tempRegion = region;
+                tempGameId = response.Game.GameId;
+                Logger.Info($"Caching Region {tempRegion.Name} for {tempGameId}", "EnterCodeManager.FindGameResult");
+            }
+        }
+    }
+}

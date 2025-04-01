@@ -1087,6 +1087,15 @@ public static class Utils
             return name;
         }
 
+        if (AmongUsClient.Instance.GameId == EnterCodeManagerPatch.tempGameId)
+        {
+            if (EnterCodeManagerPatch.tempRegion != null)
+            {
+                region = EnterCodeManagerPatch.tempRegion;
+                name = EnterCodeManagerPatch.tempRegion.Name;
+            }
+        }
+
         if (region.PingServer.EndsWith("among.us", StringComparison.Ordinal))
         {
             // Official server
