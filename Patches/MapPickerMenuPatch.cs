@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace TOHE.Patches;
 
@@ -7,14 +8,16 @@ class CreateOptionsPickerPatch
 {
     public static bool SetDleks = false;
     private static MapSelectButton DleksButton;
-    [HarmonyPatch(typeof(GameOptionsMapPicker))]
+    [HarmonyPatch]
     public static class GameOptionsMapPickerPatch
     {
-        [HarmonyPatch(nameof(GameOptionsMapPicker.Initialize))]
+        [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.SetupMapButtons))]
         [HarmonyPostfix]
         [Obfuscation(Exclude = true)]
-        public static void Postfix_Initialize(GameOptionsMapPicker __instance)
+        public static void Postfix_Initialize(CreateGameMapPicker __instance)
         {
+            if (SceneManager.GetActiveScene().name == "FindAGame") return;
+
             int DleksPos = 3;
 
             MapSelectButton[] AllMapButton = __instance.transform.GetComponentsInChildren<MapSelectButton>();
@@ -26,7 +29,11 @@ class CreateOptionsPickerPatch
                 dlekS_ehT.transform.SetSiblingIndex(DleksPos + 2);
                 MapSelectButton dlekS_ehT_MapButton = dlekS_ehT.GetComponent<MapSelectButton>();
                 DleksButton = dlekS_ehT_MapButton;
-                dlekS_ehT_MapButton.MapIcon[0].transform.localScale = new Vector3(-1f, 1f, 1f);
+                foreach (var icon in dlekS_ehT_MapButton.MapIcon)
+                {
+                    if (icon == null || icon.transform == null) continue;
+                    icon.flipX = true;
+                }
                 dlekS_ehT_MapButton.Button.OnClick.RemoveAllListeners();
                 dlekS_ehT_MapButton.Button.OnClick.AddListener((UnityEngine.Events.UnityAction)(() =>
                 {
@@ -83,12 +90,14 @@ class CreateOptionsPickerPatch
             }
         }
 
-        [HarmonyPatch(nameof(GameOptionsMapPicker.FixedUpdate))]
+        [HarmonyPatch(typeof(GameOptionsMapPicker), nameof(GameOptionsMapPicker.FixedUpdate))]
         [HarmonyPrefix]
         [Obfuscation(Exclude = true)]
         public static bool Prefix_FixedUpdate(GameOptionsMapPicker __instance)
         {
             if (__instance == null) return true;
+
+            if (__instance.MapName == null) return false;
 
             if (DleksButton != null)
             {
@@ -103,7 +112,14 @@ class CreateOptionsPickerPatch
             }
 
             if (__instance.selectedMapId == 3)
+            {
+                if (SceneManager.GetActiveScene().name == "FindAGame")
+                {
+                    __instance.SelectMap(0);
+                    SetDleks = false;
+                }
                 return false;
+            }
 
             return true;
         }
