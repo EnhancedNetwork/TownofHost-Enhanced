@@ -1265,7 +1265,7 @@ class FixedUpdateInNormalGamePatch
             var playerName = player.name;
             var moddedTag = new StringBuilder();
 
-            if (Main.playerVersion.TryGetValue(playerClientId, out var ver))
+            if (Main.ShowModdedClientText.Value && Main.playerVersion.TryGetValue(playerClientId, out var ver))
             {
                 if (Main.ForkId != ver.forkId)
                 {

@@ -1084,6 +1084,7 @@
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
   "RequiterInfoLong": "(Crewmates):\nThe Requiter has no bullets at the beginning.\nFor each Crewmate ejected,the Requiter gains one bullet.\nThe Requiter can kill when they have bullets.",
   "ShowTextOverlay": "Text Overlay",
+  "ShowModdedClientText": "Modded Client Text",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
   "Overlay.DebugMode": "<size=50%>Debug Mode</size>",
