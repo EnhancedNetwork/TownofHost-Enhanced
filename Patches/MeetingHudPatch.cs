@@ -447,8 +447,7 @@ class CheckForEndVotingPatch
         if (CustomRoles.Bard.RoleExist())
         {
             Main.BardCreations++;
-            try { name = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text"); }
-            catch { name = GetString("ByBardGetFailed"); }
+            name = GetString("ByBardGetFailed");
             name += "\n\t\t——" + GetString("ByBard");
             goto EndOfSession;
         }
