@@ -199,6 +199,7 @@ public static class CustomRolesHelper
             CustomRoles.Massacre or
             CustomRoles.Rulebook or
             CustomRoles.Volatile or
+            CustomRoles.Mutant or
             CustomRoles.Cultist;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
@@ -1389,6 +1390,7 @@ public static class CustomRolesHelper
            CustomRoles.DarkFairy => CountTypes.DarkFairy,
            CustomRoles.Assassin => CountTypes.Assassin,
            CustomRoles.Vaporizer => CountTypes.Vaporizer,
+           CustomRoles.Mutant => CountTypes.Mutant,
            CustomRoles.SchrodingersCat => CountTypes.None,
            CustomRoles.Solsticer => CountTypes.None,
            CustomRoles.Revenant => CountTypes.None,
@@ -1458,6 +1460,7 @@ public static class CustomRolesHelper
             CustomRoles.DarkFairy => CustomWinner.DarkFairy,
             CustomRoles.Assassin => CustomWinner.Assassin,
             CustomRoles.Vaporizer => CustomWinner.Vaporizer,
+            CustomRoles.Mutant => CustomWinner.Mutant,
             CustomRoles.Keymaster => CustomWinner.Keymaster,
             CustomRoles.Narc => CustomWinner.Narc,
             CustomRoles.Artist => CustomWinner.Artist,
@@ -1505,6 +1508,7 @@ public static class CustomRolesHelper
             CountTypes.DarkFairy => CustomRoles.DarkFairy,
             CountTypes.Assassin => CustomRoles.Assassin,
             CountTypes.Vaporizer => CustomRoles.Vaporizer,
+            CountTypes.Mutant => CustomRoles.Mutant,
             CountTypes.Slayer => CustomRoles.Slayer,
             CountTypes.Contaminator => CustomRoles.Contaminator,
             CountTypes.Massacre => CustomRoles.Massacre,
@@ -1608,5 +1612,6 @@ public enum CountTypes
     Contaminator,
     Massacre,
     Rulebook,
-    Volatile
+    Volatile,
+    Mutant
 }

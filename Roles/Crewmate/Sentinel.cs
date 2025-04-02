@@ -36,6 +36,9 @@ internal class Sentinel : RoleBase
         {
             return true;
         }
+
+        if (killer == reporter) return true;
+
         reporter.RpcRemoveAbilityUse();
 
         if (reporter.Is(CustomRoles.Sentinel))

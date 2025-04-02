@@ -45,9 +45,9 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
-    public const string PluginVersion = "2025.0325.163.00"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "1.6.4";
-    public const string PluginDisplaySuffix = "";
+    public const string PluginVersion = "2025.0326.170.01"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "1.7.0";
+    public const string PluginDisplaySuffix = " Dev 1.1";
     public const string SupportedVersionAU = "2025.3.25"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -894,6 +894,7 @@ public enum CustomRoles
     Lawyer,
     Maverick,
     Massacre,
+    Mutant,
     Narc,
     Opportunist,
     Pelican,
@@ -1156,6 +1157,7 @@ public enum CustomWinner
     Predator = CustomRoles.Predator,
     Volatile = CustomRoles.Volatile,
     Gunslinger = CustomRoles.Gunslinger,
+    Mutant = CustomRoles.Mutant,
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners
