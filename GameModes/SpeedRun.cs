@@ -62,11 +62,10 @@ public static class SpeedRun
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
 
-        /*
+        
         SpeedRun_ShowChatInGame = BooleanOptionItem.Create(Id + 20, "SpeedRun_ShowChatInGame", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
-        */
 
         SpeedRun_RunnerNormalSpeed = FloatOptionItem.Create(Id + 4, "SpeedRun_RunnerNormalSpeed", new(0.25f, 5f, 0.25f), 1.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)

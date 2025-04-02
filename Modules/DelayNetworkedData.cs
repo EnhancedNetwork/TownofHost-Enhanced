@@ -29,7 +29,8 @@ public class InnerNetClientPatch
                 {
                     messageWriter.EndMessage();
                     __instance.SendOrDisconnect(messageWriter);
-                    messageWriter.Clear(SendOption.Reliable);
+                    messageWriter.Recycle();
+                    messageWriter = MessageWriter.Get(SendOption.Reliable);
                     messageWriter.StartMessage(6);
                     messageWriter.Write(__instance.GameId);
                     messageWriter.WritePacked(clientId);
@@ -227,7 +228,7 @@ public class InnerNetClientPatch
         }
         else if (msg.Length > 1000)
         {
-            Logger.Info($"Large Packet({msg.Length})", "SendOrDisconnectPatch");
+            Logger.Info($"Large {msg.SendOption} Packet({msg.Length})", "SendOrDisconnectPatch");
         }
     }
 }
@@ -256,7 +257,7 @@ internal class NetworkedPlayerInfoSerializePatch
         {
             writer.Write((byte)keyValuePair.Key);
 
-            if (initialState)
+            if (keyValuePair.Key is PlayerOutfitType.Default)
             {
                 var oldOutfit = keyValuePair.Value;
                 NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();

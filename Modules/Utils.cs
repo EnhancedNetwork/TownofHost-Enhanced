@@ -1087,6 +1087,15 @@ public static class Utils
             return name;
         }
 
+        if (AmongUsClient.Instance.GameId == EnterCodeManagerPatch.tempGameId)
+        {
+            if (EnterCodeManagerPatch.tempRegion != null)
+            {
+                region = EnterCodeManagerPatch.tempRegion;
+                name = EnterCodeManagerPatch.tempRegion.Name;
+            }
+        }
+
         if (region.PingServer.EndsWith("among.us", StringComparison.Ordinal))
         {
             // Official server
@@ -2226,7 +2235,8 @@ public static class Utils
             {
                 writer.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(writer);
-                writer.Clear(SendOption.Reliable);
+                writer.Recycle();
+                writer = MessageWriter.Get(SendOption.Reliable);
                 hasValue = false;
                 writer.StartMessage(5);
                 writer.Write(AmongUsClient.Instance.GameId);
