@@ -1084,7 +1084,7 @@ class FixedUpdateInNormalGamePatch
         {
             if (GameStates.IsLobby)
             {
-                bool shouldChangeGamePublic = (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported;
+                bool shouldChangeGamePublic = !Main.AllowPublicRoom || !VersionChecker.IsSupported;
                 if (shouldChangeGamePublic && AmongUsClient.Instance.IsGamePublic)
                 {
                     AmongUsClient.Instance.ChangeGamePublic(false);
