@@ -370,7 +370,8 @@ public class GameStartManagerBeginGamePatch
             AURoleOptions.GuardianAngelCooldown = 0f;
         }
 
-        PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+        GameManager.Instance.LogicOptions.SetDirty();
+        OptionItem.SyncAllOptions();
         RPC.RpcVersionCheck();
     }
     private static byte SelectRandomMap()
@@ -444,7 +445,8 @@ class ResetStartStatePatch
             if (GameStates.IsNormalGame)
                 Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
-            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+            GameManager.Instance.LogicOptions.SetDirty();
+            OptionItem.SyncAllOptions();
         }
     }
 }

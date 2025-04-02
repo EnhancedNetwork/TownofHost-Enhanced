@@ -47,11 +47,11 @@ internal static class FFAManager
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetHeader(true);
-        /*
+        
         FFA_ShowChatInGame = BooleanOptionItem.Create(67_233_014, "FFA_ShowChatInGame", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
             .SetGameMode(CustomGameMode.FFA);
-        */
+        
         FFA_KCD = FloatOptionItem.Create(67_223_002, "FFA_KCD", new(1f, 60f, 1f), 10f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.FFA)
             .SetColor(new Color32(0, 255, 165, byte.MaxValue))
