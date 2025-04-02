@@ -1,4 +1,3 @@
-using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
@@ -234,7 +233,7 @@ internal class Revolutionist : RoleBase
                     SetDrawPlayerRPC(player, rv_target, true);
                     NotifyRoles(SpecifySeer: player, SpecifyTarget: rv_target);
                     ResetCurrentDrawTarget(playerId);
-                    if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt())
+                    if (IRandom.Instance.Next(1, 100) <= RevolutionistKillProbability.GetInt() && !rv_target.IsTransformedNeutralApocalypse())
                     {
                         rvTargetId.SetDeathReason(PlayerState.DeathReason.Sacrifice);
                         player.RpcMurderPlayer(rv_target);
@@ -245,7 +244,7 @@ internal class Revolutionist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = ExtendedPlayerControl.GetKillDistances(ovverideValue: player.Is(Reach.IsReach), newValue: 2) + 0.5f;
                     float dis = GetDistance(player.GetCustomPosition(), rv_target.GetCustomPosition());
                     if (dis <= range)
                     {
