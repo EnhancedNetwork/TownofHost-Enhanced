@@ -3170,7 +3170,7 @@ internal class ChatCommands
                 }
                 else if (Utils.IsPlayerModerator(player.FriendCode) || TagManager.CanUseSayCommand(player.FriendCode))
                 {
-                    if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowSayCommand.GetBool() == false)
+                    if (!TagManager.CanUseSayCommand(player.FriendCode) && (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowSayCommand.GetBool() == false))
                     {
                         Utils.SendMessage(GetString("SayCommandDisabled"), player.PlayerId);
                         break;
