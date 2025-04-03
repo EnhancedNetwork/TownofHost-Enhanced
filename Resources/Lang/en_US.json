@@ -4547,5 +4547,11 @@
   "Mutant": "Mutant",
   "MutantInfo": "Shift like an Impostor",
   "MutantInfoLong": "As the Mutant, you can shapeshift into any target.",
-  "WinnerRoleText.Mutant": "Mutant Wins!"
+  "WinnerRoleText.Mutant": "Mutant Wins!",
+
+  "Kidnapper": "Kidnapper",
+  "KidnapperInfo": "Kidnap and kill your target",
+  "KidnapperInfoLong": "As the Kidnapper, you may select a target via your kill button, then unshift to teleport them to you and kill them. Double click to kill normally.",
+  "KidnapCooldown349": "Kidnap cooldown",
+  "KidnapUses349": "Kidnap uses"
 }

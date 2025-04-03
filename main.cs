@@ -726,6 +726,7 @@ public enum CustomRoles
     Instigator,
     Investor,
     Kamikaze,
+    Kidnapper,
     KillingMachine,
     Lightning,
     Ludopath,
