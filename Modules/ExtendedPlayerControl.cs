@@ -245,9 +245,9 @@ static class ExtendedPlayerControl
                         {
                             remeberRoleType = player.IsHost() ? RoleTypes.Crewmate : RoleTypes.Impostor;
 
-                            // For Desync Shapeshifter
-                            if (newDesyncRole is RoleTypes.Shapeshifter)
-                                remeberRoleType = RoleTypes.Shapeshifter;
+                            // For Desync Shapeshifter and Desync Phantom
+                            if (newDesyncRole is RoleTypes.Shapeshifter or RoleTypes.Phantom)
+                                remeberRoleType = newDesyncRole;
                         }
                         else
                         {
