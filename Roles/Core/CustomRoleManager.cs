@@ -213,7 +213,7 @@ public static class CustomRoleManager
             PlagueBearer.CheckAndInfect(killer, target);
         }
 
-        Logger.Info("Start", "NarcManager.CheckMurder);
+        Logger.Info("Start", "NarcManager.CheckMurder");
 
         if (!NarcManager.CheckMurder(killer, target))
         {
