@@ -171,7 +171,15 @@ public class RoleAssign
                 continue;
             }
 
-            if (role.IsImpostor()) Roles[RoleAssignType.Impostor].Add(info);
+            if (role.IsImpostor())
+            {
+                if (role == NarcManager.RoleForNarcToSpawnAs)
+                {
+                    info = new(role, 100, 1);
+                    Roles[RoleAssignType.Crewmate].Add(info);
+                }
+                else Roles[RoleAssignType.Impostor].Add(info);
+            }
             else if (role.IsNK()) Roles[RoleAssignType.NeutralKilling].Add(info);
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
             else if (role.IsNonNK()) Roles[RoleAssignType.NonKillingNeutral].Add(info);
