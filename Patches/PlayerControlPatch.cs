@@ -1240,7 +1240,7 @@ class FixedUpdateInNormalGamePatch
                     if (playerAmOwner)
                     {
                         //Kill target override processing
-                        if (!player.Is(Custom_Team.Impostor) && player.CanUseKillButton() && !playerData.IsDead)
+                        if ((!player.Is(Custom_Team.Impostor) || NarcManager.IsNarcAssigned()) && player.CanUseKillButton() && !playerData.IsDead)
                         {
                             var players = player.GetPlayersInAbilityRangeSorted();
                             PlayerControl closest = !players.Any() ? null : players.First();
