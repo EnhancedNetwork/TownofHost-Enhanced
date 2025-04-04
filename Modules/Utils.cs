@@ -2055,6 +2055,13 @@ public static class Utils
                                 blankRT.Append(TaskState.GetTaskState()); // Random task count for revealed trickster
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
                             }
+                            if (target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
+                            {
+                                blackRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                                if (Sheriff.ShowShotLimit.GetBool())
+                                    blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), GetString($" ({Sheriff.ShotLimitOpt.GetInt()})")));
+                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                            }
                             if (Illusionist.IsNonCovIllusioned(target.PlayerId))
                             {
                                 var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
@@ -2063,13 +2070,6 @@ public static class Utils
                                 {
                                     blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(target.PlayerId, false));
                                 }
-                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
-                            }
-                            if (target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
-                            {
-                                blackRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
-                                if (Sheriff.ShowShotLimit.GetBool())
-                                    blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).Shade(0.25f), GetString($" ({Sheriff.ShotLimitOpt.GetInt()})")));
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
                             }
                         }
