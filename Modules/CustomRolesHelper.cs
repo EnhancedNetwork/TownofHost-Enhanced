@@ -43,7 +43,7 @@ public static class CustomRolesHelper
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
         if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
-        if (role.IsImpostor() && NarcManager.IsNarcAssigned) // When Narc is in a game,make all Impostor roles desync roles so imps will be able to kill each other
+        if (role.IsImpostor() && NarcManager.IsNarcAssigned()) // When Narc is in a game,make all Impostor roles desync roles so imps will be able to kill each other
             return role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes();
 
         return (role.HasImpBasis(false)) && !role.IsImpostor()
