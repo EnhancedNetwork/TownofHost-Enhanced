@@ -1266,8 +1266,8 @@ class MeetingHudStartPatch
             PlayerControl seer = PlayerControl.LocalPlayer;
             var seerRoleClass = seer.GetRoleClass();
 
-            // if based role is Shapeshifter and is Desync Shapeshifter
-            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
+            // if based role is Shapeshifter/Phantom and is Desync Shapeshifter/Phantom
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() is RoleTypes.Shapeshifter or CustomRoles.Phantom && seer.HasDesyncRole())
             {
                 // When target is impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);
