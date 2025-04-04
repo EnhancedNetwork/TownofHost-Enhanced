@@ -1316,13 +1316,13 @@ class FixedUpdateInNormalGamePatch
                 {
                     var blankRT = new StringBuilder();
                     var result = new StringBuilder(roleText.text);
-                    if ((player.Is(CustomRoles.Trickster) && (player.Is(CustomRoles.Narc) || localplayer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(playerId))
+                    if ((player.Is(CustomRoles.Trickster) && (!player.Is(CustomRoles.Narc) || localPlayer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(playerId))
                     {
                         blankRT.Clear().Append(Overseer.GetRandomRole(localPlayerId)); // random role for revealed trickster
                         blankRT.Append(TaskState.GetTaskState()); // random task count for revealed trickster
                         result.Clear().Append($"<size=1.3>{blankRT}</size>");
                     }
-                    if (player.Is(CustomRoles.Narc) && !localplayer.Is(CustomRoles.Madmate))
+                    if (player.Is(CustomRoles.Narc) && !localPlayer.Is(CustomRoles.Madmate))
                     {
                         blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
                         if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
