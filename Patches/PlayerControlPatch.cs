@@ -1325,7 +1325,7 @@ class FixedUpdateInNormalGamePatch
                     if (player.Is(CustomRoles.Narc) && !localPlayer.Is(CustomRoles.Madmate))
                     {
                         blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
-                        if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
+                        if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
                         result.Clear().Append($"<size=1.3>{blankRT}</size>");
                     }
                     if (Illusionist.IsNonCovIllusioned(playerId))
