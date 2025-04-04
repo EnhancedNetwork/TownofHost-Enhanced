@@ -239,6 +239,7 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;
                 }
+                if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
 
                 if (!role.IsEnable() && !role.RoleExist(true) && Options.CanOnlyGuessEnabled.GetBool())
                 {
