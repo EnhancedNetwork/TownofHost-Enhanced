@@ -189,10 +189,10 @@ internal class Councillor : RoleBase
                 }
                 else if (pc.Is(CustomRoles.Narc))
                 {
-                    if (NarcManager.CheckBlockGuesses(pc, target, isUi)) return true;
+                    if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
                     else CouncillorSuicide = target.IsPlayerCrewmateTeam();
                 }
-                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole.IsMadmate())
+                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
