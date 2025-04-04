@@ -14,6 +14,7 @@ public static class AddonAssign
             case CustomRoles.Lovers:
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
+            case CustomRoles.Narc:
                 return true;
             case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
@@ -195,5 +196,21 @@ public static class AddonAssign
         }
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
+    }
+
+    public static void StartAssigningNarc()
+    {
+        if (!NarcManager.IsNarcAssigned()) return;
+
+        List<PlayerControl> PlayerList = NarcManager.RoleForNarcToSpawnAs.GetPlayerListByRole();
+        if (!PlayerList.Any()) return;
+
+        int optimpnum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
+        int impnum = Main.AllPlayerControls.Count(p => p.GetCustomRole().IsImpostor());
+        if (NarcManager.RoleForNarcToSpawnAs.IsImpostor() && impnum <= optimpnum) return;
+
+        if (PlayerList.Count >= 2) PlayerList = PlayerList.Shuffle().Shuffle().ToList();
+        var pc = PlayerList.RandomElement();
+        Main.PlayerStates[pc.PlayerId].SetSubRole(CustomRoles.Narc);
     }
 }
