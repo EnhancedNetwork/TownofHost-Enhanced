@@ -103,8 +103,8 @@ internal class Captain : RoleBase
         for (int i = AllSubRoles.Count - 1; i >= 0; i--)
         {
             var role = AllSubRoles[i];
-            if (role is CustomRoles.Cleansed ||
-                or CustomRoles.LastImpostor ||
+            if (role is CustomRoles.Cleansed
+                or CustomRoles.LastImpostor
                 or CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                 role.IsBetrayalAddon())
             {
