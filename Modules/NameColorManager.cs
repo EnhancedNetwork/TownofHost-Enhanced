@@ -99,6 +99,9 @@ public static class NameColorManager
         //Virus
         if (Virus.KnowRoleColor(seer, target) != "") color = Virus.KnowRoleColor(seer, target);
 
+        // Narc & Sheriff/ChiefOfPolice
+        if (NarcManager.KnowRoleOfTarget(seer, target)) color = NarcManager.NarcAndPoliceSeeColor(seer, target);
+
         if (color != "" && color != string.Empty) return true;
 
         else return seer == target
