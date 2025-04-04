@@ -96,7 +96,7 @@ public static class CustomRolesHelper
         => role.GetVNRole() is CustomRoles.Impostor 
             or CustomRoles.Shapeshifter 
             or CustomRoles.Phantom
-            || (DesyncRole && role.GetDYRole() is RoleTypes.Impostor
+            || (ForDesyncRole && role.GetDYRole() is RoleTypes.Impostor
                 or RoleTypes.Shapeshifter
                 or RoleTypes.Phantom);
 
