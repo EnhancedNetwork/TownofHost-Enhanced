@@ -127,7 +127,8 @@ internal class DoubleAgent : RoleBase
 
         if (!BombIsActive)
         {
-            if (target.Is(Custom_Team.Impostor)) return false;
+            if (target.Is(Custom_Team.Impostor) && !voter.Is(CustomRoles.Narc)) return false;
+            if (target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam() && voter.Is(CustomRoles.Narc)) return false;
             if (voter == target) return false;
 
             if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
@@ -219,7 +220,7 @@ internal class DoubleAgent : RoleBase
                     Role = CRoleChangeRoles[IRandom.Instance.Next(2, CRoleChangeRoles.Length)];
 
                 // If role is not on Impostor team remove all Impostor addons if any.
-                if (!Role.IsImpostorTeam())
+                if (!Role.IsImpostorTeamV3())
                 {
                     foreach (CustomRoles allAddons in player.GetCustomSubRoles())
                     {
@@ -230,8 +231,11 @@ internal class DoubleAgent : RoleBase
                     }
                 }
                 // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Admired) && !player.Is(CustomRoles.Narc))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+
+                // If Double Agent is Narc and Role is Traitor,Double Agent turns into Parasite instead
+                if (Role is CustomRoles.Traitor && player.Is(CustomRoles.Narc)) Role = CustomRoles.Parasite;
 
                 Init();
                 player.GetRoleClass().OnRemove(player.PlayerId);
@@ -241,8 +245,10 @@ internal class DoubleAgent : RoleBase
                 player.MarkDirtySettings();
 
                 string RoleName = ColorString(GetRoleColor(player.GetCustomRole()), GetRoleName(player.GetCustomRole()));
-                if (Role == CustomRoles.ImpostorTOHE)
-                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired-")}{GetString("ImpostorTOHE")}");
+                if (player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Narc), $"{GetString("Narc-")}{GetString(Role.ToString())}");
                 player.Notify(ColorString(GetRoleColor(player.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
             }
         }
