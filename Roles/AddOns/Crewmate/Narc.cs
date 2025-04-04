@@ -1,3 +1,4 @@
+using System;
 using AmongUs.GameOptions;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Options;
@@ -11,6 +12,48 @@ public static class NarcManager //I dont think it should be a RoleBase class,alt
     public static CustomRoles RoleForNarcToSpawnAs;
     public static bool IsNarcAssigned() => RoleForNarcToSpawnAs != CustomRoles.NotAssigned;
     //==================================================================\\
+    private static OptionItem NarcSpawnChance;
+    private static OptionItem NarcCanUseSabotage;
+    private static OptionItem NarcHasCrewVision;
+    //public static OptionItem MadmateCanBeNarc;
+    private static OptionItem ImpsCanKillEachOther;
+
+    public static void SetUpOptionsForNarc(int id = 31200, CustomRoles role = CustomRoles.Narc, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.CrewmateRoles)
+    {
+        var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
+            .SetHeader(true)
+            .SetGameMode(customGameMode) as StringOptionItem;
+
+        NarcSpawnChance = IntegerOptionItem.Create(id + 2, "ChanceToSpawn", new(0, 100, 5), 65, tab, false)
+            .SetParent(spawnOption)
+            .SetValueFormat(OptionFormat.Percent)
+            .SetGameMode(customGameMode);
+
+        NarcCanUseSabotage = BooleanOptionItem.Create(id + 3, "NarcCanUseSabotage", true, tab, false)
+            .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
+
+        NarcHasCrewVision = BooleanOptionItem.Create(id + 4, "NarcHasCrewVision", false, tab, false)
+            .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
+
+        MadmateCanBeNarc = BooleanOptionItem.Create(id + 5, "MadmateCanBeNarc", false, tab, false)
+            .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
+        
+        ImpsCanKillEachOther = BooleanOptionItem.Create(id + 6, "ImpsCanKillEachOther", false, tab, false)
+            .SetParent(spawnOption)
+            .SetGameMode(customGameMode);        
+
+
+        var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 1, 1), 1, tab, false)
+            .SetParent(spawnOption)
+            .SetHidden(true)
+            .SetGameMode(customGameMode);
+
+        CustomRoleSpawnChances.Add(role, spawnOption);
+        CustomRoleCounts.Add(role, countOption);
+    }
 
     public static void InitForNarc()
     {
@@ -21,13 +64,13 @@ public static class NarcManager //I dont think it should be a RoleBase class,alt
         if (value <= NarcSpawnChance.GetInt() && CustomRoles.Narc.IsEnable())
         {
             List<CustomRoles> RolesEnabled = CustomRolesHelper.AllRoles
-                                        .Where(r => r.IsEnable() && (r.IsImpostor() || r.IsMadmate()) && !r.IsVanilla())
+                                        .Where(r => r.IsEnable() && (r.IsImpostor() /*|| r.IsMadmate()*/) && !r.IsVanilla() && !r.IsGhostRole())
                                         .ToList();
             var RolesToSelect = new List<CustomRoles>();
             foreach (var improle in RolesEnabled)
             {
                 if (RoleAssign.SetRoles.ContainsValue(improle)) continue;
-                if (improle.IsMadmate() && !MadmateCanBeNarc.GetBool()) continue;
+                //if (improle.IsMadmate() && !MadmateCanBeNarc.GetBool()) continue;
                 RolesToSelect.Add(improle);
             }
 
