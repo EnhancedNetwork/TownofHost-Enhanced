@@ -43,8 +43,10 @@ public static class CustomRolesHelper
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
         if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
+        if (role.IsImpostor() && NarcManager.IsNarcAssigned) // When Narc is in a game,make all Impostor roles desync roles so imps will be able to kill each other
+            return role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes();
 
-        return (role.GetStaticRoleClass().ThisRoleBase is CustomRoles.Impostor or CustomRoles.Shapeshifter) && !role.IsImpostor()
+        return (role.HasImpBasis(false)) && !role.IsImpostor()
             ? role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes()
             : RoleTypes.GuardianAngel;
     }
@@ -72,8 +74,7 @@ public static class CustomRolesHelper
 
         if (Options.CurrentGameMode is CustomGameMode.SpeedRun) return true;
 
-        var customRole = player.GetCustomRole();
-        return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
+        return player.GetCustomRole().HasImpBasis();
     }
     //This is a overall check for vanilla clients to see if they are imp basis 
     public static bool IsGhostRole(this CustomRoles role)
@@ -90,6 +91,14 @@ public static class CustomRolesHelper
     }
     public static bool HasGhostRole(this PlayerControl player) => player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole());
 
+    // Role's basis role is an Impostor (regular imp,shapeshifter,phantom) role
+    public static bool HasImpBasis(this CustomRoles role,bool DesyncRole = true)
+        => role.GetVNRole() is CustomRoles.Impostor 
+            or CustomRoles.Shapeshifter 
+            or CustomRoles.Phantom
+            || (DesyncRole && role.GetDYRole() is RoleTypes.Impostor
+                or RoleTypes.Shapeshifter
+                or RoleTypes.Phantom);
 
     /*
     public static bool IsExperimental(this CustomRoles role)
@@ -398,13 +407,16 @@ public static class CustomRolesHelper
             or CustomRoles.Contagious
             or CustomRoles.Rascal
             or CustomRoles.Soulless
-            or CustomRoles.Enchanted;
+            or CustomRoles.Enchanted
+            or CustomRoles.Narc;
     }
 
     public static bool IsBetrayalAddonV2(this CustomRoles role)
         => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal)
             || role is CustomRoles.Admired;
 
+    // Exactly,this is not only used to check if an add-on is assigned mid-game
+    // It can also be used to check if an add-on should never be removed
     public static bool IsAddonAssignedMidGame(this CustomRoles role)
         => role.IsBetrayalAddonV2()
         || role is CustomRoles.Knighted
@@ -426,6 +438,21 @@ public static class CustomRolesHelper
             CustomRoles.Swift;
     }
 
+    public static bool CheckImpCanSeeAllies(this PlayerControl pc, bool CheckAsSeer = false, bool CheckAsTarget = false)
+    {
+        if (pc.Is(CustomRoles.Narc) && CheckAsSeer) return false; // Narc cannot see Impostors
+        if (Main.PlayerStates[pc.PlayerId].IsNecromancer) return false; // Necromancer
+
+        //bool OnlyOneImp = Main.AliveImpostorCount < 2;
+        return pc.GetCustomRole() switch
+        {
+            var r when r.IsImpostor() => true,
+            CustomRoles.Refugee => true,
+            //CustomRoles.Parasite => OnlyOneImp,
+            _ => false
+        };
+    }
+
     public static CustomRoles GetBetrayalAddon(this PlayerControl pc, bool forRecruiter = false)
     {
         //Soulless and Egoist are excluded because they don't actually change player's team.
@@ -436,7 +463,8 @@ public static class CustomRolesHelper
 
         //for recruiting roles to get their respective betrayal add-on
         if (forRecruiter)
-        { 
+        {
+            if (addon is CustomRoles.Narc) return CustomRoles.Admired;
             if (addon is CustomRoles.NotAssigned)
                 return pc.GetCustomRole() switch //default addon for recruiting roles
                 {
@@ -492,9 +520,10 @@ public static class CustomRolesHelper
     {
         if (!onlyMainRole)
         {
-            if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;            
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Narc) && x is not CustomRoles.Madmate)) return false;
         }
+        if (player.IsNecromancer) return false;
 
         return (player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate) && !player.IsNecromancer;
     }
@@ -504,9 +533,11 @@ public static class CustomRolesHelper
     {
         if (!onlyMainRole)
         {
-            if (player.SubRoles.Contains(CustomRoles.Admired)) return true;
+            if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Narc)) 
+                return true;
             if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
         }
+        if (player.IsNecromancer) return false;
 
         return player.MainRole.IsCrewmate() && !player.IsNecromancer;
     }
@@ -516,8 +547,7 @@ public static class CustomRolesHelper
     {
         if (!onlyMainRole)
         {
-            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
-            if (player.SubRoles.Contains(CustomRoles.Enchanted) || player.SubRoles.Contains(CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Any(x => x is CustomRoles.Admired or CustomRoles.Madmate or CustomRoles.Enchanted or CustomRoles.Narc)) return false;
             if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted))) return true;
         }
 
@@ -531,7 +561,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
-            if (player.SubRoles.Contains(CustomRoles.Admired)) return false;
+            if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Narc)) return false;
             if (player.SubRoles.Any(x => (x.IsConverted() && x is not CustomRoles.Enchanted))) return false;
         }
 
