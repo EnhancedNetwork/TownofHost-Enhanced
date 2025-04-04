@@ -2057,7 +2057,7 @@ public static class Utils
                             }
                             if (target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
                             {
-                                blackRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                                blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
                                 if (Sheriff.ShowShotLimit.GetBool())
                                     blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), GetString($" ({Sheriff.ShotLimitOpt.GetInt()})")));
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
