@@ -2049,10 +2049,17 @@ public static class Utils
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target))
                         {
                             var blankRT = new StringBuilder();
-                            if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(target.PlayerId))
+                            if ((target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(target.PlayerId))
                             {
                                 blankRT.Clear().Append(Overseer.GetRandomRole(seer.PlayerId)); // Random trickster role
                                 blankRT.Append(TaskState.GetTaskState()); // Random task count for revealed trickster
+                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                            }
+                            if (target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
+                            {
+                                blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                                if (Sheriff.ShowShotLimit.GetBool())
+                                    blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), GetString($" ({Sheriff.ShotLimitOpt.GetInt()})")));
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
                             }
                             if (Illusionist.IsNonCovIllusioned(target.PlayerId))

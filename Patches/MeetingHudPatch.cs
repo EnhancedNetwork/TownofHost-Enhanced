@@ -1158,10 +1158,16 @@ class MeetingHudStartPatch
             {
                 var blankRT = new StringBuilder();
                 var result = new StringBuilder(roleTextMeeting.text);
-                if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(targetId))
+                if ((target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || player.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(targetId))
                 {
                     blankRT.Clear().Append(Overseer.GetRandomRole(playerId));
                     blankRT.Append(TaskState.GetTaskState());
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
+                if (target.Is(CustomRoles.Narc) && !player.Is(CustomRoles.Madmate))
+                {
+                    blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                    if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
                     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
                 if (Illusionist.IsNonCovIllusioned(targetId))
