@@ -1316,16 +1316,20 @@ class FixedUpdateInNormalGamePatch
                 {
                     var blankRT = new StringBuilder();
                     var result = new StringBuilder(roleText.text);
-                    if (player.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(playerId))
+                    if ((player.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || localplayer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(playerId))
                     {
-                        roleText.enabled = true; //have to make it return true otherwise modded Overseer won't be able to reveal Trickster's role,same for Illusionist's targets
                         blankRT.Clear().Append(Overseer.GetRandomRole(localPlayerId)); // random role for revealed trickster
                         blankRT.Append(TaskState.GetTaskState()); // random task count for revealed trickster
                         result.Clear().Append($"<size=1.3>{blankRT}</size>");
                     }
+                    if (target.Is(CustomRoles.Narc) && !localplayer.Is(CustomRoles.Madmate))
+                    {
+                        blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                        if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).Shade(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
+                        result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                    }
                     if (Illusionist.IsNonCovIllusioned(playerId))
                     {
-                        roleText.enabled = true;
                         var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
                         blankRT.Clear().Append(randomRole.GetColoredTextByRole(GetString(randomRole.ToString())));
                         if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
