@@ -163,8 +163,8 @@ internal class President : RoleBase
             foreach (var tar in Main.AllAlivePlayerControls)
             {
                 if (!MadmatesSeePresident.GetBool() && tar.Is(CustomRoles.Madmate) && tar != pc) continue;
-                if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral()) continue;
-                if (!ImpsSeePresident.GetBool() && (tar.GetCustomRole().IsImpostor() || tar.Is(CustomRoles.Crewpostor))) continue;
+                if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral() && !tar.GetCustomRole().IsMadmate()) continue;
+                if (!ImpsSeePresident.GetBool() && tar.GetCustomRole().IsImpostorTeamV3() && !tar.Is(CustomRoles.Narc)) continue;
                 if (!CovenSeePresident.GetBool() && tar.GetCustomRole().IsCoven()) continue;
                 Utils.SendMessage(string.Format(GetString("PresidentRevealed"), pc.GetRealName()), tar.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.President), GetString("PresidentRevealTitle")));
             }
@@ -236,7 +236,7 @@ internal class President : RoleBase
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
+        => (target.Is(CustomRoles.President) && (seer.GetCustomRole().IsCrewmate() && seer.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
             (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
             (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
             (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCoven() && CovenSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
