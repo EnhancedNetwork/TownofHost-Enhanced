@@ -1453,7 +1453,7 @@ static class ExtendedPlayerControl
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
-        else if (Admirer.CheckKnowRoleTarget(seer, target) return true;
+        else if (Admirer.CheckKnowRoleTarget(seer, target)) return true;
         else if (NarcManager.KnowRoleOfTarget(seer, target)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
