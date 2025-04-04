@@ -55,7 +55,8 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner) continue;
+            if (!phantom.HasDesyncRole && !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             // Set Phantom when his start vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
@@ -93,7 +94,8 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner) continue;
+            if (!phantom.HasDesyncRole && !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
 
             var clientId = target.GetClientId();
 
