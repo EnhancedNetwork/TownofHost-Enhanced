@@ -477,7 +477,7 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x != CustomRoles.Narc && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                 {
                     if (player.Is(CustomRoles.Madmate))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
@@ -489,10 +489,10 @@ class CheckForEndVotingPatch
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
                 }
 
-                else if (player.GetCustomRole().IsImpostorTeamV3())
+                else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Narc))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
-                else if (player.GetCustomRole().IsCrewmate())
+                else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc))
                     name = string.Format(GetString("IsGood"), realName);
 
                 else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
@@ -503,27 +503,27 @@ class CheckForEndVotingPatch
 
                 break;
             case 2:
-                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() ? coloredRole : player.GetCustomRole().ToColoredString();
+                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() || player.Is(CustomRoles.Narc) ? coloredRole : player.GetCustomRole().ToColoredString();
                 name = string.Format(GetString("PlayerIsRole"), realName, ejectedRoleText);
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x != CustomRoles.Narc && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                     {
                         if (player.Is(CustomRoles.Madmate))
                             name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
                         else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
                             name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                        else if (player.Is(CustomRoles.Admired))
+                        else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                             name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
                         else if (player.Is(CustomRoles.Enchanted))
                             name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     }
-                    else if (player.GetCustomRole().IsImpostorTeamV3())
+                    else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Narc))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
                     else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                    else if (player.GetCustomRole().IsCrewmate())
+                    else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
                     else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
