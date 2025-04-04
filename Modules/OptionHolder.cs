@@ -103,7 +103,7 @@ public static class Options
         Chance100,
     }
     [Obfuscation(Exclude = true)]
-    private enum RatesZeroOne
+    public enum RatesZeroOne
     {
         RoleOff,
         RoleRate,

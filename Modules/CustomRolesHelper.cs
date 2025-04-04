@@ -43,7 +43,7 @@ public static class CustomRolesHelper
     public static RoleTypes GetDYRole(this CustomRoles role) // Role has a kill button (Non-Impostor)
     {
         if (role is CustomRoles.Killer) return RoleTypes.Impostor; // FFA
-        if (role.IsImpostor() && NarcManager.IsNarcAssigned) // When Narc is in a game,make all Impostor roles desync roles so imps will be able to kill each other
+        if (role.IsImpostor() && NarcManager.IsNarcAssigned()) // When Narc is in a game,make all Impostor roles desync roles so imps will be able to kill each other
             return role.GetStaticRoleClass().ThisRoleBase.GetRoleTypes();
 
         return (role.HasImpBasis(false)) && !role.IsImpostor()
@@ -92,11 +92,11 @@ public static class CustomRolesHelper
     public static bool HasGhostRole(this PlayerControl player) => player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole());
 
     // Role's basis role is an Impostor (regular imp,shapeshifter,phantom) role
-    public static bool HasImpBasis(this CustomRoles role,bool DesyncRole = true)
+    public static bool HasImpBasis(this CustomRoles role,bool ForDesyncRole = true)
         => role.GetVNRole() is CustomRoles.Impostor 
             or CustomRoles.Shapeshifter 
             or CustomRoles.Phantom
-            || (DesyncRole && role.GetDYRole() is RoleTypes.Impostor
+            || (ForDesyncRole && role.GetDYRole() is RoleTypes.Impostor
                 or RoleTypes.Shapeshifter
                 or RoleTypes.Phantom);
 
@@ -226,7 +226,7 @@ public static class CustomRolesHelper
     public static bool IsTasklessCrewmate(this CustomRoles role)
     {
         // Based on Imp but counted as crewmate
-        return role.GetVNRole() is CustomRoles.Impostor && role.IsCrewmate();
+        return role.HasImpBasis() && role.IsCrewmate();
     }
     public static bool IsTaskBasedCrewmate(this CustomRoles role)
     {
