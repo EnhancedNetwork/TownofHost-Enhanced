@@ -17,7 +17,7 @@ public static class NarcManager
     private static OptionItem NarcCanUseSabotage;
     private static OptionItem NarcHasCrewVision;
     //public static OptionItem MadmateCanBeNarc;
-    private static OptionItem ImpsCanKillEachOther;
+    public static OptionItem ImpsCanKillEachOther;
 
     public static void SetUpOptionsForNarc(int id = 31200, CustomRoles role = CustomRoles.Narc, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.CrewmateRoles)
     {
