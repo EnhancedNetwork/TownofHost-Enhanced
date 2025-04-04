@@ -1215,6 +1215,7 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
         if (MeetingStates.FirstMeeting && !Options.ShieldedCanUseKillButton.GetBool() && pc.CheckFirstDied()) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
+        if (pc.Is(CustomRoles.Narc) && !NarcManager.NarcCanUseKillButton(pc)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseKillButton(pc)) return true;
@@ -1225,18 +1226,7 @@ static class ExtendedPlayerControl
     {
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
 
-        var role = pc.GetCustomRole();
-        if (!role.IsImpostor())
-        {
-            return role.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
-        }
-        return role.GetVNRole() switch
-        {
-            CustomRoles.Impostor => true,
-            CustomRoles.Shapeshifter => true,
-            CustomRoles.Phantom => true,
-            _ => false
-        };
+        return pc.GetCustomRole().HasImpBasis();
     }
     public static bool CanUseVents(this PlayerControl player) => player != null && (player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer);
     public static bool CantUseVent(this PlayerControl player, int ventId) => player == null || !player.CanUseVents() || (CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId));
@@ -1260,6 +1250,7 @@ static class ExtendedPlayerControl
     public static bool CanUseSabotage(this PlayerControl pc)
     {
         if (pc.Is(Custom_Team.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
+        if (NarcManager.CantUseSabotage(pc)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
@@ -1338,7 +1329,8 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Enchanted and not
-            CustomRoles.Contagious;
+            CustomRoles.Contagious and not
+            CustomRoles.Narc;
     }
 
     public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles addOn = CustomRoles.NotAssigned)
@@ -1453,8 +1445,7 @@ static class ExtendedPlayerControl
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) /*&& !target.Is(CustomRoles.Trickster)*/) return true;
-        //↑↑I disabled the part that checks target is not trickster because I found it causing modded Overseers unable to see random role texts in meetings
+        else if (Overseer.IsRevealedPlayer(seer, target)) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
@@ -1462,6 +1453,8 @@ static class ExtendedPlayerControl
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (Admirer.CheckKnowRoleTarget(seer, target) return true;
+        else if (NarcManager.KnowRoleOfTarget(seer, target)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
             if (Nemesis.PreventKnowRole(seer)) return false;
@@ -1487,7 +1480,7 @@ static class ExtendedPlayerControl
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
-
+        
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
                 or CustomRoles.Recruit
@@ -1496,7 +1489,8 @@ static class ExtendedPlayerControl
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
-                or CustomRoles.Enchanted)
+                or CustomRoles.Enchanted
+                or CustomRoles.Narc)
             && KnowSubRoleTarget(seer, target))
             return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
@@ -1543,6 +1537,7 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Sidekick))
                 return target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
         }
+        else if (NarcManager.KnowRoleOfTarget(seer, target)) return true;
 
         return false;
     }
