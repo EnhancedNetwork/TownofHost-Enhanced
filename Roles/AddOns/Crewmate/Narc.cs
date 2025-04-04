@@ -1,12 +1,13 @@
 using System;
 using AmongUs.GameOptions;
 using TOHE.Roles.Core.AssignManager;
+using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 
 namespace TOHE;
 
-public static class NarcManager //I dont think it should be a RoleBase class,although idk why,btw thanks TOR for the inspiration
+public static class NarcManager
 {
     //===========================SETUP================================\\
     public static CustomRoles RoleForNarcToSpawnAs;
@@ -37,9 +38,9 @@ public static class NarcManager //I dont think it should be a RoleBase class,alt
             .SetParent(spawnOption)
             .SetGameMode(customGameMode);
 
-        MadmateCanBeNarc = BooleanOptionItem.Create(id + 5, "MadmateCanBeNarc", false, tab, false)
-            .SetParent(spawnOption)
-            .SetGameMode(customGameMode);
+        //MadmateCanBeNarc = BooleanOptionItem.Create(id + 5, "MadmateCanBeNarc", false, tab, false)
+        //    .SetParent(spawnOption)
+        //    .SetGameMode(customGameMode);
         
         ImpsCanKillEachOther = BooleanOptionItem.Create(id + 6, "ImpsCanKillEachOther", false, tab, false)
             .SetParent(spawnOption)
@@ -93,9 +94,7 @@ public static class NarcManager //I dont think it should be a RoleBase class,alt
     }
 
     public static bool NarcCanUseKillButton(PlayerControl pc) 
-        => !Main.AllAlivePlayerControls.Any(x => (x.Is(CustomRoles.Madmate) && x.Is(CountTypes.Impostor)) 
-                                            || (x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam())) 
-                                        || ImpsCanKillEachOther.GetBool();
+        => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam()) || ImpsCanKillEachOther.GetBool();
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 
     public static bool KnowRoleOfTarget(PlayerControl seer, PlayerControl target)
@@ -107,23 +106,23 @@ public static class NarcManager //I dont think it should be a RoleBase class,alt
     public static string NarcAndPoliceSeeColor(PlayerControl seer, PlayerControl target)
     {
         var color = "";
-        if (seer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && target.IsPlayerCrewmateTeam())
+        if (seer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && target.IsPlayerCrewmateTeam() && !CopyCat.PlayerIdList.Contains(target.PlayerId))
             color = Main.roleColors[target.GetCustomRole()];
-        if (seer.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && seer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc))
+        if (seer.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && seer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.PlayerIdList.Contains(seer.PlayerId))
             color = Main.roleColors[CustomRoles.Narc];
 
         return color;
     }
 
-    public static bool CheckMurderOnNarcPresence(PlayerControl killer, PlayerControl target)
+    public static bool CheckMurder(PlayerControl killer, PlayerControl target)
     {
         if (killer.CheckImpCanSeeAllies(CheckAsSeer: true) 
             && target.CheckImpCanSeeAllies(CheckAsTarget: true) 
             && !ImpsCanKillEachOther.GetBool())
             return false;
 
-        if ((killer.Is(CustomRoles.Sheriff) && killer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc)) || 
-            (killer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam()))
+        if ((killer.Is(CustomRoles.Sheriff) && killer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.PlayerIdList.Contains(seer.PlayerId)) || 
+            (killer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam() && !CopyCat.PlayerIdList.Contains(target.PlayerId)))
             return false;
 
         return true;
@@ -135,17 +134,17 @@ public static class NarcManager //I dont think it should be a RoleBase class,alt
         {
             if (target.Is(CustomRoles.Sheriff))
             {
-                guesser.ShowInfoMessage(isUI, GetString("GuessSheriff"));
+                guesser.ShowInfoMessage(isUI, CopyCat.PlayerIdList.Contains(target.PlayerId) ? GetString("GuessImmune") : GetString("GuessSheriff"));
                 return true;
             }
             if (target.Is(CustomRoles.ChiefOfPolice))
             {
-                guesser.ShowInfoMessage(isUI, GetString("GuessCoP"));
+                guesser.ShowInfoMessage(isUI, CopyCat.PlayerIdList.Contains(target.PlayerId) ? GetString("GuessImmune") : GetString("GuessCoP"));
                 return true;
             }
         }
 
-        if (guesser.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && guesser.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc))
+        if (guesser.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && guesser.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.PlayerIdList.Contains(guesser.PlayerId))
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessNarc"));
             return true;
