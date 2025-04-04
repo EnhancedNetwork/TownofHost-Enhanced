@@ -467,6 +467,7 @@ internal class StartGameHostPatch
             {
                 if (Options.CurrentGameMode == CustomGameMode.Standard)
                 {
+                    AddonAssign.StartAssigningNarc();
                     AddonAssign.InitAndStartAssignLovers();
                     AddonAssign.StartSortAndAssign();
                 }
@@ -572,7 +573,7 @@ internal class StartGameHostPatch
 
         Main.PlayerStates[player.PlayerId].SetMainRole(role);
 
-        var selfRole = isHost ? BaseRole == RoleTypes.Shapeshifter ? RoleTypes.Shapeshifter : hostBaseRole : BaseRole;
+        var selfRole = isHost ? BaseRole is RoleTypes.Shapeshifter or RoleTypes.Phantom ? BaseRole : hostBaseRole : BaseRole;
         var othersRole = isHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
 
         // Set Desync Role for self and for others
