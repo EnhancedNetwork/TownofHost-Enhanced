@@ -448,7 +448,7 @@ public static class CustomRolesHelper
         {
             var r when r.IsImpostor() => true,
             CustomRoles.Refugee => true,
-            CustomRoles.Crewpostor => (CheckAsSeer && Crewpostor.KnowsAllies.GetBool()) || (CheckAsTarget && Crewpostor.KnownToAllies.GetBool()),
+            CustomRoles.Crewpostor => (CheckAsSeer && Crewpostor.KnowsAllies.GetBool()) || (CheckAsTarget && Crewpostor.AlliesKnowCrewpostor.GetBool()),
             //CustomRoles.Parasite => OnlyOneImp,
             _ => false
         };
@@ -524,7 +524,6 @@ public static class CustomRolesHelper
             if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;            
             if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Narc) && x is not CustomRoles.Madmate)) return false;
         }
-        if (player.IsNecromancer) return false;
 
         return (player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate) && !player.IsNecromancer;
     }
@@ -538,7 +537,6 @@ public static class CustomRolesHelper
                 return true;
             if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
         }
-        if (player.IsNecromancer) return false;
 
         return player.MainRole.IsCrewmate() && !player.IsNecromancer;
     }
