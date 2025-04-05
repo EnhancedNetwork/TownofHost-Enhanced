@@ -1476,10 +1476,9 @@ static class ExtendedPlayerControl
 
         if (seer.PlayerId == target.PlayerId) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
-        else if (Options.SeeEjectedRolesInMeeting.GetBool() 
-                 && ((Options.ShowBetrayalAddonsOnEject.GetBool() 
-                      && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote && subRole.IsBetrayalAddonV2() 
-                      && (subRole != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())) || subRole is CustomRoles.Narc)) return true;
+        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote
+                && (Options.ShowBetrayalAddonsOnEject.GetBool() || subRole is CustomRoles.Narc)// Narc is always shown regardless of the option
+                && subRole.IsBetrayalAddonV2() && (subRole != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
