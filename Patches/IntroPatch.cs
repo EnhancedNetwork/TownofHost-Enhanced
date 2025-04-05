@@ -789,6 +789,7 @@ class BeginImpostorPatch
             }
 
             __instance.overlayHandle.color = Palette.ImpostorRed;
+            return true; // manually return true here,otherwise the intro screen wont load at all
         }
 
         if (role.IsCoven())
