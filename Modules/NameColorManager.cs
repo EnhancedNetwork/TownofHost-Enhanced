@@ -44,11 +44,11 @@ public static class NameColorManager
         color = seer.GetRoleClass()?.PlayerKnowTargetColor(seer, target); // returns "" unless overriden
 
         // Impostor & Madmate
-        if (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
-        if (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Impostor];
-        if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Madmate];
-        if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) color = Main.roleColors[CustomRoles.Madmate];
+        if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) color = (seer.Is(CustomRoles.Egoist) && target.Is(CustomRoles.Egoist) && Egoist.ImpEgoistVisibalToAllies.GetBool() && seer != target) ? Main.roleColors[CustomRoles.Egoist] : Main.roleColors[CustomRoles.Impostor];
+        if (seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && Madmate.MadmateKnowWhosImp.GetBool()) color = Main.roleColors[CustomRoles.Impostor];
+        if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
+        if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor()) color = Main.roleColors[CustomRoles.Madmate];
+        if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
 
         // Coven
         if (seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven)) color = Main.roleColors[CustomRoles.Coven];
@@ -111,10 +111,10 @@ public static class NameColorManager
             || target.GetRoleClass().OthersKnowTargetRoleColor(seer, target)
             || Mimic.CanSeeDeadRoles(seer, target)
             || (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
-            || (seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
-            || (seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && Madmate.MadmateKnowWhosImp.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
-            || (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
-            || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
+            || (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true))
+            || (seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && Madmate.MadmateKnowWhosImp.GetBool())
+            || (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
+            || (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Madmate.MadmateKnowWhosMadmate.GetBool())
             || Workaholic.OthersKnowWorka(target)
             || (target.Is(CustomRoles.Gravestone) && Main.PlayerStates[target.Data.PlayerId].IsDead)
             || Mare.KnowTargetRoleColor(target, isMeeting)
