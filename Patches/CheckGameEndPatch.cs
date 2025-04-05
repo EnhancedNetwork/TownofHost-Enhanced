@@ -773,7 +773,7 @@ class CandRGameEndPredicate : GameEndPredicate
     public override bool CheckForEndGame(out GameOverReason reason)
     {
         // Task win 
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
         if (WinnerTeam != CustomWinner.Default) return false;
         if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason)) return true;
         return false;
@@ -782,11 +782,11 @@ class CandRGameEndPredicate : GameEndPredicate
     {
 
         // Everyone died
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
 
         if (CopsAndRobbersManager.RoundTime <= 0)
         {
-            reason = GameOverReason.HideAndSeek_ByTimer;
+            reason = GameOverReason.HideAndSeek_CrewmatesByTimer;
             ResetAndSetWinner(CustomWinner.Cops);
             WinnerIds = [.. CopsAndRobbersManager.cops];
             Logger.Warn("Game end because round time finished", "C&R");
@@ -795,7 +795,7 @@ class CandRGameEndPredicate : GameEndPredicate
 
         if (!Main.AllAlivePlayerControls.Any())
         {
-            reason = GameOverReason.ImpostorByKill;
+            reason = GameOverReason.ImpostorsByKill;
             ResetAndSetWinner(CustomWinner.None);
             Logger.Info("Game end because all players dead", "C&R");
             return true;
@@ -825,7 +825,7 @@ class CandRGameEndPredicate : GameEndPredicate
         // All Robbers captured
         if (allCaptured)
         {
-            reason = GameOverReason.ImpostorByKill;
+            reason = GameOverReason.ImpostorsByKill;
             ResetAndSetWinner(CustomWinner.Cops);
             WinnerIds = [.. CopsAndRobbersManager.cops];
             Logger.Info("Game end because all robbers captured", "C&R");
@@ -837,11 +837,11 @@ class CandRGameEndPredicate : GameEndPredicate
 
     public override bool CheckGameEndByTask(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
 
         if (GameData.Instance.TotalTasks <= GameData.Instance.CompletedTasks)
         {
-            reason = GameOverReason.HumansByTask;
+            reason = GameOverReason.CrewmatesByTask;
             ResetAndSetWinner(CustomWinner.Robbers);
             WinnerIds = [.. CopsAndRobbersManager.robbers];
             Logger.Info("Game end because robbers completed all tasks", "C&R");
