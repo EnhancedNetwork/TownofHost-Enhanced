@@ -98,7 +98,9 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
                 }
                 break;
-
+          case CustomGameMode.CandR:
+                CopsAndRobbersManager.ApplyGameOptions(ref opt, player);
+                break;
         }
 
         if (player.Is(Custom_Team.Impostor))
@@ -129,6 +131,10 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
 
         state.taskState.hasTasks = Utils.HasTasks(player.Data, false);
         
+        if (Main.UnShapeShifter.Contains(player.PlayerId) && Options.CurrentGameMode != CustomGameMode.CandR)
+        {
+            AURoleOptions.ShapeshifterDuration = 1f;
+        }
 
         if (Options.GhostCanSeeOtherVotes.GetBool() && player.Data.IsDead)
         {

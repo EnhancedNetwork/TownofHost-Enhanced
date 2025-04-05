@@ -13,7 +13,7 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     FFA = 0x02,
-
+ CandR = 0x03,
     HidenSeekTOHO = 0x08, // HidenSeekTOHO must be after other Gamemodes
     All = int.MaxValue
 }
@@ -49,6 +49,7 @@ public static class Options
         => GameMode.GetInt() switch
         {
             1 => CustomGameMode.FFA,
+            2 => CustomGameMode.CandR,
             3 => CustomGameMode.HidenSeekTOHO, // HidenSeekTOHO must be after other Gamemodes
             _ => CustomGameMode.Standard
         };
@@ -56,6 +57,7 @@ public static class Options
         => mode switch
         {
             CustomGameMode.FFA => 1,
+            CustomGameMode.CandR => 2,
             CustomGameMode.HidenSeekTOHO => 3, // HidenSeekTOHO must be after other Gamemodes
             _ => 0
         };
@@ -1175,6 +1177,7 @@ public static class Options
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)
             .HideInHnS();
+            .HideInCandR();
         ShowMadmatesInLeftCommand = BooleanOptionItem.Create(60042, "ShowMadmatesInLeftCommand", true, TabGroup.SystemSettings, false)
             .SetParent(EnableKillerLeftCommand);
         ShowApocalypseInLeftCommand = BooleanOptionItem.Create(60043, "ShowApocalypseInLeftCommand", true, TabGroup.SystemSettings, false)
@@ -1183,6 +1186,7 @@ public static class Options
             .SetParent(EnableKillerLeftCommand);
         SeeEjectedRolesInMeeting = BooleanOptionItem.Create(60041, "SeeEjectedRolesInMeeting", true, TabGroup.SystemSettings, false)
             .HideInHnS();
+            .HideInCandR();
 
         KickLowLevelPlayer = IntegerOptionItem.Create(60050, "KickLowLevelPlayer", new(0, 100, 1), 0, TabGroup.SystemSettings, false)
             .SetValueFormat(OptionFormat.Level)
@@ -1277,8 +1281,10 @@ public static class Options
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue)
             .HideInHnS();
+            .HideInCandR();
         RemovePetsAtDeadPlayers = BooleanOptionItem.Create(60294, "RemovePetsAtDeadPlayers", false, TabGroup.SystemSettings, false)
             .SetColor(Color.magenta);
+            .HideInCandR();
 
         CheatResponses = StringOptionItem.Create(60250, "CheatResponses", CheatResponsesName, 0, TabGroup.SystemSettings, false)
             .SetHeader(true);
@@ -1339,6 +1345,9 @@ public static class Options
         #region Game Settings
         //FFA
         FFAManager.SetupCustomOption();
+
+     //C&R
+        CopsAndRobbersManager.SetupCustomOption();
 
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
@@ -1994,11 +2003,13 @@ public static class Options
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
+            .HideInCandR()
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 梯子摔死
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .HideInFFA();
+            .HideInCandR()
         LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
 
@@ -2091,6 +2102,7 @@ public static class Options
 
         TextOptionItem.Create(10000033, "MenuTitle.GameModifiers", TabGroup.ModSettings)
            .HideInFFA()
+           .HideInCandR()
            .SetColor(new Color32(168, 50, 62, byte.MaxValue));
         EnableAnomalies = BooleanOptionItem.Create(60890, "EnableAnomalies", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)

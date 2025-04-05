@@ -23,6 +23,7 @@ public static class GhostRoleAssign
     {
         if (GameStates.IsHideNSeek
             || Options.CurrentGameMode == CustomGameMode.FFA
+            || Options.CurrentGameMode == CustomGameMode.CandR
             || player == null
             || player.Data == null
             || player.Data.Disconnected
