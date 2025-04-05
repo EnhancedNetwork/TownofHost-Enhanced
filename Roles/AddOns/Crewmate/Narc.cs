@@ -19,7 +19,7 @@ public static class NarcManager
     //public static OptionItem MadmateCanBeNarc;
     public static OptionItem ImpsCanKillEachOther;
 
-    public static void SetUpOptionsForNarc(int id = 31200, CustomRoles role = CustomRoles.Narc, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.CrewmateRoles)
+    public static void SetUpOptionsForNarc(int id = 31200, CustomRoles role = CustomRoles.Narc, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.Addons)
     {
         var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(Utils.GetRoleColor(role))
             .SetHeader(true)
