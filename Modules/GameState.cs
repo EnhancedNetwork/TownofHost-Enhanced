@@ -162,8 +162,6 @@ public class PlayerState(byte playerId)
 
 
     }
-    public bool IsSummoner { get; set; } = false;
-    public bool IsSummoned { get; set; } = false;
     public CustomWinner LingeringPresenceAssignedTeam { get; set; } = CustomWinner.None;
 
     public void ResetSubRoles()

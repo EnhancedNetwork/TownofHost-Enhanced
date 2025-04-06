@@ -102,9 +102,6 @@ internal class Summoner : CovenManager
     public override void Add(byte playerId)
     {
         base.Add(playerId);
-        var playerState = Main.PlayerStates[playerId];
-        playerState.SetMainRole(CustomRoles.Summoner);
-        playerState.IsSummoner = true;
         playerId.SetAbilityUseLimit(MaxSummonsAllowed.GetInt());
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
@@ -116,6 +113,7 @@ internal class Summoner : CovenManager
         SummonedOriginalRoles.Clear();
         SummonedPlayerIds.Clear();
         PendingRevives.Clear();
+        SummonedKillCounts.Clear();
     }
 
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
@@ -388,16 +386,13 @@ internal class Summoner : CovenManager
 
                 // Force sync their death
                 Summoned.KillSummonedPlayer(summonedPlayer);
-
+                Summoner.SummonedHealth.Remove(summonedPlayer.PlayerId); // Remove them from the timer list
+                Summoner.LastUpdateTimes.Remove(summonedPlayer.PlayerId); // Remove the timestamp entry
             }
         }
 
         // Cancel any pending revives
-        CancelPendingRevives();
-
-        // Clear tracking
-        SummonedPlayerIds.Clear();
-        SummonedOriginalRoles.Clear();
+        CancelPendingRevives();       
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -448,6 +443,8 @@ internal class Summoner : CovenManager
             {
                 Summoned.KillSummonedPlayer(player);
                 RestoreOriginalRole(player); // Restore their original role on report
+                SummonedHealth.Remove(player.PlayerId); // Remove them from the timer list
+                LastUpdateTimes.Remove(player.PlayerId); // Remove the timestamp entry
             }
         }
     }
@@ -574,10 +571,6 @@ internal class Summoned : RoleBase
     public override void Add(byte playerId)
     {
         base.Add(playerId);
-        var playerState = Main.PlayerStates[playerId];
-        playerState.SetMainRole(CustomRoles.Summoned);
-        playerState.IsSummoned = true;
-
         // Initialize timer for the summoned player
         if (!PlayerDie.ContainsKey(playerId))
         {

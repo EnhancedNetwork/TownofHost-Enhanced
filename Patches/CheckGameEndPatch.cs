@@ -147,7 +147,7 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Coven:
                         if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
-                            || (pc.Is(CustomRoles.Enchanted) || Summoner.CheckWinCondition(pc.PlayerId)) && !WinnerIds.Contains(pc.PlayerId))
+                            || (pc.Is(CustomRoles.Enchanted) || (Summoner.CheckWinCondition(pc.PlayerId) && CustomRoles.Summoner.RoleExist(true))) && !WinnerIds.Contains(pc.PlayerId))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
