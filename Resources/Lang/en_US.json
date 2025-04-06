@@ -4553,5 +4553,11 @@
   "KidnapperInfo": "Kidnap and kill your target",
   "KidnapperInfoLong": "As the Kidnapper, you may select a target via your kill button, then unshift to teleport them to you and kill them. Double click to kill normally.",
   "KidnapCooldown349": "Kidnap cooldown",
-  "KidnapUses349": "Kidnap uses"
+  "KidnapUses349": "Kidnap uses",
+
+  "Blinder": "Blinder",
+  "BlinderInfo": "Blind all witnesses",
+  "BlinderInfoLong": "When the Blinder kills, all nearby players are fully blinded and cannot move for a set duration.",
+  "BlindTime350": "Blind duration",
+  "BlindRadius350": "Blind radius"
 }

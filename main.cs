@@ -692,6 +692,7 @@ public enum CustomRoles
     Bane,
     Bard,
     Blackmailer,
+    Blinder,
     Bomber,
     BountyHunter,
     Butcher,
