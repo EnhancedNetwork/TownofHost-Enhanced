@@ -538,7 +538,7 @@ namespace TOHE.Roles.Neutral
 
                     // Randomly determine the number of add-ons to assign
                     int addOnCount = Random.Range(minAddOns, maxAddOns + 1);
-                    List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsConverted() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
+                    List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
                         .OrderBy(_ => Random.value)
                         .Take(addOnCount)
                         .ToList();
