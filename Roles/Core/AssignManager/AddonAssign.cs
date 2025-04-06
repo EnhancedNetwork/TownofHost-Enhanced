@@ -204,11 +204,19 @@ public static class AddonAssign
         if (!NarcManager.IsNarcAssigned()) return;
 
         List<PlayerControl> PlayerList = NarcManager.RoleForNarcToSpawnAs.GetPlayerListByRole();
-        if (!PlayerList.Any()) return;
+        if (!PlayerList.Any())
+        {
+            NarcManager.RoleForNarcToSpawnAs = CustomRoles.NotAssigned;
+            return;
+        }
 
         int optimpnum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
         int impnum = Main.AllPlayerControls.Count(p => p.GetCustomRole().IsImpostor());
-        if (NarcManager.RoleForNarcToSpawnAs.IsImpostor() && impnum <= optimpnum) return;
+        if (/*NarcManager.RoleForNarcToSpawnAs.IsImpostor() &&*/ impnum <= optimpnum)
+        {
+            NarcManager.RoleForNarcToSpawnAs = CustomRoles.NotAssigned;
+            return;
+        }
 
         if (PlayerList.Count >= 2) PlayerList = PlayerList.Shuffle().Shuffle().ToList();
         var pc = PlayerList.RandomElement();
