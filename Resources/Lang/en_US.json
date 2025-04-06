@@ -4090,6 +4090,7 @@
   "Description.Scope": "Increases the capture range of Cop.",
   "CopAbilityText": "Ability",
   "CopKillButtonText": "Capture",
+  "RobberAbilityText":	"Vent",
   "C&R_NotifyRobbersWhenCaptured": "Notify Robbers when captured",
   "Robber": "Robber",
   "RobberInfo": "Complete all tasks to win",

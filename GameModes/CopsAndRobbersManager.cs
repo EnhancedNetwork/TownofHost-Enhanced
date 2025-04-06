@@ -394,11 +394,16 @@ internal static class CopsAndRobbersManager
         if (Main.EnableGM.Value)
         {
             finalRoles[PlayerControl.LocalPlayer.PlayerId] = CustomRoles.GM;
+            Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].MainRole = CustomRoles.GM;//might cause bugs
             AllPlayers.Remove(PlayerControl.LocalPlayer);
         }
         foreach (byte spectator in ChatCommands.Spectators)
         {
             finalRoles.AddRange(ChatCommands.Spectators.ToDictionary(x => x, _ => CustomRoles.GM));
+             foreach (var specId in ChatCommands.Spectators)
+        {
+            Main.PlayerStates[specId].MainRole = CustomRoles.GM;
+        }
             AllPlayers.RemoveAll(x => ChatCommands.Spectators.Contains(x.PlayerId));
         }
 
@@ -409,6 +414,7 @@ internal static class CopsAndRobbersManager
             if (optImpNum > 0)
             {
                 finalRoles[pc.PlayerId] = CustomRoles.Cop;
+                Main.PlayerStates[pc.PlayerId].MainRole = CustomRoles.Cop;
                 RoleType.Cop.Add(pc.PlayerId);
                 pc.RpcSetCustomRole(CustomRoles.Cop);
                 pc.RpcChangeRoleBasis(CustomRoles.Cop);
@@ -417,6 +423,7 @@ internal static class CopsAndRobbersManager
             else
             {
                 finalRoles[pc.PlayerId] = CustomRoles.Robber;
+                Main.PlayerStates[pc.PlayerId].MainRole = CustomRoles.Robber;
                 RoleType.Robber.Add(pc.PlayerId);
                 pc.RpcSetCustomRole(CustomRoles.Robber);
                 pc.RpcChangeRoleBasis(CustomRoles.Robber);
@@ -629,6 +636,7 @@ internal static class CopsAndRobbersManager
                 byte cop = reader.ReadByte();
                 capturedScore[cop] = reader.ReadInt32();
                 break;
+               
         }
     }
 
@@ -825,7 +833,7 @@ internal static class CopsAndRobbersManager
         var shouldTrigger = random.Next(100);
         if (!robberAbilityChances.Any() || shouldTrigger >= CandR_RobberAbilityTriggerChance.GetInt()) return null;
 
-        int randomChance = random.Next(copAbilityChances.Values.Last());
+        int randomChance = random.Next(robberAbilityChances.Values.Last());
         foreach (var ability in robberAbilityChances)
         {
             if (randomChance < ability.Value)
@@ -929,6 +937,12 @@ internal static class CopsAndRobbersManager
             Logger.Info($"Ability canceled for {pc.PlayerId}, robber triggered spike strip", "robber ability cancel");
             return;
         }
+        // Update button text immediately after exiting vent
+      var hud = DestroyableSingleton<HudManager>.Instance;
+      if (hud != null)
+      {
+        SetAbilityButtonText(hud, pc.PlayerId);
+      }
         var ability = RandomRobberAbility();
         if (ability == null) return;
 
@@ -951,6 +965,7 @@ internal static class CopsAndRobbersManager
         {
             AURoleOptions.EngineerCooldown = CandR_RobberVentCooldown.GetFloat();
             AURoleOptions.EngineerInVentMaxTime = CandR_RobberVentDuration.GetFloat();
+            opt.SetBool(BoolOptionNames.GhostsDoTasks,false);//might cause bug
         }
 
         if (scopeAltered.TryGetValue(player.PlayerId, out bool isAltered))
@@ -1014,16 +1029,22 @@ internal static class CopsAndRobbersManager
     }
 
     public static void SetAbilityButtonText(HudManager hud, byte playerId)
+{
+    if (playerId == byte.MaxValue) return;
+    PlayerControl player = Utils.GetPlayerById(playerId);
+    if (player == null) return;
+
+    if (player.Is(CustomRoles.Cop))
     {
-        if (playerId == byte.MaxValue) return;
-        PlayerControl player = Utils.GetPlayerById(playerId);
-        if (player == null) return;
-        if (player.Is(CustomRoles.Cop))
-        {
-            hud.AbilityButton?.OverrideText(GetString("CopAbilityText"));
-            hud.KillButton?.OverrideText(GetString("CopKillButtonText"));
-        }
+        // For Cop's shapeshift button
+        hud.AbilityButton?.OverrideText(GetString("CopAbilityText"));
+        hud.KillButton?.OverrideText(GetString("CopKillButtonText"));
     }
+    else if (player.Is(CustomRoles.Robber))
+    {
+     hud.AbilityButton?.OverrideText(GetString("RobberAbilityText"));
+    }
+}
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
         string name;
@@ -1049,7 +1070,7 @@ internal static class CopsAndRobbersManager
         Color nameColor = Color.white;
         string roleName = Utils.ColorString(Utils.GetRoleColor(CustomRoles.GM), Utils.GetRoleName(CustomRoles.GM));
         string capturedCountText = string.Empty;
-        if (robbers.Contains(id))
+        if (Main.PlayerStates[id].MainRole == CustomRoles.Robber)
         {
             var taskState = Main.PlayerStates?[id].TaskState;
             Color CurrentСolor;
@@ -1060,7 +1081,7 @@ internal static class CopsAndRobbersManager
             if (!saved.ContainsKey(id)) saved[id] = 0;
             capturedCountText = Utils.ColorString(new Color32(255, 69, 0, byte.MaxValue), $"{GetString("Saved")}: {saved[id]}");
         }
-        else if (cops.Contains(id))
+        else if (Main.PlayerStates[id].MainRole == CustomRoles.Cop)
         {
             nameColor = Utils.GetRoleColor(CustomRoles.Cop);
             roleName = Utils.ColorString(nameColor, Utils.GetRoleName(CustomRoles.Cop));
@@ -1069,8 +1090,8 @@ internal static class CopsAndRobbersManager
 
         }
 
-        Main.PlayerStates.TryGetValue(id, out var playerState);
-        var disconnectedText = playerState.deathReason != PlayerState.DeathReason.etc && playerState.Disconnected ? $"({GetString("Disconnected")})" : string.Empty;
+        //Main.PlayerStates.TryGetValue(id, out var playerState);
+        var disconnectedText = ps.deathReason != PlayerState.DeathReason.etc && ps.Disconnected ? $"({GetString("Disconnected")})" : string.Empty;
 
         string summary = $"{Utils.ColorString(nameColor, name)} - {roleName}{TaskCount} {capturedCountText} 『{Utils.GetVitalText(id, true)}』{disconnectedText}";
 
@@ -1185,7 +1206,7 @@ internal static class CopsAndRobbersManager
                 Vector2 currentRobberLocation = robber.GetCustomPosition();
 
                 // check if duration of trap is completed every second
-                if (now != LastCheckedRobber)
+              if (now != LastCheckedRobber)
                 {
                     LastCheckedRobber = now;
                     // If Spike duration finished, reset the speed of trapped player
@@ -1207,7 +1228,7 @@ internal static class CopsAndRobbersManager
                         robber.MarkDirtySettings();
                         Logger.Info($"Removed {robberId} from Flash trigger", "Flash remove");
                     }
-                }
+
 
                 // Check if captured release
                 if (captured.Any())
@@ -1323,6 +1344,7 @@ internal static class CopsAndRobbersManager
                     foreach (KeyValuePair<Vector2, CopAbility?> trap in trapLocation)
                     {
                         // captured player can not trigger a trap
+                        if (!robber.Is(CustomRoles.Robber)) continue;
                         if (captured.ContainsKey(robberId)) continue;
 
                         // If player already trapped then continue
