@@ -150,6 +150,7 @@ public class RoleAssign
                 case CustomRoles.NiceMini:
                 case CustomRoles.EvilMini:
                 case CustomRoles.Runner:
+                case CustomRoles.PhantomTOHE when NarcManager.IsNarcAssigned():
                     continue;
             }
 
@@ -175,8 +176,8 @@ public class RoleAssign
             {
                 if (role == NarcManager.RoleForNarcToSpawnAs)
                 {
-                    info = new(role, 100, 1);
-                    Roles[RoleAssignType.Crewmate].Add(info);
+                    RoleAssignInfo newinfo = new(role, 100, 1);
+                    Roles[RoleAssignType.Crewmate].Add(newinfo);
                 }
                 else Roles[RoleAssignType.Impostor].Add(info);
             }
