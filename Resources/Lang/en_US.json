@@ -3873,6 +3873,7 @@
   "Randomizer.ChanceImpostor": "Chance to become <#ff1919>Impostor</color>",
   "Randomizer.ChanceNeutral": "Chance to become <#7f8c8d>Neutral</color>",
   "Randomizer.ChanceCoven": "Chance to become <#ac42f2>Coven</color>",
+  "Randomizer.CanGetNecronomicon": "Randomizer can get <#ac42f2>Necronomicon</color>",
   "Randomizer.OnlyEnabledRoles": "Only Use Enabled Roles",
   "Randomizer.AllowGhostRoles": "Allow Randomizer to become a Ghost Role",
   "Randomizer.MinAddOns": "Minimum number of Add-ons Randomizer can gain",

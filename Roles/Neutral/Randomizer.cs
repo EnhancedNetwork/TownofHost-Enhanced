@@ -23,6 +23,7 @@ internal class Randomizer : RoleBase
     private static OptionItem ChanceImpostor;
     private static OptionItem ChanceNeutral;
     private static OptionItem ChanceCoven;
+    public static OptionItem CanGetNecronomicon;
     private static OptionItem OnlyEnabledRoles;
     private static OptionItem AllowGhostRoles;
     private static OptionItem MinAddOns;
@@ -45,6 +46,7 @@ internal class Randomizer : RoleBase
          .SetValueFormat(OptionFormat.Percent);
         ChanceCoven = IntegerOptionItem.Create(Id + 13, "Randomizer.ChanceCoven", new(0, 100, 5), 25, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
          .SetValueFormat(OptionFormat.Percent);
+        CanGetNecronomicon = BooleanOptionItem.Create(Id + 15, "Randomizer.CanGetNecronomicon", true, TabGroup.NeutralRoles, false).SetParent(ChanceCoven);
         OnlyEnabledRoles = BooleanOptionItem.Create(Id + 14, "Randomizer.OnlyEnabledRoles", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
 
         AllowGhostRoles = BooleanOptionItem.Create(Id + 20, "Randomizer.AllowGhostRoles", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);

@@ -755,7 +755,7 @@ class CastVotePatch
         {
             Logger.Info("Solo Coven, Necronomicon Votes will not Activate", "CastVotePatch");
         }
-        else if (suspectPlayerId == 253 && voter.IsPlayerCoven())
+        else if (suspectPlayerId == 253 && voter.IsPlayerCoven() && !Main.PlayerStates[voter.PlayerId].IsRandomizer)
         {
             if (!voter.GetRoleClass().HasVoted)
             {
@@ -765,7 +765,7 @@ class CastVotePatch
                 return false;
             }
         }
-        else if (voter.IsPlayerCoven() && target.IsPlayerCoven())
+        else if (voter.IsPlayerCoven() && target.IsPlayerCoven() && !Main.PlayerStates[voter.PlayerId].IsRandomizer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
         {
             if (!voter.GetRoleClass().HasVoted)
             {
