@@ -29,6 +29,7 @@ internal class Summoner : CovenManager
     public static OptionItem NecroKillCooldownOption;
     private static OptionItem RevealSummonedPlayer;
     private static OptionItem AllowSummoningRevivedPlayers;
+    private static OptionItem ResummonTakesUse;
     public static OptionItem SummonedKillsCountToSummoner;
     public static OptionItem NoMeetingWhileSummoned;
     private static OptionItem HasAbilityUses;
@@ -80,6 +81,8 @@ internal class Summoner : CovenManager
 
         AllowSummoningRevivedPlayers = BooleanOptionItem.Create(Id + 16, "SummonerSettings.AllowResummon", false, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
+        ResummonTakesUse = BooleanOptionItem.Create(Id + 22, "SummonerSettings.ResummonTakesUse", false, TabGroup.CovenRoles, false)
+       .SetParent(AllowSummoningRevivedPlayers);
 
         SummonedKillsCountToSummoner = BooleanOptionItem.Create(Id + 20, "SummonerSettings.SummonedKillsCountToSummoner", false, TabGroup.CovenRoles, false)
        .SetParent(CustomRoleSpawnChances[CustomRoles.Summoner]);
@@ -179,7 +182,14 @@ internal class Summoner : CovenManager
         {
             // Add to pending revives list without using a summon or marking the meeting as used
             summonerInstance.RevivePlayer(targetPlayer);
-            Logger.Info($"Player {targetPlayer.PlayerId} (already Summoned) added to pending revives without consuming a summon.", "Summoner");
+            Logger.Info($"Player {targetPlayer.PlayerId} (already Summoned) added to pending revives.", "Summoner");
+
+            if (ResummonTakesUse.GetBool() && HasAbilityUses.GetBool())
+            {
+                // Only decrement ability use if the option is enabled
+                pc.RpcRemoveAbilityUse();
+                Logger.Info($"Decremented ability use for {pc.PlayerId} due to resummoning.", "Summoner");
+            }
 
             // Send global message only if required
             if (RevealSummonedPlayer.GetBool())
@@ -209,6 +219,14 @@ internal class Summoner : CovenManager
         {
             Logger.Warn("Summoner has already summoned a player this meeting.", "Summoner");
             SendMessage(GetString("Summoner.SummonedThisMeeting"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
+            return true;
+        }
+
+        // Check if Summoner has already summoned this meeting
+        if (!allowResummoning && isAlreadySummoned)
+        {
+            Logger.Warn($"Summoner tried summoning {targetPlayer.GetRealName()} but settings disallow it", "Summoner");
+            SendMessage(string.Format(GetString("Summoner.AlreadySummoned"), targetPlayer.GetRealName()), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
             return true;
         }
 
@@ -444,7 +462,9 @@ internal class Summoner : CovenManager
 
             // Revive the player
             targetPlayer.RpcRevive();
-            targetPlayer.RpcRandomVentTeleport();
+            _ = new LateTask(() => { 
+                targetPlayer.RpcRandomVentTeleport(); 
+            }, 1f, "SummonerReviveTeleport");
 
             // Save their original role
             SaveOriginalRole(targetPlayer);
