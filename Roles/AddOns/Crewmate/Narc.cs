@@ -100,8 +100,8 @@ public static class NarcManager
 
     public static bool KnowRoleOfTarget(PlayerControl seer, PlayerControl target)
     {
-        return (seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && seer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc)) || 
-            (seer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam());
+        return (seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && seer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.playerIdList.Contains(seer.PlayerId)) || 
+            (seer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(target.PlayerId));
     }
 
     public static string NarcAndPoliceSeeColor(PlayerControl seer, PlayerControl target)
