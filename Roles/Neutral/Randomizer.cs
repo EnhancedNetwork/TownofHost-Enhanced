@@ -320,6 +320,7 @@ internal class Randomizer : RoleBase
     }
     private static CustomRoles GetGhostRole(byte playerId)
     {
+        var GhostRolesList = CustomRolesHelper.AllRoles.Where(role => role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList();
         if (!GhostRolesList.Any())
         {
             Logger.Warn("No ghost roles available. Defaulting to a fallback role.", "Randomizer");
@@ -581,6 +582,4 @@ internal class Randomizer : RoleBase
         playerState.IsCovenTeam = false;
     }
 
-
-    private static readonly List<CustomRoles> GhostRolesList = CustomRolesHelper.AllRoles.Where(role => role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList();
 }
