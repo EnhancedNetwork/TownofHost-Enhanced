@@ -81,7 +81,8 @@ internal class EvilTracker : RoleBase
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;
-            if (targetId != playerId && target.Is(Custom_Team.Impostor))
+            if (targetId != playerId
+                && (NarcManager.RoleForNarcToSpawnAs == Role ? target.Is(CustomRoles.Sheriff) || target.Is(CustomRoles.ChiefOfPolice) : target.Is(Custom_Team.Impostor)))
             {
                 ImpostorsId[playerId].Add(targetId);
                 if (AmongUsClient.Instance.AmHost)
@@ -111,11 +112,13 @@ internal class EvilTracker : RoleBase
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
-        && (target.Is(Custom_Team.Impostor) || GetTargetId(seer.PlayerId) == target.PlayerId);
+        && ((seer.Is(CustomRoles.Narc) ? NarcManager.KnowRoleOfTarget(seer, target) : target.CheckImpCanSeeAllies(CheckAsTarget: true)) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
-        if (target.Is(Custom_Team.Impostor) || !CanTarget(shapeshifter.PlayerId)) return false;
+        if (!CanTarget(shapeshifter.PlayerId)) return false;
+        if (shapeshifter.Is(CustomRoles.Narc) ? NarcManager.KnowRoleOfTarget(shapeshifter, target) : target.CheckImpCanSeeAllies(CheckAsTarget: true))
+            return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
