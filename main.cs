@@ -1043,6 +1043,7 @@ public enum CustomRoles
     Overclocked,
     Paranoia,
     Prohibited,
+    Quota,
     Radar,
     Rainbow,
     Rascal,

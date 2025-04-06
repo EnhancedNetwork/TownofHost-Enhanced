@@ -403,6 +403,7 @@ public static class CustomRolesHelper
             CustomRoles.Mimic or
             CustomRoles.Stealer or
             CustomRoles.Circumvent or
+            CustomRoles.Quota or
             CustomRoles.Swift;
     }
 
@@ -1027,6 +1028,11 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Bomber)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
+                if (!pc.GetCustomRole().IsImpostor())
+                    return false;
+                break;
+
+            case CustomRoles.Quota:
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
                 break;

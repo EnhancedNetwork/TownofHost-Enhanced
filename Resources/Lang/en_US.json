@@ -4406,6 +4406,7 @@
   "Bankrupt": "Bankrupt",
   "BankruptInfo": "You have lost your role",
   "BankruptInfoLong": "(Neutrals):\nAs the Bankrupt, you are a Neutral with no win condition.\nBankrupt is a utility role.",
+  "GambleUses": "Gamble uses",
 
   "Astral": "Astral",
   "AstralInfo": "Do your tasks to win, but with a risk",
@@ -4559,5 +4560,10 @@
   "BlinderInfo": "Blind all witnesses",
   "BlinderInfoLong": "When the Blinder kills, all nearby players are fully blinded and cannot move for a set duration.",
   "BlindTime350": "Blind duration",
-  "BlindRadius350": "Blind radius"
+  "BlindRadius350": "Blind radius",
+
+  "Quota": "Quota",
+  "QuotaInfo": "Kill a certian amount to win",
+  "QuotaInfoLong": "The Quota must kill a certian amount of people to win with their team.",
+  "AmountKillsNeededToWin351": "Amount of kills needed to win"
 }

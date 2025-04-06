@@ -372,7 +372,17 @@ class GameEndCheckerForNormal
                         Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Hurried Win Check");
                     }
                 }
-                
+
+                //Remove quota not enough kills Player from winner id
+                foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Quota)).ToArray())
+                {
+                    if (!Quota.CheckWinState(pc) && WinnerIds.Contains(pc.PlayerId))
+                    {
+                        WinnerIds.Remove(pc.PlayerId);
+                        Logger.Info($"Removed {pc.GetNameWithRole()} from winner ids", "Quota Win Check");
+                    }
+                }
+
                 for (int i = 0; i < Main.AllPlayerControls.Length + 1; i++)
                 {
                     CheckAdditionalWinners();
