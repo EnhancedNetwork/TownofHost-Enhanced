@@ -90,7 +90,6 @@ internal class Randomizer : RoleBase
 
         // Set Randomizer role
         var playerState = Main.PlayerStates[playerId];
-        playerState.SetMainRole(CustomRoles.Randomizer);
         playerState.IsRandomizer = true;
 
         if (pc.GetCustomRole() != CustomRoles.Randomizer)
@@ -279,9 +278,9 @@ internal class Randomizer : RoleBase
         List<Custom_Team> overlappingTeams = new();
 
         if (roll < crewChance) overlappingTeams.Add(Custom_Team.Crewmate);
-        if (roll < crewChance + impostorChance + covenChance && roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Coven);
         if (roll < crewChance + impostorChance && roll >= crewChance) overlappingTeams.Add(Custom_Team.Impostor);
-        if (roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Neutral);
+        if (roll < crewChance + impostorChance + covenChance && roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Coven);
+        if (roll >= crewChance + impostorChance + covenChance) overlappingTeams.Add(Custom_Team.Neutral);
 
         // Handle overlap dynamically
         if (overlappingTeams.Count > 1)
@@ -544,14 +543,14 @@ internal class Randomizer : RoleBase
 
                 // Randomly determine the number of add-ons to assign
                 int addOnCount = Random.Range(minAddOns, maxAddOns + 1);
-                List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
+                List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && role is not CustomRoles.Admired or CustomRoles.Lovers or CustomRoles.Cleansed && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
                     .OrderBy(_ => Random.value)
                     .Take(addOnCount)
                     .ToList();
 
                 foreach (var addOn in selectedAddOns)
                 {
-                    playerState.SetSubRole(addOn, pc);
+                    pc.RpcSetCustomRole(addOn, false, false);
                     Logger.Info($"Assigned Add-on {addOn} to {pc.name}", "Randomizer");
                 }
             }
