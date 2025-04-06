@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using System.Diagnostics.Metrics;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -97,25 +98,12 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     {
         // Exclude Summoned players from the eligible list
         var pcList = Main.AllAlivePlayerControls
-            .Where(pc => pc.IsPlayerCoven() && pc.IsAlive() && !pc.Is(CustomRoles.Summoned))
+            .Where(pc => pc.IsPlayerCoven() && pc.IsAlive() && !pc.Is(CustomRoles.Summoned) && (Main.PlayerStates[pc.PlayerId].IsRandomizer ? Randomizer.CanGetNecronomicon.GetBool() : true))
             .ToList();
 
         if (pcList.Any())
         {
-            byte rp = pcList.RandomElement().PlayerId;
-            if (pcList.Count == 1 && pcList.Any(x => Main.PlayerStates[x.PlayerId].IsRandomizer) && !Randomizer.CanGetNecronomicon.GetBool())
-            {
-                // If there's only one Coven player and they are Randomizer, skip Necronomicon entirely
-                Logger.Info($"Only one Coven player {GetPlayerById(rp).GetRealName()} and is Randomizer, no Necronomicon assigning", "Coven");
-                return;
-            }
-            if (Main.PlayerStates[rp].IsRandomizer && !Randomizer.CanGetNecronomicon.GetBool())
-            {
-                // Avoid giving Necronomicon to Randomizer
-                Logger.Info($"Randomizer {GetPlayerById(rp).GetRealName()} was selected for Necronomicon, skipping.", "Coven");
-                GiveNecronomicon(); // Retry
-                return;
-            }
+            byte rp = pcList.RandomElement().PlayerId;            
             necroHolder = rp;
             GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
             SendRPC(necroHolder);
@@ -124,14 +112,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 
     public static void GiveNecronomicon(byte target)
     {
-        if (GetPlayerById(target).Is(CustomRoles.Summoned)) return; // Prevent assignment to Summoned players
-        if (Main.PlayerStates[target].IsRandomizer && !Randomizer.CanGetNecronomicon.GetBool())
-        {
-            // Avoid giving Necronomicon to Randomizer
-            Logger.Info($"Randomizer {GetPlayerById(target).GetRealName()} was selected for Necronomicon, skipping.", "Coven");
-            GiveNecronomicon(); // Retry
-            return;
-        }
+        if (GetPlayerById(target).Is(CustomRoles.Summoned)) return; // Prevent assignment to Summoned players        
 
         necroHolder = target;
         GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));

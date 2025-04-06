@@ -272,13 +272,14 @@ internal class Randomizer : RoleBase
             return ResolveOverlap(new[] { Custom_Team.Crewmate, Custom_Team.Impostor, Custom_Team.Neutral, Custom_Team.Coven });
         }
 
-        int roll = Random.Range(0, totalChance);
+        var rand = IRandom.Instance;
+        int roll = rand.Next(0, totalChance);
 
         // Check for overlapping chances
         List<Custom_Team> overlappingTeams = new();
 
         if (roll < crewChance) overlappingTeams.Add(Custom_Team.Crewmate);
-        if (roll < crewChance + impostorChance + covenChance && roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Impostor);
+        if (roll < crewChance + impostorChance + covenChance && roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Coven);
         if (roll < crewChance + impostorChance && roll >= crewChance) overlappingTeams.Add(Custom_Team.Impostor);
         if (roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Neutral);
 
@@ -517,6 +518,8 @@ internal class Randomizer : RoleBase
             // Update the player's role
             pc.RpcChangeRoleBasis(newRole); // Update the role basis
             pc.RpcSetCustomRole(newRole);  // Set the actual role
+            pc.SetKillCooldown();
+            pc.ResetKillCooldown(); // Ensure cooldowns are reset for the new role
 
             // Preserve Randomizer flag
             var playerState = Main.PlayerStates[playerId];
