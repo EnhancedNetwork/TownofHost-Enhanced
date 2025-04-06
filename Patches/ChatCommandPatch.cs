@@ -1696,8 +1696,6 @@ internal class ChatCommands
                     canceled = true;
                     ChatManager.SendQuickChatSpam();
                     ChatManager.SendPreviousMessagesToAll();
-                    break;
-                
                     subArgs = args.Length < 2 ? "" : args[1];
                     CopsAndRobbersManager.AbilityDescription(subArgs);
                     break;      

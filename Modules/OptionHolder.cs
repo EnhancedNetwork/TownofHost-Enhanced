@@ -13,7 +13,7 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     FFA = 0x02,
- CandR = 0x03,
+    CandR = 0x03,
     HidenSeekTOHO = 0x08, // HidenSeekTOHO must be after other Gamemodes
     All = int.MaxValue
 }
