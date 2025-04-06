@@ -3,6 +3,7 @@ using System.Text;
 using TMPro;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
+using TOHE.Roles.Impostor;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -227,7 +228,7 @@ class SetHudActivePatch
         if (GameStates.IsLobby || !isActive) return;
         if (player == null) return;
 
-        if (player.Is(CustomRoles.Oblivious) || player.Is(CustomRoles.KillingMachine))
+        if (player.Is(CustomRoles.Oblivious) || Blinder.BlindedPlayers.Contains(player) || player.Is(CustomRoles.KillingMachine))
             __instance.ReportButton.ToggleVisible(false);
 
         if (player.Is(CustomRoles.Mare) && !Utils.IsActive(SystemTypes.Electrical))

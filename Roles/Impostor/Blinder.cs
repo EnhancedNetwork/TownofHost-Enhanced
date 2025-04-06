@@ -19,7 +19,7 @@ internal class Blinder : RoleBase
     private static OptionItem KillCooldown;
     private static OptionItem BlindTime;
     private static OptionItem BlindRadius;
-    private static List<PlayerControl> BlindedPlayers = [];
+    public static List<PlayerControl> BlindedPlayers = [];
     private static float DefaultSpeed = new();
     public override void SetupCustomOption()
     {
