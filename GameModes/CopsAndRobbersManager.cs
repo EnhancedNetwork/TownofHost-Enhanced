@@ -1228,7 +1228,7 @@ internal static class CopsAndRobbersManager
                         robber.MarkDirtySettings();
                         Logger.Info($"Removed {robberId} from Flash trigger", "Flash remove");
                     }
-
+                }
 
                 // Check if captured release
                 if (captured.Any())
