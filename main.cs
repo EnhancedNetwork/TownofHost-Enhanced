@@ -47,7 +47,7 @@ public class Main : BasePlugin
     public const string PluginGuid = "com.Limeau.townofhostoptimized";
     public const string PluginVersion = "2025.0402.170.02"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "1.7.0";
-    public const string PluginDisplaySuffix = " Dev 2";
+    public const string PluginDisplaySuffix = " Dev 3";
     public const string SupportedVersionAU = "2025.3.25"; // Changed becasue Dark theme works at this version.
 
     /******************* Change one of the three variables to true before making a release. *******************/
@@ -692,6 +692,7 @@ public enum CustomRoles
     Bane,
     Bard,
     Blackmailer,
+    Blinder,
     Bomber,
     BountyHunter,
     Butcher,
@@ -1042,6 +1043,7 @@ public enum CustomRoles
     Overclocked,
     Paranoia,
     Prohibited,
+    Quota,
     Radar,
     Rainbow,
     Rascal,

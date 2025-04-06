@@ -836,7 +836,7 @@ class ReportDeadBodyPatch
                     if (targetObject.Is(CustomRoles.Unreportable)) return false;
 
                     // Oblivious try report body
-                    if (__instance.Is(CustomRoles.Oblivious))
+                    if (__instance.Is(CustomRoles.Oblivious) || Blinder.BlindedPlayers.Contains(__instance))
                     {
                         if (!targetObject.Is(CustomRoles.Bait) || (targetObject.Is(CustomRoles.Bait) && Oblivious.ObliviousBaitImmune.GetBool())) /* && (target?.Object != null)*/
                         {
