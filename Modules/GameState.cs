@@ -183,6 +183,7 @@ public class PlayerState(byte playerId)
     private bool isCrewmateTeam;
     private bool isNeutralTeam;
     private bool isImpostorTeam;
+    private bool isCovenTeam;
 
     public bool TeamLockApplied { get; set; } = false; // Flag to lock the team once set
 
@@ -199,6 +200,7 @@ public class PlayerState(byte playerId)
                 isCrewmateTeam = value;
                 isNeutralTeam = false; // Reset others
                 isImpostorTeam = false;
+                isCovenTeam = false;
                 TeamLockApplied = true; // Lock the team
                 LockedTeam = Custom_Team.Crewmate; // Lock to Crewmate team
                 LockedRoleType = Custom_RoleType.CrewmateBasic; // Enforce role type
@@ -217,6 +219,7 @@ public class PlayerState(byte playerId)
                 isNeutralTeam = value;
                 isCrewmateTeam = false; // Reset others
                 isImpostorTeam = false;
+                isCovenTeam = false;
                 TeamLockApplied = true; // Lock the team
                 LockedTeam = Custom_Team.Neutral; // Lock to Neutral team
                 LockedRoleType = Custom_RoleType.NeutralChaos; // Enforce role type
@@ -235,10 +238,30 @@ public class PlayerState(byte playerId)
                 isImpostorTeam = value;
                 isCrewmateTeam = false; // Reset others
                 isNeutralTeam = false;
+                isCovenTeam = false;
                 TeamLockApplied = true; // Lock the team
                 LockedTeam = Custom_Team.Impostor; // Lock to Impostor team
                 LockedRoleType = Custom_RoleType.ImpostorVanilla; // Enforce role type
                 RandomizerWinCondition = Custom_Team.Impostor; // Set win condition
+            }
+        }
+    }
+
+    public bool IsCovenTeam
+    {
+        get => IsRandomizer && isCovenTeam;
+        set
+        {
+            if (IsRandomizer && !TeamLockApplied)
+            {
+                isCovenTeam = value;
+                isCrewmateTeam = false; // Reset others
+                isNeutralTeam = false;
+                isImpostorTeam = false;
+                TeamLockApplied = true; // Lock the team
+                LockedTeam = Custom_Team.Coven; // Lock to Impostor team
+                LockedRoleType = Custom_RoleType.CovenKilling; // Enforce role type
+                RandomizerWinCondition = Custom_Team.Coven; // Set win condition
             }
         }
     }

@@ -1,11 +1,7 @@
-using Il2CppSystem.Configuration;
-using MS.Internal.Xml.XPath;
-using TOHE;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
-
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral
 {
@@ -14,14 +10,10 @@ namespace TOHE.Roles.Neutral
         //===========================SETUP================================\\
         private const int Id = 82000; // Unique ID for Randomizer
         public static readonly HashSet<byte> playerIdList = new();
-        public static bool HasEnabled => playerIdList.Any();
         public override bool IsDesyncRole => true;
-
         public override CustomRoles ThisRoleBase => CustomRoles.Crewmate; // Base role remains Neutral
         public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
-
         public override CustomRoles Role => CustomRoles.Randomizer;
-
         //================================================================\\
 
         private static readonly Dictionary<CustomRoles, OptionItem> RoleAvailabilityOptions = new();
@@ -30,11 +22,11 @@ namespace TOHE.Roles.Neutral
         private static OptionItem ChanceCrew;
         private static OptionItem ChanceImpostor;
         private static OptionItem ChanceNeutral;
-
+        private static OptionItem ChanceCoven;
+        private static OptionItem OnlyEnabledRoles;
         private static OptionItem AllowGhostRoles;
         private static OptionItem MinAddOns;
         private static OptionItem MaxAddOns;
-
 
 
         public override bool CanUseKillButton(PlayerControl pc) => true;
@@ -42,40 +34,25 @@ namespace TOHE.Roles.Neutral
 
         public override void SetupCustomOption()
         {
-            Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Randomizer);
+            SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Randomizer);
 
-            // Add Chance Crew Option
-            ChanceCrew = IntegerOptionItem.Create(Id + 10, "ChanceCrew", new(0, 100, 5), 40, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Randomizer])
+            // Team Chances
+            ChanceCrew = IntegerOptionItem.Create(Id + 10, "Randomizer.ChanceCrew", new(0, 100, 5), 25, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
              .SetValueFormat(OptionFormat.Percent);
-
-
-            // Add Chance Impostor Option
-            ChanceImpostor = IntegerOptionItem.Create(Id + 11, "ChanceImpostor", new(0, 100, 5), 40, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Randomizer])
+            ChanceImpostor = IntegerOptionItem.Create(Id + 11, "Randomizer.ChanceImpostor", new(0, 100, 5), 25, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
              .SetValueFormat(OptionFormat.Percent);
-
-
-            // Add Chance Neutral Option
-            ChanceNeutral = IntegerOptionItem.Create(Id + 12, "ChanceNeutral", new(0, 100, 5), 20, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Randomizer])
+            ChanceNeutral = IntegerOptionItem.Create(Id + 12, "Randomizer.ChanceNeutral", new(0, 100, 5), 25, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
              .SetValueFormat(OptionFormat.Percent);
+            ChanceCoven = IntegerOptionItem.Create(Id + 13, "Randomizer.ChanceCoven", new(0, 100, 5), 25, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer])
+             .SetValueFormat(OptionFormat.Percent);
+            OnlyEnabledRoles = BooleanOptionItem.Create(Id + 14, "Randomizer.OnlyEnabledRoles", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
 
+            AllowGhostRoles = BooleanOptionItem.Create(Id + 20, "Randomizer.AllowGhostRoles", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
 
-            AllowGhostRoles = BooleanOptionItem.Create(Id + 20, "AllowGhostRoles", false, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Randomizer]);
+            MinAddOns = IntegerOptionItem.Create(Id + 30, "Randomizer.MinAddOns", new(0, 100, 1), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
 
-
-            MinAddOns = IntegerOptionItem.Create(Id + 30, "MinAddOns", new(0, 10, 1), 0, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Randomizer]);
-
-            MaxAddOns = IntegerOptionItem.Create(Id + 31, "MaxAddOns", new(0, 10, 1), 3, TabGroup.NeutralRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Randomizer]);
+            MaxAddOns = IntegerOptionItem.Create(Id + 31, "Randomizer.MaxAddOns", new(0, 100, 1), 3, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Randomizer]);
         }
-
-
-
-
-
-
-
-
-
-
 
         public override void Init()
         {
@@ -84,8 +61,9 @@ namespace TOHE.Roles.Neutral
             int crewChance = ChanceCrew.GetInt();
             int impostorChance = ChanceImpostor.GetInt();
             int neutralChance = ChanceNeutral.GetInt();
+            int covenChance = ChanceCoven.GetInt();
 
-            int totalChance = crewChance + impostorChance + neutralChance;
+            int totalChance = crewChance + impostorChance + neutralChance + covenChance;
 
             // Check if total chances exceed 100%
             if (totalChance > 100)
@@ -97,24 +75,15 @@ namespace TOHE.Roles.Neutral
                 Logger.Warn("All team chances are set to 0. Using default equal distribution.", "Randomizer");
             }
 
-            Logger.Info($"Initialized Randomizer with team chances - Crewmate: {crewChance}%, Impostor: {impostorChance}%, Neutral: {neutralChance}%.", "Randomizer");
+            Logger.Info($"Initialized Randomizer with team chances - Crewmate: {crewChance}%, Impostor: {impostorChance}%, Neutral: {neutralChance}%, Coven: {covenChance}%.", "Randomizer");
         }
-
-
-
-
-
-
 
         public override void Add(byte playerId)
         {
             if (playerIdList.Contains(playerId)) return; // Avoid duplicates
 
             playerIdList.Add(playerId);
-
-
-
-            var pc = Utils.GetPlayerById(playerId);
+            var pc = GetPlayerById(playerId);
             if (pc == null) return;
 
             // Set Randomizer role
@@ -129,13 +98,12 @@ namespace TOHE.Roles.Neutral
             }
 
             // Notify player
-            pc.Notify($"You are the <color=#{Utils.GetRoleColor(CustomRoles.Randomizer)}>Randomizer</color>! Your role will change after each meeting.");
+            pc.Notify($"You are the {CustomRoles.Randomizer.ToColoredString()}! Your role will change after each meeting.");
         }
-
 
         private void AssignRandomRole(byte playerId)
         {
-            var pc = Utils.GetPlayerById(playerId);
+            var pc = GetPlayerById(playerId);
             if (pc == null) return;
 
             // Reset subroles before assigning a new role
@@ -168,6 +136,12 @@ namespace TOHE.Roles.Neutral
                     playerState.IsNeutralTeam = true;
                     playerState.LockedRoleType = Custom_RoleType.NeutralChaos; // Lock to Neutral type
                     Logger.Info($"Randomizer locked to Neutral team.", "Randomizer");
+                }
+                else if (randomRole.IsCoven())
+                {
+                    playerState.IsCovenTeam = true;
+                    playerState.LockedRoleType = Custom_RoleType.CovenKilling; // Lock to Neutral type
+                    Logger.Info($"Randomizer locked to Coven team.", "Randomizer");
                 }
 
                 // Apply the role
@@ -223,6 +197,15 @@ namespace TOHE.Roles.Neutral
                     }
                     break;
 
+                case Custom_Team.Coven:
+                    if (CustomWinnerHolder.WinnerTeam == CustomWinner.Coven && pc.IsAlive())
+                    {
+                        CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                        CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Randomizer);
+                        Logger.Info($"Randomizer {pc.name} (alive) wins with the Coven team.", "Randomizer");
+                    }
+                    break;
+
                 case Custom_Team.Impostor:
                     if (CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor && pc.IsAlive())
                     {
@@ -261,39 +244,39 @@ namespace TOHE.Roles.Neutral
                     CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Randomizer);
                     Logger.Info($"Randomizer {pc.name} (dead) wins with the Impostor team.", "Randomizer");
                 }
+                else if (playerState.LockedTeam == Custom_Team.Coven && CustomWinnerHolder.WinnerTeam == CustomWinner.Coven)
+                {
+                    CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                    CustomWinnerHolder.AdditionalWinnerTeams.Add(AdditionalWinners.Randomizer);
+                    Logger.Info($"Randomizer {pc.name} (dead) wins with the Coven team.", "Randomizer");
+                }
             }
         }
-
-
-
-
-
-
-
-
-
 
         private static Custom_Team DetermineTeam()
         {
             int crewChance = ChanceCrew.GetInt();
             int impostorChance = ChanceImpostor.GetInt();
             int neutralChance = ChanceNeutral.GetInt();
+            int covenChance = ChanceCoven.GetInt();
 
-            int totalChance = crewChance + impostorChance + neutralChance;
+
+            int totalChance = crewChance + impostorChance + neutralChance + covenChance;
 
             // Handle all chances set to 0 or if total chance is 0
             if (totalChance == 0)
             {
                 Logger.Warn("All team chances are set to 0. Running default overlap with equal chances.", "DetermineTeam");
-                return ResolveOverlap(new[] { Custom_Team.Crewmate, Custom_Team.Impostor, Custom_Team.Neutral });
+                return ResolveOverlap(new[] { Custom_Team.Crewmate, Custom_Team.Impostor, Custom_Team.Neutral, Custom_Team.Coven });
             }
 
-            int roll = UnityEngine.Random.Range(0, totalChance);
+            int roll = Random.Range(0, totalChance);
 
             // Check for overlapping chances
             List<Custom_Team> overlappingTeams = new();
 
             if (roll < crewChance) overlappingTeams.Add(Custom_Team.Crewmate);
+            if (roll < crewChance + impostorChance + covenChance && roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Impostor);
             if (roll < crewChance + impostorChance && roll >= crewChance) overlappingTeams.Add(Custom_Team.Impostor);
             if (roll >= crewChance + impostorChance) overlappingTeams.Add(Custom_Team.Neutral);
 
@@ -307,6 +290,7 @@ namespace TOHE.Roles.Neutral
             // Return the determined team if no overlap
             if (roll < crewChance) return Custom_Team.Crewmate;
             if (roll < crewChance + impostorChance) return Custom_Team.Impostor;
+            if (roll < crewChance + impostorChance + covenChance) return Custom_Team.Coven;
             return Custom_Team.Neutral;
         }
         private static Custom_Team ResolveOverlap(IEnumerable<Custom_Team> overlappingTeams)
@@ -323,24 +307,16 @@ namespace TOHE.Roles.Neutral
             var playerState = Main.PlayerStates[pc.PlayerId];
 
             // Get a list of add-ons for the player
-            var addOns = string.Join(", ", playerState.SubRoles.Select(addOn => Utils.GetRoleName(addOn)));
+            var addOns = string.Join(", ", playerState.SubRoles.Select(addOn => GetRoleName(addOn)));
 
             // Notify Randomizer about its role and add-ons
-            string message = $"You are still the Randomizer! Your current role is {Utils.GetRoleName(newRole)}";
+            string message = $"You are still the Randomizer! Your current role is {GetRoleName(newRole)}";
             if (!string.IsNullOrEmpty(addOns))
             {
                 message += $" with the following add-ons: {addOns}.";
             }
 
-            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Randomizer), message));
-        }
-        private static bool IsRoleEnabled(CustomRoles role)
-        {
-            if (RoleAvailabilityOptions.TryGetValue(role, out var option))
-            {
-                return option.GetBool();
-            }
-            return true; // Default to enabled if not explicitly configured
+            pc.Notify(ColorString(GetRoleColor(CustomRoles.Randomizer), message));
         }
         private static CustomRoles GetGhostRole(byte playerId)
         {
@@ -351,19 +327,14 @@ namespace TOHE.Roles.Neutral
             }
 
             // Select a random ghost role
-            CustomRoles selectedRole = GhostRolesList[UnityEngine.Random.Range(0, GhostRolesList.Count)];
+            CustomRoles selectedRole = GhostRolesList[Random.Range(0, GhostRolesList.Count)];
             Logger.Info($"Assigned ghost role {selectedRole} to player ID {playerId}.", "Randomizer");
             return selectedRole;
         }
 
-
-
-
-
-
         private static CustomRoles GetRandomRoleAcrossAllTeams(byte playerId)
         {
-            var pc = Utils.GetPlayerById(playerId);
+            var pc = GetPlayerById(playerId);
             if (pc == null) return CustomRoles.CrewmateTOHE; // Default fallback
 
             var playerState = Main.PlayerStates[playerId];
@@ -373,9 +344,10 @@ namespace TOHE.Roles.Neutral
 
             List<CustomRoles> availableRoles = team switch
             {
-                Custom_Team.Crewmate => GetAllCrewmateRoles(),
-                Custom_Team.Impostor => GetAllImpostorRoles(),
-                Custom_Team.Neutral => GetAllNeutralRoles(),
+                Custom_Team.Crewmate => CustomRolesHelper.AllRoles.Where(role => role.IsCrewmate() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+                Custom_Team.Impostor => CustomRolesHelper.AllRoles.Where(role => role.IsImpostor() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+                Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+                Custom_Team.Coven => CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
                 _ => new List<CustomRoles>() // Default empty list
             };
 
@@ -395,6 +367,8 @@ namespace TOHE.Roles.Neutral
                 playerState.IsCrewmateTeam = team == Custom_Team.Crewmate;
                 playerState.IsImpostorTeam = team == Custom_Team.Impostor;
                 playerState.IsNeutralTeam = team == Custom_Team.Neutral;
+                playerState.IsCovenTeam = team == Custom_Team.Coven;
+
 
                 Logger.Info($"Randomizer locked to {team} team.", "Randomizer");
             }
@@ -481,12 +455,12 @@ namespace TOHE.Roles.Neutral
         }
 
 
-        public static void AfterMeetingTasks()
+        public static void UnAfterMeetingTasks()
         {
             foreach (var playerId in playerIdList.ToList())
             {
 
-                var pc = Utils.GetPlayerById(playerId);
+                var pc = GetPlayerById(playerId);
                 Logger.Info($"Randomizer {pc.name} Randomizer AfterMeetingTasks is running", "Randomizer");
                 if (pc == null) continue;
 
@@ -563,9 +537,9 @@ namespace TOHE.Roles.Neutral
                     }
 
                     // Randomly determine the number of add-ons to assign
-                    int addOnCount = UnityEngine.Random.Range(minAddOns, maxAddOns + 1);
-                    List<CustomRoles> selectedAddOns = GetAvailableAddOns()
-                        .OrderBy(_ => UnityEngine.Random.value)
+                    int addOnCount = Random.Range(minAddOns, maxAddOns + 1);
+                    List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
+                        .OrderBy(_ => Random.value)
                         .Take(addOnCount)
                         .ToList();
 
@@ -582,33 +556,6 @@ namespace TOHE.Roles.Neutral
                 pc.GetRoleClass()?.OnAdd(pc.PlayerId);
             }
         }
-
-
-
-
-
-        private static void AssignAddOns(PlayerControl pc, int maxAddOns)
-        {
-            var playerState = Main.PlayerStates[pc.PlayerId];
-            if (playerState == null) return;
-
-            List<CustomRoles> availableAddOns = GetAvailableAddOns()
-                .Where(IsRoleEnabled) // Ensure only enabled add-ons are considered
-                .ToList();
-
-            // Randomly select a subset of add-ons (up to maxAddOns)
-            List<CustomRoles> selectedAddOns = availableAddOns
-                .OrderBy(_ => UnityEngine.Random.value)
-                .Take(maxAddOns)
-                .ToList();
-
-            foreach (var addOn in selectedAddOns)
-            {
-                playerState.SetSubRole(addOn, pc); // Assign add-on as a subrole
-                Logger.Info($"Assigned Add-on {addOn} to {pc.name}", "Randomizer");
-            }
-        }
-
 
         private void ResetSubRoles(byte playerId)
         {
@@ -631,291 +578,10 @@ namespace TOHE.Roles.Neutral
             playerState.IsCrewmateTeam = false;
             playerState.IsImpostorTeam = false;
             playerState.IsNeutralTeam = false;
-        }
-
-        // Define role lists inside the Randomizer class
-        private static List<CustomRoles> GetAllCrewmateRoles()
-        {
-            return new List<CustomRoles>
-            {
-                CustomRoles.Addict,
-    CustomRoles.Alchemist,
-    CustomRoles.Bastion,
-    CustomRoles.Benefactor,
-    CustomRoles.Bodyguard,
-    CustomRoles.Captain,
-    CustomRoles.Celebrity,
-    CustomRoles.Cleanser,
-    CustomRoles.Coroner,
-    CustomRoles.Crusader,
-    CustomRoles.Deceiver,
-    CustomRoles.Deputy,
-    CustomRoles.Detective,
-    CustomRoles.Dictator,
-    CustomRoles.Enigma,
-    CustomRoles.FortuneTeller,
-    CustomRoles.Grenadier,
-    CustomRoles.Guardian,
-    CustomRoles.GuessMaster,
-    CustomRoles.Inspector,
-    CustomRoles.Investigator,
-    CustomRoles.Jailer,
-    CustomRoles.Judge,
-    CustomRoles.Keeper,
-    CustomRoles.Knight,
-    CustomRoles.LazyGuy,
-    CustomRoles.Lighter,
-    CustomRoles.Lookout,
-    CustomRoles.Marshall,
-    CustomRoles.Mayor,
-    CustomRoles.Mechanic,
-    CustomRoles.Medium,
-    CustomRoles.Merchant,
-    CustomRoles.Mole,
-    CustomRoles.Mortician,
-    CustomRoles.NiceGuesser,
-    CustomRoles.Observer,
-    CustomRoles.Oracle,
-    CustomRoles.Overseer,
-    CustomRoles.Pacifist,
-    CustomRoles.Psychic,
-    CustomRoles.Reverie,
-    CustomRoles.Sheriff,
-    CustomRoles.Snitch,
-    CustomRoles.Spiritualist,
-    CustomRoles.Spy,
-    CustomRoles.Swapper,
-    CustomRoles.TaskManager,
-    CustomRoles.Telecommunication,
-    CustomRoles.TimeManager,
-    CustomRoles.TimeMaster,
-    CustomRoles.Tracefinder,
-    CustomRoles.Transporter,
-    CustomRoles.Ventguard,
-    CustomRoles.Veteran,
-    CustomRoles.Vigilante,
-    CustomRoles.Witness,
-                // Add other Crewmate roles here
-            };
-        }
-
-        private static List<CustomRoles> GetAllNeutralRoles()
-        {
-            return new List<CustomRoles>
-            {
-                        CustomRoles.Arsonist,
-        CustomRoles.Arsonist,
-     CustomRoles.Bandit,
-
-     CustomRoles.BloodKnight,
-     CustomRoles.Collector,
-     CustomRoles.Demon,
-     CustomRoles.Doomsayer,
-     CustomRoles.Executioner,
-     CustomRoles.Evolver,
-     CustomRoles.Follower,
-     CustomRoles.Glitch,
-     CustomRoles.God,
-     CustomRoles.Hater,
-     CustomRoles.HexMaster,
-     CustomRoles.Huntsman,
-    CustomRoles.Jester,
-    CustomRoles.Jinx,
-    CustomRoles.Juggernaut,
-     CustomRoles.Maverick,
-    CustomRoles.Medusa,
-    CustomRoles.Necromancer,
-    CustomRoles.Opportunist,
-    CustomRoles.Pelican,
-     CustomRoles.Pickpocket,
-     CustomRoles.Pirate,
-     CustomRoles.Pixie,
-    CustomRoles.PlagueDoctor,
-    CustomRoles.Poisoner,
-    CustomRoles.PotionMaster,
-     CustomRoles.PunchingBag,
-     CustomRoles.Pursuer,
-     CustomRoles.Pyromaniac,
-     CustomRoles.Quizmaster,
-     CustomRoles.Revolutionist,
-     CustomRoles.RuthlessRomantic,
-     CustomRoles.SchrodingersCat,
-     CustomRoles.Seeker,
-    CustomRoles.SerialKiller,
-    CustomRoles.Shaman,
-    CustomRoles.Shroud,
-    CustomRoles.Sidekick,
-    CustomRoles.Solsticer,
-    CustomRoles.Stalker,
-    CustomRoles.Sunnyboy,
-    CustomRoles.Taskinator,
-    CustomRoles.Terrorist,
-    CustomRoles.Traitor,
-    CustomRoles.Troller,
-    CustomRoles.Vector,
-    CustomRoles.VengefulRomantic,
-     CustomRoles.Vulture,
-     CustomRoles.Werewolf,
-     CustomRoles.Workaholic,
-    
-                // Add other Neutral roles here
-            };
-        }
-
-        private static List<CustomRoles> GetAllImpostorRoles()
-        {
-            return new List<CustomRoles>
-    {
-        CustomRoles.Consigliere,
-        CustomRoles.Crewpostor,
-        CustomRoles.Cleaner,
-         CustomRoles.Anonymous,
-    CustomRoles.AntiAdminer,
-    CustomRoles.Arrogance,
-    CustomRoles.Bard,
-    CustomRoles.Blackmailer,
-    CustomRoles.Bomber,
-    CustomRoles.BountyHunter,
-    CustomRoles.Butcher,
-    CustomRoles.Camouflager,
-    CustomRoles.Chronomancer,
-    CustomRoles.Councillor,
-    CustomRoles.CursedWolf,
-    CustomRoles.Dazzler,
-    CustomRoles.Deathpact,
-    CustomRoles.Disperser,
-    CustomRoles.DoubleAgent,
-    CustomRoles.Eraser,
-    CustomRoles.Escapist,
-    CustomRoles.EvilGuesser,
-    CustomRoles.EvilHacker,
-    CustomRoles.EvilTracker,
-    CustomRoles.Fireworker,
-    CustomRoles.Greedy,
-    CustomRoles.Hangman,
-    CustomRoles.Inhibitor,
-    CustomRoles.Kamikaze,
-    CustomRoles.KillingMachine,
-    CustomRoles.Lightning,
-    CustomRoles.Ludopath,
-    CustomRoles.Lurker,
-    CustomRoles.Mastermind,
-    CustomRoles.Miner,
-    CustomRoles.Morphling,
-    CustomRoles.Ninja,
-    CustomRoles.Parasite,
-    CustomRoles.Penguin,
-    CustomRoles.Pitfall,
-    CustomRoles.Puppeteer,
-    CustomRoles.QuickShooter,
-    CustomRoles.Refugee,
-    CustomRoles.RiftMaker,
-    CustomRoles.Saboteur,
-    CustomRoles.Scavenger,
-    CustomRoles.ShapeMaster,
-    CustomRoles.Sniper,
-    CustomRoles.SoulCatcher,
-    CustomRoles.Stealth,
-    CustomRoles.YinYanger,
-    CustomRoles.Swooper,
-    CustomRoles.Trapster,
-    CustomRoles.Trickster,
-    CustomRoles.Twister,
-    CustomRoles.Undertaker,
-    CustomRoles.Vampire,
-    CustomRoles.Vindicator,
-    CustomRoles.Visionary,
-    CustomRoles.Warlock,
-    CustomRoles.Wildling,
-    CustomRoles.Witch,
-    CustomRoles.Zombie,
-        // Add other existing impostor roles here
-    };
+            playerState.IsCovenTeam = false;
         }
 
 
-        private static List<CustomRoles> GetAvailableAddOns()
-        {
-            return new List<CustomRoles>
-    {
-
-        CustomRoles.Antidote,
-        CustomRoles.Autopsy,
-        CustomRoles.Avanger,
-        CustomRoles.Aware,
-        CustomRoles.Bait,
-        CustomRoles.Bewilder,
-        CustomRoles.Bloodthirst,
-        CustomRoles.Burst,
-        CustomRoles.Circumvent,
-        CustomRoles.Cleansed,
-        CustomRoles.Clumsy,
-        CustomRoles.Cyber,
-        CustomRoles.Diseased,
-        CustomRoles.DoubleShot,
-        CustomRoles.Eavesdropper,
-        CustomRoles.Evader,
-        CustomRoles.Flash,
-        CustomRoles.Fool,
-        CustomRoles.Fragile,
-        CustomRoles.Ghoul,
-        CustomRoles.Glow,
-        CustomRoles.Gravestone,
-        CustomRoles.Guesser,
-        CustomRoles.Influenced,
-        CustomRoles.LastImpostor,
-        CustomRoles.Lazy,
-        CustomRoles.Loyal,
-        CustomRoles.Lucky,
-        CustomRoles.Mare,
-        CustomRoles.Rebirth,
-        CustomRoles.Mimic,
-        CustomRoles.Mundane,
-        CustomRoles.Necroview,
-        CustomRoles.Nimble,
-        CustomRoles.Oblivious,
-        CustomRoles.Onbound,
-        CustomRoles.Overclocked,
-        CustomRoles.Paranoia,
-        CustomRoles.Prohibited,
-        CustomRoles.Radar,
-        CustomRoles.Rainbow,
-        CustomRoles.Rascal,
-        CustomRoles.Reach,
-        CustomRoles.Rebound,
-        CustomRoles.Spurt,
-        CustomRoles.Seer,
-        CustomRoles.Silent,
-        CustomRoles.Sleuth,
-        CustomRoles.Sloth,
-        CustomRoles.Statue,
-        CustomRoles.Stubborn,
-        CustomRoles.Susceptible,
-        CustomRoles.Swift,
-        CustomRoles.Tiebreaker,
-        CustomRoles.Stealer,
-        CustomRoles.Torch,
-        CustomRoles.Trapper,
-        CustomRoles.Tricky,
-        CustomRoles.Tired,
-        CustomRoles.Unlucky,
-        CustomRoles.VoidBallot,
-        CustomRoles.Watcher,
-        CustomRoles.Workhorse,
-
-    };
-
-
-        }
-
-        private static readonly List<CustomRoles> GhostRolesList = new()
-{
-    CustomRoles.Bloodmoon,
-    CustomRoles.Minion,
-    CustomRoles.Possessor,
-    CustomRoles.Ghastly,
-    CustomRoles.Hawk,
-    CustomRoles.Warden
-};
+        private static readonly List<CustomRoles> GhostRolesList = CustomRolesHelper.AllRoles.Where(role => role.IsGhostRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList();
     }
 }

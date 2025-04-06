@@ -2387,7 +2387,7 @@ public static class Utils
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
-            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.AfterMeetingTasks();
+            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {
