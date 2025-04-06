@@ -72,6 +72,7 @@ public static class NarcManager
             {
                 if (RoleAssign.SetRoles.ContainsValue(improle)) continue;
                 //if (improle.IsMadmate() && !MadmateCanBeNarc.GetBool()) continue;
+                if (improle is CustomRoles.PhantomTOHE) continue;
                 RolesToSelect.Add(improle);
             }
 
