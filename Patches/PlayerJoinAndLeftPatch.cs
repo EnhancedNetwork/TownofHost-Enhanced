@@ -89,7 +89,7 @@ class OnGameJoinedPatch
                     Logger.Info(" Is Hide & Seek", "Game Mode");
 
                     // If custom Gamemode is Standard/FFA/C&R in H&S game, set HideNSeekTOHO
-                    if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA)
+                                       if (Options.CurrentGameMode is CustomGameMode.Standard or CustomGameMode.FFA or CustomGameMode.CandR)
                     {
                         // Select HideNSeekTOHO
                         Options.GameMode.SetValue(2);
@@ -329,6 +329,10 @@ class OnPlayerLeftPatch
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
         {
+                       if (Options.CurrentGameMode is CustomGameMode.CandR)
+            {
+                CopsAndRobbersManager.OnPlayerDisconnect(data.Character.PlayerId);
+            }
             if (data.Character != null) CustomNetObject.DespawnOnQuit(data.Character.PlayerId);
             MurderPlayerPatch.AfterPlayerDeathTasks(data?.Character, data?.Character, GameStates.IsMeeting);
         }

@@ -34,6 +34,7 @@ public static class AddonAssign
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
+            case CustomGameMode.CandR:
                 return;
         }
         AddonRolesList.Clear();
@@ -49,7 +50,7 @@ public static class AddonAssign
     }
     public static void StartSortAndAssign()
     {
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return;
+           if (Options.CurrentGameMode == CustomGameMode.FFA || Options.CurrentGameMode == CustomGameMode.CandR) return;
 
         var rd = IRandom.Instance;
         List<CustomRoles> addonsList = [];

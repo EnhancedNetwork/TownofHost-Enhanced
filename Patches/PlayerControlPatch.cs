@@ -210,6 +210,12 @@ class CheckMurderPatch
             FFAManager.OnPlayerAttack(killer, target);
             return false;
         }
+             //C&R
+        if (Options.CurrentGameMode == CustomGameMode.CandR)
+        {
+            CopsAndRobbersManager.OnCopAttack(killer, target);
+            return false;
+        }
 
         //If Player hacked by Glitch
         if (Glitch.HasEnabled && !Glitch.OnCheckMurderOthers(killer, target))
@@ -642,6 +648,16 @@ public static class CheckShapeshiftPatch
             Logger.Info("Checking while AntiBlackOut protect, shapeshift was canceled", "CheckShapeshift");
             return false;
         }
+          if (Options.CurrentGameMode is CustomGameMode.CandR)
+        {
+            if (instance == target && Main.UnShapeShifter.Contains(instance.PlayerId))
+            {
+                if (!instance.IsMushroomMixupActive() && !GameStates.IsMeeting) CopsAndRobbersManager.UnShapeShiftButton(instance);
+                instance.RpcResetAbilityCooldown();
+                logger.Info($"Cancel shapeshifting because {instance.GetRealName()} is using un-shapeshift ability button");
+                return false;
+            }
+        }
         else
         {
             if (!(instance.Is(CustomRoles.ShapeshifterTOHO) || instance.Is(CustomRoles.Shapeshifter)) && target.GetClient().GetHashedPuid() == Main.FirstDiedPrevious && MeetingStates.FirstMeeting)
@@ -733,7 +749,7 @@ class ReportDeadBodyPatch
             return false;
         }
         if (Options.DisableMeeting.GetBool()) return false;
-        if (Options.CurrentGameMode is CustomGameMode.FFA) return false;
+             if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.CandR) return false;
 
         if (!CanReport[__instance.PlayerId])
         {
@@ -1403,6 +1419,9 @@ class FixedUpdateInNormalGamePatch
                     case CustomGameMode.FFA:
                         Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
                         break;
+                                          case CustomGameMode.CandR:
+                        Suffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, target));
+                        break;
                 }
                 
                 // Devourer
@@ -1643,6 +1662,11 @@ class CoExitVentPatch
         }
 
         if (!AmongUsClient.Instance.AmHost) return;
+          if (Options.CurrentGameMode == CustomGameMode.CandR)
+        {
+            CopsAndRobbersManager.OnRobberExitVent(player);
+        }
+
 
         player.GetRoleClass()?.OnExitVent(player, id);
         if (player.GetRoleClass()?.BlockMoveInVent(player) ?? true)
