@@ -184,11 +184,9 @@ internal class BountyHunter : RoleBase
             (target.CheckImpCanSeeAllies()
             || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool()))) return false;
 
-        if (player.Is(CustomRoles.Narc)
-            && target.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && target.IsPlayerCrewmateTeam()) return false;
-
+        if (player.Is(CustomRoles.Narc) && target.IsPolice()) return false;
+        
         return true;
-
     }
     private static byte ResetTarget(PlayerControl player)
     {
