@@ -5,6 +5,7 @@ using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -73,7 +74,7 @@ internal class SoulCollector : RoleBase
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (_Player == null) return string.Empty;
-        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
+        if (TargetId == target.PlayerId && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
         {
             return Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), "♠");
         }
@@ -182,7 +183,7 @@ internal class Death : RoleBase
         var death = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) continue;
+            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer) continue;
             if (death.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))

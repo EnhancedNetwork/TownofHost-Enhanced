@@ -18,6 +18,8 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE;
 
@@ -1412,7 +1414,7 @@ class FixedUpdateInNormalGamePatch
                             if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
                                 Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                         }
-                        if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
+                        if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) && !(Main.PlayerStates[localPlayer.PlayerId].IsRandomizer || Main.PlayerStates[player.PlayerId].IsRandomizer) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
                         {
                             Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                         }

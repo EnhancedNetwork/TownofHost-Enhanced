@@ -214,7 +214,7 @@ internal class PlagueBearer : RoleBase
         => IsPlagued(seer.PlayerId, seen.PlayerId) ? ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿") : string.Empty;
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
-        if (playerIdList.Any() && IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First() && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
+        if (playerIdList.Any() && IsPlagued(playerIdList.First(), target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != playerIdList.First() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer)
         {
             return ColorString(GetRoleColor(CustomRoles.PlagueBearer), "⦿");
         }
@@ -249,14 +249,14 @@ internal class Pestilence : RoleBase
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
-        if (killer.IsNeutralApocalypse() && !Main.PlayerStates[killer.PlayerId].IsNecromancer) return false;
+        if (killer.IsNeutralApocalypse() && !Main.PlayerStates[killer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return false;
         target.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
         return false;
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return false;
+        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer) return false;
         return true;
     }
 

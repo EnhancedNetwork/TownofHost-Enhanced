@@ -1992,7 +1992,7 @@ public static class Utils
                                     TargetMark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
 
 
-                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && CovenManager.HasNecronomicon(target))
+                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) && !(Main.PlayerStates[seer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer) || !seer.IsAlive()) && CovenManager.HasNecronomicon(target))
                                 {
                                     TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                                 }

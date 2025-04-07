@@ -2,6 +2,7 @@ using Hazel;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules.ChatManager;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Crewmate;
@@ -11,6 +12,7 @@ using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Coven;
 
@@ -326,6 +328,6 @@ internal class Ritualist : CovenManager
     {
         return pc != null && (!pc.GetCustomRole().IsCovenTeam() && !pc.IsTransformedNeutralApocalypse()) && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool() && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
     }
 }
