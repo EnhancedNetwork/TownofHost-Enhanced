@@ -128,7 +128,7 @@ internal class DoubleAgent : RoleBase
         if (!BombIsActive)
         {
             if (target.Is(Custom_Team.Impostor) && !voter.Is(CustomRoles.Narc)) return false;
-            if (target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam() && voter.Is(CustomRoles.Narc)) return false;
+            if (target.IsPolice() && voter.Is(CustomRoles.Narc)) return false;
             if (voter == target) return false;
 
             if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
