@@ -767,7 +767,7 @@ class CastVotePatch
             }
 
 
-            if (!voter.GetRoleClass().HasVoted && voter.GetRoleClass().CheckVote(voter, target) == false)
+            if (!voter.GetRoleClass().HasVoted && Reroll.OnCheckVote(voter, target) == false || voter.GetRoleClass().CheckVote(voter, target) == false)
             {
                 Logger.Info($"Canceling {voter.GetRealName()}'s vote because of {voter.GetCustomRole()}", "CastVotePatch.RoleBase.CheckVote");
                 voter.GetRoleClass().HasVoted = true;

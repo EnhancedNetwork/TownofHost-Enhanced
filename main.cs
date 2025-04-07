@@ -1049,6 +1049,7 @@ public enum CustomRoles
     Rascal,
     Reach,
     Rebound,
+    Reroll,
     Spurt,
     Recruit,
     Seer,

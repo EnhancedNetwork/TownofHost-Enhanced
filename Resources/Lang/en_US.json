@@ -4090,7 +4090,7 @@
   "Description.Scope": "Increases the capture range of Cop.",
   "CopAbilityText": "Ability",
   "CopKillButtonText": "Capture",
-  "RobberAbilityText":	"Vent",
+  "RobberAbilityText": "Vent",
   "C&R_NotifyRobbersWhenCaptured": "Notify Robbers when captured",
   "Robber": "Robber",
   "RobberInfo": "Complete all tasks to win",
@@ -4637,5 +4637,9 @@
   "Quota": "Quota",
   "QuotaInfo": "Kill a certian amount to win",
   "QuotaInfoLong": "The Quota must kill a certian amount of people to win with their team.",
-  "AmountKillsNeededToWin351": "Amount of kills needed to win"
+  "AmountKillsNeededToWin351": "Amount of kills needed to win",
+
+  "Reroll": "Reroll",
+  "RerollInfo": "Change your role",
+  "RerollInfoLong": "When the Reroll votes themself, they will change roles to a random role in their faction. This action can only be used once."
 }
