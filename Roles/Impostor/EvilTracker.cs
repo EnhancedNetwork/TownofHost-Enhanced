@@ -30,7 +30,9 @@ internal class EvilTracker : RoleBase
 
     private static readonly Dictionary<byte, byte> Target = [];
     private static readonly Dictionary<byte, bool> CanSetTarget = [];
-    private static readonly Dictionary<byte, HashSet<byte>> ImpostorsId = [];
+    private static List<byte> TeammatesIdList(PlayerControl pc) 
+        => Main.AllAlivePlayerControls.Where(x => pc.Is(CustomRoles.Narc) ? x.IsPolice() : x.CheckImpCanSeeAllies(CheckAsTarget: true))
+                                      .Select(x => x.PlayerId).ToList();
 
     [Obfuscation(Exclude = true)]
     private enum TargetMode
@@ -63,7 +65,6 @@ internal class EvilTracker : RoleBase
         playerIdList.Clear();
         Target.Clear();
         CanSetTarget.Clear();
-        ImpostorsId.Clear();
 
         CanSeeKillFlash = OptionCanSeeKillFlash.GetBool();
         CurrentTargetMode = (TargetMode)OptionTargetMode.GetValue();
@@ -75,21 +76,8 @@ internal class EvilTracker : RoleBase
             playerIdList.Add(playerId);
         Target.Add(playerId, byte.MaxValue);
         CanSetTarget.Add(playerId, CurrentTargetMode != TargetMode.Never);
-
-        ImpostorsId[playerId] = [];
-
-        foreach (var target in Main.AllAlivePlayerControls)
-        {
-            var targetId = target.PlayerId;
-            if (targetId != playerId
-                && (NarcManager.RoleForNarcToSpawnAs == Role ? target.Is(CustomRoles.Sheriff) || target.Is(CustomRoles.ChiefOfPolice) : target.Is(Custom_Team.Impostor)))
-            {
-                ImpostorsId[playerId].Add(targetId);
-                if (AmongUsClient.Instance.AmHost)
-                    TargetArrow.Add(playerId, targetId);
-            }
-        }
     }
+
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = CanTarget(playerId) ? 1f : 255f;
@@ -112,13 +100,12 @@ internal class EvilTracker : RoleBase
     public static bool IsTrackTarget(PlayerControl seer, PlayerControl target)
         => seer.IsAlive() && playerIdList.Contains(seer.PlayerId)
         && target.IsAlive() && seer != target
-        && ((seer.Is(CustomRoles.Narc) ? NarcManager.KnowRoleOfTarget(seer, target) : target.CheckImpCanSeeAllies(CheckAsTarget: true)) || GetTargetId(seer.PlayerId) == target.PlayerId);
+        && (TeammatesIdList(seer).Contains(target.PlayerId) || GetTargetId(seer.PlayerId) == target.PlayerId);
 
     public override bool OnCheckShapeshift(PlayerControl shapeshifter, PlayerControl target, ref bool resetCooldown, ref bool shouldAnimate)
     {
         if (!CanTarget(shapeshifter.PlayerId)) return false;
-        if (shapeshifter.Is(CustomRoles.Narc) ? NarcManager.KnowRoleOfTarget(shapeshifter, target) : target.CheckImpCanSeeAllies(CheckAsTarget: true))
-            return false;
+        if (TeammatesIdList(shapeshifter).Contains(target.PlayerId)) return false;
 
         SetTarget(shapeshifter.PlayerId, target.PlayerId);
 
@@ -216,13 +203,11 @@ internal class EvilTracker : RoleBase
         var trackerId = target.PlayerId;
         if (seer.PlayerId != trackerId) return string.Empty;
 
-        ImpostorsId[trackerId].RemoveWhere(id => Main.PlayerStates[id].IsDead);
-
         var sb = new StringBuilder(80);
-        if (ImpostorsId[trackerId].Any())
+        if (TeammatesIdList(target).Any())
         {
             sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Impostor)}>");
-            foreach (var impostorId in ImpostorsId[trackerId])
+            foreach (var impostorId in TeammatesIdList(target))
             {
                 sb.Append(TargetArrow.GetArrows(target, impostorId));
             }
