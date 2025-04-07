@@ -96,9 +96,9 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     }
     public static void GiveNecronomicon()
     {
-        // Exclude Summoned players from the eligible list
+        // Exclude Summoned players and Randomizer from the eligible list
         var pcList = Main.AllAlivePlayerControls
-            .Where(pc => pc.IsPlayerCoven() && pc.IsAlive() && !pc.Is(CustomRoles.Summoned) && (Main.PlayerStates[pc.PlayerId].IsRandomizer ? Randomizer.CanGetNecronomicon.GetBool() : true))
+            .Where(pc => pc.IsPlayerCoven() && pc.IsAlive() && !pc.Is(CustomRoles.Summoned) && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
             .ToList();
 
         if (pcList.Any())
@@ -121,7 +121,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     public static void GiveNecronomicon(PlayerControl target)
     {
         if (target.Is(CustomRoles.Summoned)) return; // Prevent assignment to Summoned players
-        if (Main.PlayerStates[target.PlayerId].IsRandomizer && !Randomizer.CanGetNecronomicon.GetBool())
+        if (Main.PlayerStates[target.PlayerId].IsRandomizer)
         {
             // Avoid giving Necronomicon to Randomizer
             Logger.Info($"Randomizer {target.GetRealName()} was selected for Necronomicon, skipping.", "Coven");
@@ -189,7 +189,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             GiveNecronomicon();
         }
     }
-    public static bool HasNecronomicon(PlayerControl pc) => necroHolder == pc.PlayerId;
-    public static bool HasNecronomicon(byte playerId) => necroHolder == playerId;
+    public static bool HasNecronomicon(PlayerControl pc) => necroHolder == pc.PlayerId || (Main.PlayerStates[pc.PlayerId].IsRandomizer && Randomizer.CanGetNecronomicon.GetBool() && pc.GetCustomRole().IsCoven());
+    public static bool HasNecronomicon(byte playerId) => necroHolder == playerId || (Main.PlayerStates[playerId].IsRandomizer && Randomizer.CanGetNecronomicon.GetBool() && GetPlayerById(playerId).GetCustomRole().IsCoven());
 
 }

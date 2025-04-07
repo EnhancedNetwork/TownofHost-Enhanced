@@ -11,7 +11,7 @@ internal class Randomizer : RoleBase
     private const int Id = 82000; // Unique ID for Randomizer
     public static readonly HashSet<byte> playerIdList = new();
     public override bool IsDesyncRole => true;
-    public override CustomRoles ThisRoleBase => CustomRoles.Crewmate; // Base role remains Neutral
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor; // Base role remains Neutral
     public override Custom_RoleType ThisRoleType => Custom_RoleType.NeutralChaos;
     public override CustomRoles Role => CustomRoles.Randomizer;
     //================================================================\\
@@ -94,7 +94,7 @@ internal class Randomizer : RoleBase
 
         if (pc.GetCustomRole() != CustomRoles.Randomizer)
         {
-            pc.RpcChangeRoleBasis(CustomRoles.Crewmate);
+            pc.RpcChangeRoleBasis(ThisRoleBase);
             pc.RpcSetCustomRole(CustomRoles.Randomizer);
         }
 
@@ -349,7 +349,7 @@ internal class Randomizer : RoleBase
         {
             Custom_Team.Crewmate => CustomRolesHelper.AllRoles.Where(role => role.IsCrewmate() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
             Custom_Team.Impostor => CustomRolesHelper.AllRoles.Where(role => role.IsImpostor() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
-            Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true) && role is not CustomRoles.Randomizer).ToList(),
             Custom_Team.Coven => CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
             _ => new List<CustomRoles>() // Default empty list
         };
