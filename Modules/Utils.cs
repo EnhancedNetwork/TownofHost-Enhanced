@@ -2462,7 +2462,7 @@ public static class Utils
 
         if (Diseased.IsEnable) Diseased.AfterMeetingTasks();
         if (Antidote.IsEnable) Antidote.AfterMeetingTasks();
-        Reroll.AfterMeetingTasks();
+        Redo.AfterMeetingTasks();
 
         AntiBlackout.AfterMeetingTasks();
 

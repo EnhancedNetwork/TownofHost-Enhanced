@@ -1049,7 +1049,7 @@ public enum CustomRoles
     Rascal,
     Reach,
     Rebound,
-    Reroll,
+    Redo,
     Spurt,
     Recruit,
     Seer,

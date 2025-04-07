@@ -2,9 +2,9 @@
 
 namespace TOHE.Roles.AddOns.Common;
 
-public class Reroll : IAddon
+public class Redo : IAddon
 {
-    public CustomRoles Role => CustomRoles.Reroll;
+    public CustomRoles Role => CustomRoles.Redo;
     private const int Id = 35200;
     public AddonTypes Type => AddonTypes.Mixed;
     public static CustomRoles switchTo = CustomRoles.NotAssigned;
@@ -12,7 +12,7 @@ public class Reroll : IAddon
     public static PlayerControl switchPlayer = null;
     public void SetupCustomOption()
     {
-        SetupAdtRoleOptions(Id, CustomRoles.Reroll, canSetNum: true, teamSpawnOptions: true);
+        SetupAdtRoleOptions(Id, CustomRoles.Redo, canSetNum: true, teamSpawnOptions: true);
     }
     public void Init()
     { }
@@ -22,7 +22,7 @@ public class Reroll : IAddon
     { }
     public static bool OnCheckVote(PlayerControl voter, PlayerControl target)
     {
-        if (voter.Is(CustomRoles.Reroll))
+        if (voter.Is(CustomRoles.Redo))
         if (voter == target)
         {
             List<CustomRoles> PotentialRoles = [];
@@ -50,7 +50,7 @@ public class Reroll : IAddon
         {  
             switchPlayer.RpcChangeRoleBasis(switchTo);
             switchPlayer.RpcSetCustomRole(switchTo);
-            Main.PlayerStates[switchPlayer.PlayerId].RemoveSubRole(CustomRoles.Reroll);
+            Main.PlayerStates[switchPlayer.PlayerId].RemoveSubRole(CustomRoles.Redo);
             isSwitching = false;
         }
     }
