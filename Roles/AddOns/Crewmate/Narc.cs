@@ -98,6 +98,10 @@ public static class NarcManager
         => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam()) || ImpsCanKillEachOther.GetBool();
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 
+    public static bool IsPolice(this PlayerControl player)
+        => (player.Is(CustomRoles.Sheriff) || player.Is(CustomRoles.ChiefOfPolice))
+            && player.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(player.PlayerId);
+    
     public static bool KnowRoleOfTarget(PlayerControl seer, PlayerControl target)
     {
         return (seer.IsPolice() && target.Is(CustomRoles.Narc)) || 
