@@ -46,7 +46,7 @@ public static class CustomRolesHelper
             case CustomGameMode.FFA: //FFA
                 if (role is CustomRoles.Killer) return RoleTypes.Impostor;
                 break;
-                           case CustomGameMode.CandR: //C&R
+            case CustomGameMode.CandR: //C&R
                 if (role is CustomRoles.Cop) return RoleTypes.Shapeshifter;
                 break;
         }
