@@ -98,18 +98,22 @@ public static class NarcManager
         => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam()) || ImpsCanKillEachOther.GetBool();
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 
+    public static bool IsPolice(this PlayerControl player)
+        => (player.Is(CustomRoles.Sheriff) || player.Is(CustomRoles.ChiefOfPolice))
+            && player.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(player.PlayerId);
+    
     public static bool KnowRoleOfTarget(PlayerControl seer, PlayerControl target)
     {
-        return (seer.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && seer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.playerIdList.Contains(seer.PlayerId)) || 
-            (seer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(target.PlayerId));
+        return (seer.IsPolice() && target.Is(CustomRoles.Narc)) || 
+            (seer.Is(CustomRoles.Narc) && target.IsPolice());
     }
 
     public static string NarcAndPoliceSeeColor(PlayerControl seer, PlayerControl target)
     {
         var color = "";
-        if (seer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && target.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(target.PlayerId))
+        if (seer.Is(CustomRoles.Narc) && target.IsPolice())
             color = Main.roleColors[target.GetCustomRole()];
-        if (seer.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && seer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.playerIdList.Contains(seer.PlayerId))
+        if (seer.IsPolice() && target.Is(CustomRoles.Narc))
             color = Main.roleColors[CustomRoles.Narc];
 
         return color;
@@ -122,8 +126,8 @@ public static class NarcManager
             && !ImpsCanKillEachOther.GetBool())
             return false;
 
-        if ((killer.Is(CustomRoles.Sheriff) && killer.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.playerIdList.Contains(killer.PlayerId)) || 
-            (killer.Is(CustomRoles.Narc) && target.GetCustomRole() is CustomRoles.Sheriff or CustomRoles.ChiefOfPolice && target.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(target.PlayerId)))
+        if ((killer.IsPolice() && target.Is(CustomRoles.Narc)) || 
+            (killer.Is(CustomRoles.Narc) && target.IsPolice()))
             return false;
 
         return true;
@@ -145,7 +149,7 @@ public static class NarcManager
             }
         }
 
-        if (guesser.GetCustomRole() is CustomRoles.ChiefOfPolice or CustomRoles.Sheriff && guesser.IsPlayerCrewmateTeam() && target.Is(CustomRoles.Narc) && !CopyCat.playerIdList.Contains(guesser.PlayerId))
+        if (guesser.IsPolice() && target.Is(CustomRoles.Narc))
         {
             guesser.ShowInfoMessage(isUI, GetString("GuessNarc"));
             return true;
