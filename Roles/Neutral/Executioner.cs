@@ -177,6 +177,7 @@ internal class Executioner : RoleBase
     private void ChangeRole()
     {
         if (!_Player.IsAlive()) return;
+        if (!_Player.Is(CustomRoles.Executioner)) return;
 
         var executioner = _Player;
         var executionerId = _Player.PlayerId;

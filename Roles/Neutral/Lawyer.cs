@@ -184,7 +184,7 @@ internal class Lawyer : RoleBase
 
     private void OthersAfterPlayerDeathTask(PlayerControl killer, PlayerControl target, bool inMeeting)
     {
-        if (_Player == null || !IsTarget(target.PlayerId)) return;
+        if (_Player == null || !_Player.Is(CustomRoles.Lawyer) || !IsTarget(target.PlayerId)) return;
         ChangeRole(inMeeting);
     }
     public static bool TargetKnowLawyer => TargetKnowsLawyer.GetBool();
