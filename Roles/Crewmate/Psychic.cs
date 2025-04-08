@@ -83,7 +83,14 @@ internal class Psychic : RoleBase
     public override void OnReportDeadBody(PlayerControl reported, NetworkedPlayerInfo target)
     {
         if (Fresh.GetBool() || RedPlayer == null || RedPlayer.Count < 1)
+        {
+            if (Fresh.GetBool())
+            {
+                RedPlayer.Clear(); // Force generate new red names so its freshed?
+            }
+
             GetRedName();
+        }
     }
     private void GetRedName()
     {

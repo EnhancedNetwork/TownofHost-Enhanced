@@ -431,6 +431,8 @@ class ShipStatusSerializePatch
 
             foreach (var player in Main.AllPlayerControls)
             {
+                if (player.AmOwner) continue;
+
                 rwriter.StartMessage(6);
                 rwriter.Write(AmongUsClient.Instance.GameId);
                 rwriter.WritePacked(player.OwnerId);
@@ -439,18 +441,18 @@ class ShipStatusSerializePatch
                 rwriter.WritePacked(__instance.NetId);
                 rwriter.StartMessage((byte)reactor);
 
-                if (ReactorFlashList.Contains(player.OwnerId))
+                if (ReactorFlashList.Contains(player.OwnerId) && !player.IsModded())
                 {
                     switch (reactor)
                     {
                         case SystemTypes.Reactor:
                         case SystemTypes.Laboratory:
-                            rwriter.Write((float)1f);
+                            rwriter.Write((float)60f);
                             rwriter.WritePacked(0);
                             break;
                         case SystemTypes.HeliSabotage:
-                            rwriter.Write((float)1f);
-                            rwriter.Write((float)1f);
+                            rwriter.Write((float)60f);
+                            rwriter.Write((float)60f);
                             rwriter.WritePacked(0);
                             rwriter.WritePacked(0);
                             break;
@@ -467,7 +469,7 @@ class ShipStatusSerializePatch
 
                 rwriter.EndMessage();
             }
-
+            
             AmongUsClient.Instance.SendOrDisconnect(rwriter);
             rwriter.Recycle();
         }
