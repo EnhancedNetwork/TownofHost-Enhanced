@@ -287,11 +287,21 @@ public static class AntiBlackout
         {
             _ = new LateTask(() =>
             {
+                var sender = CustomRpcSender.Create("AntiBlackout.SetDeadAfterMeetingTasks", SendOption.Reliable);
+
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     pc.GetRoleClass()?.NotifyAfterMeeting();
+
+                    if (!pc.IsAlive())
+                    {
+                        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.Exiled, -1);
+                        sender.EndRpc();
+                    }
                 }
-            }, timeNotify + 0.2f, "Notify AfterMeetingTasks");
+
+                sender.SendMessage();
+            }, timeNotify + 0.3f, "Notify & SetDead AfterMeetingTasks");
         }
         catch (Exception error)
         {
