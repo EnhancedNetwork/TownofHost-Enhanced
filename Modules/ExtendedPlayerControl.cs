@@ -1170,7 +1170,7 @@ static class ExtendedPlayerControl
     }
     public static void ReactorFlash(this PlayerControl pc, float delay = 0f)
     {
-        if (pc == null) return;
+        if (pc == null || pc.AmOwner) return;
         // Logger.Info($"{pc}", "ReactorFlash");
         var systemtypes = Utils.GetCriticalSabotageSystemType();
         float FlashDuration = Options.KillFlashDuration.GetFloat();
