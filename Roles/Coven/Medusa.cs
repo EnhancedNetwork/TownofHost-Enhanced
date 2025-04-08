@@ -55,6 +55,7 @@ internal class Medusa : CovenManager
     {
         StonedPlayers[playerId] = [];
         isStoning = false;
+        GetPlayerById(playerId)?.AddDoubleTrigger();
     }
 
     public void SendRPC(PlayerControl player, PlayerControl target)
@@ -93,27 +94,28 @@ internal class Medusa : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (killer == null || target == null) return false;
-        if (HasNecronomicon(killer))
+        if (killer.CheckDoubleTrigger(target, () => { SetStoned(killer, target); }))
         {
-            if (target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
             {
-                killer.Notify(GetString("CovenDontKillOtherCoven"));
+                killer.RpcMurderPlayer(target);
+                killer.ResetKillCooldown();
+                killer.SetKillCooldown();
+                Main.UnreportableBodies.Add(target.PlayerId);
                 return false;
             }
-            killer.RpcMurderPlayer(target);
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            Main.UnreportableBodies.Add(target.PlayerId);
-            return false;
+            killer.Notify(GetString("CovenDontKillOtherCoven"));
         }
-        else
-        {
-            StonedPlayers[killer.PlayerId].Add(target.PlayerId);
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            killer.Notify(string.Format(GetString("MedusaStonedPlayer"), target.GetRealName()));
-            return false;
-        }
+        return false;
+    }
+    private void SetStoned(PlayerControl killer, PlayerControl target)
+    {
+        if (killer == null || target == null) return;
+        StonedPlayers[killer.PlayerId].Add(target.PlayerId);
+        SendRPC(killer, target);
+        killer.ResetKillCooldown();
+        killer.SetKillCooldown();
+        killer.Notify(string.Format(GetString("MedusaStonedPlayer"), target.GetRealName()));
     }
     public override void UnShapeShiftButton(PlayerControl dusa)
     {
