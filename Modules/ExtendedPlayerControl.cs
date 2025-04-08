@@ -561,10 +561,15 @@ static class ExtendedPlayerControl
         // Other Clients
         else
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.GetClientId());
-            writer.WriteNetObject(target);
-            writer.Write((int)MurderResultFlags.FailedProtected);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.Reliable);
+            sender.WriteSettingsInSender(killer);
+
+            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer, killer.OwnerId);
+            sender.WriteNetObject(target);
+            sender.Write((int)MurderResultFlags.FailedProtected);
+            sender.EndRpc();
+
+            sender.SendMessage();
         }
 
         if (!fromSetKCD) killer.SetKillTimer(half: true);
@@ -599,8 +604,32 @@ static class ExtendedPlayerControl
         }
         else if (forceAnime || !player.IsModded())
         {
-            player.SyncSettings();
-            player.RpcGuardAndKill(target, fromSetKCD: true);
+            if (player.AmOwner)
+            {
+                time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
+                target.ShowFailedMurder();
+                player.SetKillTimer(time);
+            }
+            else if (player.IsModded())
+            {
+                time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
+                player.SetKillTimer(time);
+
+                var sender = CustomRpcSender.Create("SetKillCoolDown_SheildForModded", SendOption.Reliable);
+                sender.AutoStartRpc(player.NetId, (byte)CustomRPC.PlayGuardAndKill, player.OwnerId);
+                sender.WriteNetObject(target);
+                sender.EndRpc();
+
+                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, player.OwnerId);
+                sender.Write(time);
+                sender.EndRpc();
+
+                sender.SendMessage();
+            }
+            else
+            {
+                player.RpcGuardAndKill(target, fromSetKCD: true);
+            }
         }
         else
         {
@@ -661,6 +690,13 @@ static class ExtendedPlayerControl
             }
         }
         player.ResetKillCooldown();
+    }
+
+    public static void RpcShowGuardAndKill(this PlayerControl seer, PlayerControl target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayGuardAndKill, RpcSendOption, seer.OwnerId);
+        writer.WriteNetObject(target);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
     {
@@ -1096,6 +1132,30 @@ static class ExtendedPlayerControl
     {
         PlayerGameOptionsSender.SetDirty(player.PlayerId);
         GameOptionsSender.SendAllGameOptions();
+    }
+    public static void WriteSettingsInSender(this CustomRpcSender sender, PlayerControl player)
+    {
+        var optionsender = PlayerGameOptionsSender.AllSenders.OfType<PlayerGameOptionsSender>().FirstOrDefault(x => x.player.PlayerId == player.PlayerId);
+        if (optionsender == null) return;
+
+        var options = optionsender.BuildGameOptions();
+
+        for (var i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
+        {
+
+            var logicOptions = GameManager.Instance.LogicComponents[i].CastFast<LogicOptions>();
+            if (logicOptions == null) continue;
+
+            sender.StartMessage(player.OwnerId);
+            sender.WriteMessageType(1);
+            sender.WritePacked(GameManager.Instance.NetId);
+            sender.WriteMessageType((byte)i);
+            sender.stream.WriteBytesAndSize(logicOptions.gameOptionsFactory.ToBytes(options, false));
+            sender.WriteEndMessage();
+            sender.WriteEndMessage();
+            sender.EndMessage();
+            break;
+        }
     }
     public static TaskState GetPlayerTaskState(this PlayerControl player)
     {

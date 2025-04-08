@@ -64,6 +64,7 @@ public enum CustomRPC : byte // 174/255 USED
     NotificationPopper,
     SyncDeadPassedMeetingList,
     SyncAbilityUseLimit,
+    PlayGuardAndKill,
 
     //Roles 
     SyncRoleSkill,
@@ -79,11 +80,11 @@ public enum CustomRPC : byte // 174/255 USED
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-    SetDrawPlayer,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     SyncJailerData,
@@ -650,6 +651,10 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Necronomicon:
                 CovenManager.ReceiveNecroRPC(reader);
+                break;
+            case CustomRPC.PlayGuardAndKill:
+                var gtarget = reader.ReadNetObject<PlayerControl>();
+                gtarget.ShowFailedMurder();
                 break;
         }
     }
