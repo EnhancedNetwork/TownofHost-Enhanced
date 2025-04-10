@@ -62,10 +62,10 @@ internal class Savior : RoleBase
         if (ProtectList.Contains(target.PlayerId))
         {
             killer.RpcGuardAndKill(killer);
-            return false;
+            return true;
         }
         Logger.Info($"{target.GetNameWithRole()} : Shield Shatter from the Savior", "Savior");
-        return true;
+        return false;
     }
     public override void AfterMeetingTasks()
     {
