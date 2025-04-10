@@ -396,7 +396,9 @@ internal class Summoner : CovenManager
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
+        if (killer == null || target == null) return false;
         if (!killer.Is(CustomRoles.Summoner)) return true;
+        if (Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer) return true; // Skip if the killer is a Randomizer
 
         // Prevent killing summoned players or other coven members
         if (target.Is(CustomRoles.Summoned) || target.IsPlayerCovenTeam())

@@ -66,7 +66,7 @@ internal class Ritualist : CovenManager
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.GetCustomRole().IsCovenTeam())
+        if (target.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
         {
             killer.Notify(GetString("CovenDontKillOtherCoven"));
             return false;

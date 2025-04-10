@@ -256,7 +256,7 @@ internal class HexMaster : CovenManager
         {
             if (HasNecronomicon(killer))
             {
-                if (target.GetCustomRole().IsCovenTeam())
+                if (target.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
                 {
                     killer.Notify(GetString("CovenDontKillOtherCoven"));
                     return false;
@@ -269,7 +269,7 @@ internal class HexMaster : CovenManager
     private static void SetHexedNecronomicon(PlayerControl killer, PlayerControl target)
     {
         if (!CustomRoles.HexMaster.RoleExist()) return;
-        if (target.GetCustomRole().IsCovenTeam())
+        if (target.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
         {
             killer.Notify(GetString("CovenDontKillOtherCoven"));
             return;

@@ -52,7 +52,7 @@ internal class Harvester : CovenManager
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         if (!CanUseKillButton(killer)) return false;
-        if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+        if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
         {
             return true;
         }
