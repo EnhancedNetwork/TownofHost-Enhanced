@@ -6,6 +6,7 @@ using TOHE.Modules;
 using AmongUs.Data;
 using System.Text;
 using System;
+using static NetworkedPlayerInfo;
 
 namespace TOHE;
 
@@ -434,24 +435,50 @@ internal static class CopsAndRobbersManager
         SendCandRData(6);
         return finalRoles;
     }
-    private static void Add(this RoleType role, byte playerId)
+    private static void Add(this RoleType oldrole, byte playerId)
     {
+        var player = Utils.GetPlayerById(playerId);
+        var role = player.GetCustomRole();
         defaultSpeed[playerId] = Main.AllPlayerSpeed[playerId];
-        role.SetCostume(playerId: playerId);
+        var playerOutfit = new NetworkedPlayerInfo.PlayerOutfit();
 
         switch (role)
         {
-            case RoleType.Cop:
+            case CustomRoles.Cop:
                 cops.Add(playerId);
                 capturedScore[playerId] = 0;
                 Main.UnShapeShifter.Add(playerId);
+                var copout = new PlayerOutfit()
+                    .Set(
+                    player.CurrentOutfit.PlayerName,
+                    1, //blue
+                    "hat_police", //hat
+                    "skin_Police", //skin 
+                    "visor_pk01_Security1Visor", //visor
+                    player.CurrentOutfit.PetId,
+                    player.CurrentOutfit.NamePlateId);
+
+                player.SetNewOutfit(copout, newLevel: player.Data.PlayerLevel);
+                Main.OvverideOutfit[player.PlayerId] = (copout, Main.PlayerStates[player.PlayerId].NormalOutfit.PlayerName);
                 return;
 
-            case RoleType.Robber:
+            case CustomRoles.Robber:
                 robbers.Add(playerId);
                 timesCaptured[playerId] = 0;
                 saved[playerId] = 0;
                 numRobbers++;
+                var robout = new PlayerOutfit()
+                    .Set(
+                    player.CurrentOutfit.PlayerName,
+                    6, //black
+                    "hat_pk04_Vagabond", //hat
+                    "skin_None", //skin 
+                    "visor_None", //visor
+                    player.CurrentOutfit.PetId,
+                    player.CurrentOutfit.NamePlateId);
+
+                player.SetNewOutfit(robout, newLevel: player.Data.PlayerLevel);
+                Main.OvverideOutfit[player.PlayerId] = (robout, Main.PlayerStates[player.PlayerId].NormalOutfit.PlayerName);
                 return;
         }
     }
