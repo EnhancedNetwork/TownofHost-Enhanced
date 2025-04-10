@@ -17,7 +17,7 @@ namespace TOHE.Patches
 
             var details = $"TOHO v{Main.PluginDisplayVersion + Main.PluginDisplaySuffix}";
             activity.Details = details;
-            activity.Name = "Among Us: Town of Host Optimized";
+
             activity.Assets = new ActivityAssets
             {
                 LargeImage = "https://i.imgur.com/W6HMVgD.png"

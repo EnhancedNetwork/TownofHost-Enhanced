@@ -59,17 +59,15 @@ class GameEndCheckerForNormal
         // FFA
         switch (Options.CurrentGameMode)
         {
-
-            case CustomGameMode.CandR:
-
             case CustomGameMode.FFA:
+                    case CustomGameMode.CandR:
 
                 if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
                 {
-                    ShipStatus.Instance.enabled = false;
-                    StartEndGame(reason);
-                    predicate = null;
-                }
+                ShipStatus.Instance.enabled = false;
+                StartEndGame(reason);
+                predicate = null;
+            }
             return false;
         }
 
@@ -792,20 +790,6 @@ class CandRGameEndPredicate : GameEndPredicate
     }
     public static bool CheckGameEndByLivingPlayers(out GameOverReason reason)
     {
-        List<PlayerControl> copsList = Utils.GetPlayerListByRole(CustomRoles.Cop);
-        List<PlayerControl> robberList = Utils.GetPlayerListByRole(CustomRoles.Robber);
-
-        HashSet<byte> copIds = [];
-        HashSet<byte> robberIds = [];
-
-        foreach (var player in copsList)
-        {
-            copIds.Add(player.PlayerId);
-        }
-        foreach (var player in robberList)
-        {
-            robberIds.Add(player.PlayerId);
-        }
 
         // Everyone died
         reason = GameOverReason.ImpostorsByKill;
@@ -814,7 +798,7 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.HideAndSeek_CrewmatesByTimer;
             ResetAndSetWinner(CustomWinner.Cops);
-            WinnerIds = copIds;
+            WinnerIds = [.. CopsAndRobbersManager.cops];
             Logger.Warn("Game end because round time finished", "C&R");
             return true;
         }
@@ -843,7 +827,7 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.ImpostorDisconnect;
             ResetAndSetWinner(CustomWinner.Robbers);
-            WinnerIds = robberIds;
+            WinnerIds = [.. CopsAndRobbersManager.robbers];
             Logger.Info("Game end because No cops left", "C&R");
             return true;
         }
@@ -853,8 +837,7 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.ImpostorsByKill;
             ResetAndSetWinner(CustomWinner.Cops);
-            
-            WinnerIds = copIds;
+            WinnerIds = [.. CopsAndRobbersManager.cops];
             Logger.Info("Game end because all robbers captured", "C&R");
             return true;
         }
