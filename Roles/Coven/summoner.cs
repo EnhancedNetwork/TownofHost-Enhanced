@@ -376,7 +376,7 @@ internal class Summoner : CovenManager
         {
             // PlayerControl summonedPlayer = Main.AllPlayerControls.FirstOrDefault(p => p.PlayerId == summonedId);
             PlayerControl summonedPlayer = GetPlayerById(summonedId);
-            if (summonedPlayer != null)
+            if (summonedPlayer != null && summonedPlayer.Is(CustomRoles.Summoned))
             {
                 // Restore the player's original role
                 RestoreOriginalRole(summonedPlayer);
@@ -672,6 +672,7 @@ internal class Summoned : RoleBase
 
         // Use RpcExileV2 to remove the player without leaving a body
         player.RpcExileV2();
+        Logger.Info($"Killing summoned player {player.GetRealName()} without leaving a body", "Summoned");
     }
 
     public override string GetProgressText(byte playerId, bool comms)

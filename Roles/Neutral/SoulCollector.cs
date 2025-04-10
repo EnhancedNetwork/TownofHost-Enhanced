@@ -183,7 +183,7 @@ internal class Death : RoleBase
         var death = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsRandomizer) continue;
+            if (pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !Main.PlayerStates[pc.PlayerId].IsRandomizer) continue;
             if (death.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))
