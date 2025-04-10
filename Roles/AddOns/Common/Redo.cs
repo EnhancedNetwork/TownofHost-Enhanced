@@ -1,4 +1,5 @@
-﻿using static TOHE.Options;
+﻿using TOHE.Roles.Core;
+using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Common;
 
@@ -47,9 +48,11 @@ public class Redo : IAddon
     public static void AfterMeetingTasks()
     {
         if (isSwitching)
-        {  
+        {
+            switchPlayer.GetRoleClass()?.OnRemove(switchPlayer.PlayerId);
             switchPlayer.RpcChangeRoleBasis(switchTo);
             switchPlayer.RpcSetCustomRole(switchTo);
+            switchPlayer.GetRoleClass()?.OnAdd(switchPlayer.PlayerId);
             Main.PlayerStates[switchPlayer.PlayerId].RemoveSubRole(CustomRoles.Redo);
             isSwitching = false;
         }
