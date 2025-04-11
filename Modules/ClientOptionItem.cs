@@ -37,7 +37,7 @@ public class ClientOptionItem
                 CustomBackground.gameObject.SetActive(false);
 
                 var closeButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
-                closeButton.transform.localPosition = new(3.0f, -2.5f, -6f);
+                closeButton.transform.localPosition = new(2.6f, -2.3f, -6f);
                 closeButton.name = "Back";
                 closeButton.Text.text = Translator.GetString("Back");
                 closeButton.Background.color = Palette.DisabledGrey;
