@@ -883,6 +883,7 @@ public enum CustomRoles
     Follower,
     Glitch,
     God,
+    Gunslinger,
     Hater,
     Huntsman,
     Imitator,
@@ -948,7 +949,6 @@ public enum CustomRoles
     Werewolf,
     Workaholic,
     Wraith,
-    Gunslinger,
 
     //Coven
     Coven,
