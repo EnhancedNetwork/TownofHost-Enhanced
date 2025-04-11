@@ -576,7 +576,7 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        TOHE.Logger.Disable("CustomRpcSender");
+        // TOHE.Logger.Disable("CustomRpcSender");
         TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
