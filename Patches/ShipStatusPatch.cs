@@ -235,7 +235,7 @@ class StartPatch
                     UnityEngine.Object.Destroy(Decorations.GetComponent<Console>());
                     UnityEngine.Object.Destroy(Decorations.GetComponent<BoxCollider2D>());
                     UnityEngine.Object.Destroy(Decorations.GetComponent<PassiveButton>());
-                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.Dropship-Decorations.png", 100f);
+                    Decorations.GetComponent<SpriteRenderer>().sprite = Utils.LoadSprite("TOHE.Resources.Images.TOHO_decor.png", 100f);
                     Decorations.transform.SetSiblingIndex(1);
                     Decorations.transform.localPosition = new(0.0709f, 0.73f);
                 }
