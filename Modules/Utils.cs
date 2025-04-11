@@ -2049,7 +2049,7 @@ public static class Utils
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target))
                         {
                             var blankRT = new StringBuilder();
-                            if ((target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) && seer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(target.PlayerId))
+                            if ((target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(target.PlayerId))
                             {
                                 blankRT.Clear().Append(Overseer.GetRandomRole(seer.PlayerId)); // Random trickster role
                                 blankRT.Append(TaskState.GetTaskState()); // Random task count for revealed trickster
