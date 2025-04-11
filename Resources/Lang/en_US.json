@@ -4641,5 +4641,11 @@
 
   "Redo": "Redo",
   "RedoInfo": "Change your role",
-  "RedoInfoLong": "When the Redo votes themself, they will change roles to a random role in their faction. This action can only be used once."
+  "RedoInfoLong": "When the Redo votes themself, they will change roles to a random role in their faction. This action can only be used once.",
+  
+  "Godzilla": "Godzilla",
+  "GodzillaInfo": "Destroy random rooms",
+  "GodzillaInfoLong": "As the Godzilla, you can destroy random rooms by using your kill button. The Godzilla can also kill normally by double click depending on host settings.Be the last one alive to win",
+  "GodzillaShapeshiftText": "Destroy",
+  "GodzillaRoomWarning": "RUN GODZILLA IS HERE"
 }

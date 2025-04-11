@@ -1073,7 +1073,8 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber
+    Youtuber,
+    Godzilla
 }
 //WinData
 [Obfuscation(Exclude = true)]
@@ -1162,6 +1163,7 @@ public enum CustomWinner
     Volatile = CustomRoles.Volatile,
     Gunslinger = CustomRoles.Gunslinger,
     Mutant = CustomRoles.Mutant,
+    Godzilla = CustomRoles.Godzilla
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

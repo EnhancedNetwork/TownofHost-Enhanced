@@ -205,7 +205,8 @@ public static class CustomRolesHelper
             CustomRoles.Rulebook or
             CustomRoles.Volatile or
             CustomRoles.Mutant or
-            CustomRoles.Cultist;
+            CustomRoles.Cultist or
+            CustomRoles.Godzilla;
     }
     public static bool IsTasklessCrewmate(this CustomRoles role)
     {
@@ -1411,6 +1412,7 @@ public static class CustomRolesHelper
            CustomRoles.Rulebook => CountTypes.Rulebook,
            CustomRoles.Massacre => CountTypes.Massacre,
            CustomRoles.Volatile => CountTypes.Volatile,
+           CustomRoles.Godzilla => CountTypes.Godzilla,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
                
        };
@@ -1481,6 +1483,7 @@ public static class CustomRolesHelper
             CustomRoles.Rulebook => CustomWinner.Rulebook,
             CustomRoles.Volatile => CustomWinner.Volatile,
             CustomRoles.Gunslinger => CustomWinner.Gunslinger,
+            CustomRoles.Godzilla => CustomWinner.Godzilla,
             _ => throw new NotImplementedException()
 
         };
@@ -1525,6 +1528,7 @@ public static class CustomRolesHelper
             CountTypes.Massacre => CustomRoles.Massacre,
             CountTypes.Rulebook => CustomRoles.Rulebook,
             CountTypes.Volatile => CustomRoles.Volatile,
+            CountTypes.Godzilla => CustomRoles.Godzilla,
             _ => throw new NotImplementedException()
         };
     public static bool HasSubRole(this PlayerControl pc) => Main.PlayerStates[pc.PlayerId].SubRoles.Any();
@@ -1624,5 +1628,6 @@ public enum CountTypes
     Massacre,
     Rulebook,
     Volatile,
-    Mutant
+    Mutant,
+    Godzilla
 }
