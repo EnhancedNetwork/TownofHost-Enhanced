@@ -52,8 +52,8 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0330.230.00060"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.3.0 Alpha 6";
+    public const string PluginVersion = "2025.0412.230.00070"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.3.0 Alpha 7";
     public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU = 
         [
             (2024, 8, 11, 0) // 2025.3.25 & 16.0.0
