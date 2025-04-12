@@ -63,7 +63,7 @@ static class VentSystemDeterioratePatch
             }
 
             if (needUpdate)
-                ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
+                ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>

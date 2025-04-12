@@ -38,10 +38,10 @@ public abstract class GameOptionsSender
         writer.Write(opt.Version);
         writer.StartMessage(0);
         writer.Write((byte)currentGameMode);
-        if (opt.TryCast<NormalGameOptionsV08>(out var normalOpt))
-            NormalGameOptionsV08.Serialize(writer, normalOpt);
-        else if (opt.TryCast<HideNSeekGameOptionsV08>(out var hnsOpt))
-            HideNSeekGameOptionsV08.Serialize(writer, hnsOpt);
+        if (opt.TryCast<NormalGameOptionsV09>(out var normalOpt))
+            NormalGameOptionsV09.Serialize(writer, normalOpt);
+        else if (opt.TryCast<HideNSeekGameOptionsV09>(out var hnsOpt))
+            HideNSeekGameOptionsV09.Serialize(writer, hnsOpt);
         else
         {
             writer.Recycle();
@@ -52,7 +52,7 @@ public abstract class GameOptionsSender
         // Create into array
         var byteArray = new Il2CppStructArray<byte>(writer.Length - 1);
         // MessageWriter.ToByteArray
-        Buffer.BlockCopy(writer.Buffer.Cast<Array>(), 1, byteArray.Cast<Array>(), 0, writer.Length - 1);
+        Buffer.BlockCopy(writer.Buffer.CastFast<Array>(), 1, byteArray.CastFast<Array>(), 0, writer.Length - 1);
 
         SendOptionsArray(byteArray);
         writer.Recycle();
@@ -64,7 +64,7 @@ public abstract class GameOptionsSender
             byte logicOptionsIndex = 0;
             foreach (var logicComponent in GameManager.Instance.LogicComponents.GetFastEnumerator())
             {
-                if (logicComponent.TryCast<LogicOptions>(out _))
+                if (logicComponent.CastFast<LogicOptions>() != null)
                 {
                     SendOptionsArray(optionArray, logicOptionsIndex, -1);
                 }
