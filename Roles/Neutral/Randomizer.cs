@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -30,7 +31,7 @@ internal class Randomizer : RoleBase
     private static OptionItem MaxAddOns;
 
 
-    public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override bool CanUseKillButton(PlayerControl pc) => !pc.Is(CustomRoles.Randomizer);
 
 
     public override void SetupCustomOption()
@@ -467,6 +468,12 @@ internal class Randomizer : RoleBase
             Logger.Info($"Randomizer {pc.name} Randomizer AfterMeetingTasks is running", "Randomizer");
             if (pc == null) continue;
 
+            List<CustomRoles> keptAddons = new List<CustomRoles>();
+            foreach (var addOn in pc.GetCustomSubRoles().Where(x => (x.IsBetrayalAddonV2() || x == CustomRoles.Lovers)))
+            {
+                Logger.Info($"Randomizer {pc.name} keeps addon {addOn}", "Randomizer");
+                keptAddons.Add(addOn);
+            }
             // Reset subroles
             Main.PlayerStates[playerId].ResetSubRoles();
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
@@ -547,6 +554,10 @@ internal class Randomizer : RoleBase
                     .OrderBy(_ => Random.value)
                     .Take(addOnCount)
                     .ToList();
+                foreach (var addOn in keptAddons)
+                {
+                    selectedAddOns.Add(addOn);
+                }
 
                 foreach (var addOn in selectedAddOns)
                 {

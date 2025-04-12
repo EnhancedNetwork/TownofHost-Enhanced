@@ -381,13 +381,10 @@ internal class Summoner : CovenManager
                 // Restore the player's original role
                 RestoreOriginalRole(summonedPlayer);
 
-                // Teleport them to the black room
-                summonedPlayer.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
-
                 // Force sync their death
                 Summoned.KillSummonedPlayer(summonedPlayer);
-                Summoner.SummonedHealth.Remove(summonedPlayer.PlayerId); // Remove them from the timer list
-                Summoner.LastUpdateTimes.Remove(summonedPlayer.PlayerId); // Remove the timestamp entry
+                SummonedHealth.Remove(summonedPlayer.PlayerId); // Remove them from the timer list
+                LastUpdateTimes.Remove(summonedPlayer.PlayerId); // Remove the timestamp entry
             }
         }
 
@@ -441,10 +438,14 @@ internal class Summoner : CovenManager
     {
         foreach (var player in PlayerControl.AllPlayerControls)
         {
-            if (player.Is(CustomRoles.Summoned) && player.IsAlive())
+            if (player.Is(CustomRoles.Summoned))
             {
+                Logger.Info($"Meeting started, killing summoned player {player.GetRealName()}.", "Summoner");
                 Summoned.KillSummonedPlayer(player);
-                RestoreOriginalRole(player); // Restore their original role on report
+                _ = new LateTask(() =>
+                {
+                    RestoreOriginalRole(player); // Restore their original role on report
+                }, .2f, "SummonerRestoreROle");
                 SummonedHealth.Remove(player.PlayerId); // Remove them from the timer list
                 LastUpdateTimes.Remove(player.PlayerId); // Remove the timestamp entry
             }
@@ -627,7 +628,10 @@ internal class Summoned : RoleBase
                     {
                         if (pc.GetRoleClass() is Summoner summonerInstance)
                         {
-                            summonerInstance.RestoreOriginalRole(player);
+                            _ = new LateTask(() =>
+                            {
+                                summonerInstance.RestoreOriginalRole(player); // Restore their original role on report
+                            }, .2f, "SummonerRestoreROle");
                         }
                     }
                 }
@@ -666,15 +670,18 @@ internal class Summoned : RoleBase
 
         // Set the player's death reason and mark them as dead
         player.SetDeathReason(PlayerState.DeathReason.Expired);
+        
         var playerState = Main.PlayerStates[player.PlayerId];
-        if (playerState != null)
-        {
             playerState.IsDead = true;
-        }
+        
 
         // Use RpcExileV2 to remove the player without leaving a body
         player.RpcExileV2();
-        Logger.Info($"Killing summoned player {player.GetRealName()} without leaving a body", "Summoned");
+        /*
+        player.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
+        player.RpcMurderPlayer(player);
+        */
+        Logger.Info($"Killing summoned player {player.GetRealName()}", "Summoned");
     }
 
     public override string GetProgressText(byte playerId, bool comms)
@@ -706,7 +713,10 @@ internal class Summoned : RoleBase
         {
             if (pc.GetRoleClass() is Summoner summonerInstance)
             {
-                summonerInstance.RestoreOriginalRole(target);
+                _ = new LateTask(() =>
+                {
+                    summonerInstance.RestoreOriginalRole(pc); // Restore their original role on report
+                }, .2f, "SummonerRestoreROle");
             }
         }
         Summoner.SummonedHealth.Remove(target.PlayerId); // Remove them from the timer list
