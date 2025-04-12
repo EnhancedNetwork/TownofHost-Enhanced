@@ -458,6 +458,14 @@ internal class Randomizer : RoleBase
         );
     }
 
+    public static string RandomizerReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (Main.PlayerStates[seen.PlayerId].IsRandomizer && !seen.Is(CustomRoles.Randomizer) &&  (!seer.IsAlive() || seer == seen))
+        {
+            return $"<size=1><i>{CustomRoles.Randomizer.ToColoredString()}</i></size>";
+        }
+        return string.Empty;
+    }
 
     public static void UnAfterMeetingTasks()
     {
@@ -475,7 +483,11 @@ internal class Randomizer : RoleBase
                 keptAddons.Add(addOn);
             }
             // Reset subroles
-            Main.PlayerStates[playerId].ResetSubRoles();
+            // Main.PlayerStates[playerId].ResetSubRoles();
+            foreach (var addon in pc.GetCustomSubRoles().ToArray().Except(keptAddons))
+            {
+                Main.PlayerStates[playerId].RemoveSubRole(addon);
+            }
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
 
             // Determine role assignment based on player's alive status
