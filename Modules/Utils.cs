@@ -2022,7 +2022,7 @@ public static class Utils
 
                                 TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                                 TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
-                                SelfSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
 
                                 break;
                         }
