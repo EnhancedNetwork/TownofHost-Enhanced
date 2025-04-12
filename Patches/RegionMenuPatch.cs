@@ -57,7 +57,7 @@ public static class ServerDropDownPatch
 
         int num = 0;
         int column = 0;
-        const int maxPerColumn = 6;
+        int maxPerColumn = 6;
         const float columnWidth = 4.15f;
         const float buttonSpacing = 0.5f;
 
@@ -132,7 +132,7 @@ public static class ServerDropDownPatch
         if (allButtons.Count == 0)
             return;
 
-        const int buttonsPerColumn = 7;
+        const int buttonsPerColumn = 12;
         int columnCount = (allButtons.Count + buttonsPerColumn - 1) / buttonsPerColumn;
 
         Vector3 startPosition = new Vector3(0, -buttonSpacing, 0);
@@ -143,19 +143,6 @@ public static class ServerDropDownPatch
             int row = i % buttonsPerColumn;
             allButtons[i].transform.localPosition = startPosition + new Vector3(col * columnSpacing, -row * buttonSpacing, 0f);
         }
-
-        int maxRows = Math.Min(buttonsPerColumn, allButtons.Count);
-        float backgroundHeight = 1.2f + buttonSpacing * (maxRows - 1);
-        float backgroundWidth = (columnCount > 1) ?
-            (columnSpacing * (columnCount - 1) + 5) : 5;
-
-        // Adjust background
-        __instance.background.transform.localPosition = new Vector3(
-            0f,
-            __instance.initialYPos - (backgroundHeight - 1.2f) / 2f,
-            0f);
-        __instance.background.size = new Vector2(backgroundWidth, backgroundHeight);
-        __instance.background.transform.localPosition += new Vector3(4f, 0, 0);
     }
 }
 
@@ -195,6 +182,17 @@ public static class FindAGameManagerPatch
     [HarmonyPrefix]
     internal static void Start_Prefix(FindAGameManager __instance)
     {
+        var aspectPosition = __instance.serverDropdown.transform.parent.GetComponent<AspectPosition>();
+        if (aspectPosition != null)
+        {
+            aspectPosition.Alignment = AspectPosition.EdgeAlignments.Top;
+            aspectPosition.anchorPoint = Vector3.zero;
+            aspectPosition.DistanceFromEdge = new Vector3(-1.2f, 0.3f, 0f);
+            aspectPosition.AdjustPosition();
+        }
+
+        __instance.modeText.transform.localPosition -= new Vector3(0.4f, 0f, 0f);
+
         GameContainer gameContainer = __instance.gameContainers[4];
         GameObject gameObject = new GameObject("GameListScroller");
         gameObject.transform.SetParent(gameContainer.transform.parent);
@@ -256,5 +254,40 @@ public static class FindAGameManagerPatch
         spriteRenderer.sprite = sprite;
         gameObject.transform.localScale = new Vector3(100f, 100f, 1f);
         return spriteRenderer;
+    }
+}
+
+[HarmonyPatch(typeof(EnterCodeManager), nameof(EnterCodeManager.FindGameResult))]
+public static class EnterCodeManagerPatch
+{
+    public static IRegionInfo tempRegion;
+    public static int tempGameId;
+    [HarmonyPostfix]
+    public static void FindGameResult_Postfix(HttpMatchmakerManager.FindGameByCodeResponse response)
+    {
+        if (response != null && ServerManager.InstanceExists)
+        {
+            IRegionInfo region;
+            if (response.Region != StringNames.NoTranslation)
+            {
+                region = ServerManager.DefaultRegions.FirstOrDefault(r => r.TranslateName == response.Region);
+
+                if (region != null)
+                {
+                    tempRegion = region;
+                    tempGameId = response.Game.GameId;
+                    Logger.Info($"Caching Official Region {tempRegion.Name} for {tempGameId}", "EnterCodeManager.FindGameResult");
+                    return;
+                }
+            }
+
+            region = ServerManager.Instance.AvailableRegions.FirstOrDefault(r => r.Name == response.UntranslatedRegion);
+            if (region != null)
+            {
+                tempRegion = region;
+                tempGameId = response.Game.GameId;
+                Logger.Info($"Caching Region {tempRegion.Name} for {tempGameId}", "EnterCodeManager.FindGameResult");
+            }
+        }
     }
 }

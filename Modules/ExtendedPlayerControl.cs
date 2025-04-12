@@ -547,6 +547,8 @@ static class ExtendedPlayerControl
 
         if (target == null) target = killer;
 
+        Logger.Info($"RpcGuardAndKill for [{killer.PlayerId}]{killer.GetRealName()} => [{target.PlayerId}]{target.GetRealName()}, forObserver: {forObserver}, fromSetKCD: {fromSetKCD}", "RpcGuardAndKill");
+
         // Check Observer
         if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
@@ -561,10 +563,15 @@ static class ExtendedPlayerControl
         // Other Clients
         else
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.GetClientId());
-            writer.WriteNetObject(target);
-            writer.Write((int)MurderResultFlags.FailedProtected);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.Reliable, isUnsafe: true);
+            sender.WriteSettingsInSender(killer);
+
+            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer, killer.OwnerId);
+            sender.WriteNetObject(target);
+            sender.Write((int)MurderResultFlags.FailedProtected);
+            sender.EndRpc();
+
+            sender.SendMessage();
         }
 
         if (!fromSetKCD) killer.SetKillTimer(half: true);
@@ -583,6 +590,9 @@ static class ExtendedPlayerControl
 
         player.SetKillTimer(CD: time);
         if (target == null) target = player;
+
+        Logger.Info($"SetKillCooldown for [{player.PlayerId}]{player.GetRealName()} => [{target.PlayerId}]{target.GetRealName()}, forceAnime: {forceAnime}", "SetKillCooldown");
+
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (player.GetRoleClass() is Glitch gc)
@@ -599,8 +609,32 @@ static class ExtendedPlayerControl
         }
         else if (forceAnime || !player.IsModded())
         {
-            player.SyncSettings();
-            player.RpcGuardAndKill(target, fromSetKCD: true);
+            if (player.AmOwner)
+            {
+                time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
+                target.ShowFailedMurder();
+                player.SetKillTimer(time);
+            }
+            else if (player.IsModded())
+            {
+                time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
+                player.SetKillTimer(time);
+
+                var sender = CustomRpcSender.Create("SetKillCoolDown_SheildForModded", SendOption.Reliable);
+                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayGuardAndKill, player.OwnerId);
+                sender.WriteNetObject(target);
+                sender.EndRpc();
+
+                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, player.OwnerId);
+                sender.Write(time);
+                sender.EndRpc();
+
+                sender.SendMessage();
+            }
+            else
+            {
+                player.RpcGuardAndKill(target, fromSetKCD: true);
+            }
         }
         else
         {
@@ -661,6 +695,13 @@ static class ExtendedPlayerControl
             }
         }
         player.ResetKillCooldown();
+    }
+
+    public static void RpcShowGuardAndKill(this PlayerControl seer, PlayerControl target)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayGuardAndKill, RpcSendOption, seer.OwnerId);
+        writer.WriteNetObject(target);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
     {
@@ -1097,6 +1138,26 @@ static class ExtendedPlayerControl
         PlayerGameOptionsSender.SetDirty(player.PlayerId);
         GameOptionsSender.SendAllGameOptions();
     }
+    public static void WriteSettingsInSender(this CustomRpcSender sender, PlayerControl player)
+    {
+        var optionsender = PlayerGameOptionsSender.AllSenders.OfType<PlayerGameOptionsSender>().FirstOrDefault(x => x.player.PlayerId == player.PlayerId);
+        if (optionsender == null) return;
+
+        var options = optionsender.BuildGameOptions();
+
+        var logicOptions = GameManager.Instance.LogicOptions;
+        var id = GameManager.Instance.LogicComponents.IndexOf(logicOptions);
+
+        sender.StartMessage(player.OwnerId);
+        sender.WriteMessageType(1);
+        sender.WritePacked(GameManager.Instance.NetId);
+        sender.WriteMessageType((byte)id); // LogicOptions is always 4 for normal, 5 for hns
+        sender.stream.WriteBytesAndSize(logicOptions.gameOptionsFactory.ToBytes(options, false));
+        sender.WriteEndMessage();
+        sender.WriteEndMessage();
+        sender.EndMessage();
+
+    }
     public static TaskState GetPlayerTaskState(this PlayerControl player)
     {
         return Main.PlayerStates[player.PlayerId].TaskState;
@@ -1170,7 +1231,7 @@ static class ExtendedPlayerControl
     }
     public static void ReactorFlash(this PlayerControl pc, float delay = 0f)
     {
-        if (pc == null) return;
+        if (pc == null || pc.AmOwner) return;
         // Logger.Info($"{pc}", "ReactorFlash");
         var systemtypes = Utils.GetCriticalSabotageSystemType();
         float FlashDuration = Options.KillFlashDuration.GetFloat();
