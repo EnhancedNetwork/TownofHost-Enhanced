@@ -202,9 +202,9 @@ internal class CopyCat : RoleBase
     }
     public static string CopycatReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (playerIdList.Contains(seen.PlayerId) && !seen.Is(CustomRoles.CopyCat) && (!seer.IsAlive() || seer == seen) && seen.IsAlive())
+        if (playerIdList.Contains(seen.PlayerId) && !seen.Is(CustomRoles.CopyCat) && ((!seer.IsAlive() && Altruist.HasEnabled ? !seer.IsMurderedThisRound() : true) || seer == seen) && seen.IsAlive())
         {
-            return $"<size=1><i>{CustomRoles.CopyCat.ToColoredString()}</i></size>";
+            return $"<size=1.5><i>{CustomRoles.CopyCat.ToColoredString()}</i></size>";
         }
         return string.Empty;
     }
