@@ -43,7 +43,6 @@ internal class RunLoginPatch
     {
 #if DEBUG
         if (ClickCount < 10) canOnline = true;
-        if (ClickCount >= 10) ModUpdater.forceUpdate = false;
 #endif
     }
 

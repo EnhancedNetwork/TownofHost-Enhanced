@@ -883,6 +883,7 @@ public enum CustomRoles
     Follower,
     Glitch,
     God,
+    Godzilla,
     Hater,
     Huntsman,
     Imitator,
@@ -1073,8 +1074,7 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber,
-    Godzilla
+    Youtuber
 }
 //WinData
 [Obfuscation(Exclude = true)]
