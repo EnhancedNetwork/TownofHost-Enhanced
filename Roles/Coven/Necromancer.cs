@@ -246,7 +246,7 @@ internal class Necromancer : CovenManager
     }
     public static string NecromancerReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (Main.PlayerStates[seen.PlayerId].IsNecromancer && !seen.Is(CustomRoles.Necromancer) && (!seer.IsAlive() || seer == seen))
+        if (Main.PlayerStates[seen.PlayerId].IsNecromancer && !seen.Is(CustomRoles.Necromancer) && (!seer.IsAlive() || seer == seen) && seen.IsAlive())
         {
             return $"<size=1><i>{CustomRoles.Necromancer.ToColoredString()}</i></size>";
         }
