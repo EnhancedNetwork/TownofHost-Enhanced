@@ -576,7 +576,6 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        // TOHE.Logger.Disable("CustomRpcSender");
         TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
@@ -598,6 +597,7 @@ public class Main : BasePlugin
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
             //TOHE.Logger.Disable("DoNotifyRoles");
+            TOHE.Logger.Disable("CustomRpcSender");
         }
         //TOHE.Logger.isDetail = true;
 
