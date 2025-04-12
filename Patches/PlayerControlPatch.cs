@@ -1406,6 +1406,7 @@ class FixedUpdateInNormalGamePatch
                         Suffix.Append(CustomRoleManager.GetSuffixOthers(localPlayer, player, false));
 
                         Suffix.Append(Radar.GetPlayerArrow(localPlayer, player, isForMeeting: false));
+                        Suffix.Append(Necromancer.NecromancerReminder(localPlayer, player, isForMeeting: false));
 
                         if (localPlayerRole.IsImpostor() && player.GetPlayerTaskState().IsTaskFinished)
                         {

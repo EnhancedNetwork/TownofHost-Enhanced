@@ -1859,6 +1859,7 @@ public static class Utils
                         SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
                         SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
                         SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
                         break;
                 }
@@ -2021,7 +2022,7 @@ public static class Utils
 
                                 TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                                 TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
-
+                                TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
                                 break;
                         }
 
