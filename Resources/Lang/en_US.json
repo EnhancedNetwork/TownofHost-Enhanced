@@ -1087,6 +1087,7 @@
   "RequiterInfoLong": "(Crewmates):\nThe Requiter has no bullets at the beginning.\nFor each Crewmate ejected,the Requiter gains one bullet.\nThe Requiter can kill when they have bullets.",
   "NarcInfoLong": "(Betrayal Add-ons):\nNarc spawns as an extra Impostor.\n\nAs the Narc,you appear as an Impostor to Impostors and Madmates.But you can't see them.\nYou and the Sheriff and the Chief of Police can see each other.\nYour goal is to protect the Crewmates with the Sheriff.\n\nNote:Depending on the settings,Impostors may kill each other when Narc is in a game,\nIf the settings is disabled,Narc won't be able to use their kill button until the other Impostors die.",
   "ShowTextOverlay": "Text Overlay",
+  "ShowModdedClientText": "Modded Client Text",
   "Overlay.GuesserMode": "<size=50%>Guesser Mode</size>",
   "Overlay.NoGameEnd": "<size=50%>No Game End</size>",
   "Overlay.DebugMode": "<size=50%>Debug Mode</size>",

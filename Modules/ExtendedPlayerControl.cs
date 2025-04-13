@@ -547,6 +547,8 @@ static class ExtendedPlayerControl
 
         if (target == null) target = killer;
 
+        Logger.Info($"RpcGuardAndKill for [{killer.PlayerId}]{killer.GetRealName()} => [{target.PlayerId}]{target.GetRealName()}, forObserver: {forObserver}, fromSetKCD: {fromSetKCD}", "RpcGuardAndKill");
+
         // Check Observer
         if (Observer.HasEnabled && !forObserver && !MeetingStates.FirstMeeting)
         {
@@ -561,7 +563,7 @@ static class ExtendedPlayerControl
         // Other Clients
         else
         {
-            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.Reliable);
+            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.Reliable, isUnsafe: true);
             sender.WriteSettingsInSender(killer);
 
             sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer, killer.OwnerId);
@@ -588,6 +590,9 @@ static class ExtendedPlayerControl
 
         player.SetKillTimer(CD: time);
         if (target == null) target = player;
+
+        Logger.Info($"SetKillCooldown for [{player.PlayerId}]{player.GetRealName()} => [{target.PlayerId}]{target.GetRealName()}, forceAnime: {forceAnime}", "SetKillCooldown");
+
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (player.GetRoleClass() is Glitch gc)
@@ -616,7 +621,7 @@ static class ExtendedPlayerControl
                 player.SetKillTimer(time);
 
                 var sender = CustomRpcSender.Create("SetKillCoolDown_SheildForModded", SendOption.Reliable);
-                sender.AutoStartRpc(player.NetId, (byte)CustomRPC.PlayGuardAndKill, player.OwnerId);
+                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayGuardAndKill, player.OwnerId);
                 sender.WriteNetObject(target);
                 sender.EndRpc();
 
@@ -1140,22 +1145,18 @@ static class ExtendedPlayerControl
 
         var options = optionsender.BuildGameOptions();
 
-        for (var i = 0; i < GameManager.Instance.LogicComponents.Count; i++)
-        {
+        var logicOptions = GameManager.Instance.LogicOptions;
+        var id = GameManager.Instance.LogicComponents.IndexOf(logicOptions);
 
-            var logicOptions = GameManager.Instance.LogicComponents[i].CastFast<LogicOptions>();
-            if (logicOptions == null) continue;
+        sender.StartMessage(player.OwnerId);
+        sender.WriteMessageType(1);
+        sender.WritePacked(GameManager.Instance.NetId);
+        sender.WriteMessageType((byte)id); // LogicOptions is always 4 for normal, 5 for hns
+        sender.stream.WriteBytesAndSize(logicOptions.gameOptionsFactory.ToBytes(options, false));
+        sender.WriteEndMessage();
+        sender.WriteEndMessage();
+        sender.EndMessage();
 
-            sender.StartMessage(player.OwnerId);
-            sender.WriteMessageType(1);
-            sender.WritePacked(GameManager.Instance.NetId);
-            sender.WriteMessageType((byte)i);
-            sender.stream.WriteBytesAndSize(logicOptions.gameOptionsFactory.ToBytes(options, false));
-            sender.WriteEndMessage();
-            sender.WriteEndMessage();
-            sender.EndMessage();
-            break;
-        }
     }
     public static TaskState GetPlayerTaskState(this PlayerControl player)
     {
