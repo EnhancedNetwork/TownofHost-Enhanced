@@ -3,7 +3,6 @@ using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -69,7 +68,7 @@ internal class Doomsayer : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doomsayer]);
         ObserveCooldown = FloatOptionItem.Create(Id + 29, "DoomsayerObserveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(EasyMode)
             .SetValueFormat(OptionFormat.Seconds);
-        
+
 
         AdvancedSettings = BooleanOptionItem.Create(Id + 16, "DoomsayerAdvancedSettings", true, TabGroup.NeutralRoles, true)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Doomsayer]);
@@ -285,7 +284,6 @@ internal class Doomsayer : RoleBase
         hud.KillButton?.OverrideText(GetString("DoomsayerKillButtonText"));
     }
 
-    // i hate this code so much no wonder why we reworked fortune teller, oh well, here we go again
     public static string ObserveRiddleMsg(PlayerControl player)
     {
         string result = "DoomsayerObserve.";
@@ -298,7 +296,7 @@ internal class Doomsayer : RoleBase
         {
             return GetString(result + "Dead");
         }
-        if (Main.PlayerStates[player.PlayerId].IsNecromancer || Illusionist.IsNonCovIllusioned(player.PlayerId)|| role is CustomRoles.SchrodingersCat or CustomRoles.Glitch)
+        if (Main.PlayerStates[player.PlayerId].IsNecromancer || Illusionist.IsNonCovIllusioned(player.PlayerId) || role is CustomRoles.SchrodingersCat or CustomRoles.Glitch)
         {
             return GetString(result + "Unknown");
         }
@@ -320,10 +318,10 @@ internal class Doomsayer : RoleBase
         }
         switch (role.GetCustomRoleType())
         {
-            case Custom_RoleType.CrewmateVanilla:          
-            case Custom_RoleType.CrewmateBasic:          
-            case Custom_RoleType.NeutralBenign:          
-            case Custom_RoleType.ImpostorVanilla:   
+            case Custom_RoleType.CrewmateVanilla:
+            case Custom_RoleType.CrewmateBasic:
+            case Custom_RoleType.NeutralBenign:
+            case Custom_RoleType.ImpostorVanilla:
                 result += "Basic";
                 break;
             case Custom_RoleType.CrewmatePower:
