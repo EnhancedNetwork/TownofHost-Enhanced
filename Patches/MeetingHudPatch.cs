@@ -862,6 +862,11 @@ static class ExtendedMeetingHud
                     VoteNum += Stealer.AddRealVotesNum(ps);
                 }
 
+                if (pc != null && pc.Is(CustomRoles.Constable))
+                {
+                    VoteNum += Constable.RealExtraVotes(ps);
+                }
+
                 // Madmate assign by Vote
                 if (ps.TargetPlayerId == ps.VotedFor && Madmate.MadmateSpawnMode.GetInt() == 2) VoteNum = 0;
 
