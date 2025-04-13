@@ -53,6 +53,9 @@ public static class DevManager
 
             // PEPPERcula
             new(code: "motorlace#4741", color: "#DFB722", tag: "❖ Exclusive Tester ❖", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "PEPPERcula"),
+
+             // Mirage
+            new(code: "spyside#1041", color: "#a300a3", tag: "Illusionist", isUp: true, isDev: true, deBug: true, colorCmd: true, upName: "Mirage"),
             
             /*TOHO DEVS ABOVE*/
             /*TESTERS BELOW*/
@@ -72,8 +75,6 @@ public static class DevManager
             // Glazecraft
             new(code: "motorstack#2287", color: "#ec9d2f", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Glazecraft"),
 
-            // Mirage
-            new(code: "spyside#1041", color: "#a300a3", tag: "Illusionist", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Mirage"),
 
             /*TESTERS ABOVE*/
         ];

@@ -884,6 +884,7 @@ public enum CustomRoles
     Follower,
     Glitch,
     God,
+    Godzilla,
     Gunslinger,
     Hater,
     Huntsman,
@@ -1163,6 +1164,7 @@ public enum CustomWinner
     Volatile = CustomRoles.Volatile,
     Gunslinger = CustomRoles.Gunslinger,
     Mutant = CustomRoles.Mutant,
+    Godzilla = CustomRoles.Godzilla
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

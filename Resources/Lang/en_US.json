@@ -4643,6 +4643,15 @@
   "RedoInfo": "Change your role",
   "RedoInfoLong": "When the Redo votes themself, they will change roles to a random role in their faction. This action can only be used once.",
 
+  "Godzilla": "Godzilla",
+  "GodzillaInfo": "Destroy random rooms",
+  "GodzillaInfoLong": "As the Godzilla, you can destroy random rooms by using your unshift button. The Godzilla can also kill normally depending on host settings. Be the last one alive to win.",
+  "GodzillaShapeshiftText": "Destroy",
+  "GodzillaRoomWarning": "Godzilla will be destroying room {0} in {1} seconds",
+  "DestroyCooldown": "Destroy cooldown",
+  "WarningTimeBeforeDestroying": "Warning time before destroying",
+  "DeathReason.Destroyed": "Destroyed",
+  
   "Constable": "Constable",
   "ConstableInfo": "Create bonus meetings for extra power",
   "ConstableInfoLong": "The Constable can vote themself to create a bonus meeting after the current one. The Constable will receive a certain amount of extra votes during a Tribunal. More Tribunals can be called during a Tribunal.",
