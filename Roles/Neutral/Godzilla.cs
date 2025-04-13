@@ -12,7 +12,6 @@ internal class Godzilla : RoleBase
 {
     private static Dictionary<byte, SystemTypes> RoomsToDestroy = new();
     private static Dictionary<byte, long> DestroyTimestamps = new();
-
     
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Godzilla;
@@ -63,9 +62,22 @@ internal class Godzilla : RoleBase
         var playerRole = shapeshifter.GetCustomRole();
         Logger.Info("Godzilla is destroying a room", playerRole.ToString());
 
-        // Select a random room to destroy
-        var allRooms = SystemTypeHelpers.AllTypes.Where(x => x != SystemTypes.HeliSabotage).ToList();
-        var roomToDestroy = allRooms[IRandom.Instance.Next(0, allRooms.Count)];
+        // Get all ship rooms that exist on the current map
+        var shipRoom = ShipStatus.Instance.AllRooms;
+        var currentMapRooms = shipRoom.Select(room => room.RoomId).ToList();
+        
+        // Filter out HeliSabotage and rooms that don't exist on current map
+        var validRooms = SystemTypeHelpers.AllTypes
+            .Where(x => x != SystemTypes.HeliSabotage && currentMapRooms.Contains(x))
+            .ToList();
+            
+        if (validRooms.Count == 0)
+        {
+            shapeshifter.Notify(Translator.GetString("NoValidRoomsToDestroy"));
+            return;
+        }
+
+        var roomToDestroy = validRooms[IRandom.Instance.Next(0, validRooms.Count)];
         RoomsToDestroy[shapeshifter.PlayerId] = roomToDestroy;
         DestroyTimestamps[shapeshifter.PlayerId] = Utils.GetTimeStamp() + (long)WarningTimeBeforeDestroying.GetFloat();
 
@@ -107,16 +119,15 @@ internal class Godzilla : RoleBase
             }
         }
     }
-public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
-{
-    RoomsToDestroy.Clear();
-    DestroyTimestamps.Clear();
-}
+
+    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
+    {
+        RoomsToDestroy.Clear();
+        DestroyTimestamps.Clear();
+    }
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(Translator.GetString("GodzillaShapeshiftText"));
     }
-
-   
 }

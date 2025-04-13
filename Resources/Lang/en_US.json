@@ -4649,5 +4649,6 @@
   "GodzillaShapeshiftText": "Destroy",
   "GodzillaRoomWarning": "Godzilla will be destroying room {0} in {1} seconds",
   "DestroyCooldown": "Destroy cooldown",
-  "WarningTimeBeforeDestroying": "Warning time before destroying"
+  "WarningTimeBeforeDestroying": "Warning time before destroying",
+  "DeathReason.Destroyed": "Destroyed"
 }
