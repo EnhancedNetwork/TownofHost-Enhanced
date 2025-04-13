@@ -7,7 +7,6 @@ using UnityEngine;
 using static TOHE.Translator;
 using static TOHE.Utils;
 
-
 namespace TOHE.Roles.Crewmate;
 
 internal class Medic : RoleBase
@@ -27,6 +26,9 @@ internal class Medic : RoleBase
     private static OptionItem ShieldDeactivationIsVisibleOpt;
     private static OptionItem ResetCooldown;
     public static OptionItem GuesserIgnoreShield;
+    private static OptionItem MedicPortableVitals;
+    private static OptionItem VitalsCooldown;
+    private static OptionItem VitalsDuration;
 
     private static readonly HashSet<byte> GlobalProtectedList = [];
     private static readonly Dictionary<byte, HashSet<byte>> ProtectedPlayers = [];
@@ -67,6 +69,14 @@ internal class Medic : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         GuesserIgnoreShield = BooleanOptionItem.Create(Id + 32, "MedicShieldedCanBeGuessed", false, TabGroup.CrewmateRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
+        MedicPortableVitals = BooleanOptionItem.Create(Id + 35, "MedicPortableVitals", false, TabGroup.CrewmateRoles, false)
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Medic]);
+        VitalsCooldown = IntegerOptionItem.Create(Id + 36, GeneralOption.ScientistBase_BatteryCooldown, new(1, 250, 1), 15, TabGroup.CrewmateRoles, false)
+            .SetParent(MedicPortableVitals)
+            .SetValueFormat(OptionFormat.Seconds);
+        VitalsDuration = IntegerOptionItem.Create(Id + 37, GeneralOption.ScientistBase_BatteryDuration, new(1, 250, 1), 5, TabGroup.CrewmateRoles, false)
+            .SetParent(MedicPortableVitals)
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
     {
@@ -196,7 +206,14 @@ internal class Medic : RoleBase
         var medicClientId = medic.GetClientId();
         GiveTasks = true;
 
-        medic.RpcSetRoleType(RoleTypes.Crewmate, removeFromDesyncList: true);
+        if (!MedicPortableVitals.GetBool())
+        {
+            medic.RpcSetRoleType(RoleTypes.Crewmate, removeFromDesyncList: true);
+        }
+        else
+        {
+            medic.RpcSetRoleType(RoleTypes.Scientist, removeFromDesyncList: true);
+        }
         medic.RpcResetTasks();
 
         // set others as normal RoleType
@@ -273,7 +290,12 @@ internal class Medic : RoleBase
     }
 
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => GiveTasks;
-    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override void ApplyGameOptions(IGameOptions opt, byte playerid)
+    {
+        opt.SetVision(false);
+        AURoleOptions.ScientistCooldown = VitalsCooldown.GetFloat();
+        AURoleOptions.ScientistBatteryCharge = VitalsDuration.GetFloat();
+    }
 
     public override string GetMark(PlayerControl seer, PlayerControl target = null, bool isForMeeting = false)
     {
