@@ -964,7 +964,7 @@ public static class Options
         CustomRoles.Mini.GetStaticRoleClass().SetupCustomOption();
 
         /*
-         * INVESTIGATIVE ROLES
+         * PROTECTIVE ROLES
          */
         TextOptionItem.Create(10000103, "RoleType.CrewProtective", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
