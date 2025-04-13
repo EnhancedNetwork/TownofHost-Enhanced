@@ -1415,6 +1415,27 @@ class MeetingHudUpdatePatch
         }
     }
 }
+
+[HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.HandleProceed))]
+class MeetingHudHandleProceedPatch
+{
+    public static bool Prefix(MeetingHud __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            __instance.StartCoroutine(Effects.SwayX(__instance.HostIcon.transform, 0.75f, 0.25f));
+            return false;
+        }
+        if (__instance.state != MeetingHud.VoteStates.Results)
+        {
+            return false;
+        }
+        __instance.state = MeetingHud.VoteStates.Proceeding;
+        __instance.RpcClose();
+        return false;
+    }
+}
+
 [HarmonyPatch(typeof(PlayerVoteArea), nameof(PlayerVoteArea.SetHighlighted))]
 class SetHighlightedPatch
 {
