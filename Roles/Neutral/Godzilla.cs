@@ -39,7 +39,8 @@ internal class Godzilla : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla])
             .SetValueFormat(OptionFormat.Seconds);
         WarningTimeBeforeDestroying = FloatOptionItem.Create(Id + 13, "WarningTimeBeforeDestroying", new(5f, 180f, 2.5f), 60f, TabGroup.NeutralRoles, false)
-            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla]);
+            .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla])
+            .SetValueFormat(OptionFormat.Seconds);
     }
 
     public override bool CanUseKillButton(PlayerControl pc) => GodzillaCanKill.GetBool() && pc.IsAlive();
@@ -74,7 +75,7 @@ internal class Godzilla : RoleBase
             if (!target.IsAlive()) continue;
             
             var roomName = Translator.GetString(roomToDestroy.ToString());
-            target.Notify(string.Format(Translator.GetString("GodzillaRoomWarning"), roomName, WarningTimeBeforeDestroying.GetFloat()), WarningTimeBeforeDestroying.GetFloat());
+            target.Notify(string.Format(Translator.GetString("GodzillaRoomWarning"), roomName, WarningTimeBeforeDestroying.GetFloat()));
         }
 
         // Schedule the room destruction
