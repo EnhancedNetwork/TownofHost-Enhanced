@@ -14,7 +14,7 @@ internal class Ventguard : RoleBase
     private const int Id = 30000;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Ventguard);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 

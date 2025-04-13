@@ -15,7 +15,7 @@ internal class Pacifist : RoleBase
     private const int Id = 9200;
     public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Pacifist);
     public override CustomRoles ThisRoleBase => CustomRoles.Engineer;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateSupport;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateHindering;
     public override bool BlockMoveInVent(PlayerControl pc) => true;
     //==================================================================\\
 
