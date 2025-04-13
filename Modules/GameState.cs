@@ -162,8 +162,6 @@ public class PlayerState(byte playerId)
 
 
     }
-    public CustomWinner LingeringPresenceAssignedTeam { get; set; } = CustomWinner.None;
-
     public void ResetSubRoles()
     {
         foreach (var subRole in SubRoles.ToArray()) // Use ToArray() to avoid modification during iteration
@@ -444,8 +442,6 @@ public class PlayerState(byte playerId)
     public bool IsSuicide => deathReason == DeathReason.Suicide;
     public TaskState TaskState => taskState;
 
-    public bool IsLingeringPresence { get; internal set; }
-
     public void InitTask(PlayerControl player) => taskState.Init(player);
     public void UpdateTask(PlayerControl player) => taskState.Update(player);
 
@@ -593,7 +589,6 @@ public class TaskState
 
         //Solsticer task state is updated by host rpc
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
-        if (player.Is(CustomRoles.LingeringPresence) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;
 

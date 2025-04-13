@@ -1046,8 +1046,7 @@ public enum CustomRoles
     VoidBallot,
     Watcher,
     Workhorse,
-    Youtuber,
-    LingeringPresence
+    Youtuber
 }
 //WinData
 [Obfuscation(Exclude = true)]

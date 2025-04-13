@@ -2290,7 +2290,6 @@ public static class Utils
         return checkbanned ? !BannedReason(reason) : reason switch
         {
             PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
-            PlayerState.DeathReason.FadedAway => (CustomRoles.LingeringPresence.IsEnable()),
             PlayerState.DeathReason.Expired => (CustomRoles.Summoner.IsEnable()),
             PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
             PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
