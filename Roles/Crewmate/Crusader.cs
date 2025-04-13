@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
@@ -20,7 +19,7 @@ internal class Crusader : RoleBase
     private static OptionItem SkillLimitOpt;
     private static OptionItem SkillCooldown;
 
-    private readonly HashSet<byte> ForCrusade = [];
+    public readonly HashSet<byte> ForCrusade = [];
     private float CurrentKillCooldown;
 
     public override void SetupCustomOption()

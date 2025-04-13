@@ -1,11 +1,11 @@
 using System.Text;
-using UnityEngine;
 using TOHE.Modules;
-using TOHE.Roles.Core;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.Core;
+using UnityEngine;
 using static TOHE.Options;
-using static TOHE.Utils;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -25,6 +25,8 @@ internal class TaskManager : RoleBase
     private static OptionItem CanGetHarmfulAddons;
     private static OptionItem CanGetMixedAddons;
     private static OptionItem CanSeeAllCompletedTasks;
+
+    private int LastTarget = byte.MaxValue;
 
     private static List<CustomRoles> Addons = [];
     private static readonly Dictionary<int, byte> Target = [];
@@ -54,6 +56,8 @@ internal class TaskManager : RoleBase
         Target.Clear();
         VisualTasksCompleted.Clear();
 
+        LastTarget = byte.MaxValue;
+
         if (CanGetHelpfulAddons.GetBool())
         {
             Addons.AddRange(GroupedAddons[AddonTypes.Helpful]);
@@ -73,6 +77,11 @@ internal class TaskManager : RoleBase
     {
         playerId.SetAbilityUseLimit(LimitGetsAddOns.GetInt());
     }
+    public override void Remove(byte playerId)
+    {
+        Target.Remove(LastTarget);
+        LastTarget = byte.MaxValue;
+    }
     public override bool OnTaskComplete(PlayerControl taskManager, int completedTaskCount, int totalTaskCount)
     {
         if (!taskManager.IsAlive() && !CanCompleteTaskAfterDeath.GetBool()) return true;
@@ -89,7 +98,8 @@ internal class TaskManager : RoleBase
 
         if (allNotCompletedTasks.Count > 0)
         {
-            Target[randomPlayer.PlayerId] = taskManager.PlayerId;
+            LastTarget = randomPlayer.PlayerId;
+            Target[LastTarget] = taskManager.PlayerId;
             randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
 
             taskManager.Notify(GetString("TaskManager_YouCompletedRandomTask"));
@@ -99,7 +109,7 @@ internal class TaskManager : RoleBase
     }
     public override void OnOthersTaskComplete(PlayerControl player, PlayerTask task, bool playerIsOverridden, PlayerControl realPlayer)
     {
-        if (!_Player.IsAlive()) return;
+        if (!_Player.IsAlive() || !_Player.Is(CustomRoles.TaskManager)) return;
 
         if (!playerIsOverridden)
             VisualTaskIsCompleted(task.TaskType);
@@ -108,15 +118,9 @@ internal class TaskManager : RoleBase
         if (realPlayer.PlayerId == _Player.PlayerId || !realPlayer.GetPlayerTaskState().IsTaskFinished || abilityLimit < 1) return;
 
         var taskManager = _Player;
-        Addons.RemoveAll(taskManager.Is);
 
-        foreach (var addOn in Addons)
-        {
-            if (!CustomRolesHelper.CheckAddonConfilct(addOn, taskManager, checkLimitAddons: false, checkSelfAddOn: false))
-            {
-                Addons.Remove(addOn);
-            }
-        }
+        Addons.RemoveAll(taskManager.Is);
+        taskManager.CheckConflictedAddOnsFromList(ref Addons);
 
         if (Addons.Count == 0)
         {
@@ -128,7 +132,7 @@ internal class TaskManager : RoleBase
             taskManager.RpcRemoveAbilityUse();
             var randomAddOn = Addons.RandomElement();
 
-            taskManager.RpcSetCustomRole(randomAddOn, checkAAconflict: false);
+            taskManager.RpcSetCustomRole(randomAddOn, false, false);
             taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), abilityLimit), time: 10);
         }
     }
