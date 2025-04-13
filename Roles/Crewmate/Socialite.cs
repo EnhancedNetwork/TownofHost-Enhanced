@@ -1,10 +1,9 @@
-using TOHE.Modules;
-using TOHE.Roles.Core;
-using InnerNet;
-using static TOHE.Options;
-using static TOHE.Utils;
-using static TOHE.Translator;
 using Hazel;
+using InnerNet;
+using TOHE.Modules;
+using static TOHE.Options;
+using static TOHE.Translator;
+using static TOHE.Utils;
 namespace TOHE.Roles.Crewmate;
 
 internal class Socialite : RoleBase
@@ -87,10 +86,10 @@ internal class Socialite : RoleBase
     }
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-       foreach (var playerId in PreGuestList)
-       {
+        foreach (var playerId in PreGuestList)
+        {
             GuestList.Add(playerId);
-       }
+        }
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
@@ -104,9 +103,10 @@ internal class Socialite : RoleBase
     public override bool CheckVote(PlayerControl voter, PlayerControl target)
     {
         if (voter == null || target == null) return true;
-        if (GuestList.Contains(voter.PlayerId)) {
+        if (GuestList.Contains(voter.PlayerId))
+        {
             SendMessage(GetString("SocialiteAlreadyGuest"), voter.PlayerId, title: CustomRoles.Socialite.ToColoredString().ToUpper());
-            return false; 
+            return false;
         }
         GuestList.Add(target.PlayerId);
         SendMessage(string.Format(GetString("SocialiteVoteMsg"), target.GetRealName()), voter.PlayerId, title: CustomRoles.Socialite.ToColoredString().ToUpper());
