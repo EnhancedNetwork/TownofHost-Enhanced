@@ -108,7 +108,7 @@ class SetUpRoleTextPatch
             RandomSpawn.SpawnMap spawnMap = mapName switch
             {
                 MapNames.Skeld => new RandomSpawn.SkeldSpawnMap(),
-                MapNames.Mira => new RandomSpawn.MiraHQSpawnMap(),
+                MapNames.MiraHQ => new RandomSpawn.MiraHQSpawnMap(),
                 MapNames.Polus => new RandomSpawn.PolusSpawnMap(),
                 MapNames.Dleks => new RandomSpawn.DleksSpawnMap(),
                 MapNames.Fungle => new RandomSpawn.FungleSpawnMap(),
@@ -917,10 +917,10 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                /*
+                
                 CustomGameMode.FFA => FFAManager.FFA_ShowChatInGame.GetBool(),
                 CustomGameMode.SpeedRun => SpeedRun.SpeedRun_ShowChatInGame.GetBool(),
-                */
+                
                 _ => false
             };
             try
