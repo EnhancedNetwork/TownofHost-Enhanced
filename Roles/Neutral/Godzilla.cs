@@ -31,13 +31,13 @@ internal class Godzilla : RoleBase
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Godzilla);
         GodzillaCanKill = BooleanOptionItem.Create(Id + 10, GeneralOption.CanKill, false, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla]);
-        GodzillaKillCD = FloatOptionItem.Create(Id + 11, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false)
+        GodzillaKillCD = FloatOptionItem.Create(Id + 11, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(GodzillaCanKill)
             .SetValueFormat(OptionFormat.Seconds);
-        DestroyCooldown = FloatOptionItem.Create(Id + 12, "DestroyCooldown", new(5f, 180f, 2.5f), 60f, TabGroup.NeutralRoles, false)
+        DestroyCooldown = FloatOptionItem.Create(Id + 12, "DestroyCooldown", new(5f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla])
             .SetValueFormat(OptionFormat.Seconds);
-        WarningTimeBeforeDestroying = FloatOptionItem.Create(Id + 13, "WarningTimeBeforeDestroying", new(5f, 180f, 2.5f), 60f, TabGroup.NeutralRoles, false)
+        WarningTimeBeforeDestroying = FloatOptionItem.Create(Id + 13, "WarningTimeBeforeDestroying", new(5f, 180f, 2.5f), 10f, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla])
             .SetValueFormat(OptionFormat.Seconds);
     }
