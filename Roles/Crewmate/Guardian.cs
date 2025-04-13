@@ -9,7 +9,7 @@ internal class Guardian : RoleBase
     public override CustomRoles Role => CustomRoles.Guardian;
     private const int Id = 11700;
     public override CustomRoles ThisRoleBase => CustomRoles.Crewmate;
-    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmatePower;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateProtective;
     //==================================================================\\
 
     public override void SetupCustomOption()
