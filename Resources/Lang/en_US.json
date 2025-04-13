@@ -4641,5 +4641,13 @@
 
   "Redo": "Redo",
   "RedoInfo": "Change your role",
-  "RedoInfoLong": "When the Redo votes themself, they will change roles to a random role in their faction. This action can only be used once."
+  "RedoInfoLong": "When the Redo votes themself, they will change roles to a random role in their faction. This action can only be used once.",
+
+  "Constable": "Constable",
+  "ConstableInfo": "Create bonus meetings for extra power",
+  "ConstableInfoLong": "The Constable can vote themself to create a bonus meeting after the current one. The Constable will receive a certain amount of extra votes during a Tribunal. More Tribunals can be called during a Tribunal.",
+  "TribunalVotes354": "Extra votes during Tribunals",
+  "ConstableOutOfAbility": "No more ability uses! Do tasks to be able to call Tribunals",
+  "TribunalStart": "The Constable has called a Tribunal! A second meeting will take place.",
+  "TribunalTitle": "A Tribunal has been called!"
 }

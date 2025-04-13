@@ -789,6 +789,7 @@ public enum CustomRoles
     Chameleon,
     ChiefOfPolice,
     Cleanser,
+    Constable,
     CopyCat,
     Coroner,
     Crusader,
