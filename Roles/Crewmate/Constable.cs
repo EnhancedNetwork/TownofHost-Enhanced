@@ -79,7 +79,13 @@ internal class Constable : RoleBase
         if (IsTribunal)
         {
             ExtraVotes = TribunalExtraVotes.GetInt();
-            _Player.NoCheckStartMeeting(null, force: true);
+            foreach (var player in Main.AllPlayerControls)
+            {
+                if (player.IsHost())
+                {
+                    player.NoCheckStartMeeting(null, force: true);
+                }
+            }
             Utils.SendMessage(GetString("TribunalStart"), title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Constable), GetString("TribunalTitle")));
             IsTribunal = false;
         }
