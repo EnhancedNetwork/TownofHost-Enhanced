@@ -1,9 +1,9 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using UnityEngine;
-using static TOHE.Translator;
 using static TOHE.Options;
+using static TOHE.Translator;
 
 namespace TOHE.Roles.Crewmate;
 

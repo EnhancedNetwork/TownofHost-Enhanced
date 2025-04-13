@@ -73,7 +73,7 @@ internal class Cleanser : RoleBase
 
         Logger.Info($"{voter.GetNameWithRole()} cleansed {target.GetNameWithRole()}", "Cleansed");
         Utils.SendMessage(string.Format(GetString("CleanserRemovedRole"), targetName), voter.PlayerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cleanser), GetString("CleanserTitle")));
-        
+
         return false;
     }
     public override void OnReportDeadBody(PlayerControl baba, NetworkedPlayerInfo lilelam)
@@ -101,17 +101,15 @@ internal class Cleanser : RoleBase
         foreach (var pid in CleanserTarget.Keys.ToArray())
         {
             if (pid == byte.MaxValue) continue;
+
             var targetid = CleanserTarget[pid];
             if (targetid == byte.MaxValue) continue;
-            var targetpc = Utils.GetPlayerById(targetid);
+
+            var targetpc = targetid.GetPlayer();
             if (targetpc == null) continue;
-            //var allAddons = targetpc.GetCustomSubRoles();
-            targetpc.RpcSetCustomRole(CustomRoles.Cleansed);
+
+            targetpc.RpcSetCustomRole(CustomRoles.Cleansed, false, false);
             Logger.Info($"Removed all the add ons of {targetpc.GetNameWithRole()}", "Cleanser");
-            //foreach (var role in allAddons)
-            //{
-            //    Main.PlayerStates[targetid].RemoveSubRole(role);
-            //}
         }
         Utils.MarkEveryoneDirtySettings();
     }
