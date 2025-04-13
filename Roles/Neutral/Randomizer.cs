@@ -1,4 +1,3 @@
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -461,7 +460,7 @@ internal class Randomizer : RoleBase
 
     public static string RandomizerReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (Main.PlayerStates[seen.PlayerId].IsRandomizer && !seen.Is(CustomRoles.Randomizer) &&  ((!seer.IsAlive() && Altruist.HasEnabled ? !seer.IsMurderedThisRound() : true) || seer == seen))
+        if (Main.PlayerStates[seen.PlayerId].IsRandomizer && !seen.Is(CustomRoles.Randomizer) && ((!seer.IsAlive() && Altruist.HasEnabled ? !seer.IsMurderedThisRound() : true) || seer == seen))
         {
             return $"<size=1.5><i>{CustomRoles.Randomizer.ToColoredString()}</i></size>";
         }

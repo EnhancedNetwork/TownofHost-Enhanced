@@ -1,11 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using System.Diagnostics.Metrics;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
@@ -103,7 +101,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
 
         if (pcList.Any())
         {
-            byte rp = pcList.RandomElement().PlayerId;            
+            byte rp = pcList.RandomElement().PlayerId;
             necroHolder = rp;
             GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
             SendRPC(necroHolder);

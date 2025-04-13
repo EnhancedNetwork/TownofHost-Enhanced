@@ -2,13 +2,10 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System.Text;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Neutral;
 
@@ -323,7 +320,7 @@ internal class Baker : RoleBase
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
-        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer && !Main.PlayerStates[x.PlayerId].IsRandomizer ).Count()))
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer && !Main.PlayerStates[x.PlayerId].IsRandomizer).Count()))
         {
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);

@@ -303,7 +303,7 @@ internal class Summoner : CovenManager
             {
                 msg = msg.Replace("/" + comm, string.Empty).Trim();
                 return true;
-            }            
+            }
         }
         return false;
     }
@@ -351,7 +351,8 @@ internal class Summoner : CovenManager
         if (SummonedOriginalRoles.TryGetValue(player.PlayerId, out RoleBase originalRole))
         {
             if (player.IsAlive()) player.RpcChangeRoleBasis(originalRole.ThisRoleBase);
-            else { 
+            else
+            {
                 if (originalRole.HasTasks(player.Data, originalRole.Role, false))
                 {
                     player.RpcSetRoleType(RoleTypes.CrewmateGhost, true);
@@ -389,7 +390,7 @@ internal class Summoner : CovenManager
         }
 
         // Cancel any pending revives
-        CancelPendingRevives();       
+        CancelPendingRevives();
     }
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -462,8 +463,9 @@ internal class Summoner : CovenManager
 
             // Revive the player
             targetPlayer.RpcRevive();
-            _ = new LateTask(() => { 
-                targetPlayer.RpcRandomVentTeleport(); 
+            _ = new LateTask(() =>
+            {
+                targetPlayer.RpcRandomVentTeleport();
             }, 1f, "SummonerReviveTeleport");
 
             // Save their original role
@@ -670,10 +672,10 @@ internal class Summoned : RoleBase
 
         // Set the player's death reason and mark them as dead
         player.SetDeathReason(PlayerState.DeathReason.Expired);
-        
+
         var playerState = Main.PlayerStates[player.PlayerId];
-            playerState.IsDead = true;
-        
+        playerState.IsDead = true;
+
 
         // Use RpcExileV2 to remove the player without leaving a body
         player.RpcExileV2();

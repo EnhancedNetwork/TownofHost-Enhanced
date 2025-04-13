@@ -73,13 +73,7 @@ public class PlayerState(byte playerId)
         }
         if (Main.PlayerStates[pc.PlayerId].IsRandomizer)
         {
-            countTypes = Main.PlayerStates[pc.PlayerId].LockedTeam switch
-            {
-                Custom_Team.Crewmate => CountTypes.None,
-                Custom_Team.Impostor => CountTypes.None,
-                Custom_Team.Neutral => CountTypes.None,
-                _ => CountTypes.None // Default fallback if team is unknown
-            };
+            countTypes = CountTypes.OutOfGame;
         }
 
         if (pc.Is(CustomRoles.Charmed))
@@ -464,8 +458,6 @@ public class PlayerState(byte playerId)
         Revenge,
         Execution,
         Fall,
-        FadedAway,
-        Expired,
 
 
         // TOHE
@@ -501,6 +493,7 @@ public class PlayerState(byte playerId)
         Electrocuted,
         Scavenged,
         BlastedOff,
+        Expired,
 
         //Please add all new roles with deathreason & new deathreason in Utils.DeathReasonIsEnable();
         etc = -1,
