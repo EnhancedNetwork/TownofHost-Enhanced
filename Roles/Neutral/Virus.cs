@@ -36,9 +36,9 @@ internal class Virus : RoleBase
     [Obfuscation(Exclude = true)]
     private enum ContagiousCountModeSelectList
     {
-        Virus_ContagiousCountMode_None,
+        CountMode_None,
         Virus_ContagiousCountMode_Virus,
-        Virus_ContagiousCountMode_Original
+        CountMode_Original
     }
 
     public override void SetupCustomOption()
