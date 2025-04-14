@@ -44,11 +44,6 @@
   "TeamEgoist": "Egoist",
   "TeamApocalypse": "Apocalypse",
 
-  "Role_Amnesiac": "<color=#7FBFFF>Amnesiac</color>",
-  "Role_Imitator": "<color=#B3D94C>Imitator</color>",
-  "Role_AdmiredImpostor": "<color=#ee43c3>Admired Impostor</color>",
-  "Role_Trickster": "<color=#ff1919>Trickster</color>",
-  "Role_Traitor": "<color=#BA2E05>Traitor</color>",
   "Role_NoChange": "Don't change the role",
   "Role_Random": "Random role from list",
 
@@ -3827,7 +3822,6 @@
   "HaterCanKillEnchanted": "Can kill Enchanted",
   "HorseMode": "Enable to become a horse",
   "LongMode": "Enable to have a long neck",
-  "InfluencedChangeVote": "Oops! You are so influenced by others!\nYou can not contain your fear that you change voted {0}!",
 
   "FFA": "Free For All",
   "ModeFFA": "Gamemode: FFA",
@@ -3875,7 +3869,6 @@
   "MurderSolsticer": "You stopped Solsticer this round!",
   "SolsticerMurderMessage": "<b>{0}</b> used Kill button on you last round! Its role is <b>{1}</b>!",
   "SolsticerOnMeeting": "You witnessed too many deaths! Next round you will have {0} more short task!",
-  "SolsticerTitle": "SOLSTICER",
   "GuessSolsticer": "Sorry, but you can not guess Solsticer!",
   "ExpelSolsticer": "Sorry, but you can not expel Solsticer!",
   "SolsticerTasksReset": "Your tasks get reset!",
@@ -3889,7 +3882,6 @@
 
   "dbConnect.InitFailure": "Error while connecting to TOHE API, please check your network connection and retry login!",
   "dbConnect.InitFailurePublic": "Error while connecting to TOHE API, this could be caused by your internet connection. And so Sponsor+ perks are not available, you may continue to play as usual without these.",
-  "dbConnect.nullFriendCode": "This build of TOHE is not available to users with no Friend Code!",
 
   "Quizmaster": "Quizmaster",
   "QuizmasterInfo": "Quiz people to kill them in meetings",
@@ -4011,7 +4003,7 @@
 
   "Minion_Blind": "blinded",
 
-  "Evader_ChanceNotExiled": "Chance not be exiled",
+  "Evader_ChanceNotExiled": "Chance to not be exiled",
 
   "ShockerAbilityPerRound": "Abilities Per Round",
   "ShockerShockInVents": "Shock people in Vents",

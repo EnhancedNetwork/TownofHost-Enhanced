@@ -62,8 +62,8 @@ internal class Executioner : RoleBase
         CanTargetNeutralApocalypse = BooleanOptionItem.Create(Id + 17, "CanTargetNeutralApocalypse", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         CanTargetCoven = BooleanOptionItem.Create(Id + 19, "CanTargetCoven", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         KnowTargetRole = BooleanOptionItem.Create(Id + 13, "KnowTargetRole", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
-        CRoleChangeRoles.ForEach(x => ChangeRoles.Add(x.ToString()));
-        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", ChangeRoles.ToArray(), 1, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
+        CRoleChangeRoles.ForEach(x => ChangeRoles.Add(x.ToColoredString()));
+        ChangeRolesAfterTargetKilled = StringOptionItem.Create(Id + 11, "ExecutionerChangeRolesAfterTargetKilled", ChangeRoles.ToArray(), 1, TabGroup.NeutralRoles, false, useGetString: false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
         RevealExeTargetUponEjection = BooleanOptionItem.Create(Id + 18, "Executioner_RevealTargetUponEject", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Executioner]);
     }
     public override void Init()
