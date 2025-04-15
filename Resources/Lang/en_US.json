@@ -1557,8 +1557,8 @@
   "SheriffSetMadCanKill": "Non-<color=#8cffff>Crewmate</color> <color=#f8cd46>Sheriff</color> Configuration",
   "SheriffCanKillEnchanted": "Can Kill <color=#ac42f2>Enchanted</color> players",
   "SheriffCanKillCoven": "Can Kill <color=#ac42f2>Coven</color>",
-  "SheriffMadCanKillNeutral": "Can Kill <color=#7f8c8d>Neutrals</color>",
-  "SheriffMadCanKillCoven": "Can Kill <color=#ac42f2>Coven</color>",
+  "SheriffMadCanKillImp": "Can Kill <color=#ff1919>Impostors</color>",
+  "SheriffMadCanKillCrew": "Can Kill <color=#8cffff>Crewmates</color>",
 
   "RebirthUses": "Amount of Rebirths",
   "RebirthCountVotes": "Only rebirth to players who voted for them",
