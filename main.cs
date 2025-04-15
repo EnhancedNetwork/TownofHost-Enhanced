@@ -947,6 +947,8 @@ public enum CustomRoles
     PotionMaster,
     Ritualist,
     Sacrifist,
+    Summoner,
+    Summoned,
     VoodooMaster,
 
     //two-way camp
@@ -1121,6 +1123,8 @@ public enum AdditionalWinners
     None = -1,
     Lovers = CustomRoles.Lovers,
     Opportunist = CustomRoles.Opportunist,
+    Summoned = CustomRoles.Summoned,
+    Randomizer = CustomRoles.Randomizer,
     Executioner = CustomRoles.Executioner,
     Lawyer = CustomRoles.Lawyer,
     Hater = CustomRoles.Hater,

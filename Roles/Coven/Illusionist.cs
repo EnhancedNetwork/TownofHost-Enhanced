@@ -72,7 +72,7 @@ internal class Illusionist : CovenManager
     {
         if (killer.CheckDoubleTrigger(target, () => { SetIllusioned(killer, target); }))
         {
-            if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
             {
                 var randomDeathReason = ChangeRandomDeath();
                 Main.PlayerStates[target.PlayerId].deathReason = randomDeathReason;

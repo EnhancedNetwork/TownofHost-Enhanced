@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -60,6 +61,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Necronomicon, SendOption.Reliable, -1);
         writer.Write(playerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
+
     }
     public static void ReceiveNecroRPC(MessageReader reader)
     {
@@ -92,7 +94,11 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     }
     public static void GiveNecronomicon()
     {
-        var pcList = Main.AllAlivePlayerControls.Where(pc => pc.IsPlayerCoven() && pc.IsAlive()).ToList();
+        // Exclude Summoned players and Randomizer from the eligible list
+        var pcList = Main.AllAlivePlayerControls
+            .Where(pc => pc.IsPlayerCoven() && pc.IsAlive() && !pc.Is(CustomRoles.Summoned) && !Main.PlayerStates[pc.PlayerId].IsRandomizer)
+            .ToList();
+
         if (pcList.Any())
         {
             byte rp = pcList.RandomElement().PlayerId;
@@ -101,18 +107,30 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             SendRPC(necroHolder);
         }
     }
+
     public static void GiveNecronomicon(byte target)
     {
+        if (GetPlayerById(target).Is(CustomRoles.Summoned)) return; // Prevent assignment to Summoned players        
+
         necroHolder = target;
         GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
         SendRPC(necroHolder);
     }
     public static void GiveNecronomicon(PlayerControl target)
     {
+        if (target.Is(CustomRoles.Summoned)) return; // Prevent assignment to Summoned players
+        if (Main.PlayerStates[target.PlayerId].IsRandomizer)
+        {
+            // Avoid giving Necronomicon to Randomizer
+            Logger.Info($"Randomizer {target.GetRealName()} was selected for Necronomicon, skipping.", "Coven");
+            GiveNecronomicon(); // Retry
+            return;
+        }
         necroHolder = target.PlayerId;
-        GetPlayerById(necroHolder).Notify(GetString("NecronomiconNotification"));
+        target.Notify(GetString("NecronomiconNotification"));
         SendRPC(necroHolder);
     }
+
     public static void CheckNecroVotes()
     {
         if (necroVotes.Count < 1) return;
@@ -169,7 +187,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
             GiveNecronomicon();
         }
     }
-    public static bool HasNecronomicon(PlayerControl pc) => necroHolder == pc.PlayerId;
-    public static bool HasNecronomicon(byte playerId) => necroHolder == playerId;
+    public static bool HasNecronomicon(PlayerControl pc) => necroHolder == pc.PlayerId || (Main.PlayerStates[pc.PlayerId].IsRandomizer && Randomizer.CanGetNecronomicon.GetBool() && pc.GetCustomRole().IsCoven());
+    public static bool HasNecronomicon(byte playerId) => necroHolder == playerId || (Main.PlayerStates[playerId].IsRandomizer && Randomizer.CanGetNecronomicon.GetBool() && GetPlayerById(playerId).GetCustomRole().IsCoven());
 
 }

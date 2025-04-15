@@ -171,7 +171,7 @@ internal class Dreamweaver : CovenManager
         {
             if (HasNecronomicon(killer))
             {
-                if (target.IsPlayerCovenTeam())
+                if (target.IsPlayerCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
                 {
                     killer.Notify(GetString("CovenDontKillOtherCoven"));
                     return false;

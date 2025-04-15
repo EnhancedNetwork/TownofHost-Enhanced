@@ -75,7 +75,7 @@ internal class Necromancer : CovenManager
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         if (IsRevenge) return true;
-        if (killer.GetCustomRole().IsCovenTeam()) return true;
+        if (killer.GetCustomRole().IsCovenTeam() && !(Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer)) return true;
         if (!HasNecronomicon(target)) return true;
         if ((killer.Is(CustomRoles.Retributionist) || killer.Is(CustomRoles.Nemesis)) && !killer.IsAlive()) return true;
 
