@@ -364,4 +364,8 @@ internal class Doomsayer : RoleBase
             }
         }
     }
+    public override void AfterMeetingTasks()
+    {
+        MsgToSend.Clear();
+    }
 }
