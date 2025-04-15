@@ -62,11 +62,10 @@ public static class SpeedRun
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
 
-        /*
+        
         SpeedRun_ShowChatInGame = BooleanOptionItem.Create(Id + 20, "SpeedRun_ShowChatInGame", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
             .SetColor(new Color32(255, 251, 0, byte.MaxValue));
-        */
 
         SpeedRun_RunnerNormalSpeed = FloatOptionItem.Create(Id + 4, "SpeedRun_RunnerNormalSpeed", new(0.25f, 5f, 0.25f), 1.5f, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.SpeedRun)
@@ -362,7 +361,7 @@ class SpeedRunGameEndPredicate : GameEndPredicate
 {
     public override bool CheckForEndGame(out GameOverReason reason)
     {
-        reason = GameOverReason.ImpostorByKill;
+        reason = GameOverReason.ImpostorsByKill;
 
         if (Main.AllAlivePlayerControls.Count(x => x.Is(CustomRoles.Runner)) <= 1)
         {
@@ -374,7 +373,7 @@ class SpeedRunGameEndPredicate : GameEndPredicate
 
         if (SpeedRun.StartedAt != 0 && GetTimeStamp() - SpeedRun.StartedAt >= SpeedRun.SpeedRun_MaxTimeForTie.GetInt())
         {
-            reason = GameOverReason.HumansByTask;
+            reason = GameOverReason.CrewmatesByTask;
             CustomWinnerHolder.WinnerIds.Clear();
             Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Runner)).Select(x => x.PlayerId).Do(x => CustomWinnerHolder.WinnerIds.Add(x));
             Main.DoBlockNameChange = true;

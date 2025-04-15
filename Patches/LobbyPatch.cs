@@ -87,36 +87,33 @@ public class LobbyBehaviourPatch
         }
     }
 }
-[HarmonyPatch(typeof(HostInfoPanel), nameof(HostInfoPanel.SetUp))]
-public static class HostInfoPanelUpdatePatch
+
+[HarmonyPatch(typeof(PlayerMaterial), nameof(PlayerMaterial.SetColors), [typeof(int), typeof(Material)])]
+public class PlayerMaterialPatch
 {
-    private static TextMeshPro HostText;
-    public static bool Prefix(HostInfoPanel __instance)
+    public static void Prefix([HarmonyArgument(0)] ref int colorId)
     {
-        if (!GameStates.IsLobby) return false;
-
-        // Fix System.IndexOutOfRangeException: Index was outside the bounds of the array.
-        // When __instance.player.ColorId is 255 them ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[255]) gets exception
-        return __instance.player.ColorId != byte.MaxValue;
-    }
-    public static void Postfix(HostInfoPanel __instance)
-    {
-        try
+        if (colorId < 0 || colorId >= Palette.PlayerColors.Length)
         {
-            if (AmongUsClient.Instance.AmHost)
+            colorId = 0;
+        }
+    }
+}
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.Init))]
+public class NetworkedPlayerInfoInitPatch
+{
+    public static void Postfix(NetworkedPlayerInfo __instance)
+    {
+        foreach (var outfit in __instance.Outfits)
+        {
+            if (outfit.Value != null)
             {
-                if (HostText == null)
-                    HostText = __instance.content.transform.FindChild("Name").GetComponent<TextMeshPro>();
-
-                string htmlStringRgb = ColorUtility.ToHtmlStringRGB(Palette.PlayerColors[__instance.player.ColorId]);
-                string hostName = Main.HostRealName;
-                string youLabel = DestroyableSingleton<TranslationController>.Instance.GetString(StringNames.HostYouLabel);
-
-                // Set text in host info panel
-                HostText.text = $"<color=#{htmlStringRgb}>{hostName}</color>  <size=90%><b><font=\"Barlow-BoldItalic SDF\" material=\"Barlow-BoldItalic SDF Outline\">{youLabel}";
+                if (outfit.Value.ColorId < 0 || outfit.Value.ColorId >= Palette.PlayerColors.Length)
+                {
+                    outfit.Value.ColorId = 0;
+                }
             }
         }
-        catch
-        { }
     }
 }

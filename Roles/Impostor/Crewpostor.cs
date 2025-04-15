@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
+using UnityEngine;
+using TOHE.Roles.AddOns.Impostor;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -17,7 +19,8 @@ internal class Crewpostor : RoleBase
     private static OptionItem KnowsAllies;
     private static OptionItem AlliesKnowCrewpostor;
     private static OptionItem LungeKill;
-    private static OptionItem KillAfterTask;
+    public static OptionItem KillAfterTask;
+    public static OptionItem KillsPerRound;
 
     private static Dictionary<byte, int> TasksDone = [];
 
@@ -32,14 +35,15 @@ internal class Crewpostor : RoleBase
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
         LungeKill = BooleanOptionItem.Create(Id + 5, "CrewpostorLungeKill", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        KillAfterTask = IntegerOptionItem.Create(Id + 6, "CrewpostorKillAfterTask", new(1, 50, 1), 1, TabGroup.ImpostorRoles, false)
+        KillAfterTask = IntegerOptionItem.Create(Id + 6, "CrewpostorKillAfterTask", new(2, 5, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
-        OverrideTasksData.Create(Id + 7, TabGroup.ImpostorRoles, CustomRoles.Crewpostor);
+        KillsPerRound = IntegerOptionItem.Create(Id + 7, "CrewpostorKillsPerRound", new(1, 15, 1), 1, TabGroup.ImpostorRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Crewpostor]);
     }
 
     public override void Init()
     {
-        TasksDone = [];
+        TasksDone.Clear();
 
     }
     public override void Add(byte playerId)
@@ -47,16 +51,8 @@ internal class Crewpostor : RoleBase
         TasksDone[playerId] = 0;
 
     }
-    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute)
-    {
-        if (ForRecompute & !player.IsDead)
-            return false;
-        if (player.IsDead)
-            return false;
-
-        return true;
-    }
-
+    public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute && !player.IsDead;
+    
     private static void SendRPC(byte cpID, int tasksDone)
     {
         if (PlayerControl.LocalPlayer.PlayerId == cpID)
@@ -85,6 +81,7 @@ internal class Crewpostor : RoleBase
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
+        opt.SetVision(true);
         AURoleOptions.EngineerCooldown = 0f;
         AURoleOptions.EngineerInVentMaxTime = 0f;
     }
@@ -97,9 +94,23 @@ internal class Crewpostor : RoleBase
         => (AlliesKnowCrewpostor.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Crewpostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer)
             || (KnowsAllies.GetBool() && seer.Is(CustomRoles.Crewpostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer);
 
+    public override string GetProgressText(byte playerId, bool comms)
+    {
+        var color = comms ? Color.gray : Color.red;
+        string TaskCompleted = comms ? "?" : $"{TasksDone[playerId]}";
+        string DisplayTaskProgress = LastImpostor.currentId == playerId ? 
+                                string.Empty : Utils.ColorString(color, $" ({TaskCompleted}/{KillAfterTask.GetInt()})");
+
+        int NumKillsLeft = KillsPerRound.GetInt() - Main.MurderedThisRound.Count(ded => ded.GetRealKillerById() == playerId.GetPlayer());
+        string DisplayKillsLeft = Utils.ColorString(Color.red, LastImpostor.currentId == playerId ? $"({Main.AllAlivePlayerControls.Length})" : $"({NumKillsLeft})");
+
+        return DisplayTaskProgress + " - " + DisplayKillsLeft;
+    }
+
     public override bool OnTaskComplete(PlayerControl player, int completedTaskCount, int totalTaskCount)
     {
         if (!player.IsAlive()) return true;
+        int TaskNeededToKill = LastImpostor.currentId == player.PlayerId ? 1 : KillAfterTask.GetInt();
 
         if (TasksDone.ContainsKey(player.PlayerId))
             TasksDone[player.PlayerId]++;
@@ -113,9 +124,9 @@ internal class Crewpostor : RoleBase
         {
             Logger.Info($"No target to kill", "Crewpostor");
         }
-        else if (TasksDone[player.PlayerId] % KillAfterTask.GetInt() != 0 && TasksDone[player.PlayerId] != 0)
+        else if (TasksDone[player.PlayerId] % TaskNeededToKill != 0 && TasksDone[player.PlayerId] != 0)
         {
-            Logger.Info($"Crewpostor task done but kill skipped, tasks completed {TasksDone[player.PlayerId]}, but it kills after {KillAfterTask.GetInt()} tasks", "Crewpostor");
+            Logger.Info($"Crewpostor task done but kill skipped, tasks completed {TasksDone[player.PlayerId]}, but it kills after {TaskNeededToKill} tasks", "Crewpostor");
         }
         else
         {
@@ -155,5 +166,13 @@ internal class Crewpostor : RoleBase
         }
 
         return true;
+    }
+
+    public override void AfterMeetingTasks()
+    {
+        if (!_Player.IsAlive()) return;
+        var cp = _Player;
+        cp.RpcResetTasks();
+        TasksDone[cp.PlayerId] = 0;
     }
 }

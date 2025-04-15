@@ -241,6 +241,7 @@ internal class ChangeRoleSettings
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
+            ShipStatusSerializePatch.ReactorFlashList.Clear();
 
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
@@ -264,7 +265,7 @@ internal class StartGameHostPatch
 {
     private static AmongUsClient thiz;
 
-    private static RoleOptionsCollectionV08 RoleOpt => Main.NormalOptions.roleOptions;
+    private static RoleOptionsCollectionV09 RoleOpt => Main.NormalOptions.roleOptions;
     private static Dictionary<RoleTypes, int> RoleTypeNums = [];
     public static void UpdateRoleTypeNums()
     {
@@ -475,16 +476,20 @@ internal class StartGameHostPatch
                 Logger.Warn($"Error after addons assign - error: {error}", "AddonAssign");
             }
 
+            var setCustomRoleSender = CustomRpcSender.Create("SetCustomRole Release Sender", SendOption.Reliable);
+
             // Sync for non-host modded clients by RPC
             foreach (var pair in Main.PlayerStates)
             {
-                // Set Roles
-                ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                // Set roles
+                setCustomRoleSender.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
                 // Set Add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
-                    ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
+                    setCustomRoleSender.RpcSetCustomRole(pair.Key, subRole);
             }
+
+            setCustomRoleSender.SendMessage();
 
             GhostRoleAssign.Add();
 
@@ -624,16 +629,18 @@ internal class StartGameHostPatch
     }
     private static void SetRoleSelf()
     {
+        var sender = CustomRpcSender.Create("SetRoleSelf Sender", SendOption.Reliable);
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             try
             {
-                SetRoleSelf(pc);
+                DoSetRoleSelf(sender, pc);
             }
             catch { }
         }
+        sender.SendMessage();
     }
-    private static void SetRoleSelf(PlayerControl target)
+    private static void DoSetRoleSelf(CustomRpcSender sender, PlayerControl target)
     {
         if (target == null) return;
 
@@ -650,7 +657,7 @@ internal class StartGameHostPatch
             roleType = RpcSetRoleReplacer.StoragedData[target.PlayerId];
         }
 
-        target.RpcSetRoleDesync(roleType, targetClientId);
+        sender.RpcSetRole(target, roleType, targetClientId);
     }
 
     public static readonly Dictionary<byte, bool> DataDisconnected = [];

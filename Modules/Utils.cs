@@ -131,7 +131,7 @@ public static class Utils
                 }
             case SystemTypes.Comms:
                 {
-                    if (mapName is MapNames.Mira or MapNames.Fungle) // Only Mira HQ & The Fungle
+                    if (mapName is MapNames.MiraHQ or MapNames.Fungle) // Only Mira HQ & The Fungle
                     {
                         var HqHudSystemType = ShipStatus.Instance.Systems[type].CastFast<HqHudSystemType>();
                         return HqHudSystemType != null && HqHudSystemType.IsActive;
@@ -762,14 +762,6 @@ public static class Utils
                 NonCompleteColor = Workhorse.RoleColor;
 
             var NormalColor = taskState.IsTaskFinished ? TaskCompleteColor : NonCompleteColor;
-            if (Main.PlayerStates.TryGetValue(playerId, out var ps))
-            {
-                NormalColor = ps.MainRole switch
-                {
-                    CustomRoles.Crewpostor => Color.red,
-                    _ => NormalColor
-                };
-            }
 
             Color TextColor = comms ? Color.gray : NormalColor;
             string Completed = comms ? "?" : $"{taskState.CompletedTasksCount}";
@@ -1093,6 +1085,15 @@ public static class Utils
         {
             name = "Local Games";
             return name;
+        }
+
+        if (AmongUsClient.Instance.GameId == EnterCodeManagerPatch.tempGameId)
+        {
+            if (EnterCodeManagerPatch.tempRegion != null)
+            {
+                region = EnterCodeManagerPatch.tempRegion;
+                name = EnterCodeManagerPatch.tempRegion.Name;
+            }
         }
 
         if (region.PingServer.EndsWith("among.us", StringComparison.Ordinal))
@@ -2213,27 +2214,44 @@ public static class Utils
         return false;
     }
 
-    public static void SendGameData()
+    public static void SendGameDataAll()
     {
+        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+        writer.StartMessage(5);
+        writer.Write(AmongUsClient.Instance.GameId);
+
+        bool hasValue = false;
         foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            MessageWriter writer = MessageWriter.Get(SendOption.None);
-            writer.StartMessage(5); //0x05 GameData
-            writer.Write(AmongUsClient.Instance.GameId);
+            writer.StartMessage(1); //0x01 Data
             {
-                writer.StartMessage(1); //0x01 Data
-                {
-                    writer.WritePacked(playerinfo.NetId);
-                    playerinfo.Serialize(writer, true);
-                }
-                writer.EndMessage();
+                writer.WritePacked(playerinfo.NetId);
+                playerinfo.Serialize(writer, false);
             }
             writer.EndMessage();
+            hasValue = true;
 
-            AmongUsClient.Instance.SendOrDisconnect(writer);
-            writer.Recycle();
+            if (writer.Length > 800)
+            {
+                writer.EndMessage();
+                AmongUsClient.Instance.SendOrDisconnect(writer);
+                writer.Recycle();
+                writer = MessageWriter.Get(SendOption.Reliable);
+                hasValue = false;
+                writer.StartMessage(5);
+                writer.Write(AmongUsClient.Instance.GameId);
+            }
         }
+
+        writer.EndMessage();
+
+        if (hasValue)
+        {
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+        }
+        writer.Recycle();
     }
+
     public static void SetAllVentInteractions()
     {
         VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>());
