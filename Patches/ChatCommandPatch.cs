@@ -467,11 +467,11 @@ internal class ChatCommands
                     {
                         case CustomGameMode.Standard:
                             var allAlivePlayers = Main.AllAlivePlayerControls;
-                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                            int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
+                            int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate)) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
                             int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
-                            int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
-                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
+                            int apocnum = allAlivePlayers.Count(pc => (pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
+                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
 
                             sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
