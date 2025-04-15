@@ -562,7 +562,7 @@ internal class Randomizer : RoleBase
 
                 // Randomly determine the number of add-ons to assign
                 int addOnCount = Random.Range(minAddOns, maxAddOns + 1);
-                List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && role is not CustomRoles.Admired or CustomRoles.Lovers or CustomRoles.Cleansed && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
+                List<CustomRoles> selectedAddOns = CustomRolesHelper.AllRoles.Where(role => role.IsAdditionRole() && !role.IsBetrayalAddon() && !AddonBlackList(role) && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList()
                     .OrderBy(_ => Random.value)
                     .Take(addOnCount)
                     .ToList();
@@ -572,7 +572,7 @@ internal class Randomizer : RoleBase
                 }
 
                 foreach (var addOn in selectedAddOns)
-                {
+                {                    
                     pc.RpcSetCustomRole(addOn, false, false);
                     Logger.Info($"Assigned Add-on {addOn} to {pc.name}", "Randomizer");
                 }
@@ -584,7 +584,14 @@ internal class Randomizer : RoleBase
             pc.GetRoleClass()?.OnAdd(pc.PlayerId);
         }
     }
-
+    private static bool AddonBlackList(CustomRoles role)
+    {
+        // Check if the role is in the blacklist
+        return role.IsBetrayalAddonV2() || role is
+            CustomRoles.Lovers or
+            CustomRoles.Cleansed or
+            CustomRoles.Admired;
+    }
     private void ResetSubRoles(byte playerId)
     {
         var playerState = Main.PlayerStates[playerId];
