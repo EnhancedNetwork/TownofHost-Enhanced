@@ -2675,6 +2675,8 @@
   "KillLog": "Kill Log",
   "MainRoleLog": "Role Convert Log",
   "Maximum": "Maximum",
+  "RoleRate": "<color=#008000>ON</color>",
+  "RoleOff": "<color=#ff0000>OFF</color>",
   "Chance0": "<color=#444444>0%</color>",
   "Chance5": "<color=#EE5015>5%</color>",
   "Chance10": "<color=#EC6817>10%</color>",
