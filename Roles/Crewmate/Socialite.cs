@@ -44,6 +44,7 @@ internal class Socialite : RoleBase
         playerId.SetAbilityUseLimit(AbilityLimit.GetInt());
     }
 
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = AbilityCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => PartiedPlayers.Contains(seen.PlayerId) ? CustomRoles.Socialite.GetColoredTextByRole("♪") : string.Empty;
     public void SendRPC(PlayerControl player, PlayerControl target)
