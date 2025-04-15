@@ -551,7 +551,6 @@ class GameEndCheckerForNormal
                             .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
                             .Do(p => WinnerIds.Add(p.PlayerId));
                     }
-
                     /*Keep Schrodinger cat win condition at last*/
                     Main.AllPlayerControls.Where(pc => pc.Is(CustomRoles.SchrodingersCat)).ToList().ForEach(SchrodingersCat.SchrodingerWinCondition);
                 }
@@ -570,9 +569,16 @@ class GameEndCheckerForNormal
                         Randomizer.RandomizerWinCondition(player);
 
                         // If Randomizer met its win condition, log and add it to winners
-                        if (CustomWinnerHolder.WinnerIds.Contains(player.PlayerId))
+                        if (WinnerIds.Contains(player.PlayerId))
                         {
                             Logger.Info($"Randomizer {player.name} has been added to the winners list.", "GameEnd");
+                            if (player.Is(CustomRoles.Lovers))
+                            {
+                                Main.AllPlayerControls
+                                .Where(p => p.Is(CustomRoles.Lovers) && !WinnerIds.Contains(p.PlayerId))
+                                .Do(p => WinnerIds.Add(p.PlayerId));
+                                Logger.Info($"Randomizer {player.name} has a Lover, adding them to winners", "GameEnd");
+                            }
                         }
                         else
                         {
