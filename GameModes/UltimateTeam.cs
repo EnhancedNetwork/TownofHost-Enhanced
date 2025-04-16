@@ -171,9 +171,11 @@ internal static class UltimateTeam
             if (player.GetRealKiller() == target && Lives[player.PlayerId] > 0)
             {
                 player.RpcRevive();
-                player.RpcChangeRoleBasis(player.GetCustomRole()); 
+                player.RpcChangeRoleBasis(CustomRoles.Impostor); 
                 player.RpcSetCustomRole(player.GetCustomRole());
                 player.SetRealKiller(null);
+                player.RpcTeleport(killer.GetCustomPosition());
+                player.ResetKillCooldown();
             }
         }
         Lives[target.PlayerId]--;
