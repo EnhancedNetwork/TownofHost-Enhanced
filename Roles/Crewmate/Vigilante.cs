@@ -26,8 +26,8 @@ internal class Vigilante : RoleBase
     public override bool CanUseKillButton(PlayerControl pc) => true;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.Is(CustomRoles.Madmate)) return true;
-        if (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
+        if (!killer.IsPlayerCrewmateTeam()) return true;
+        if (target.IsPlayerCrewmateTeam())
         {
             killer.RpcSetCustomRole(CustomRoles.Madmate);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("VigilanteNotify")));

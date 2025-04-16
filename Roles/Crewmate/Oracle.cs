@@ -81,7 +81,7 @@ internal class Oracle : RoleBase
                 string text = "Crewmate";
                 if (ChangeRecruitTeam.GetBool())
                 {
-                    if (target.Is(CustomRoles.Admired)) text = "Crewmate";
+                    if (target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)) text = "Crewmate";
                     else if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
                     else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
                     else if (target.GetCustomRole().IsImpostorTeamV2() || target.GetCustomSubRoles().Any(role => role.IsImpostorTeamV2())) text = "Impostor";
@@ -93,6 +93,7 @@ internal class Oracle : RoleBase
                 {
                     if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
                     else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
+                    else if (target.Is(CustomRoles.Narc)) text = "Crewmate";
                     else if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
                     else if (target.Is(Custom_Team.Coven)) text = "Coven";
