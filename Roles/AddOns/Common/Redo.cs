@@ -47,6 +47,7 @@ public class Redo : IAddon
     }
     public static void AfterMeetingTasks()
     {
+        if (!switchPlayer.IsAlive()) return;
         if (isSwitching)
         {
             switchPlayer.GetRoleClass()?.OnRemove(switchPlayer.PlayerId);
