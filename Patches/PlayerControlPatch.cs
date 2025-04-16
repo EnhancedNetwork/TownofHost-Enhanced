@@ -1578,6 +1578,10 @@ class CoEnterVentPatch
         {
             return true;
         }
+        if (Options.CurrentGameMode == CustomGameMode.UltimateTeam)
+        {
+            return false;
+        }
 
         if (KillTimerManager.AllKillTimers.TryGetValue(__instance.myPlayer.PlayerId, out var timer))
         {
