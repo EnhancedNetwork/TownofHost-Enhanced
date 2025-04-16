@@ -203,7 +203,7 @@ internal class Nemesis : RoleBase
         foreach (var player in Main.AllAlivePlayerControls)
         {
             var role = player.GetCustomRole();
-            if (role != CustomRoles.Nemesis && role.IsImpostor()) LivingImpostorsNum++;
+            if (role != CustomRoles.Nemesis && role.IsImpostor() && !player.Is(CustomRoles.Narc)) LivingImpostorsNum++;
         }
 
         // if Nemesis is Narc, they can use kill buttom when all Sheriffs are dead
