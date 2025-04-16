@@ -4060,6 +4060,8 @@
   "CopInfo": "Capture all <color=#ff8c00>Robbers</color> to win",
   "CopInfoLong": "As a Cop, use your Kill button to capture all Robbers before they finish their tasks. When caught, Robbers freeze in place.\n\nYou can trigger a random ability with the Shapeshift button.\nUse <b>/ability cop</b> to check all the abilities.\n\nTrack down the Robbers and secure your win!",
   "WinnerRoleText.Cop": "Cops Win!",
+  "WinnerRoleText.Red": "Red Team Wins!",
+  "WinnerRoleText.Blue": "Blue Team Wins!",
   "C&R_NumCops": "Number of Cops",
   "C&R_CopAbilityTriggerChance": "Cop Ability trigger chance",
   "C&R_CaptureCooldown": "Capture Cooldown",
@@ -4651,12 +4653,24 @@
   "DestroyCooldown": "Destroy cooldown",
   "WarningTimeBeforeDestroying": "Warning time before destroying",
   "DeathReason.Destroyed": "Destroyed",
-  
+
   "Constable": "Constable",
   "ConstableInfo": "Create bonus meetings for extra power",
   "ConstableInfoLong": "The Constable can vote themself to create a bonus meeting after the current one. The Constable will receive a certain amount of extra votes during a Tribunal. More Tribunals can be called during a Tribunal.",
   "TribunalVotes354": "Extra votes during Tribunals",
   "ConstableOutOfAbility": "No more ability uses! Do tasks to be able to call Tribunals",
   "TribunalStart": "The Constable has called a Tribunal! A second meeting will take place.",
-  "TribunalTitle": "A Tribunal has been called!"
+  "TribunalTitle": "A Tribunal has been called!",
+
+  "UltimateTeam": "Ultimate Team",
+  "ModeUltimateTeam": "Gamemode: Ultimate Team",
+  "ModeDescribe.UltimateTeam": "In the Ultimate Team game mode, there are 2 teams (color coded to Red and Blue) who must eliminate the entire other team to win. If you have enough lives left, you will be revived after your killer is killed. If you run out of lives, you die permanently. If the timer runs out, the team with the most alive players wins.",
+  "Red": "Red Team",
+  "Blue": "Blue Team",
+  "RedInfo": "You are on the Red Team",
+  "BlueInfo": "You are on the Blue Team",
+  "RedInfoLong": "You are on the Red Team",
+  "BlueInfoLong": "You are on the Blue Team",
+  "UltimateInfo": "Eliminate the other team to win",
+  "PlayerLives": "Maximum player lives"
 }

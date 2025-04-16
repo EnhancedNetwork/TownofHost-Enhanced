@@ -603,7 +603,7 @@ public static class Utils
 
         if (States.Disconnected) return false;
 
-        if (Options.CurrentGameMode == CustomGameMode.FFA) return false;
+        if (Options.CurrentGameMode == CustomGameMode.FFA || Options.CurrentGameMode == CustomGameMode.UltimateTeam) return false;
         if (playerData.IsDead && Options.GhostIgnoreTasks.GetBool()) hasTasks = false;
 
         if (GameStates.IsHideNSeek) return hasTasks;
@@ -691,7 +691,10 @@ public static class Utils
                     break;
                 case CustomGameMode.CandR:
                     ProgressText.Append(CopsAndRobbersManager.GetProgressText(playerId));
-                    break;    
+                    break;
+                case CustomGameMode.UltimateTeam:
+                    ProgressText.Append(UltimateTeam.GetProgressText(playerId));
+                    break;
                 default:
                     ProgressText.Append(playerId.GetRoleClassById()?.GetProgressText(playerId, comms));
 
@@ -1658,8 +1661,10 @@ public static class Utils
             }
             if (Options.CurrentGameMode == CustomGameMode.FFA)
                 name = $"<color=#00ffff><size=1.7>{GetString("ModeFFA")}</size></color>\r\n" + name;
-           else if (Options.CurrentGameMode == CustomGameMode.CandR)
+            else if (Options.CurrentGameMode == CustomGameMode.CandR)
                 name = $"<color=#007bff><size=1.7>{GetString("ModeC&R")}</size></color>\r\n" + name;
+            else if (Options.CurrentGameMode == CustomGameMode.UltimateTeam)
+                name = $"<color=#16c910><size=1.7>{GetString("ModeUltimateTeam")}</size></color>\r\n" + name;
         }
 
         var modtag = "";

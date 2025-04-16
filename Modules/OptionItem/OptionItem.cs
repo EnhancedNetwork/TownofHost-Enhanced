@@ -28,7 +28,8 @@ public abstract class OptionItem
     public OptionFormat ValueFormat { get; protected set; }
     public CustomGameMode GameMode { get; protected set; }
     public CustomGameMode HideOptionInFFA { get; protected set; }
-        public CustomGameMode HideOptionInCandR { get; protected set; }
+    public CustomGameMode HideOptionInCandR { get; protected set; }
+    public CustomGameMode HideOptionInUltimate { get; protected set; }
     public CustomGameMode HideOptionInHnS { get; protected set; }
     public bool IsHeader { get; protected set; }
     public bool IsHidden { get; protected set; }
@@ -131,7 +132,8 @@ public abstract class OptionItem
     public OptionItem SetHidden(bool value) => Do(i => i.IsHidden = value);
     public OptionItem SetText(bool value) => Do(i => i.IsText = value);
     public OptionItem HideInFFA(CustomGameMode value = CustomGameMode.FFA) => Do(i => i.HideOptionInFFA = value);
-       public OptionItem HideInCandR(CustomGameMode value = CustomGameMode.CandR) => Do(i => i.HideOptionInCandR = value); //C&R
+    public OptionItem HideInUltimate(CustomGameMode value = CustomGameMode.UltimateTeam) => Do(i => i.HideOptionInUltimate = value);
+    public OptionItem HideInCandR(CustomGameMode value = CustomGameMode.CandR) => Do(i => i.HideOptionInCandR = value); //C&R
     public OptionItem HideInHnS(CustomGameMode value = CustomGameMode.HidenSeekTOHO) => Do(i => i.HideOptionInHnS = value);
 
     public OptionItem SetParent(OptionItem parent) => Do(i =>
@@ -183,7 +185,7 @@ public abstract class OptionItem
     // Deprecated IsHidden function
     public virtual bool IsHiddenOn(CustomGameMode mode)
     {
-            return IsHidden || this.Parent?.IsHiddenOn(Options.CurrentGameMode) == true || (HideOptionInCandR != CustomGameMode.All && HideOptionInCandR == mode) || (HideOptionInFFA != CustomGameMode.All && HideOptionInFFA == mode) || (HideOptionInHnS != CustomGameMode.All && HideOptionInHnS == mode) || (GameMode != CustomGameMode.All && GameMode != mode);
+            return IsHidden || this.Parent?.IsHiddenOn(Options.CurrentGameMode) == true || (HideOptionInCandR != CustomGameMode.All && HideOptionInCandR == mode) || (HideOptionInUltimate != CustomGameMode.All && HideOptionInUltimate == mode) || (HideOptionInFFA != CustomGameMode.All && HideOptionInFFA == mode) || (HideOptionInHnS != CustomGameMode.All && HideOptionInHnS == mode) || (GameMode != CustomGameMode.All && GameMode != mode);
     }
     public string ApplyFormat(string value)
     {

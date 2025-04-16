@@ -2094,7 +2094,10 @@ internal class ChatCommands
             case CustomGameMode.FFA:
                 Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
                 return;
-                  case CustomGameMode.CandR:
+            case CustomGameMode.UltimateTeam:
+                Utils.SendMessage(GetString("ModeDescribe.UltimateTeam"), playerId);
+                return;
+            case CustomGameMode.CandR:
                 var copName = GetString(CustomRoles.Cop.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
                 var robberName = GetString(CustomRoles.Robber.ToString()).ToLower().Trim().TrimStart('*').Replace(" ", string.Empty);
                 var Conf1 = new StringBuilder();

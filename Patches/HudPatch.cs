@@ -79,7 +79,7 @@ class HudManagerUpdatePatch
                 }
                 LowerInfoText.text = FFAManager.GetHudText();
             }
-                      else if (Options.CurrentGameMode == CustomGameMode.CandR)
+            else if (Options.CurrentGameMode == CustomGameMode.CandR)
             {
                 if (LowerInfoText == null)
                 {
@@ -98,7 +98,26 @@ class HudManagerUpdatePatch
                 }
                 LowerInfoText.text = CopsAndRobbersManager.GetHudText();
             }
-            
+            else if (Options.CurrentGameMode == CustomGameMode.UltimateTeam)
+            {
+                if (LowerInfoText == null)
+                {
+                    TempLowerInfoText = new GameObject("CountdownText");
+                    TempLowerInfoText.transform.position = new Vector3(0f, -2f, 1f);
+                    LowerInfoText = TempLowerInfoText.AddComponent<TextMeshPro>();
+                    LowerInfoText.alignment = TextAlignmentOptions.Center;
+                    LowerInfoText.transform.parent = __instance.transform;
+                    LowerInfoText.transform.localPosition = new Vector3(0, -2f, 0);
+                    LowerInfoText.overflowMode = TextOverflowModes.Overflow;
+                    LowerInfoText.enableWordWrapping = false;
+                    LowerInfoText.color = Color.white;
+                    LowerInfoText.outlineColor = Color.black;
+                    LowerInfoText.outlineWidth = 20000000f;
+                    LowerInfoText.fontSize = 2f;
+                }
+                LowerInfoText.text = UltimateTeam.GetHudText();
+            }
+
             if (player.IsAlive())
             {
                 // Set default

@@ -14,6 +14,7 @@ public enum CustomGameMode
     Standard = 0x01,
     FFA = 0x02,
     CandR = 0x03,
+    UltimateTeam = 0x04,
     HidenSeekTOHO = 0x08, // HidenSeekTOHO must be after other Gamemodes
     All = int.MaxValue
 }
@@ -50,7 +51,8 @@ public static class Options
         {
             1 => CustomGameMode.FFA,
             2 => CustomGameMode.CandR,
-            3 => CustomGameMode.HidenSeekTOHO, // HidenSeekTOHO must be after other Gamemodes
+            3 => CustomGameMode.UltimateTeam,
+            4 => CustomGameMode.HidenSeekTOHO, // HidenSeekTOHO must be after other Gamemodes
             _ => CustomGameMode.Standard
         };
     public static int GetGameModeInt(CustomGameMode mode)
@@ -67,7 +69,7 @@ public static class Options
         "Standard",
         "FFA",
         "C&R",
-
+        "UltimateTeam",
 
         "Hide&SeekTOHO", // HidenSeekTOHO must be after other Gamemodes
     ];
@@ -1347,8 +1349,11 @@ public static class Options
         //FFA
         FFAManager.SetupCustomOption();
 
-     //C&R
+        //C&R
         CopsAndRobbersManager.SetupCustomOption();
+
+        //Ultimate Team
+        UltimateTeam.SetupCustomOption();
 
         // Hide & Seek
         TextOptionItem.Create(10000055, "MenuTitle.Hide&Seek", TabGroup.ModSettings)
@@ -1772,6 +1777,7 @@ public static class Options
         //Disable Short Tasks
         DisableShortTasks = BooleanOptionItem.Create(60594, "DisableShortTasks", false, TabGroup.ModSettings, false)
             .HideInFFA()
+            .HideInUltimate()
             .SetHeader(true)
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableCleanVent = BooleanOptionItem.Create(60595, "DisableCleanVent", false, TabGroup.ModSettings, false)
@@ -1855,6 +1861,7 @@ public static class Options
         //Disable Common Tasks
         DisableCommonTasks = BooleanOptionItem.Create(60627, "DisableCommonTasks", false, TabGroup.ModSettings, false)
             .HideInFFA()
+            .HideInUltimate()
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableSwipeCard = BooleanOptionItem.Create(60628, "DisableSwipeCardTask", false, TabGroup.ModSettings, false)
             .SetParent(DisableCommonTasks);
@@ -1877,6 +1884,7 @@ public static class Options
         //Disable Long Tasks
         DisableLongTasks = BooleanOptionItem.Create(60640, "DisableLongTasks", false, TabGroup.ModSettings, false)
             .HideInFFA()
+            .HideInUltimate()
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableSubmitScan = BooleanOptionItem.Create(60641, "DisableSubmitScanTask", false, TabGroup.ModSettings, false)
             .SetParent(DisableLongTasks);
@@ -1928,6 +1936,7 @@ public static class Options
         //Disable Divert Power, Weather Nodes and etc. situational Tasks
         DisableOtherTasks = BooleanOptionItem.Create(60665, "DisableOtherTasks", false, TabGroup.ModSettings, false)
             .HideInFFA()
+            .HideInUltimate()
             .SetColor(new Color32(239, 89, 175, byte.MaxValue));
         DisableUploadData = BooleanOptionItem.Create(60666, "DisableUploadDataTask", false, TabGroup.ModSettings, false)
             .SetParent(DisableOtherTasks);
@@ -2004,12 +2013,14 @@ public static class Options
         // 其它设定
         TextOptionItem.Create(10000031, "MenuTitle.Other", TabGroup.ModSettings)
             .HideInFFA()
+            .HideInUltimate()
             .HideInCandR()
             .SetColor(new Color32(193, 255, 209, byte.MaxValue));
         // 梯子摔死
         LadderDeath = BooleanOptionItem.Create(60760, "LadderDeath", false, TabGroup.ModSettings, false)
             .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .HideInFFA()
+            .HideInUltimate()
             .HideInCandR();
         LadderDeathChance = StringOptionItem.Create(60761, "LadderDeathChance", EnumHelper.GetAllNames<SpawnChance>()[1..], 0, TabGroup.ModSettings, false)
             .SetParent(LadderDeath);
@@ -2103,6 +2114,7 @@ public static class Options
 
         TextOptionItem.Create(10000033, "MenuTitle.GameModifiers", TabGroup.ModSettings)
            .HideInFFA()
+           .HideInUltimate()
            .HideInCandR()
            .SetColor(new Color32(168, 50, 62, byte.MaxValue));
         EnableAnomalies = BooleanOptionItem.Create(60890, "EnableAnomalies", false, TabGroup.ModSettings, false)

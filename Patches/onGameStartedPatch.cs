@@ -231,8 +231,10 @@ internal class ChangeRoleSettings
 
             //FFA
             FFAManager.Init();
-             //C&R
+            //C&R
             CopsAndRobbersManager.Init();
+            //Ultimate Team
+            UltimateTeam.Init();
 
             FallFromLadder.Reset();
             CustomWinnerHolder.Reset();
@@ -439,7 +441,13 @@ internal class StartGameHostPatch
                         pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
                     }
                     goto EndOfSelectRolePatch;
-                                case CustomGameMode.CandR:
+                case CustomGameMode.UltimateTeam:
+                    foreach (var pair in RoleAssign.RoleResult)
+                    {
+                        pair.Key.GetPlayer()?.RpcSetCustomRole(pair.Value, checkAddons: false);
+                    }
+                    goto EndOfSelectRolePatch;
+                case CustomGameMode.CandR:
                     foreach (var pair in RoleAssign.RoleResult)
                     {
                         if (pair.Value is CustomRoles.Robber) AssignCustomRole(pair.Value, Utils.GetPlayerById(pair.Key));
@@ -517,8 +525,11 @@ internal class StartGameHostPatch
                 case CustomGameMode.FFA:
                     GameEndCheckerForNormal.SetPredicateToFFA();
                     break;
-                 case CustomGameMode.CandR:
+                case CustomGameMode.CandR:
                     GameEndCheckerForNormal.SetPredicateToCandR();
+                    break;
+                case CustomGameMode.UltimateTeam:
+                    GameEndCheckerForNormal.SetPredicateToUltimateTeam();
                     break;
             }
 

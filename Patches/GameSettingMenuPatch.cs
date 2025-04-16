@@ -32,7 +32,8 @@ public class GameSettingMenuPatch
         {
             CustomGameMode.HidenSeekTOHO => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
             CustomGameMode.FFA => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
-                 CustomGameMode.CandR => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
+            CustomGameMode.UltimateTeam => Enum.GetValues<TabGroup>().Skip(2).ToArray(),
+            CustomGameMode.CandR => Enum.GetValues<TabGroup>().Skip(3).ToArray(),
             _ => []
         };
 

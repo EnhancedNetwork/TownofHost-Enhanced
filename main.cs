@@ -980,6 +980,10 @@ public enum CustomRoles
     Cop,
     Robber,
 
+    // UT
+    Red,
+    Blue,
+
     //GM
     GM,
 
@@ -1164,7 +1168,9 @@ public enum CustomWinner
     Volatile = CustomRoles.Volatile,
     Gunslinger = CustomRoles.Gunslinger,
     Mutant = CustomRoles.Mutant,
-    Godzilla = CustomRoles.Godzilla
+    Godzilla = CustomRoles.Godzilla,
+    Red = CustomRoles.Red,
+    Blue = CustomRoles.Blue
 }
 [Obfuscation(Exclude = true)]
 public enum AdditionalWinners

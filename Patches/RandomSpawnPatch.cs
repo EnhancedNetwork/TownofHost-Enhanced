@@ -179,6 +179,7 @@ class RandomSpawn
     {
         RandomSpawnMode = BooleanOptionItem.Create(60470, RandomSpawnOpt.RandomSpawnMode, false, TabGroup.ModSettings, false)
             .HideInFFA()
+            .HideInUltimate()
             .SetColor(new Color32(19, 188, 233, byte.MaxValue));
         SpawnInFirstRound = BooleanOptionItem.Create(60476, RandomSpawnOpt.RandomSpawn_SpawnInFirstRound, true, TabGroup.ModSettings, false)
             .SetParent(RandomSpawnMode);

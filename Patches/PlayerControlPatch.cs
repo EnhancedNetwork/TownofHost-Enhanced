@@ -210,11 +210,15 @@ class CheckMurderPatch
             FFAManager.OnPlayerAttack(killer, target);
             return false;
         }
-             //C&R
+        //C&R
         if (Options.CurrentGameMode == CustomGameMode.CandR)
         {
             CopsAndRobbersManager.OnCopAttack(killer, target);
             return false;
+        }
+        if (Options.CurrentGameMode == CustomGameMode.UltimateTeam)
+        {
+            return UltimateTeam.OnTag(killer, target);
         }
 
         //If Player hacked by Glitch
@@ -749,7 +753,7 @@ class ReportDeadBodyPatch
             return false;
         }
         if (Options.DisableMeeting.GetBool()) return false;
-             if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.CandR) return false;
+             if (Options.CurrentGameMode is CustomGameMode.FFA or CustomGameMode.CandR or CustomGameMode.UltimateTeam) return false;
 
         if (!CanReport[__instance.PlayerId])
         {
@@ -1419,7 +1423,7 @@ class FixedUpdateInNormalGamePatch
                     case CustomGameMode.FFA:
                         Suffix.Append(FFAManager.GetPlayerArrow(seer, target));
                         break;
-                                          case CustomGameMode.CandR:
+                    case CustomGameMode.CandR:
                         Suffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, target));
                         break;
                 }

@@ -29,7 +29,7 @@ class CheckTaskCompletionPatch
 {
     public static bool Prefix(ref bool __result)
     {
-        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.FFA)
+        if (Options.DisableTaskWin.GetBool() || Options.NoGameEnd.GetBool() || TaskState.InitialTotalTasks == 0 || Options.CurrentGameMode == CustomGameMode.UltimateTeam || Options.CurrentGameMode == CustomGameMode.FFA)
         {
             __result = false;
             return false;
@@ -60,14 +60,15 @@ class GameEndCheckerForNormal
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-                    case CustomGameMode.CandR:
+            case CustomGameMode.CandR:
+            case CustomGameMode.UltimateTeam:
 
                 if (WinnerIds.Count > 0 || WinnerTeam != CustomWinner.Default)
                 {
-                ShipStatus.Instance.enabled = false;
-                StartEndGame(reason);
-                predicate = null;
-            }
+                    ShipStatus.Instance.enabled = false;
+                    StartEndGame(reason);
+                    predicate = null;
+                }
             return false;
         }
 
@@ -639,7 +640,8 @@ class GameEndCheckerForNormal
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
     public static void SetPredicateToFFA() => predicate = new FFAGameEndPredicate();
-  public static void SetPredicateToCandR() => predicate = new CandRGameEndPredicate(); //C&R
+    public static void SetPredicateToCandR() => predicate = new CandRGameEndPredicate(); //C&R
+    public static void SetPredicateToUltimateTeam() => predicate = new UltimateTeamGameEndPredicate();
 
     // ===== Check Game End =====
     // For Normal Games
@@ -857,6 +859,68 @@ class CandRGameEndPredicate : GameEndPredicate
             Logger.Info("Game end because robbers completed all tasks", "C&R");
             return true;
         }
+        return false;
+    }
+}
+
+// For Ultimate Team games
+class UltimateTeamGameEndPredicate : GameEndPredicate
+{
+    public override bool CheckForEndGame(out GameOverReason reason)
+    {
+        reason = GameOverReason.ImpostorsByKill;
+        if (CheckGameEndByLivingTeam(out reason)) return true;
+        return false;
+    }
+    public static bool CheckGameEndByLivingTeam(out  GameOverReason reason)
+    {
+        bool redAlive = false;
+        bool blueAlive = false;
+        reason = GameOverReason.ImpostorsByKill;
+        if (UltimateTeam.RoundTime <= 0)
+        {
+            if (UltimateTeam.RedTeam.Count < UltimateTeam.BlueTeam.Count)
+            {
+                ResetAndSetWinner(CustomWinner.Blue);
+                WinnerIds = [.. UltimateTeam.BlueTeam];
+            }
+            else if (UltimateTeam.RedTeam.Count == UltimateTeam.BlueTeam.Count)
+            {
+                ResetAndSetWinner(CustomWinner.None);
+                WinnerIds = null;
+            }
+            else
+            {
+                ResetAndSetWinner(CustomWinner.Red);
+                WinnerIds = [.. UltimateTeam.RedTeam];
+            }
+
+            Main.DoBlockNameChange = true;
+
+            return true;
+        }
+
+        foreach (var player in Main.AllAlivePlayerControls)
+        {
+            if (player.GetCustomRole() == CustomRoles.Red) redAlive = true;
+            if (player.GetCustomRole() == CustomRoles.Blue) blueAlive = true;
+        }
+
+        if (!redAlive)
+        {
+            ResetAndSetWinner(CustomWinner.Blue);
+            WinnerIds = [.. UltimateTeam.BlueTeam];
+            Logger.Info("Game end because red is dead", "Ultimate Team");
+            return true;
+        }
+        if (!blueAlive)
+        {
+            ResetAndSetWinner(CustomWinner.Red);
+            WinnerIds = [.. UltimateTeam.RedTeam];
+            Logger.Info("Game end because blue is dead", "Ultimate Team");
+            return true;
+        }
+
         return false;
     }
 }

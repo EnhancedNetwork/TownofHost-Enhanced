@@ -74,7 +74,8 @@ class CoBeginPatch
         RPC.RpcVersionCheck();
 
         FFAManager.SetData();
-               CopsAndRobbersManager.SetData();
+        CopsAndRobbersManager.SetData();
+        UltimateTeam.SetData();
     }
 }
 [HarmonyPatch(typeof(IntroCutscene), nameof(IntroCutscene.ShowRole))]
@@ -135,14 +136,21 @@ class SetUpRoleTextPatch
                     __instance.RoleBlurbText.color = color;
                     __instance.RoleBlurbText.text = GetString("KillerInfo");
                     break;
-                                   case CustomGameMode.CandR: //C&R
+                case CustomGameMode.CandR: //C&R
                     __instance.YouAreText.color = Utils.GetRoleColor(role);
                     __instance.RoleText.text = Utils.GetRoleName(role);
                     __instance.RoleText.color = Utils.GetRoleColor(role);
                     __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
                     __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
                     break;
-                
+                case CustomGameMode.UltimateTeam: //C&R
+                    __instance.YouAreText.color = Utils.GetRoleColor(role);
+                    __instance.RoleText.text = Utils.GetRoleName(role);
+                    __instance.RoleText.color = Utils.GetRoleColor(role);
+                    __instance.RoleBlurbText.color = Utils.GetRoleColor(role);
+                    __instance.RoleBlurbText.text = localPlayer.GetRoleInfo();
+                    break;
+
                 default:
                     if (!role.IsVanilla())
                     {
@@ -442,13 +450,12 @@ class BeginCrewmatePatch
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("KillerInfo");
                 break;
-                  case CustomGameMode.CandR: //C&R
+            case CustomGameMode.CandR: //C&R
                 __instance.TeamTitle.text = $"<size=75%>{GetString("C&R")}</size>";
                 __instance.ImpostorText.gameObject.SetActive(true);
                 __instance.ImpostorText.text = GetString("C&RShortInfo");
                 __instance.TeamTitle.color = Color.blue;
                 __instance.BackgroundBar.material.color = Color.blue;
-                StartFadeIntro(__instance, Color.blue, Color.red, changeInterval: 400);
                 switch (role)
                 {
                     case CustomRoles.Cop:
@@ -459,7 +466,14 @@ class BeginCrewmatePatch
                         break;
                 }
                 break;
-            
+            case CustomGameMode.UltimateTeam:
+                __instance.TeamTitle.text = GetString("UltimateTeam"); ;
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(role);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                __instance.ImpostorText.gameObject.SetActive(true);
+                __instance.ImpostorText.text = GetString("UltimateInfo");
+                break;
+
             default:
                 switch (role.GetCustomRoleTeam())
                 {
@@ -891,7 +905,7 @@ class IntroCutsceneDestroyPatch
                 {
                     pc.RpcResetAbilityCooldown();
 
-                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA)
+                    if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.FFA && Options.CurrentGameMode != CustomGameMode.UltimateTeam)
                     {
                         _ = new LateTask(() =>
                         {
@@ -940,13 +954,15 @@ class IntroCutsceneDestroyPatch
             bool chatVisible = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
+                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
+                CustomGameMode.UltimateTeam => UltimateTeam.ShowChatInGame.GetBool(),
                 _ => false
             };
             bool shouldAntiBlackOut = Options.CurrentGameMode switch
             {
                 CustomGameMode.FFA => FFAManager.ShowChatInGame.GetBool(),
-                                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
+                CustomGameMode.CandR => CopsAndRobbersManager.ShowChatInGame.GetBool(),
+                CustomGameMode.UltimateTeam => UltimateTeam.ShowChatInGame.GetBool(),
                 _ => false
             };
             try

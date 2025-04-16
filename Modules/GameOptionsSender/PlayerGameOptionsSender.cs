@@ -98,8 +98,13 @@ public class PlayerGameOptionsSender(PlayerControl player) : GameOptionsSender
                     opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
                 }
                 break;
-          case CustomGameMode.CandR:
+            case CustomGameMode.CandR:
                 CopsAndRobbersManager.ApplyGameOptions(ref opt, player);
+                break;
+            case CustomGameMode.UltimateTeam:
+                opt.SetVision(true);
+                opt.SetFloat(FloatOptionNames.CrewLightMod, 1.25f);
+                opt.SetFloat(FloatOptionNames.ImpostorLightMod, 1.25f);
                 break;
         }
 
