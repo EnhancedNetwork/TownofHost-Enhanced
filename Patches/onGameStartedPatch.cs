@@ -752,7 +752,7 @@ public static class RpcSetRoleReplacer
     public static Dictionary<byte, CustomRpcSender> Senders = [];
     public static Dictionary<byte, RoleTypes> StoragedData = [];
     public static Dictionary<(byte seerId, byte targetId), (RoleTypes roleType, CustomRoles customRole)> RoleMap = [];
-    // List of Senders that do not require additional writing because SetRoleRpc has already been written by another process such as Position Desync
+    
     public static List<CustomRpcSender> OverriddenSenderList = [];
     public static void Initialize()
     {
