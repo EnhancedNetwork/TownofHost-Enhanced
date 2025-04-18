@@ -31,9 +31,9 @@ internal class Cultist : RoleBase
     [Obfuscation(Exclude = true)]
     private enum CharmedCountModeSelectList
     {
-        Cultist_CharmedCountMode_None,
+        CountMode_None,
         Cultist_CharmedCountMode_Cultist,
-        Cultist_CharmedCountMode_Original
+        CountMode_Original
     }
 
     public override void SetupCustomOption()

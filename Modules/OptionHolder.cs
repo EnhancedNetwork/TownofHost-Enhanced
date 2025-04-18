@@ -131,7 +131,8 @@ public static class Options
         "CamouflageMode.ryuk",
         "CamouflageMode.Gurge44",
         "CamouflageMode.TommyXL",
-        "CamouflageMode.Sarha"
+        "CamouflageMode.Sarha",
+        "CamouflageMode.Marg"
     ];
     [Obfuscation(Exclude = true)]
     public enum QuickChatSpamMode
@@ -236,7 +237,6 @@ public static class Options
     public static OptionItem EnableVoteCommand;
     public static OptionItem ShouldVoteCmdsSpamChat;
 
-    //public static OptionItem ShowLobbyCode;
     public static OptionItem LowLoadMode;
     public static OptionItem LowLoadDelayUpdateNames;
     public static OptionItem EndWhenPlayerBug;
@@ -1211,13 +1211,6 @@ public static class Options
         /*TimeForReminder = IntegerOptionItem.Create(60131, "TimeForReminder", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
             .SetParent(TimeForReminder)
             .SetValueFormat(OptionFormat.Seconds); */
-        /*AutoKickStopWords = BooleanOptionItem.Create(60160, "AutoKickStopWords", false, TabGroup.SystemSettings, false);
-        AutoKickStopWordsTimes = IntegerOptionItem.Create(60161, "AutoKickStopWordsTimes", new(0, 99, 1), 3, TabGroup.SystemSettings, false)
-            .SetParent(AutoKickStopWords)
-            .SetValueFormat(OptionFormat.Times);
-        AutoKickStopWordsAsBan = BooleanOptionItem.Create(60162, "AutoKickStopWordsAsBan", false, TabGroup.SystemSettings, false)
-            .SetParent(AutoKickStopWords);
-        AutoWarnStopWords = BooleanOptionItem.Create(60163, "AutoWarnStopWords", false, TabGroup.SystemSettings, false); */
         MinWaitAutoStart = FloatOptionItem.Create(60170, "MinWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false).SetHeader(true);
         MaxWaitAutoStart = FloatOptionItem.Create(60180, "MaxWaitAutoStart", new(0f, 10f, 0.5f), 1.5f, TabGroup.SystemSettings, false);
         PlayerAutoStart = IntegerOptionItem.Create(60190, "PlayerAutoStart", new(1, 100, 1), 14, TabGroup.SystemSettings, false)
@@ -1240,8 +1233,6 @@ public static class Options
         AutoPlayAgainCountdown = IntegerOptionItem.Create(60211, "AutoPlayAgainCountdown", new(1, 20, 1), 10, TabGroup.SystemSettings, false)
             .SetParent(AutoPlayAgain)
             .SetValueFormat(OptionFormat.Seconds);
-        /*ShowLobbyCode = BooleanOptionItem.Create(60220, "ShowLobbyCode", true, TabGroup.SystemSettings, false)
-            .SetColor(Color.blue); */
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
@@ -1273,7 +1264,6 @@ public static class Options
         HideHostText = BooleanOptionItem.Create(60311, "HideHostText", false, TabGroup.SystemSettings, false);
         HideAllTagsAndText = BooleanOptionItem.Create(60312, "HideAllTagsAndText", false, TabGroup.SystemSettings, false);
         HideGameSettings = BooleanOptionItem.Create(60310, "HideGameSettings", false, TabGroup.SystemSettings, false);
-        //DIYGameSettings = BooleanOptionItem.Create(60320, "DIYGameSettings", false, TabGroup.SystemSettings, false);
         PlayerCanSetColor = BooleanOptionItem.Create(60330, "PlayerCanSetColor", false, TabGroup.SystemSettings, false);
         PlayerCanUseQuitCommand = BooleanOptionItem.Create(60331, "PlayerCanUseQuitCommand", false, TabGroup.SystemSettings, false);
         PlayerCanSetName = BooleanOptionItem.Create(60332, "PlayerCanSetName", false, TabGroup.SystemSettings, false);
@@ -1671,16 +1661,16 @@ public static class Options
         DisableSkeldDevices = BooleanOptionItem.Create(60571, "DisableSkeldDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableSkeldAdmin = BooleanOptionItem.Create(60572, "DisableSkeldAdmin", false, TabGroup.ModSettings, false)
+        DisableSkeldAdmin = BooleanOptionItem.Create(60572, "DisableAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableSkeldDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableSkeldCamera = BooleanOptionItem.Create(60573, "DisableSkeldCamera", false, TabGroup.ModSettings, false)
+        DisableSkeldCamera = BooleanOptionItem.Create(60573, "DisableCamera", false, TabGroup.ModSettings, false)
             .SetParent(DisableSkeldDevices);
         //.SetGameMode(CustomGameMode.Standard);
         DisableMiraHQDevices = BooleanOptionItem.Create(60574, "DisableMiraHQDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableMiraHQAdmin = BooleanOptionItem.Create(60575, "DisableMiraHQAdmin", false, TabGroup.ModSettings, false)
+        DisableMiraHQAdmin = BooleanOptionItem.Create(60575, "DisableAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableMiraHQDevices);
         //.SetGameMode(CustomGameMode.Standard);
         DisableMiraHQDoorLog = BooleanOptionItem.Create(60576, "DisableMiraHQDoorLog", false, TabGroup.ModSettings, false)
@@ -1689,13 +1679,13 @@ public static class Options
         DisablePolusDevices = BooleanOptionItem.Create(60577, "DisablePolusDevices", false, TabGroup.ModSettings, false)
             .SetParent(DisableDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusAdmin = BooleanOptionItem.Create(60578, "DisablePolusAdmin", false, TabGroup.ModSettings, false)
+        DisablePolusAdmin = BooleanOptionItem.Create(60578, "DisableAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisablePolusDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusCamera = BooleanOptionItem.Create(60579, "DisablePolusCamera", false, TabGroup.ModSettings, false)
+        DisablePolusCamera = BooleanOptionItem.Create(60579, "DisableCamera", false, TabGroup.ModSettings, false)
             .SetParent(DisablePolusDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisablePolusVital = BooleanOptionItem.Create(60580, "DisablePolusVital", false, TabGroup.ModSettings, false)
+        DisablePolusVital = BooleanOptionItem.Create(60580, "DisableVital", false, TabGroup.ModSettings, false)
             .SetParent(DisablePolusDevices);
         //.SetGameMode(CustomGameMode.Standard);
         DisableAirshipDevices = BooleanOptionItem.Create(60581, "DisableAirshipDevices", false, TabGroup.ModSettings, false)
@@ -1707,10 +1697,10 @@ public static class Options
         DisableAirshipRecordsAdmin = BooleanOptionItem.Create(60583, "DisableAirshipRecordsAdmin", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipCamera = BooleanOptionItem.Create(60584, "DisableAirshipCamera", false, TabGroup.ModSettings, false)
+        DisableAirshipCamera = BooleanOptionItem.Create(60584, "DisableCamera", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableAirshipVital = BooleanOptionItem.Create(60585, "DisableAirshipVital", false, TabGroup.ModSettings, false)
+        DisableAirshipVital = BooleanOptionItem.Create(60585, "DisableVital", false, TabGroup.ModSettings, false)
             .SetParent(DisableAirshipDevices);
         //.SetGameMode(CustomGameMode.Standard);
         DisableFungleDevices = BooleanOptionItem.Create(60586, "DisableFungleDevices", false, TabGroup.ModSettings, false)
@@ -1719,7 +1709,7 @@ public static class Options
         DisableFungleBinoculars = BooleanOptionItem.Create(60587, "DisableFungleBinoculars", false, TabGroup.ModSettings, false)
             .SetParent(DisableFungleDevices);
         //.SetGameMode(CustomGameMode.Standard);
-        DisableFungleVital = BooleanOptionItem.Create(60588, "DisableFungleVital", false, TabGroup.ModSettings, false)
+        DisableFungleVital = BooleanOptionItem.Create(60588, "DisableVital", false, TabGroup.ModSettings, false)
             .SetParent(DisableFungleDevices);
         //.SetGameMode(CustomGameMode.Standard);
         DisableDevicesIgnoreConditions = BooleanOptionItem.Create(60589, "IgnoreConditions", false, TabGroup.ModSettings, false)
