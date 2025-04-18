@@ -244,6 +244,14 @@ internal class Necromancer : CovenManager
         }
         else canUseAbility = true;
     }
+    public static string NecromancerReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (Main.PlayerStates[seen.PlayerId].IsNecromancer && !seen.Is(CustomRoles.Necromancer) && !seer.IsAlive() && seen.IsAlive())
+        {
+            return $"<size=1.5><i>{CustomRoles.Necromancer.ToColoredString()}</i></size>";
+        }
+        return string.Empty;
+    }
     public static void UnAfterMeetingTasks()
     {
         AbilityTimer = 0;
