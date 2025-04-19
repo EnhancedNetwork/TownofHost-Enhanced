@@ -1865,7 +1865,7 @@
   "JudgeCanTrialInfected": "可以審判<color=#7B8968>被感染</color>的玩家",
   "JudgeCanTrialContagious": "可以審判<color=#2E8B57>被傳染</color>的玩家",
   "JudgeTryHideMsg": "嘗試混淆法官指令",
-  "JudgeTrialLimitPerMeeting": "每次會議謀殺次數上限",
+  "JudgeTrialLimitPerMeeting": "每次會議審判次數上限",
   "JudgeTrialLimitPerGame": "每局遊戲最大審判次數",
   "JudgeCanTrialMadmate": "可以審判<color=#ff1919>叛徒</color>",
   "JudgeCanTrialCharmed": "可以審判被<color=#cf6acd>魅惑</color>的玩家",
