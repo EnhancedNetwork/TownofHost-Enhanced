@@ -150,14 +150,23 @@ internal class Survivalist : RoleBase
         return string.Empty;
     }
 
-    public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo deadBody, PlayerControl killer)
     {
         if (InShowdown)
         {
-            // End showdown if meeting is called
-            EndShowdown(false);
+            return false;
         }
+        else return base.OnCheckReportDeadBody(reporter, deadBody, killer);
     }
+    public override bool OnCheckStartMeeting(PlayerControl reporter)
+    {
+        if (InShowdown)
+        {
+            return false;
+        }
+        else return base.OnCheckStartMeeting(reporter);
+    }
+
 
     // This method should be called from CheckGameEndPatch when game is about to end
     public static bool CheckForShowdown()
