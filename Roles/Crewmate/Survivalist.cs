@@ -74,11 +74,11 @@ internal class Survivalist : RoleBase
         {
             if (pc.Is(CustomRoles.Survivalist))
             {
-                pc.Notify(GetString("SurvivalistShowdownStart"), ShowdownDuration.GetFloat());
+                pc.Notify(string.Format(GetString("SurvivalistShowdownStart")), ShowdownDuration.GetFloat());
             }
             else
             {
-                pc.Notify(GetString("SurvivalistShowdownHunt"), ShowdownDuration.GetFloat());
+                pc.Notify(string.Format(GetString("SurvivalistShowdownHunt")), ShowdownDuration.GetFloat());
             }
         }
 
