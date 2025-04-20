@@ -46,7 +46,7 @@ internal class Survivalist : RoleBase
         if (!AmongUsClient.Instance.AmHost || lowLoad || !InShowdown) return;
 
         var remainingTime = ShowdownStartTime + (long)ShowdownDuration.GetFloat() - nowTime;
-        
+
         if (remainingTime <= 0)
         {
             EndShowdown(true); // Survivalist wins
@@ -144,7 +144,7 @@ internal class Survivalist : RoleBase
         if (InShowdown && seer.Is(CustomRoles.Survivalist))
         {
             var remainingTime = ShowdownStartTime + (long)ShowdownDuration.GetFloat() - Utils.GetTimeStamp();
-            return string.Format(GetString("SurvivalistShowdownStatus"), remainingTime +1);
+            return string.Format(GetString("SurvivalistShowdownStatus"), remainingTime + 1);
         }
 
         return string.Empty;
