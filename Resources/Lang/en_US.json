@@ -51,7 +51,6 @@
   "YouAreCoven": "You are a Coven member",
   "YouAreMadmate": "You are a Madmate",
 
-
   "Role_Crewmate": "<color=#8cffff>Crewmate</color>",
   "Role_Jester": "<color=#ec62a5>Jester</color>",
   "Role_Opportunist": "<color=#4dff4d>Opportunist</color>",
@@ -93,7 +92,6 @@
   "ApocCanGuessApoc": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can Guess <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "CovenCanGuessCoven": "<color=#ac42f2>Coven</color> Can Guess <color=#ac42f2>Coven</color> Roles",
   "GuessImmune": "Sorry, but that role is immune to being guessed!",
-
 
   "GM": "Game Master",
   "Sunnyboy": "Sunnyboy",
@@ -4019,7 +4017,6 @@
   "LongMode": "Enable to have a long neck",
   "InfluencedChangeVote": "Oops! You are so influenced by others!\nYou can not contain your fear that you change voted {0}!",
 
-
   "FFA": "Free For All",
   "ModeFFA": "Gamemode: FFA",
   "ModeDescribe.FFA": "In the FFA (Free For All) Gamemode, everyone is a killer, and everyone can kill anyone. The last player alive wins!\n\nSome random events make this even more fun in the meantime!",
@@ -4672,5 +4669,15 @@
   "RedInfoLong": "You are on the Red Team",
   "BlueInfoLong": "You are on the Blue Team",
   "UltimateInfo": "Eliminate the other team to win",
-  "PlayerLives": "Maximum player lives"
+  "PlayerLives": "Maximum player lives",
+
+  "Survivalist": "Survivalist",
+  "SurvivalistInfo": "Win the showdown to make crewmates win",
+  "SurvivalistInfoLong": "If crew loses when you are alive , a countdown will begin and the winner team will try and hunt you . Survive the showdown and lead crew to victory",
+  "SurvivalistShowdownStart": "Showdown started! Survive for {0} seconds to win!",
+  "SurvivalistShowdownHunt": "Find and kill the Survivalist to win!",
+  "SurvivalistShowdownCountdown": "Showdown ends in: {0}",
+  "SurvivalistShowdownStatus": "Survive for: {0} seconds",
+  "SurvivalistWinByTimeout": "Survivalist survived! Crewmates win!",
+  "SurvivalistLoseByDeath": "Survivalist was killed! Original winners win!"
 }

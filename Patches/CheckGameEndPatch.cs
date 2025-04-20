@@ -8,6 +8,7 @@ using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.CustomWinnerHolder;
@@ -69,7 +70,7 @@ class GameEndCheckerForNormal
                     StartEndGame(reason);
                     predicate = null;
                 }
-            return false;
+                return false;
         }
 
         // Start end game
@@ -293,6 +294,15 @@ class GameEndCheckerForNormal
                         }
                     }
                 }
+                if (CustomRoles.Survivalist.RoleExist())
+                {
+                    if (WinnerTeam == CustomWinner.Impostor || WinnerTeam == CustomWinner.Neutrals || WinnerTeam == CustomWinner.Coven)
+                    {
+                        if(Survivalist.CheckForShowdown())
+                        return false;
+                    }
+
+                }
 
                 if (CustomRoles.Lovers.RoleExist() && !reason.Equals(GameOverReason.CrewmatesByTask))
                 {
@@ -324,7 +334,7 @@ class GameEndCheckerForNormal
                             WinnerIds.Add(pc.PlayerId);
                     }
                 }
-                
+
                 if (WinnerTeam is CustomWinner.Youtuber)
                 {
                     var youTuber = Main.AllPlayerControls.FirstOrDefault(x => x.Is(CustomRoles.Youtuber) && WinnerIds.Contains(x.PlayerId));
@@ -397,8 +407,8 @@ class GameEndCheckerForNormal
 
                 void CheckAdditionalWinners()
                 {
-                   foreach (var pc in Main.AllPlayerControls)
-                   {
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
                         if (WinnerIds.Contains(pc.PlayerId)) continue;
                         switch (pc.GetCustomRole())
                         {
@@ -509,7 +519,7 @@ class GameEndCheckerForNormal
                                 break;
                         }
                     }
-                    
+
                     //Lovers follow winner
                     if (WinnerTeam is not CustomWinner.Lovers)
                     {
@@ -647,9 +657,11 @@ class GameEndCheckerForNormal
     // For Normal Games
     class NormalGameEndPredicate : GameEndPredicate
     {
+
         public override bool CheckForEndGame(out GameOverReason reason)
         {
             reason = GameOverReason.ImpostorsByKill;
+              if(Survivalist.CheckForShowdown()) return false;
             if (WinnerTeam != CustomWinner.Default) return false;
             if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason) || CheckGameEndBySabotage(out reason)) return true;
             return false;
@@ -660,6 +672,7 @@ class GameEndCheckerForNormal
             reason = GameOverReason.ImpostorsByKill;
 
             if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
+          
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
             int dual = 0, impCount = 0, crewCount = 0, covenCount = 0;
@@ -712,7 +725,7 @@ class GameEndCheckerForNormal
                 ResetAndSetWinner(CustomWinner.Lovers);
                 return true;
             }
-
+            
 
             else if (totalNKAlive == 0 && covenCount == 0) // total number of nks alive 0
             {
@@ -872,7 +885,7 @@ class UltimateTeamGameEndPredicate : GameEndPredicate
         if (CheckGameEndByLivingTeam(out reason)) return true;
         return false;
     }
-    public static bool CheckGameEndByLivingTeam(out  GameOverReason reason)
+    public static bool CheckGameEndByLivingTeam(out GameOverReason reason)
     {
         bool redAlive = false;
         bool blueAlive = false;
