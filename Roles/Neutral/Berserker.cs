@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -100,13 +101,19 @@ internal class Berserker : RoleBase
             killer.RpcIncreaseAbilityUseLimitBy(1);
             abilityUse++;
 
-            killer.Notify(string.Format(GetString("BerserkerLevelChanged"), abilityUse));
-            Logger.Info($"Increased the lvl to {abilityUse}", "CULTIVATOR");
+            _ = new LateTask(() =>
+            {
+                killer.Notify(string.Format(GetString("BerserkerLevelChanged"), abilityUse));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+            Logger.Info($"Increased the lvl to {abilityUse}", "Berserker");
         }
         else
         {
-            killer.Notify(GetString("BerserkerMaxReached"));
-            Logger.Info($"Max level reached lvl =  {abilityUse}", "CULTIVATOR");
+            _ = new LateTask(() =>
+            {
+                killer.Notify(GetString("BerserkerMaxReached"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+            Logger.Info($"Max level reached lvl = {abilityUse}", "Berserker");
         }
 
         if (abilityUse >= BerserkerKillCooldownLevel.GetInt() && BerserkerOneCanKillCooldown.GetBool())

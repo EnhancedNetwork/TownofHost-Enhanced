@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -130,7 +131,10 @@ internal class Chronomancer : RoleBase
         if (ChargedTime >= FullCharge)
         {
             LastNowF = countnowF + Dtime.GetFloat();
-            killer.Notify(GetString("ChronomancerStartMassacre"));
+            _ = new LateTask(() =>
+            {
+                killer.Notify(GetString("ChronomancerStartMassacre"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
             IsInMassacre = true;
         }
         killer.SetKillCooldown();
