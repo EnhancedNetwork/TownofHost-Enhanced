@@ -296,10 +296,10 @@ class GameEndCheckerForNormal
                 }
                 if (CustomRoles.Survivalist.RoleExist())
                 {
-                    if (WinnerTeam == CustomWinner.Impostor || WinnerTeam == CustomWinner.Neutrals || WinnerTeam == CustomWinner.Coven)
+                    if (WinnerTeam == CustomWinner.Impostor)
                     {
-                        if(Survivalist.CheckForShowdown())
-                        return false;
+                        if (Survivalist.CheckForShowdown())
+                            return false;
                     }
 
                 }
@@ -661,7 +661,7 @@ class GameEndCheckerForNormal
         public override bool CheckForEndGame(out GameOverReason reason)
         {
             reason = GameOverReason.ImpostorsByKill;
-              if(Survivalist.CheckForShowdown()) return false;
+            if (Survivalist.CheckForShowdown()) return false;
             if (WinnerTeam != CustomWinner.Default) return false;
             if (CheckGameEndByLivingPlayers(out reason) || CheckGameEndByTask(out reason) || CheckGameEndBySabotage(out reason)) return true;
             return false;
@@ -672,7 +672,7 @@ class GameEndCheckerForNormal
             reason = GameOverReason.ImpostorsByKill;
 
             if (Sunnyboy.HasEnabled && Sunnyboy.CheckGameEnd()) return false;
-          
+
             var neutralRoleCounts = new Dictionary<CountTypes, int>();
             var allAlivePlayerList = Main.AllAlivePlayerControls.ToArray();
             int dual = 0, impCount = 0, crewCount = 0, covenCount = 0;
@@ -725,7 +725,7 @@ class GameEndCheckerForNormal
                 ResetAndSetWinner(CustomWinner.Lovers);
                 return true;
             }
-            
+
 
             else if (totalNKAlive == 0 && covenCount == 0) // total number of nks alive 0
             {

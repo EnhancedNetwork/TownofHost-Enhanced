@@ -78,7 +78,7 @@ internal class Survivalist : RoleBase
             }
             else
             {
-                pc.Notify(GetString("SurvivalistShowdownHunt"));
+                pc.Notify(GetString("SurvivalistShowdownHunt"), ShowdownDuration.GetFloat());
             }
         }
 
@@ -125,7 +125,7 @@ internal class Survivalist : RoleBase
 
     private static bool IsThreat(PlayerControl pc)
     {
-        return pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven() || pc.GetCustomRole().IsNeutralKillerTeam();
+        return pc.GetCustomRole().IsImpostor();
     }
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
@@ -168,9 +168,7 @@ internal class Survivalist : RoleBase
         if (survivalist == null) return false;
 
         // Check if game is ending with non-crew win
-        if (CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor || 
-            CustomWinnerHolder.WinnerTeam == CustomWinner.Coven ||
-            CustomWinnerHolder.WinnerTeam == CustomWinner.Neutrals)
+        if (CustomWinnerHolder.WinnerTeam == CustomWinner.Impostor)
         {
             StartShowdown();
             CustomWinnerHolder.Reset();

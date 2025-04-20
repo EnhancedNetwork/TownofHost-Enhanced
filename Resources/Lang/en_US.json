@@ -4675,7 +4675,7 @@
   "SurvivalistInfo": "Win the showdown to make crewmates win",
   "SurvivalistInfoLong": "If crew loses when you are alive , a countdown will begin and the winner team will try and hunt you . Survive the showdown and lead crew to victory",
   "SurvivalistShowdownStart": "Showdown started! Survive for {0} seconds to win!",
-  "SurvivalistShowdownHunt": "Find and kill the Survivalist to win!",
+  "SurvivalistShowdownHunt": "Find and kill the Survivalist to win in {0} seconds to win!",
   "SurvivalistShowdownCountdown": "Showdown ends in: {0}",
   "SurvivalistShowdownStatus": "Survive for: {0} seconds",
   "SurvivalistWinByTimeout": "Survivalist survived! Crewmates win!",
