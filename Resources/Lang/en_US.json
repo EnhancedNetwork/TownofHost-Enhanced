@@ -4519,7 +4519,7 @@
   "Massacre": "Massacre",
   "MassacreInfo": "Kill your targets",
   "MassacreInfoLong": "(Neutrals):\nAs the Massacre, you are the transformed version of Contaminator when you contaminate everyone.",
-  "MassacreKillCooldown": "<color=#a86832>Massacre>/color> Kill Cooldown",
+  "MassacreKillCooldown": "<color=#a86832>Massacre</color> Kill Cooldown",
   "MassacreSwitch": "You will become a Contaminator next round",
   "WinnerRoleText.Massacre": "Massacre Wins!",
 
