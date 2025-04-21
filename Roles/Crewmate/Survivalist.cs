@@ -60,6 +60,7 @@ internal class Survivalist : RoleBase
             // Notify all players about remaining time
             foreach (var pc in Main.AllAlivePlayerControls)
             {
+                if (pc.Is(CustomRoles.Survivalist)) continue;
                 pc.Notify(string.Format(GetString("SurvivalistShowdownCountdown"), remainingTime), sendInLog: false);
             }
         }
