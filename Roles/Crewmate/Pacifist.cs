@@ -54,10 +54,11 @@ internal class Pacifist : RoleBase
             abilityUse--;
 
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
-            bool isNonCrew = pc.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Soulless and not CustomRoles.Admired);
 
             Main.AllAlivePlayerControls.Where(x =>
-            isNonCrew ? (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate()) : x.CanUseKillButton()
+            pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Rebel)
+                ? (x.CanUseKillButton() && x.IsPlayerCrewmateTeam())
+                : x.CanUseKillButton()
             ).Do(x =>
             {
                 x.RPCPlayCustomSound("Dove");

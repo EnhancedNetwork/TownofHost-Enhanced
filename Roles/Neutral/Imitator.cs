@@ -46,9 +46,7 @@ internal class Imitator : RoleBase
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
         CustomRoles ChangeRole = CustomRoles.Imitator;
-        var role = target.GetCustomRole();
-
-        if (target.Is(CustomRoles.Rebel)) ChangeRole = CustomRoles.Taskinator;
+        var role = target.Is(CustomRoles.Rebel) ? CustomRoles.Taskinator : target.GetCustomRole();
 
         if (role.IsCrewmate()) ChangeRole = CustomRoles.Sheriff;
         else if (role.IsImpostor() || role.IsMadmate()) ChangeRole = CustomRoles.Refugee;

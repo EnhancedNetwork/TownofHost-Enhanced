@@ -28,14 +28,13 @@ internal class Revenant : RoleBase
         CustomRoles role = killer.GetCustomRole();
         if (role.IsTNA()) return false;
 
-        if (killer.Is(CustomRoles.Rebel)) role = CustomRoles.Taskinator;
-
         killer.RpcMurderPlayer(killer);
         killer.SetRealKiller(target);
 
         target.RpcChangeRoleBasis(role);
         target.RpcSetCustomRole(role);
         target.GetRoleClass()?.OnAdd(target.PlayerId);
+        if (killer.Is(CustomRoles.Rebel)) target.RpcSetCustomRole(CustomRoles.Rebel);
 
         target.Notify(string.Format(GetString("RevenantTargeted"), GetRoleName(role)));
 

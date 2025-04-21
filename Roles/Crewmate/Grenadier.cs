@@ -64,11 +64,11 @@ internal class Grenadier : RoleBase
     {
         // Grenadier or Mad Grenadier enter the vent
         if ((GrenadierBlinding.Any() &&
-            (player.GetCustomRole().IsImpostorTeamV3() ||
-            (player.IsRebelNeutralV3() && GrenadierCanAffectNeutral.GetBool()) ||
-            (player.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
+            (player.IsPlayerImpostorTeam() ||
+            (player.IsPlayerNeutralTeam() && GrenadierCanAffectNeutral.GetBool()) ||
+            (player.IsPlayerCovenTeam() && GrenadierCanAffectCoven.GetBool()))
             )
-            || (MadGrenadierBlinding.Any() && !player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Madmate)))
+            || (MadGrenadierBlinding.Any() && !player.IsPlayerImpostorTeam()))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, GrenadierCauseVision.GetFloat());
@@ -90,7 +90,7 @@ internal class Grenadier : RoleBase
                 MadGrenadierBlinding.Remove(pc.PlayerId);
                 MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => !x.GetCustomRole().IsImpostorTeamV3() && !x.Is(CustomRoles.Madmate))
+                    .Where(x => !x.IsPlayerImpostorTeam())
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             // Why in the world is there a separate list for Mad, whatever i guess -- Marg
@@ -99,7 +99,7 @@ internal class Grenadier : RoleBase
                 MadGrenadierBlinding.Remove(pc.PlayerId);
                 MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => !x.GetCustomRole().IsCoven() && !x.Is(CustomRoles.Enchanted))
+                    .Where(x => !x.IsPlayerCovenTeam())
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             else if (pc.Is(CustomRoles.Rebel))
@@ -115,7 +115,7 @@ internal class Grenadier : RoleBase
                 GrenadierBlinding.Remove(pc.PlayerId);
                 GrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
                 Main.AllPlayerControls.Where(x => x.IsModded())
-                    .Where(x => x.GetCustomRole().IsImpostorTeamV3() || (x.IsRebelNeutralV3() && GrenadierCanAffectNeutral.GetBool()) || (x.GetCustomRole().IsCoven() && GrenadierCanAffectCoven.GetBool()))
+                    .Where(x => x.IsPlayerImpostorTeam() || (x.IsPlayerNeutralTeam() && GrenadierCanAffectNeutral.GetBool()) || (x.IsPlayerCovenTeam() && GrenadierCanAffectCoven.GetBool()))
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);

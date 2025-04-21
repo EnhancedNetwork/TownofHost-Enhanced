@@ -441,7 +441,7 @@ public static class Utils
     public static Color GetTeamColor(PlayerControl player)
     {
         string hexColor = string.Empty;
-        var Team = player.GetCustomRoleTeam();
+        var Team = player.GetCustomRole().GetCustomRoleTeam();
 
         switch (Team)
         {
@@ -1838,7 +1838,7 @@ public static class Utils
         }
         else if (!target.IsAnySubRole(x => x.IsConverted()))
         {
-            team = player.GetCustomRoleTeam();
+            team = player.GetCustomRole().GetCustomRoleTeam();
             return target.Is(team);
         }
 
@@ -1916,7 +1916,7 @@ public static class Utils
 
         string IconText = "<color=#ffffff>|</color>";
         string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
-        string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(player), $"{player.GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+        string SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(GetTeamColor(player), $"{player.GetCustomRole().GetCustomRoleTeam()}")}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
         string SelfRoleName = $"<size=185%>{Font}{ColorString(player.GetRoleColor(), GetRoleName(player.GetCustomRole()))}</font></size>";
         string SelfSubRolesName = string.Empty;
         string RoleInfo = $"<size=25%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
@@ -2102,16 +2102,7 @@ public static class Utils
                     string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
                     string RoleInfo = ColorString(seer.GetRoleColor(), seer.GetRoleInfo());
 
-                    if (seer.Is(CustomRoles.Rebel))
-                    {
-                        RoleText = ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info"));
-                    }
-                    else if (seer.Is(CustomRoles.Madmate))
-                    {
-                        RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate"));
-                        RoleInfo = ColorString(GetRoleColor(CustomRoles.Madmate), GetString($"{CustomRoles.Madmate}" + "Info"));
-                    }
+                    if (seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")); RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info")); }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }

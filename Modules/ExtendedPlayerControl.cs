@@ -1651,10 +1651,9 @@ static class ExtendedPlayerControl
         Main.PlayerStates[targetId].deathReason = reason;
     }
 
-    public static Custom_Team GetCustomRoleTeam(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) ? Custom_Team.Neutral : pc.GetCustomRole().GetCustomRoleTeam();
     public static bool Is(this PlayerControl target, CustomRoles role) =>
         role > CustomRoles.NotAssigned ? target.GetCustomSubRoles().Contains(role) : target.GetCustomRole() == role;
-    public static bool Is(this PlayerControl target, Custom_Team type) => target.GetCustomRoleTeam() == type;
+    public static bool Is(this PlayerControl target, Custom_Team type) => target.GetCustomRole().GetCustomRoleTeam() == type;
     public static bool Is(this PlayerControl target, RoleTypes type) => target.GetCustomRole().GetRoleTypes() == type;
     public static bool Is(this PlayerControl target, CountTypes type) => target.GetCountTypes() == type;
     public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target != null && target.GetCustomSubRoles().Any() && target.GetCustomSubRoles().Any(predicate);

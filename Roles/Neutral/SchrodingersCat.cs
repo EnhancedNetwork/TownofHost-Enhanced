@@ -95,9 +95,9 @@ internal class SchrodingersCat : RoleBase
                     return Main.roleColors[SubRole];
             }
 
-            if ((target.GetCustomRole().IsCrewmate() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rebel)) return Main.roleColors[CustomRoles.CrewmateTOHE];
-            else if (target.GetCustomRole().IsImpostorTeamV3() || target.Is(CustomRoles.Madmate)) return Main.roleColors[CustomRoles.ImpostorTOHE];
-            else if (target.GetCustomRole().IsCoven() || target.Is(CustomRoles.Enchanted)) return Main.roleColors[CustomRoles.Coven];
+            if (target.IsPlayerCrewmateTeam()) return Main.roleColors[CustomRoles.CrewmateTOHE];
+            else if (target.IsPlayerImpostorTeam()) return Main.roleColors[CustomRoles.ImpostorTOHE];
+            else if (target.IsPlayerCovenTeam()) return Main.roleColors[CustomRoles.Coven];
             else return Main.roleColors[target.GetCustomRole()];
         }
         return string.Empty;

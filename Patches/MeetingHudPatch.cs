@@ -1003,10 +1003,10 @@ class MeetingHudStartPatch
 
             foreach (var csId in Cyber.CyberDead)
             {
-                if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostorTeamV3()) continue;
-                if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.IsRebelNeutralV3()) continue;
-                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.IsNonRebelCrewmate()) continue;
-                if (!Cyber.CovenKnowCyberDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
+                if (!Cyber.ImpKnowCyberDead.GetBool() && pc.IsPlayerImpostorTeam()) continue;
+                if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.IsPlayerNeutralTeam()) continue;
+                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.IsPlayerCrewmateTeam()) continue;
+                if (!Cyber.CovenKnowCyberDead.GetBool() && pc.IsPlayerCovenTeam()) continue;
 
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("CyberNewsTitle")));
             }

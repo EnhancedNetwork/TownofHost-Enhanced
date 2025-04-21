@@ -91,7 +91,7 @@ internal class Sheriff : RoleBase
     }
     private static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => x.IsNeutral() && !x.IsMadmate() && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => (x.IsNeutral() || x is CustomRoles.Rebel) && !x.IsMadmate() && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;
@@ -119,7 +119,7 @@ internal class Sheriff : RoleBase
         if ((CanBeKilledBySheriff(target) && !(SetNonCrewCanKill.GetBool() && killer.IsNonCrewSheriff() || SidekickSheriffCanGoBerserk.GetBool() && killer.Is(CustomRoles.Recruit)))
             || (SidekickSheriffCanGoBerserk.GetBool() && killer.Is(CustomRoles.Recruit))
             || (SetNonCrewCanKill.GetBool() && killer.IsNonCrewSheriff()
-                 && ((target.GetCustomRole().IsImpostorTeamV3() && NonCrewCanKillImp.GetBool()) || (target.IsNonRebelCrewmate() && NonCrewCanKillCrew.GetBool()) || (target.IsRebelNeutralV3() && NonCrewCanKillNeutral.GetBool()) || (target.GetCustomRole().IsCoven() && NonCrewCanKillCoven.GetBool())))
+                 && ((target.GetCustomRole().IsImpostorTeamV3() && NonCrewCanKillImp.GetBool()) || (target.GetCustomRole().IsCrewmate() && NonCrewCanKillCrew.GetBool()) || (target.GetCustomRole().IsNeutral() && NonCrewCanKillNeutral.GetBool()) || (target.GetCustomRole().IsCoven() && NonCrewCanKillCoven.GetBool())))
             )
         {
             killer.ResetKillCooldown();
@@ -156,17 +156,18 @@ internal class Sheriff : RoleBase
             };
         }
 
-        bool CanKillAdmired = !(player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool());
+        if (CanKill) return true;
+        else if (player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool()) return false;
+        else if (player.Is(CustomRoles.Rebel)) return CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool());
         return cRole switch
         {
             CustomRoles.Trickster => false,
             var _ when cRole.IsTNA() => false,
-            var _ when cRole.IsMadmate() => CanKillAdmired,
-            _ => player.GetCustomRoleTeam() switch
+            _ => cRole.GetCustomRoleTeam() switch
             {
-                Custom_Team.Impostor => CanKillAdmired,
-                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool()) && CanKillAdmired,
-                Custom_Team.Coven => CanKillCoven.GetBool() && CanKillAdmired,
+                Custom_Team.Impostor => true,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool()),
+                Custom_Team.Coven => CanKillCoven.GetBool(),
                 _ => CanKill,
             }
         };

@@ -229,8 +229,8 @@ internal class Councillor : RoleBase
                         CouncillorSuicide = true;
                     }
                 }
-                else if (target.IsNonRebelCrewmate()) CouncillorSuicide = false;
-                else if (target.IsRebelNeutral()) CouncillorSuicide = false;
+                else if (target.GetCustomRole().IsCrewmate()) CouncillorSuicide = false;
+                else if (target.GetCustomRole().IsNeutral()) CouncillorSuicide = false;
                 else if (target.GetCustomRole().IsCoven()) CouncillorSuicide = false;
                 else
                 {

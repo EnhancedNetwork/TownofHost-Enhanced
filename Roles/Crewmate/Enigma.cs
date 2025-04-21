@@ -448,15 +448,15 @@ internal class Enigma : RoleBase
             switch (this.ClueStage)
             {
                 case 1:
-                    if (role.IsImpostorTeamV3()) return GetString("EnigmaClueRole1");
-                    if (killer.IsRebelNeutralV3()) return GetString("EnigmaClueRole2");
-                    if (role.IsCoven()) return GetString("EnigmaClueRole5");
+                    if (killer.IsPlayerImpostorTeam()) return GetString("EnigmaClueRole1");
+                    if (killer.IsPlayerNeutralTeam()) return GetString("EnigmaClueRole2");
+                    if (killer.IsPlayerCovenTeam()) return GetString("EnigmaClueRole5");
                     return GetString("EnigmaClueRole3");
                 case 2:
                     if (showStageClue) return string.Format(GetString("EnigmaClueRole4"), killer.GetDisplayRoleAndSubName(killer, false, false));
-                    if (role.IsImpostorTeamV3()) return GetString("EnigmaClueRole1");
-                    if (killer.IsRebelNeutralV3()) return GetString("EnigmaClueRole2");
-                    if (role.IsCoven()) return GetString("EnigmaClueRole5");
+                    if (killer.IsPlayerImpostorTeam()) return GetString("EnigmaClueRole1");
+                    if (killer.IsPlayerNeutralTeam()) return GetString("EnigmaClueRole2");
+                    if (killer.IsPlayerCovenTeam()) return GetString("EnigmaClueRole5");
                     return GetString("EnigmaClueRole3");
             }
 

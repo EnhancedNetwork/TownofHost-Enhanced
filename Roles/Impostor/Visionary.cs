@@ -33,7 +33,7 @@ internal class Visionary : RoleBase
                 return "7f8c8d";
             if (SubRole is CustomRoles.Admired)
             {
-                return Main.roleColors[CustomRoles.Bait];
+                return Main.roleColors[CustomRoles.Crewmate];
             }
         }
 
@@ -49,7 +49,7 @@ internal class Visionary : RoleBase
 
         if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rascal) && !target.Is(CustomRoles.Rebel))
         {
-            return Main.roleColors[CustomRoles.Bait];
+            return Main.roleColors[CustomRoles.Crewmate];
         }
 
         if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))
