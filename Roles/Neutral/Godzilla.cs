@@ -26,6 +26,10 @@ internal class Godzilla : RoleBase
     public static OptionItem GodzillaKillCD;
     public static OptionItem WarningTimeBeforeDestroying;
 
+    public static bool InDestroy = false;
+    public static SystemTypes ActiveRoom;
+    private static long DestroyStartTime;
+
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Godzilla);
@@ -56,7 +60,16 @@ internal class Godzilla : RoleBase
     {
         AURoleOptions.ShapeshifterCooldown = DestroyCooldown.GetFloat();
     }
-
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
+    {
+        var remainingTime = DestroyStartTime + (long)WarningTimeBeforeDestroying.GetFloat() - nowTime;
+        if (!InDestroy) return;
+        foreach (var target in Main.AllAlivePlayerControls)
+        {
+            var roomName = Translator.GetString(ActiveRoom.ToString());
+            target.Notify(string.Format(Translator.GetString("GodzillaRoomWarning"), roomName, remainingTime));
+        }
+    }
     public override void UnShapeShiftButton(PlayerControl shapeshifter)
     {
         var playerRole = shapeshifter.GetCustomRole();
@@ -79,20 +92,17 @@ internal class Godzilla : RoleBase
 
         var roomToDestroy = validRooms[IRandom.Instance.Next(0, validRooms.Count)];
         RoomsToDestroy[shapeshifter.PlayerId] = roomToDestroy;
+        ActiveRoom = roomToDestroy;
         DestroyTimestamps[shapeshifter.PlayerId] = Utils.GetTimeStamp() + (long)WarningTimeBeforeDestroying.GetFloat();
 
         // Send warning to all players
-        foreach (var target in Main.AllPlayerControls)
-        {
-            if (!target.IsAlive()) continue;
-            
-            var roomName = Translator.GetString(roomToDestroy.ToString());
-            target.Notify(string.Format(Translator.GetString("GodzillaRoomWarning"), roomName, WarningTimeBeforeDestroying.GetFloat()));
-        }
+        InDestroy = true;
+        DestroyStartTime = Utils.GetTimeStamp();
 
         // Schedule the room destruction
         _ = new LateTask(() =>
         {
+            InDestroy = false;
             DestroyRoom(shapeshifter, roomToDestroy);
             RoomsToDestroy.Remove(shapeshifter.PlayerId);
             DestroyTimestamps.Remove(shapeshifter.PlayerId);
