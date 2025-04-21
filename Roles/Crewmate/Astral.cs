@@ -32,6 +32,7 @@ internal class Astral : RoleBase
     public override void OnEnterVent(PlayerControl shapeshifter, Vent vent)
     {
         teleportPosition = vent.transform.position;
+        shapeshifter?.MyPhysics?.RpcBootFromVent(vent.Id);
         shapeshifter.RpcMurderPlayer(shapeshifter);
         InRevival = true;
     }
