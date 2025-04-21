@@ -75,6 +75,10 @@ public static class DevManager
             // Glazecraft
             new(code: "motorstack#2287", color: "#ec9d2f", tag: "Tester", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Glazecraft"),
 
+            // Zuzu
+             new(code: "partyready#4849", color: "#a000c8", tag: "Cultist", isUp: true, isDev: false, deBug: true, colorCmd: true, upName: "Zuzu"),
+
+
 
             /*TESTERS ABOVE*/
         ];

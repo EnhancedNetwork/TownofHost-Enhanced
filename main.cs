@@ -842,6 +842,7 @@ public enum CustomRoles
     Spiritualist,
     Spy,
     SuperStar,
+    Survivalist,
     Swapper,
     TaskManager,
     Technician,
