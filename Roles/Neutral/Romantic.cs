@@ -265,7 +265,7 @@ internal class Romantic : RoleBase
         });
         if (romantic == 0x73) return;
         var pc = Utils.GetPlayerById(romantic);
-        if (pc == null || !pc.IsAlive()) return;
+        if (pc == null) return;
         if (player.GetRealKiller() == pc)
         {
             pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
@@ -275,6 +275,7 @@ internal class Romantic : RoleBase
         if (player.GetCustomRole().IsNE() || player.GetCustomRole().IsNC())
         {
             Logger.Info($"Neutral Romantic Partner Died => Changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
+            pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
@@ -332,6 +333,7 @@ internal class Romantic : RoleBase
                     || killer == player //or if partner dies by suicide
                     || !killer.IsAlive()) //or if killer is dead,romantic will become ruthless romantic
                 {
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcChangeRoleBasis(CustomRoles.RuthlessRomantic);
                     pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
@@ -341,6 +343,7 @@ internal class Romantic : RoleBase
                 {
                     VengefulTargetId = killer.PlayerId;
 
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcChangeRoleBasis(CustomRoles.VengefulRomantic);
                     pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);

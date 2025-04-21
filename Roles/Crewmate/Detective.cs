@@ -57,18 +57,18 @@ internal class Detective : RoleBase
             if (DetectiveCanknowKiller.GetBool())
             {
                 var realKiller = deadBody.PlayerId.GetRealKillerById();
-                
-                if (realKiller == null 
-                    || realKiller.Data == null 
+
+                if (realKiller == null
+                    || realKiller.Data == null
                     || deadBody.PlayerId == realKiller.Data.PlayerId)
                     msg.Append($"；\n{GetString("DetectiveNoticeKillerNotFound")}");
-                
+
                 else
                 {
                     var RoleKillerInfo = InfoAboutDeadPlayerAndKiller.GetValueOrDefault(realKiller.Data.PlayerId);
                     if (string.IsNullOrEmpty(RoleKillerInfo))
                     {
-                        RoleKillerInfo = Main.PlayerStates.TryGetValue(realKiller.Data.PlayerId, out var killerState) 
+                        RoleKillerInfo = Main.PlayerStates.TryGetValue(realKiller.Data.PlayerId, out var killerState)
                             ? Utils.GetRoleName(killerState.MainRole) : string.Empty;
 
                         if (string.IsNullOrEmpty(RoleKillerInfo))

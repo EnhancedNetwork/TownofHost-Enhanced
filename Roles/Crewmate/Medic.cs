@@ -116,10 +116,10 @@ internal class Medic : RoleBase
     private bool IsProtect(byte id)
         => ProtectedList.Contains(id) && Main.PlayerStates.TryGetValue(id, out var ps) && !ps.IsDead;
 
-    public bool CheckKillButton() => _state.PlayerId.GetAbilityUseLimit() > 0;
+    private static bool CheckKillButton(byte playerId) => playerId.GetAbilityUseLimit() > 0;
 
-    public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton();
-    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton() ? 5f : 300f;
+    public override bool CanUseKillButton(PlayerControl pc) => CheckKillButton(pc.PlayerId);
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = CheckKillButton(id) ? 5f : 300f;
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
@@ -193,10 +193,43 @@ internal class Medic : RoleBase
         if (_Player == null) return;
 
         var medic = _Player;
+        var medicClientId = medic.GetClientId();
         GiveTasks = true;
 
         medic.RpcSetRoleType(RoleTypes.Crewmate, removeFromDesyncList: true);
         medic.RpcResetTasks();
+
+        // set others as normal RoleType
+        foreach (var target in Main.AllPlayerControls)
+        {
+            if (medic.PlayerId == target.PlayerId) continue;
+
+            RoleTypes remeberRoleType;
+            var (targetRoleType, targetCustomRole) = target.GetRoleMap();
+            var targetIsHost = target.IsHost();
+            var targetIsDesync = targetCustomRole.IsDesyncRole();
+
+            if (target.IsAlive())
+            {
+                if (targetIsDesync)
+                    remeberRoleType = targetIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
+                else
+                    remeberRoleType = targetRoleType;
+            }
+            else
+            {
+                if (target.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
+                else remeberRoleType = RoleTypes.CrewmateGhost;
+
+                RpcSetRoleReplacer.RoleMap[(medic.PlayerId, target.PlayerId)] = (targetIsDesync ? targetIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist : targetRoleType, targetCustomRole);
+                target.RpcSetRoleDesync(remeberRoleType, medicClientId);
+                continue;
+            }
+
+            // Set role type for player
+            RpcSetRoleReplacer.RoleMap[(medic.PlayerId, target.PlayerId)] = (remeberRoleType, targetCustomRole);
+            target.RpcSetRoleDesync(remeberRoleType, medicClientId);
+        }
     }
     public override void AfterMeetingTasks()
     {
