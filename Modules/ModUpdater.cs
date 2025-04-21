@@ -223,7 +223,7 @@ public class ModUpdater
             latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : DateTime.MinValue;
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
-            JArray assets = data["assets"].TryCast<JArray>();
+            JArray assets = data["assets"].CastFast<JArray>();
             for (int i = 0; i < assets.Count; i++)
             {
                 string assetName = assets[i]["name"].ToString();

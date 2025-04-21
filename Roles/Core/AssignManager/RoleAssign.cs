@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
@@ -300,7 +301,7 @@ public class RoleAssign
                 readyNonNeutralKillingNum++;
             }
 
-            readyRoleNum++;
+            //readyRoleNum++;
 
             Logger.Warn($"Pre-Set Role Assigned: {pc.GetRealName()} => {item.Value}", "RoleAssign");
         }
@@ -351,6 +352,8 @@ public class RoleAssign
                 spawnCoven = true;
                 break;
         }
+
+        Logger.Info($"Spawn NK: {spawnNK}, Spawn NA: {spawnNA}, Spawn Coven: {spawnCoven}", "SpawnKillingFractions");
 
         playerCount = AllPlayers.Count;
 
@@ -906,7 +909,7 @@ public class RoleAssign
             RoleAssignInfo[] CrewRoleCounts = AlwaysCrewRoles.Distinct().Select(GetAssignInfo).ToArray().AddRangeToArray(ChanceCrewRoles.Distinct().Select(GetAssignInfo).ToArray());
             Crews = CrewRoleCounts;
 
-            // Assign roles set to ALWAYS
+            // Assign roles set to 100%
             if (readyRoleNum < playerCount)
             {
                 while (AlwaysCrewRoles.Any())
@@ -962,6 +965,7 @@ public class RoleAssign
 
         if (Sunnyboy.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Jester)) FinalRolesList.Add(CustomRoles.Sunnyboy);
         if (Bard.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Arrogance)) FinalRolesList.Add(CustomRoles.Bard);
+        if (Requiter.CheckSpawn() && FinalRolesList.Remove(CustomRoles.Knight)) FinalRolesList.Add(CustomRoles.Requiter);
 
         if (Romantic.HasEnabled)
         {

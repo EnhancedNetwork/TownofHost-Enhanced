@@ -64,6 +64,7 @@ public enum CustomRPC : byte // 174/255 USED
     NotificationPopper,
     SyncDeadPassedMeetingList,
     SyncAbilityUseLimit,
+    PlayGuardAndKill,
 
     //Roles 
     SyncRoleSkill,
@@ -79,11 +80,11 @@ public enum CustomRPC : byte // 174/255 USED
     SendFireworkerState,
     SetCurrentDousingTarget,
     SetEvilTrackerTarget,
-    SetDrawPlayer,
 
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
+    SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
     SyncJailerData,
@@ -651,6 +652,10 @@ internal class RPCHandlerPatch
             case CustomRPC.Necronomicon:
                 CovenManager.ReceiveNecroRPC(reader);
                 break;
+            case CustomRPC.PlayGuardAndKill:
+                var gtarget = reader.ReadNetObject<PlayerControl>();
+                gtarget.ShowFailedMurder();
+                break;
         }
     }
 
@@ -830,7 +835,7 @@ internal static class RPC
     public static void SetFriendCode(PlayerControl target, string fc)
     {
         if (GameStates.IsVanillaServer) return;
-        if (target.GetClient() != null && target.GetClient().ProductUserId != string.Empty) return;
+        if (target.GetClient() != null && target.GetClient().FriendCode != string.Empty) return;
         // On Niko233's region this is not needed lol
         target.FriendCode = fc;
         target.Data.FriendCode = fc;

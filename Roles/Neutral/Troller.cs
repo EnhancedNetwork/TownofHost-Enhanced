@@ -141,7 +141,7 @@ internal class Troller : RoleBase
                 {
                     case MapNames.Skeld:
                     case MapNames.Dleks:
-                    case MapNames.Mira:
+                    case MapNames.MiraHQ:
                         allSabotage.Add(SystemTypes.Reactor);
                         allSabotage.Add(SystemTypes.LifeSupp);
                         allSabotage.Add(SystemTypes.Comms);
@@ -248,13 +248,16 @@ internal class Troller : RoleBase
                 randomPC.MarkDirtySettings();
                 break;
             case Events.TelepostEveryoneToVents:
-                foreach (var pcTeleport in Main.AllAlivePlayerControls)
+                foreach (var pcTeleport in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()))
                 {
                     pcTeleport.RpcRandomVentTeleport();
                 }
                 break;
             case Events.PullEveryone:
-                ExtendedPlayerControl.RpcTeleportAllPlayers(troller.GetCustomPosition());
+                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()))
+                {
+                    pc.RpcTeleport(troller.GetCustomPosition());
+                }
                 break;
             case Events.TwistEveryone:
                 List<byte> changePositionPlayers = [];

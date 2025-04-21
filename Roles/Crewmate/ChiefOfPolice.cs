@@ -102,7 +102,7 @@ internal class ChiefOfPolice : RoleBase
             {
                 suidice = true;
             }
-            if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini) || target.Is(CustomRoles.Loyal))
+            else if (target.Is(CustomRoles.Zombie) || target.Is(CustomRoles.EvilMini) || target.Is(CustomRoles.Loyal))
             {
                 suidice = true;
             }
