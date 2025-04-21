@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Hazel;
 using UnityEngine;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -41,23 +42,25 @@ internal class Survivalist : RoleBase
         // No special initialization needed
     }
 
+    private static long Time;
+
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!AmongUsClient.Instance.AmHost || lowLoad || !InShowdown) return;
 
         var remainingTime = ShowdownStartTime + (long)ShowdownDuration.GetFloat() - nowTime;
+        Time = remainingTime;
 
         if (remainingTime <= 0)
         {
             EndShowdown(true); // Survivalist wins
         }
-        else if (remainingTime <= 10)
+        else
         {
             // Notify all players about remaining time
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!pc.IsModded())
-                    pc.Notify(string.Format(GetString("SurvivalistShowdownCountdown"), remainingTime + 1), sendInLog: false);
+                pc.Notify(string.Format(GetString("SurvivalistShowdownCountdown"), remainingTime), sendInLog: false);
             }
         }
     }
@@ -68,19 +71,6 @@ internal class Survivalist : RoleBase
 
         InShowdown = true;
         ShowdownStartTime = Utils.GetTimeStamp();
-
-        // Notify all players
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            if (pc.Is(CustomRoles.Survivalist))
-            {
-                pc.Notify(string.Format(GetString("SurvivalistShowdownStart")), ShowdownDuration.GetFloat());
-            }
-            else
-            {
-                pc.Notify(string.Format(GetString("SurvivalistShowdownHunt")), ShowdownDuration.GetFloat());
-            }
-        }
 
         // Disable all abilities except for Survivalist and killers
         foreach (var pc in Main.AllPlayerControls)

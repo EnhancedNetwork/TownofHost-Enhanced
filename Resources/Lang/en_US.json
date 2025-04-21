@@ -4677,7 +4677,7 @@
   "ShowdownDuration": "Showdown Duration",
   "SurvivalistShowdownStart": "Showdown started! Survive for {0} seconds to win!",
   "SurvivalistShowdownHunt": "Find and kill the Survivalist to win in {0} seconds to win!",
-  "SurvivalistShowdownCountdown": "Showdown ends in: {0}",
+  "SurvivalistShowdownCountdown": "Kill Survivalist in {0} to win as Impostor",
   "SurvivalistShowdownStatus": "Survive for: {0} seconds",
   "SurvivalistWinByTimeout": "Survivalist survived! Crewmates win!",
   "SurvivalistLoseByDeath": "Survivalist was killed! Original winners win!"
