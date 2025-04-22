@@ -26,7 +26,7 @@ internal class Survivalist : RoleBase
     public override void SetupCustomOption()
     {
         SetupSingleRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Survivalist, 1);
-        ShowdownDuration = FloatOptionItem.Create(Id + 10, "SurvivalistShowdownDuration", new(10f, 120f, 5f), 70f, TabGroup.CrewmateRoles, false)
+        ShowdownDuration = FloatOptionItem.Create(Id + 10, "ShowdownDuration", new(10f, 120f, 5f), 70f, TabGroup.CrewmateRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Survivalist])
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -60,8 +60,10 @@ internal class Survivalist : RoleBase
             // Notify all players about remaining time
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (pc.Is(CustomRoles.Survivalist)) continue;
+                if (!pc.Is(CustomRoles.Survivalist))
                 pc.Notify(string.Format(GetString("SurvivalistShowdownCountdown"), remainingTime), sendInLog: false);
+                else 
+                pc.Notify(string.Format(GetString("SurvivalistShowdownStart"), remainingTime), sendInLog: false);
             }
         }
     }
