@@ -320,7 +320,7 @@ public static class SpeedRun
         for (int i = 0; i < playerInfoList.Count; i++)
         {
             var info = playerInfoList[i];
-            builder.Append((forGameEnd && info.isAlive ? "<#c4aa02>★</color>" : $"{i + 1}. ") + $"{info.playerName} ({(info.isAlive ? ColorString(Color.green, GetString("Alive")) : ColorString(Color.gray, GetString("Death")))})");
+            builder.Append((forGameEnd && info.isAlive ? "<#c4aa02>★</color>" : $"{i + 1}. ") + $"{info.playerName} ({(info.isAlive ? ColorString(Color.green, GetString("Alive")) : ColorString(Color.red, GetString("Death")))})");
 
             if (info.finishedTasks)
             {
@@ -580,6 +580,7 @@ public class Runner : RoleBase
         {
             BasisChanged = true;
             player.RpcSetRoleDesync(RoleTypes.Impostor, player.OwnerId);
+            player.SetKillCooldown();
             player.MarkDirtySettings();
             SpeedRun.PlayerTaskFinishedAt[player.PlayerId] = GetTimeStamp();
         }
