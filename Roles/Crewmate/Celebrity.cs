@@ -60,7 +60,7 @@ internal class Celebrity : RoleBase
                 if (!NeutralKnowCelebrityDead.GetBool() && pc.IsPlayerNeutralTeam()) continue;
                 if (!CovenKnowCelebrityDead.GetBool() && pc.IsPlayerCovenTeam()) continue;
 
-                SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
+                SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("Celebrity").ToUpper()));
             }
         }
         else

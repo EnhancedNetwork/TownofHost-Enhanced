@@ -403,7 +403,7 @@ public static class CustomRoleManager
                 switch (subRole)
                 {
                     case CustomRoles.Stealer when !inMeeting && !isSuicide:
-                        Stealer.OnMurderPlayer(killer);
+                        Stealer.OnMurderPlayer(killer, target);
                         break;
 
                     case CustomRoles.Tricky:

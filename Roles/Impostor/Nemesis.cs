@@ -175,7 +175,7 @@ internal class Nemesis : RoleBase
             }
             target.SetRealKiller(pc);
 
-            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("NemesisKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), GetString("NemesisRevengeTitle")), true); }, 0.6f, "Nemesis Kill");
+            _ = new LateTask(() => { Utils.SendMessage(string.Format(GetString("NemesisKillSucceed"), Name), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Nemesis), GetString("Nemesis").ToUpper()), true); }, 0.6f, "Nemesis Kill");
         }, 0.2f, "Nemesis Start Kill");
         return true;
     }

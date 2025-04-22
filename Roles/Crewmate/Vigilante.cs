@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -30,7 +31,10 @@ internal class Vigilante : RoleBase
         if (target.IsPlayerCrewmateTeam())
         {
             killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("VigilanteNotify")));
+            _ = new LateTask(() =>
+            {
+                killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Madmate), GetString("VigilanteNotify")));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
             //Utils.NotifyRoles(SpecifySeer: killer);
             Utils.MarkEveryoneDirtySettings();
         }

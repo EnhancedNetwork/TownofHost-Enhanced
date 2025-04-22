@@ -162,7 +162,7 @@ internal class Ninja : RoleBase
             hud.KillButton.OverrideText(GetString("KillButtonText"));
 
         if (MarkedPlayer.ContainsKey(playerid) && !Shapeshifting(playerid))
-            hud.AbilityButton.OverrideText(GetString("NinjaShapeshiftText"));
+            hud.AbilityButton.OverrideText(GetString("KillButtonText"));
     }
 
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => !shapeshifting ? CustomButton.Get("Mark") : null;
