@@ -2216,7 +2216,7 @@ internal class ChatCommands
                     subArgs = text.Remove(0, 5);
                 else
                     subArgs = text.Remove(0, 2);
-                SendRolesInfo(subArgs, player.PlayerId, isDev: player.FriendCode.GetDevUser().DeBug);
+                SendRolesInfo(subArgs, player.PlayerId);
                 break;
 
             case "/m":
