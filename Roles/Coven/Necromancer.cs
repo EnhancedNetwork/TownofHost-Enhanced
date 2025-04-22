@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
@@ -100,7 +101,11 @@ internal class Necromancer : CovenManager
         else if (target == Killer)
         {
             Success = true;
-            killer.Notify(GetString("NecromancerSuccess"));
+            _ = new LateTask(() =>
+            {
+                killer.Notify(GetString("NecromancerSuccess"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+
             killer.SetKillCooldown(KillCooldown.GetFloat() + tempKillTimer);
             IsRevenge = false;
             return true;

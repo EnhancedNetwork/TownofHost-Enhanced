@@ -49,7 +49,7 @@ internal class Executioner : RoleBase
         CustomRoles.Deputy,
         CustomRoles.Medic,
     ];
-    public static readonly List<string> ChangeRoles = new List<string>();    
+    public static readonly List<string> ChangeRoles = new List<string>();
 
     public override void SetupCustomOption()
     {

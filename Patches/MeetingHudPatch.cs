@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Epic.OnlineServices.Presence;
 using Hazel;
 using System;
 using System.Text;
