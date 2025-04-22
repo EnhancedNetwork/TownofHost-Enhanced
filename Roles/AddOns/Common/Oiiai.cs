@@ -165,7 +165,7 @@ public class Oiiai : IAddon
         killer.SetKillCooldown();
         _ = new LateTask(() =>
         {
-            killer.Notify(GetString("LostRoleByOiiai"));            
+            killer.Notify(GetString("LostRoleByOiiai"));
         }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
         killer.RPCPlayCustomSound("Oiiai");
         Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");

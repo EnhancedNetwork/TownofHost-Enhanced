@@ -1,6 +1,3 @@
-using System;
-using UnityEngine;
-
 namespace TOHE.Modules;
 
 // https://github.com/tukasa0001/TownOfHost/blob/main/Modules/VersionChecker.cs

@@ -2667,7 +2667,7 @@ internal class ChatCommands
             case "/玩家信息":
             case "/玩家编号列表":
                 //canceled = true;
-                var tagCanUse = TagManager.ReadPermission(player.FriendCode) >= 2;           
+                var tagCanUse = TagManager.ReadPermission(player.FriendCode) >= 2;
                 //checking if modlist on or not
                 //checking if player is has necessary privellege or not
                 if (!tagCanUse && !Utils.IsPlayerModerator(player.FriendCode))

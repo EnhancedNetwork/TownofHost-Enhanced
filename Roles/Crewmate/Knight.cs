@@ -105,7 +105,7 @@ internal class Requiter : RoleBase
 
         // TNAs
         if (target.GetCustomRole().IsTNA()) return true;
-        
+
         killer.RpcMurderPlayer(target);
         killer.ResetKillCooldown();
         return false;

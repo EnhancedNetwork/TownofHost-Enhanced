@@ -271,7 +271,8 @@ public static class OnPlayerJoinedPatch
                     Logger.SendInGame(string.Format(GetString("MsgWhiteListNoKick"), client?.PlayerName));
                     Logger.Info($"{client?.PlayerName} should be kicked because platform, but is in whitelist so they will not be kicked", "Other Platform Kick");
                 }
-                else { 
+                else
+                {
                     string msg = string.Format(GetString("MsgKickOtherPlatformPlayer"), client?.PlayerName, platform.ToString());
                     AmongUsClient.Instance.KickPlayer(client.Id, false);
                     Logger.SendInGame(msg);

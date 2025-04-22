@@ -103,8 +103,8 @@ internal class Necromancer : CovenManager
             Success = true;
             _ = new LateTask(() =>
             {
-                killer.Notify(GetString("NecromancerSuccess")); 
-            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");            
+                killer.Notify(GetString("NecromancerSuccess"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
 
             killer.SetKillCooldown(KillCooldown.GetFloat() + tempKillTimer);
             IsRevenge = false;
