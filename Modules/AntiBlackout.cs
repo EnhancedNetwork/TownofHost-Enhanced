@@ -123,7 +123,19 @@ public static class AntiBlackout
         foreach (var seer in Main.AllPlayerControls)
         {
             if (seer.IsModded()) continue;
-            var seerIsAliveAndHasKillButton = seer.HasImpKillButton() && seer.IsAlive();
+            var RoleClass = seer.PlayerId.GetRoleClassById();
+            RoleTypes selfRoleType;
+
+            if (RoleClass is DefaultSetup)
+            {
+                selfRoleType = seer.GetCustomRole().GetDYRole();
+            }
+            else
+            {
+                selfRoleType = RoleClass.ThisRoleBase.GetRoleTypesDirect();
+            }
+
+            var seerIsAliveAndHasKillButton = (selfRoleType is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom) && seer.IsAlive();
 
             if (Options.CurrentGameMode is CustomGameMode.SpeedRun or CustomGameMode.FFA)
             {
@@ -139,6 +151,11 @@ public static class AntiBlackout
                         if (target.PlayerId != seer.PlayerId)
                         {
                             sender.RpcSetRole(target, RoleTypes.Crewmate, seer.GetClientId());
+                            hasValue = true;
+                        }
+                        else
+                        {
+                            sender.RpcSetRole(target, selfRoleType, seer.GetClientId());
                             hasValue = true;
                         }
                     }
