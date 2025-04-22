@@ -56,7 +56,7 @@ internal class Jackal : RoleBase
     private enum SidekickCountModeSelectList
     {
         Jackal_SidekickCountMode_Jackal,
-        Jackal_SidekickCountMode_None,
+        CountMode_None,
         Jackal_SidekickCountMode_Original,
     }
 

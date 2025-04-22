@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using UnityEngine;
 using TOHE.Roles.AddOns.Impostor;
+using UnityEngine;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -52,7 +52,7 @@ internal class Crewpostor : RoleBase
 
     }
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute && !player.IsDead;
-    
+
     private static void SendRPC(byte cpID, int tasksDone)
     {
         if (PlayerControl.LocalPlayer.PlayerId == cpID)
@@ -98,7 +98,7 @@ internal class Crewpostor : RoleBase
     {
         var color = comms ? Color.gray : Color.red;
         string TaskCompleted = comms ? "?" : $"{TasksDone[playerId]}";
-        string DisplayTaskProgress = LastImpostor.currentId == playerId ? 
+        string DisplayTaskProgress = LastImpostor.currentId == playerId ?
                                 string.Empty : Utils.ColorString(color, $" ({TaskCompleted}/{KillAfterTask.GetInt()})");
 
         int NumKillsLeft = KillsPerRound.GetInt() - Main.MurderedThisRound.Count(ded => ded.GetRealKillerById() == playerId.GetPlayer());

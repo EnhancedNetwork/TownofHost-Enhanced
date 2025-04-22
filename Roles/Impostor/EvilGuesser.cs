@@ -25,7 +25,7 @@ internal class EvilGuesser : RoleBase
             .SetValueFormat(OptionFormat.Times);
         EGCanGuessImp = BooleanOptionItem.Create(Id + 3, "EGCanGuessImp", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        EGCanGuessAdt = BooleanOptionItem.Create(Id + 4, "EGCanGuessAdt", false, TabGroup.ImpostorRoles, false)
+        EGCanGuessAdt = BooleanOptionItem.Create(Id + 4, "GCanGuessAdt", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
         //EGCanGuessTaskDoneSnitch = BooleanOptionItem.Create(Id + 5, "EGCanGuessTaskDoneSnitch", true, TabGroup.ImpostorRoles, false)
         //    .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
@@ -49,7 +49,7 @@ internal class EvilGuesser : RoleBase
         // Check limit
         if (GuessManager.GuesserGuessed[guesser.PlayerId] >= EGCanGuessTime.GetInt())
         {
-            guesser.ShowInfoMessage(isUI, Translator.GetString("EGGuessMax"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessMax"));
             return true;
         }
 

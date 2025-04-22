@@ -107,7 +107,7 @@ internal class SoulCollector : RoleBase
     {
         if (!pc.IsAlive() || !GetPassiveSouls.GetBool()) return;
 
-        MeetingHudStartPatch.AddMsg(GetString("PassiveSoulGained"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+        MeetingHudStartPatch.AddMsg(GetString("PassiveSoulGained"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollector").ToUpper()));
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
@@ -125,7 +125,7 @@ internal class SoulCollector : RoleBase
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(GetString("SoulCollectorMeetingDeath"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+                    Utils.SendMessage(GetString("SoulCollectorMeetingDeath"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollector").ToUpper()));
 
                 }, 3f, "Soul Collector Meeting Death");
             }
