@@ -266,7 +266,7 @@ public static class OnPlayerJoinedPatch
                 (platform == Platforms.Playstation && Options.OptKickPlayStationPlayer.GetBool()) ||
                 (platform == Platforms.Switch && Options.OptKickNintendoPlayer.GetBool()))
             {
-                if (AmongUsClient.Instance.AmHost && Options.WhiteListNoKick.GetBool() && BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+                if (Options.WhiteListNoKick.GetBool() && BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
                 {
                     Logger.SendInGame(string.Format(GetString("MsgWhiteListNoKick"), client?.PlayerName));
                     Logger.Info($"{client?.PlayerName} should be kicked because platform, but is in whitelist so they will not be kicked", "Other Platform Kick");
