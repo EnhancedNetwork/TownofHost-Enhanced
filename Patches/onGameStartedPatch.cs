@@ -858,6 +858,72 @@ public static class RpcSetRoleReplacer
         }
     }
 
+    public static void ResetRoleMapMidGame()
+    {
+        RoleMap.Clear();
+
+        foreach (var target in Main.PlayerStates.Values)
+        {
+            var MainRole = target.MainRole;
+            var RoleClass = target.RoleClass; // Can be DefaultSetup for rare cases
+
+            RoleTypes selfRoleTypes;
+
+            if (RoleClass is DefaultSetup)
+            {
+                selfRoleTypes = MainRole.GetVNRole().GetRoleTypesDirect();
+            }
+            else
+            {
+                selfRoleTypes = RoleClass.ThisRoleBase.GetRoleTypesDirect();
+            }
+
+            foreach (var seer in Main.PlayerStates.Values)
+            {
+                if (seer.PlayerId == target.PlayerId)
+                {
+                    RoleMap[(seer.PlayerId, target.PlayerId)] = (selfRoleTypes, MainRole);
+                    continue;
+                }
+
+                if (selfRoleTypes is RoleTypes.Noisemaker)
+                {
+                    RoleMap[(seer.PlayerId, target.PlayerId)] = (selfRoleTypes, MainRole);
+                    continue;
+                }
+
+                var seerMainRole = seer.MainRole;
+                var seerRoleClass = seer.RoleClass;
+                RoleTypes seerRoleTypes;
+
+                bool seerDesync;
+                if (seerRoleClass is DefaultSetup)
+                {
+                    seerRoleTypes = seerMainRole.GetVNRole().GetRoleTypesDirect();
+                    seerDesync = Main.DesyncPlayerList.Contains(seer.PlayerId);
+                }
+                else
+                {
+                    seerRoleTypes = seerRoleClass.ThisRoleBase.GetRoleTypesDirect();
+                    seerDesync = seerRoleClass.ThisRoleBase.IsDesyncRole();
+                }
+
+                if (seerDesync)
+                {
+                    RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Scientist, MainRole);
+                }
+                else if (seer.MainRole.IsImpostor() && target.MainRole.IsImpostor())
+                {
+                    RoleMap[(seer.PlayerId, target.PlayerId)] = (selfRoleTypes, seerMainRole);
+                }
+                else
+                {
+                    RoleMap[(seer.PlayerId, target.PlayerId)] = (RoleTypes.Crewmate, seerMainRole);
+                }
+            }
+        }
+    }
+
     public static void EndReplace()
     {
         Senders = null;

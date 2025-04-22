@@ -320,20 +320,19 @@ public static class AntiBlackout
 
         if (Options.CurrentGameMode is CustomGameMode.Standard)
         {
+            RpcSetRoleReplacer.ResetRoleMapMidGame();
+
             foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
             {
-                // skip host
-                if (seerId == 0) continue;
-
                 var seer = seerId.GetPlayer();
                 var target = targetId.GetPlayer();
 
                 if (seer == null || target == null) continue;
-                if (seer.IsModded()) continue;
 
                 var isSelf = seerId == targetId;
                 var isDead = target.Data.IsDead;
                 var changedRoleType = roletype;
+
                 if (isDead)
                 {
                     if (isSelf)
@@ -346,13 +345,23 @@ public static class AntiBlackout
                     }
                     else
                     {
-                        var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
-                        if (!seerIsKiller && target.Is(Custom_Team.Impostor)) changedRoleType = RoleTypes.ImpostorGhost;
-                        else changedRoleType = RoleTypes.CrewmateGhost;
+                        if (roletype is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom)
+                        {
+                            changedRoleType = RoleTypes.ImpostorGhost;
+                        }
+                        else
+                        {
+                            changedRoleType = RoleTypes.CrewmateGhost;
+                        }
                     }
                 }
 
-                if (!isDead && isSelf && seer.HasImpKillButton()) continue;
+                if (seer.AmOwner)
+                {
+                    target.SetRole(changedRoleType, true);
+
+                    continue;
+                }
 
                 sender.RpcSetRole(target, changedRoleType, seer.OwnerId);
                 hasValue = true;
@@ -364,7 +373,7 @@ public static class AntiBlackout
                 sender.EndRpc();
                 hasValue = true;
 
-                if (pc.PlayerId == ExileControllerWrapUpPatch.AntiBlackout_LastExiled?.PlayerId)
+                if (!pc.IsModded() && pc.PlayerId == ExileControllerWrapUpPatch.AntiBlackout_LastExiled?.PlayerId)
                 {
                     sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.MurderPlayer, pc.OwnerId);
                     sender.WriteNetObject(pc);
