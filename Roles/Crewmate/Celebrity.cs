@@ -73,9 +73,9 @@ internal class Celebrity : RoleBase
     {
         foreach (var csId in CelebrityDead)
         {
-            if (!ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
-            if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
-            if (!CovenKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsCoven()) continue;
+            if (!ImpKnowCelebrityDead.GetBool() && targets.IsPlayerImpostorTeam()) continue;
+            if (!NeutralKnowCelebrityDead.GetBool() && targets.IsPlayerNeutralTeam()) continue;
+            if (!CovenKnowCelebrityDead.GetBool() && targets.IsPlayerCovenTeam()) continue;
             AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("Celebrity").ToUpper()));
         }
     }
