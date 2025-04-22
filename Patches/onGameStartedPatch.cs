@@ -244,6 +244,7 @@ internal class ChangeRoleSettings
 
             SabotageSystemPatch.SabotageSystemTypeRepairDamagePatch.Initialize();
             DoorsReset.Initialize();
+            ShipStatusSerializePatch.ReactorFlashList.Clear();
 
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
