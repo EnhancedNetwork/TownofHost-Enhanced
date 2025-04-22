@@ -189,6 +189,7 @@ public static class Options
     public static OptionItem AllowOnlyWhiteList;
 
     public static OptionItem KickOtherPlatformPlayer;
+    public static OptionItem WhiteListNoKick;
     public static OptionItem OptKickAndroidPlayer;
     public static OptionItem OptKickIphonePlayer;
     public static OptionItem OptKickXboxPlayer;
@@ -1169,6 +1170,8 @@ public static class Options
         AllowOnlyWhiteList = BooleanOptionItem.Create(60061, "AllowOnlyWhiteList", false, TabGroup.SystemSettings, false);
 
         KickOtherPlatformPlayer = BooleanOptionItem.Create(60070, "KickOtherPlatformPlayer", false, TabGroup.SystemSettings, false);
+        WhiteListNoKick = BooleanOptionItem.Create(60076, "WhiteListNoKick", false, TabGroup.SystemSettings, false)
+            .SetParent(KickOtherPlatformPlayer);
         OptKickAndroidPlayer = BooleanOptionItem.Create(60071, "OptKickAndroidPlayer", false, TabGroup.SystemSettings, false)
             .SetParent(KickOtherPlatformPlayer);
         OptKickIphonePlayer = BooleanOptionItem.Create(60072, "OptKickIphonePlayer", false, TabGroup.SystemSettings, false)
