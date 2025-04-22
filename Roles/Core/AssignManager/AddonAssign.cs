@@ -201,25 +201,17 @@ public static class AddonAssign
 
     public static void StartAssigningNarc()
     {
-        if (!NarcManager.IsNarcAssigned()) return;
+        var ps = Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == NarcManager.RoleForNarcToSpawnAs) ?? null;
 
-        List<PlayerControl> PlayerList = NarcManager.RoleForNarcToSpawnAs.GetPlayerListByRole();
-        if (!PlayerList.Any())
+        if (ps == null)
         {
             NarcManager.RoleForNarcToSpawnAs = CustomRoles.NotAssigned;
             return;
         }
+        ps.SetSubRole(CustomRoles.Narc);
 
-        int optimpnum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
-        int impnum = Main.AllPlayerControls.Count(p => p.GetCustomRole().IsImpostor());
-        if (/*NarcManager.RoleForNarcToSpawnAs.IsImpostor() &&*/ impnum <= optimpnum)
-        {
-            NarcManager.RoleForNarcToSpawnAs = CustomRoles.NotAssigned;
-            return;
-        }
-
-        if (PlayerList.Count >= 2) PlayerList = PlayerList.Shuffle().Shuffle().ToList();
-        var pc = PlayerList.RandomElement();
-        Main.PlayerStates[pc.PlayerId].SetSubRole(CustomRoles.Narc);
+        // logs the assigning
+        var pc = ps.PlayerId.GetPlayer();
+        Logger.Info($"Assigned Narc to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName}'s Role: {pc.GetCustomRole()} + Narc", "Assign Narc");
     }
 }
