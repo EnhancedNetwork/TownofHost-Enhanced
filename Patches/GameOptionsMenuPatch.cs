@@ -506,6 +506,9 @@ public static class NumberOptionPatch
             case StringNames.GameNumImpostors:
                 __instance.ValidRange = new(0f, GameOptionsManager.Instance.CurrentGameOptions.MaxPlayers / 2);
                 break;
+                       case StringNames.CapacityLabel:
+                __instance.ValidRange = new(4, 127);
+                break;    
         }
 
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
