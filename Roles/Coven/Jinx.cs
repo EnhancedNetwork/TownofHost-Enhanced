@@ -184,5 +184,9 @@ internal class Jinx : CovenManager
 
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl pc) => true;
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("Jinx"));
+    }
     //public override bool CanUseImpostorVentButton(PlayerControl player) => CanVent.GetBool();
 }

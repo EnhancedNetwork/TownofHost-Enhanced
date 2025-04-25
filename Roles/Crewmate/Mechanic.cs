@@ -30,7 +30,7 @@ internal class Mechanic : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Mechanic);
-        SkillLimit = IntegerOptionItem.Create(Id + 10, "MechanicSkillLimit", new(0, 100, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mechanic])
+        SkillLimit = IntegerOptionItem.Create(Id + 10, "AbilityUseLimit", new(0, 100, 1), 10, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mechanic])
             .SetValueFormat(OptionFormat.Times);
         FixesDoors = BooleanOptionItem.Create(Id + 11, "MechanicFixesDoors", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mechanic]);
         FixesReactors = BooleanOptionItem.Create(Id + 12, "MechanicFixesReactors", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mechanic]);

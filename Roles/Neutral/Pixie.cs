@@ -67,7 +67,7 @@ internal class Pixie : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton.OverrideText(GetString("PixieButtonText"));
+        hud.KillButton.OverrideText(GetString("MarkButtonText"));
     }
     public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Mark");
 

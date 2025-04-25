@@ -1597,9 +1597,9 @@ public static class Utils
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
                 SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
-                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
-                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
-                SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
+                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.DoNotKillMe")}</color></size>",
+                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.NoAndroidPlz")}</color></size>",
+                SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.AutoHost")}</color></size>",
                 _ => name
             };
         }
@@ -1859,6 +1859,8 @@ public static class Utils
                         SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
                         SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
                         SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
                         SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
                         break;
@@ -2022,6 +2024,8 @@ public static class Utils
 
                                 TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                                 TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
                                 TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
 
                                 break;

@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
@@ -100,7 +101,11 @@ internal class Necromancer : CovenManager
         else if (target == Killer)
         {
             Success = true;
-            killer.Notify(GetString("NecromancerSuccess"));
+            _ = new LateTask(() =>
+            {
+                killer.Notify(GetString("NecromancerSuccess"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+
             killer.SetKillCooldown(KillCooldown.GetFloat() + tempKillTimer);
             IsRevenge = false;
             return true;
@@ -243,6 +248,14 @@ internal class Necromancer : CovenManager
             AbilityTimer += Time.fixedDeltaTime;
         }
         else canUseAbility = true;
+    }
+    public static string NecromancerReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (Main.PlayerStates[seen.PlayerId].IsNecromancer && !seen.Is(CustomRoles.Necromancer) && !seer.IsAlive() && seen.IsAlive())
+        {
+            return $"<size=1.5><i>{CustomRoles.Necromancer.ToColoredString()}</i></size>";
+        }
+        return string.Empty;
     }
     public static void UnAfterMeetingTasks()
     {

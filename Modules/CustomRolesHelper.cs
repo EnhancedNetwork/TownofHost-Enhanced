@@ -244,6 +244,7 @@ public static class CustomRolesHelper
             || target.Is(CustomRoles.CopyCat)
             || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
             || Knight.CheckCanUseVent(target)
+            || Vigilante.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
     }
     public static bool IsNeutral(this CustomRoles role)
@@ -977,6 +978,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Nimble:
                 if (Knight.CheckCanUseVent(pc)
+                    || Vigilante.CheckCanUseVent(pc)
                     || pc.Is(CustomRoles.CopyCat))
                     return false;
                 if (!pc.GetCustomRole().IsTasklessCrewmate())
@@ -1208,7 +1210,7 @@ public static class CustomRolesHelper
         return true;
     }
     public static RoleTypes GetRoleTypes(this CustomRoles role)
-        => GetVNRole(role) switch
+        => GetVNRole(role) switch // Dog Shit
         {
             CustomRoles.Crewmate => RoleTypes.Crewmate,
             CustomRoles.Impostor => RoleTypes.Impostor,
@@ -1221,6 +1223,24 @@ public static class CustomRolesHelper
             CustomRoles.Tracker => RoleTypes.Tracker,
             _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
         };
+
+    public static RoleTypes GetRoleTypesDirect(this CustomRoles role)
+    {
+        return role switch
+        {
+            CustomRoles.Crewmate => RoleTypes.Crewmate,
+            CustomRoles.Impostor => RoleTypes.Impostor,
+            CustomRoles.Scientist => RoleTypes.Scientist,
+            CustomRoles.Engineer => RoleTypes.Engineer,
+            CustomRoles.GuardianAngel => RoleTypes.GuardianAngel,
+            CustomRoles.Shapeshifter => RoleTypes.Shapeshifter,
+            CustomRoles.Noisemaker => RoleTypes.Noisemaker,
+            CustomRoles.Phantom => RoleTypes.Phantom,
+            CustomRoles.Tracker => RoleTypes.Tracker,
+            _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
+        };
+    }
+
     public static bool IsDesyncRole(this CustomRoles role) => role.GetDYRole() != RoleTypes.GuardianAngel;
     /// <summary>
     /// Role is Madmate Or Impostor

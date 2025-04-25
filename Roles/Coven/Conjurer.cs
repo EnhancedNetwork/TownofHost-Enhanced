@@ -160,7 +160,7 @@ internal class Conjurer : CovenManager
 
         if (conjState is ConjState.NormalMark or ConjState.NecroMark)
         {
-            hud.AbilityButton.OverrideText(GetString("ConjurerMarkShapeshift"));
+            hud.AbilityButton.OverrideText(GetString("MarkButtonText"));
         }
         else if (conjState is ConjState.NormalBomb or ConjState.NecroBomb)
         {

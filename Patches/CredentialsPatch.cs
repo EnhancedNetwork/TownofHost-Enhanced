@@ -64,11 +64,11 @@ class PingTrackerUpdatePatch
             if (Main.ShowTextOverlay.Value)
             {
                 var sbOverlay = new StringBuilder();
-                if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.LowLoadMode"))}");
-                if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.NoGameEnd"))}");
-                if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n{Utils.ColorString(Color.yellow, GetString("Overlay.GuesserMode"))}");
-                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n{Utils.ColorString(Color.red, GetString("Overlay.AllowConsole"))}");
-                if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n{Utils.ColorString(Color.green, GetString("Overlay.DebugMode"))}");
+                if (Options.LowLoadMode.GetBool()) sbOverlay.Append($"\r\n<size=50%>{Utils.ColorString(Color.green, GetString("LowLoadMode"))}</size>");
+                if (Options.NoGameEnd.GetBool()) sbOverlay.Append($"\r\n<size=50%>{Utils.ColorString(Color.red, GetString("NoGameEnd"))}</size>");
+                if (Options.GuesserMode.GetBool()) sbOverlay.Append($"\r\n<size=50%>{Utils.ColorString(Color.yellow, GetString("GuesserMode"))}</size>");
+                if (Options.AllowConsole.GetBool() && PlayerControl.LocalPlayer.FriendCode.GetDevUser().DeBug) sbOverlay.Append($"\r\n<size=50%>{Utils.ColorString(Color.red, GetString("AllowConsole"))}</size>");
+                if (DebugModeManager.IsDebugMode) sbOverlay.Append($"\r\n<size=50%>{Utils.ColorString(Color.green, GetString("DebugMode"))}</size>");
 
                 if (sbOverlay.Length > 0)
                     sb.Append(sbOverlay);

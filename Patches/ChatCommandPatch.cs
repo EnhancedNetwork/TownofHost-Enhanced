@@ -559,7 +559,7 @@ internal class ChatCommands
                     else if (PlayerControl.LocalPlayer.IsAlive())
                     {
                         Logger.Info("IsAlive", "/death command");
-                        Utils.SendMessage(text: GetString("DeathCmd.HeyPlayer") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + GetString("DeathCmd.YouAreRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>\n\n" + GetString("DeathCmd.NotDead"), sendTo: PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("DeathCmd.NotDead"), PlayerControl.LocalPlayer.GetRealName(), PlayerControl.LocalPlayer.GetCustomRole().ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                     else if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote)
@@ -2552,7 +2552,7 @@ internal class ChatCommands
                 }
                 else if (player.IsAlive())
                 {
-                    Utils.SendMessage(GetString("DeathCmd.HeyPlayer") + "<b>" + player.GetRealName() + "</b>" + GetString("DeathCmd.YouAreRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>\n\n" + GetString("DeathCmd.NotDead"), player.PlayerId);
+                    Utils.SendMessage(string.Format(GetString("DeathCmd.NotDead"), player.GetRealName(), player.GetCustomRole().ToColoredString()), player.PlayerId);
                     break;
                 }
                 else if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Vote)
@@ -2669,7 +2669,7 @@ internal class ChatCommands
             case "/玩家信息":
             case "/玩家编号列表":
                 //canceled = true;
-                var tagCanUse = TagManager.ReadPermission(player.FriendCode) >= 2;           
+                var tagCanUse = TagManager.ReadPermission(player.FriendCode) >= 2;
                 //checking if modlist on or not
                 //checking if player is has necessary privellege or not
                 if (!tagCanUse && !Utils.IsPlayerModerator(player.FriendCode))
@@ -3368,10 +3368,10 @@ internal class ChatCommands
                 switch (result)
                 {
                     case 0:
-                        str = GetString("8BallYes");
+                        str = GetString("Yes");
                         break;
                     case 1:
-                        str = GetString("8BallNo");
+                        str = GetString("No");
                         break;
                     case 2:
                         str = GetString("8BallMaybe");

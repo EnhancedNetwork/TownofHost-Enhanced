@@ -164,6 +164,6 @@ internal class Medusa : CovenManager
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.ReportButton.OverrideText(GetString("MedusaReportButtonText"));
+        hud.AbilityButton.OverrideText(GetString("MedusaReportButtonText"));
     }
 }

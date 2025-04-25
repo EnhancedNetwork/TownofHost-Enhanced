@@ -180,9 +180,9 @@ internal class TaskManager : RoleBase
         if (!pc.IsAlive()) return;
 
         if (VisualTasksCompleted.Count > 0)
-            MeetingHudStartPatch.AddMsg(string.Format(GetString("TaskManager_ListCompletedVisualTasksMessage"), GetVisualTaskList()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
+            MeetingHudStartPatch.AddMsg(string.Format(GetString("TaskManager_ListCompletedVisualTasksMessage"), GetVisualTaskList()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManager").ToUpper()));
         else
-            MeetingHudStartPatch.AddMsg(GetString("TaskManager_NoOneCompletedVisualTasksMessage"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManagerNoticeTitle")));
+            MeetingHudStartPatch.AddMsg(GetString("TaskManager_NoOneCompletedVisualTasksMessage"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.TaskManager), GetString("TaskManager").ToUpper()));
     }
     private static string GetVisualTaskList() => string.Join(", ", VisualTasksCompleted.Values.Select(str => GetString(str)));
 
