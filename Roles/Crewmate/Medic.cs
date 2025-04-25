@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.Core;
@@ -218,7 +219,7 @@ internal class Medic : RoleBase
         {
             medic.RpcSetRoleDesync(RoleTypes.Scientist, medicClientId);
         }
-        medic.RpcResetTasks();
+        medic.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
     }
     public override void AfterMeetingTasks()
     {
