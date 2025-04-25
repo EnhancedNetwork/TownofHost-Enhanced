@@ -348,13 +348,17 @@ internal class Randomizer : RoleBase
 
         List<CustomRoles> availableRoles = team switch
         {
-            Custom_Team.Crewmate => CustomRolesHelper.AllRoles.Where(role => role.IsCrewmate() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
-            Custom_Team.Impostor => CustomRolesHelper.AllRoles.Where(role => role.IsImpostor() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
-            Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true) && role is not CustomRoles.Randomizer or CustomRoles.Lawyer).ToList(),
-            Custom_Team.Coven => CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            Custom_Team.Crewmate => CustomRolesHelper.AllRoles.Where(role => role.IsCrewmate() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            Custom_Team.Impostor => CustomRolesHelper.AllRoles.Where(role => role.IsImpostor() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
+            Custom_Team.Neutral => CustomRolesHelper.AllRoles.Where(role => role.IsNeutral() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true) && role is not CustomRoles.Randomizer or CustomRoles.Lawyer).ToList(),
+            Custom_Team.Coven => CustomRolesHelper.AllRoles.Where(role => role.IsCoven() && !role.IsAdditionRole() && (OnlyEnabledRoles.GetBool() ? role.IsEnable() : true)).ToList(),
             _ => new List<CustomRoles>() // Default empty list
         };
-
+        if (availableRoles.Contains(CustomRoles.Randomizer))
+        {
+            Logger.Error("Available roles list somehow contained Randomizer, removing it...", "Randomizer");
+            availableRoles.Remove(CustomRoles.Randomizer);
+        }
         if (!availableRoles.Any())
         {
             Logger.Error("Available roles list is empty for the determined team. Defaulting to Crewmate.", "Randomizer");
@@ -469,6 +473,7 @@ internal class Randomizer : RoleBase
 
     public static void UnAfterMeetingTasks()
     {
+        if (playerIdList == null) return;
         foreach (var playerId in playerIdList.ToList())
         {
 
