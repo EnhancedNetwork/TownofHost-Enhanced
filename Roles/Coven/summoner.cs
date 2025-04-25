@@ -205,6 +205,13 @@ internal class Summoner : CovenManager
             return true;
         }
 
+        if (targetPlayer == pc)
+        {
+            Logger.Warn($"{targetPlayer.GetRealName()} tried to summon self, lol", "Summoner");
+            SendMessage(GetString("Summoner.SummonSelf"), pc.PlayerId, CustomRoles.Summoner.ToColoredString().ToUpper());
+            return true;
+        }
+
         if (targetPlayer.IsAlive())
         {
             Logger.Warn($"{targetPlayer.GetRealName()} is already alive.", "Summoner");
