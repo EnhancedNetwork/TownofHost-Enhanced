@@ -1570,6 +1570,8 @@
   "ReverieResetCooldownMeeting": "Reset Kill Cooldown after meeting",
   "ConvertedReverieKillAll": "Converted Reverie can kill anyone without repercussions",
 
+  "ConvertedVigilanteCanVent": "Converted Vigilante can Vent",
+  "CanSabotageAsRecruit": "Can Sabotage as <color=#00b4eb>Recruit</color>",
   "VigilanteNotify": "You have become the very thing you swore to destroy",
 
   "DictatorChangeCommandToExpel": "<color=#df9b00>Dictator</color> use Command to expell instead of vote",
