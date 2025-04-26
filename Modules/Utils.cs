@@ -654,13 +654,30 @@ public static class Utils
                 case CustomRoles.Soulless:
                 case CustomRoles.Enchanted:
                 case CustomRoles.Rascal:
-                case CustomRoles.Rebel:
                     hasTasks &= !ForRecompute;
+                    break;
+                case CustomRoles.Rebel:
+                    if (role.IsTaskBasedCrewmate() || role is
+                        CustomRoles.Oracle or
+                        CustomRoles.Ventguard or
+                        CustomRoles.Enigma or
+                        CustomRoles.Veteran or
+                        CustomRoles.Bastion or
+                        CustomRoles.Spy or
+                        CustomRoles.Grenadier or
+                        CustomRoles.Inspector or
+                        CustomRoles.Coroner or
+                        CustomRoles.Chameleon or
+                        CustomRoles.TaskManager or
+                        CustomRoles.Lighter or
+                        CustomRoles.Mechanic or
+                        CustomRoles.TimeMaster or
+                        CustomRoles.Medium) hasTasks &= !ForRecompute;
+                    else hasTasks = false;
                     break;
                 case CustomRoles.Mundane:
                     if (!hasTasks) hasTasks = !ForRecompute;
                     break;
-
             }
 
         if (CopyCat.NoHaveTask(playerData.PlayerId, ForRecompute)) hasTasks = false;
@@ -2100,9 +2117,10 @@ public static class Utils
                     var SeerRoleInfo = seer.GetRoleInfo();
                     string RoleText = string.Empty;
                     string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
-                    string RoleInfo = ColorString(seer.GetRoleColor(), seer.GetRoleInfo());
+                    Color InfoColor = seer.GetRoleColor();
+                    string RoleInfo = seer.GetRoleInfo();
 
-                    if (seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")); RoleInfo = ColorString(GetRoleColor(CustomRoles.Rebel), GetString($"{CustomRoles.Rebel}" + "Info")); }
+                    if (seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(new(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")); InfoColor = GetRoleColor(CustomRoles.Rebel); RoleInfo = GetString("RebelInfo"); }
                     else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                     else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
                     else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }

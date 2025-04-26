@@ -707,7 +707,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.KillingMachine)
-                    || (pc.Is(CustomRoles.Rebel) && Rebel.HasImpostorVision.GetBool()))
+                    || (pc.Is(CustomRoles.Rebel) && RebelManager.RebelHasImpVision.GetBool()))
                     return false;
                 if (!pc.GetCustomRole().IsCrewmate())
                     return false;

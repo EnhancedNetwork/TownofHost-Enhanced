@@ -465,7 +465,7 @@ internal class StartGameHostPatch
             {
                 if (Options.CurrentGameMode is CustomGameMode.Standard)
                 {
-                    AddonAssign.StartAssignRebel();
+                    AddonAssign.StartAssigningRebel();
                     AddonAssign.InitAndStartAssignLovers();
                     AddonAssign.StartSortAndAssign();
                 }

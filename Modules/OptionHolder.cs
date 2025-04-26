@@ -1,6 +1,7 @@
 using System;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -103,7 +104,7 @@ public static class Options
         Chance100,
     }
     [Obfuscation(Exclude = true)]
-    private enum RatesZeroOne
+    public enum RatesZeroOne
     {
         RoleOff,
         RoleRate,
@@ -1100,7 +1101,10 @@ public static class Options
                 Madmate.SetupCustomMenuOptions();
 
             if (addonType.Key == AddonTypes.Misc)
-                SetupLoversRoleOptionsToggle(23600); // KYS 
+                SetupLoversRoleOptionsToggle(23600);
+
+            if (addonType.Key == AddonTypes.Misc)
+                RebelManager.SetUpOptionsForRebel();
 
             foreach (var addon in addonType.Value)
             {

@@ -196,44 +196,20 @@ public static class AddonAssign
         if (Main.LoversPlayers.Any())
             RPC.SyncLoversPlayers();
     }
-    public static void StartAssignRebel()
+
+    public static void StartAssigningRebel()
     {
-        var PrepareRoles = new List<CustomRoles>();
-        var NonNKs = new List<PlayerControl>();
+        var ps = Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == RebelManager.RoleForRebelToSpawnAs) ?? null;
 
-        // Select role for Rebel to spawn as
-        foreach (var role in CustomRolesHelper.AllRoles.Where(x => x.IsEnable() && x.IsCrewmate()).ToArray())
+        if (ps == null)
         {
-            int CountPlayers = Main.AllPlayerControls.Count(x => x.Is(role));
-            if (CountPlayers >= role.GetCount()
-                || (role == CustomRoles.Altruist && !Rebel.CanWinAfterDeath.GetBool())
-                || (role == CustomRoles.Sheriff && !Rebel.SheriffCanBeRebel.GetBool())
-                || (role == CustomRoles.Marshall && !Rebel.MarshallCanBeRebel.GetBool())
-                || (role == CustomRoles.Overseer && !Rebel.OverseerCanBeRebel.GetBool())
-                || (role == CustomRoles.Swapper && !Rebel.SwapperCanBeRebel.GetBool())
-                || (role == CustomRoles.Cleanser && !Rebel.CleanserCanBeRebel.GetBool())
-                || (role == CustomRoles.Reverie && !Rebel.ReverieCanBeRebel.GetBool())
-                || (role == CustomRoles.Dictator && (!Rebel.DictatorCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
-                || (role == CustomRoles.Retributionist && (!Rebel.RetributionistCanBeRebel.GetBool() || !Rebel.CanWinAfterDeath.GetBool()))
-                || role is CustomRoles.Snitch or CustomRoles.Admirer or CustomRoles.NiceMini or CustomRoles.CopyCat or CustomRoles.Vigilante)
-                continue;
-            PrepareRoles.Add(role);
+            RebelManager.RoleForRebelToSpawnAs = CustomRoles.NotAssigned;
+            return;
         }
+        ps.SetSubRole(CustomRoles.Rebel);
 
-        // Select players to assign Rebel to
-        foreach (var player in Main.AllPlayerControls.Where(x => x.GetCustomRole().IsNonNK() && !x.Is(CustomRoles.GM)).ToArray())
-        {
-            if (RoleAssign.SetRoles.ContainsKey(player.PlayerId)) continue;// If host used /up, do not select host
-            if (Options.GetRoleChance(player.GetCustomRole()) == 20 /*why is it a string option item...*/) continue;// if spawn chance of player's role is 100%, do not select player
-            NonNKs.Add(player);
-        }
-
-        if (Rebel.CheckRebelAssign() && PrepareRoles.Any() && NonNKs.Any())
-            Rebel.AssignRebelToPlayer(PrepareRoles.RandomElement(), NonNKs.RandomElement());
-        else
-        {
-            if (!PrepareRoles.Any()) Logger.Info($"No role for Rebel to spawn as. Rebel will not spawn.", "Assign Rebel");
-            if (!NonNKs.Any()) Logger.Info($"No player can be Rebel. Rebel will not spawn.", "Assign Rebel");
-        }
+        // logs the assigning
+        var pc = ps.PlayerId.GetPlayer();
+        Logger.Info($"Assigned Rebel to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName}'s Role: {pc.GetCustomRole()} + Rebel", "Assign Rebel");
     }
 }
