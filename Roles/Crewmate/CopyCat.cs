@@ -200,6 +200,14 @@ internal class CopyCat : RoleBase
         killer.SetKillCooldown();
         return false;
     }
+    public static string CopycatReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (playerIdList.Contains(seen.PlayerId) && !seen.Is(CustomRoles.CopyCat) && !seer.IsAlive() && seen.IsAlive())
+        {
+            return $"<size=1.5><i>{CustomRoles.CopyCat.ToColoredString()}</i></size>";
+        }
+        return string.Empty;
+    }
 
     public override void SetAbilityButtonText(HudManager hud, byte id)
     {

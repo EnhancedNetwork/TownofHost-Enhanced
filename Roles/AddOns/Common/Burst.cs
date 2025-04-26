@@ -10,7 +10,7 @@ public class Burst : IAddon
     public static bool IsEnable = false;
     public AddonTypes Type => AddonTypes.Helpful;
 
-    private static OptionItem BurstKillDelay;
+    public static OptionItem BurstKillDelay;
 
     private static readonly HashSet<byte> BurstBodies = [];
     private static readonly HashSet<byte> playerList = [];
@@ -55,6 +55,7 @@ public class Burst : IAddon
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstNotify")));
             _ = new LateTask(() =>
             {
+                if (killer.IsTransformedNeutralApocalypse()) return;
                 if (!killer.inVent && killer.IsAlive() && !GameStates.IsMeeting && GameStates.IsInGame)
                 {
                     killer.SetDeathReason(PlayerState.DeathReason.Bombed);

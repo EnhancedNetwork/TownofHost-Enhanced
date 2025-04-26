@@ -190,7 +190,7 @@ internal class Retributionist : RoleBase
 
             _ = new LateTask(() =>
             {
-                SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
+                SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("Retributionist").ToUpper()), true);
             }, 0.6f, "Retributionist Kill");
 
         }, 0.2f, "Retributionist Start Kill");

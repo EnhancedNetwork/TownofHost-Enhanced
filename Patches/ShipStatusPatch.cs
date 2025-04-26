@@ -469,7 +469,7 @@ class ShipStatusSerializePatch
 
                 rwriter.EndMessage();
             }
-            
+
             AmongUsClient.Instance.SendOrDisconnect(rwriter);
             rwriter.Recycle();
         }
