@@ -2555,6 +2555,8 @@
   "Message.MeCommandTargetInfo": "<size=100%><b>Selected [{0}] Player {1} ,</b></size>\n\n<size=90%>Their <color=#f34c50>friend code</color> is <u>{2}</u>.</size>\n\n<size=90%>Their <color=#f34c50>hash puid</color> is <u>{3}</u>.</size>\n\n<size=90%>Their <b><color=#ffc0cb>TOHE</color> <color=#5865F2>Discord</color></b> role is <u>{4}</u>.</size>\n\n",
   "Message.MeCommandInvalidID": "The ID you entered seems incorrect. \nPlease use /id to get the player ID of online players",
   "Message.MeCommandNoPermission": "You are not allowed to use /me command for others",
+  "FactionSettingsTitle": "FACTION SETTINGS:",
+  "NumberOfImpostors": "Number of <color=#ff1919>Impostors</color>",
 
   "PollTitle": "〖 Poll 〗",
   "PollResultTitle": "Poll Results",
