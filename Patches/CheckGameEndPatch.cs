@@ -813,7 +813,13 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.HideAndSeek_CrewmatesByTimer;
             ResetAndSetWinner(CustomWinner.Cops);
-            WinnerIds = [.. CopsAndRobbersManager.cops];
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(CustomRoles.Cop))
+                {
+                    WinnerIds.Add(pc.PlayerId);
+                }
+            }
             Logger.Warn("Game end because round time finished", "C&R");
             return true;
         }
@@ -842,7 +848,13 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.ImpostorDisconnect;
             ResetAndSetWinner(CustomWinner.Robbers);
-            WinnerIds = [.. CopsAndRobbersManager.robbers];
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(CustomRoles.Robber))
+                {
+                    WinnerIds.Add(pc.PlayerId);
+                }
+            }
             Logger.Info("Game end because No cops left", "C&R");
             return true;
         }
@@ -852,7 +864,13 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.ImpostorsByKill;
             ResetAndSetWinner(CustomWinner.Cops);
-            WinnerIds = [.. CopsAndRobbersManager.cops];
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(CustomRoles.Cop))
+                {
+                    WinnerIds.Add(pc.PlayerId);
+                }
+            }
             Logger.Info("Game end because all robbers captured", "C&R");
             return true;
         }
@@ -868,7 +886,13 @@ class CandRGameEndPredicate : GameEndPredicate
         {
             reason = GameOverReason.CrewmatesByTask;
             ResetAndSetWinner(CustomWinner.Robbers);
-            WinnerIds = [.. CopsAndRobbersManager.robbers];
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(CustomRoles.Robber))
+                {
+                    WinnerIds.Add(pc.PlayerId);
+                }
+            }
             Logger.Info("Game end because robbers completed all tasks", "C&R");
             return true;
         }
@@ -895,7 +919,14 @@ class UltimateTeamGameEndPredicate : GameEndPredicate
             if (UltimateTeam.RedTeam.Count < UltimateTeam.BlueTeam.Count)
             {
                 ResetAndSetWinner(CustomWinner.Blue);
-                WinnerIds = [.. UltimateTeam.BlueTeam];
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.Is(CustomRoles.Blue))
+                    {
+                        WinnerIds.Add(pc.PlayerId);
+                    }
+
+                }
             }
             else if (UltimateTeam.RedTeam.Count == UltimateTeam.BlueTeam.Count)
             {
@@ -905,7 +936,14 @@ class UltimateTeamGameEndPredicate : GameEndPredicate
             else
             {
                 ResetAndSetWinner(CustomWinner.Red);
-                WinnerIds = [.. UltimateTeam.RedTeam];
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.Is(CustomRoles.Red))
+                    {
+                        WinnerIds.Add(pc.PlayerId);
+                    }
+
+                }
             }
 
             Main.DoBlockNameChange = true;
@@ -922,14 +960,28 @@ class UltimateTeamGameEndPredicate : GameEndPredicate
         if (!redAlive)
         {
             ResetAndSetWinner(CustomWinner.Blue);
-            WinnerIds = [.. UltimateTeam.BlueTeam];
+            foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.Is(CustomRoles.Blue))
+                    {
+                        WinnerIds.Add(pc.PlayerId);
+                    }
+
+                }
             Logger.Info("Game end because red is dead", "Ultimate Team");
             return true;
         }
         if (!blueAlive)
         {
             ResetAndSetWinner(CustomWinner.Red);
-            WinnerIds = [.. UltimateTeam.RedTeam];
+            foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.Is(CustomRoles.Red))
+                    {
+                        WinnerIds.Add(pc.PlayerId);
+                    }
+
+                }
             Logger.Info("Game end because blue is dead", "Ultimate Team");
             return true;
         }
