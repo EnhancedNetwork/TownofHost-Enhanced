@@ -2636,7 +2636,7 @@ internal class ChatCommands
             case "/更改颜色":
             case "/修改颜色":
             case "/换颜色":
-                if (Options.PlayerCanSetColor.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().ColorCmd || Utils.IsPlayerVIP(player.FriendCode))
+                if (Options.PlayerCanSetColor.GetBool() || player.FriendCode.GetDevUser().IsDev || player.FriendCode.GetDevUser().ColorCmd || (Utils.IsPlayerVIP(player.FriendCode) && Options.ApplyVipList.GetBool()))
                 {
                     if (GameStates.IsInGame)
                     {
