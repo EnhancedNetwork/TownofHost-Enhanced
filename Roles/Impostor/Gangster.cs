@@ -1,4 +1,4 @@
-﻿using TOHE.Modules;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
@@ -35,9 +35,9 @@ internal class Gangster : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Gangster);
-        KillCooldown = FloatOptionItem.Create(Id + 10, "GangsterRecruitCooldown", new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster])
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.AbilityCooldown, new(0f, 180f, 2.5f), 20f, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster])
             .SetValueFormat(OptionFormat.Seconds);
-        RecruitLimitOpt = IntegerOptionItem.Create(Id + 12, "GangsterRecruitLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster])
+        RecruitLimitOpt = IntegerOptionItem.Create(Id + 12, "AbilityUseLimit", new(1, 15, 1), 2, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster])
             .SetValueFormat(OptionFormat.Times);
 
         CovenCanBeMadmate = BooleanOptionItem.Create(Id + 21, "GanCovenCanBeMadmate", false, TabGroup.ImpostorRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Gangster]);
@@ -158,6 +158,6 @@ internal class Gangster : RoleBase
         return pc != null && (pc.IsNonRebelCrewmate() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven())
             && !pc.Is(CustomRoles.Soulless) && !pc.Is(CustomRoles.Lovers) && !pc.Is(CustomRoles.Loyal)
             && !((pc.Is(CustomRoles.NiceMini) || pc.Is(CustomRoles.EvilMini)) && Mini.Age < 18)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
 }

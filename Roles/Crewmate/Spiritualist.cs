@@ -90,7 +90,7 @@ internal class Spiritualist : RoleBase
         writer.StartMessage(target.GetClientId());
         writer.StartRpc(target.NetId, (byte)RpcCalls.SetName)
             .Write(target.Data.NetId)
-            .Write(GetString("SpiritualistNoticeTitle"))
+            .Write(GetString("Spiritualist").ToUpper())
             .EndRpc();
         writer.StartRpc(target.NetId, (byte)RpcCalls.SendChat)
             .Write(GetString("SpiritualistNoticeMessage"))

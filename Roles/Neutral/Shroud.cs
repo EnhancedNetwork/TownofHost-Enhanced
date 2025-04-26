@@ -3,7 +3,6 @@ using Hazel;
 using InnerNet;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -124,7 +123,7 @@ internal class Shroud : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = min.Key.GetPlayer();
-                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
                 if (min.Value <= KillRange && !shroud.inVent && !shroud.inMovingPlat && !target.inVent && !target.inMovingPlat)
                 {
                     if (shroud.RpcCheckAndMurder(target, true))
@@ -175,6 +174,6 @@ internal class Shroud : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton?.OverrideText($"{GetString("ShroudButtonText")}");
+        hud.KillButton?.OverrideText($"{GetString("Shroud")}");
     }
 }

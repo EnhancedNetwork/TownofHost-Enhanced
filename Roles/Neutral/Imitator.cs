@@ -21,21 +21,22 @@ internal class Imitator : RoleBase
     private static OptionItem IncompatibleNeutralMode;
 
     [Obfuscation(Exclude = true)]
-    private enum ImitatorIncompatibleNeutralModeSelectList
-    {
-        Role_Imitator,
-        Role_Pursuer,
-        Role_Follower,
-        Role_Maverick,
-        Role_Amnesiac
-    }
+
+    public static readonly string[] CRoleChangeRoles =
+    [
+        CustomRoles.Imitator.ToColoredString(),
+        CustomRoles.Pursuer.ToColoredString(),
+        CustomRoles.Follower.ToColoredString(),
+        CustomRoles.Maverick.ToColoredString(),
+        CustomRoles.Amnesiac.ToColoredString()
+    ];
 
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Imitator);
         RememberCooldown = FloatOptionItem.Create(Id + 10, "RememberCooldown", new(0f, 180f, 2.5f), 25f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator])
-            .SetValueFormat(OptionFormat.Seconds);
-        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", EnumHelper.GetAllNames<ImitatorIncompatibleNeutralModeSelectList>(), 0, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
+                .SetValueFormat(OptionFormat.Seconds);
+        IncompatibleNeutralMode = StringOptionItem.Create(Id + 12, "IncompatibleNeutralMode", CRoleChangeRoles, 0, TabGroup.NeutralRoles, false, useGetString: false).SetParent(CustomRoleSpawnChances[CustomRoles.Imitator]);
     }
     public override void Add(byte playerId)
     {

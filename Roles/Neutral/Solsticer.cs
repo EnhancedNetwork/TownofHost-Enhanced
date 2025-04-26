@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -92,6 +93,7 @@ internal class Solsticer : RoleBase
         var taskState = player.GetPlayerTaskState();
         if (taskState.IsTaskFinished)
         {
+            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Solsticer);
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
@@ -289,7 +291,7 @@ internal class Solsticer : RoleBase
             SetShortTasksToAdd();
             if (MurderMessage == "")
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
-            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("Solsticer").ToUpper()));
         }
     }
 }

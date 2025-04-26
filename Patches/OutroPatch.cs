@@ -211,21 +211,21 @@ class SetEverythingUpPatch
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-            {
-                var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
-                __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
-                WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
-                WinnerText.color = Main.PlayerColors[winnerId];
-                goto EndOfText;
-            }
+                {
+                    var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+                    __instance.BackgroundBar.material.color = new Color32(0, 255, 255, 255);
+                    WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
+                    WinnerText.color = Main.PlayerColors[winnerId];
+                    goto EndOfText;
+                }
             case CustomGameMode.SpeedRun:
-            {
-                var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
-                __instance.BackgroundBar.material.color = new Color32(255, 251, 0, 255);
-                WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
-                WinnerText.color = Main.PlayerColors[winnerId];
-                goto EndOfText;
-            }
+                {
+                    var winnerId = CustomWinnerHolder.WinnerIds.FirstOrDefault();
+                    __instance.BackgroundBar.material.color = new Color32(255, 251, 0, 255);
+                    WinnerText.text = Main.AllPlayerNames[winnerId] + " Wins!";
+                    WinnerText.color = Main.PlayerColors[winnerId];
+                    goto EndOfText;
+                }
         }
 
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
@@ -240,7 +240,7 @@ class SetEverythingUpPatch
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
             }
         }
-        if (AmongUsClient.Instance.AmHost && Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].MainRole == CustomRoles.GM)
+        if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].MainRole == CustomRoles.GM)
         {
             __instance.WinText.text = GetString("GameOver");
             __instance.WinText.color = Utils.GetRoleColor(CustomRoles.GM);

@@ -221,12 +221,12 @@ public static class GuessManager
                 }
                 if (Jailer.IsTarget(pc.PlayerId) && role != CustomRoles.Jailer)
                 {
-                    pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("JailedCanOnlyGuessJailer"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
                     return true;
                 }
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    pc.ShowInfoMessage(isUI, GetString("CantGuessJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("CantGuessJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
                     return true;
                 }
                 if (!Mundane.OnGuess(pc))
@@ -1115,7 +1115,7 @@ public static class GuessManager
             return;
         }
 
-        PlayerControl.LocalPlayer.RPCPlayCustomSound("Gunload");
+        CustomSoundsManager.Play("Gunload");
 
     }
 

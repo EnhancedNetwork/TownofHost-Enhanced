@@ -2,6 +2,7 @@ using Hazel;
 using InnerNet;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -183,7 +184,10 @@ internal class MoonDancer : CovenManager
             }
             else
             {
-                killer.Notify(GetString("MoonDancerNormalKill"));
+                _ = new LateTask(() =>
+                {
+                    killer.Notify(GetString("MoonDancerNormalKill"));
+                }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
                 return true;
             }
         }
@@ -294,6 +298,17 @@ internal class MoonDancer : CovenManager
             pc.SetRealKiller(moonDancer);
             pc.RpcExileV2();
             pc.SetDeathReason(PlayerState.DeathReason.BlastedOff);
+        }
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (HasNecronomicon(playerId))
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerNecroKillButton"));
+        }
+        else
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerKillButton"));
         }
     }
 }

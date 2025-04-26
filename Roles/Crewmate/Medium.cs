@@ -94,8 +94,8 @@ internal class Medium : RoleBase
             return true;
         }
 
-        SendMessage(GetString("Medium" + (ans ? "Yes" : "No")), ContactPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
-        SendMessage(GetString("MediumDone"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+        SendMessage(GetString("Medium" + (ans ? "Yes" : "No")), ContactPlayer[pc.PlayerId], ColorString(GetRoleColor(CustomRoles.Medium), GetString("Medium").ToUpper()));
+        SendMessage(GetString("MediumDone"), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("Medium").ToUpper()));
 
         ContactPlayer.Remove(pc.PlayerId);
 
@@ -127,10 +127,10 @@ internal class Medium : RoleBase
 
         //Self 
         if (ContactPlayer.ContainsValue(pc.PlayerId))
-            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], _Player.GetAbilityUseLimit()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+            AddMsg(string.Format(GetString("MediumNotifySelf"), Main.AllPlayerNames[ContactPlayer.Where(x => x.Value == pc.PlayerId).FirstOrDefault().Key], _Player.GetAbilityUseLimit()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("Medium").ToUpper()));
 
         //For target
-        if (ContactPlayer.ContainsKey(pc.PlayerId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.IsNonRebelCrewmate()))
-            AddMsg(string.Format(GetString("MediumNotifyTarget"), Main.AllPlayerNames[ContactPlayer[pc.PlayerId]]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("MediumTitle")));
+        if (ContactPlayer.ContainsKey(pc.PlayerId) && (!OnlyReceiveMsgFromCrew.GetBool() || pc.GetCustomRole().IsCrewmate()))
+            AddMsg(string.Format(GetString("MediumNotifyTarget"), Main.AllPlayerNames[ContactPlayer[pc.PlayerId]]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Medium), GetString("Medium").ToUpper()));
     }
 }

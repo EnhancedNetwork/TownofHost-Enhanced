@@ -75,7 +75,7 @@ internal class Bandit : RoleBase
         var AllSubRoles = Target.GetCustomSubRoles().ToList();
         killer.CheckConflictedAddOnsFromList(ref AllSubRoles);
 
-        foreach (var subRole in AllSubRoles)
+        foreach (var subRole in AllSubRoles.ToList())
         {
             if (subRole is CustomRoles.Cleansed or // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
                 CustomRoles.LastImpostor or

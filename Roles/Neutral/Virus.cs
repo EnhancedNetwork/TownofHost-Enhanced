@@ -36,9 +36,9 @@ internal class Virus : RoleBase
     [Obfuscation(Exclude = true)]
     private enum ContagiousCountModeSelectList
     {
-        Virus_ContagiousCountMode_None,
+        CountMode_None,
         Virus_ContagiousCountMode_Virus,
-        Virus_ContagiousCountMode_Original
+        CountMode_Original
     }
 
     public override void SetupCustomOption()
@@ -161,6 +161,6 @@ public static class VirusPlayerControls
     {
         return true && !pc.Is(CustomRoles.Virus) && !pc.Is(CustomRoles.Contagious) && !pc.Is(CustomRoles.Loyal)
             && !pc.Is(CustomRoles.Admired) && !pc.Is(CustomRoles.Enchanted) && !pc.Is(CustomRoles.Cultist) && !pc.Is(CustomRoles.Infectious) && !pc.Is(CustomRoles.Specter)
-            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool());
+            && !(pc.GetCustomSubRoles().Contains(CustomRoles.Hurried) && !Hurried.CanBeConverted.GetBool()) && !(CovenManager.HasNecronomicon(pc.PlayerId) && pc.Is(CustomRoles.CovenLeader));
     }
 }

@@ -322,7 +322,7 @@ internal class ChatCommands
                         case "船员":
                             GameManager.Instance.enabled = false;
                             Utils.NotifyGameEnding();
-                            GameManager.Instance.RpcEndGame(GameOverReason.HumansDisconnect, false);
+                            GameManager.Instance.RpcEndGame(GameOverReason.CrewmateDisconnect, false);
                             break;
 
                         case "imp":
@@ -558,7 +558,7 @@ internal class ChatCommands
                     else if (PlayerControl.LocalPlayer.IsAlive())
                     {
                         Logger.Info("IsAlive", "/death command");
-                        Utils.SendMessage(text: GetString("DeathCmd.HeyPlayer") + "<b>" + PlayerControl.LocalPlayer.GetRealName() + "</b>" + GetString("DeathCmd.YouAreRole") + "<b>" + $"<color={Utils.GetRoleColorCode(PlayerControl.LocalPlayer.GetCustomRole())}>{Utils.GetRoleName(PlayerControl.LocalPlayer.GetCustomRole())}</color>" + "</b>\n\n" + GetString("DeathCmd.NotDead"), sendTo: PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("DeathCmd.NotDead"), PlayerControl.LocalPlayer.GetRealName(), PlayerControl.LocalPlayer.GetCustomRole().ToColoredString()), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                     else if (Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId].deathReason == PlayerState.DeathReason.Vote)
@@ -1160,7 +1160,10 @@ internal class ChatCommands
                     canceled = true;
                     if (GameStates.IsMeeting)
                     {
-                        MeetingHud.Instance.RpcClose();
+                        if (MeetingHud.Instance)
+                        {
+                            MeetingHud.Instance.RpcClose();
+                        }
                     }
                     else
                     {
@@ -2033,15 +2036,15 @@ internal class ChatCommands
         switch (Options.CurrentGameMode)
         {
             case CustomGameMode.FFA:
-            {
-                Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
-                return;
-            }
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.FFA"), playerId);
+                    return;
+                }
             case CustomGameMode.SpeedRun:
-            {
-                Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
-                return;
-            }
+                {
+                    Utils.SendMessage(GetString("ModeDescribe.SpeedRun"), playerId);
+                    return;
+                }
         }
         role = role.Trim().ToLower();
         if (role.StartsWith("/r")) _ = role.Replace("/r", string.Empty);
@@ -2547,7 +2550,7 @@ internal class ChatCommands
                 }
                 else if (player.IsAlive())
                 {
-                    Utils.SendMessage(GetString("DeathCmd.HeyPlayer") + "<b>" + player.GetRealName() + "</b>" + GetString("DeathCmd.YouAreRole") + "<b>" + $"<color={Utils.GetRoleColorCode(player.GetCustomRole())}>{Utils.GetRoleName(player.GetCustomRole())}</color>" + "</b>\n\n" + GetString("DeathCmd.NotDead"), player.PlayerId);
+                    Utils.SendMessage(string.Format(GetString("DeathCmd.NotDead"), player.GetRealName(), player.GetCustomRole().ToColoredString()), player.PlayerId);
                     break;
                 }
                 else if (Main.PlayerStates[player.PlayerId].deathReason == PlayerState.DeathReason.Vote)
@@ -2646,7 +2649,8 @@ internal class ChatCommands
             case "/айди":
             case "/编号":
             case "/玩家编号":
-                if ((Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2))
+                if (TagManager.ReadPermission(player.FriendCode) < 2) break;
+                else if (TagManager.ReadPermission(player.FriendCode) < 2 && (Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode))
                     && !Options.EnableVoteCommand.GetBool()) break;
 
                 string msgText = GetString("PlayerIdList");
@@ -2663,16 +2667,17 @@ internal class ChatCommands
             case "/玩家信息":
             case "/玩家编号列表":
                 //canceled = true;
+                var tagCanUse = TagManager.ReadPermission(player.FriendCode) >= 2;
                 //checking if modlist on or not
-                if (Options.ApplyModeratorList.GetValue() == 0)
-                {
-                    Utils.SendMessage(GetString("midCommandDisabled"), player.PlayerId);
-                    break;
-                }
                 //checking if player is has necessary privellege or not
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2)
+                if (!tagCanUse && !Utils.IsPlayerModerator(player.FriendCode))
                 {
                     Utils.SendMessage(GetString("midCommandNoAccess"), player.PlayerId);
+                    break;
+                }
+                if (!tagCanUse && Options.ApplyModeratorList.GetValue() == 0)
+                {
+                    Utils.SendMessage(GetString("midCommandDisabled"), player.PlayerId);
                     break;
                 }
                 string msgText1 = GetString("PlayerIdList");
@@ -2690,15 +2695,16 @@ internal class ChatCommands
             case "/забанить":
             case "/封禁":
                 //canceled = true;
+                var tagCanBan = TagManager.ReadPermission(player.FriendCode) >= 5;
                 // Check if the ban command is enabled in the settings
-                if (Options.ApplyModeratorList.GetValue() == 0)
+                if (!tagCanBan && Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("BanCommandDisabled"), player.PlayerId);
                     break;
                 }
 
                 // Check if the player has the necessary privileges to use the command
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 5)
+                if (!tagCanBan && !Utils.IsPlayerModerator(player.FriendCode))
                 {
                     Utils.SendMessage(GetString("BanCommandNoAccess"), player.PlayerId);
                     break;
@@ -2734,8 +2740,8 @@ internal class ChatCommands
                     break;
                 }
 
-                // Prevent moderators from baning other moderators
-                if (Utils.IsPlayerModerator(bannedPlayer.FriendCode) || TagManager.ReadPermission(bannedPlayer.FriendCode) >= 2)
+                // Prevent moderators from banning other moderators
+                if (Utils.IsPlayerModerator(bannedPlayer.FriendCode) || TagManager.ReadPermission(bannedPlayer.FriendCode) >= 5)
                 {
                     Utils.SendMessage(GetString("BanCommandBanMod"), player.PlayerId);
                     break;
@@ -2770,12 +2776,13 @@ internal class ChatCommands
             case "/предупредить":
             case "/警告":
             case "/提醒":
-                if (Options.ApplyModeratorList.GetValue() == 0)
+                var tagCanWarn = TagManager.ReadPermission(player.FriendCode) >= 2;
+                if (!tagCanWarn && Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("WarnCommandDisabled"), player.PlayerId);
                     break;
                 }
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2)
+                if (!tagCanWarn && !Utils.IsPlayerModerator(player.FriendCode))
                 {
                     Utils.SendMessage(GetString("WarnCommandNoAccess"), player.PlayerId);
                     break;
@@ -2837,15 +2844,16 @@ internal class ChatCommands
             case "/выгнать":
             case "/踢出":
             case "/踢":
+                var tagCanKick = TagManager.ReadPermission(player.FriendCode) >= 4;
                 // Check if the kick command is enabled in the settings
-                if (Options.ApplyModeratorList.GetValue() == 0)
+                if (!tagCanKick && Options.ApplyModeratorList.GetValue() == 0)
                 {
                     Utils.SendMessage(GetString("KickCommandDisabled"), player.PlayerId);
                     break;
                 }
 
                 // Check if the player has the necessary privileges to use the command
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 4)
+                if (!tagCanKick && !Utils.IsPlayerModerator(player.FriendCode))
                 {
                     Utils.SendMessage(GetString("KickCommandNoAccess"), player.PlayerId);
                     break;
@@ -3162,7 +3170,7 @@ internal class ChatCommands
                 }
                 else if (Utils.IsPlayerModerator(player.FriendCode) || TagManager.CanUseSayCommand(player.FriendCode))
                 {
-                    if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowSayCommand.GetBool() == false)
+                    if (!TagManager.CanUseSayCommand(player.FriendCode) && (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowSayCommand.GetBool() == false))
                     {
                         Utils.SendMessage(GetString("SayCommandDisabled"), player.PlayerId);
                         break;
@@ -3358,10 +3366,10 @@ internal class ChatCommands
                 switch (result)
                 {
                     case 0:
-                        str = GetString("8BallYes");
+                        str = GetString("Yes");
                         break;
                     case 1:
-                        str = GetString("8BallNo");
+                        str = GetString("No");
                         break;
                     case 2:
                         str = GetString("8BallMaybe");
@@ -3423,7 +3431,8 @@ internal class ChatCommands
                 }
                 else
                 {
-                    if (Options.ApplyModeratorList.GetValue() == 0 || (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 2))
+                    var tagCanMe = TagManager.ReadPermission(player.FriendCode) >= 2;
+                    if ((Options.ApplyModeratorList.GetValue() == 0 || !Utils.IsPlayerModerator(player.FriendCode)) && !tagCanMe)
                     {
                         Utils.SendMessage(GetString("Message.MeCommandNoPermission"), player.PlayerId);
                         break;
@@ -3465,15 +3474,13 @@ internal class ChatCommands
                     Utils.SendMessage(GetString("Message.OnlyCanUseInLobby"), player.PlayerId);
                     break;
                 }
-
-                if (!Utils.IsPlayerModerator(player.FriendCode) && TagManager.ReadPermission(player.FriendCode) < 3)
+                var tagCanStart = TagManager.ReadPermission(player.FriendCode) >= 3;
+                if (!tagCanStart && !Utils.IsPlayerModerator(player.FriendCode))
                 {
                     Utils.SendMessage(GetString("StartCommandNoAccess"), player.PlayerId);
-
                     break;
-
                 }
-                if (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowStartCommand.GetBool() == false)
+                if (!tagCanStart && (Options.ApplyModeratorList.GetValue() == 0 || Options.AllowStartCommand.GetBool() == false))
                 {
                     Utils.SendMessage(GetString("StartCommandDisabled"), player.PlayerId);
                     break;
@@ -3569,7 +3576,7 @@ class ChatUpdatePatch
 
         if (Main.DarkTheme.Value)
         {
-            var chatBubble = __instance.chatBubblePool.Prefab.Cast<ChatBubble>();
+            var chatBubble = __instance.chatBubblePool.Prefab.CastFast<ChatBubble>();
             chatBubble.TextArea.overrideColorTags = false;
             chatBubble.TextArea.color = Color.white;
             chatBubble.Background.color = Color.black;

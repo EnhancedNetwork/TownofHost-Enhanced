@@ -81,8 +81,8 @@ internal class Sheriff : RoleBase
         SetNonCrewCanKill = BooleanOptionItem.Create(Id + 18, "SheriffSetMadCanKill", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Sheriff]);
         NonCrewCanKillImp = BooleanOptionItem.Create(Id + 19, "SheriffMadCanKillImp", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
         NonCrewCanKillCrew = BooleanOptionItem.Create(Id + 21, "SheriffMadCanKillCrew", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
-        NonCrewCanKillNeutral = BooleanOptionItem.Create(Id + 20, "SheriffMadCanKillNeutral", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
-        NonCrewCanKillCoven = BooleanOptionItem.Create(Id + 31, "SheriffMadCanKillCoven", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
+        NonCrewCanKillNeutral = BooleanOptionItem.Create(Id + 20, "SheriffCanKillNeutrals", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
+        NonCrewCanKillCoven = BooleanOptionItem.Create(Id + 31, "SheriffCanKillCoven", true, TabGroup.CrewmateRoles, false).SetParent(SetNonCrewCanKill);
     }
     public override void Add(byte playerId)
     {

@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using static TOHE.Options;
 
 namespace TOHE.Roles.AddOns.Impostor;
@@ -44,10 +45,13 @@ public class Stealer : IAddon
             });
         }
     }
-    public static void OnMurderPlayer(PlayerControl killer)
+    public static void OnMurderPlayer(PlayerControl killer, PlayerControl target)
     {
-        killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
-            ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * TicketsPerKill.GetFloat() + 1f)
-            .ToString("0.0#####")));
+        _ = new LateTask(() =>
+        {
+            killer.Notify(string.Format(Translator.GetString("StealerGetTicket"),
+                ((Main.AllPlayerControls.Count(x => x.GetRealKiller()?.PlayerId == killer.PlayerId)) * TicketsPerKill.GetFloat() + 1f)
+                .ToString("0.0#####")));
+        }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
     }
 }

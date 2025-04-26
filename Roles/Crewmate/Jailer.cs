@@ -127,7 +127,7 @@ internal class Jailer : RoleBase
             var tpc = targetIdByte.GetPlayer();
             if (!tpc.IsAlive()) continue;
 
-            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), targetIdByte, ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), targetIdByte, ColorString(GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
         }
     }
 
