@@ -1085,6 +1085,11 @@ static class ExtendedPlayerControl
     }
     public static void SyncSettings(this PlayerControl player)
     {
+        if (GameStates.IsVanillaServer)
+        {
+            player.SyncSettings();
+            return;
+        }
         PlayerGameOptionsSender.SetDirty(player.PlayerId);
         GameOptionsSender.SendAllGameOptions();
     }

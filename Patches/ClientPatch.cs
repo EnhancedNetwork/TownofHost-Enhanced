@@ -1,7 +1,9 @@
 using InnerNet;
 using TOHE.Modules;
+using AmongUs.Data;
 using UnityEngine;
 using static TOHE.Translator;
+using Hazel;
 
 namespace TOHE;
 
@@ -137,6 +139,50 @@ internal class InnerNetObjectSerializePatch
         }
         catch
         { }
+    }
+}
+// Next 4: https://github.com/Rabek009/MoreGamemodes/blob/master/Patches/ClientPatch.cs
+
+[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CheckOnlinePermissions))]
+static class CheckOnlinePermissionsPatch
+{
+    public static void Prefix()
+    {
+        DataManager.Player.Ban.banPoints = 0f;
+    }
+}
+
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]
+static class SpawnPatch
+{
+    public static void Prefix(InnerNetClient __instance)
+    {
+        MessageWriter writer = __instance.Streams[1];
+        if (writer.Length > 800)
+        {
+            writer.EndMessage();
+            __instance.SendOrDisconnect(writer);
+            writer.Clear(SendOption.Reliable);
+            writer.StartMessage(5);
+            writer.Write(__instance.GameId);
+        }
+    }
+}
+
+[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Despawn))]
+static class DespawnPatch
+{
+    public static void Prefix(InnerNetClient __instance)
+    {
+        MessageWriter writer = __instance.Streams[1];
+        if (writer.Length > 800)
+        {
+            writer.EndMessage();
+            __instance.SendOrDisconnect(writer);
+            writer.Clear(SendOption.Reliable);
+            writer.StartMessage(5);
+            writer.Write(__instance.GameId);
+        }
     }
 }
 
