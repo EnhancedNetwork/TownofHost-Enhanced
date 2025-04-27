@@ -1,9 +1,7 @@
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TOHE.Roles.Crewmate;
 

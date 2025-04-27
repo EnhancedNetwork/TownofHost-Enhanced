@@ -166,7 +166,7 @@ internal class Poisoner : CovenManager
         if (pc == null) return false;
         if (IsRoleblocked(pc.PlayerId))
         {
-            if (pc.GetCustomRole() is 
+            if (pc.GetCustomRole() is
                 CustomRoles.SerialKiller or
                 CustomRoles.Pursuer or
                 CustomRoles.Deputy or

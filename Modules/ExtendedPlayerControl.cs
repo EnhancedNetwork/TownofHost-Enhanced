@@ -1011,7 +1011,7 @@ static class ExtendedPlayerControl
         return UnityEngine.Object.FindObjectsOfType<DeadBody>().FirstOrDefault(bead => bead.ParentId == playerData.PlayerId);
     }
 
-    public static float GetKillDistances(bool ovverideValue = false, int newValue = 2) 
+    public static float GetKillDistances(bool ovverideValue = false, int newValue = 2)
         => NormalGameOptionsV09.KillDistances[Mathf.Clamp(ovverideValue ? newValue : Main.NormalOptions.KillDistance, 0, 2)];
 
     public static void MarkDirtySettings(this PlayerControl player)
