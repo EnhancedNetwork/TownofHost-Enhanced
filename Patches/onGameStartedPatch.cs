@@ -674,20 +674,9 @@ internal class StartGameHostPatch
                 playerInfo.Disconnected = data;
                 playerInfo.IsDead = data;
             }
-
-            var stream = MessageWriter.Get(SendOption.Reliable);
-            stream.StartMessage(5);
-            stream.Write(AmongUsClient.Instance.GameId);
-            {
-                stream.StartMessage(1);
-                stream.WritePacked(playerInfo.NetId);
-                playerInfo.Serialize(stream, false);
-                stream.EndMessage();
-            }
-            stream.EndMessage();
-            AmongUsClient.Instance.SendOrDisconnect(stream);
-            stream.Recycle();
         }
+
+        Utils.SendGameData();
     }
 
     private static void AssignCustomRole(CustomRoles role, PlayerControl player)
