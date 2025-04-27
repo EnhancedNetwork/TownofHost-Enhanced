@@ -2978,6 +2978,7 @@
   "BakerBreadDied": "{0} has died and lost their bread!<br>You may give Bread to another player!",
   "BakerCanVent": "Baker can Vent",
   "BakerBreadGivesEffects": "Bread gives additional effects",
+  "BakerApocCanSeeReveals": "<color=#ff174f>Apocalypse</color> can see Reveals",
   "BakerTransformNoMoreBread": "Baker transforms if they do not have enough bread",
   "BakerRegenBread": "Baker can give Bread again if fed player dies",
   "FamineKillButtonText": "Starve",
