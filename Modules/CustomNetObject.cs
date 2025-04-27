@@ -365,17 +365,18 @@ namespace TOHE.Modules
                 msg2.StartMessage(6);
                 msg2.Write(AmongUsClient.Instance.GameId);
                 msg2.WritePacked(int.MaxValue);
-
-                msg2.StartMessage(4);
-                msg2.WritePacked(2U);
-                msg2.WritePacked(-2);
-                msg2.Write((byte)SpawnFlags.None);
-                msg2.WritePacked(1);
-                msg2.WritePacked(AmongUsClient.Instance.NetIdCnt - i);
-                msg2.StartMessage(1);
-                msg2.EndMessage();
-                msg2.EndMessage();
-
+                for (uint i = 1; i <= 3; ++i)
+                {
+                    msg2.StartMessage(4);
+                    msg2.WritePacked(2U);
+                    msg2.WritePacked(-2);
+                    msg2.Write((byte)SpawnFlags.None);
+                    msg2.WritePacked(1);
+                    msg2.WritePacked(AmongUsClient.Instance.NetIdCnt - i);
+                    msg2.StartMessage(1);
+                    msg2.EndMessage();
+                    msg2.EndMessage();
+                }
                 msg2.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(msg2);
                 msg2.Recycle();

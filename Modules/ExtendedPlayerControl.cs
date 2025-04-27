@@ -1085,7 +1085,7 @@ static class ExtendedPlayerControl
     }
     public static void SyncSettings(this PlayerControl player)
     {
-        if (GameStates.CurrentServerType == GameStates.ServerType.Vanilla)
+        if (GameStates.IsVanillaServer)
         {
             player.SyncSettings();
             return;

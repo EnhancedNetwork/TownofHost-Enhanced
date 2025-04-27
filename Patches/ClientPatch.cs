@@ -3,6 +3,7 @@ using TOHE.Modules;
 using AmongUs.Data;
 using UnityEngine;
 using static TOHE.Translator;
+using Hazel;
 
 namespace TOHE;
 
@@ -148,23 +149,6 @@ static class CheckOnlinePermissionsPatch
     public static void Prefix()
     {
         DataManager.Player.Ban.banPoints = 0f;
-    }
-}
-
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpc))]
-static class StartRpcPatch
-{
-    public static void Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option)
-    {
-        MessageWriter writer = __instance.Streams[(int)option];
-        if (writer.Length > 800)
-        {
-            writer.EndMessage();
-            __instance.SendOrDisconnect(writer);
-            writer.Clear(option);
-            writer.StartMessage(5);
-            writer.Write(__instance.GameId);
-        }
     }
 }
 
