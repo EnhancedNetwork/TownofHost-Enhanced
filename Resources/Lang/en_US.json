@@ -3402,6 +3402,7 @@
   "PitfallTrapCauseVisionTime": "Trap caused vision time",
   "PitfallTrap": "You have fallen into a trap!",
   "ConsigliereDivinationMaxCount": "Maximum Reveals",
+  "ConsigliereImpsCanSeeReveals": "<color=#ff1919>Impostors</color> can see Reveals",
   "CleanserHideVote": "Hide Cleanser's vote",
   "OracleSkillLimit": "Maximum Uses",
   "OracleHideVote": "Hide <color=#6666FF>Oracle</color>'s vote",
