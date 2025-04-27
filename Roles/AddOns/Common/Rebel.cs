@@ -1,10 +1,9 @@
 using AmongUs.GameOptions;
-using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using static TOHE.Options;
 using static TOHE.Utils;
 
-namespace TOHE.Roles.AddOns.Crewmate;
+namespace TOHE.Roles.AddOns.Common;
 
 public static class RebelManager
 {
@@ -133,5 +132,5 @@ public static class RebelManager
     }
 
     public static bool CheckWinCondition(CustomWinner winner, PlayerControl pc)
-        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || (pc.IsAlive() && !CanWinAfterDeath.GetBool()));
+        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || pc.IsAlive() && !CanWinAfterDeath.GetBool());
 }

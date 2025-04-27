@@ -30,8 +30,13 @@ public class Necroview : IAddon
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
-                or CustomRoles.Soulless)
+                or CustomRoles.Soulless
+                or CustomRoles.Rebel)
                 return "7f8c8d";
+            if (SubRole is CustomRoles.Admired)
+            {
+                return Main.roleColors[CustomRoles.Crewmate];
+            }
         }
 
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))
@@ -39,9 +44,9 @@ public class Necroview : IAddon
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rascal) && !target.Is(CustomRoles.Rebel))
+        if (customRole.IsCrewmateTeamV2() && !target.Is(CustomRoles.Rascal))
         {
-            return Main.roleColors[CustomRoles.Bait];
+            return Main.roleColors[CustomRoles.Crewmate];
         }
 
         if (customRole.IsCoven() || customRole.Equals(CustomRoles.Enchanted))

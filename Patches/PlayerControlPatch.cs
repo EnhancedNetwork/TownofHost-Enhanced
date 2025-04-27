@@ -1,3 +1,4 @@
+
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
@@ -1323,9 +1324,14 @@ class FixedUpdateInNormalGamePatch
                         blankRT.Append(TaskState.GetTaskState()); // random task count for revealed trickster
                         result.Clear().Append($"<size=1.3>{blankRT}</size>");
                     }
+                    if (player.Is(CustomRoles.Rebel))
+                    {
+                        blankRT.Clear().Append(CustomRoles.Taskinator.ToColoredString());
+                        blankRT.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $" ({Taskinator.maxTasksMarkedPerRound})"));
+                        result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                    }
                     if (Illusionist.IsNonCovIllusioned(playerId))
                     {
-                        roleText.enabled = true;
                         var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
                         blankRT.Clear().Append(randomRole.GetColoredTextByRole(GetString(randomRole.ToString())));
                         if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses

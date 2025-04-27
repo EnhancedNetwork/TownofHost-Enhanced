@@ -136,7 +136,7 @@ internal class Merchant : RoleBase
 
             if (helpfulAddon && OptionSellOnlyHarmfulToEvil.GetBool())
             {
-                AllAlivePlayer = AllAlivePlayer.Where(a => a.IsNonRebelCrewmate()).ToList();
+                AllAlivePlayer = AllAlivePlayer.Where(a => a.GetCustomRole().IsCrewmate()).ToList();
             }
 
             if (harmfulAddon && OptionSellOnlyHelpfulToCrew.GetBool())

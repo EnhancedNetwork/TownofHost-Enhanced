@@ -154,7 +154,7 @@ internal class CopyCat : RoleBase
                 _ => role
             };
         }
-        if (target.IsNonRebelCrewmate())
+        if (role.IsCrewmate())
         {
             if (role != CustomRoles.CopyCat)
             {

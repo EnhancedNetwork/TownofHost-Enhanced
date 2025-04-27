@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -150,6 +151,8 @@ public class RoleAssign
                 case CustomRoles.NiceMini:
                 case CustomRoles.EvilMini:
                 case CustomRoles.Runner:
+                case CustomRoles.NoisemakerTOHE when RebelManager.IsRebelAssigned():
+                case CustomRoles.TrackerTOHE when RebelManager.IsRebelAssigned():
                     continue;
             }
 
@@ -176,7 +179,15 @@ public class RoleAssign
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
             else if (role.IsNonNK()) Roles[RoleAssignType.NonKillingNeutral].Add(info);
             else if (role.IsCoven()) Roles[RoleAssignType.Coven].Add(info);
-            else Roles[RoleAssignType.Crewmate].Add(info);
+            else
+            {
+                if (role == RebelManager.RoleForRebelToSpawnAs)
+                {
+                    RoleAssignInfo newinfo = new(role, 100, 1);
+                    Roles[RoleAssignType.NonKillingNeutral].Add(newinfo);
+                }
+                else Roles[RoleAssignType.Crewmate].Add(info);
+            }
         }
 
         //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))

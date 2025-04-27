@@ -1,5 +1,5 @@
 using System;
-using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;

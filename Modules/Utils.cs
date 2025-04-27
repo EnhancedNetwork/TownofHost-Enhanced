@@ -1751,6 +1751,10 @@ public static class Utils
             RoleNameUp = "<size=565%>\n</size>";
             RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
         }
+        else if (player.Is(CustomRoles.Rebel))
+        {
+            SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(new(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"))}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
+        }
 
         // Format addons
         bool isFirstSub = true;
@@ -1912,13 +1916,15 @@ public static class Utils
                         var SeerRoleInfo = seer.GetRoleInfo();
                         string RoleText = string.Empty;
                         const string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                        Color InfoColor = seer.GetRoleColor();
+                        string RoleInfo = seer.GetRoleInfo();
 
-                    if (seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(new(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")); InfoColor = GetRoleColor(CustomRoles.Rebel); RoleInfo = GetString("RebelInfo"); }
-                    else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
-                    else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
-                    else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
-                    else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
-                    else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
+                        if (seer.Is(CustomRoles.Rebel)) { RoleText = ColorString(new(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")); InfoColor = GetRoleColor(CustomRoles.Rebel); RoleInfo = GetString("RebelInfo"); }
+                        else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                        else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
+                        else if (seerRole.IsMadmate()) { RoleText = ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamMadmate")); }
+                        else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
+                        else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
                         SelfName.Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
                     }
@@ -2083,10 +2089,11 @@ public static class Utils
                         }
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Rebel))
                         {
-                            BlankRT = ColorString(GetRoleColor(CustomRoles.Taskinator), GetString(CustomRoles.Taskinator.ToString())); // Taskinator
-                            BlankRT += $" {ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $"({Taskinator.maxTasksMarkedPerRound})")}"; // Taskinator progress text
-                            TargetRoleText = $"<size={fontSize}>{BlankRT}</size>\r\n";
-                        }
+                            var blankRT = new StringBuilder();
+                            blankRT.Clear().Append(CustomRoles.Taskinator.ToColoredString()); // Taskinator
+                            blankRT.Append(ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), GetString($" ({Taskinator.maxTasksMarkedPerRound})"))); // Taskinator progress text
+                            TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                    }
 
                         // ====== Target player name ======
 

@@ -1,7 +1,7 @@
 using System;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
-using TOHE.Roles.AddOns.Crewmate;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using UnityEngine;

@@ -166,8 +166,8 @@ public static class CustomRoleManager
                     case CustomRoles.Mare:
                         Mare.ApplyGameOptions(player.PlayerId);
                         break;
-                    case CustomRoles.Rebel:
-                        Rebel.ApplyGameOptions(opt, player);
+                    case CustomRoles.Rebel when !player.Is(CustomRoles.Torch) && !player.Is(CustomRoles.Bewilder):
+                        RebelManager.ApplyGameOptions(opt, player);
                         break;
                 }
             }

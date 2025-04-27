@@ -579,9 +579,9 @@ public static class CustomRolesHelper
                 if (pc.Is(CustomRoles.Guesser) || pc.Is(CustomRoles.NiceGuesser)) return true;
                 if (Options.GuesserMode.GetBool())
                 {
-                    if (pc.IsNonNeutralKiller() && Options.PassiveNeutralsCanGuess.GetBool())
+                    if ((pc.GetCustomRole().IsNonNK() || pc.Is(CustomRoles.Rebel)) && Options.PassiveNeutralsCanGuess.GetBool())
                         return true;
-                    if (pc.IsNonRebelCrewmate() && Options.CrewmatesCanGuess.GetBool())
+                    if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel) && Options.CrewmatesCanGuess.GetBool())
                         return true;
                     else return false;
                 }
@@ -1287,22 +1287,12 @@ public static class CustomRolesHelper
     /// </summary>
     public static bool IsCovenTeam(this CustomRoles role) => role.IsCoven() || role == CustomRoles.Enchanted;
     public static bool IsImpostorTeamV3(this CustomRoles role) => role.IsImpostor() || role.IsMadmate();
-    public static bool IsNeutralTeamV3(this CustomRoles role) => role.IsNeutral() && !role.IsMadmate();
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
     /// <summary>
     /// Player's main role is a Crewmate role, and player is not Rebel
     /// </summary>
-    public static bool IsNonRebelCrewmate(this PlayerControl pc) => pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel);
-    /// <summary>
-    /// Player's main role is a Neutral role, or player has Rebel
-    /// </summary>
-    public static bool IsRebelNeutral(this PlayerControl pc) => pc.Is(CustomRoles.Rebel) || pc.GetCustomRole().IsNeutral();
-    /// <summary>
-    /// Player's main role is a Neutral role and not a Madmate role, or player has Rebel
-    /// </summary>
-    public static bool IsRebelNeutralV3(this PlayerControl pc) => pc.IsRebelNeutral() && !pc.GetCustomRole().IsMadmate();
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is

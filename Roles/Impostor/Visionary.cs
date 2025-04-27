@@ -29,7 +29,8 @@ internal class Visionary : RoleBase
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Recruit
-                or CustomRoles.Soulless)
+                or CustomRoles.Soulless
+                or CustomRoles.Rebel)
                 return "7f8c8d";
             if (SubRole is CustomRoles.Admired)
             {
@@ -47,7 +48,7 @@ internal class Visionary : RoleBase
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if ((customRole.IsCrewmateTeamV2() || target.Is(CustomRoles.Admired)) && !target.Is(CustomRoles.Rascal) && !target.Is(CustomRoles.Rebel))
+        if (customRole.IsCrewmateTeamV2() && !target.Is(CustomRoles.Rascal))
         {
             return Main.roleColors[CustomRoles.Crewmate];
         }
