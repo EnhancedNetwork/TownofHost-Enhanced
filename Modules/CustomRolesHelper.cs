@@ -1290,9 +1290,6 @@ public static class CustomRolesHelper
     public static bool IsNeutralKillerTeam(this CustomRoles role) => role.IsNK() && !role.IsMadmate();
     public static bool IsPassiveNeutralTeam(this CustomRoles role) => role.IsNonNK() && !role.IsMadmate();
     public static bool IsNNK(this CustomRoles role) => role.IsNeutral() && !role.IsNK();
-    /// <summary>
-    /// Player's main role is a Crewmate role, and player is not Rebel
-    /// </summary>
     public static bool IsVanilla(this CustomRoles role)
     {
         return role is
