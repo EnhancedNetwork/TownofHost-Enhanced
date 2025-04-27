@@ -734,6 +734,7 @@ public enum CustomRoles
     Lurker,
     Mastermind,
     Mercenary,
+    Meteor,
     Miner,
     Morphling,
     Nemesis,
