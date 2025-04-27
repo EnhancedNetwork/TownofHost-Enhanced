@@ -4684,6 +4684,7 @@
 
   "Meteor": "Meteor",
   "MeteorInfo": "Use your kill button to kill random players.",
-  "MeteorInfoLong": "As yourthe Meteor when you use your kill button on someone,\nthe kill will be blocked and a random non-imposter will be killed.\nDouble cick to kill normally.",
-  "MeteorKillButtonText": "Enflame"
+  "MeteorInfoLong": "As the Meteor when you use your kill button on someone , the kill will be blocked and a random non-imposter will be killed.\nDouble cick to kill normally.",
+  "MeteorKillButtonText": "Enflame",
+  "DeathReason.Enflamed": "Enflamed"
 }

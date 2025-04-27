@@ -2438,6 +2438,7 @@ public static class Utils
             PlayerState.DeathReason.Toxined => CustomRoles.Bane.IsEnable(),
             PlayerState.DeathReason.Arrested => CustomRoles.Narc.IsEnable(),
             PlayerState.DeathReason.Overthrown => CustomRoles.Dictator.IsEnable(),
+            PlayerState.DeathReason.Enflamed => (CustomRoles.Meteor.IsEnable()),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };

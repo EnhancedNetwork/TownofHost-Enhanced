@@ -47,8 +47,10 @@ internal class Meteor : RoleBase
         {
             return true;
         }
+       
         TriggerMeteorEffect(killer, target);
         return false;
+        
 
     }
 
@@ -75,12 +77,12 @@ internal class Meteor : RoleBase
             // Kill the random target 
             randomTarget.SetRealKiller(killer);
             randomTarget.RpcMurderPlayer(randomTarget);
-            Main.PlayerStates[randomTarget.PlayerId].deathReason = PlayerState.DeathReason.Enflamed;
+            randomTarget.SetDeathReason(PlayerState.DeathReason.Enflamed);
             Main.PlayerStates[randomTarget.PlayerId].SetDead();
 
-            // Show fake kill animation for original target
-            killer.RpcMurderPlayer(originalTarget);
-            originalTarget.RpcResetAbilityCooldown(); // Cancel the actual kill
+            // Block kill
+            killer.RpcGuardAndKill(originalTarget);
+           
         }
         else
         {
