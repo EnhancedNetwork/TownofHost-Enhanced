@@ -1558,7 +1558,7 @@
   "EnableVote": "Activar commando /vote",
   "ShouldVoteSpam": "Try to hide /vote command",
   "VoteDisabled": "/vote command has been disabled by the Host.",
-  "CanTargetImpostor": "Can Target <color=#ff1919>Impostors</color>",
+  "CanTargetImpostor": "Puede tener a <color=#ff1919>Impostores</color> de objetivo",
   "CanTargetNeutralKiller": "Can Target <color=#7f8c8d>Neutral</color> <color=#ff1919>Killing</color>",
   "CanTargetNeutralApocalypse": "Can Target <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color>",
   "ExecutionerChangeRolesAfterTargetKilled": "Si su objetivo muere, el <color=#c0c0c0>Verdugo</color> se convierte en",
