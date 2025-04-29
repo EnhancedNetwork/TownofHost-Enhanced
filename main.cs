@@ -47,7 +47,7 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0425.221.00100"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginVersion = "2025.0429.221.00100"; // YEAR.MMDD.VERSION.CANARYDEV
     public const string PluginDisplayVersion = "2.2.1 Beta 3";
     public const string SupportedVersionAU = "2025.3.25"; // 16.0.0
 
@@ -566,7 +566,7 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        TOHE.Logger.Disable("CustomRpcSender");
+        //TOHE.Logger.Disable("CustomRpcSender");
         TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
