@@ -123,7 +123,6 @@ static class ExtendedPlayerControl
     public static void RpcChangeRoleBasis(this PlayerControl player, CustomRoles newCustomRole, bool loggerRoleMap = false)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || player == null) return;
-
         var playerId = player.PlayerId;
         var playerClientId = player.GetClientId();
         var playerRole = player.GetCustomRole();
@@ -156,7 +155,9 @@ static class ExtendedPlayerControl
 
                         // Set role type for seer
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
+
+                        if (seer.OwnerId == player.OwnerId)
+                            sender.RpcSetRole(player, remeberRoleType, seerClientId);
 
                         if (self) continue;
 
@@ -174,13 +175,17 @@ static class ExtendedPlayerControl
                             if (!newCustomRole.IsImpostor() && seer.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
 
                             RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.IsDesyncRole() ? seerIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist : seerRoleType, seerCustomRole);
-                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
+
+                            if (player.OwnerId == seer.OwnerId)
+                                sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                             continue;
                         }
 
                         // Set role type for player
                         RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (remeberRoleType, seerCustomRole);
-                        sender.RpcSetRole(seer, remeberRoleType, playerClientId);
+
+                        if (player.OwnerId == seer.OwnerId)
+                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                     }
 
                     break;
@@ -209,7 +214,9 @@ static class ExtendedPlayerControl
                         }
 
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
+
+                        if (seer.OwnerId == player.OwnerId)
+                            sender.RpcSetRole(player, remeberRoleType, seerClientId);
 
                         if (self) continue;
 
@@ -222,13 +229,17 @@ static class ExtendedPlayerControl
                         {
                             remeberRoleType = RoleTypes.CrewmateGhost;
                             RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist, seerCustomRole);
-                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
+
+                            if (player.OwnerId == seer.OwnerId)
+                                sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                             continue;
                         }
 
                         // Set role type for player
                         RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (remeberRoleType, seerCustomRole);
-                        sender.RpcSetRole(seer, remeberRoleType, playerClientId);
+
+                        if (player.OwnerId == seer.OwnerId)
+                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
                     }
 
                     break;
@@ -248,7 +259,9 @@ static class ExtendedPlayerControl
                         else remeberRoleType = newRoleType;
 
                         RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
+
+                        if (seer.OwnerId == player.OwnerId)
+                            sender.RpcSetRole(player, remeberRoleType, seerClientId);
                     }
 
                     break;

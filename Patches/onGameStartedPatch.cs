@@ -624,24 +624,26 @@ internal class StartGameHostPatch
     }
     private static void SetRoleSelf()
     {
-        var sender = CustomRpcSender.Create("SetRoleSelf Sender", SendOption.Reliable);
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
+            var sender = CustomRpcSender.Create("SetRoleSelf.Sender." + pc.OwnerId, SendOption.Reliable);
+            var hasValue = false;
             try
             {
-                DoSetRoleSelf(sender, pc);
+                hasValue = DoSetRoleSelf(sender, pc);
             }
             catch { }
+
+            sender.SendMessage(dispose: !hasValue);
         }
-        sender.SendMessage();
     }
-    private static void DoSetRoleSelf(CustomRpcSender sender, PlayerControl target)
+    private static bool DoSetRoleSelf(CustomRpcSender sender, PlayerControl target)
     {
-        if (target == null) return;
+        if (target == null) return false;
 
         RoleTypes roleType;
         int targetClientId = target.GetClientId();
-        if (targetClientId == -1) return;
+        if (targetClientId == -1) return false;
 
         if (RpcSetRoleReplacer.RoleMap.TryGetValue((target.PlayerId, target.PlayerId), out var roleMap))
         {
@@ -653,6 +655,7 @@ internal class StartGameHostPatch
         }
 
         sender.RpcSetRole(target, roleType, targetClientId);
+        return true;
     }
 
     public static readonly Dictionary<byte, bool> DataDisconnected = [];

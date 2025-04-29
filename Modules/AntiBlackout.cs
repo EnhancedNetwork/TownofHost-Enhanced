@@ -118,12 +118,13 @@ public static class AntiBlackout
 
         // For vanilla crew basis, we always try serialize host as dummy imp
 
-        var hasValue = false;
-        var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp", SendOption.Reliable);
         foreach (var seer in Main.AllPlayerControls)
         {
-            if (seer.IsModded()) continue;
+            if (seer.AmOwner || seer.IsModded()) continue;
 
+            var hasValue = false;
+            var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp." + seer.PlayerId, SendOption.Reliable);
+            
             var RoleClass = seer.PlayerId.GetRoleClassById();
             RoleTypes selfRoleType;
 
@@ -166,8 +167,9 @@ public static class AntiBlackout
                     }
                 }
             }
+
+            sender.SendMessage(dispose: !hasValue);
         }
-        sender.SendMessage(dispose: !hasValue);
     }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
@@ -227,10 +229,11 @@ public static class AntiBlackout
             __instance.VotingComplete(states, exiled, tie);
         }
 
-        var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete", SendOption.Reliable);
         foreach (var pc in Main.AllPlayerControls)
         {
             if (pc.IsHost()) continue;
+
+            var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete." + pc.PlayerId, SendOption.Reliable);
             if (pc.IsNonHostModdedClient()) //For mod client show real result
             {
                 sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
@@ -263,8 +266,9 @@ public static class AntiBlackout
                     sender.EndRpc();
                 }
             }
+
+            sender.SendMessage();
         }
-        sender.SendMessage();
     }
     public static void AfterMeetingTasks()
     {
@@ -300,15 +304,13 @@ public static class AntiBlackout
 
         RpcSetRoleReplacer.ResetRoleMapMidGame();
 
-        var hasValue = false;
-
-        var sender = CustomRpcSender.Create("AntiBlackout.SetRealPlayerRoles", SendOption.Reliable);
+        Dictionary<int, CustomRpcSender> sendersByOwnerId = [];
         List<PlayerControl> selfExiled = [];
 
         foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
         {
             // skip host
-            if (seerId == 0) continue;
+            if (seerId == PlayerControl.LocalPlayer.PlayerId) continue;
 
             var seer = seerId.GetPlayer();
             var target = targetId.GetPlayer();
@@ -346,23 +348,34 @@ public static class AntiBlackout
             if (seer.AmOwner)
             {
                 target.SetRole(changedRoleType, true);
-
                 continue;
             }
 
-            sender.RpcSetRole(target, changedRoleType, seer.OwnerId);
-            hasValue = true;
+            int ownerId = seer.OwnerId;
+            if (!sendersByOwnerId.TryGetValue(ownerId, out var sender))
+            {
+                sender = CustomRpcSender.Create($"AntiBlackout.SetRealPlayerRoles.OwnerId{ownerId}", SendOption.Reliable);
+                sendersByOwnerId[ownerId] = sender;
+            }
+
+            sender.RpcSetRole(target, changedRoleType, ownerId);
         }
 
         foreach (var pc in selfExiled)
         {
-            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.Exiled, -1);
+            int ownerId = pc.OwnerId;
+            if (!sendersByOwnerId.TryGetValue(ownerId, out var sender))
+            {
+                sender = CustomRpcSender.Create($"AntiBlackout.SetRealPlayerRoles.OwnerId{ownerId}", SendOption.Reliable);
+                sendersByOwnerId[ownerId] = sender;
+            }
+
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.Exiled, ownerId);
             sender.EndRpc();
-            hasValue = true;
 
             if (!pc.IsModded() && pc.PlayerId == ExileControllerWrapUpPatch.AntiBlackout_LastExiled?.PlayerId)
             {
-                sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.MurderPlayer, pc.OwnerId);
+                sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.MurderPlayer, ownerId);
                 sender.WriteNetObject(pc);
                 sender.Write((int)MurderResultFlags.Succeeded);
                 sender.EndRpc();
@@ -371,7 +384,11 @@ public static class AntiBlackout
             }
         }
 
-        sender.SendMessage(dispose: !hasValue);
+        foreach (var sender in sendersByOwnerId.Values)
+        {
+            sender.SendMessage(dispose: false);
+        }
+
         ResetAllCooldown();
     }
     private static void ResetAllCooldown()
