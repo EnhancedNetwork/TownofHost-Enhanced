@@ -126,7 +126,7 @@ class HudManagerUpdatePatch
                 __instance.SabotageButton?.OverrideText(GetString("SabotageButtonText"));
 
                 player.GetRoleClass()?.SetAbilityButtonText(__instance, player.PlayerId);
-              if (Options.CurrentGameMode is CustomGameMode.CandR)
+                if (Options.CurrentGameMode is CustomGameMode.CandR)
                     CopsAndRobbersManager.SetAbilityButtonText(__instance, player.PlayerId);
                 // Set lower info text for modded players
                 if (LowerInfoText == null)
@@ -339,7 +339,7 @@ class TaskPanelBehaviourPatch
         if (!player.GetCustomRole().IsVanilla())
         {
             sb.Clear();
-            sb.Append($"{player.GetDisplayRoleAndSubName(player, false, false)}:\r\n");
+            sb.Append($"{player.GetDisplayRoleAndSubName(player, false)}:\r\n");
             sb.Append(player.GetRoleInfo());
 
             var AllText = Utils.ColorString(player.GetRoleColor(), sb.ToString());

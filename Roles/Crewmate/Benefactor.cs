@@ -5,6 +5,7 @@ using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Translator;
 
+
 namespace TOHE.Roles.Crewmate;
 
 internal class Benefactor : RoleBase

@@ -114,28 +114,61 @@ public static class AntiBlackout
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
-        PlayerControl dummyImp = Main.AllAlivePlayerControls.FirstOrDefault(x => x.PlayerId != ExilePlayerId);
+        PlayerControl dummyImp = PlayerControl.LocalPlayer;
 
-        if (dummyImp == null)
-        {
-            Logger.Warn("Cant find a alive dummy Imp, AntiBlackout may break?", "AntiBlackout.RevivePlayersAndSetDummyImp");
-            Logger.SendInGame("Cant find a alive dummy Imp, AntiBlackout may break?");
-            return;
-        }
+        // For vanilla crew basis, we always try serialize host as dummy imp
 
         foreach (var seer in Main.AllPlayerControls)
         {
-            if (seer.IsModded()) continue;
-            var seerIsAliveAndHasKillButton = seer.HasImpKillButton() && seer.IsAlive();
+            if (seer.AmOwner || seer.IsModded()) continue;
+
+            var hasValue = false;
+            var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp." + seer.PlayerId, SendOption.Reliable);
+
+            var RoleClass = seer.PlayerId.GetRoleClassById();
+            RoleTypes selfRoleType;
+
+            if (RoleClass is DefaultSetup)
+            {
+                selfRoleType = seer.GetCustomRole().GetDYRole();
+            }
+            else
+            {
+                selfRoleType = RoleClass.ThisRoleBase.GetRoleTypesDirect();
+            }
+
+            var seerIsAliveAndHasKillButton = (selfRoleType is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom) && seer.IsAlive();
             foreach (var target in Main.AllPlayerControls)
             {
-                if (seer.PlayerId == target.PlayerId && seerIsAliveAndHasKillButton) continue;
-                
-                RoleTypes targetRoleType = !seerIsAliveAndHasKillButton && target.PlayerId == dummyImp.PlayerId
-                    ? RoleTypes.Impostor : RoleTypes.Crewmate;
-
-                target.RpcSetRoleDesync(targetRoleType, seer.GetClientId());
+                if (seerIsAliveAndHasKillButton)
+                {
+                    if (target.PlayerId != seer.PlayerId)
+                    {
+                        sender.RpcSetRole(target, RoleTypes.Crewmate, seer.GetClientId());
+                        hasValue = true;
+                    }
+                    else
+                    {
+                        sender.RpcSetRole(target, selfRoleType, seer.GetClientId());
+                        hasValue = true;
+                    }
+                }
+                else
+                {
+                    if (target.PlayerId == dummyImp.PlayerId)
+                    {
+                        sender.RpcSetRole(target, RoleTypes.Impostor, seer.GetClientId());
+                        hasValue = true;
+                    }
+                    else
+                    {
+                        sender.RpcSetRole(target, RoleTypes.Crewmate, seer.GetClientId());
+                        hasValue = true;
+                    }
+                }
             }
+
+            sender.SendMessage(dispose: !hasValue);
         }
     }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
@@ -162,15 +195,17 @@ public static class AntiBlackout
     private static void RestoreIsDeadByExile()
     {
         var sender = CustomRpcSender.Create("AntiBlackout RestoreIsDeadByExile", SendOption.Reliable);
+        var hasValue = false;
         foreach (var player in Main.AllPlayerControls)
         {
             if (player.Data.IsDead && !player.Data.Disconnected)
             {
                 sender.AutoStartRpc(player.NetId, (byte)RpcCalls.Exiled);
                 sender.EndRpc();
+                hasValue = true;
             }
         }
-        sender.SendMessage();
+        sender.SendMessage(dispose: !hasValue);
     }
 
     public static void SendGameData([CallerMemberName] string callerMethodName = "")
@@ -194,10 +229,11 @@ public static class AntiBlackout
             __instance.VotingComplete(states, exiled, tie);
         }
 
-        var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete", SendOption.None);
         foreach (var pc in Main.AllPlayerControls)
         {
             if (pc.IsHost()) continue;
+
+            var sender = CustomRpcSender.Create("AntiBlack RpcVotingComplete." + pc.PlayerId, SendOption.Reliable);
             if (pc.IsNonHostModdedClient()) //For mod client show real result
             {
                 sender.AutoStartRpc(__instance.NetId, (byte)RpcCalls.VotingComplete, pc.GetClientId());
@@ -230,14 +266,15 @@ public static class AntiBlackout
                     sender.EndRpc();
                 }
             }
+
+            sender.SendMessage();
         }
-        sender.SendMessage();
     }
     public static void AfterMeetingTasks()
     {
         var timeNotify = 0f;
 
-        if (CheckForEndVotingPatch.TempExileMsg != null && BlackOutIsActive)
+        if (BlackOutIsActive && CheckForEndVotingPatch.TempExileMsg != null)
         {
             timeNotify = 4f;
             foreach (var pc in Main.AllPlayerControls.Where(p => !p.IsModded()).ToArray())
@@ -265,10 +302,15 @@ public static class AntiBlackout
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
+        RpcSetRoleReplacer.ResetRoleMapMidGame();
+
+        Dictionary<int, CustomRpcSender> sendersByOwnerId = [];
+        List<PlayerControl> selfExiled = [];
+
         foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
         {
             // skip Host
-            if (seerId == 0) continue;
+            if (seerId == PlayerControl.LocalPlayer.PlayerId) continue;
 
             var seer = seerId.GetPlayer();
             var target = targetId.GetPlayer();
@@ -283,7 +325,7 @@ public static class AntiBlackout
             {
                 if (isSelf)
                 {
-                    target.RpcExile();
+                    selfExiled.Add(seer);
 
                     if (target.HasGhostRole()) changedRoleType = RoleTypes.GuardianAngel;
                     else if (target.Is(Custom_Team.Impostor) || target.HasDesyncRole()) changedRoleType = RoleTypes.ImpostorGhost;
@@ -291,29 +333,72 @@ public static class AntiBlackout
                 }
                 else
                 {
-                    var seerIsKiller = seer.Is(Custom_Team.Impostor) || seer.HasDesyncRole();
-                    if (!seerIsKiller && target.Is(Custom_Team.Impostor)) changedRoleType = RoleTypes.ImpostorGhost;
-                    else changedRoleType = RoleTypes.CrewmateGhost;
+                    if (roletype is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom)
+                    {
+                        changedRoleType = RoleTypes.ImpostorGhost;
+                    }
+                    else
+                    {
+                        changedRoleType = RoleTypes.CrewmateGhost;
+                    }
                 }
             }
 
-            if (!isDead && seerId == targetId && seer.HasImpKillButton()) continue;
-            target.RpcSetRoleDesync(changedRoleType, seer.GetClientId());
+            if (seer.AmOwner)
+            {
+                target.SetRole(changedRoleType, true);
+                continue;
+            }
+
+            int ownerId = seer.OwnerId;
+            if (!sendersByOwnerId.TryGetValue(ownerId, out var sender))
+            {
+                sender = CustomRpcSender.Create($"AntiBlackout.SetRealPlayerRoles.OwnerId{ownerId}", SendOption.Reliable);
+                sendersByOwnerId[ownerId] = sender;
+            }
+
+            sender.RpcSetRole(target, changedRoleType, ownerId);
         }
+
+        foreach (var pc in selfExiled)
+        {
+            int ownerId = pc.OwnerId;
+            if (!sendersByOwnerId.TryGetValue(ownerId, out var sender))
+            {
+                sender = CustomRpcSender.Create($"AntiBlackout.SetRealPlayerRoles.OwnerId{ownerId}", SendOption.Reliable);
+                sendersByOwnerId[ownerId] = sender;
+            }
+
+            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.Exiled, ownerId);
+            sender.EndRpc();
+
+            if (!pc.IsModded() && pc.PlayerId == ExileControllerWrapUpPatch.AntiBlackout_LastExiled?.PlayerId)
+            {
+                sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.MurderPlayer, ownerId);
+                sender.WriteNetObject(pc);
+                sender.Write((int)MurderResultFlags.Succeeded);
+                sender.EndRpc();
+
+                pc.ReactorFlash(0.2f);
+            }
+        }
+
+        foreach (var sender in sendersByOwnerId.Values)
+        {
+            sender.SendMessage(dispose: false);
+        }
+
+        ResetAllCooldown();
     }
     private static void ResetAllCooldown()
     {
         foreach (var seer in Main.AllPlayerControls)
         {
-            if (seer.HasGhostRole())
-            {
-                seer.RpcResetAbilityCooldown();
-            }
+            seer.RpcResetAbilityCooldown();
         }
     }
     public static void ResetAfterMeeting()
     {
-        ResetAllCooldown();
         // add 1 second delay
         _ = new LateTask(() =>
         {
