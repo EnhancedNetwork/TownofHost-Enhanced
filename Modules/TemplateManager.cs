@@ -10,7 +10,7 @@ namespace TOHE;
 
 public static class TemplateManager
 {
-    private static readonly string TEMPLATE_FILE_PATH = "./TOHE-DATA/template.txt";
+    private static readonly string TEMPLATE_FILE_PATH = @$"{Main.TOHE_Initial_Path}/template.txt";
     private static readonly Dictionary<string, Func<string>> _replaceDictionaryNormalOptions = new()
     {
         ["RoomCode"] = () => InnerNet.GameCode.IntToGameName(AmongUsClient.Instance.GameId),
@@ -105,14 +105,14 @@ public static class TemplateManager
                     _ => "English"
                 };
             else fileName = "English";
-            if (!Directory.Exists(@"TOHE-DATA")) Directory.CreateDirectory(@"TOHE-DATA");
+            if (!Directory.Exists(Main.TOHE_DATA_FOLDER_NAME)) Directory.CreateDirectory(Main.TOHE_DATA_FOLDER_NAME);
             var defaultTemplateMsg = GetResourcesTxt($"TOHE.Resources.Config.template.{fileName}.txt");
-            if (!File.Exists(@"./TOHE-DATA/Default_Teamplate.txt")) //default template
+            if (!File.Exists(@$"{Main.TOHE_Initial_Path}/Default_Teamplate.txt")) //default template
             {
                 Logger.Warn("Creating Default_Template.txt", "TemplateManager");
-                using FileStream fs = File.Create(@"./TOHE-DATA/Default_Teamplate.txt");
+                using FileStream fs = File.Create(@$"{Main.TOHE_Initial_Path}/Default_Teamplate.txt");
             }
-            File.WriteAllText(@"./TOHE-DATA/Default_Teamplate.txt", defaultTemplateMsg); //overwriting default template
+            File.WriteAllText(@$"{Main.TOHE_Initial_Path}/Default_Teamplate.txt", defaultTemplateMsg); //overwriting default template
             if (!File.Exists(TEMPLATE_FILE_PATH))
             {
                 if (File.Exists(@"./template.txt")) File.Move(@"./template.txt", TEMPLATE_FILE_PATH);

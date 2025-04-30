@@ -147,7 +147,15 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
-    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+
+    public const string TOHE_DATA_FOLDER_NAME = @"TOHE-DATA";
+    public const string LANGUAGE_FOLDER_NAME = @$"{TOHE_DATA_FOLDER_NAME}/Language";
+
+#if DEBUGANDROID || BETAANDROID || RELEASEANDROID
+    public static readonly string TOHE_Initial_Path = @$"{Application.persistentDataPath}/{TOHE_DATA_FOLDER_NAME}";
+#else
+    public static readonly string TOHE_Initial_Path = @$"./{TOHE_DATA_FOLDER_NAME}";
+#endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
