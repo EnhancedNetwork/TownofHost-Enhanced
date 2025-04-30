@@ -22,7 +22,7 @@ public static class BanManager
     {
         try
         {
-            Directory.CreateDirectory($"{Main.TOHE_DATA_FOLDER_NAME}");
+            Directory.CreateDirectory(Main.TOHE_DATA_FOLDER_NAME);
 
             if (!File.Exists(BanListPath))
             {
