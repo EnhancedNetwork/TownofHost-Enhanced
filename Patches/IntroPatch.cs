@@ -326,7 +326,7 @@ class BeginCrewmatePatch
                     teamToDisplay.Add(pc);
             }
 
-            __instance.overlayHandle.color = new Color32(255, 154, 206, byte.MaxValue);
+            __instance.BackgroundBar.material.color = new Color32(255, 154, 206, byte.MaxValue);
             return true;
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Egoist))
@@ -334,14 +334,14 @@ class BeginCrewmatePatch
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
 
-            __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
+            __instance.BackgroundBar.material.color = new Color32(86, 0, 255, byte.MaxValue);
             return true;
         }
         else if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             __instance.BeginImpostor(teamToDisplay);
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+            __instance.BackgroundBar.material.color = Palette.ImpostorRed;
             return false;
         }
         else if (PlayerControl.LocalPlayer.IsPlayerCoven())
@@ -728,7 +728,7 @@ class BeginImpostorPatch
                 }
             }
 
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+            __instance.BackgroundBar.material.color = Palette.ImpostorRed;
             return true;
         }
 
@@ -738,7 +738,7 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
-            __instance.overlayHandle.color = Palette.CrewmateBlue;
+            __instance.BackgroundBar.material.color = Palette.CrewmateBlue;
             return false;
         }
 
@@ -748,7 +748,7 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
-            __instance.overlayHandle.color = new Color32(127, 140, 141, byte.MaxValue);
+            __instance.BackgroundBar.material.color = new Color32(127, 140, 141, byte.MaxValue);
             return false;
         }
 
@@ -772,7 +772,7 @@ class BeginImpostorPatch
                 }
             }
 
-            __instance.overlayHandle.color = Palette.ImpostorRed;
+            __instance.BackgroundBar.material.color = Palette.ImpostorRed;
         }
 
         if (role.IsCoven())
@@ -781,7 +781,7 @@ class BeginImpostorPatch
             yourTeam.Add(PlayerControl.LocalPlayer);
             foreach (var pc in Main.AllPlayerControls.Where(x => !x.AmOwner)) yourTeam.Add(pc);
             __instance.BeginCrewmate(yourTeam);
-            __instance.overlayHandle.color = new Color32(172, 66, 242, byte.MaxValue);
+            __instance.BackgroundBar.material.color = new Color32(172, 66, 242, byte.MaxValue);
             return false;
         }
 
