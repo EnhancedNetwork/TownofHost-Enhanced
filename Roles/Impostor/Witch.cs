@@ -233,7 +233,7 @@ internal class Witch : RoleBase
         }
         else
         {
-            str.Append(IsSpellMode(witch.PlayerId) ? GetString("WitchModeSpell") : GetString("WitchModeKill"));
+            str.Append(IsSpellMode(witch.PlayerId) ? GetString("WitchModeSpell") : GetString("KillButtonText"));
         }
         return str.ToString();
     }

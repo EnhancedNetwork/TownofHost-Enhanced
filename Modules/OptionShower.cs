@@ -101,7 +101,7 @@ public class OptionShower : MonoBehaviour
             if (Options.CurrentGameMode == CustomGameMode.Standard)
             {
                 //有効な役職一覧
-                sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {(Main.EnableGM.Value ? GetString("RoleRate") : GetString("RoleOff"))}\n\n");
+                sb.Append($"<color={Utils.GetRoleColorCode(CustomRoles.GM)}>{Utils.GetRoleName(CustomRoles.GM)}:</color> {(Main.EnableGM.Value ? GetString("ColoredOn") : GetString("ColoredOff"))}\n\n");
                 sb.Append(GetString("ActiveRolesList")).Append('\n');
 
                 var count = 4;
