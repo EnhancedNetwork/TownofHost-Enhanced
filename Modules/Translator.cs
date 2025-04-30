@@ -10,8 +10,8 @@ namespace TOHE;
 
 public static class Translator
 {
-    public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
+    public static Dictionary<string, Dictionary<int, string>> translateMaps = [];
+    public static readonly string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static readonly Dictionary<CustomRoles, HashSet<string>> CrossLangRoleNames = [];
     public static void Init()
@@ -27,7 +27,7 @@ public static class Translator
             // Get the directory containing the JSON files (e.g., TOHE.Resources.Lang)
             string jsonDirectory = "TOHE.Resources.Lang";
             // Get the assembly containing the resources
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetExecutingAssembly();
             string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
 
             translateMaps = [];
@@ -291,13 +291,13 @@ public static class Translator
         }
         catch (Exception Ex)
         {
-            Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
+            Logger.Fatal($"Error oucured at [{str}] in en_US.json - langId {langId}", "Translator");
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
         return res;
     }
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
     public static string GetRoleString(string str, bool forUser = true)
     {
         var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;

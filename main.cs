@@ -148,13 +148,14 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
 
-    public const string TOHE_DATA_FOLDER_NAME = @"TOHE-DATA";
-    public const string LANGUAGE_FOLDER_NAME = @$"{TOHE_DATA_FOLDER_NAME}/Language";
+    public const string TOHE_DATA_FOLDER_NAME = "TOHE-DATA";
 
 #if DEBUGANDROID || BETAANDROID || RELEASEANDROID
     public static readonly string TOHE_Initial_Path = @$"{Application.persistentDataPath}/{TOHE_DATA_FOLDER_NAME}";
+        public static readonly string LANGUAGE_FOLDER_NAME = $"{TOHE_Initial_Path}/Language";
 #else
-    public static readonly string TOHE_Initial_Path = @$"./{TOHE_DATA_FOLDER_NAME}";
+    public static readonly string TOHE_Initial_Path = $"./{TOHE_DATA_FOLDER_NAME}";
+    public static readonly string LANGUAGE_FOLDER_NAME = $"{TOHE_DATA_FOLDER_NAME}/Language";
 #endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
@@ -422,6 +423,8 @@ public class Main : BasePlugin
     public static void LoadRoleClasses()
     {
         TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
+        CustomRoleManager.RoleClass.Clear();
+
         try
         {
             var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
