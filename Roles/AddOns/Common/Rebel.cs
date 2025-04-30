@@ -7,9 +7,41 @@ namespace TOHE.Roles.AddOns.Common;
 
 public static class RebelManager
 {
+    /// <summary>
+    /// List of roles that can be Rebel
+    /// </summary>
+    public static List<CustomRoles> SelectedRebelRoles()
+    {
+        var list = new List<CustomRoles>();
+        foreach (var role in CustomRolesHelper.AllRoles
+                                    .Where(r => r.IsEnable() && !r.IsVanilla() && !r.IsGhostRole() && !r.IsAdditionRole()))
+        {
+            if (!role.IsCrewmate()) continue;
+            if (role is CustomRoles.Altruist && !CanWinAfterDeath.GetBool()) continue;
+            if (role is CustomRoles.Marshall && !MarshallCanBeRebel.GetBool()) continue;
+            if (role is CustomRoles.Overseer && !OverseerCanBeRebel.GetBool()) continue;
+            if (role is CustomRoles.Swapper && !SwapperCanBeRebel.GetBool()) continue;
+            if (role is CustomRoles.Cleanser && !CleanserCanBeRebel.GetBool()) continue;
+            if (role is CustomRoles.Reverie && !ReverieCanBeRebel.GetBool()) continue;
+            if (role is CustomRoles.Sheriff && !SheriffCanBeRebel.GetBool()) continue;
+            if (role is CustomRoles.Dictator && (!DictatorCanBeRebel.GetBool() || !CanWinAfterDeath.GetBool())) continue;
+            if (role is CustomRoles.Retributionist && (!RetributionistCanBeRebel.GetBool() || !CanWinAfterDeath.GetBool())) continue;
+            if (role is CustomRoles.Snitch or CustomRoles.Admirer or CustomRoles.NiceMini or CustomRoles.Vigilante or CustomRoles.CopyCat) continue;
+
+            list.Add(role);
+        }
+        return list;
+    }
+
+    /// <summary>
+    /// Checks if a role can be Rebel
+    /// </summary>
+    public static bool CanBeRebel(this CustomRoles role) => SelectedRebelRoles().Contains(role);
+
     //===========================SETUP================================\\
     public static CustomRoles RoleForRebelToSpawnAs;
     public static bool IsRebelAssigned() => RoleForRebelToSpawnAs != CustomRoles.NotAssigned;
+    public static bool AssignedToHost = false;
     //==================================================================\\
 
     public static OptionItem RebelSpawnChance;
@@ -97,26 +129,17 @@ public static class RebelManager
 
     public static void InitForRebel()
     {
+        if (AssignedToHost) return;
         RoleForRebelToSpawnAs = CustomRoles.NotAssigned;
 
         int value = IRandom.Instance.Next(1, 100);
 
         if (value <= RebelSpawnChance.GetInt() && CustomRoles.Rebel.IsEnable())
         {
-            List<CustomRoles> RolesEnabled = CustomRolesHelper.AllRoles
-                                        .Where(r => r.IsEnable() && r.IsCrewmate() && !r.IsVanilla() && !r.IsGhostRole())
-                                        .ToList();
-            var RolesToSelect = new List<CustomRoles>();
-            foreach (var crewrole in RolesEnabled)
-            {
-                if (RoleAssign.SetRoles.ContainsValue(crewrole)) continue;
-                if (crewrole is CustomRoles.NoisemakerTOHE or CustomRoles.TrackerTOHE) continue;
-                RolesToSelect.Add(crewrole);
-            }
-
-            if (!RolesToSelect.Any()) return;
-            RolesToSelect = RolesToSelect.Shuffle().Shuffle().ToList();
+            if (!SelectedRebelRoles().Any()) return;
+            var RolesToSelect = SelectedRebelRoles().Shuffle().Shuffle().ToList();
             RoleForRebelToSpawnAs = RolesToSelect.RandomElement();
+            Logger.Info("Select Role for Rebel:" + RoleForRebelToSpawnAs.ToString(), "RebelManager");
         }
     }
 

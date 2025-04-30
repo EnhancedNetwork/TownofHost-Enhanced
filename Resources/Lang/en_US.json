@@ -1055,7 +1055,7 @@
   "SlothInfoLong": "(Add-ons):\nThe Sloth's default movement speed is slower than others.\n(Speed depends on the setting of the Host)",
   "ProhibitedInfoLong": "(Add-ons):\nAs the Prohibited, you have specific Vents that you can't use.\nHow many Vents are disabled depends on the Host's settings.",
   "EavesdropperInfoLong": "(Add-ons):\nAs the Eavesdropper, you have a chance to read other Role/Add-on information-based messages like Mortician or Sleuth.",
-  "RebelInfoLong": "(Betrayal Add-ons):\nOnly Crewmates can become Rebels. As a Rebel Crewmate, you are a Neutral that has turned against the Crewmates. You win with the winning team while watching them lose. If Crewmates win, you lose.",
+  "RebelInfoLong": "(Betrayal Add-ons):\nOnly Crewmates can become Rebels. As a Rebel, you are a Crewmate that has turned against the other Crewmates.\nYou win with the winning team while watching them lose.\nNote: Depending on the settings, a Rebel can even win after getting killed. If the setting is disabled, then they lose.",
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
   "RequiterInfoLong": "(Crewmates):\nThe Requiter has no bullets at the beginning.\nFor each Crewmate ejected,the Requiter gains one bullet.\nThe Requiter can kill when they have bullets.",

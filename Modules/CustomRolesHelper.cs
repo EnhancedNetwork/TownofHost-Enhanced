@@ -249,6 +249,18 @@ public static class CustomRolesHelper
             || Vigilante.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
     }
+
+    /// <summary>
+    /// Get the respective main role from hidden role
+    public static CustomRoles GetRoleFromHiddenRole(this CustomRoles role)
+        => role switch
+        {
+            CustomRoles.Bard => CustomRoles.Arrogance,
+            CustomRoles.Sunnyboy => CustomRoles.Jester,
+            CustomRoles.Requiter => CustomRoles.Knight,
+            CustomRoles.EvilMini or CustomRoles.NiceMini => CustomRoles.Mini,
+            _ => role
+        };
     public static bool IsNeutral(this CustomRoles role)
     {
         if (role is
@@ -492,7 +504,7 @@ public static class CustomRolesHelper
         else if ((pc.Is(CustomRoles.RuthlessRomantic) || pc.Is(CustomRoles.Romantic) || pc.Is(CustomRoles.VengefulRomantic)) && role is CustomRoles.Lovers) return false;
 
         if (checkLimitAddons)
-            if (pc.HasSubRole() && pc.GetCustomSubRoles().Count(x => x is not CustomRoles.Rebel) >= Options.NoLimitAddonsNumMax.GetInt()) return false;
+            if (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt()) return false;
 
 
         // Checking for conflicts with roles and other add-ons

@@ -151,8 +151,6 @@ public class RoleAssign
                 case CustomRoles.NiceMini:
                 case CustomRoles.EvilMini:
                 case CustomRoles.Runner:
-                case CustomRoles.NoisemakerTOHE when RebelManager.IsRebelAssigned():
-                case CustomRoles.TrackerTOHE when RebelManager.IsRebelAssigned():
                     continue;
             }
 
@@ -174,20 +172,18 @@ public class RoleAssign
                 continue;
             }
 
-            if (role.IsImpostor()) Roles[RoleAssignType.Impostor].Add(info);
+
+            else if (role.IsImpostor()) Roles[RoleAssignType.Impostor].Add(info);
             else if (role.IsNK()) Roles[RoleAssignType.NeutralKilling].Add(info);
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
             else if (role.IsNonNK()) Roles[RoleAssignType.NonKillingNeutral].Add(info);
             else if (role.IsCoven()) Roles[RoleAssignType.Coven].Add(info);
-            else
+            else if (role == RebelManager.RoleForRebelToSpawnAs)
             {
-                if (role == RebelManager.RoleForRebelToSpawnAs)
-                {
-                    RoleAssignInfo newinfo = new(role, 100, 1);
-                    Roles[RoleAssignType.NonKillingNeutral].Add(newinfo);
-                }
-                else Roles[RoleAssignType.Crewmate].Add(info);
+                RoleAssignInfo newinfo = new(role, 100, 1);
+                Roles[RoleAssignType.NonKillingNeutral].Add(newinfo);
             }
+            else Roles[RoleAssignType.Crewmate].Add(info);
         }
 
         //if (Roles[RoleAssignType.Impostor].Count == 0 && !SetRoles.Values.Any(x => x.IsImpostor()))
@@ -306,7 +302,7 @@ public class RoleAssign
                 Roles[RoleAssignType.Coven].Where(x => x.Role == item.Value).Do(x => x.AssignedCount++);
                 readyCovenNum++;
             }
-            else if (item.Value.IsNonNK())
+            else if (item.Value.IsNonNK() || item.Value == RebelManager.RoleForRebelToSpawnAs)
             {
                 Roles[RoleAssignType.NonKillingNeutral].Where(x => x.Role == item.Value).Do(x => x.AssignedCount++);
                 readyNonNeutralKillingNum++;

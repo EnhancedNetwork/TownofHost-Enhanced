@@ -136,25 +136,25 @@ internal class Sheriff : RoleBase
     public static bool CanBeKilledBySheriff(PlayerControl player)
     {
         var cRole = player.GetCustomRole();
-        var subRole = player.GetCustomSubRoles();
         bool CanKill = false;
-        foreach (var SubRoleTarget in subRole)
-        {
-            CanKill = SubRoleTarget switch
-            {
-                CustomRoles.Madmate => CanKillMadmate.GetBool(),
-                CustomRoles.Charmed => CanKillCharmed.GetBool(),
-                CustomRoles.Lovers => CanKillLovers.GetBool(),
-                CustomRoles.Recruit => CanKillSidekicks.GetBool(),
-                CustomRoles.Egoist => CanKillEgoists.GetBool(),
-                CustomRoles.Infected => CanKillInfected.GetBool(),
-                CustomRoles.Contagious => CanKillContagious.GetBool(),
-                CustomRoles.Enchanted => CanKillEnchanted.GetBool(),
-                CustomRoles.Rascal => true,
-                CustomRoles.Admired => false,
-                _ => false,
-            };
-        }
+        if (player.Is(CustomRoles.Madmate) && CanKillMadmate.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Charmed) && CanKillCharmed.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Lovers) && CanKillLovers.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Recruit) && CanKillSidekicks.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Infected) && CanKillInfected.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Contagious) && CanKillContagious.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Enchanted) && CanKillEnchanted.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Rascal))
+            CanKill = true;
 
         if (CanKill) return true;
         else if (player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool()) return false;
@@ -168,7 +168,7 @@ internal class Sheriff : RoleBase
                 Custom_Team.Impostor => true,
                 Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool()),
                 Custom_Team.Coven => CanKillCoven.GetBool(),
-                _ => CanKill,
+                _ => false,
             }
         };
     }

@@ -154,7 +154,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Infectious:
-                        if ((pc.Is(CustomRoles.Infected) || pc.Is(CustomRoles.Infectious))  )
+                        if ((pc.Is(CustomRoles.Infected) || pc.Is(CustomRoles.Infectious)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }

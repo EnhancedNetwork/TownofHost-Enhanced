@@ -666,23 +666,24 @@ public static class Utils
                     hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Rebel:
-                    if (role.IsTaskBasedCrewmate() || role is
-                        CustomRoles.Oracle or
-                        CustomRoles.Ventguard or
-                        CustomRoles.Enigma or
-                        CustomRoles.Veteran or
-                        CustomRoles.Bastion or
-                        CustomRoles.Spy or
-                        CustomRoles.Grenadier or
-                        CustomRoles.Inspector or
-                        CustomRoles.Coroner or
-                        CustomRoles.Chameleon or
-                        CustomRoles.TaskManager or
-                        CustomRoles.Lighter or
-                        CustomRoles.Mechanic or
-                        CustomRoles.TimeMaster or
-                        CustomRoles.Medium) hasTasks &= !ForRecompute;
-                    else hasTasks = false;
+                    if (!role.IsTaskBasedCrewmate() && role is not
+                        CustomRoles.Oracle and not
+                        CustomRoles.Ventguard and not
+                        CustomRoles.Enigma and not
+                        CustomRoles.Veteran and not
+                        CustomRoles.Bastion and not
+                        CustomRoles.Spy and not
+                        CustomRoles.Grenadier and not
+                        CustomRoles.Inspector and not
+                        CustomRoles.Coroner and not
+                        CustomRoles.Chameleon and not
+                        CustomRoles.FortuneTeller and not
+                        CustomRoles.TaskManager and not
+                        CustomRoles.Lighter and not
+                        CustomRoles.Mechanic and not
+                        CustomRoles.TimeMaster and not
+                        CustomRoles.Medium) hasTasks = false;
+                    else hasTasks &= !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
                     if (!hasTasks) hasTasks = !ForRecompute;

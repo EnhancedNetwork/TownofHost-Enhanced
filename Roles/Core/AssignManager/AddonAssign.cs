@@ -172,7 +172,6 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.NiceMini)
                 || pc.Is(CustomRoles.EvilMini)
                 || pc.Is(CustomRoles.Altruist)
-                || pc.Is(CustomRoles.Rebel)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool())
@@ -199,17 +198,20 @@ public static class AddonAssign
 
     public static void StartAssigningRebel()
     {
-        var ps = Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == RebelManager.RoleForRebelToSpawnAs) ?? null;
+        var ps = RebelManager.AssignedToHost ?
+            Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId] : Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == RebelManager.RoleForRebelToSpawnAs) ?? null;
+        RebelManager.AssignedToHost = false;
 
         if (ps == null)
         {
             RebelManager.RoleForRebelToSpawnAs = CustomRoles.NotAssigned;
             return;
         }
+
         ps.SetSubRole(CustomRoles.Rebel);
 
         // logs the assigning
         var pc = ps.PlayerId.GetPlayer();
-        Logger.Info($"Assigned Rebel to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName}'s Role: {pc.GetCustomRole()} + Rebel", "Assign Rebel");
+        Logger.Info($"Assigned Rebel to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName} Role: {pc.GetCustomRole()} + Rebel", "Assign Rebel");
     }
 }

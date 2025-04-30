@@ -123,9 +123,9 @@ internal class Merchant : RoleBase
                 && !addon.IsConverted()
                 && CustomRolesHelper.CheckAddonConfilct(addon, x, checkLimitAddons: false)
                 && (!Cleanser.CantGetAddon() || (Cleanser.CantGetAddon() && !x.Is(CustomRoles.Cleansed)))
-                && ((OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate()) ||
+                && ((OptionCanTargetCrew.GetBool() && x.GetCustomRole().IsCrewmate() && !x.Is(CustomRoles.Rebel)) ||
                     (OptionCanTargetImpostor.GetBool() && x.GetCustomRole().IsImpostorTeamV3()) ||
-                    (OptionCanTargetNeutral.GetBool() && x.GetCustomRole().IsNeutral()) ||
+                    (OptionCanTargetNeutral.GetBool() && (x.GetCustomRole().IsNeutral() || x.Is(CustomRoles.Rebel))) ||
                     (OptionCanTargetCoven.GetBool() && x.GetCustomRole().IsCoven()))
             ).ToList();
 
@@ -136,7 +136,7 @@ internal class Merchant : RoleBase
 
             if (helpfulAddon && OptionSellOnlyHarmfulToEvil.GetBool())
             {
-                AllAlivePlayer = AllAlivePlayer.Where(a => a.GetCustomRole().IsCrewmate()).ToList();
+                AllAlivePlayer = AllAlivePlayer.Where(a => a.GetCustomRole().IsCrewmate() && !a.Is(CustomRoles.Rebel)).ToList();
             }
 
             if (harmfulAddon && OptionSellOnlyHelpfulToCrew.GetBool())
@@ -144,6 +144,7 @@ internal class Merchant : RoleBase
                 AllAlivePlayer = AllAlivePlayer.Where(a =>
                     a.GetCustomRole().IsImpostorTeamV3() ||
                     a.GetCustomRole().IsNeutral() ||
+                    a.Is(CustomRoles.Rebel) ||
                     a.GetCustomRole().IsCoven()
                 ).ToList();
             }

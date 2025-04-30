@@ -337,14 +337,6 @@ class BeginCrewmatePatch
             __instance.overlayHandle.color = new Color32(86, 0, 255, byte.MaxValue);
             return true;
         }
-        else if (PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
-        {
-            teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
-            teamToDisplay.Add(PlayerControl.LocalPlayer);
-
-            __instance.overlayHandle.color = new Color32(255, 171, 26, byte.MaxValue);
-            return true;
-        }
         else if (role.IsMadmate() || PlayerControl.LocalPlayer.Is(CustomRoles.Madmate))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
@@ -374,7 +366,7 @@ class BeginCrewmatePatch
             }
             teamToDisplay = apocTeam;
         }
-        else if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral))
+        else if (PlayerControl.LocalPlayer.Is(Custom_Team.Neutral) || PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
         {
             teamToDisplay = new Il2CppSystem.Collections.Generic.List<PlayerControl>();
             teamToDisplay.Add(PlayerControl.LocalPlayer);
@@ -623,11 +615,11 @@ class BeginCrewmatePatch
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
         {
-            __instance.TeamTitle.text = GetString("TeamRebel");
-            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 171, 26, byte.MaxValue);
+            __instance.TeamTitle.text = GetString("TeamNeutral");
+            __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(127, 140, 141, byte.MaxValue);
             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
             __instance.ImpostorText.gameObject.SetActive(true);
-            __instance.ImpostorText.text = GetString("SubText.Rebel");
+            __instance.ImpostorText.text = GetString("SubText.Neutral");
         }
         else if (PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) || role.IsMadmate())
         {
@@ -749,7 +741,7 @@ class BeginImpostorPatch
             return true;
         }
 
-        if (role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor)
+        if (role.IsCrewmate() && role.GetDYRole() == RoleTypes.Impostor && !PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
@@ -759,7 +751,7 @@ class BeginImpostorPatch
             return false;
         }
 
-        if (role.IsNeutral())
+        if (role.IsNeutral() || PlayerControl.LocalPlayer.Is(CustomRoles.Rebel))
         {
             yourTeam = new();
             yourTeam.Add(PlayerControl.LocalPlayer);
