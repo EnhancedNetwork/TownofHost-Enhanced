@@ -11,7 +11,7 @@ using static TOHE.Translator;
 using static TOHE.Utils;
 
 namespace TOHE.Roles.Impostor;
-internal class DoubleAgent : RoleBase
+public class DoubleAgent : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.DoubleAgent;

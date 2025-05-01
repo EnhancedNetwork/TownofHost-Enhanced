@@ -1,6 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)' == 'DebugAndroid' Or '$(Configuration)' == 'BetaAndroid' Or '$(Configuration)' == 'ReleaseAndroid'">net8.0</TargetFramework>
+		<TargetFramework Condition="'$(Configuration)' != 'DebugAndroid' And '$(Configuration)' != 'BetaAndroid' And '$(Configuration)' != 'ReleaseAndroid'">net6.0</TargetFramework>
+	</PropertyGroup>
+	<PropertyGroup>
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
 		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
 		<GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>

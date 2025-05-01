@@ -1649,7 +1649,7 @@ public static class Utils
 
         return false;
     }
-    public static IEnumerable<t> GetRoleBasesByType<t>() where t : RoleBase
+    public static IEnumerable<TRole> GetRoleBasesByType<TRole>() where TRole : RoleBase
     {
         try
         {
@@ -1658,7 +1658,7 @@ public static class Utils
             if (cache.Any())
             {
                 var Get = cache.Select(x => x.RoleClass);
-                return Get.OfType<t>().Any() ? Get.OfType<t>() : null;
+                return Get.OfType<TRole>().Any() ? Get.OfType<TRole>() : null;
             }
         }
         catch (Exception exx)

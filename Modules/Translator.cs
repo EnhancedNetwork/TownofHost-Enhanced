@@ -277,7 +277,7 @@ public static class Translator
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
         {
-            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
+            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || string.IsNullOrEmpty(res) || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
             {
                 if (langId == SupportedLangs.English) res = $"*{str}";
                 else res = GetString(str, SupportedLangs.English);
@@ -285,7 +285,7 @@ public static class Translator
             if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
             {
                 var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
+                if (stringNames != null && stringNames.Length != 0)
                     res = GetString(stringNames.FirstOrDefault());
             }
         }
@@ -297,7 +297,7 @@ public static class Translator
         return res;
     }
     public static string GetString(StringNames stringName)
-        => TranslationController.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => TranslationController.Instance.GetString(stringName);
     public static string GetRoleString(string str, bool forUser = true)
     {
         var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;
