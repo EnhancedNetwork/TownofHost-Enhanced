@@ -91,7 +91,7 @@ public static class Utils
             The Airship  = 4
             The Fungle   = 5
         */
-        
+
         switch (type)
         {
             case SystemTypes.Electrical:
@@ -559,7 +559,7 @@ public static class Utils
     {
         var state = Main.PlayerStates[playerId];
         string deathReason = state.IsDead ? state.deathReason == PlayerState.DeathReason.etc && state.Disconnected ? GetString("Disconnected") : GetString("DeathReason." + state.deathReason) : GetString("Alive");
-               if (Options.CurrentGameMode is CustomGameMode.CandR)
+        if (Options.CurrentGameMode is CustomGameMode.CandR)
         {
             if (deathReason == GetString("Alive"))
             {
@@ -569,7 +569,7 @@ public static class Utils
             }
             return deathReason;
         }
-        
+
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
@@ -609,7 +609,7 @@ public static class Utils
         if (GameStates.IsHideNSeek) return hasTasks;
 
         var role = States.MainRole;
-             if (Options.CurrentGameMode == CustomGameMode.CandR) return CopsAndRobbersManager.HasTasks(role); //C&R
+        if (Options.CurrentGameMode == CustomGameMode.CandR) return CopsAndRobbersManager.HasTasks(role); //C&R
 
         if (States.RoleClass != null && States.RoleClass.HasTasks(playerData, role, ForRecompute) == false)
             hasTasks = false;
@@ -1073,6 +1073,14 @@ public static class Utils
         {
             name = "Local Games";
             return name;
+        }
+        if (AmongUsClient.Instance.GameId == EnterCodeManagerPatch.tempGameId)
+        {
+            if (EnterCodeManagerPatch.tempRegion != null)
+            {
+                region = EnterCodeManagerPatch.tempRegion;
+                name = EnterCodeManagerPatch.tempRegion.Name;
+            }
         }
 
         if (region.PingServer.EndsWith("among.us", StringComparison.Ordinal))
@@ -1762,7 +1770,7 @@ public static class Utils
             else if (TagManager.ReadTagName(player.FriendCode) == " " || TagManager.ReadTagName(player.FriendCode) == "") modtag = "";
             else modtag = $"<color=#{TagManager.ReadTagColor(player.FriendCode)}>{TagManager.ReadTagName(player.FriendCode)}</color>";
         }
-        
+
         if (player.AmOwner)
         {
             name = Options.GetSuffixMode() switch
@@ -1779,7 +1787,7 @@ public static class Utils
             };
         }
 
-        if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag() && player.IsModded())
+        if (!name.Contains($"\r\r") && player.FriendCode.GetDevUser().HasTag())
         {
             name = player.FriendCode.GetDevUser().GetTag() + "<size=1.5>" + modtag + "</size>" + name;
         }
@@ -1966,7 +1974,7 @@ public static class Utils
 
         HudManagerUpdatePatch.NowCallNotifyRolesCount++;
         HudManagerUpdatePatch.LastSetNameDesyncCount = 0;
-        
+
         PlayerControl[] seerList = SpecifySeer != null
             ? ([SpecifySeer])
             : Main.AllPlayerControls;
@@ -2044,7 +2052,7 @@ public static class Utils
                         break;
                     case CustomGameMode.CandR:
                         SelfSuffix.Append(CopsAndRobbersManager.GetClosestArrow(seer, seer));
-                        break;     
+                        break;
                 }
 
 
@@ -2055,7 +2063,7 @@ public static class Utils
                 // ====== Combine SelfRoleName, SelfTaskText, SelfName, SelfDeathReason for Seer ======
                 string SelfTaskText = GetProgressText(seer);
 
-                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, isForMeeting, false)}{SelfTaskText}</size>";
+                string SelfRoleName = $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(seer, isForMeeting)}{SelfTaskText}</size>";
                 string SelfDeathReason = seer.KnowDeathReason(seer) ? $"\n<size={fontSizeDeathReason}>『{ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))}』</size>" : string.Empty;
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
@@ -2197,7 +2205,7 @@ public static class Utils
                         bool KnowRoleTarget = ExtendedPlayerControl.KnowRoleTarget(seer, target);
 
                         string TargetRoleText = KnowRoleTarget
-                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, isForMeeting, false)}{GetProgressText(target)}</size>\r\n" : "";
+                                ? $"<size={fontSize}>{seer.GetDisplayRoleAndSubName(target, isForMeeting)}{GetProgressText(target)}</size>\r\n" : "";
 
                         string BlankRT = string.Empty;
 
@@ -2438,6 +2446,7 @@ public static class Utils
             PlayerState.DeathReason.Toxined => CustomRoles.Bane.IsEnable(),
             PlayerState.DeathReason.Arrested => CustomRoles.Narc.IsEnable(),
             PlayerState.DeathReason.Overthrown => CustomRoles.Dictator.IsEnable(),
+            PlayerState.DeathReason.Enflamed => (CustomRoles.Meteor.IsEnable()),
             PlayerState.DeathReason.Kill => true,
             _ => true,
         };
@@ -2604,7 +2613,7 @@ public static class Utils
 
     public static string SummaryTexts(byte id, bool disableColor = true, bool check = false)
     {
-               if (Options.CurrentGameMode is CustomGameMode.CandR) return CopsAndRobbersManager.SummaryTexts(id, disableColor, check);
+        if (Options.CurrentGameMode is CustomGameMode.CandR) return CopsAndRobbersManager.SummaryTexts(id, disableColor, check);
         string name;
         try
         {
@@ -2820,18 +2829,17 @@ public static class Utils
 
         vanillasend.StartMessage(1);
         vanillasend.WritePacked(0);
-        vanillasend.EndMessage();
+
 
         vanillasend.EndMessage();
         vanillasend.EndMessage();
 
-        vanillasend.StartMessage(6);
-        vanillasend.Write(AmongUsClient.Instance.GameId);
-        vanillasend.Write(player.OwnerId);
+
         vanillasend.StartMessage((byte)GameDataTag.RpcFlag);
         vanillasend.WritePacked(customNetId);
         vanillasend.Write((byte)RpcCalls.CloseMeeting);
         vanillasend.EndMessage();
+
         vanillasend.EndMessage();
 
         AmongUsClient.Instance.SendOrDisconnect(vanillasend);

@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using System.Text;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -11,10 +12,11 @@ public abstract class RoleBase
     public abstract CustomRoles Role { get; }
     public PlayerState _state;
 #pragma warning disable IDE1006
-    public PlayerControl _Player => _state != null ? _state.PlayerId.GetPlayer() ?? null : null;
+    public PlayerControl _Player => _state != null ? Utils.GetPlayerById(_state.PlayerId) ?? null : null;
     public List<byte> _playerIdList => Main.PlayerStates.Values.Where(x => x.MainRole == _state.MainRole).Select(x => x.PlayerId).Cast<byte>().ToList();
 #pragma warning restore IDE1006
 
+    public float AbilityLimit { get; set; } = -100;
     public virtual bool IsEnable { get; set; } = false;
     public bool HasVoted = false;
     public virtual bool IsExperimental => false;
@@ -27,7 +29,7 @@ public abstract class RoleBase
         Init();
     }
 
-    public void OnAdd(byte playerid) // The Player with the class executes this
+    public void OnAdd(byte playerid) // The player with the class executes this
     {
         _state = Main.PlayerStates.GetValueOrDefault(playerid);
         try
@@ -235,12 +237,12 @@ public abstract class RoleBase
     { }
 
     /// <summary>
-    /// When someone was died and need to run Kill Flash for specific Role
+    /// When Player is dead and need to run kill flash for specific Role
     /// </summary>
     public virtual bool KillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
     /// <summary>
-    /// When the Target Role has died and Kill Flash needs to run globally
+    /// When the Target Role has died and kill flash needs to run globally
     /// </summary>
     public virtual bool GlobalKillFlashCheck(PlayerControl killer, PlayerControl target, PlayerControl seer) => false;
 
@@ -288,7 +290,7 @@ public abstract class RoleBase
     /// When the meeting was start by report dead body or press meeting button
     /// Target is null when meeting was start by pressing meeting button
     /// Target is not null when meeting was start by report dead body
-    /// When Target left the game, it's data in NetworkedPlayerInfo is not null, it still has data that can be used
+    /// When target left the game, it's data in NetworkedPlayerInfo is not null, it still has data that can be used
     /// But if you use target.Object, then it can be null
     /// </summary>
     public virtual void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
@@ -299,13 +301,13 @@ public abstract class RoleBase
     /// </summary>
     public virtual bool GuessCheck(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
     /// <summary>
-    /// When Guesser trying guess target a Role
+    /// When Guesser trying guess Target as a Role
     /// Target need to check whether misguessed so it wont cancel misguesses
     /// </summary>
     public virtual bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl guesser, CustomRoles role, ref bool guesserSuicide) => target == null;
 
     /// <summary>
-    /// When Guesser was misguessed
+    /// When Guesser misguessed
     /// </summary>
     public virtual bool CheckMisGuessed(bool isUI, PlayerControl guesser, PlayerControl target, CustomRoles role, ref bool guesserSuicide) => target == null;
 
@@ -427,10 +429,10 @@ public abstract class RoleBase
     /// Set PlayerName text for the Role
     /// </summary>
     public virtual string NotifyPlayerName(PlayerControl seer, PlayerControl target, string TargetPlayerName = "", bool IsForMeeting = false) => string.Empty;
-    // Add Mark/LowerText/Suffix for Player
-    // When using this code remember the Seer can also see the Target, therefore..
-    // return string.empty if "seer != seen" if only Seer should have it
-    // otherwise make some list or byte or smt of sorts to only get the Target
+    // Add Mark/LowerText/Suffix for player
+    // When using this code remember the seer can also see the target, therefore..
+    // return string.empty if "seer != seen" if only seer should have it
+    // otherwise make some list or byte or smt of sorts to only get the target
     public virtual string GetMark(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffix(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
@@ -444,21 +446,33 @@ public abstract class RoleBase
     }
 
     // IMPORTANT note about otherIcons: 
-    // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once).
-    // You may use static attributes, tho you can simply just use utils.GetRoleBasesByType<> if need be.
+    // These are only called once in the method, so object attributes are banned (as 99.99% of roles only want the method to run once)
+    // You may use static attributes, tho you can simply just use utils.GetRoleBasesByType<> if need be
     public virtual string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
     public virtual string GetLowerTextOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false) => string.Empty;
     public virtual string GetSuffixOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false) => string.Empty;
 
-
-
-    // Player know role target, color role target
+    // Player know Role Target, color Role Target
     public virtual bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => false;
     public virtual string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target) => string.Empty;
     public virtual bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => false;
 
+    public void OnReceiveRPC(MessageReader reader)
+    {
+        float Limit = reader.ReadSingle();
+        AbilityLimit = Limit;
+    }
+    public void SendSkillRPC()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+        writer.WriteNetObject(_Player);
+        writer.Write(AbilityLimit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
     public virtual void ReceiveRPC(MessageReader reader, PlayerControl pc)
-    { }
+    {
+        OnReceiveRPC(reader); // Default implementation
+    }
 
     [Obfuscation(Exclude = true)]
     public enum GeneralOption

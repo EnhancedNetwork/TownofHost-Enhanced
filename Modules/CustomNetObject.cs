@@ -168,13 +168,14 @@ namespace TOHE.Modules
                 playerControl.PlayerId = 255;
                 playerControl.isNew = false;
                 playerControl.notRealPlayer = true;
+                playerControl.NetTransform.SnapTo(new(-200, -200));
 
                 MessageWriter msg = MessageWriter.Get();
                 msg.StartMessage(5);
                 msg.Write(AmongUsClient.Instance.GameId);
                 AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
                 msg.EndMessage();
-
+/*
                 // This makes Innersloth server think PlayerControl and PlayerNetTransform is a LobbyBehavoir
                 // So it will disable checks regarding it
                 if (GameStates.IsVanillaServer)
@@ -215,6 +216,7 @@ namespace TOHE.Modules
 
                     msg.EndMessage();
                 }
+                */
 
                 AmongUsClient.Instance.SendOrDisconnect(msg);
                 msg.Recycle();
@@ -347,9 +349,10 @@ namespace TOHE.Modules
             playerControl = UnityEngine.Object.Instantiate(AmongUsClient.Instance.PlayerPrefab, Vector2.zero, Quaternion.identity);
             playerControl.PlayerId = 255;
             playerControl.isNew = false;
-            playerControl.notRealPlayer = true;
 
-            MessageWriter msg = MessageWriter.Get();
+            playerControl.NetTransform.SnapTo(new(-200, -200));
+
+            MessageWriter msg = MessageWriter.Get(SendOption.Reliable);
             msg.StartMessage(5);
             msg.Write(AmongUsClient.Instance.GameId);
             AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);

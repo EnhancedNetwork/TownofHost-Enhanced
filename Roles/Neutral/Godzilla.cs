@@ -41,7 +41,7 @@ internal class Godzilla : RoleBase
         DestroyCooldown = FloatOptionItem.Create(Id + 12, "DestroyCooldown", new(5f, 180f, 2.5f), 20f, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla])
             .SetValueFormat(OptionFormat.Seconds);
-        WarningTimeBeforeDestroying = FloatOptionItem.Create(Id + 13, "WarningTimeBeforeDestroying", new(5f, 180f, 2.5f), 3f, TabGroup.NeutralRoles, false)
+        WarningTimeBeforeDestroying = FloatOptionItem.Create(Id + 13, "WarningTimeBeforeDestroying", new(1f, 10f, 1f), 5f, TabGroup.NeutralRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Godzilla])
             .SetValueFormat(OptionFormat.Seconds);
     }
