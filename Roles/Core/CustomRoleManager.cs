@@ -24,7 +24,7 @@ public static class CustomRoleManager
         if (!role.IsVanilla() && !role.IsAdditionRole()
             && role is not CustomRoles.Apocalypse and not CustomRoles.Mini and not CustomRoles.NotAssigned and not CustomRoles.SpeedBooster and not CustomRoles.Killer and not CustomRoles.GM)
         {
-            if (RoleClass.Where(x => x.Value.Role == role).Count() > 1)
+            if (RoleClass.Count(x => x.Value.Role == role) > 1)
                 Logger.Error($"RoleClass for {role} is not unique.", "GetStaticRoleClass");
             if (roleClass == null)
                 Logger.Error($"RoleClass for {role} is null.", "GetStaticRoleClass");
@@ -126,7 +126,7 @@ public static class CustomRoleManager
         if (Grenadier.HasEnabled) Grenadier.ApplyGameOptionsForOthers(opt, player);
         if (CustomRoles.Dazzler.RoleExist()) Dazzler.SetDazzled(player, opt);
         if (CustomRoles.Deathpact.RoleExist()) Deathpact.SetDeathpactVision(player, opt);
-        if (Spiritcaller.HasEnabled) Spiritcaller.ReduceVision(opt, player);
+        if (CustomRoles.Spiritcaller.RoleExist()) Spiritcaller.ReduceVision(opt, player);
         if (CustomRoles.Pitfall.RoleExist()) Pitfall.SetPitfallTrapVision(opt, player);
         if (CustomRoles.Medusa.RoleExist()) Medusa.SetStoned(player, opt);
         if (CustomRoles.Sacrifist.RoleExist()) Sacrifist.SetVision(player, opt);

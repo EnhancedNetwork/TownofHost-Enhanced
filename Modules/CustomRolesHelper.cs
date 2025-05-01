@@ -14,7 +14,7 @@ namespace TOHE;
 public static class CustomRolesHelper
 {
     public static readonly CustomRoles[] AllRoles = EnumHelper.GetAllValues<CustomRoles>();
-    public static Dictionary<CustomRoles, Type> DuplicatedRoles;
+    public static Dictionary<CustomRoles, Type> DuplicatedRoles = [];
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {

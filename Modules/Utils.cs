@@ -1367,14 +1367,14 @@ public static class Utils
     public static bool IsPlayerModerator(string friendCode)
     {
         if (friendCode == "") return false;
-        var friendCodesFilePath = @"./TOHE-DATA/Moderators.txt";
+        var friendCodesFilePath = @$"{Main.TOHE_Initial_Path}/Moderators.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
     }
     public static bool IsPlayerVIP(string friendCode)
     {
         if (friendCode == "") return false;
-        var friendCodesFilePath = @"./TOHE-DATA/VIP-List.txt";
+        var friendCodesFilePath = @$"{Main.TOHE_Initial_Path}/VIP-List.txt";
         var friendCodes = File.ReadAllLines(friendCodesFilePath);
         return friendCodes.Any(code => code.Contains(friendCode));
     }
@@ -1497,7 +1497,7 @@ public static class Utils
         {
             if (IsPlayerVIP(player.FriendCode))
             {
-                string colorFilePath = @$"./TOHE-DATA/Tags/VIP_TAGS/{player.FriendCode}.txt";
+                string colorFilePath = @$"{Main.TOHE_Initial_Path}/Tags/VIP_TAGS/{player.FriendCode}.txt";
                 //static color
                 if (!Options.GradientTagsOpt.GetBool())
                 {
@@ -1541,7 +1541,7 @@ public static class Utils
         {
             if (IsPlayerModerator(player.FriendCode))
             {
-                string colorFilePath = @$"./TOHE-DATA/Tags/MOD_TAGS/{player.FriendCode}.txt";
+                string colorFilePath = @$"{Main.TOHE_Initial_Path}/Tags/MOD_TAGS/{player.FriendCode}.txt";
                 //static color
                 if (!Options.GradientTagsOpt.GetBool())
                 {
@@ -1649,7 +1649,7 @@ public static class Utils
 
         return false;
     }
-    public static IEnumerable<t> GetRoleBasesByType<t>() where t : RoleBase
+    public static IEnumerable<TRole> GetRoleBasesByType<TRole>() where TRole : RoleBase
     {
         try
         {
@@ -1658,7 +1658,7 @@ public static class Utils
             if (cache.Any())
             {
                 var Get = cache.Select(x => x.RoleClass);
-                return Get.OfType<t>().Any() ? Get.OfType<t>() : null;
+                return Get.OfType<TRole>().Any() ? Get.OfType<TRole>() : null;
             }
         }
         catch (Exception exx)

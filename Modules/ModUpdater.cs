@@ -273,11 +273,11 @@ public class ModUpdater
         try
         {
             var fileName = Assembly.GetExecutingAssembly().Location;
-            if (Directory.Exists("TOH_DATA") && File.Exists(@"./TOHE-DATA/BanWords.txt"))
+            if (Directory.Exists(Main.TOHE_DATA_FOLDER_NAME) && File.Exists(@$"{Main.TOHE_Initial_Path}/BanWords.txt"))
             {
-                DirectoryInfo di = new("TOH_DATA");
+                DirectoryInfo di = new(Main.TOHE_DATA_FOLDER_NAME);
                 di.Delete(true);
-                Logger.Warn("Deleting old data´╝ÜTOH_DATA", "NewVersionCheck");
+                Logger.Warn($"Deleting old data '╝{Main.TOHE_DATA_FOLDER_NAME}'", "NewVersionCheck");
             }
         }
         catch (Exception ex)

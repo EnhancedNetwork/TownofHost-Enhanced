@@ -147,7 +147,16 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, Color32> PlayerColors = [];
     public static readonly Dictionary<byte, PlayerState.DeathReason> AfterMeetingDeathPlayers = [];
     public static readonly Dictionary<CustomRoles, string> roleColors = [];
-    public const string LANGUAGE_FOLDER_NAME = "TOHE-DATA/Language";
+
+    public const string TOHE_DATA_FOLDER_NAME = "TOHE-DATA";
+
+#if DEBUGANDROID || BETAANDROID || RELEASEANDROID
+    public static readonly string TOHE_Initial_Path = @$"{Application.persistentDataPath}/{TOHE_DATA_FOLDER_NAME}";
+        public static readonly string LANGUAGE_FOLDER_NAME = $"{TOHE_Initial_Path}/Language";
+#else
+    public static readonly string TOHE_Initial_Path = $"./{TOHE_DATA_FOLDER_NAME}";
+    public static readonly string LANGUAGE_FOLDER_NAME = $"{TOHE_DATA_FOLDER_NAME}/Language";
+#endif
 
     public static bool IsFixedCooldown => CustomRoles.Vampire.IsEnable() || CustomRoles.Poisoner.IsEnable();
     public static float RefixCooldownDelay = 0f;
@@ -207,8 +216,8 @@ public class Main : BasePlugin
         get
         {
             DateTime utcNow = DateTime.UtcNow;
-            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
-            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t = new(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
             return utcNow >= t && utcNow <= t2;
         }
     }
@@ -414,13 +423,28 @@ public class Main : BasePlugin
     public static void LoadRoleClasses()
     {
         TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
+
         try
         {
             var RoleTypes = Assembly.GetAssembly(typeof(RoleBase))!
-                .GetTypes()
-                .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
+            .GetTypes()
+            .Where(myType => myType.IsClass && !myType.IsAbstract && myType.IsSubclassOf(typeof(RoleBase)));
 
-            var roleInstances = RoleTypes.Select(x => (RoleBase)Activator.CreateInstance(x)).ToList();
+            var roleInstances = new List<RoleBase>();
+            foreach (var type in RoleTypes)
+            {
+                try
+                {
+                    if (Activator.CreateInstance(type) is RoleBase instance)
+                        roleInstances.Add(instance);
+                    else
+                        TOHE.Logger.Warn($"Failed to create instance of {type.Name}: Activator returned null", "LoadRoleClasses");
+                }
+                catch (Exception ex)
+                {
+                    TOHE.Logger.Error($"Failed to create instance of {type.Name}: {ex.Message}", "LoadRoleClasses");
+                }
+            }
 
             CustomRolesHelper.DuplicatedRoles = new Dictionary<CustomRoles, Type>
             {
@@ -519,7 +543,7 @@ public class Main : BasePlugin
         File.WriteAllText(@$"./{LANGUAGE_FOLDER_NAME}/export_RoleColor.dat", sb.ToString());
     }
 
-    private void InitializeFileHash()
+    private static void InitializeFileHash()
     {
         var file = Assembly.GetExecutingAssembly();
         using var stream = file.Location != null ? File.OpenRead(file.Location) : null;

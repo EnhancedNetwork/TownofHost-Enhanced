@@ -10,8 +10,8 @@ namespace TOHE;
 
 public static class Translator
 {
-    public static Dictionary<string, Dictionary<int, string>> translateMaps;
-    public const string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
+    public static Dictionary<string, Dictionary<int, string>> translateMaps = [];
+    public static readonly string LANGUAGE_FOLDER_NAME = Main.LANGUAGE_FOLDER_NAME;
     private static readonly Dictionary<SupportedLangs, Dictionary<CustomRoles, string>> ActualRoleNames = [];
     public static readonly Dictionary<CustomRoles, HashSet<string>> CrossLangRoleNames = [];
     public static void Init()
@@ -27,7 +27,7 @@ public static class Translator
             // Get the directory containing the JSON files (e.g., TOHE.Resources.Lang)
             string jsonDirectory = "TOHE.Resources.Lang";
             // Get the assembly containing the resources
-            var assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetExecutingAssembly();
             string[] jsonFileNames = GetJsonFileNames(assembly, jsonDirectory);
 
             translateMaps = [];
@@ -277,7 +277,7 @@ public static class Translator
         var res = showInvalid ? $"<INVALID:{str}>" : str;
         try
         {
-            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || res == "" || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
+            if (translateMaps.TryGetValue(str, out var dic) && (!dic.TryGetValue((int)langId, out res) || string.IsNullOrEmpty(res) || (langId is not SupportedLangs.SChinese and not SupportedLangs.TChinese && Regex.IsMatch(res, @"[\u4e00-\u9fa5]") && res == GetString(str, SupportedLangs.SChinese)))) //strに該当する&無効なlangIdかresが空
             {
                 if (langId == SupportedLangs.English) res = $"*{str}";
                 else res = GetString(str, SupportedLangs.English);
@@ -285,19 +285,19 @@ public static class Translator
             if (!translateMaps.ContainsKey(str)) //translateMapsにない場合、StringNamesにあれば取得する
             {
                 var stringNames = EnumHelper.GetAllValues<StringNames>().Where(x => x.ToString() == str).ToArray();
-                if (stringNames != null && stringNames.Any())
+                if (stringNames != null && stringNames.Length != 0)
                     res = GetString(stringNames.FirstOrDefault());
             }
         }
         catch (Exception Ex)
         {
-            Logger.Fatal($"Error oucured at [{str}] in String.csv", "Translator");
+            Logger.Fatal($"Error oucured at [{str}] in en_US.json - langId {langId}", "Translator");
             Logger.Error("Here was the error:\n" + Ex.ToString(), "Translator");
         }
         return res;
     }
     public static string GetString(StringNames stringName)
-        => DestroyableSingleton<TranslationController>.Instance.GetString(stringName, new Il2CppReferenceArray<Il2CppSystem.Object>(0));
+        => TranslationController.Instance.GetString(stringName);
     public static string GetRoleString(string str, bool forUser = true)
     {
         var CurrentLanguage = TranslationController.Instance.currentLanguage.languageID;
