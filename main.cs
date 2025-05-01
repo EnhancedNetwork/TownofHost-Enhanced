@@ -423,7 +423,6 @@ public class Main : BasePlugin
     public static void LoadRoleClasses()
     {
         TOHE.Logger.Info("Loading All RoleClasses...", "LoadRoleClasses");
-        CustomRoleManager.RoleClass.Clear();
 
         try
         {
