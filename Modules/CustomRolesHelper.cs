@@ -21,6 +21,7 @@ public static class CustomRolesHelper
         // Vanilla roles
         if (role.IsVanilla()) return role;
         if (role is CustomRoles.GM) return CustomRoles.Crewmate;
+        if (role is CustomRoles.Killer) return CustomRoles.Impostor;
 
         // Role base
         if (role.GetStaticRoleClass() is not DefaultSetup) return role.GetStaticRoleClass().ThisRoleBase;
@@ -49,23 +50,6 @@ public static class CustomRolesHelper
 
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
-        /*
-        if (player == null) return false;
-        var customRole = player.GetCustomRole();
-        bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
-
-        if (player.IsModded() || (!considerVanillaShift && !player.IsModded()))
-            return ModSideHasKillButton;
-
-        bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
-                                         (OriginalRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || OriginalRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom) : ModSideHasKillButton;
-
-        return vanillaSideHasKillButton;
-        */
-
-        // Due to the fact that change role basis is widely used in mod
-        // this function now always uses current mod role to decide kill button access?
-
         if (player == null) return false;
         var customRole = player.GetCustomRole();
         return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;

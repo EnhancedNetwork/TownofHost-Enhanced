@@ -875,7 +875,7 @@ class IntroCutsceneDestroyPatch
 
             bool chatVisible = Options.CurrentGameMode switch
             {
-                CustomGameMode.FFA => false,
+                CustomGameMode.FFA => true,
                 _ => false
             };
             try

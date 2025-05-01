@@ -843,12 +843,12 @@ public static class RpcSetRoleReplacer
                 if (seerRoleClass is DefaultSetup)
                 {
                     seerRoleTypes = seerMainRole.GetVNRole().GetRoleTypesDirect();
-                    seerDesync = Main.DesyncPlayerList.Contains(seer.PlayerId);
+                    seerDesync = Main.DesyncPlayerList.Contains(seer.PlayerId) || seerMainRole.IsDesyncRole();
                 }
                 else
                 {
                     seerRoleTypes = seerRoleClass.ThisRoleBase.GetRoleTypesDirect();
-                    seerDesync = seerRoleClass.ThisRoleBase.IsDesyncRole();
+                    seerDesync = seerMainRole.IsDesyncRole();
                 }
 
                 if (seerDesync)
