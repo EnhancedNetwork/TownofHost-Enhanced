@@ -18,8 +18,14 @@ public static class CustomRolesHelper
     public static readonly Custom_Team[] AllRoleTypes = EnumHelper.GetAllValues<Custom_Team>();
     public static CustomRoles GetVNRole(this CustomRoles role) // RoleBase: Impostor, Shapeshifter, Crewmate, Engineer, Scientist
     {
-      //C&R
+        //C&R
         if (Options.CurrentGameMode is CustomGameMode.CandR && role is CustomRoles.Robber) return CustomRoles.Engineer;
+        if (Options.CurrentGameMode is CustomGameMode.CandR && role is CustomRoles.Cop) return CustomRoles.Shapeshifter;
+
+        //Ultimate Team
+        if (Options.CurrentGameMode is CustomGameMode.UltimateTeam && role is CustomRoles.Red) return CustomRoles.Impostor;
+        if (Options.CurrentGameMode is CustomGameMode.UltimateTeam && role is CustomRoles.Blue) return CustomRoles.Impostor;
+
         // Vanilla Roles
         if (role.IsVanilla()) return role;
 
@@ -63,7 +69,7 @@ public static class CustomRolesHelper
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
         if (player == null) return false;
-           if (Options.CurrentGameMode is CustomGameMode.CandR && player.Is(CustomRoles.Cop)) return true;
+        if (Options.CurrentGameMode is CustomGameMode.CandR && player.Is(CustomRoles.Cop)) return true;
         var customRole = player.GetCustomRole();
         return customRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
     }
@@ -392,14 +398,14 @@ public static class CustomRolesHelper
     }
 
     public static bool IsBetrayalAddonV2(this CustomRoles role)
-        => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal) 
+        => (role.IsBetrayalAddon() && role is not CustomRoles.Rascal)
             || role is CustomRoles.Admired;
 
     public static bool IsAddonAssignedMidGame(this CustomRoles role)
-        => role.IsBetrayalAddonV2() 
-        || role is CustomRoles.Knighted 
-                or CustomRoles.Cleansed 
-                or CustomRoles.Workhorse 
+        => role.IsBetrayalAddonV2()
+        || role is CustomRoles.Knighted
+                or CustomRoles.Cleansed
+                or CustomRoles.Workhorse
                 or CustomRoles.LastImpostor
                 or CustomRoles.Lovers;
 
@@ -470,7 +476,7 @@ public static class CustomRolesHelper
 
         if (Options.AddonCanBeSettings.TryGetValue(role, out var o) && ((!o.Imp.GetBool() && pc.GetCustomRole().IsImpostor()) || (!o.Neutral.GetBool() && pc.GetCustomRole().IsNeutral()) || (!o.Crew.GetBool() && pc.GetCustomRole().IsCrewmate()) || (!o.Coven.GetBool() && pc.GetCustomRole().IsCoven())))
             return false;
-        
+
         // if player already has this Add-on
         else if (checkSelfAddOn && pc.Is(role)) return false;
 
@@ -676,8 +682,8 @@ public static class CustomRolesHelper
 
             case CustomRoles.Lazy:
                 if (!Lazy.CheckConflicts(pc))
-                if (pc.Is(CustomRoles.Protector))
-                    return false;
+                    if (pc.Is(CustomRoles.Protector))
+                        return false;
                 break;
 
             case CustomRoles.Ghoul:
@@ -685,7 +691,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.LazyGuy)
                     || pc.Is(CustomRoles.Mundane)
                     || pc.Is(CustomRoles.Burst)
-                    || pc.Is(CustomRoles.NiceMini))   
+                    || pc.Is(CustomRoles.NiceMini))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsImpostor() || pc.GetCustomRole().IsCoven() || pc.GetCustomRole().IsTasklessCrewmate() || pc.GetCustomRole().IsTaskBasedCrewmate())
                     return false;
@@ -1232,7 +1238,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Spurt)
                     || pc.Is(CustomRoles.Chameleon)
                     || pc.Is(CustomRoles.Alchemist)
-                    || pc.Is(CustomRoles.Mare))    
+                    || pc.Is(CustomRoles.Mare))
                     return false;
                 break;
             case CustomRoles.Evader:
@@ -1434,7 +1440,7 @@ public static class CustomRolesHelper
            CustomRoles.Volatile => CountTypes.Volatile,
            CustomRoles.Godzilla => CountTypes.Godzilla,
            _ => role.IsImpostorTeam() ? CountTypes.Impostor : CountTypes.Crew,
-               
+
        };
     public static CustomWinner GetNeutralCustomWinnerFromRole(this CustomRoles role) // only to be used for Neutrals
         => role switch
