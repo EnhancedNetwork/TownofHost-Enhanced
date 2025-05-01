@@ -106,7 +106,6 @@ public class Oiiai : IAddon
             Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Enchanted);
-            killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");
         }
         else if (CovenManager.HasNecronomicon(killer))
@@ -122,7 +121,6 @@ public class Oiiai : IAddon
             Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.AddInSwitchAddons(killer, CustomRoles.Madmate);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Madmates assign.", "Oiiai");
         }
         else if (killer.Is(CustomRoles.Sidekick))
@@ -133,7 +131,6 @@ public class Oiiai : IAddon
             Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Recruit);
-            killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }
         else if (!killerRole.IsNeutral())
@@ -166,7 +163,10 @@ public class Oiiai : IAddon
         }
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        killer.Notify(GetString("LostRoleByOiiai"));
+        _ = new LateTask(() =>
+        {
+            killer.Notify(GetString("LostRoleByOiiai"));
+        }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
         killer.RPCPlayCustomSound("Oiiai");
         Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
     }

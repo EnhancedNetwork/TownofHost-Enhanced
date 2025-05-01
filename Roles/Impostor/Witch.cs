@@ -19,6 +19,7 @@ internal class Witch : RoleBase
     //==================================================================\\
 
     public static OptionItem ModeSwitchActionOpt;
+    private static OptionItem CanKillTNA;
 
     private static readonly Dictionary<byte, bool> SpellMode = [];
     private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
@@ -37,6 +38,7 @@ internal class Witch : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Witch);
         ModeSwitchActionOpt = StringOptionItem.Create(Id + 10, GeneralOption.ModeSwitchAction, EnumHelper.GetAllNames<SwitchTriggerList>(), 2, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
+        CanKillTNA = BooleanOptionItem.Create(Id + 11, "CanKillTNA", false, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Witch]);
     }
     public override void Init()
     {
@@ -170,6 +172,7 @@ internal class Witch : RoleBase
         {
             var dic = SpelledPlayer.Where(x => x.Value.Contains(pc.PlayerId));
             if (!dic.Any()) continue;
+            if (pc.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
             var whichId = dic.FirstOrDefault().Key;
             var witch = Utils.GetPlayerById(whichId);
             if (witch != null && witch.IsAlive())
@@ -230,7 +233,7 @@ internal class Witch : RoleBase
         }
         else
         {
-            str.Append(IsSpellMode(witch.PlayerId) ? GetString("WitchModeSpell") : GetString("WitchModeKill"));
+            str.Append(IsSpellMode(witch.PlayerId) ? GetString("WitchModeSpell") : GetString("KillButtonText"));
         }
         return str.ToString();
     }

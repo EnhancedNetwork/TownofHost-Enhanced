@@ -105,7 +105,7 @@ public class GameStartManagerPatch
                 if (Main.NormalOptions.KillCooldown == 0f)
                     Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
 
-                AURoleOptions.SetOpt(Main.NormalOptions.Cast<IGameOptions>());
+                AURoleOptions.SetOpt(Main.NormalOptions.CastFast<IGameOptions>());
                 if (AURoleOptions.ShapeshifterCooldown == 0f)
                     AURoleOptions.ShapeshifterCooldown = Main.LastShapeshifterCooldown.Value;
 
@@ -292,14 +292,6 @@ public class GameStartManagerPatch
                 && version.tag == $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})";
         }
     }
-    [HarmonyPatch(typeof(TextBoxTMP), nameof(TextBoxTMP.SetText))]
-    public static class HiddenTextPatch
-    {
-        private static void Postfix(TextBoxTMP __instance)
-        {
-            if (__instance.name == "GameIdText") __instance.outputText.text = new string('*', __instance.text.Length);
-        }
-    }
 }
 [HarmonyPatch(typeof(GameStartManager), nameof(GameStartManager.BeginGame))]
 public class GameStartManagerBeginGamePatch
@@ -360,8 +352,8 @@ public class GameStartManagerBeginGamePatch
         //}
 
         IGameOptions opt = GameStates.IsNormalGame
-            ? Main.NormalOptions.Cast<IGameOptions>()
-            : Main.HideNSeekOptions.Cast<IGameOptions>();
+            ? Main.NormalOptions.CastFast<IGameOptions>()
+            : Main.HideNSeekOptions.CastFast<IGameOptions>();
 
         if (GameStates.IsNormalGame)
         {
@@ -378,7 +370,8 @@ public class GameStartManagerBeginGamePatch
             AURoleOptions.GuardianAngelCooldown = 0f;
         }
 
-        PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+        GameManager.Instance.LogicOptions.SetDirty();
+        OptionItem.SyncAllOptions();
         RPC.RpcVersionCheck();
     }
     private static byte SelectRandomMap()
@@ -452,7 +445,8 @@ class ResetStartStatePatch
             if (GameStates.IsNormalGame)
                 Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
 
-            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, AprilFoolsMode.IsAprilFoolsModeToggledOn));
+            GameManager.Instance.LogicOptions.SetDirty();
+            OptionItem.SyncAllOptions();
         }
     }
 }

@@ -161,7 +161,7 @@ public class ModUpdater
         if (firstNotify && hasUpdate)
         {
             firstNotify = false;
-            
+
             if (!string.IsNullOrEmpty(latestTitleModName))
                 ShowPopupWithTwoButtons(string.Format(GetString("NewUpdateAvailable"), latestTitleModName), GetString("update"), onClickOnFirstButton: () => StartUpdate(downloadUrl));
         }
@@ -223,7 +223,7 @@ public class ModUpdater
             latestVersion = DateTime.TryParse(publishedAt, out DateTime parsedDate) ? parsedDate : DateTime.MinValue;
             latestTitle = $"Day: {latestVersion?.Day} Month: {latestVersion?.Month} Year: {latestVersion?.Year}";
 
-            JArray assets = data["assets"].TryCast<JArray>();
+            JArray assets = data["assets"].CastFast<JArray>();
             for (int i = 0; i < assets.Count; i++)
             {
                 string assetName = assets[i]["name"].ToString();
@@ -464,7 +464,7 @@ public class ModUpdater
                 firstButtonGetChild.GetComponent<TMP_Text>().text = firstButtonText;
                 firstButton.GetComponent<PassiveButton>().OnClick = new();
                 if (onClickOnFirstButton != null)
-                    firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close();}));
+                    firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => { onClickOnFirstButton(); InfoPopupV2.Close(); }));
                 else firstButton.GetComponent<PassiveButton>().OnClick.AddListener((UnityEngine.Events.UnityAction)(() => InfoPopupV2.Close()));
             }
             if (secondButton != null)

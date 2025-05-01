@@ -84,7 +84,7 @@ public class Glow : IAddon
             MarkedOnce[player.PlayerId] = false;
             return;
         }
-        var prevList = InRadius[player.PlayerId];
+        var prevList = InRadius.GetValueOrDefault(player.PlayerId);
         InRadius[player.PlayerId] = Main.AllAlivePlayerControls
             .Where(target => target != null
                 && !target.Is(CustomRoles.Glow)
@@ -92,7 +92,7 @@ public class Glow : IAddon
             .Select(target => target.PlayerId)
             .ToHashSet();
 
-        if (!MarkedOnce[player.PlayerId] || (!prevList.SetEquals(InRadius[player.PlayerId])))
+        if (!MarkedOnce.GetValueOrDefault(player.PlayerId) || (!prevList.SetEquals(InRadius.GetValueOrDefault(player.PlayerId, []))))
         {
             MarkedOnce[player.PlayerId] = true;
             Utils.MarkEveryoneDirtySettings();
