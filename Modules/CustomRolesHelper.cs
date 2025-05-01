@@ -942,7 +942,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Flash)
                     || pc.Is(CustomRoles.Sloth)
-                    || pc.Is(CustomRoles.KillingMachine))
+                    || pc.Is(CustomRoles.KillingMachine)
                     || pc.Is(CustomRoles.Crewpostor))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor()
