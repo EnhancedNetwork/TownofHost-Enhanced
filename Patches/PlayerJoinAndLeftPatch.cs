@@ -144,7 +144,8 @@ class OnGameJoinedPatch
                         Logger.Info($"{client.PlayerName.RemoveHtmlTags()}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) finished join room", "Session: OnGameJoined Retry");
                         Logger.Info($"{host.PlayerName.RemoveHtmlTags()}(ClientID:{host.Id}/FriendCode:{host.FriendCode}/HashPuid:{host.GetHashedPuid()}/Platform:{host.PlatformData.Platform}) is the host", "Session: OnGameJoined Retry");
                     }
-                    catch { };
+                    catch { }
+                    ;
                 }, 1.5f, "Retry Log Local Client");
             }
         }, 0.7f, "OnGameJoinedPatch");
@@ -324,12 +325,12 @@ class OnPlayerLeftPatch
         {
             Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
             RoleAssign.RoleResult?.Remove(data.Character.PlayerId);
-            RpcSetRoleReplacer.Senders?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.Senders?.Remove(data.Character.OwnerId);
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)
         {
-                       if (Options.CurrentGameMode is CustomGameMode.CandR)
+            if (Options.CurrentGameMode is CustomGameMode.CandR)
             {
                 CopsAndRobbersManager.OnPlayerDisconnect(data.Character.PlayerId);
             }

@@ -3,6 +3,7 @@ using Hazel;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 
 namespace TOHE;
@@ -116,60 +117,29 @@ public static class AntiBlackout
 
         PlayerControl dummyImp = PlayerControl.LocalPlayer;
 
-        // For vanilla crew basis, we always try serialize host as dummy imp
+        var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp", SendOption.Reliable).StartMessage(-1);
 
-        foreach (var seer in Main.AllPlayerControls)
+        foreach (var player in Main.AllPlayerControls)
         {
-            if (seer.AmOwner || seer.IsModded()) continue;
-
-            var hasValue = false;
-            var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp." + seer.PlayerId, SendOption.Reliable);
-
-            var RoleClass = seer.PlayerId.GetRoleClassById();
-            RoleTypes selfRoleType;
-
-            if (RoleClass is DefaultSetup)
+            if (player.PlayerId == dummyImp.PlayerId)
             {
-                selfRoleType = seer.GetCustomRole().GetDYRole();
+                sender.StartRpc(player.NetId, (byte)RpcCalls.SetRole);
+                sender.Write((ushort)RoleTypes.Impostor);
+                sender.Write(true);
+                sender.EndRpc();
             }
             else
             {
-                selfRoleType = RoleClass.ThisRoleBase.GetRoleTypesDirect();
+                sender.StartRpc(player.NetId, (byte)RpcCalls.SetRole);
+                sender.Write((ushort)RoleTypes.Crewmate);
+                sender.Write(true);
+                sender.EndRpc();
             }
 
-            var seerIsAliveAndHasKillButton = (selfRoleType is RoleTypes.Impostor or RoleTypes.Shapeshifter or RoleTypes.Phantom) && seer.IsAlive();
-            foreach (var target in Main.AllPlayerControls)
-            {
-                if (seerIsAliveAndHasKillButton)
-                {
-                    if (target.PlayerId != seer.PlayerId)
-                    {
-                        sender.RpcSetRole(target, RoleTypes.Crewmate, seer.GetClientId());
-                        hasValue = true;
-                    }
-                    else
-                    {
-                        sender.RpcSetRole(target, selfRoleType, seer.GetClientId());
-                        hasValue = true;
-                    }
-                }
-                else
-                {
-                    if (target.PlayerId == dummyImp.PlayerId)
-                    {
-                        sender.RpcSetRole(target, RoleTypes.Impostor, seer.GetClientId());
-                        hasValue = true;
-                    }
-                    else
-                    {
-                        sender.RpcSetRole(target, RoleTypes.Crewmate, seer.GetClientId());
-                        hasValue = true;
-                    }
-                }
-            }
-
-            sender.SendMessage(dispose: !hasValue);
         }
+
+        sender.EndMessage();
+        sender.SendMessage(dispose: false);
     }
     public static void RestoreIsDead(bool doSend = true, [CallerMemberName] string callerMethodName = "")
     {
