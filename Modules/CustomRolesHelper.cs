@@ -223,7 +223,6 @@ public static class CustomRolesHelper
     {
         return role is
             CustomRoles.Snitch or
-            CustomRoles.FortuneTeller or
             CustomRoles.Marshall or
             CustomRoles.TimeManager or
             CustomRoles.Guardian or
@@ -234,6 +233,23 @@ public static class CustomRolesHelper
             CustomRoles.Retributionist or
             CustomRoles.Benefactor or
             CustomRoles.Alchemist;
+    }
+    public static bool IsTaskRoleWithAbilityUses(this CustomRoles role)
+    {
+        return role is
+            CustomRoles.Oracle or
+            CustomRoles.FortuneTeller or
+            CustomRoles.Inspector or
+            CustomRoles.Veteran or
+            CustomRoles.TimeMaster or
+            CustomRoles.Ventguard or
+            CustomRoles.Bastion or
+            CustomRoles.Coroner or
+            CustomRoles.Medium or
+            CustomRoles.Spy or
+            CustomRoles.Pacifist or
+            CustomRoles.Grenadier or
+            CustomRoles.Lighter;
     }
     public static bool IsCrewKiller(this CustomRoles role)
     {

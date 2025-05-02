@@ -48,7 +48,7 @@ internal class Visionary : RoleBase
             return Main.roleColors[CustomRoles.Impostor];
         }
 
-        if (customRole.IsCrewmateTeamV2() && !target.Is(CustomRoles.Rascal))
+        if (customRole.IsCrewmateTeamV2() && !target.Is(CustomRoles.Rascal) && !target.Is(CustomRoles.Rebel))
         {
             return Main.roleColors[CustomRoles.Crewmate];
         }

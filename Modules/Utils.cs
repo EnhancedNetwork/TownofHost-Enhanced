@@ -665,25 +665,11 @@ public static class Utils
                 case CustomRoles.Rascal:
                     hasTasks &= !ForRecompute;
                     break;
-                case CustomRoles.Rebel:
-                    if (!role.IsTaskBasedCrewmate() && role is not
-                        CustomRoles.Oracle and not
-                        CustomRoles.Ventguard and not
-                        CustomRoles.Enigma and not
-                        CustomRoles.Veteran and not
-                        CustomRoles.Bastion and not
-                        CustomRoles.Spy and not
-                        CustomRoles.Grenadier and not
-                        CustomRoles.Inspector and not
-                        CustomRoles.Coroner and not
-                        CustomRoles.Chameleon and not
-                        CustomRoles.FortuneTeller and not
-                        CustomRoles.TaskManager and not
-                        CustomRoles.Lighter and not
-                        CustomRoles.Mechanic and not
-                        CustomRoles.TimeMaster and not
-                        CustomRoles.Medium) hasTasks = false;
-                    else hasTasks &= !ForRecompute;
+                case CustomRoles.Rebel when !role.IsTaskBasedCrewmate() && !role.IsTaskRoleWithAbilityUses():
+                    hasTasks = false;
+                    break;
+                case CustomRoles.Rebel when role.IsTaskBasedCrewmate() || role.IsTaskRoleWithAbilityUses():
+                    hasTasks = !ForRecompute;
                     break;
                 case CustomRoles.Mundane:
                     if (!hasTasks) hasTasks = !ForRecompute;
