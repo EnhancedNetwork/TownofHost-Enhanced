@@ -98,6 +98,11 @@ internal class Meteor : RoleBase
         // Add immune roles here 
         return player.Is(CustomRoles.Solsticer) ||
         player.Is(CustomRoles.Necromancer) ||
+        player.Is(CustomRoles.NiceMini) ||
+        player.Is(CustomRoles.LazyGuy) ||
+        player.IsTransformedNeutralApocalypse() ||
+        player.IsPlayerImpostorTeam() ||
+        player.Is(CustomRoles.PunchingBag) ||
         player.Is(CustomRoles.Jinx) ||
         player.Is(CustomRoles.GM);
     }
