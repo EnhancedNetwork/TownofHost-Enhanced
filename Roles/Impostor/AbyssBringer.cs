@@ -4,22 +4,29 @@ using System;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Modules.HazelExtensions;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
 
 //EHR - https://github.com/Gurge44/EndlessHostRoles/blob/main/Roles/Impostor/Abyssbringer.cs
 internal class AbyssBringer : RoleBase
 {
+    //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Abyssbringer;
     const int Id = 31300;
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorConcealing;
+    //==================================================================\\
+
+    private static OptionItem BlackHoleCountLimit;
     private static OptionItem BlackHolePlaceCooldown;
     private static OptionItem BlackHoleDespawnMode;
     private static OptionItem BlackHoleDespawnTime;
     private static OptionItem BlackHoleMovesTowardsNearestPlayer;
     private static OptionItem BlackHoleMoveSpeed;
     private static OptionItem BlackHoleRadius;
+    private static OptionItem CanKillImpostors;
+    private static OptionItem CanKillTNA;
 
     private readonly Dictionary<byte, BlackHoleData> BlackHoles = [];
 
@@ -27,22 +34,26 @@ internal class AbyssBringer : RoleBase
     {
         const TabGroup tab = TabGroup.ImpostorRoles;
         const CustomRoles role = CustomRoles.Abyssbringer;
-        Options.SetupRoleOptions(Id, tab, role);
+        SetupRoleOptions(Id, tab, role);
+        BlackHoleCountLimit = IntegerOptionItem.Create(Id + 16, "BlackHoleCountLimit", new(1, 15, 1), 1, tab, false)
+            .SetParent(CustomRoleSpawnChances[role]);
         BlackHolePlaceCooldown = IntegerOptionItem.Create(Id + 10, "BlackHolePlaceCooldown", new(1, 180, 1), 30, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role])
+            .SetParent(CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Seconds);
         BlackHoleDespawnMode = StringOptionItem.Create(Id + 11, "BlackHoleDespawnMode", Enum.GetNames<DespawnMode>(), 0, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role]);
+            .SetParent(CustomRoleSpawnChances[role]);
         BlackHoleDespawnTime = IntegerOptionItem.Create(Id + 12, "BlackHoleDespawnTime", new(1, 60, 1), 15, tab, false)
             .SetParent(BlackHoleDespawnMode)
             .SetValueFormat(OptionFormat.Seconds);
         BlackHoleMovesTowardsNearestPlayer = BooleanOptionItem.Create(Id + 13, "BlackHoleMovesTowardsNearestPlayer", true, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role]);
+            .SetParent(CustomRoleSpawnChances[role]);
         BlackHoleMoveSpeed = FloatOptionItem.Create(Id + 14, "BlackHoleMoveSpeed", new(0.25f, 10f, 0.25f), 1f, tab, false)
             .SetParent(BlackHoleMovesTowardsNearestPlayer);
         BlackHoleRadius = FloatOptionItem.Create(Id + 15, "BlackHoleRadius", new(0.1f, 5f, 0.1f), 1.2f, tab, false)
-            .SetParent(Options.CustomRoleSpawnChances[role])
+            .SetParent(CustomRoleSpawnChances[role])
             .SetValueFormat(OptionFormat.Multiplier);
+        CanKillImpostors = BooleanOptionItem.Create(Id + 19, "CanKillImpostors", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
+        CanKillTNA = BooleanOptionItem.Create(Id + 20, "CanKillTNA", false, tab, false).SetParent(CustomRoleSpawnChances[role]);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -93,6 +104,11 @@ internal class AbyssBringer : RoleBase
         }
         // When no player exists, Instantly spawm and despawn networked object will cause error spam
 
+        if (BlackHoles.Count >= BlackHoleCountLimit.GetInt())
+        {
+            return;
+        }
+
         var pos = shapeshifter.GetCustomPosition();
         var room = shapeshifter.GetPlainShipRoom();
         var roomName = room == null ? string.Empty : Translator.GetString($"{room.RoomId}");
@@ -101,8 +117,7 @@ internal class AbyssBringer : RoleBase
         Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 1, blackHoleId, pos, roomName);
     }
     public override void SetAbilityButtonText(HudManager hud, byte id) => hud.AbilityButton.OverrideText(Translator.GetString("AbyssbringerButtonText"));
-    // public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Black Hole");
-    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl pc, bool lowLoad, long nowTime, int timerLowLoad)
     {
         var abyssbringer = _Player;
 
@@ -134,12 +149,13 @@ internal class AbyssBringer : RoleBase
                 {
                     var direction = (pos - blackHole.Position).normalized;
                     var newPosition = blackHole.Position + direction * BlackHoleMoveSpeed.GetFloat() * Time.fixedDeltaTime;
-                    blackHole.NetObject.TP(newPosition);
                     blackHole.Position = newPosition;
+                    blackHole.NetObject.Position = newPosition;
                 }
 
                 if (Vector2.Distance(pos, blackHole.Position) <= BlackHoleRadius.GetFloat())
                 {
+                    if (nearestPlayer.Is(Custom_Team.Impostor) && !CanKillImpostors.GetBool() || nearestPlayer.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool()) continue;
                     blackHole.PlayersConsumed++;
                     Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, id, (byte)blackHole.PlayersConsumed);
                     Notify();
@@ -148,7 +164,7 @@ internal class AbyssBringer : RoleBase
                     nearestPlayer.SetRealKiller(_Player);
                     nearestPlayer.SetDeathReason(PlayerState.DeathReason.Consumed);
                     Main.PlayerStates[nearestPlayer.PlayerId].SetDead();
-                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, false);
+                    MurderPlayerPatch.AfterPlayerDeathTasks(_Player, nearestPlayer, inMeeting: false, fromRole: true);
 
                     if (despawnMode == DespawnMode.After1PlayerEaten)
                     {

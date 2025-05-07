@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
@@ -79,9 +80,12 @@ internal class Wildling : RoleBase
         TimeStamp = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
         SendRPC();
 
-        killer.Notify(Translator.GetString("BKInProtect"));
+        _ = new LateTask(() =>
+        {
+            killer.Notify(Translator.GetString("BKInProtect"));
+        }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!lowLoad && TimeStamp != 0 && TimeStamp < nowTime)
         {

@@ -24,6 +24,7 @@ internal class Baker : RoleBase
     public static OptionItem FamineStarveCooldown;
     private static OptionItem BTOS2Baker;
     private static OptionItem TransformNoMoreBread;
+    private static OptionItem RegenBread;
     public static OptionItem CanVent;
     private static byte BreadID = 0;
 
@@ -45,6 +46,7 @@ internal class Baker : RoleBase
         BTOS2Baker = BooleanOptionItem.Create(Id + 12, "BakerBreadGivesEffects", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         TransformNoMoreBread = BooleanOptionItem.Create(Id + 13, "BakerTransformNoMoreBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         CanVent = BooleanOptionItem.Create(Id + 14, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        RegenBread = BooleanOptionItem.Create(Id + 15, "BakerRegenBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
     }
     public override void Init()
     {
@@ -116,10 +118,9 @@ internal class Baker : RoleBase
         }
     }
     public override string GetProgressText(byte playerId, bool comms) => ColorString(GetRoleColor(CustomRoles.Baker).ShadeColor(0.25f), $"({BreadedPlayerCount(playerId).Item1}/{BreadedPlayerCount(playerId).Item2})");
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse()) return true;
+        // if (target.IsNeutralApocalypse() && seer.IsNeutralApocalypse()) return true;
         // i swear this isn't consigliere's code i swear
         if (seer.IsAlive() && RevealList.TryGetValue(seer.PlayerId, out var targets))
         {
@@ -145,7 +146,7 @@ internal class Baker : RoleBase
     public override string GetMarkOthers(PlayerControl seer, PlayerControl target, bool isForMeeting = false)
     {
         if (!_Player) return string.Empty;
-        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId)
+        if (HasBread(_Player.PlayerId, target.PlayerId) && seer.IsNeutralApocalypse() && seer.PlayerId != _Player.PlayerId && !Main.PlayerStates[seer.PlayerId].IsNecromancer)
         {
             return ColorString(GetRoleColor(CustomRoles.Baker), "●");
         }
@@ -174,11 +175,18 @@ internal class Baker : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        foreach (var playerId in BreadList.Keys.ToArray())
+        foreach (var playerId in BreadList.Keys.ToList())
         {
-            if (deadPlayer.PlayerId == playerId)
+            var baker = GetPlayerById(playerId);
+            if (HasBread(playerId, deadPlayer.PlayerId))
             {
-                BreadList[playerId].Remove(playerId);
+                BreadList[playerId].Remove(deadPlayer.PlayerId);
+                Logger.Info($"{deadPlayer.GetNameWithRole()} died, remove them from BreadList", "Baker");
+                if (RegenBread.GetBool())
+                {
+                    CanUseAbility = true;
+                    baker.Notify(string.Format(GetString("BakerBreadDied"), deadPlayer.GetRealName()));
+                }
             }
         }
     }
@@ -232,7 +240,7 @@ internal class Baker : RoleBase
         if (!CanUseAbility)
             killer.Notify(GetString("BakerBreadUsedAlready"));
 
-        else if (target.IsNeutralApocalypse())
+        else if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
             killer.Notify(GetString("BakerCantBreadApoc"));
 
         else if (HasBread(killer.PlayerId, target.PlayerId))
@@ -273,8 +281,6 @@ internal class Baker : RoleBase
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {
         if (_Player == null || !_Player.IsAlive()) return false;
-        if (!BarrierList[_Player.PlayerId].Contains(target.PlayerId) && !IsRoleblocked(killer.PlayerId)) return false;
-
 
         if (BarrierList[_Player.PlayerId].Contains(target.PlayerId))
         {
@@ -285,15 +291,17 @@ internal class Baker : RoleBase
             NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             return true;
         }
-        if (killer.GetCustomRole() is CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false;
-        else
+        if (IsRoleblocked(killer.PlayerId))
         {
+            if (killer.GetCustomRole() is CustomRoles.SerialKiller or CustomRoles.Pursuer or CustomRoles.Deputy or CustomRoles.Deceiver or CustomRoles.Poisoner) return false;
+
             if (!DisableShieldAnimations.GetBool()) killer.RpcGuardAndKill(killer);
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
             Logger.Info($"{killer.GetRealName()} fail ability because roleblocked", "Baker");
+            return true;
         }
-        return true;
+        return false;
     }
     public static bool IsRoleblocked(byte target)
     {
@@ -309,11 +317,11 @@ internal class Baker : RoleBase
         if (_Player)
             BarrierList[_Player.PlayerId].Clear();
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || player.Is(CustomRoles.Famine)) return;
 
-        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse()).Count()))
+        if (AllHasBread(player) || (TransformNoMoreBread.GetBool() && BreadedPlayerCount(player.PlayerId).Item1 >= Main.AllAlivePlayerControls.Where(x => !x.IsNeutralApocalypse() && !Main.PlayerStates[x.PlayerId].IsNecromancer).Count()))
         {
             player.RpcChangeRoleBasis(CustomRoles.Famine);
             player.RpcSetCustomRole(CustomRoles.Famine);
@@ -341,7 +349,6 @@ internal class Famine : RoleBase
     {
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
-    public override bool OthersKnowTargetRoleColor(PlayerControl seer, PlayerControl target) => KnowRoleTarget(seer, target);
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => CustomRoles.Baker.GetStaticRoleClass().KnowRoleTarget(seer, target);
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Baker.FamineStarveCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(true);
@@ -371,7 +378,7 @@ internal class Famine : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (target.IsNeutralApocalypse())
+        if (target.IsNeutralApocalypse() && !Main.PlayerStates[target.PlayerId].IsNecromancer)
             killer.Notify(GetString("FamineCantStarveApoc"));
 
         else if (FamineList[killer.PlayerId].Contains(target.PlayerId))
@@ -424,7 +431,7 @@ internal class Famine : RoleBase
         var baker = _Player;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (pc.IsNeutralApocalypse() || Baker.HasBread(baker.PlayerId, pc.PlayerId)) continue;
+            if ((pc.IsNeutralApocalypse() && !Main.PlayerStates[pc.PlayerId].IsNecromancer) || Baker.HasBread(baker.PlayerId, pc.PlayerId)) continue;
             if (baker.IsAlive())
             {
                 if (!Main.AfterMeetingDeathPlayers.ContainsKey(pc.PlayerId))

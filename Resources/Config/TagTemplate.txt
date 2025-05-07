@@ -7,3 +7,4 @@ SayCommandAccess:
 // Only give the permissions below to someone you are certain you trust
 EndCommandAccess: 
 ExecuteCommandAccess: 
+AssignGameMaster: 

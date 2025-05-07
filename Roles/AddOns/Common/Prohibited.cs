@@ -55,7 +55,7 @@ public class Prohibited : IAddon
         return Utils.GetActiveMapName() switch
         {
             MapNames.Skeld => CountBlockedVentsInSkeld.GetInt(),
-            MapNames.Mira => CountBlockedVentsInMira.GetInt(),
+            MapNames.MiraHQ => CountBlockedVentsInMira.GetInt(),
             MapNames.Polus => CountBlockedVentsInPolus.GetInt(),
             MapNames.Dleks => CountBlockedVentsInDleks.GetInt(),
             MapNames.Airship => CountBlockedVentsInAirship.GetInt(),

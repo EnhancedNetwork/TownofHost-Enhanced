@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -44,7 +45,7 @@ internal class Chronomancer : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Chronomancer);
         KillCooldown = IntegerOptionItem.Create(Id + 10, "ChronomancerKillCooldown", new(1, 180, 1), 60, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
-        Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.05f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
+        Dtime = FloatOptionItem.Create(Id + 11, "ChronomancerDecreaseTime", new(0.10f, 1f, 0.05f), 0.15f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Seconds);
         ReduceVision = FloatOptionItem.Create(Id + 12, "ChronomancerVisionMassacre", new(0.25f, 1f, 0.25f), 0.5f, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Chronomancer])
             .SetValueFormat(OptionFormat.Multiplier);
@@ -130,13 +131,16 @@ internal class Chronomancer : RoleBase
         if (ChargedTime >= FullCharge)
         {
             LastNowF = countnowF + Dtime.GetFloat();
-            killer.Notify(GetString("ChronomancerStartMassacre"));
+            _ = new LateTask(() =>
+            {
+                killer.Notify(GetString("ChronomancerStartMassacre"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
             IsInMassacre = true;
         }
         killer.SetKillCooldown();
         return true;
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (!Main.IntroDestroyed) return;
 

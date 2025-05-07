@@ -34,7 +34,6 @@ internal class Alchemist : RoleBase
     public static readonly Dictionary<byte, byte> BloodthirstList = [];
 
     private static byte PotionID = 10;
-    private static string PlayerName = string.Empty;
     private static bool VisionPotionActive = false;
     private static bool FixNextSabo = false;
     private static bool IsProtected = false;
@@ -63,7 +62,6 @@ internal class Alchemist : RoleBase
     {
         BloodthirstList.Clear();
         PotionID = 10;
-        PlayerName = string.Empty;
         ventedId.Clear();
         InvisTime.Clear();
         FixNextSabo = false;
@@ -71,8 +69,6 @@ internal class Alchemist : RoleBase
     }
     public override void Add(byte playerId)
     {
-        PlayerName = Utils.GetPlayerById(playerId).GetRealName();
-
         if (AmongUsClient.Instance.AmHost)
         {
             AddBloodlus();
@@ -144,8 +140,8 @@ internal class Alchemist : RoleBase
 
     private static void SendRPC(PlayerControl pc)
     {
-        if (pc.IsHost()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, SendOption.Reliable, pc.GetClientId());
+        if (!pc.IsNonHostModdedClient()) return;
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
         writer.Write(FixNextSabo);
         writer.Write(PotionID);
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
@@ -196,7 +192,7 @@ internal class Alchemist : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 PlayerControl target = Utils.GetPlayerById(min.Key);
-                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
                 if (min.Value <= KillRange && !player.inVent && !player.inMovingPlat && !target.inVent && !target.inMovingPlat)
                 {
                     if (player.RpcCheckAndMurder(target, true))
@@ -214,7 +210,7 @@ internal class Alchemist : RoleBase
             }
         }
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (lowLoad || !IsInvis(player.PlayerId)) return;
 
@@ -280,6 +276,7 @@ internal class Alchemist : RoleBase
         {
             case 1: // Shield
                 IsProtected = true;
+                player.RPCPlayCustomSound("Shield");
                 player.Notify(GetString("AlchemistShielded"), ShieldDuration.GetInt());
 
                 _ = new LateTask(() =>
@@ -430,10 +427,15 @@ internal class Alchemist : RoleBase
     }
     public override string GetProgressText(byte playerId, bool comms)
     {
-        var player = Utils.GetPlayerById(playerId);
-        if (player == null || !GameStates.IsInTask) return string.Empty;
+        var player = playerId.GetPlayer();
+        if (player == null) return string.Empty;
 
         var str = new StringBuilder();
+        str.Append(Utils.GetTaskCount(playerId, comms));
+
+        if (PotionID != 10 || FixNextSabo)
+            str.Append(Utils.ColorString(Color.white, " - "));
+
         switch (PotionID)
         {
             case 1: // Shield
@@ -519,4 +521,5 @@ internal class Alchemist : RoleBase
     {
         hud.AbilityButton.OverrideText(GetString("AlchemistVentButtonText"));
     }
+    public override Sprite GetAbilityButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("Drink");
 }

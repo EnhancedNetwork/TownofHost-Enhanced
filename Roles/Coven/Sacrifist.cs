@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Modules;
 using UnityEngine;
 using static TOHE.Options;
@@ -74,7 +73,7 @@ internal class Sacrifist : CovenManager
         maxDebuffTimer = DebuffCooldown.GetFloat();
         VisionChange[playerId] = [];
     }
-    public void SendRPC(PlayerControl pc)
+    private static void SendRPC(PlayerControl pc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
         writer.Write(DebuffID);
@@ -174,7 +173,7 @@ internal class Sacrifist : CovenManager
                     break;
                 // Cant Fix Sabotage (not coding allat, just give them Fool)
                 case 3:
-                    GetPlayerById(sacrifist).RpcSetCustomRole(CustomRoles.Fool);
+                    pc.RpcSetCustomRole(CustomRoles.Fool);
                     randPlayerPC.RpcSetCustomRole(CustomRoles.Fool);
                     Logger.Info($"{pc.GetRealName()} Gave Fool to {randPlayerPC.GetRealName()} and self", "Sacrifist");
                     pc.Notify(GetString("SacrifistFoolDebuff"), 5f);
@@ -206,12 +205,8 @@ internal class Sacrifist : CovenManager
                     break;
                 // Reset Tasks
                 case 6:
-                    var taskStateTarget = randPlayerPC.GetPlayerTaskState();
-                    randPlayerPC.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskStateTarget.CompletedTasksCount = 0;
-                    var taskStateSacrif = pc.GetPlayerTaskState();
-                    pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-                    taskStateSacrif.CompletedTasksCount = 0;
+                    randPlayerPC.RpcResetTasks();
+                    pc.RpcResetTasks();
                     pc.Notify(GetString("SacrifistTasksDebuff"), 5f);
                     Logger.Info($"{pc.GetRealName()} Made {randPlayerPC.GetRealName()} and self reset tasks", "Sacrifist");
                     break;
@@ -316,7 +311,7 @@ internal class Sacrifist : CovenManager
     {
         return GetString("SacrifistDebuffCooldown") + ": " + string.Format("{0:f0}", debuffTimer) + "s / " + string.Format("{0:f0}", maxDebuffTimer) + "s";
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (debuffTimer < maxDebuffTimer)
         {

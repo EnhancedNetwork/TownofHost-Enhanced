@@ -25,8 +25,14 @@ namespace TOHE;
 
 [BepInPlugin(PluginGuid, "TOHE", PluginVersion)]
 [BepInIncompatibility("jp.ykundesu.supernewroles")]
+[BepInIncompatibility("com.ten.betteramongus")]
 [BepInIncompatibility("com.ten.thebetterroles")]
 [BepInIncompatibility("xyz.crowdedmods.crowdedmod")]
+[BepInIncompatibility("com.slushiegoose.townofus")]
+[BepInIncompatibility("com.gurge44.endlesshostroles")]
+[BepInIncompatibility("com.emptybottle.townofhost")]
+[BepInIncompatibility("me.eisbison.theotherroles")]
+[BepInIncompatibility("com.discussions.LotusContinued")]
 [BepInProcess("Among Us.exe")]
 public class Main : BasePlugin
 {
@@ -46,24 +52,27 @@ public class Main : BasePlugin
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
 
     public const string PluginGuid = "com.0xdrmoe.townofhostenhanced";
-    public const string PluginVersion = "2025.0116.220.12000"; // YEAR.MMDD.VERSION.CANARYDEV
-    public const string PluginDisplayVersion = "2.2.0 Alpha 12";
-    public const string SupportedVersionAU = "2024.10.29"; // Changed becasue Dark theme works at this version.
+    public const string PluginVersion = "2025.0422.230.00080"; // YEAR.MMDD.VERSION.CANARYDEV
+    public const string PluginDisplayVersion = "2.3.0 Alpha 8";
+    public static readonly List<(int year, int month, int day, int revision)> SupportedVersionAU =
+        [
+            (2024, 8, 11, 0) // 2025.3.25 & 16.0.0
+        ];
 
     /******************* Change one of the three variables to true before making a release. *******************/
-    public static readonly bool devRelease = false; // Latest: V2.2.0 Alpha 4 Hotfix 1
-    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 1
-    public static readonly bool fullRelease = false; // Latest: V2.1.1
+    public static readonly bool devRelease = false; // Latest: V2.3.0 Alpha 2 Hotfix 2
+    public static readonly bool canaryRelease = true; // Latest: V2.2.0 Beta 4
+    public static readonly bool fullRelease = false; // Latest: V2.2.0
 
     public static bool hasAccess = true;
 
     public static readonly bool ShowUpdateButton = true;
 
     public static readonly bool ShowGitHubButton = true;
-    public static readonly string GitHubInviteUrl = "https://github.com/0xDrMoe/TownofHost-Enhanced";
+    public static readonly string GitHubInviteUrl = "https://github.com/EnhancedNetwork/TownofHost-Enhanced";
 
     public static readonly bool ShowDiscordButton = true;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/tohe";
+    public static readonly string DiscordInviteUrl = "https://discord.gg/ten";
 
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteInviteUrl = "https://weareten.ca/";
@@ -81,8 +90,8 @@ public class Main : BasePlugin
     public static string credentialsText;
     public Coroutines coroutines;
     public Dispatcher dispatcher;
-    public static NormalGameOptionsV08 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
-    public static HideNSeekGameOptionsV08 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
+    public static NormalGameOptionsV09 NormalOptions => GameOptionsManager.Instance.currentNormalGameOptions;
+    public static HideNSeekGameOptionsV09 HideNSeekOptions => GameOptionsManager.Instance.currentHideNSeekGameOptions;
     //Client Options
     public static ConfigEntry<string> HideName { get; private set; }
     public static ConfigEntry<string> HideColor { get; private set; }
@@ -95,6 +104,7 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> DarkTheme { get; private set; }
     public static ConfigEntry<bool> DisableLobbyMusic { get; private set; }
     public static ConfigEntry<bool> ShowTextOverlay { get; private set; }
+    public static ConfigEntry<bool> ShowModdedClientText { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> LongMode { get; private set; }
     public static ConfigEntry<bool> ForceOwnLanguage { get; private set; }
@@ -151,6 +161,7 @@ public class Main : BasePlugin
     public static bool isChatCommand = false;
     public static bool MeetingIsStarted = false;
     public static string LastSummaryMessage;
+    public static bool CurrentServerIsVanilla = false;
 
     public static readonly HashSet<byte> DesyncPlayerList = [];
     public static readonly HashSet<byte> MurderedThisRound = [];
@@ -171,6 +182,7 @@ public class Main : BasePlugin
     public static readonly Dictionary<byte, byte> ShapeshiftTarget = [];
     public static readonly HashSet<byte> UnShapeShifter = [];
     public static readonly HashSet<byte> DeadPassedMeetingPlayers = [];
+    public static readonly Dictionary<byte, bool> LowLoadUpdateName = [];
 
     public static bool GameIsLoaded { get; set; } = false;
 
@@ -190,7 +202,16 @@ public class Main : BasePlugin
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
-    public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
+    public static bool IsAprilFools
+    {
+        get
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            DateTime t = new DateTime(utcNow.Year, 4, 1, 7, 0, 0, 0, DateTimeKind.Utc);
+            DateTime t2 = new DateTime(utcNow.Year, 4, 8, 7, 0, 0, 0, DateTimeKind.Utc);
+            return utcNow >= t && utcNow <= t2;
+        }
+    }
     public static bool ResetOptions = true;
     public static string FirstDied = ""; //Store with hash puid so things can pass through different round
     public static string FirstDiedPrevious = "";
@@ -248,6 +269,10 @@ public class Main : BasePlugin
 
     public static List<string> TName_Snacks_CN = ["冰激凌", "奶茶", "巧克力", "蛋糕", "甜甜圈", "可乐", "柠檬水", "冰糖葫芦", "果冻", "糖果", "牛奶", "抹茶", "烧仙草", "菠萝包", "布丁", "椰子冻", "曲奇", "红豆土司", "三彩团子", "艾草团子", "泡芙", "可丽饼", "桃酥", "麻薯", "鸡蛋仔", "马卡龙", "雪梅娘", "炒酸奶", "蛋挞", "松饼", "西米露", "奶冻", "奶酥", "可颂", "奶糖"];
     public static List<string> TName_Snacks_EN = ["Ice cream", "Milk tea", "Chocolate", "Cake", "Donut", "Coke", "Lemonade", "Candied haws", "Jelly", "Candy", "Milk", "Matcha", "Burning Grass Jelly", "Pineapple Bun", "Pudding", "Coconut Jelly", "Cookies", "Red Bean Toast", "Three Color Dumplings", "Wormwood Dumplings", "Puffs", "Can be Crepe", "Peach Crisp", "Mochi", "Egg Waffle", "Macaron", "Snow Plum Niang", "Fried Yogurt", "Egg Tart", "Muffin", "Sago Dew", "panna cotta", "soufflé", "croissant", "toffee"];
+
+    public static StringNames[] how2playN = [StringNames.HowToPlayText1, StringNames.HowToPlayText2, StringNames.HowToPlayText41, StringNames.HowToPlayText42, StringNames.HowToPlayText43, StringNames.HowToPlayText44, StringNames.HowToPlayText5, StringNames.HowToPlayText6, StringNames.HowToPlayText7, StringNames.HowToPlayText81, StringNames.HowToPlayText82];
+    public static StringNames[] how2playHnS = [StringNames.HideSeekHowToPlayCaptionOne, StringNames.HideSeekHowToPlayCaptionTwo, StringNames.HideSeekHowToPlayCaptionThree, StringNames.HideSeekHowToPlayPageOne, StringNames.HideSeekHowToPlaySubtextOne, StringNames.HideSeekHowToPlayCrewmateInfoOne, StringNames.HideSeekHowToPlayCrewmateInfoTwo, StringNames.HideSeekHowToPlayFlashlightConsoles, StringNames.HideSeekHowToPlayImpostorInfoOne, StringNames.HideSeekHowToPlayFinalHide, StringNames.HideSeekHowToPlayFlashlightDefault];
+    public static StringNames[] how2playEzHacked = [StringNames.ErrorAuthNonceFailure, StringNames.ErrorBanned, StringNames.ErrorBannedNoCode, StringNames.ErrorClientTimeout, StringNames.ErrorClientTimeoutConsole, StringNames.ErrorCommunications, StringNames.ErrorCrossPlatformCommunication, StringNames.ErrorDuplicateConnection, StringNames.ErrorFullGame, StringNames.ErrorHacking, StringNames.ErrorInactivity, StringNames.ErrorIntentionalLeaving, StringNames.ErrorInvalidName, StringNames.ErrorKicked, StringNames.ErrorKickedNoCode, StringNames.ErrorLobbyFailedGettingBlockedUsers];
     public static string Get_TName_Snacks => TranslationController.Instance.currentLanguage.languageID is SupportedLangs.SChinese or SupportedLangs.TChinese
         ? TName_Snacks_CN.RandomElement()
         : TName_Snacks_EN.RandomElement();
@@ -523,6 +548,7 @@ public class Main : BasePlugin
         DarkTheme = Config.Bind("Client Options", "DarkTheme", false);
         DisableLobbyMusic = Config.Bind("Client Options", "DisableLobbyMusic", false);
         ShowTextOverlay = Config.Bind("Client Options", "ShowTextOverlay", false);
+        ShowModdedClientText = Config.Bind("Client Options", "ShowModdedClientText", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         LongMode = Config.Bind("Client Options", "LongMode", false);
         ForceOwnLanguage = Config.Bind("Client Options", "ForceOwnLanguage", false);
@@ -550,7 +576,6 @@ public class Main : BasePlugin
         //TOHE.Logger.Disable("NotifyRoles");
         TOHE.Logger.Disable("SwitchSystem");
         TOHE.Logger.Disable("ModNews");
-        TOHE.Logger.Disable("CustomRpcSender");
         TOHE.Logger.Disable("RpcSetNamePrivate");
         TOHE.Logger.Disable("KnowRoleTarget");
         if (!DebugModeManager.AmDebugger)
@@ -572,6 +597,7 @@ public class Main : BasePlugin
             TOHE.Logger.Disable("PlayerControl.RpcSetRole");
             TOHE.Logger.Disable("SyncCustomSettings");
             //TOHE.Logger.Disable("DoNotifyRoles");
+            TOHE.Logger.Disable("CustomRpcSender");
         }
         //TOHE.Logger.isDetail = true;
 
@@ -623,13 +649,15 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
+        ClassInjector.RegisterTypeInIl2Cpp<OptionShower>();
         ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<ShapeShifterPagingBehaviour>();
         ClassInjector.RegisterTypeInIl2Cpp<VitalsPagingBehaviour>();
 
-        NormalGameOptionsV08.RecommendedImpostors = NormalGameOptionsV08.MaxImpostors = Enumerable.Repeat(127, 127).ToArray();
-        NormalGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
-        HideNSeekGameOptionsV08.MinPlayers = Enumerable.Repeat(4, 127).ToArray();
+        NormalGameOptionsV09.RecommendedImpostors = NormalGameOptionsV09.MaxImpostors = Enumerable.Repeat(128, 128).ToArray();
+        NormalGameOptionsV09.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
+        HideNSeekGameOptionsV09.MinPlayers = Enumerable.Repeat(4, 128).ToArray();
+        DisconnectPopup.ErrorMessages[DisconnectReasons.Hacking] = StringNames.ErrorHacking;
 
         Harmony.PatchAll();
 
@@ -809,6 +837,7 @@ public enum CustomRoles
     President,
     Psychic,
     Randomizer,
+    Requiter,
     Retributionist,
     Reverie,
     Sheriff,
@@ -907,6 +936,8 @@ public enum CustomRoles
     Coven,
     Conjurer,
     CovenLeader,
+    Harvester,
+    Dreamweaver,
     HexMaster,
     Illusionist,
     Jinx,
@@ -927,6 +958,9 @@ public enum CustomRoles
 
     //GM
     GM,
+
+    // Speed run
+    Runner,
 
     // Sub-role after 500
     NotAssigned = 500,

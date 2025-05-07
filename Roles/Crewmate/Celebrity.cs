@@ -60,7 +60,7 @@ internal class Celebrity : RoleBase
                 if (!NeutralKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
                 if (!CovenKnowCelebrityDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
 
-                SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
+                SendMessage(string.Format(GetString("CelebrityDead"), target.GetRealName()), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("Celebrity").ToUpper()));
             }
         }
         else
@@ -76,7 +76,7 @@ internal class Celebrity : RoleBase
             if (!ImpKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsImpostor()) continue;
             if (!NeutralKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsNeutral()) continue;
             if (!CovenKnowCelebrityDead.GetBool() && targets.GetCustomRole().IsCoven()) continue;
-            AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("CelebrityNewsTitle")));
+            AddMsg(string.Format(GetString("CelebrityDead"), Main.AllPlayerNames[csId]), targets.PlayerId, ColorString(GetRoleColor(CustomRoles.Celebrity), GetString("Celebrity").ToUpper()));
         }
     }
     public override void MeetingHudClear()

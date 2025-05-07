@@ -45,6 +45,10 @@ internal class Blackmailer : RoleBase
             }
         }
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.AbilityButton.OverrideText(GetString("BlackmailerButtonText"));
+    }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
         AURoleOptions.ShapeshifterCooldown = SkillCooldown.GetFloat();
@@ -81,6 +85,12 @@ internal class Blackmailer : RoleBase
         DoBlackmaile(blackmailer, target);
         blackmailer.Notify(GetString("RejectShapeshift.AbilityWasUsed"), time: 2f);
         return false;
+    }
+    public override void OnShapeshift(PlayerControl shapeshifter, PlayerControl target, bool IsAnimate, bool shapeshifting)
+    {
+        if (!shapeshifting) return;
+
+        DoBlackmaile(shapeshifter, target);
     }
     private void DoBlackmaile(PlayerControl blackmailer, PlayerControl target)
     {
@@ -126,7 +136,7 @@ internal class Blackmailer : RoleBase
         {
             var playername = pc.GetRealName(isMeeting: true);
             if (Main.OvverideOutfit.TryGetValue(pc.PlayerId, out var realfit)) playername = realfit.name;
-            AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("BlackmaileKillTitle"))));
+            AddMsg(string.Format(string.Format(GetString("BlackmailerDead"), playername), byte.MaxValue, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Blackmailer), GetString("Blackmailer").ToUpper())));
         }
     }
 }

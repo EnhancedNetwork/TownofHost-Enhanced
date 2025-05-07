@@ -23,7 +23,7 @@ internal class Parasite : RoleBase
         ParasiteCD = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Parasite])
             .SetValueFormat(OptionFormat.Seconds);
-        LegacyParasite = BooleanOptionItem.Create(Id + 11, "LegacyParasite", false, TabGroup.ImpostorRoles, false)
+        LegacyParasite = BooleanOptionItem.Create(Id + 11, "UseLegacyVersion", false, TabGroup.ImpostorRoles, false)
                 .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Parasite]);
         ParasiteShapeshiftCD = FloatOptionItem.Create(Id + 12, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
                 .SetParent(LegacyParasite)

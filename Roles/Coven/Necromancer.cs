@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Neutral;
@@ -32,6 +33,7 @@ internal class Necromancer : CovenManager
     private static float tempKillTimer = 0;
 
     private static readonly Dictionary<byte, List<CustomRoles>> UsedRoles = [];
+    private static readonly Dictionary<byte, List<CustomRoles>> OldAddons = [];
     private static float AbilityTimer;
     private static bool canUseAbility;
 
@@ -44,9 +46,9 @@ internal class Necromancer : CovenManager
             .SetValueFormat(OptionFormat.Seconds);
         //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer]);
-        AbilityDuration = FloatOptionItem.Create(Id + 14, "NecromancerAbilityDuration", new(0f, 300f, 2.5f), 60f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
+        AbilityDuration = FloatOptionItem.Create(Id + 14, GeneralOption.AbilityDuration, new(0f, 300f, 2.5f), 60f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
             .SetValueFormat(OptionFormat.Seconds);
-        AbilityCooldown = FloatOptionItem.Create(Id + 15, "NecromancerAbilityCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
+        AbilityCooldown = FloatOptionItem.Create(Id + 15, GeneralOption.AbilityCooldown, new(0f, 180f, 2.5f), 30f, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Necromancer])
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
@@ -56,6 +58,7 @@ internal class Necromancer : CovenManager
         Killer = null;
         tempKillTimer = 0;
         UsedRoles.Clear();
+        OldAddons.Clear();
         canUseAbility = false;
         AbilityTimer = 0;
     }
@@ -63,6 +66,7 @@ internal class Necromancer : CovenManager
     {
         Timer = RevengeTime.GetInt();
         UsedRoles[playerId] = [];
+        OldAddons[playerId] = [];
     }
     //public override void ApplyGameOptions(IGameOptions opt, byte id) => opt.SetVision(HasImpostorVision.GetBool());
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = KillCooldown.GetFloat();
@@ -97,7 +101,11 @@ internal class Necromancer : CovenManager
         else if (target == Killer)
         {
             Success = true;
-            killer.Notify(GetString("NecromancerSuccess"));
+            _ = new LateTask(() =>
+            {
+                killer.Notify(GetString("NecromancerSuccess"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+
             killer.SetKillCooldown(KillCooldown.GetFloat() + tempKillTimer);
             IsRevenge = false;
             return true;
@@ -110,7 +118,7 @@ internal class Necromancer : CovenManager
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        return string.Format(GetString("NecromancerAbilityCooldown") + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
+        return string.Format(GetString(GeneralOption.AbilityCooldown.ToString()) + ": {0:F0}s / {1:F0}s", AbilityTimer, AbilityCooldown.GetFloat());
     }
     public override void UnShapeShiftButton(PlayerControl nm)
     {
@@ -118,6 +126,11 @@ internal class Necromancer : CovenManager
         if (!canUseAbility)
         {
             nm.Notify(GetString("NecromancerCooldownNotDone"));
+            return;
+        }
+        if (IsRevenge)
+        {
+            nm.Notify(GetString("NecromancerRevengeInProgress"));
             return;
         }
         var deadPlayers = Main.AllPlayerControls.Where(x => !x.IsAlive());
@@ -135,9 +148,24 @@ internal class Necromancer : CovenManager
         }
         var role = deadRoles.RandomElement();
         nm.RpcChangeRoleBasis(role);
-        nm.RpcSetCustomRole(role);
+        nm.RpcSetCustomRole(role, false, false);
         nm.GetRoleClass()?.OnAdd(nm.PlayerId);
         nm.SyncSettings();
+        Dictionary<byte, List<CustomRoles>> CurrentAddons = new();
+        CurrentAddons[nm.PlayerId] = [];
+        foreach (var addon in nm.GetCustomSubRoles())
+        {
+            CurrentAddons[nm.PlayerId].Add(addon);
+        }
+        foreach (var addon in CurrentAddons[nm.PlayerId])
+        {
+            if (!CustomRolesHelper.CheckAddonConfilct(addon, nm))
+            {
+                OldAddons[nm.PlayerId].Add(addon);
+                Main.PlayerStates[nm.PlayerId].RemoveSubRole(addon);
+                Logger.Info($"{nm.GetNameWithRole()} had incompatible addon {addon.ToString()}, removing addon", "Necromancer");
+            }
+        }
         Main.PlayerStates[nm.PlayerId].InitTask(nm);
         nm.RpcGuardAndKill(nm);
         nm.Notify(string.Format(GetString("CopyCatRoleChange"), Utils.GetRoleName(role)));
@@ -156,7 +184,12 @@ internal class Necromancer : CovenManager
         }
         if (nm.IsAlive())
             nm.RpcChangeRoleBasis(CustomRoles.Necromancer);
-        nm.RpcSetCustomRole(CustomRoles.Necromancer);
+        nm.RpcSetCustomRole(CustomRoles.Necromancer, false, false);
+        foreach (var addon in OldAddons[nm.PlayerId])
+        {
+            nm.RpcSetCustomRole(addon, false, false);
+        }
+        OldAddons[nm.PlayerId].Clear();
         nm.ResetKillCooldown();
         nm.SyncSettings();
         nm.RpcGuardAndKill(nm);
@@ -205,15 +238,24 @@ internal class Necromancer : CovenManager
             CustomRoles.Sunnyboy ||
             (role == CustomRoles.Workaholic && Workaholic.WorkaholicVisibleToEveryone.GetBool()) ||
             (role == CustomRoles.Mayor && Mayor.MayorRevealWhenDoneTasks.GetBool()) ||
-            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool());
+            (role == CustomRoles.Executioner && Executioner.KnowTargetRole.GetBool()) ||
+            (role == CustomRoles.Doctor && Doctor.VisibleToEveryoneOpt.GetBool());
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (AbilityTimer < AbilityCooldown.GetFloat())
         {
             AbilityTimer += Time.fixedDeltaTime;
         }
         else canUseAbility = true;
+    }
+    public static string NecromancerReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (Main.PlayerStates[seen.PlayerId].IsNecromancer && !seen.Is(CustomRoles.Necromancer) && !seer.IsAlive() && seen.IsAlive())
+        {
+            return $"<size=1.5><i>{CustomRoles.Necromancer.ToColoredString()}</i></size>";
+        }
+        return string.Empty;
     }
     public static void UnAfterMeetingTasks()
     {

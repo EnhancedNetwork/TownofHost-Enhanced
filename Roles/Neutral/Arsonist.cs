@@ -125,7 +125,7 @@ internal class Arsonist : RoleBase
         _Player.RpcSetVentInteraction();
         _ = new LateTask(() => { NotifyRoles(SpecifySeer: _Player, ForceLoop: false); }, 1f, $"Update name for Arsonist {_Player?.PlayerId}", shoudLog: false);
     }
-    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime)
+    public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {
         if (ArsonistTimer.TryGetValue(player.PlayerId, out var arsonistTimerData))
         {
@@ -155,7 +155,7 @@ internal class Arsonist : RoleBase
                 }
                 else
                 {
-                    float range = NormalGameOptionsV08.KillDistances[Mathf.Clamp(player.Is(Reach.IsReach) ? 2 : Main.NormalOptions.KillDistance, 0, 2)] + 0.5f;
+                    float range = ExtendedPlayerControl.GetKillDistances(ovverideValue: player.Is(Reach.IsReach), newValue: 2) + 0.5f;
                     float distance = GetDistance(player.GetCustomPosition(), arTarget.GetCustomPosition());
 
                     if (distance <= range)
@@ -251,6 +251,7 @@ internal class Arsonist : RoleBase
                     foreach (var pc in Main.AllAlivePlayerControls)
                     {
                         if (!IsDousedPlayer(__instance.myPlayer, pc)) continue;
+                        if (pc.IsTransformedNeutralApocalypse()) continue;
                         pc.KillFlash();
                         pc.SetDeathReason(PlayerState.DeathReason.Torched);
                         pc.RpcMurderPlayer(pc);

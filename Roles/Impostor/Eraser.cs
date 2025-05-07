@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
-using UnityEngine;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -39,17 +38,14 @@ internal class Eraser : RoleBase
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = EraseLimitOpt.GetInt();
+        playerId.SetAbilityUseLimit(EraseLimitOpt.GetInt());
     }
-    public override string GetProgressText(byte playerId, bool comms)
-        => Utils.ColorString(AbilityLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Eraser) : Color.gray, $"({AbilityLimit})");
-
     public override bool CheckVote(PlayerControl player, PlayerControl target)
     {
         if (!HasEnabled) return true;
         if (player == null || target == null) return true;
         if (target.Is(CustomRoles.Eraser)) return true;
-        if (AbilityLimit < 1) return true;
+        if (player.GetAbilityUseLimit() < 1) return true;
 
         if (didVote.Contains(player.PlayerId)) return true;
         didVote.Add(player.PlayerId);
@@ -58,7 +54,7 @@ internal class Eraser : RoleBase
 
         if (target.PlayerId == player.PlayerId)
         {
-            Utils.SendMessage(GetString("EraserEraseSelf"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+            Utils.SendMessage(GetString("EraserEraseSelf"), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("Eraser").ToUpper()));
             return true;
         }
 
@@ -66,17 +62,16 @@ internal class Eraser : RoleBase
         if (targetRole.IsNeutral() || targetRole.IsCoven() || CopyCat.playerIdList.Contains(target.PlayerId) || target.Is(CustomRoles.Stubborn))
         {
             Logger.Info($"Cannot erase role because is Impostor Based or Neutral or ect", "Eraser");
-            Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+            Utils.SendMessage(string.Format(GetString("EraserEraseBaseImpostorOrNeutralRoleNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("Eraser").ToUpper()));
             return true;
         }
 
-        AbilityLimit--;
-        SendSkillRPC();
+        player.RpcRemoveAbilityUse();
 
         if (!PlayerToErase.Contains(target.PlayerId))
             PlayerToErase.Add(target.PlayerId);
 
-        Utils.SendMessage(string.Format(GetString("EraserEraseNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("EraserEraseMsgTitle")));
+        Utils.SendMessage(string.Format(GetString("EraserEraseNotice"), target.GetRealName()), player.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Eraser), GetString("Eraser").ToUpper()));
 
         Utils.NotifyRoles(SpecifySeer: player);
         return false;
@@ -130,6 +125,7 @@ internal class Eraser : RoleBase
             player.GetRoleClass()?.OnRemove(player.PlayerId);
             player.RpcChangeRoleBasis(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
             player.RpcSetCustomRole(GetErasedRole(player.GetCustomRole().GetRoleTypes(), player.GetCustomRole()));
+            Main.DesyncPlayerList.Remove(player.PlayerId);
             player.GetRoleClass()?.OnAdd(player.PlayerId);
             player.ResetKillCooldown();
             player.SetKillCooldown();

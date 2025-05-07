@@ -53,7 +53,7 @@ public class Cyber : IAddon
 
             if (inMeeting)
             {
-                Utils.SendMessage(string.Format(Translator.GetString("CyberDead"), target.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), Translator.GetString("CyberNewsTitle")));
+                Utils.SendMessage(string.Format(Translator.GetString("CyberDead"), target.GetRealName()), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cyber), Translator.GetString("Cyber").ToUpper()));
             }
             else
             {

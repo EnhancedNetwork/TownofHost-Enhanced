@@ -1,9 +1,6 @@
 using AmongUs.GameOptions;
-using System;
-using System.Text;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -78,9 +75,9 @@ internal class Troller : RoleBase
     }
     public override void Remove(byte playerId)
     {
-        AbilityLimit = 0;
+        playerId.SetAbilityUseLimit(0);
     }
-    private void ResetAbility() => AbilityLimit = TrollsPerRound.GetInt();
+    private void ResetAbility() => _state.PlayerId.SetAbilityUseLimit(TrollsPerRound.GetInt());
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute;
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
@@ -91,9 +88,9 @@ internal class Troller : RoleBase
     public override void AfterMeetingTasks() => ResetAbility();
     public override bool OnTaskComplete(PlayerControl troller, int completedTaskCount, int totalTaskCount)
     {
-        if (!troller.IsAlive() || AbilityLimit <= 0) return true;
+        if (!troller.IsAlive() || troller.GetAbilityUseLimit() <= 0) return true;
 
-        AbilityLimit--;
+        troller.RpcRemoveAbilityUse();
 
         if (IsActive(SystemTypes.MushroomMixupSabotage) || IsActive(SystemTypes.Electrical))
         {
@@ -144,7 +141,7 @@ internal class Troller : RoleBase
                 {
                     case MapNames.Skeld:
                     case MapNames.Dleks:
-                    case MapNames.Mira:
+                    case MapNames.MiraHQ:
                         allSabotage.Add(SystemTypes.Reactor);
                         allSabotage.Add(SystemTypes.LifeSupp);
                         allSabotage.Add(SystemTypes.Comms);
@@ -251,13 +248,16 @@ internal class Troller : RoleBase
                 randomPC.MarkDirtySettings();
                 break;
             case Events.TelepostEveryoneToVents:
-                foreach (var pcTeleport in Main.AllAlivePlayerControls)
+                foreach (var pcTeleport in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()))
                 {
                     pcTeleport.RpcRandomVentTeleport();
                 }
                 break;
             case Events.PullEveryone:
-                ExtendedPlayerControl.RpcTeleportAllPlayers(troller.GetCustomPosition());
+                foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.CanBeTeleported()))
+                {
+                    pc.RpcTeleport(troller.GetCustomPosition());
+                }
                 break;
             case Events.TwistEveryone:
                 List<byte> changePositionPlayers = [];
@@ -302,17 +302,5 @@ internal class Troller : RoleBase
         {
             CurrentActiveSabotage = systemType;
         }
-    }
-    public override string GetProgressText(byte playerId, bool comms)
-    {
-        var ProgressText = new StringBuilder();
-        var taskState8 = Main.PlayerStates?[playerId].TaskState;
-        Color TextColor8;
-        var NonCompleteColor8 = Color.white;
-        TextColor8 = comms ? Color.gray : NonCompleteColor8;
-        string Completed8 = comms ? "?" : $"{taskState8.CompletedTasksCount}";
-        ProgressText.Append(ColorString(TextColor8, $"({Completed8}/{taskState8.AllTasksCount}) "));
-        ProgressText.Append(ColorString((AbilityLimit > 0) ? GetRoleColor(CustomRoles.Troller).ShadeColor(0.25f) : Color.gray, $" <color=#ffffff>-</color> {Math.Round(AbilityLimit, 1)}"));
-        return ProgressText.ToString();
     }
 }

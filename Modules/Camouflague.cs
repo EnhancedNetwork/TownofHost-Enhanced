@@ -131,9 +131,13 @@ public static class Camouflage
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
                 break;
-            case 11: // Sarha, Sponsor
+            case 11: // Sarha, Co-President
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_mira_flower", "skin_PusheenPurpleskin", "visor_hl_hmph", "pet_Charles", "");
+                break;
+            case 12: // Marg
+                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
+                    .Set("", 13, "hat_rabbitEars", "skin_hl_pekora", "visor_claws_knife", "pet_claws_spaceCat", "");
                 break;
         }
     }
@@ -156,7 +160,14 @@ public static class Camouflage
                     pc.RpcRemovePet();
                 }
             }
-            Utils.NotifyRoles(NoCache: true);
+            if (Main.CurrentServerIsVanilla && Options.BypassRateLimitAC.GetBool())
+            {
+                Main.Instance.StartCoroutine(Utils.NotifyEveryoneAsync(speed: 5));
+            }
+            else
+            {
+                Utils.NotifyRoles();
+            }
         }
     }
     public static void RpcSetSkin(PlayerControl target, bool ForceRevert = false, bool RevertToDefault = false, bool GameEnd = false)
@@ -182,7 +193,7 @@ public static class Camouflage
         if (!IsCamouflage || ForceRevert)
         {
             // if player are a shapeshifter, change to the id of your current Outfit
-            if (Main.CheckShapeshift.TryGetValue(targetId, out var shapeshifting) && shapeshifting && !RevertToDefault)
+            if (Main.CheckShapeshift.GetValueOrDefault(targetId, false) && !RevertToDefault)
             {
                 targetId = Main.ShapeshiftTarget[targetId];
             }

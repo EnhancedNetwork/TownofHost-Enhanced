@@ -35,6 +35,10 @@ internal class Bodyguard : RoleBase
             or CustomRoles.Veteran
             or CustomRoles.Deputy)
             return false;
+        if (killer.IsTransformedNeutralApocalypse())
+        {
+            Logger.Info($"{bodyguard.GetRealName()} was too scared of {killer.GetRealName()}'s power, so they could not protect {target.GetRealName()}", "Bodyguard");
+        }
 
         var pos = target.transform.position;
         var dis = Utils.GetDistance(pos, bodyguard.transform.position);
@@ -46,7 +50,7 @@ internal class Bodyguard : RoleBase
         }
         else if (bodyguard.Is(CustomRoles.Enchanted) && killer.GetCustomRole().IsCoven())
         {
-            Logger.Info($"{bodyguard.GetRealName()} He was a impostor, so he chose to ignore the murder scene", "Bodyguard");
+            Logger.Info($"{bodyguard.GetRealName()} He was a Coven, so he chose to ignore the murder scene", "Bodyguard");
         }
         else if (bodyguard.CheckForInvalidMurdering(killer))
         {

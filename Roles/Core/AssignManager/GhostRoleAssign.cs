@@ -8,7 +8,7 @@ public static class GhostRoleAssign
     public static Dictionary<byte, CustomRoles> GhostGetPreviousRole = [];
     private static readonly Dictionary<CustomRoles, int> getCount = [];
 
-    private static readonly IRandom Rnd = IRandom.Instance;
+    private static IRandom Rnd => IRandom.Instance;
     private static bool GetChance(this CustomRoles role) => role.GetMode() == 100 || Rnd.Next(1, 100) <= role.GetMode();
     private static int ImpCount = 0;
     private static int CrewCount = 0;
@@ -20,7 +20,7 @@ public static class GhostRoleAssign
     public static void GhostAssignPatch(PlayerControl player)
     {
         if (GameStates.IsHideNSeek
-            || Options.CurrentGameMode == CustomGameMode.FFA
+            || Options.CurrentGameMode != CustomGameMode.Standard
             || player == null
             || player.Data == null
             || player.Data.Disconnected
@@ -56,6 +56,7 @@ public static class GhostRoleAssign
             or CustomRoles.Retributionist
             or CustomRoles.NiceMini
             or CustomRoles.Romantic
+            or CustomRoles.Jester
             or CustomRoles.Follower
             or CustomRoles.Specter
             or CustomRoles.Sunnyboy
@@ -65,6 +66,8 @@ public static class GhostRoleAssign
             or CustomRoles.Lawyer
             or CustomRoles.Provocateur
             or CustomRoles.Virus
+            or CustomRoles.Jackal
+            or CustomRoles.Sidekick
             or CustomRoles.PlagueDoctor) return;
 
         var IsNeutralAllowed = !player.IsAnySubRole(x => x.IsConverted()) || Options.ConvertedCanBecomeGhost.GetBool();

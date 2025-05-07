@@ -1,3 +1,4 @@
+using TOHE.Roles.Core;
 
 namespace TOHE.Roles.AddOns.Impostor;
 
@@ -31,12 +32,12 @@ public class LastImpostor : IAddon
         Main.AllPlayerKillCooldown[currentId] -= removeCooldown;
     }
     private static bool CanBeLastImpostor(PlayerControl pc)
-        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && !pc.Is(CustomRoles.Overclocked) && pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsNecromancer;
+        => pc.IsAlive() && !pc.Is(CustomRoles.LastImpostor) && (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !Main.PlayerStates[pc.PlayerId].IsNecromancer;
 
     public static void SetSubRole()
     {
         if (currentId != byte.MaxValue || !AmongUsClient.Instance.AmHost) return;
-        if (Options.CurrentGameMode == CustomGameMode.FFA || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1) return;
+        if (Options.CurrentGameMode != CustomGameMode.Standard || !CustomRoles.LastImpostor.IsEnable() || Main.AliveImpostorCount != 1) return;
 
         foreach (var pc in Main.AllAlivePlayerControls)
         {
@@ -47,6 +48,9 @@ public class LastImpostor : IAddon
                 SetKillCooldown();
                 pc.SyncSettings();
                 Utils.NotifyRoles(SpecifySeer: pc, ForceLoop: false);
+
+                // reset Crewpostor's tasks upon getting Last Impostor
+                if (pc.Is(CustomRoles.Crewpostor)) pc.GetRoleClass().AfterMeetingTasks();
                 break;
             }
         }

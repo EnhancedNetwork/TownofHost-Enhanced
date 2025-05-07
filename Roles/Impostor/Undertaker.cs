@@ -134,7 +134,7 @@ internal class Undertaker : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.KillButton?.OverrideText(Translator.GetString("KillButtonText"));
-        hud.AbilityButton?.OverrideText(Translator.GetString("UndertakerButtonText"));
+        hud.AbilityButton?.OverrideText(Translator.GetString("MarkButtonText"));
     }
 }
 

@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -26,6 +26,16 @@ public class PlayerState(byte playerId)
 #pragma warning restore IDE1006
     public TaskState taskState = new();
     public bool IsBlackOut { get; set; } = false;
+    private bool _canUseMovingPlatform = true;
+    public bool CanUseMovingPlatform
+    {
+        get => _canUseMovingPlatform;
+        set
+        {
+            Logger.Info($"player {PlayerId} set to use moving platform as {value}", nameof(PlayerState));
+            _canUseMovingPlatform = value;
+        }
+    }
     public bool IsNecromancer { get; set; } = false;
     public (DateTime, byte) RealKiller = (DateTime.MinValue, byte.MaxValue);
     public List<(DateTime, CustomRoles)> MainRoleLogs = [];
@@ -121,12 +131,14 @@ public class PlayerState(byte playerId)
 
             //Some role may be bugged for this, need further testing.
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
-            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            InitTask(pc);
 
-            if (pc.GetRoleClass() != null && pc.GetRoleClass().ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
+            pc.RpcResetTasks();
+
+            if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
             {
                 Main.UnShapeShifter.Add(pc.PlayerId);
+                pc.DoUnShiftState(true);
+
                 Logger.Info($"Added {pc.GetNameWithRole()} to UnShapeShifter list mid game", "PlayerState.SetMainRole");
             }
         }
@@ -174,6 +186,7 @@ public class PlayerState(byte playerId)
         {
             case CustomRoles.LastImpostor:
                 SubRoles.Remove(CustomRoles.Mare);
+                SubRoles.Remove(CustomRoles.Overclocked);
                 break;
 
             case CustomRoles.Madmate:
@@ -410,6 +423,7 @@ public class TaskState
         }
 
         hasTasks = true;
+        CompletedTasksCount = 0;
         AllTasksCount = player.Data.Tasks.Count;
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
@@ -430,6 +444,12 @@ public class TaskState
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;
+
+        if (player.IsAlive() && Main.IntroDestroyed)
+        {
+            float add = GetSettingNameAndValueForRole(player.GetCustomRole(), "AbilityUseGainWithEachTaskCompleted");
+            if (Math.Abs(add - float.MaxValue) > 0.5f && add > 0) player.RpcIncreaseAbilityUseLimitBy(add);
+        }
 
         // Display only up to the adjusted task amount
         CompletedTasksCount = Math.Min(AllTasksCount, CompletedTasksCount);
@@ -462,7 +482,7 @@ public static class GameStates
     public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
     public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;
     public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
-    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.MiraHQ;
     public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
     public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
     public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
@@ -481,15 +501,15 @@ public static class GameStates
             const string Domain = "among.us";
 
             // From Reactor.gg
-            return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&
+            return ServerManager.Instance.CurrentRegion?.CastFast<StaticHttpRegionInfo>() is { } regionInfo &&
                    regionInfo.PingServer.EndsWith(Domain, StringComparison.Ordinal) &&
                    regionInfo.Servers.All(serverInfo => serverInfo.Ip.EndsWith(Domain, StringComparison.Ordinal));
         }
     }
     public static bool IsLocalGame => AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame;
     public static bool IsFreePlay => AmongUsClient.Instance.NetworkMode == NetworkModes.FreePlay;
-    public static bool IsInTask => InGame && !MeetingHud.Instance;
-    public static bool IsMeeting => InGame && MeetingHud.Instance;
+    public static bool IsInTask => InGame && !MeetingHud.Instance && !Main.MeetingIsStarted;
+    public static bool IsMeeting => InGame && (MeetingHud.Instance || Main.MeetingIsStarted);
     public static bool IsVoting => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Voted or MeetingHud.VoteStates.NotVoted;
     public static bool IsProceeding => IsMeeting && MeetingHud.Instance.state is MeetingHud.VoteStates.Proceeding;
     public static bool IsExilling => ExileController.Instance != null && !(AirshipIsActive && Minigame.Instance != null && Minigame.Instance.isActiveAndEnabled);

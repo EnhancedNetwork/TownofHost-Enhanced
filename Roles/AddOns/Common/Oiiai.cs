@@ -98,12 +98,14 @@ public class Oiiai : IAddon
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} cannot eraser crew imp-based role", "Oiiai");
             return;
         }
-        else if (killer.GetCustomRole().IsCoven() && !CovenManager.HasNecronomicon(killer))
+        else if (killerRole.IsCoven() && !CovenManager.HasNecronomicon(killer))
         {
-            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
+            killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            Main.DesyncPlayerList.Remove(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Enchanted);
-            killer.AddInSwitchAddons(killer, CustomRoles.Enchanted);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven without Necronomicon.", "Oiiai");
         }
         else if (CovenManager.HasNecronomicon(killer))
@@ -111,29 +113,34 @@ public class Oiiai : IAddon
             // Necronomicon holder immune to Oiiai
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Coven with Necronomicon.", "Oiiai");
         }
-        else if (killer.GetCustomRole().IsMadmate())
+        else if (killerRole.IsMadmate())
         {
+            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            Main.DesyncPlayerList.Remove(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Madmate);
-            killer.AddInSwitchAddons(killer, CustomRoles.Madmate);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Madmates assign.", "Oiiai");
         }
         else if (killer.Is(CustomRoles.Sidekick))
         {
+            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
             killer.RpcSetCustomRole(CustomRoles.Amnesiac);
+            Main.DesyncPlayerList.Remove(killer.PlayerId);
+            killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.RpcSetCustomRole(CustomRoles.Recruit);
-            killer.AddInSwitchAddons(killer, CustomRoles.Recruit);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with Sidekicks assign.", "Oiiai");
         }
-        else if (!killer.GetCustomRole().IsNeutral())
+        else if (!killerRole.IsNeutral())
         {
             var readyrole = Eraser.GetErasedRole(killer.GetCustomRole().GetRoleTypes(), killer.GetCustomRole());
             //Use eraser here LOL
             killer.GetRoleClass()?.OnRemove(killer.PlayerId);
             killer.RpcChangeRoleBasis(readyrole);
             killer.RpcSetCustomRole(readyrole);
+            Main.DesyncPlayerList.Remove(killer.PlayerId);
             killer.GetRoleClass()?.OnAdd(killer.PlayerId);
             Logger.Info($"Oiiai {killer.GetNameWithRole().RemoveHtmlTags()} with eraser assign.", "Oiiai");
         }
@@ -146,6 +153,7 @@ public class Oiiai : IAddon
                 killer.GetRoleClass().OnRemove(killer.PlayerId);
                 killer.RpcChangeRoleBasis(NRoleChangeRoles[changeValue - 1]);
                 killer.RpcSetCustomRole(NRoleChangeRoles[changeValue - 1]);
+                Main.DesyncPlayerList.Remove(killer.PlayerId);
                 killer.GetRoleClass().OnAdd(killer.PlayerId);
 
                 killer.SyncSettings();
@@ -155,7 +163,10 @@ public class Oiiai : IAddon
         }
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
-        killer.Notify(GetString("LostRoleByOiiai"));
+        _ = new LateTask(() =>
+        {
+            killer.Notify(GetString("LostRoleByOiiai"));
+        }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
         killer.RPCPlayCustomSound("Oiiai");
         Logger.Info($"{killer.GetRealName()} was OIIAIed", "Oiiai");
     }

@@ -32,23 +32,38 @@ static class PerformVentOpPatch
 static class VentSystemDeterioratePatch
 {
     public static Dictionary<byte, int> LastClosestVent = [];
-    public static long LastUpadate;
+    public static Dictionary<byte, bool> PlayerHadBlockedVentLastTime = [];
     public static bool ForceUpadate;
 
-    public static void Postfix(VentilationSystem __instance)
+    public static void Postfix()
     {
-        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed) return;
+        if (!AmongUsClient.Instance.AmHost || !Main.IntroDestroyed || GameStates.IsMeeting) return;
 
-        var nowTime = Utils.GetTimeStamp();
-        if (ForceUpadate || (nowTime != LastUpadate))
+        if (ForceUpadate || FixedUpdateInNormalGamePatch.BufferTime.GetValueOrDefault((byte)0, 0) % 6 == 0)
         {
-            LastUpadate = nowTime;
+            var needUpdate = false;
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                LastClosestVent[pc.PlayerId] = pc.GetVentsFromClosest()[0].Id;
+                if (pc.BlockVentInteraction())
+                {
+                    var closestVents = pc.GetVentsFromClosest()[0].Id;
+                    if (ForceUpadate || closestVents != LastClosestVent.GetValueOrDefault(pc.PlayerId, 99))
+                    {
+                        PlayerHadBlockedVentLastTime[pc.PlayerId] = true;
+                        LastClosestVent[pc.PlayerId] = closestVents;
+                        needUpdate = true;
+                    }
+                }
+                else if (PlayerHadBlockedVentLastTime[pc.PlayerId])
+                {
+                    PlayerHadBlockedVentLastTime[pc.PlayerId] = false;
+                    LastClosestVent[pc.PlayerId] = 99;
+                    needUpdate = true;
+                }
             }
 
-            ShipStatus.Instance.Systems[SystemTypes.Ventilation].Cast<VentilationSystem>().IsDirty = true;
+            if (needUpdate)
+                ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>().IsDirty = true;
         }
     }
     /// <summary>

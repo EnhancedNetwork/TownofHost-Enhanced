@@ -3,23 +3,20 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
+using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 
 namespace TOHE;
 
-[HarmonyPatch(typeof(ShipStatus), nameof(ShipStatus.AddTasksFromList))]
-class AddTasksFromListPatch
+class DisableTasks
 {
-    public static void Prefix(ShipStatus __instance,
-        [HarmonyArgument(4)] Il2CppSystem.Collections.Generic.List<NormalPlayerTask> unusedTasks)
+    public static void DoRemove(ref List<NormalPlayerTask> usedTasks)
     {
-        if (!AmongUsClient.Instance.AmHost || __instance == null) return;
-
         if (!Options.DisableShortTasks.GetBool() && !Options.DisableCommonTasks.GetBool() && !Options.DisableLongTasks.GetBool() && !Options.DisableOtherTasks.GetBool()) return;
 
         List<NormalPlayerTask> disabledTasks = [];
 
-        foreach (var task in unusedTasks.GetFastEnumerator())
+        foreach (var task in usedTasks)
         {
             switch (task.TaskType)
             {
@@ -102,7 +99,7 @@ class AddTasksFromListPatch
         foreach (var task in disabledTasks.ToArray())
         {
             Logger.Msg($"Deletion: {task.TaskType}", "Disable Tasks");
-            unusedTasks.Remove(task);
+            usedTasks.Remove(task);
         }
     }
 }
@@ -161,6 +158,13 @@ class RpcSetTasksPatch
             NumShortTasks = Madmate.MadSnitchTasks.GetInt();
         }
 
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+        {
+            hasCommonTasks = SpeedRun.SpeedRun_NumCommonTasks.GetBool();
+            NumLongTasks = SpeedRun.SpeedRun_NumLongTasks.GetInt();
+            NumShortTasks = SpeedRun.SpeedRun_NumShortTasks.GetInt();
+        }
+
         // GM - no have tasks, Lazy Gay and Lazy have 1 task, FFA all are killers so need to assign any tasks
         if (pc.Is(CustomRoles.GM) || pc.Is(CustomRoles.LazyGuy) || pc.Is(CustomRoles.Lazy) || Options.CurrentGameMode == CustomGameMode.FFA)
         {
@@ -183,6 +187,18 @@ class RpcSetTasksPatch
             hasCommonTasks = false;
         }
 
+        if (pc.Is(CustomRoles.Crewpostor))
+        {
+            // when Crewpostor has Last Impostor,their kills wont be limited
+            // and they will only need 1 task for each kill
+            // so let the total number of alive players decide how many tasks Crewpostor will get
+            int CPTaskNum = LastImpostor.currentId == pc.PlayerId ? Main.AllAlivePlayerControls.Length : Crewpostor.KillAfterTask.GetInt() * Crewpostor.KillsPerRound.GetInt();
+
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = CPTaskNum;
+        }
+
         // Above is override task num
         /* --------------------------------------------------------------*/
         //Below is assign tasks
@@ -198,9 +214,21 @@ class RpcSetTasksPatch
             longTasks.RemoveAll(x => x.TaskType == TaskTypes.SubmitScan);
             // Niko admits this is shit.
         }
+
+        // Remove all disabled tasks
+        DisableTasks.DoRemove(ref commonTasks);
+        DisableTasks.DoRemove(ref shortTasks);
+        DisableTasks.DoRemove(ref longTasks);
+
         List<TaskTypes> usedTaskTypes = [];
 
         int defaultcommoncount = Main.RealOptionsData.GetInt(Int32OptionNames.NumCommonTasks);
+
+        if (Options.CurrentGameMode is CustomGameMode.SpeedRun)
+        {
+            defaultcommoncount = SpeedRun.SpeedRun_NumCommonTasks.GetInt();
+        }
+
         int commonTasksNum = System.Math.Min(commonTasks.Count, defaultcommoncount);
 
         // Setting task num to 0 will make role description disappear from task panel for vanilla players and mod crews
@@ -223,7 +251,7 @@ class RpcSetTasksPatch
         {
             if (__instance.Object != null)
             {
-                if (__instance.Object.GetCustomRole().IsCrewmateTeamV2() && !__instance.Object.GetCustomSubRoles().Any(x => !x.IsCrewmateTeamV2()))
+                if (__instance.Object.IsPlayerCrewmateTeam() || !Options.NonCrewRandomCommonTasks.GetBool())
                 {
                     foreach (var id in decidedCommonTasks)
                         TasksList.Add(id);
@@ -321,7 +349,7 @@ class RpcSetTasksPatch
             __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());
         }
 
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, 29, SendOption.Reliable);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SetTasks, SendOption.Reliable);
         messageWriter.WriteBytesAndSize((Il2CppStructArray<byte>)TasksList.ToArray());
         messageWriter.EndMessage();
         return false;

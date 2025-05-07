@@ -23,7 +23,7 @@ internal class NiceGuesser : RoleBase
         GGCanGuessTime = IntegerOptionItem.Create(Id + 10, "GuesserCanGuessTimes", new(1, 15, 1), 15, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetValueFormat(OptionFormat.Times);
         GGCanGuessCrew = BooleanOptionItem.Create(Id + 11, "GGCanGuessCrew", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
-        GGCanGuessAdt = BooleanOptionItem.Create(Id + 12, "GGCanGuessAdt", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
+        GGCanGuessAdt = BooleanOptionItem.Create(Id + 12, "GCanGuessAdt", false, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser]);
         GGTryHideMsg = BooleanOptionItem.Create(Id + 13, "GuesserTryHideMsg", true, TabGroup.CrewmateRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.NiceGuesser])
             .SetColor(Color.green);
     }
@@ -43,7 +43,7 @@ internal class NiceGuesser : RoleBase
         // Check limit
         if (GuessManager.GuesserGuessed[guesser.PlayerId] >= GGCanGuessTime.GetInt())
         {
-            guesser.ShowInfoMessage(isUI, Translator.GetString("GGGuessMax"));
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessMax"));
             return true;
         }
 
@@ -54,8 +54,8 @@ internal class NiceGuesser : RoleBase
             return true;
         }
 
-        // Nice Guesser Can't Guess Impostors
-        if (target.Is(Custom_Team.Crewmate) && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate))
+        // Nice Guesser Can't Guess Crewmates
+        if (role.IsCrewmate() && !GGCanGuessCrew.GetBool() && !guesser.Is(CustomRoles.Madmate))
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessCrewRole"));
             return true;

@@ -25,6 +25,17 @@ public class InnerNetClientPatch
             HashSet<GameObject> hashSet = [];
             for (int i = 0; i < __instance.allObjects.Count; i++)
             {
+                if (messageWriter.Length > 800)
+                {
+                    messageWriter.EndMessage();
+                    __instance.SendOrDisconnect(messageWriter);
+                    messageWriter.Recycle();
+                    messageWriter = MessageWriter.Get(SendOption.Reliable);
+                    messageWriter.StartMessage(6);
+                    messageWriter.Write(__instance.GameId);
+                    messageWriter.WritePacked(clientId);
+                }
+
                 InnerNetObject innerNetObject = __instance.allObjects[i];
                 if (innerNetObject && (innerNetObject.OwnerId != -4 || __instance.AmModdedHost) && hashSet.Add(innerNetObject.gameObject))
                 {
@@ -35,8 +46,7 @@ public class InnerNetClientPatch
                     }
                     else
                     {
-                        if (innerNetObject is not NetworkedPlayerInfo)
-                            __instance.WriteSpawnMessage(innerNetObject, innerNetObject.OwnerId, innerNetObject.SpawnFlags, messageWriter);
+                        __instance.WriteSpawnMessage(innerNetObject, innerNetObject.OwnerId, innerNetObject.SpawnFlags, messageWriter);
                     }
                 }
             }
@@ -45,38 +55,7 @@ public class InnerNetClientPatch
             __instance.SendOrDisconnect(messageWriter);
             messageWriter.Recycle();
         }
-        DelaySpawnPlayerInfo(__instance, clientId);
         return false;
-    }
-
-    private static void DelaySpawnPlayerInfo(InnerNetClient __instance, int clientId)
-    {
-        List<NetworkedPlayerInfo> players = GameData.Instance.AllPlayers.ToArray().ToList();
-
-        // We send 5 players at a time to prevent too huge packet
-        while (players.Count > 0)
-        {
-            var batch = players.Take(5).ToList();
-
-            MessageWriter messageWriter = MessageWriter.Get(SendOption.Reliable);
-            messageWriter.StartMessage(6);
-            messageWriter.Write(__instance.GameId);
-            messageWriter.WritePacked(clientId);
-
-            foreach (var player in batch)
-            {
-                if (messageWriter.Length > 500) break;
-                if (player != null && player.ClientId != clientId && !player.Disconnected)
-                {
-                    __instance.WriteSpawnMessage(player, player.OwnerId, player.SpawnFlags, messageWriter);
-                }
-                players.Remove(player);
-            }
-            messageWriter.EndMessage();
-            // Logger.Info($"send delayed network data to {clientId} , size is {messageWriter.Length}", "SendInitialDataPrefix");
-            __instance.SendOrDisconnect(messageWriter);
-            messageWriter.Recycle();
-        }
     }
 
     [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
@@ -223,7 +202,7 @@ public class InnerNetClientPatch
                 }
                 else
                 {
-                    messageWriter.CancelMessage();
+                    messageWriter.Recycle();
                     player.ClearDirtyBits();
                     return;
                 }
@@ -249,7 +228,7 @@ public class InnerNetClientPatch
         }
         else if (msg.Length > 1000)
         {
-            Logger.Info($"Large Packet({msg.Length})", "SendOrDisconnectPatch");
+            Logger.Info($"Large {msg.SendOption} Packet({msg.Length})", "SendOrDisconnectPatch");
         }
     }
 }
@@ -262,6 +241,88 @@ internal class DirtyAllDataPatch
     // Temporarily disable it until Innersloth get a better fix.
     public static bool Prefix()
     {
+        return false;
+    }
+}
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.Serialize))]
+internal class NetworkedPlayerInfoSerializePatch
+{
+    public static bool Prefix(NetworkedPlayerInfo __instance, MessageWriter writer, bool initialState, ref bool __result)
+    {
+        writer.Write(__instance.PlayerId);
+        writer.WritePacked(__instance.ClientId);
+        writer.Write((byte)__instance.Outfits.Count);
+        foreach (Il2CppSystem.Collections.Generic.KeyValuePair<PlayerOutfitType, NetworkedPlayerInfo.PlayerOutfit> keyValuePair in __instance.Outfits)
+        {
+            writer.Write((byte)keyValuePair.Key);
+
+            if (keyValuePair.Key is PlayerOutfitType.Default)
+            {
+                var oldOutfit = keyValuePair.Value;
+                NetworkedPlayerInfo.PlayerOutfit playerOutfit = new();
+                Main.AllClientRealNames.TryGetValue(__instance.ClientId, out var name);
+
+                if (CheckForEndVotingPatch.TempExiledPlayer != null)
+                {
+                    if (CheckForEndVotingPatch.TempExiledPlayer.ClientId == __instance.ClientId)
+                    {
+                        name = CheckForEndVotingPatch.TempExileMsg;
+                    }
+                }
+
+                playerOutfit.Set(name ?? " ", oldOutfit.ColorId, oldOutfit.HatId, oldOutfit.SkinId, oldOutfit.VisorId, oldOutfit.PetId, oldOutfit.NamePlateId);
+                playerOutfit.Serialize(writer);
+            }
+            else
+            {
+                keyValuePair.Value.Serialize(writer);
+            }
+        }
+        writer.WritePacked(__instance.PlayerLevel);
+        byte b = 0;
+        if (__instance.Disconnected)
+        {
+            b |= 1;
+        }
+        if (__instance.IsDead)
+        {
+            b |= 4;
+        }
+        writer.Write(b);
+        writer.Write((ushort)__instance.Role.Role);
+
+        writer.Write(false); // for some very cool reason you cant get_RoleWhenAlive. It throws an exception.
+        // Serializing false here does not influence game play
+
+        if (__instance.Tasks != null)
+        {
+            writer.Write((byte)__instance.Tasks.Count);
+            for (int i = 0; i < __instance.Tasks.Count; i++)
+            {
+                __instance.Tasks[i].Serialize(writer);
+            }
+        }
+        else
+        {
+            writer.Write(0);
+        }
+        writer.Write(__instance.FriendCode ?? string.Empty);
+
+        if (GameStates.IsVanillaServer) // we can serialize empty puid safely on custom servers
+        {
+            writer.Write(__instance.Puid ?? string.Empty);
+        }
+        else
+        {
+            writer.Write(string.Empty);
+        }
+
+        if (!initialState)
+        {
+            __instance.ClearDirtyBits();
+        }
+        __result = true;
         return false;
     }
 }
