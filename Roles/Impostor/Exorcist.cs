@@ -1,5 +1,6 @@
-﻿using Hazel;
+using Hazel;
 using TMPro;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using UnityEngine;
@@ -62,7 +63,7 @@ internal class Exorcist : RoleBase
     {
         PlayerIds.Add(playerId);
         ExorcismLimitPerMeeting = ExorcismLimitMeeting.GetInt();
-        AbilityLimit = ExorcismPerGame.GetInt();
+        playerId.SetAbilityUseLimit(ExorcismPerGame.GetInt());
     }
     public override void Remove(byte playerId)
     {
@@ -88,7 +89,7 @@ internal class Exorcist : RoleBase
         {
             if (msg.StartsWith("/" + cmd))
             {
-                if (AbilityLimit <= 0 || ExorcismLimitPerMeeting <= 0)
+                if (player.PlayerId.GetAbilityUseLimit() <= 0 || ExorcismLimitPerMeeting <= 0)
                 {
                     if (TryHideMsg.GetBool() && !player.Data.IsHost())
                         GuessManager.TryHideMsg();
@@ -143,8 +144,7 @@ internal class Exorcist : RoleBase
     {
         var exorcist = (Exorcist)player.GetRoleClass();
         exorcist.ExorcismLimitPerMeeting--;
-        exorcist.AbilityLimit--;
-        exorcist.SendSkillRPC();
+        player.RpcRemoveAbilityUse();
 
         if (TryHideMsg.GetBool())
             GuessManager.TryHideMsg();
@@ -177,7 +177,7 @@ internal class Exorcist : RoleBase
             Dispelled = true;
     }
     public override string GetProgressText(byte playerId, bool coooms)
-        => Utils.ColorString(AbilityLimit <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Exorcist), $"({AbilityLimit})") ?? "Invalid";
+        => Utils.ColorString(playerId.GetAbilityUseLimit() <= 0 ? Color.gray : Utils.GetRoleColor(CustomRoles.Exorcist), $"({playerId.GetAbilityUseLimit()})") ?? "Invalid";
 
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
     class StartMeetingPatch
@@ -223,7 +223,7 @@ internal class Exorcist : RoleBase
         Logger.Msg($"Exorcist Click: ID {PlayerControl.LocalPlayer.PlayerId}", "Exorcist UI");
         if (AmongUsClient.Instance.AmHost && PlayerControl.LocalPlayer.GetRoleClass() is Exorcist exorcist)
         {
-            if (exorcist.AbilityLimit <= 0)
+            if (exorcist._Player.PlayerId.GetAbilityUseLimit() <= 0)
             {
                 PlayerControl.LocalPlayer.ShowInfoMessage(true, GetString("ExorcistOutOfUsages"));
                 return;

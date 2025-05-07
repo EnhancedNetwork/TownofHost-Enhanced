@@ -85,7 +85,6 @@ public enum CustomRPC : byte // 175/255 USED
     // BetterAmongUs (BAU) RPC, This is sent to allow other BAU users know who's using BAU!
     BetterCheck = 150,
 
-    SetEvilTrackerTarget,
     SetDrawPlayer,
     SetCrewpostorTasksDone,
     SetCurrentDrawTarget,
@@ -109,6 +108,7 @@ public enum CustomRPC : byte // 175/255 USED
     SyncAdmiredList,
     DictatorRPC,
     Necronomicon,
+    ExorcistExorcise,
 
     //FFA
     SyncFFAPlayer,
