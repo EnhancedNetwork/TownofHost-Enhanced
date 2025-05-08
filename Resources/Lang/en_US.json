@@ -2066,6 +2066,7 @@
 
   "PotionMasterMaxReveals": "Maximum Reveals",
   "PotionMasterMaxBarriers": "Maximum Barriers",
+  "PotionMasterCovenCanSeeReveals": "<#ac42f2>Coven</color> can see Reveals",
   "PotionMasterNoPotions": "You're out of {0} Potions!",
   "PotionMasterPotionSwitch": "Potion switched to: {0}",
   "PotionMasterPotionCurrent": "Current Potion: ",
@@ -2982,6 +2983,7 @@
   "BakerBreadDied": "{0} has died and lost their bread!<br>You may give Bread to another player!",
   "BakerCanVent": "Baker can Vent",
   "BakerBreadGivesEffects": "Bread gives additional effects",
+  "BakerApocCanSeeReveals": "<color=#ff174f>Apocalypse</color> can see Reveals",
   "BakerTransformNoMoreBread": "Baker transforms if they do not have enough bread",
   "BakerRegenBread": "Baker can give Bread again if fed player dies",
   "FamineKillButtonText": "Starve",
@@ -3406,6 +3408,7 @@
   "PitfallTrapCauseVisionTime": "Trap caused vision time",
   "PitfallTrap": "You have fallen into a trap!",
   "ConsigliereDivinationMaxCount": "Maximum Reveals",
+  "ConsigliereImpsCanSeeReveals": "<color=#ff1919>Impostors</color> can see Reveals",
   "CleanserHideVote": "Hide Cleanser's vote",
   "OracleSkillLimit": "Maximum Uses",
   "OracleHideVote": "Hide <color=#6666FF>Oracle</color>'s vote",
