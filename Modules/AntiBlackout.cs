@@ -181,7 +181,7 @@ public static class AntiBlackout
     public static void SendGameData([CallerMemberName] string callerMethodName = "")
     {
         logger.Info($"SendGameData is called from {callerMethodName}");
-        Utils.SendGameDataAll();
+        Utils.SendGameData();
     }
     public static void OnDisconnect(NetworkedPlayerInfo player)
     {
@@ -304,6 +304,7 @@ public static class AntiBlackout
 
             if (isDead)
             {
+
                 if (isSelf)
                 {
                     selfExiled.Add(seer);
