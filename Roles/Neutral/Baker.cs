@@ -6,7 +6,6 @@ using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -24,7 +23,9 @@ internal class Baker : RoleBase
     private static OptionItem BreadNeededToTransform;
     public static OptionItem FamineStarveCooldown;
     private static OptionItem BTOS2Baker;
+    private static OptionItem ApocCanSeeReveals;
     private static OptionItem TransformNoMoreBread;
+    private static OptionItem RegenBread;
     public static OptionItem CanVent;
     private static byte BreadID = 0;
 
@@ -44,8 +45,10 @@ internal class Baker : RoleBase
         FamineStarveCooldown = FloatOptionItem.Create(Id + 11, "FamineStarveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker])
                 .SetValueFormat(OptionFormat.Seconds);
         BTOS2Baker = BooleanOptionItem.Create(Id + 12, "BakerBreadGivesEffects", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        ApocCanSeeReveals = BooleanOptionItem.Create(Id + 16, "PotionMasterCovenCanSeeReveals", true, TabGroup.NeutralRoles, false).SetParent(BTOS2Baker);
         TransformNoMoreBread = BooleanOptionItem.Create(Id + 13, "BakerTransformNoMoreBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         CanVent = BooleanOptionItem.Create(Id + 14, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        RegenBread = BooleanOptionItem.Create(Id + 15, "BakerRegenBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
     }
     public override void Init()
     {
@@ -127,6 +130,17 @@ internal class Baker : RoleBase
         }
         return false;
     }
+    public static bool ApocKnowRoleTarget(PlayerControl apoc, PlayerControl target)
+    {
+        if (apoc == null || !apoc.IsNeutralApocalypse()) return false;
+        if (!ApocCanSeeReveals.GetBool()) return false;
+        bool result = false;
+        foreach (var baker in RevealList.Keys)
+        {
+            if (RevealList[baker].Contains(target.PlayerId)) result = true;
+        }
+        return result;
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         StringBuilder sb = new();
@@ -174,11 +188,18 @@ internal class Baker : RoleBase
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
-        foreach (var playerId in BreadList.Keys.ToArray())
+        foreach (var playerId in BreadList.Keys.ToList())
         {
-            if (deadPlayer.PlayerId == playerId)
+            var baker = GetPlayerById(playerId);
+            if (HasBread(playerId, deadPlayer.PlayerId))
             {
-                BreadList[playerId].Remove(playerId);
+                BreadList[playerId].Remove(deadPlayer.PlayerId);
+                Logger.Info($"{deadPlayer.GetNameWithRole()} died, remove them from BreadList", "Baker");
+                if (RegenBread.GetBool())
+                {
+                    CanUseAbility = true;
+                    baker.Notify(string.Format(GetString("BakerBreadDied"), deadPlayer.GetRealName()));
+                }
             }
         }
     }

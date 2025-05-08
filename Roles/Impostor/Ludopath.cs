@@ -14,7 +14,7 @@ internal class Ludopath : RoleBase
     public override void SetupCustomOption()
     {
         Options.SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Ludopath);
-        LudopathRandomKillCD = IntegerOptionItem.Create(Id + 2, "LudopathRandomKillCD", new(1, 100, 1), 45, TabGroup.ImpostorRoles, false)
+        LudopathRandomKillCD = IntegerOptionItem.Create(Id + 2, "MaxKillCooldown", new(1, 100, 1), 45, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Ludopath])
             .SetValueFormat(OptionFormat.Seconds);
     }

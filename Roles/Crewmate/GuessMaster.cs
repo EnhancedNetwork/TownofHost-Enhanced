@@ -44,14 +44,14 @@ internal class GuessMaster : RoleBase
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(string.Format(GetString("GuessMasterMisguess"), dp.GetRealName()), gmID, Utils.ColorString(Utils.GetRoleColor(CustomRoles.GuessMaster), GetString("GuessMasterTitle")));
+                    Utils.SendMessage(string.Format(GetString("GuessMasterMisguess"), dp.GetRealName()), gmID, Utils.ColorString(Utils.GetRoleColor(CustomRoles.GuessMaster), GetString("GuessMaster").ToUpper()));
                 }, 1f, "GuessMaster On Miss Guess");
             }
             else
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(string.Format(GetString("GuessMasterTargetRole"), Utils.GetRoleName(role)), gmID, Utils.ColorString(Utils.GetRoleColor(CustomRoles.GuessMaster), GetString("GuessMasterTitle")));
+                    Utils.SendMessage(string.Format(GetString("GuessMasterTargetRole"), Utils.GetRoleName(role)), gmID, Utils.ColorString(Utils.GetRoleColor(CustomRoles.GuessMaster), GetString("GuessMaster").ToUpper()));
                 }, 1f, "GuessMaster Target Role");
 
             }

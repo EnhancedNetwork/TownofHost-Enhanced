@@ -1,3 +1,4 @@
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -135,7 +136,7 @@ internal class Mastermind : RoleBase
         foreach (var x in ManipulatedPlayers)
         {
             var pc = GetPlayerById(x.Key);
-            if (pc.IsAlive())
+            if (pc.IsAlive() && !pc.IsTransformedNeutralApocalypse())
             {
                 pc.SetDeathReason(PlayerState.DeathReason.Suicide);
                 pc.RpcMurderPlayer(pc);
@@ -156,7 +157,11 @@ internal class Mastermind : RoleBase
         var mastermind = GetPlayerById(_playerIdList.First());
         mastermind?.Notify(string.Format(GetString("ManipulatedKilled"), killer.GetRealName()), 4f);
         mastermind?.SetKillCooldown(time: KillCooldown.GetFloat());
-        killer.Notify(GetString("SurvivedManipulation"));
+        _ = new LateTask(() =>
+        {
+            killer.Notify(GetString("SurvivedManipulation"));
+        }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
+
 
         if (target.Is(CustomRoles.Pestilence) || target.Is(CustomRoles.Mastermind))
         {

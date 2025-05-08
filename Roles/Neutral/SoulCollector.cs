@@ -1,10 +1,10 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Neutral;
 
@@ -46,27 +46,24 @@ internal class SoulCollector : RoleBase
     public override void Add(byte playerId)
     {
         TargetId = byte.MaxValue;
-        AbilityLimit = 0;
+        playerId.SetAbilityUseLimit(0);
 
         CustomRoleManager.CheckDeadBodyOthers.Add(OnPlayerDead);
     }
 
-    public override string GetProgressText(byte playerId, bool cvooms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), $"({AbilityLimit}/{SoulCollectorPointsOpt.GetInt()})");
-    public override void SetAbilityButtonText(HudManager hud, byte playerId) => hud.KillButton.OverrideText(GetString("SoulCollectorKillButtonText"));
+    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector).ShadeColor(0.25f), $"({playerId.GetAbilityUseLimit()}/{SoulCollectorPointsOpt.GetInt()})");
+
     private void SendRPC()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
         writer.Write(TargetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
-        var limit = reader.ReadSingle();
         byte target = reader.ReadByte();
 
-        AbilityLimit = limit;
         TargetId = target;
     }
 
@@ -95,6 +92,7 @@ internal class SoulCollector : RoleBase
             return false;
         }
         TargetId = target.PlayerId;
+        SendRPC();
         Logger.Info($"{killer.GetNameWithRole()} predicted the death of {target.GetNameWithRole()}", "SoulCollector");
         killer.Notify(string.Format(GetString("SoulCollectorTarget"), target.GetRealName()));
         return false;
@@ -103,14 +101,13 @@ internal class SoulCollector : RoleBase
     {
         if (_Player == null || !_Player.IsAlive() || !GetPassiveSouls.GetBool()) return;
 
-        AbilityLimit++;
-        SendRPC();
+        _Player.RpcIncreaseAbilityUseLimitBy(1);
     }
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (!pc.IsAlive() || !GetPassiveSouls.GetBool()) return;
 
-        MeetingHudStartPatch.AddMsg(GetString("PassiveSoulGained"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+        MeetingHudStartPatch.AddMsg(GetString("PassiveSoulGained"), pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollector").ToUpper()));
     }
     private void OnPlayerDead(PlayerControl killer, PlayerControl deadPlayer, bool inMeeting)
     {
@@ -122,12 +119,13 @@ internal class SoulCollector : RoleBase
         if (TargetId == deadPlayer.PlayerId && playerState.IsDead && !playerState.Disconnected)
         {
             TargetId = byte.MaxValue;
-            AbilityLimit++;
+            _Player.RpcIncreaseAbilityUseLimitBy(1);
+
             if (inMeeting)
             {
                 _ = new LateTask(() =>
                 {
-                    Utils.SendMessage(GetString("SoulCollectorMeetingDeath"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollectorTitle")));
+                    Utils.SendMessage(GetString("SoulCollectorMeetingDeath"), playerId, title: Utils.ColorString(Utils.GetRoleColor(CustomRoles.SoulCollector), GetString("SoulCollector").ToUpper()));
 
                 }, 3f, "Soul Collector Meeting Death");
             }
@@ -135,7 +133,7 @@ internal class SoulCollector : RoleBase
             SendRPC();
             _Player.Notify(GetString("SoulCollectorSoulGained"));
         }
-        if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !inMeeting)
+        if (_Player.GetAbilityUseLimit() >= SoulCollectorPointsOpt.GetInt() && !inMeeting)
         {
             PlayerControl sc = _Player;
 
@@ -150,14 +148,16 @@ internal class SoulCollector : RoleBase
     {
         if (_Player == null || !_Player.IsAlive()) return;
         TargetId = byte.MaxValue;
+        SendRPC();
 
-        if (AbilityLimit >= SoulCollectorPointsOpt.GetInt() && !_Player.Is(CustomRoles.Death))
+        var player = _Player;
+        if (player.GetAbilityUseLimit() >= SoulCollectorPointsOpt.GetInt() && !player.Is(CustomRoles.Death))
         {
-            _Player.RpcSetCustomRole(CustomRoles.Death);
-            _Player.GetRoleClass()?.OnAdd(_Player.PlayerId);
+            player.RpcSetCustomRole(CustomRoles.Death);
+            player.GetRoleClass()?.OnAdd(player.PlayerId);
 
-            _Player.Notify(GetString("SoulCollectorToDeath"));
-            _Player.RpcGuardAndKill(_Player);
+            player.Notify(GetString("SoulCollectorToDeath"));
+            player.RpcGuardAndKill(player);
         }
     }
 }
@@ -208,11 +208,11 @@ internal class Death : RoleBase
         {
             if (exiled.PlayerId == sc.PlayerId)
             {
-                name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name = string.Format(GetString("ExiledDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
             }
             else
             {
-                name = string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, true));
+                name = string.Format(GetString("ExiledNotDeath"), Main.LastVotedPlayer, Utils.GetDisplayRoleAndSubName(exiled.PlayerId, exiled.PlayerId, false, true));
             }
         }
     }

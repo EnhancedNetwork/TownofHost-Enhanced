@@ -34,14 +34,14 @@ internal class DoubleAgent : RoleBase
     private static OptionItem ChangeRoleToOnLast;
 
     [Obfuscation(Exclude = true)]
-    private enum ChangeRolesSelectOnLast
-    {
-        Role_NoChange,
-        Role_Random,
-        Role_AdmiredImpostor, // Team Crewmate
-        Role_Traitor, // Team Neutral
-        Role_Trickster, // Team Impostor as Crewmate
-    }
+    public static readonly string[] CRoleChangeRolesString =
+    [
+        GetString("Role_NoChange"),
+        GetString("Role_Random"),
+        $"{CustomRoles.Admired.ToColoredString()} {CustomRoles.Impostor.ToColoredString()}",
+        CustomRoles.Traitor.ToColoredString(),
+        CustomRoles.Trickster.ToColoredString(),
+    ];
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
         0, // NoChange
@@ -62,7 +62,7 @@ internal class DoubleAgent : RoleBase
         ExplosionRadius = FloatOptionItem.Create(Id + 14, "DoubleAgentExplosionRadius", new(0.5f, 2f, 0.1f), 1.0f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent])
             .SetValueFormat(OptionFormat.Multiplier);
-        ChangeRoleToOnLast = StringOptionItem.Create(Id + 15, "DoubleAgentChangeRoleTo", EnumHelper.GetAllNames<ChangeRolesSelectOnLast>(), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent]);
+        ChangeRoleToOnLast = StringOptionItem.Create(Id + 15, "DoubleAgentChangeRoleTo", CRoleChangeRolesString, 1, TabGroup.ImpostorRoles, false, useGetString: false).SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent]);
     }
     public override void Init()
     {
@@ -106,9 +106,10 @@ internal class DoubleAgent : RoleBase
                 return;
             }
 
-            if (Bastion.BombedVents.Contains(vent.Id))
+            var bastion = Main.AllPlayerControls.FirstOrDefault(p => pc.Is(CustomRoles.Bastion));
+            if (bastion.GetRoleClass() is Bastion bastionClass && bastionClass.BombedVents.Contains(vent.Id))
             {
-                Bastion.BombedVents.Remove(vent.Id);
+                bastionClass.BombedVents.Remove(vent.Id);
                 _ = new LateTask(() =>
                 {
                     if (pc.inVent) pc.MyPhysics.RpcBootFromVent(vent.Id);
@@ -254,7 +255,7 @@ internal class DoubleAgent : RoleBase
 
         foreach (PlayerControl target in Main.AllAlivePlayerControls) // Get players in radius of bomb that are not in a vent.
         {
-            if (GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat())
+            if (GetDistance(player.GetCustomPosition(), target.GetCustomPosition()) <= ExplosionRadius.GetFloat() && !(player.IsTransformedNeutralApocalypse() || target.IsTransformedNeutralApocalypse()))
             {
                 if (player.inVent) continue;
                 Main.PlayerStates[target.PlayerId].deathReason = PlayerState.DeathReason.Bombed;
