@@ -567,7 +567,6 @@ internal class StartGameHostPatch
         yield break;
     }
 
-
     private static void SetRoleSelf()
     {
         var sender = CustomRpcSender.Create("SetRoleSelf Sender", SendOption.Reliable);
