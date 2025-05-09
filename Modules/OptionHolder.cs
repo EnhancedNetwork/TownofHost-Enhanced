@@ -103,7 +103,7 @@ public static class Options
         Chance100,
     }
     [Obfuscation(Exclude = true)]
-    private enum RatesZeroOne
+    public enum RatesZeroOne
     {
         RoleOff,
         RoleRate,
@@ -1108,7 +1108,10 @@ public static class Options
                 Madmate.SetupCustomMenuOptions();
 
             if (addonType.Key == AddonTypes.Misc)
-                SetupLoversRoleOptionsToggle(23600); // KYS 
+                SetupLoversRoleOptionsToggle(23600); 
+
+            if (addonType.Key == AddonTypes.Experimental)
+                NarcManager.SetUpOptionsForNarc();
 
             foreach (var addon in addonType.Value)
             {

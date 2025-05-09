@@ -36,8 +36,8 @@ internal class Vigilante : RoleBase
     public override bool CanUseSabotage(PlayerControl player) => player.Is(CustomRoles.Madmate) || player.Is(CustomRoles.Recruit) && CanSabotageAsRecruit.GetBool();
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        if (killer.Is(CustomRoles.Madmate)) return true;
-        if (target.GetCustomRole().IsCrewmate() && !target.Is(CustomRoles.Madmate) && !target.GetCustomRole().IsConverted())
+        if (!killer.IsPlayerCrewmateTeam()) return true;
+        if (target.IsPlayerCrewmateTeam())
         {
             killer.RpcSetCustomRole(CustomRoles.Madmate);
             _ = new LateTask(() =>

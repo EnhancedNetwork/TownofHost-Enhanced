@@ -26,18 +26,11 @@ public class Torch : IAddon
     { }
     public static void ApplyGameOptions(IGameOptions opt)
     {
-        if (!Utils.IsActive(SystemTypes.Electrical))
-        {
-            opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat());
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat());
-        }
+        float forcrew = Utils.IsActive(SystemTypes.Electrical) && !TorchAffectedByLights.GetBool() ? TorchVision.GetFloat() * 5 : TorchVision.GetFloat();
+        float forimp = Utils.IsActive(SystemTypes.Electrical) && TorchAffectedByLights.GetBool() ? TorchVision.GetFloat() / 5 : TorchVision.GetFloat();
 
-        if (Utils.IsActive(SystemTypes.Electrical) && !TorchAffectedByLights.GetBool())
-        {
-            opt.SetVision(true);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, TorchVision.GetFloat() * 5);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, TorchVision.GetFloat() * 5);
-        }
+        opt.SetVision(true);
+        opt.SetFloat(FloatOptionNames.CrewLightMod, forcrew);
+        opt.SetFloat(FloatOptionNames.ImpostorLightMod, forimp);
     }
 }
