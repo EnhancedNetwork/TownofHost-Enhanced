@@ -2232,7 +2232,7 @@ public static class Utils
         return false;
     }
 
-    public static void SendGameDataAll()
+    public static void SendGameData()
     {
         MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
         writer.StartMessage(5);
@@ -2269,7 +2269,6 @@ public static class Utils
         }
         writer.Recycle();
     }
-
     public static void SetAllVentInteractions()
     {
         VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>());
@@ -2724,6 +2723,7 @@ public static class Utils
 
         var customNetId = AmongUsClient.Instance.NetIdCnt++;
         var vanillasend = MessageWriter.Get(SendOption.Reliable);
+
         vanillasend.StartMessage(6);
         vanillasend.Write(AmongUsClient.Instance.GameId);
         vanillasend.Write(player.OwnerId);
@@ -2740,15 +2740,12 @@ public static class Utils
         vanillasend.EndMessage();
 
         vanillasend.EndMessage();
-        vanillasend.EndMessage();
 
-        vanillasend.StartMessage(6);
-        vanillasend.Write(AmongUsClient.Instance.GameId);
-        vanillasend.Write(player.OwnerId);
         vanillasend.StartMessage((byte)GameDataTag.RpcFlag);
         vanillasend.WritePacked(customNetId);
         vanillasend.Write((byte)RpcCalls.CloseMeeting);
         vanillasend.EndMessage();
+
         vanillasend.EndMessage();
 
         AmongUsClient.Instance.SendOrDisconnect(vanillasend);

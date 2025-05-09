@@ -23,6 +23,7 @@ public static class CustomRolesHelper
         // Vanilla roles
         if (role.IsVanilla()) return role;
         if (role is CustomRoles.GM) return CustomRoles.Crewmate;
+        if (role is CustomRoles.Killer) return CustomRoles.Impostor;
 
         // Role base
         if (role.GetStaticRoleClass() is not DefaultSetup) return role.GetStaticRoleClass().ThisRoleBase;
@@ -53,23 +54,6 @@ public static class CustomRolesHelper
 
     public static bool HasImpKillButton(this PlayerControl player, bool considerVanillaShift = false)
     {
-        /*
-        if (player == null) return false;
-        var customRole = player.GetCustomRole();
-        bool ModSideHasKillButton = customRole.GetDYRole() == RoleTypes.Impostor || customRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom;
-
-        if (player.IsModded() || (!considerVanillaShift && !player.IsModded()))
-            return ModSideHasKillButton;
-
-        bool vanillaSideHasKillButton = EAC.OriginalRoles.TryGetValue(player.PlayerId, out var OriginalRole) ?
-                                         (OriginalRole.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter || OriginalRole.GetVNRole() is CustomRoles.Impostor or CustomRoles.Shapeshifter or CustomRoles.Phantom) : ModSideHasKillButton;
-
-        return vanillaSideHasKillButton;
-        */
-
-        // Due to the fact that change role basis is widely used in mod
-        // this function now always uses current mod role to decide kill button access?
-
         if (player == null) return false;
 
         if (Options.CurrentGameMode is CustomGameMode.SpeedRun) return true;
@@ -255,6 +239,7 @@ public static class CustomRolesHelper
             || target.Is(CustomRoles.CopyCat)
             || target.Is(CustomRoles.Telecommunication) && Telecommunication.CanUseVent()
             || Knight.CheckCanUseVent(target)
+            || Vigilante.CheckCanUseVent(target)
             || target.Is(CustomRoles.Nimble);
     }
     public static bool IsNeutral(this CustomRoles role)
@@ -1084,6 +1069,7 @@ public static class CustomRolesHelper
 
             case CustomRoles.Nimble:
                 if (Knight.CheckCanUseVent(pc)
+                    || Vigilante.CheckCanUseVent(pc)
                     || pc.Is(CustomRoles.CopyCat))
                     return false;
                 if (!pc.GetCustomRole().IsTasklessCrewmate())
@@ -1345,7 +1331,6 @@ public static class CustomRolesHelper
             _ => role.IsImpostor() ? RoleTypes.Impostor : RoleTypes.Crewmate,
         };
     }
-
     public static bool IsDesyncRole(this CustomRoles role) => role.GetDYRole() != RoleTypes.GuardianAngel;
     /// <summary>
     /// Role is Madmate Or Impostor

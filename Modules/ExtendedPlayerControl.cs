@@ -1447,6 +1447,9 @@ static class ExtendedPlayerControl
         else if (target.Is(Custom_Team.Coven) && seer.Is(Custom_Team.Coven)) return true;
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
+        else if (PotionMaster.CovenKnowRoleTarget(seer, target)) return true;
+        else if (Consigliere.ImpKnowRoleTarget(seer, target)) return true;
+        else if (Baker.ApocKnowRoleTarget(seer, target)) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
         else if (Overseer.IsRevealedPlayer(seer, target)) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
