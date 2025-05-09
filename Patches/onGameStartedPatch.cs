@@ -567,70 +567,7 @@ internal class StartGameHostPatch
         yield break;
     }
 
-    public static void AssignDesyncRole(CustomRoles role, PlayerControl player, Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), (RoleTypes, CustomRoles)> rolesMap, RoleTypes BaseRole, RoleTypes hostBaseRole = RoleTypes.Crewmate)
-    {
-        if (player == null) return;
 
-        var hostId = PlayerControl.LocalPlayer.PlayerId;
-        var isHost = player.PlayerId == hostId;
-
-        Main.PlayerStates[player.PlayerId].SetMainRole(role);
-
-        var selfRole = isHost ? BaseRole is RoleTypes.Shapeshifter or RoleTypes.Phantom ? BaseRole : hostBaseRole : BaseRole;
-        var othersRole = isHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
-
-        // Set Desync Role for self and for others
-        foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            var targetRoleType = othersRole;
-            var targetCustomRole = RoleAssign.RoleResult.GetValueOrDefault(target.PlayerId, CustomRoles.CrewmateTOHE);
-
-            if (targetCustomRole.GetVNRole() is CustomRoles.Noisemaker)
-                targetRoleType = RoleTypes.Noisemaker;
-
-            rolesMap[(player.PlayerId, target.PlayerId)] = player.PlayerId != target.PlayerId ? (targetRoleType, targetCustomRole) : (selfRole, role);
-        }
-
-        // Set Desync Role for others
-        foreach (var seer in Main.AllPlayerControls.Where(x => player.PlayerId != x.PlayerId).ToArray())
-            rolesMap[(seer.PlayerId, player.PlayerId)] = (othersRole, role);
-
-
-        RpcSetRoleReplacer.OverriddenSenderList.Add(senders[player.PlayerId]);
-        // Set Role for Host, but not self
-        // canOverride should be false for the Host during assign
-        if (!isHost)
-        {
-            player.SetRole(othersRole, false);
-        }
-
-        Logger.Info($"Registered Role: {player?.Data?.PlayerName} => {role} : RoleType for self => {selfRole}, for others => {othersRole}", "AssignDesyncRoles");
-    }
-    public static void MakeDesyncSender(Dictionary<byte, CustomRpcSender> senders, Dictionary<(byte, byte), (RoleTypes, CustomRoles)> rolesMap)
-    {
-        foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
-        {
-            foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
-            {
-                if (seer.PlayerId == target.PlayerId || target.PlayerId == PlayerControl.LocalPlayer.PlayerId) continue;
-
-                if (rolesMap.TryGetValue((seer.PlayerId, target.PlayerId), out var roleMap))
-                {
-                    try
-                    {
-                        var targetClientId = target.GetClientId();
-                        if (targetClientId == -1) continue;
-
-                        var roleType = roleMap.Item1;
-                        var sender = senders[seer.PlayerId];
-                        sender.RpcSetRole(seer, roleType, targetClientId);
-                    }
-                    catch
-                    { }
-                }
-            }
-        }
-    }
     private static void SetRoleSelf()
     {
         var sender = CustomRpcSender.Create("SetRoleSelf Sender", SendOption.Reliable);
