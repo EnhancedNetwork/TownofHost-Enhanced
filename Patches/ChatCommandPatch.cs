@@ -70,6 +70,7 @@ internal class ChatCommands
         if (Retributionist.RetributionistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Ritualist.RitualistMsgCheck(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (Medium.MsMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
+        if (Summoner.SummonerCheckMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Swapper sw && sw.SwapMsg(PlayerControl.LocalPlayer, text)) goto Canceled;
         if (PlayerControl.LocalPlayer.GetRoleClass() is Dictator dt && dt.ExilePlayer(PlayerControl.LocalPlayer, text)) goto Canceled;
         Directory.CreateDirectory(modTagsFiles);
@@ -479,11 +480,11 @@ internal class ChatCommands
                     {
                         case CustomGameMode.Standard:
                             var allAlivePlayers = Main.AllAlivePlayerControls;
-                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                            int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
+                            int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate)) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
                             int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
-                            int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
-                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
+                            int apocnum = allAlivePlayers.Count(pc => (pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse()) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
+                            int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven) && !Main.PlayerStates[pc.PlayerId].IsRandomizer);
 
                             sub.Append(string.Format(GetString("Remaining.ImpostorCount"), impnum));
 
@@ -2204,6 +2205,7 @@ internal class ChatCommands
         if (Retributionist.RetributionistMsgCheck(player, text)) { Logger.Info($"Is Retributionist Revenge command", "OnReceiveChat"); return; }
         if (player.GetRoleClass() is Dictator dt && dt.ExilePlayer(player, text)) { canceled = true; Logger.Info($"Is Dictator command", "OnReceiveChat"); return; }
         if (Ritualist.RitualistMsgCheck(player, text)) { canceled = true; Logger.Info($"Is Ritualist command", "OnReceiveChat"); return; }
+        if (Summoner.SummonerCheckMsg(player, text)) { canceled = true; Logger.Info($"Is Summoner command", "OnReceiveChat"); return; }
 
         Directory.CreateDirectory(modTagsFiles);
         Directory.CreateDirectory(vipTagsFiles);
