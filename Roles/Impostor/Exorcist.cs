@@ -13,7 +13,7 @@ internal class Exorcist : RoleBase
 {
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Exorcist;
-    private const int Id = 31100;
+    private const int Id = 31200;
     public static readonly HashSet<byte> PlayerIds = [];
     public static bool HasEnabled => PlayerIds.Any();
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
