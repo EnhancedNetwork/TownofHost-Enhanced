@@ -739,6 +739,7 @@ public enum CustomRoles
     Morphling,
     Nemesis,
     Ninja,
+    Nuancer,
     Parasite,
     Penguin,
     Pitfall,

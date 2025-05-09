@@ -4686,5 +4686,11 @@
   "MeteorInfo": "Use your kill button to kill random players.",
   "MeteorInfoLong": "As the Meteor when you use your kill button on someone , the kill will be blocked and a random non-imposter will be killed.\nDouble cick to kill normally.",
   "MeteorKillButtonText": "Enflame",
-  "DeathReason.Enflamed": "Enflamed"
+  "DeathReason.Enflamed": "Enflamed",
+
+  "Nuancer":"Nuancer",
+  "NuancerInfo":"Kill in different ways",
+  "NuancerInfoLong":"Your killing method is Random. \nWhen you use your Kill Button on someone one of the following events happen with equal probability.\n Normal kill.\n Delayed Kill like Vampire.\n Curse like witch.\n Explosion like Bomber.\n You can suicide(if enabled).",
+  "NuancerVampireDelay":"Nuancer Vampire Kill Delay",
+  "NuancerSuicideOption": "Nuancer can Suicide "
 }

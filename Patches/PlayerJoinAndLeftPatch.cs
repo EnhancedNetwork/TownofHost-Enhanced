@@ -120,6 +120,7 @@ class OnGameJoinedPatch
                     return;
                 }
 
+
                 var client = AmongUsClient.Instance.GetClientFromCharacter(PlayerControl.LocalPlayer);
                 var host = AmongUsClient.Instance.GetHost();
 
@@ -203,6 +204,20 @@ public static class OnPlayerJoinedPatch
 
         return false;
     }
+
+    private static bool IsSuspiciousPlayer(ClientData client)
+    {
+
+        // Check for known attacker patterns in player name
+        if (client.PlayerName.Contains("SEEKER"))
+            return true;
+
+        // Check for suspicious platform data
+        if (client.PlatformData.Platform == Platforms.Unknown)
+            return true;
+
+        return false;
+    }
     public static void Postfix(/*AmongUsClient __instance,*/ [HarmonyArgument(0)] ClientData client)
     {
         Logger.Info($"{client.PlayerName}(ClientID:{client.Id}/FriendCode:{client.FriendCode}/HashPuid:{client.GetHashedPuid()}/Platform:{client.PlatformData.Platform}) Joining room", "Session: OnPlayerJoined");
@@ -213,6 +228,14 @@ public static class OnPlayerJoinedPatch
         {
             try
             {
+                // Check for suspicious players
+                if (IsSuspiciousPlayer(client))
+                {
+                    AmongUsClient.Instance.KickPlayer(client.Id, true);
+                    Logger.Warn($"Kicked suspicious player: {client.PlayerName}", "Anti-Hack");
+                    return;
+                }
+
                 if (AmongUsClient.Instance.AmHost && !client.IsDisconnected() && client.Character.Data.IsIncomplete)
                 {
                     Logger.SendInGame(GetString("Error.InvalidColor") + $" {client.Id}/{client.PlayerName}");
