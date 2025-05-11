@@ -266,10 +266,18 @@ public static class OnPlayerJoinedPatch
                 (platform == Platforms.Playstation && Options.OptKickPlayStationPlayer.GetBool()) ||
                 (platform == Platforms.Switch && Options.OptKickNintendoPlayer.GetBool()))
             {
-                string msg = string.Format(GetString("MsgKickOtherPlatformPlayer"), client?.PlayerName, platform.ToString());
-                AmongUsClient.Instance.KickPlayer(client.Id, false);
-                Logger.SendInGame(msg);
-                Logger.Info(msg, "Other Platform Kick"); ;
+                if (Options.WhiteListNoKick.GetBool() && BanManager.CheckAllowList(client?.FriendCode) && !GameStates.IsLocalGame)
+                {
+                    Logger.SendInGame(string.Format(GetString("MsgWhiteListNoKick"), client?.PlayerName));
+                    Logger.Info($"{client?.PlayerName} should be kicked because platform, but is in whitelist so they will not be kicked", "Other Platform Kick");
+                }
+                else
+                {
+                    string msg = string.Format(GetString("MsgKickOtherPlatformPlayer"), client?.PlayerName, platform.ToString());
+                    AmongUsClient.Instance.KickPlayer(client.Id, false);
+                    Logger.SendInGame(msg);
+                    Logger.Info(msg, "Other Platform Kick");
+                }
             }
         }
         if (DestroyableSingleton<FriendsListManager>.Instance.IsPlayerBlockedUsername(client.FriendCode) && AmongUsClient.Instance.AmHost)
@@ -327,7 +335,7 @@ class OnPlayerLeftPatch
         {
             Logger.Warn($"Assign roles not ended, try remove player {data.Character.PlayerId} from role assign", "OnPlayerLeft");
             RoleAssign.RoleResult?.Remove(data.Character.PlayerId);
-            RpcSetRoleReplacer.Senders?.Remove(data.Character.PlayerId);
+            RpcSetRoleReplacer.Senders?.Remove(data.Character.OwnerId);
         }
 
         if (GameStates.IsNormalGame && GameStates.IsInGame)

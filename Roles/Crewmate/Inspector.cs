@@ -184,7 +184,7 @@ internal class Inspector : RoleBase
                 {
                     _ = new LateTask(() =>
                     {
-                        pc.ShowInfoMessage(isUI, GetString("InspectCheckSelf"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                        pc.ShowInfoMessage(isUI, GetString("InspectCheckSelf"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
                         Logger.Msg("Check attempted on self", "Inspector");
                     }, 0.2f, "Inspector Msg 3");
                     return true;
@@ -193,7 +193,7 @@ internal class Inspector : RoleBase
                 {
                     _ = new LateTask(() =>
                     {
-                        pc.ShowInfoMessage(isUI, GetString("InspectCheckReveal"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                        pc.ShowInfoMessage(isUI, GetString("InspectCheckReveal"), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
                         Logger.Msg("Check attempted on revealed role", "Inspector");
                     }, 0.2f, "Inspector Msg 4");
                     return true;
@@ -228,7 +228,7 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckTrue"), target1.GetRealName(), target2.GetRealName()), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckTrue"), target1.GetRealName(), target2.GetRealName()), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
                             Logger.Msg("Check attempt, result TRUE", "Inspector");
                         }, 0.2f, "Inspector Msg 5");
                     }
@@ -236,7 +236,7 @@ internal class Inspector : RoleBase
                     {
                         _ = new LateTask(() =>
                         {
-                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckFalse"), target1Name, target2Name), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            pc.ShowInfoMessage(isUI, string.Format(GetString("InspectCheckFalse"), target1Name, target2Name), ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
                             Logger.Msg("Check attempt, result FALSE", "Inspector");
                         }, 0.2f, "Inspector Msg 6");
                     }
@@ -254,8 +254,8 @@ internal class Inspector : RoleBase
                         textToSend1 += GetString("InspectCheckTargetMsg");
                         _ = new LateTask(() =>
                         {
-                            SendMessage(textToSend, target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                            SendMessage(textToSend1, target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                            SendMessage(textToSend, target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                            SendMessage(textToSend1, target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
                             Logger.Msg("Check attempt, target1 notified", "Inspector");
                             Logger.Msg("Check attempt, target2 notified", "Inspector");
                         }, 0.2f, "Inspector Msg 7");
@@ -275,8 +275,8 @@ internal class Inspector : RoleBase
 
                             _ = new LateTask(() =>
                             {
-                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target2Name, roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
-                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target1Name, roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("InspectCheckTitle")));
+                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target2Name, roleT2), target1.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
+                                SendMessage(string.Format(GetString("InspectorTargetReveal"), target1Name, roleT1), target2.PlayerId, ColorString(GetRoleColor(CustomRoles.Inspector), GetString("Inspector").ToUpper()));
                                 Logger.Msg($"check attempt, target1 notified target2 as {roleT2} and target2 notified target1 as {roleT1}", "Inspector");
                             }, 0.3f, "Inspector Msg 8");
                         }

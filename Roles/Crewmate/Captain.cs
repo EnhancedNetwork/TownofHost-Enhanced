@@ -68,7 +68,7 @@ internal class Captain : RoleBase
         if (pc.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) NotifyRoles(SpecifyTarget: pc, ForceLoop: true);
         if (pc.GetPlayerTaskState().CompletedTasksCount < OptionTaskRequiredToSlow.GetInt()) return true;
         var allTargets = Main.AllAlivePlayerControls.Where(x => (x != null) && (!OriginalSpeed.ContainsKey(x.PlayerId)) &&
-                                                           (x.GetCustomRole().IsImpostorTeamV3() ||
+                                                           ((x.GetCustomRole().IsImpostorTeamV3() && !x.Is(CustomRoles.Narc)) ||
                                                            (CaptainCanTargetNB.GetBool() && x.GetCustomRole().IsNB()) ||
                                                            (CaptainCanTargetNE.GetBool() && x.GetCustomRole().IsNE()) ||
                                                            (CaptainCanTargetNC.GetBool() && x.GetCustomRole().IsNC()) ||
@@ -103,9 +103,9 @@ internal class Captain : RoleBase
         for (int i = AllSubRoles.Count - 1; i >= 0; i--)
         {
             var role = AllSubRoles[i];
-            if (role == CustomRoles.Cleansed ||
-                role == CustomRoles.LastImpostor ||
-                role == CustomRoles.Lovers || // Causes issues involving Lovers Suicide
+            if (role is CustomRoles.Cleansed
+                or CustomRoles.LastImpostor
+                or CustomRoles.Lovers || // Causes issues involving Lovers Suicide
                 role.IsBetrayalAddon())
             {
                 Logger.Info($"Removed {role} from list of addons", "Captain");
@@ -156,7 +156,7 @@ internal class Captain : RoleBase
     {
         if (target.Is(CustomRoles.Captain) && OptionCrewCanFindCaptain.GetBool() &&
                 (target.GetPlayerTaskState().CompletedTasksCount >= OptionTaskRequiredToReveal.GetInt()) &&
-                ((seer.Is(Custom_Team.Crewmate) && !seer.Is(CustomRoles.Madmate)) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool())))
+                ((seer.Is(Custom_Team.Crewmate) && !seer.Is(CustomRoles.Madmate)) || (seer.Is(CustomRoles.Madmate) && OptionMadmateCanFindCaptain.GetBool()) || seer.Is(CustomRoles.Narc)))
         {
             return ColorString(GetRoleColor(CustomRoles.Captain), " ☆");
         }

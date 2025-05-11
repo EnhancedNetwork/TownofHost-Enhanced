@@ -128,7 +128,7 @@ internal class Councillor : RoleBase
 
                 if (Jailer.IsTarget(target.PlayerId))
                 {
-                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+                    pc.ShowInfoMessage(isUI, GetString("CanNotTrialJailed"), Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
                     return true;
                 }
                 if (pc.PlayerId == target.PlayerId)
@@ -161,7 +161,7 @@ internal class Councillor : RoleBase
                     return true;
                 }
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
+                // else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
                 {
                     pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
@@ -187,8 +187,12 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
-                else if ((target.Is(CustomRoles.Madmate) ||
-                        target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
+                else if (pc.Is(CustomRoles.Narc))
+                {
+                    if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
+                    else CouncillorSuicide = target.IsPlayerCrewmateTeam();
+                }
+                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -209,7 +213,7 @@ internal class Councillor : RoleBase
                         CouncillorSuicide = true;
                     }
                 }
-                else if ((target.GetCustomRole().IsImpostor()))
+                else if (target.GetCustomRole().IsImpostor())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {

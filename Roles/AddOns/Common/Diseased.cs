@@ -20,7 +20,7 @@ public class Diseased : IAddon
         SetupAdtRoleOptions(Id, CustomRoles.Diseased, canSetNum: true, teamSpawnOptions: true);
         DiseasedCDOpt = FloatOptionItem.Create(Id + 13, "DiseasedCDOpt", new(0f, 180f, 1f), 25f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased])
             .SetValueFormat(OptionFormat.Seconds);
-        DiseasedCDReset = BooleanOptionItem.Create(Id + 14, "DiseasedCDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
+        DiseasedCDReset = BooleanOptionItem.Create(Id + 14, "CDReset", true, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Diseased]);
     }
 
     public void Init()

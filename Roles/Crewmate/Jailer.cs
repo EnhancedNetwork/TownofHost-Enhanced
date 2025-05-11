@@ -127,7 +127,7 @@ internal class Jailer : RoleBase
             var tpc = targetIdByte.GetPlayer();
             if (!tpc.IsAlive()) continue;
 
-            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), targetIdByte, ColorString(GetRoleColor(CustomRoles.Jailer), GetString("JailerTitle")));
+            MeetingHudStartPatch.AddMsg(GetString("JailedNotifyMsg"), targetIdByte, ColorString(GetRoleColor(CustomRoles.Jailer), GetString("Jailer").ToUpper()));
         }
     }
 
@@ -183,7 +183,7 @@ internal class Jailer : RoleBase
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
                     tpc.SetRealKiller(player);
                 }
-                if (!CanBeExecuted(tpc.GetCustomRole()) && !player.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless))
+                if ((!CanBeExecuted(tpc.GetCustomRole()) && !player.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless)) || tpc.Is(CustomRoles.Narc))
                 {
                     playerId.SetAbilityUseLimit(0);
                 }

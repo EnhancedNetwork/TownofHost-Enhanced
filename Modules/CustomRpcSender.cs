@@ -31,6 +31,8 @@ public class CustomRpcSender
     //-2: 未設定
     private int currentRpcTarget;
 
+    private int rootMessageCount;
+
     private CustomRpcSender() { }
     public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe)
     {
@@ -43,6 +45,7 @@ public class CustomRpcSender
         onSendDelegate = () => Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");
 
         currentState = State.Ready;
+        rootMessageCount = 0;
         Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
     }
     public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.None, bool isUnsafe = false)
@@ -82,6 +85,12 @@ public class CustomRpcSender
 
         currentRpcTarget = targetClientId;
         currentState = State.InRootMessage;
+        rootMessageCount++;
+
+        if (rootMessageCount > 1)
+        {
+            Logger.Info($"\"{name}\" has {rootMessageCount} root messages.", "CustomRpcSender");
+        }
         return this;
     }
     public CustomRpcSender EndMessage()

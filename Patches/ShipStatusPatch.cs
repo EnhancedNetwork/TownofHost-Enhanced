@@ -426,13 +426,13 @@ class ShipStatusSerializePatch
 
         // Reactor Flash
         {
-            var rwriter = MessageWriter.Get(SendOption.Reliable);
             var reactor = Utils.GetCriticalSabotageSystemType();
 
             foreach (var player in Main.AllPlayerControls)
             {
                 if (player.AmOwner) continue;
 
+                var rwriter = MessageWriter.Get(SendOption.Reliable);
                 rwriter.StartMessage(6);
                 rwriter.Write(AmongUsClient.Instance.GameId);
                 rwriter.WritePacked(player.OwnerId);
@@ -468,10 +468,10 @@ class ShipStatusSerializePatch
                 rwriter.EndMessage();
 
                 rwriter.EndMessage();
+
+                AmongUsClient.Instance.SendOrDisconnect(rwriter);
+                rwriter.Recycle();
             }
-            
-            AmongUsClient.Instance.SendOrDisconnect(rwriter);
-            rwriter.Recycle();
         }
         return false;
     }

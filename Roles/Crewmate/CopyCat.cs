@@ -106,7 +106,7 @@ internal class CopyCat : RoleBase
 
     public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        CustomRoles role = target.GetCustomRole();
+        CustomRoles role = target.Is(CustomRoles.Narc) ? CustomRoles.Sheriff : target.GetCustomRole();
         if (BlackList(role))
         {
             killer.Notify(GetString("CopyCatCanNotCopy"));
@@ -187,7 +187,7 @@ internal class CopyCat : RoleBase
                 if (target.Is(CustomRoles.Recruit)) killer.RpcSetCustomRole(CustomRoles.Recruit);
                 if (target.Is(CustomRoles.Contagious)) killer.RpcSetCustomRole(CustomRoles.Contagious);
                 if (target.Is(CustomRoles.Soulless)) killer.RpcSetCustomRole(CustomRoles.Soulless);
-                if (target.Is(CustomRoles.Admired)) killer.RpcSetCustomRole(CustomRoles.Admired);
+                if (target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)) killer.RpcSetCustomRole(CustomRoles.Admired);
                 if (target.Is(CustomRoles.Enchanted)) killer.RpcSetCustomRole(CustomRoles.Enchanted);
             }
             killer.RpcGuardAndKill(killer);
@@ -199,6 +199,14 @@ internal class CopyCat : RoleBase
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return false;
+    }
+    public static string CopycatReminder(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
+    {
+        if (playerIdList.Contains(seen.PlayerId) && !seen.Is(CustomRoles.CopyCat) && !seer.IsAlive() && seen.IsAlive())
+        {
+            return $"<size=1.5><i>{CustomRoles.CopyCat.ToColoredString()}</i></size>";
+        }
+        return string.Empty;
     }
 
     public override void SetAbilityButtonText(HudManager hud, byte id)

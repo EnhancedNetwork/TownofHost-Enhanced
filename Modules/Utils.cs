@@ -566,6 +566,7 @@ public static class Utils
                             case CustomRoles.Contagious:
                             case CustomRoles.Admired:
                             case CustomRoles.Enchanted:
+                            case CustomRoles.Narc:
                                 RoleColor = GetRoleColor(subRole);
                                 oldRoleText = RoleText.ToString();
                                 RoleText.Clear().Append(GetRoleString($"{subRole}-") + oldRoleText);
@@ -1061,7 +1062,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Enchanted) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Recruit or CustomRoles.Admired or CustomRoles.Infected or CustomRoles.Contagious or CustomRoles.Soulless or CustomRoles.Enchanted or CustomRoles.Narc) continue;
 
             var RoleColor = GetRoleColor(role);
             var RoleText = disableColor ? GetRoleName(role) : ColorString(RoleColor, GetRoleName(role));
@@ -1597,9 +1598,9 @@ public static class Utils
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
                 SuffixModes.OriginalName => name += $"\r\n<size=1.7><color={Main.ModColor}>{DataManager.player.Customization.Name}</color></size>",
-                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.DoNotKillMe")}</color></size>",
-                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
-                SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.AutoHost")}</color></size>",
+                SuffixModes.DoNotKillMe => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.DoNotKillMe")}</color></size>",
+                SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.NoAndroidPlz")}</color></size>",
+                SuffixModes.AutoHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.AutoHost")}</color></size>",
                 _ => name
             };
         }
@@ -1732,6 +1733,10 @@ public static class Utils
             RoleNameUp = "<size=565%>\n</size>";
             RoleInfo = $"<size=50%>\n</size><size={GetInfoSize(player.GetRoleInfo())}%>{Font}{ColorString(player.GetRoleColor(), player.GetRoleInfo())}</font></size>";
         }
+        else if (player.Is(CustomRoles.Narc))
+        {
+            SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(new(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"))}</font> {IconText}</size><size=900%>\n \n</size>\r\n";            
+        }
 
         // Format addons
         bool isFirstSub = true;
@@ -1859,6 +1864,8 @@ public static class Utils
                         SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
                         SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
+                        SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
                         SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
                         break;
                 }
@@ -1891,14 +1898,17 @@ public static class Utils
                         var SeerRoleInfo = seer.GetRoleInfo();
                         string RoleText = string.Empty;
                         const string Font = "<font=\"VCR SDF\" material=\"VCR Black Outline\">";
+                        Color InfoColor = seer.GetRoleColor();
+                        string RoleInfo = seer.GetRoleInfo();
 
-                        if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
+                        if (seer.Is(CustomRoles.Narc)) { RoleText = ColorString(new(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate")); InfoColor = GetRoleColor(CustomRoles.Narc); RoleInfo = GetString("NarcInfo"); }
+                        else if (seerRole.IsImpostor()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamImpostor")); }
                         else if (seerRole.IsCrewmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCrewmate")); }
+                        else if (seerRole.IsMadmate()) { RoleText = ColorString(new(255, 25, 25, byte.MaxValue), GetString("TeamMadmate")); }
                         else if (seerRole.IsNeutral()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamNeutral")); }
-                        else if (seerRole.IsMadmate()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamMadmate")); }
                         else if (seerRole.IsCoven()) { RoleText = ColorString(GetTeamColor(seer), GetString("TeamCoven")); }
 
-                        SelfName.Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(seer.GetRoleColor(), seer.GetRoleInfo())}</size></font>\n");
+                        SelfName.Append($"<size=600%>\n \n</size><size=150%>{Font}{ColorString(seer.GetRoleColor(), RoleText)}</size>\n<size=75%>{ColorString(InfoColor, RoleInfo)}</size></font>\n");
                     }
 
                     if (Pelican.HasEnabled && Pelican.IsEaten(seer.PlayerId))
@@ -2021,7 +2031,8 @@ public static class Utils
 
                                 TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
                                 TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
-
+                                TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
                                 break;
                         }
 
@@ -2041,10 +2052,17 @@ public static class Utils
                         if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target))
                         {
                             var blankRT = new StringBuilder();
-                            if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(target.PlayerId))
+                            if ((target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || seer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(target.PlayerId))
                             {
                                 blankRT.Clear().Append(Overseer.GetRandomRole(seer.PlayerId)); // Random trickster role
                                 blankRT.Append(TaskState.GetTaskState()); // Random task count for revealed trickster
+                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                            }
+                            if (target.Is(CustomRoles.Narc) && !seer.Is(CustomRoles.Madmate))
+                            {
+                                blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                                if (Sheriff.ShowShotLimit.GetBool())
+                                    blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), GetString($" ({Sheriff.ShotLimitOpt.GetInt()})")));
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
                             }
                             if (Illusionist.IsNonCovIllusioned(target.PlayerId))
@@ -2214,7 +2232,7 @@ public static class Utils
         return false;
     }
 
-    public static void SendGameDataAll()
+    public static void SendGameData()
     {
         MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
         writer.StartMessage(5);
@@ -2251,7 +2269,6 @@ public static class Utils
         }
         writer.Recycle();
     }
-
     public static void SetAllVentInteractions()
     {
         VentSystemDeterioratePatch.SerializeV2(ShipStatus.Instance.Systems[SystemTypes.Ventilation].CastFast<VentilationSystem>());
@@ -2335,6 +2352,7 @@ public static class Utils
             PlayerState.DeathReason.BloodLet => CustomRoles.Bloodmoon.IsEnable(),
             PlayerState.DeathReason.Starved => CustomRoles.Baker.IsEnable(),
             PlayerState.DeathReason.Sacrificed => CustomRoles.Altruist.IsEnable(),
+            PlayerState.DeathReason.Exorcised => CustomRoles.Exorcist.IsEnable(),
             PlayerState.DeathReason.Electrocuted => CustomRoles.Shocker.IsEnable(),
             PlayerState.DeathReason.Scavenged => CustomRoles.Scavenger.IsEnable(),
             PlayerState.DeathReason.BlastedOff => CustomRoles.MoonDancer.IsEnable(),
@@ -2425,7 +2443,7 @@ public static class Utils
     }
     public static void CountAlivePlayers(bool sendLog = false, bool checkGameEnd = false)
     {
-        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate());//why cant i just use IsImpostorTeamV3 here
+        int AliveImpostorCount = Main.AllAlivePlayerControls.Count(pc => (pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && !pc.Is(CustomRoles.Narc) && !Main.PlayerStates[pc.PlayerId].IsNecromancer);
         if (Main.AliveImpostorCount != AliveImpostorCount)
         {
             Logger.Info("Number Impostor left: " + AliveImpostorCount, "CountAliveImpostors");
@@ -2706,6 +2724,7 @@ public static class Utils
 
         var customNetId = AmongUsClient.Instance.NetIdCnt++;
         var vanillasend = MessageWriter.Get(SendOption.Reliable);
+
         vanillasend.StartMessage(6);
         vanillasend.Write(AmongUsClient.Instance.GameId);
         vanillasend.Write(player.OwnerId);
@@ -2722,15 +2741,12 @@ public static class Utils
         vanillasend.EndMessage();
 
         vanillasend.EndMessage();
-        vanillasend.EndMessage();
 
-        vanillasend.StartMessage(6);
-        vanillasend.Write(AmongUsClient.Instance.GameId);
-        vanillasend.Write(player.OwnerId);
         vanillasend.StartMessage((byte)GameDataTag.RpcFlag);
         vanillasend.WritePacked(customNetId);
         vanillasend.Write((byte)RpcCalls.CloseMeeting);
         vanillasend.EndMessage();
+
         vanillasend.EndMessage();
 
         AmongUsClient.Instance.SendOrDisconnect(vanillasend);

@@ -218,7 +218,7 @@ internal class Glitch : RoleBase
         if (killer == target || killer == null) return true;
         if (hackedIdList.ContainsKey(killer.PlayerId))
         {
-            killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("GlitchKill")));
+            killer.Notify(string.Format(GetString("HackedByGlitch"), GetString("KillButtonText")));
             return false;
         }
         return true;

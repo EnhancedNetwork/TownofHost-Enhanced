@@ -171,155 +171,97 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsInGame || player == null) return;
 
-        var playerId = player.PlayerId;
         var playerClientId = player.GetClientId();
-        var playerRole = player.GetCustomRole();
         var newRoleType = newCustomRole.GetRoleTypes();
-        RoleTypes remeberRoleType;
 
-        var oldRoleIsDesync = playerRole.IsDesyncRole();
-        var newRoleIsDesync = newCustomRole.IsDesyncRole();
+        var sender = CustomRpcSender.Create("Change Role Basis." + playerClientId, SendOption.Reliable).StartMessage(playerClientId);
 
-        var newVanillaRole = newCustomRole.GetVNRole();
-        var newDesyncRole = newCustomRole.GetDYRole();
-
-        var sender = CustomRpcSender.Create("Change Role Basis", SendOption.Reliable);
-
-        switch (oldRoleIsDesync, newRoleIsDesync)
+        if (newCustomRole.IsDesyncRole())
         {
-            // Desync role to normal role
-            case (true, false):
-                {
-                    foreach (var seer in Main.AllPlayerControls)
-                    {
-                        var seerClientId = seer.GetClientId();
-                        if (seerClientId == -1) continue;
-                        var seerIsHost = seer.IsHost();
-                        var self = player.PlayerId == seer.PlayerId;
-
-                        if (!self && seer.HasDesyncRole() && !seerIsHost)
-                            remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
-                        else remeberRoleType = newRoleType;
-
-                        // Set role type for seer
-                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
-
-                        if (self) continue;
-
-                        var (seerRoleType, seerCustomRole) = seer.GetRoleMap();
-                        if (seer.IsAlive())
-                        {
-                            if (seerCustomRole.IsDesyncRole())
-                                remeberRoleType = seerIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist;
-                            else
-                                remeberRoleType = seerRoleType;
-                        }
-                        else
-                        {
-                            remeberRoleType = RoleTypes.CrewmateGhost;
-                            if (!newCustomRole.IsImpostor() && seer.Is(Custom_Team.Impostor)) remeberRoleType = RoleTypes.ImpostorGhost;
-
-                            RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.IsDesyncRole() ? seerIsHost ? RoleTypes.Crewmate : RoleTypes.Scientist : seerRoleType, seerCustomRole);
-                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
-                            continue;
-                        }
-
-                        // Set role type for player
-                        RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (remeberRoleType, seerCustomRole);
-                        sender.RpcSetRole(seer, remeberRoleType, playerClientId);
-                    }
-
-                    break;
-                }
-            // Normal role to desync role
-            case (false, true):
-                {
-                    foreach (var seer in Main.AllPlayerControls)
-                    {
-                        var seerClientId = seer.GetClientId();
-                        if (seerClientId == -1) continue;
-                        var self = player.PlayerId == seer.PlayerId;
-
-                        if (self)
-                        {
-                            remeberRoleType = player.IsHost() ? RoleTypes.Crewmate : RoleTypes.Impostor;
-
-                            // For Desync Shapeshifter
-                            if (newDesyncRole is RoleTypes.Shapeshifter)
-                                remeberRoleType = RoleTypes.Shapeshifter;
-                        }
-                        else
-                        {
-                            if (newRoleIsDesync) remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
-                            else remeberRoleType = newRoleType;
-                        }
-
-                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
-
-                        if (self) continue;
-
-                        var seerCustomRole = seer.GetRoleMap().CustomRole;
-                        if (seer.IsAlive())
-                        {
-                            remeberRoleType = newVanillaRole is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist;
-                        }
-                        else
-                        {
-                            remeberRoleType = RoleTypes.CrewmateGhost;
-                            RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (seerCustomRole.GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Scientist, seerCustomRole);
-                            sender.RpcSetRole(seer, remeberRoleType, playerClientId);
-                            continue;
-                        }
-
-                        // Set role type for player
-                        RpcSetRoleReplacer.RoleMap[(playerId, seer.PlayerId)] = (remeberRoleType, seerCustomRole);
-                        sender.RpcSetRole(seer, remeberRoleType, playerClientId);
-                    }
-
-                    break;
-                }
-            // Desync role to desync role
-            // Normal role to normal role
-            default:
-                {
-                    var playerIsDesync = player.HasDesyncRole();
-                    foreach (var seer in Main.AllPlayerControls)
-                    {
-                        var seerClientId = seer.GetClientId();
-                        if (seerClientId == -1) continue;
-
-                        if ((playerIsDesync || seer.HasDesyncRole()) && seer.PlayerId != playerId)
-                            remeberRoleType = Utils.GetRoleMap(seer.PlayerId, playerId).RoleType;
-                        else remeberRoleType = newRoleType;
-
-                        RpcSetRoleReplacer.RoleMap[(seer.PlayerId, playerId)] = (remeberRoleType, newCustomRole);
-                        sender.RpcSetRole(player, remeberRoleType, seerClientId);
-                    }
-
-                    break;
-                }
-        }
-
-        sender.SendMessage();
-
-        if (loggerRoleMap)
-        {
-            foreach (var seer in PlayerControl.AllPlayerControls.GetFastEnumerator())
+            foreach (var target in Main.AllPlayerControls)
             {
-                var seerData = seer.Data;
-                foreach (var target in PlayerControl.AllPlayerControls.GetFastEnumerator())
+                if (target.PlayerId == player.PlayerId)
                 {
-                    var targetData = target.Data;
-                    var (roleType, customRole) = seer.GetRoleMap(targetData.PlayerId);
-                    Logger.Info($"seer {seerData?.PlayerName}-{seerData?.PlayerId}, target {targetData?.PlayerName}-{targetData?.PlayerId} => {roleType}, {customRole}", "Role Map");
+                    if (player.AmOwner)
+                    {
+                        player.SetRole(newRoleType, true);
+                        continue;
+                    }
+
+                    sender.StartRpc(player.NetId, (byte)RpcCalls.SetRole);
+                    sender.Write((ushort)newRoleType);
+                    sender.Write(true);
+                    sender.EndRpc();
+
+                    continue;
+                }
+
+                if (target.IsAlive() || !target.Data.IsDead && !target.Data.Disconnected)
+                {
+                    sender.StartRpc(target.NetId, (byte)RpcCalls.SetRole);
+                    sender.Write((ushort)(target.HasImpKillButton() ? RoleTypes.Scientist : (target.GetCustomRole().GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Crewmate)));
+                    sender.Write(true);
+                    sender.EndRpc();
+
+                    if (target.AmOwner)
+                    {
+                        player.SetRole(RoleTypes.Scientist, true);
+                        continue;
+                    }
+
+                    var targetsender = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, target.GetClientId());
+                    targetsender.Write((ushort)RoleTypes.Scientist);
+                    targetsender.Write(true);
+                    AmongUsClient.Instance.FinishRpcImmediately(targetsender);
+                }
+            }
+        }
+        else
+        {
+            foreach (var target in Main.AllPlayerControls)
+            {
+                if (target.PlayerId == player.PlayerId)
+                {
+                    if (player.AmOwner)
+                    {
+                        player.SetRole(newRoleType, true);
+                        continue;
+                    }
+
+                    sender.StartRpc(player.NetId, (byte)RpcCalls.SetRole);
+                    sender.Write((ushort)newRoleType);
+                    sender.Write(true);
+                    sender.EndRpc();
+                    continue;
+                }
+
+                if (target.IsAlive() || !target.Data.IsDead && !target.Data.Disconnected)
+                {
+                    var targetRole = target.GetCustomRole();
+
+                    sender.StartRpc(target.NetId, (byte)RpcCalls.SetRole);
+                    sender.Write((ushort)(targetRole.IsDesyncRole() ? RoleTypes.Scientist : targetRole.GetRoleTypes()));
+                    sender.Write(true);
+                    sender.EndRpc();
+
+                    if (target.AmOwner)
+                    {
+                        player.SetRole(targetRole.IsDesyncRole() ? RoleTypes.Scientist : targetRole.GetRoleTypes(), true);
+                        continue;
+                    }
+
+                    var targetsender = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, target.GetClientId());
+                    targetsender.Write((ushort)newRoleType);
+                    targetsender.Write(true);
+                    AmongUsClient.Instance.FinishRpcImmediately(targetsender);
                 }
             }
         }
 
-        Logger.Info($"{player.GetNameWithRole()}'s role basis was changed to {newRoleType} ({newCustomRole}) (from role: {playerRole}) - oldRoleIsDesync: {oldRoleIsDesync}, newRoleIsDesync: {newRoleIsDesync}", "RpcChangeRoleBasis");
+        sender.SendMessage();
+        Logger.Info($"{player.GetNameWithRole()}'s role basis was changed to {newRoleType} ({newCustomRole}) newRoleIsDesync: {newCustomRole.IsDesyncRole()}", "RpcChangeRoleBasis");
     }
+
     /// <summary>
     /// Changes the RoleType but have same CustomRole of player during the game
     /// </summary>
@@ -1276,6 +1218,7 @@ static class ExtendedPlayerControl
         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId) || DollMaster.IsDoll(pc.PlayerId)) return false;
         if (MeetingStates.FirstMeeting && !Options.ShieldedCanUseKillButton.GetBool() && pc.CheckFirstDied()) return false;
         if (pc.Is(CustomRoles.Killer) || Mastermind.PlayerIsManipulated(pc)) return true;
+        if (pc.Is(CustomRoles.Narc) && !NarcManager.NarcCanUseKillButton(pc)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseKillButton(pc)) return true;
@@ -1286,18 +1229,7 @@ static class ExtendedPlayerControl
     {
         if (!pc.IsAlive() || pc.Data.Role.Role == RoleTypes.GuardianAngel || Pelican.IsEaten(pc.PlayerId)) return false;
 
-        var role = pc.GetCustomRole();
-        if (!role.IsImpostor())
-        {
-            return role.GetDYRole() is RoleTypes.Impostor or RoleTypes.Shapeshifter;
-        }
-        return role.GetVNRole() switch
-        {
-            CustomRoles.Impostor => true,
-            CustomRoles.Shapeshifter => true,
-            CustomRoles.Phantom => true,
-            _ => false
-        };
+        return pc.GetCustomRole().HasImpBasis();
     }
     public static bool CanUseVents(this PlayerControl player) => player != null && (player.CanUseImpostorVentButton() || player.GetCustomRole().GetVNRole() == CustomRoles.Engineer);
     public static bool CantUseVent(this PlayerControl player, int ventId) => player == null || !player.CanUseVents() || (CustomRoleManager.BlockedVentsList.TryGetValue(player.PlayerId, out var blockedVents) && blockedVents.Contains(ventId));
@@ -1321,6 +1253,7 @@ static class ExtendedPlayerControl
     public static bool CanUseSabotage(this PlayerControl pc)
     {
         if (pc.Is(Custom_Team.Impostor) && !pc.IsAlive() && Options.DeadImpCantSabotage.GetBool()) return false;
+        if (NarcManager.CantUseSabotage(pc)) return false;
 
         var playerRoleClass = pc.GetRoleClass();
         if (playerRoleClass != null && playerRoleClass.CanUseSabotage(pc)) return true;
@@ -1399,7 +1332,8 @@ static class ExtendedPlayerControl
             CustomRoles.Lovers and not
             CustomRoles.Infected and not
             CustomRoles.Enchanted and not
-            CustomRoles.Contagious;
+            CustomRoles.Contagious and not
+            CustomRoles.Narc;
     }
 
     public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles addOn = CustomRoles.NotAssigned)
@@ -1503,19 +1437,21 @@ static class ExtendedPlayerControl
         else if (Altruist.HasEnabled && seer.IsMurderedThisRound()) return false;
         else if (seer.GetCustomRole() == target.GetCustomRole() && seer.GetCustomRole().IsNK()) return true;
         else if (Options.LoverKnowRoles.GetBool() && seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers)) return true;
-        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
-        else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
-        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.Is(Custom_Team.Impostor) && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
-        else if (seer.Is(Custom_Team.Impostor) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
+        else if (Options.ImpsCanSeeEachOthersRoles.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return true;
+        else if (Madmate.MadmateKnowWhosImp.GetBool() && seer.Is(CustomRoles.Madmate) && target.CheckImpCanSeeAllies(CheckAsTarget: true)) return true;
+        else if (Madmate.ImpKnowWhosMadmate.GetBool() && target.Is(CustomRoles.Madmate) && seer.CheckImpCanSeeAllies(CheckAsSeer: true)) return true;
+        else if (seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.GetCustomRole().IsGhostRole() && target.GetCustomRole().IsImpostor() && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !Main.PlayerStates[seer.PlayerId].IsNecromancer && !Main.PlayerStates[target.PlayerId].IsNecromancer) return true;
         else if (Ritualist.EnchantedKnowsCoven.GetBool() && seer.Is(CustomRoles.Enchanted) && target.Is(Custom_Team.Coven)) return true;
         else if (target.Is(CustomRoles.Enchanted) && seer.Is(Custom_Team.Coven)) return true;
         else if (target.Is(Custom_Team.Coven) && seer.Is(Custom_Team.Coven)) return true;
         else if (target.GetRoleClass().KnowRoleTarget(seer, target)) return true;
         else if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
+        else if (PotionMaster.CovenKnowRoleTarget(seer, target)) return true;
+        else if (Consigliere.ImpKnowRoleTarget(seer, target)) return true;
+        else if (Baker.ApocKnowRoleTarget(seer, target)) return true;
         else if (Solsticer.OtherKnowSolsticer(target)) return true;
-        else if (Overseer.IsRevealedPlayer(seer, target) /*&& !target.Is(CustomRoles.Trickster)*/) return true;
-        //↑↑I disabled the part that checks target is not trickster because I found it causing modded Overseers unable to see random role texts in meetings
+        else if (Overseer.IsRevealedPlayer(seer, target)) return true;
         else if (Gravestone.EveryoneKnowRole(target)) return true;
         else if (Mimic.CanSeeDeadRoles(seer, target)) return true;
         else if (Workaholic.OthersKnowWorka(target)) return true;
@@ -1523,6 +1459,8 @@ static class ExtendedPlayerControl
         else if (Cultist.KnowRole(seer, target)) return true;
         else if (Infectious.KnowRole(seer, target)) return true;
         else if (Virus.KnowRole(seer, target)) return true;
+        else if (Admirer.CheckKnowRoleTarget(seer, target)) return true;
+        else if (NarcManager.KnowRoleOfTarget(seer, target)) return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
         {
             if (Nemesis.PreventKnowRole(seer)) return false;
@@ -1544,11 +1482,13 @@ static class ExtendedPlayerControl
 
         if (seer.PlayerId == target.PlayerId) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
-        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Options.ShowBetrayalAddonsOnEject.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote && subRole.IsBetrayalAddonV2() && (subRole != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())) return true;
-        else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Impostor) && target.Is(Custom_Team.Impostor) && !subRole.IsBetrayalAddon()) return true;
+        else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote
+                && (Options.ShowBetrayalAddonsOnEject.GetBool() || subRole is CustomRoles.Narc)// Narc is always shown regardless of the option
+                && subRole.IsBetrayalAddonV2() && (subRole != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())) return true;
+        else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
-
+        
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
                 or CustomRoles.Recruit
@@ -1557,7 +1497,8 @@ static class ExtendedPlayerControl
                 or CustomRoles.Infected
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
-                or CustomRoles.Enchanted)
+                or CustomRoles.Enchanted
+                or CustomRoles.Narc)
             && KnowSubRoleTarget(seer, target))
             return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
@@ -1578,7 +1519,7 @@ static class ExtendedPlayerControl
     {
         //if (seer.GetRoleClass().KnowRoleTarget(seer, target)) return true;
 
-        if (seer.Is(Custom_Team.Impostor))
+        if (seer.CheckImpCanSeeAllies(CheckAsSeer: true))
         {
             // Imp know Madmate
             if (target.Is(CustomRoles.Madmate) && Madmate.ImpKnowWhosMadmate.GetBool())
@@ -1604,6 +1545,7 @@ static class ExtendedPlayerControl
             else if (seer.Is(CustomRoles.Sidekick))
                 return target.Is(CustomRoles.Recruit) || target.Is(CustomRoles.Sidekick);
         }
+        else if (NarcManager.KnowRoleOfTarget(seer, target)) return true;
 
         return false;
     }
@@ -1660,7 +1602,7 @@ static class ExtendedPlayerControl
 
         var Prefix = "";
         if (!InfoLong && role == CustomRoles.Nemesis)
-            Prefix = Nemesis.CheckCanUseKillButton() ? "After" : "Before";
+            Prefix = Nemesis.CheckCanUseKillButton(player) ? "After" : "Before";
 
         var Info = (role.IsVanilla() ? "Blurb" : "Info");
         return !InfoLong ? GetString($"{Prefix}{text}{Info}") : role.GetInfoLong();

@@ -57,7 +57,7 @@ internal class Pacifist : RoleBase
 
             Main.AllAlivePlayerControls.Where(x =>
             pc.Is(CustomRoles.Madmate)
-                ? (x.CanUseKillButton() && x.GetCustomRole().IsCrewmate())
+                ? (x.CanUseKillButton() && x.IsPlayerCrewmateTeam())
                 : x.CanUseKillButton()
             ).Do(x =>
             {

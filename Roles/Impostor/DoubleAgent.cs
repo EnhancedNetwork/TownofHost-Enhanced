@@ -34,14 +34,14 @@ internal class DoubleAgent : RoleBase
     private static OptionItem ChangeRoleToOnLast;
 
     [Obfuscation(Exclude = true)]
-    private enum ChangeRolesSelectOnLast
-    {
-        Role_NoChange,
-        Role_Random,
-        Role_AdmiredImpostor, // Team Crewmate
-        Role_Traitor, // Team Neutral
-        Role_Trickster, // Team Impostor as Crewmate
-    }
+    public static readonly string[] CRoleChangeRolesString =
+    [
+        GetString("Role_NoChange"),
+        GetString("Role_Random"),
+        $"{CustomRoles.Admired.ToColoredString()} {CustomRoles.Impostor.ToColoredString()}",
+        CustomRoles.Traitor.ToColoredString(),
+        CustomRoles.Trickster.ToColoredString(),
+    ];
     public static readonly CustomRoles[] CRoleChangeRoles =
     [
         0, // NoChange
@@ -62,7 +62,7 @@ internal class DoubleAgent : RoleBase
         ExplosionRadius = FloatOptionItem.Create(Id + 14, "DoubleAgentExplosionRadius", new(0.5f, 2f, 0.1f), 1.0f, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent])
             .SetValueFormat(OptionFormat.Multiplier);
-        ChangeRoleToOnLast = StringOptionItem.Create(Id + 15, "DoubleAgentChangeRoleTo", EnumHelper.GetAllNames<ChangeRolesSelectOnLast>(), 1, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent]);
+        ChangeRoleToOnLast = StringOptionItem.Create(Id + 15, "DoubleAgentChangeRoleTo", CRoleChangeRolesString, 1, TabGroup.ImpostorRoles, false, useGetString: false).SetParent(CustomRoleSpawnChances[CustomRoles.DoubleAgent]);
     }
     public override void Init()
     {
@@ -127,7 +127,8 @@ internal class DoubleAgent : RoleBase
 
         if (!BombIsActive)
         {
-            if (target.Is(Custom_Team.Impostor)) return false;
+            if (target.Is(Custom_Team.Impostor) && !voter.Is(CustomRoles.Narc)) return false;
+            if (target.IsPolice() && voter.Is(CustomRoles.Narc)) return false;
             if (voter == target) return false;
 
             if (target.Is(CustomRoles.VoodooMaster) && VoodooMaster.Dolls[target.PlayerId].Count > 0)
@@ -219,7 +220,7 @@ internal class DoubleAgent : RoleBase
                     Role = CRoleChangeRoles[IRandom.Instance.Next(2, CRoleChangeRoles.Length)];
 
                 // If role is not on Impostor team remove all Impostor addons if any.
-                if (!Role.IsImpostorTeam())
+                if (!Role.IsImpostorTeamV3())
                 {
                     foreach (CustomRoles allAddons in player.GetCustomSubRoles())
                     {
@@ -230,8 +231,11 @@ internal class DoubleAgent : RoleBase
                     }
                 }
                 // If Role is ImpostorTOHE aka Admired Impostor opt give Admired Addon if player dose not already have it.
-                if (Role == CustomRoles.ImpostorTOHE && !player.GetCustomSubRoles().Contains(CustomRoles.Admired))
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Admired) && !player.Is(CustomRoles.Narc))
                     player.GetCustomSubRoles()?.Add(CustomRoles.Admired);
+
+                // If Double Agent is Narc and Role is Traitor,Double Agent turns into Parasite instead
+                if (Role is CustomRoles.Traitor && player.Is(CustomRoles.Narc)) Role = CustomRoles.Parasite;
 
                 Init();
                 player.GetRoleClass().OnRemove(player.PlayerId);
@@ -241,8 +245,10 @@ internal class DoubleAgent : RoleBase
                 player.MarkDirtySettings();
 
                 string RoleName = ColorString(GetRoleColor(player.GetCustomRole()), GetRoleName(player.GetCustomRole()));
-                if (Role == CustomRoles.ImpostorTOHE)
-                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired")} {GetString("ImpostorTOHE")}");
+                if (Role == CustomRoles.ImpostorTOHE && !player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Admired), $"{GetString("Admired-")}{GetString("ImpostorTOHE")}");
+                if (player.Is(CustomRoles.Narc))
+                    RoleName = ColorString(GetRoleColor(CustomRoles.Narc), $"{GetString("Narc-")}{GetString(Role.ToString())}");
                 player.Notify(ColorString(GetRoleColor(player.GetCustomRole()), GetString("DoubleAgentRoleChange") + RoleName));
             }
         }

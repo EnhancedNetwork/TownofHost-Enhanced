@@ -291,7 +291,7 @@ internal class Solsticer : RoleBase
             SetShortTasksToAdd();
             if (MurderMessage == "")
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
-            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("Solsticer").ToUpper()));
         }
     }
 }
