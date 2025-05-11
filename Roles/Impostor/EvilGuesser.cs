@@ -27,7 +27,7 @@ internal class EvilGuesser : RoleBase
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
         EGCanGuessAdt = BooleanOptionItem.Create(Id + 4, "GCanGuessAdt", false, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
-        NarcEGCanGuessCrew = BooleanOptionItem.Create(Id + 5, "NarcEGGCanGuessCrew", true, TabGroup.ImpostorRoles, false)
+        NarcEGCanGuessCrew = BooleanOptionItem.Create(Id + 5, "NarcEGCanGuessCrew", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser]);
         EGTryHideMsg = BooleanOptionItem.Create(Id + 6, "GuesserTryHideMsg", true, TabGroup.ImpostorRoles, false)
             .SetParent(Options.CustomRoleSpawnChances[CustomRoles.EvilGuesser])
