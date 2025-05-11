@@ -89,12 +89,15 @@ internal class Consigliere : RoleBase
 
     public static bool ImpKnowRoleTarget(PlayerControl imp, PlayerControl target)
     {
-        if (imp == null || !imp.IsPlayerImpostorTeam()) return false;
+        if (imp == null || !(imp.IsPlayerImpostorTeam() || imp.IsPolice())) return false;
         if (!ImpsCanSeeReveals.GetBool()) return false;
         bool result = false;
         foreach (var cs in DivinationTarget.Keys)
         {
             if (DivinationTarget[cs].Contains(target.PlayerId)) result = true;
+
+            // when seer is Sheriff or ChiefOfPolice and Consigliere is not Narc,seer shouldn't see target's role
+            if (imp.IsPolice() && !cs.GetPlayer().Is(CustomRoles.Narc)) result = false;
         }
         return result;
     }

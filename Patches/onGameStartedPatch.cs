@@ -375,6 +375,9 @@ internal class StartGameHostPatch
 
         try
         {
+            // Initialize for Narc
+            NarcManager.InitForNarc();
+            
             // Block "RpcSetRole" for set Desync Roles for some players
             RpcSetRoleReplacer.Initialize();
 
@@ -462,6 +465,7 @@ internal class StartGameHostPatch
             {
                 if (Options.CurrentGameMode == CustomGameMode.Standard)
                 {
+                    AddonAssign.StartAssigningNarc();
                     AddonAssign.InitAndStartAssignLovers();
                     AddonAssign.StartSortAndAssign();
                 }
