@@ -15,8 +15,9 @@ using static TOHE.Translator;
 
 namespace TOHE;
 
+
 [Obfuscation(Exclude = true)]
-public enum CustomRPC : byte // 174/255 USED
+public enum CustomRPC : byte // 175/255 USED
 {
     // RpcCalls can increase with each AU version
     // On version 2024.6.18 the last id in RpcCalls: 65
@@ -107,6 +108,7 @@ public enum CustomRPC : byte // 174/255 USED
     SyncAdmiredList,
     DictatorRPC,
     Necronomicon,
+    ExorcistExorcise,
 
     //FFA
     SyncFFAPlayer,
@@ -149,6 +151,7 @@ internal class RPCHandlerPatch
         or CustomRPC.RequestRetryVersionCheck
         or CustomRPC.AntiBlackout
         or CustomRPC.Judge
+        or CustomRPC.ExorcistExorcise
         or CustomRPC.CouncillorJudge
         or CustomRPC.NemesisRevenge
         or CustomRPC.RetributionistRevenge
@@ -575,6 +578,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.Judge:
                 Judge.ReceiveRPC_Custom(reader, __instance);
+                break;
+            case CustomRPC.ExorcistExorcise:
+                Exorcist.ReceiveRPC_Custom(reader, __instance);
                 break;
             case CustomRPC.PresidentEnd:
                 President.ReceiveRPC(reader, __instance);
@@ -1051,7 +1057,7 @@ internal class StartRpcPatch
 [HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.StartRpcImmediately))]
 public class StartRpcImmediatelyPatch
 {
-    public static void Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId)
+    public static void Prefix(InnerNetClient __instance, [HarmonyArgument(0)] uint targetNetId, [HarmonyArgument(1)] byte callId, [HarmonyArgument(2)] SendOption option, [HarmonyArgument(3)] int targetClientId, ref MessageWriter __result)
     {
         RPC.SendRpcLogger(targetNetId, callId, option, targetClientId);
     }
