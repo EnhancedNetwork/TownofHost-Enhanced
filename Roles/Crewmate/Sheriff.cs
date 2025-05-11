@@ -91,7 +91,7 @@ internal class Sheriff : RoleBase
     }
     private static void SetUpNeutralOptions(int Id)
     {
-        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => (x.IsNeutral() || x is CustomRoles.Rebel) && !x.IsMadmate() && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
+        foreach (var neutral in CustomRolesHelper.AllRoles.Where(x => (x.IsNeutral() || x is CustomRoles.Rebel) && !x.IsTNA() && x is not CustomRoles.Glitch and not CustomRoles.Killer).ToArray())
         {
             SetUpKillTargetOption(neutral, Id, true, CanKillNeutralsMode);
             Id++;

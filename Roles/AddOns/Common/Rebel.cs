@@ -55,7 +55,7 @@ public static class RebelManager
     public static OptionItem CanWinAfterDeath;
     public static OptionItem RebelHasImpVision;
 
-    public static void SetUpOptionsForRebel(int id = 31700, CustomRoles role = CustomRoles.Rebel, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.Addons)
+    public static void SetUpOptionsForRebel(int id = 31900, CustomRoles role = CustomRoles.Rebel, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.Addons)
     {
         var spawnOption = StringOptionItem.Create(id, role.ToString(), EnumHelper.GetAllNames<RatesZeroOne>(), 0, tab, false).SetColor(GetRoleColor(role))
             .SetHeader(true)
@@ -154,5 +154,5 @@ public static class RebelManager
     }
 
     public static bool CheckWinCondition(CustomWinner winner, PlayerControl pc)
-        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || pc.IsAlive() && !CanWinAfterDeath.GetBool());
+        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || (pc.IsAlive() && !CanWinAfterDeath.GetBool()));
 }
