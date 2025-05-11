@@ -161,7 +161,7 @@ public static class AddonAssign
         foreach (var pc in Main.AllPlayerControls)
         {
             if (pc.Is(CustomRoles.GM)
-                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())
+                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count(x => x != CustomRoles.Narc) >= Options.NoLimitAddonsNumMax.GetInt())
                 || pc.Is(CustomRoles.Dictator)
                 || pc.Is(CustomRoles.God)
                 || pc.Is(CustomRoles.Hater)
