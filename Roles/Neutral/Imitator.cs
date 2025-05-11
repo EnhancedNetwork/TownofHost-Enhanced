@@ -46,7 +46,7 @@ internal class Imitator : RoleBase
     public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() > 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        var role = target.GetCustomRole();
+        var role = target.Is(CustomRoles.Narc) ? CustomRoles.Sheriff : target.GetCustomRole();
 
         if (role is CustomRoles.Jackal
             or CustomRoles.HexMaster

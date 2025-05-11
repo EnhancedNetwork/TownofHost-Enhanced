@@ -23,6 +23,7 @@ internal class Baker : RoleBase
     private static OptionItem BreadNeededToTransform;
     public static OptionItem FamineStarveCooldown;
     private static OptionItem BTOS2Baker;
+    private static OptionItem ApocCanSeeReveals;
     private static OptionItem TransformNoMoreBread;
     private static OptionItem RegenBread;
     public static OptionItem CanVent;
@@ -44,6 +45,7 @@ internal class Baker : RoleBase
         FamineStarveCooldown = FloatOptionItem.Create(Id + 11, "FamineStarveCooldown", new(0f, 180f, 2.5f), 30f, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker])
                 .SetValueFormat(OptionFormat.Seconds);
         BTOS2Baker = BooleanOptionItem.Create(Id + 12, "BakerBreadGivesEffects", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
+        ApocCanSeeReveals = BooleanOptionItem.Create(Id + 16, "PotionMasterCovenCanSeeReveals", true, TabGroup.NeutralRoles, false).SetParent(BTOS2Baker);
         TransformNoMoreBread = BooleanOptionItem.Create(Id + 13, "BakerTransformNoMoreBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         CanVent = BooleanOptionItem.Create(Id + 14, "BakerCanVent", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
         RegenBread = BooleanOptionItem.Create(Id + 15, "BakerRegenBread", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Baker]);
@@ -127,6 +129,17 @@ internal class Baker : RoleBase
             return targets.Contains(target.PlayerId);
         }
         return false;
+    }
+    public static bool ApocKnowRoleTarget(PlayerControl apoc, PlayerControl target)
+    {
+        if (apoc == null || !apoc.IsNeutralApocalypse()) return false;
+        if (!ApocCanSeeReveals.GetBool()) return false;
+        bool result = false;
+        foreach (var baker in RevealList.Keys)
+        {
+            if (RevealList[baker].Contains(target.PlayerId)) result = true;
+        }
+        return result;
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {

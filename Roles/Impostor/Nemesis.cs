@@ -192,9 +192,9 @@ internal class Nemesis : RoleBase
         NemesisMsgCheck(pc, $"/rv {PlayerId}", true);
     }
 
-    public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton();
+    public override bool CanUseKillButton(PlayerControl pc) => CheckCanUseKillButton(pc);
 
-    public static bool CheckCanUseKillButton()
+    public static bool CheckCanUseKillButton(PlayerControl pc)
     {
         if (Main.PlayerStates == null) return false;
 
@@ -203,10 +203,12 @@ internal class Nemesis : RoleBase
         foreach (var player in Main.AllAlivePlayerControls)
         {
             var role = player.GetCustomRole();
-            if (role != CustomRoles.Nemesis && role.IsImpostor()) LivingImpostorsNum++;
+            if (role != CustomRoles.Nemesis && role.IsImpostor() && !player.Is(CustomRoles.Narc)) LivingImpostorsNum++;
         }
 
-        return LivingImpostorsNum <= 0;
+        // if Nemesis is Narc, they can use kill buttom when all Sheriffs are dead
+        // if not, they can use kill button when LivingImpostorNum is 0
+        return pc.Is(CustomRoles.Narc) ? !CustomRoles.Sheriff.RoleExist() :  LivingImpostorsNum <= 0;
     }
 
     private static void NemesisOnClick(byte playerId /*, MeetingHud __instance*/)
