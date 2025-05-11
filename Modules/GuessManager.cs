@@ -799,7 +799,7 @@ public static class GuessManager
             {
                 if (PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser))
                 {
-                    if (EvilGuesser.HideTabInGuesserUI(TabId)) continue;
+                    if (EvilGuesser.HideTabInGuesserUI(PlayerControl.LocalPlayer, TabId)) continue;
                 }
                 else if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser))
                 {
