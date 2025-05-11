@@ -62,9 +62,16 @@ internal class EvilGuesser : RoleBase
         }
 
         // Evil Guesser Can't Guess Impostors
-        if ((role.IsImpostor() || role.IsMadmate()) && !EGCanGuessImp.GetBool())
+        if ((role.IsImpostor() || role.IsMadmate()) && !EGCanGuessImp.GetBool() && !pc.Is(CustomRoles.Narc))
         {
             guesser.ShowInfoMessage(isUI, Translator.GetString("GuessImpRole"));
+            return true;
+        }
+
+        // Narc Evil Guesser can guess Impostors but cannot guess Crewmates
+        if (role.IsCrewmate() && !NarcEGCanGuessCrew.GetBool() && pc.Is(CustomRoles.Narc))
+        {
+            guesser.ShowInfoMessage(isUI, Translator.GetString("GuessCrewRole"));
             return true;
         }
 
