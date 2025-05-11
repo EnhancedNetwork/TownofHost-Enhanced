@@ -105,7 +105,7 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Admired))
+        if (pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc))
         {
             countTypes = CountTypes.Crew;
         }
@@ -158,7 +158,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
-                if (subRole is CustomRoles.Rebel) continue;
+                if (subRole is CustomRoles.Narc or CustomRoles.Rebel) continue;
                 RemoveSubRole(subRole);
             }
         }
@@ -240,6 +240,7 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Admired:
+            case CustomRoles.Narc:
                 countTypes = CountTypes.Crew;
                 break;
 
@@ -316,6 +317,7 @@ public class PlayerState(byte playerId)
         Revenge,
         Execution,
         Fall,
+        Exorcised,
 
         // TOHE
         Gambled,

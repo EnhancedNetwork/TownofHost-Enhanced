@@ -444,7 +444,6 @@ internal class Enigma : RoleBase
 
         public override string GetMessage(PlayerControl killer, bool showStageClue)
         {
-            CustomRoles role = killer.GetCustomRole();
             switch (this.ClueStage)
             {
                 case 1:

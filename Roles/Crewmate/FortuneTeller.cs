@@ -95,6 +95,8 @@ internal class FortuneTeller : RoleBase
             {
                 msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement().ToString()));
             }
+            else if (target.Is(CustomRoles.Narc)) 
+                msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRoles.Sheriff.ToString()));
             else if (target.Is(CustomRoles.Rebel))
                 msg = string.Format(GetString("FortuneTellerCheck.TaskDone"), target.GetRealName(), GetString(CustomRoles.Taskinator.ToString()));
             else
@@ -113,6 +115,7 @@ internal class FortuneTeller : RoleBase
             var targetRole = target.GetCustomRole();
             if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+            else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
             else if (target.Is(CustomRoles.Rebel)) targetRole = CustomRoles.Taskinator;
             var activeRoleList = CustomRolesHelper.AllRoles.Where(role => (role.IsEnable() || role.RoleExist(countDead: true)) && role != targetRole && !role.IsAdditionRole()).ToList();
             var count = Math.Min(4, activeRoleList.Count);
@@ -143,6 +146,7 @@ internal class FortuneTeller : RoleBase
 
             if (Illusionist.IsCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCrewmate()).ToList().RandomElement();
             else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) targetRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+            else if (target.Is(CustomRoles.Narc)) targetRole = CustomRoles.Sheriff;
             else if (target.Is(CustomRoles.Rebel)) targetRole = CustomRoles.Taskinator;
 
             text = GetTargetRoleList(completeRoleList.FirstOrDefault(x => x.Contains(targetRole)));

@@ -461,7 +461,7 @@ class CheckForEndVotingPatch
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             var pc_role = pc.GetCustomRole();
-            if (pc_role.IsImpostorTeamV3() && pc != exiledPlayer.Object)
+            if (pc_role.IsImpostorTeamV3() && !pc.Is(CustomRoles.Narc) && pc != exiledPlayer.Object)
                 impnum++;
             else if (pc_role.IsNK() && pc != exiledPlayer.Object)
                 neutralnum++;
@@ -476,7 +476,7 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Rebel && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Narc and not CustomRoles.Rebel && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                 {
                     if (player.Is(CustomRoles.Madmate))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
@@ -488,10 +488,10 @@ class CheckForEndVotingPatch
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
                 }
 
-                else if (player.GetCustomRole().IsImpostorTeamV3())
+                else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Narc))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
-                else if (player.GetCustomRole().IsCrewmate() && !player.Is(CustomRoles.Rebel))
+                else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc)) && !player.Is(CustomRoles.Rebel))
                     name = string.Format(GetString("IsGood"), realName);
 
                 else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel)) && !player.GetCustomRole().IsMadmate())
@@ -502,27 +502,27 @@ class CheckForEndVotingPatch
 
                 break;
             case 2:
-                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() || player.Is(CustomRoles.Rebel) ? coloredRole : player.GetCustomRole().ToColoredString();
+                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() || player.Is(CustomRoles.Narc) || player.Is(CustomRoles.Rebel) ? coloredRole : player.GetCustomRole().ToColoredString();
                 name = string.Format(GetString("PlayerIsRole"), realName, ejectedRoleText);
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Rebel && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Narc and not CustomRoles.Rebel && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                     {
                         if (player.Is(CustomRoles.Madmate))
                             name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
                         else if (player.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
                             name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                        else if (player.Is(CustomRoles.Admired))
+                        else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                             name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
                         else if (player.Is(CustomRoles.Enchanted))
                             name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
                     }
-                    else if (player.GetCustomRole().IsImpostorTeamV3())
+                    else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Narc))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
                     else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel)) && !player.GetCustomRole().IsMadmate())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                    else if (player.GetCustomRole().IsCrewmate() && !player.Is(CustomRoles.Rebel))
+                    else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc)) && !player.Is(CustomRoles.Rebel))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
                     else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
@@ -722,6 +722,7 @@ class CastVotePatch
             voter.RpcChangeRoleBasis(CovenLeader.retrainPlayer[voter.PlayerId]);
             voter.RpcSetCustomRole(CovenLeader.retrainPlayer[voter.PlayerId]);
             voter.GetRoleClass()?.OnAdd(voter.PlayerId);
+            if (CL.GetBetrayalAddon() != CustomRoles.NotAssigned) voter.RpcSetCustomRole(CL.GetBetrayalAddon());
             SendMessage(string.Format(GetString("CovenLeaderAcceptRetrain"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), CL.PlayerId);
             SendMessage(string.Format(GetString("RetrainAcceptOffer"), CustomRoles.CovenLeader.ToColoredString(), CovenLeader.retrainPlayer[voter.PlayerId].ToColoredString()), voter.PlayerId);
 
@@ -1156,10 +1157,16 @@ class MeetingHudStartPatch
             {
                 var blankRT = new StringBuilder();
                 var result = new StringBuilder(roleTextMeeting.text);
-                if (target.Is(CustomRoles.Trickster) || Illusionist.IsCovIllusioned(targetId))
+                if ((target.Is(CustomRoles.Trickster) && (!target.Is(CustomRoles.Narc) || player.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(targetId))
                 {
                     blankRT.Clear().Append(Overseer.GetRandomRole(playerId));
                     blankRT.Append(TaskState.GetTaskState());
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
+                if (target.Is(CustomRoles.Narc) && !player.Is(CustomRoles.Madmate))
+                {
+                    blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                    if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
                     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
                 if (target.Is(CustomRoles.Rebel))
@@ -1270,8 +1277,8 @@ class MeetingHudStartPatch
             PlayerControl seer = PlayerControl.LocalPlayer;
             var seerRoleClass = seer.GetRoleClass();
 
-            // if based role is Shapeshifter and is Desync Shapeshifter
-            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() == RoleTypes.Shapeshifter && seer.HasDesyncRole())
+            // if based role is Shapeshifter/Phantom and is Desync Shapeshifter/Phantom
+            if (seerRoleClass?.ThisRoleBase.GetRoleTypes() is RoleTypes.Shapeshifter or RoleTypes.Phantom && seer.HasDesyncRole())
             {
                 // When target is impostor, set name color as white
                 target.cosmetics.SetNameColor(Color.white);

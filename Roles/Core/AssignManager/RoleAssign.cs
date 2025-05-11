@@ -151,6 +151,7 @@ public class RoleAssign
                 case CustomRoles.NiceMini:
                 case CustomRoles.EvilMini:
                 case CustomRoles.Runner:
+                case CustomRoles.PhantomTOHE when NarcManager.IsNarcAssigned():
                     continue;
             }
 
@@ -172,8 +173,15 @@ public class RoleAssign
                 continue;
             }
 
-
-            else if (role.IsImpostor()) Roles[RoleAssignType.Impostor].Add(info);
+            if (role.IsImpostor())
+            {
+                if (role == NarcManager.RoleForNarcToSpawnAs)
+                {
+                    RoleAssignInfo newinfo = new(role, 100, 1);
+                    Roles[RoleAssignType.Crewmate].Add(newinfo);
+                }
+                else Roles[RoleAssignType.Impostor].Add(info);
+            }
             else if (role.IsNK()) Roles[RoleAssignType.NeutralKilling].Add(info);
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
             else if (role.IsNonNK()) Roles[RoleAssignType.NonKillingNeutral].Add(info);

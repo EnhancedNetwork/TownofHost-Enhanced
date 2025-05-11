@@ -85,19 +85,7 @@ internal class SchrodingersCat : RoleBase
     {
         if (teammate.TryGetValue(seer.PlayerId, out var temmate) && target.PlayerId == temmate)
         {
-            foreach (var SubRole in target.GetCustomSubRoles())
-            {
-                if (SubRole is CustomRoles.Charmed
-                    or CustomRoles.Infected
-                    or CustomRoles.Contagious
-                    or CustomRoles.Egoist
-                    or CustomRoles.Recruit)
-                    return Main.roleColors[SubRole];
-            }
-
             if (target.IsPlayerCrewmateTeam()) return Main.roleColors[CustomRoles.CrewmateTOHE];
-            else if (target.IsPlayerImpostorTeam()) return Main.roleColors[CustomRoles.ImpostorTOHE];
-            else if (target.IsPlayerCovenTeam()) return Main.roleColors[CustomRoles.Coven];
             else return Main.roleColors[target.GetCustomRole()];
         }
         return string.Empty;

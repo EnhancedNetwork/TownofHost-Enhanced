@@ -75,7 +75,7 @@ internal class Ventguard : RoleBase
             {
                 if (!player.IsAlive()) continue;
                 if (player.NotUnlockVent(ventId)) continue;
-                if (ventguard.PlayerId != player.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
+                if (ventguard.PlayerId != player.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.IsPlayerCrewmateTeam()) continue;
 
                 CustomRoleManager.BlockedVentsList[player.PlayerId].Add(ventId);
                 player.RpcSetVentInteraction();

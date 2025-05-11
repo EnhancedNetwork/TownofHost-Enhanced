@@ -161,7 +161,7 @@ internal class Councillor : RoleBase
                     return true;
                 }
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
+                // else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
                 {
                     pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
@@ -186,6 +186,11 @@ internal class Councillor : RoleBase
                 {
                     pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
                     return true;
+                }
+                else if (pc.Is(CustomRoles.Narc))
+                {
+                    if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
+                    else CouncillorSuicide = target.IsPlayerCrewmateTeam();
                 }
                 else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {

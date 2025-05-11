@@ -33,10 +33,9 @@ public class Necroview : IAddon
                 or CustomRoles.Soulless
                 or CustomRoles.Rebel)
                 return "7f8c8d";
-            if (SubRole is CustomRoles.Admired)
-            {
+            if (SubRole is CustomRoles.Admired
+                or CustomRoles.Narc)
                 return Main.roleColors[CustomRoles.Crewmate];
-            }
         }
 
         if (customRole.IsImpostorTeamV2() || customRole.IsMadmate() || target.Is(CustomRoles.Rascal) || target.Is(CustomRoles.Madmate))

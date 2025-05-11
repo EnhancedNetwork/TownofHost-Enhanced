@@ -183,7 +183,7 @@ internal class Jailer : RoleBase
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
                     tpc.SetRealKiller(player);
                 }
-                if (!CanBeExecuted(tpc.GetCustomRole()) && !player.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Soulless))
+                if ((!CanBeExecuted(tpc.GetCustomRole()) && !player.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Soulless)) || tpc.Is(CustomRoles.Narc))
                 {
                     playerId.SetAbilityUseLimit(0);
                 }

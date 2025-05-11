@@ -706,7 +706,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 31600 last id for roles/add-ons (Next use 31700)
+        // 31800 last id for roles/add-ons (Next use 31900)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1109,7 +1109,10 @@ public static class Options
                 Madmate.SetupCustomMenuOptions();
 
             if (addonType.Key == AddonTypes.Misc)
-                SetupLoversRoleOptionsToggle(23600);
+                SetupLoversRoleOptionsToggle(23600); 
+
+            if (addonType.Key == AddonTypes.Experimental)
+                NarcManager.SetUpOptionsForNarc();
 
             if (addonType.Key == AddonTypes.Misc)
                 RebelManager.SetUpOptionsForRebel();

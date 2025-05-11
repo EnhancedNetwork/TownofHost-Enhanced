@@ -21,8 +21,8 @@ internal class Sheriff : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
-    private static OptionItem ShotLimitOpt;
-    private static OptionItem ShowShotLimit;
+    public static OptionItem ShotLimitOpt;
+    public static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
     private static OptionItem MisfireOnAdmired;
@@ -158,6 +158,7 @@ internal class Sheriff : RoleBase
 
         if (CanKill) return true;
         else if (player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool()) return false;
+        else if (player.Is(CustomRoles.Narc)) return false; //copycat sheriff can still kill narc so this exists
         else if (player.Is(CustomRoles.Rebel)) return CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || !KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool());
         return cRole switch
         {
