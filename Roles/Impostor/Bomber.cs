@@ -69,7 +69,8 @@ internal class Bomber : RoleBase
             if (!target.IsModded()) target.KillFlash();
             if (target.PlayerId == shapeshifter.PlayerId) continue;
 
-            if (!target.IsAlive() || Medic.IsProtected(target.PlayerId) || (target.Is(Custom_Team.Impostor) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
+            if (!target.IsAlive() || Medic.IsProtected(target.PlayerId) || ((target.Is(Custom_Team.Impostor) && !shapeshifter.Is(CustomRoles.Narc)) && ImpostorsSurviveBombs.GetBool()) || target.inVent || target.IsTransformedNeutralApocalypse() || target.Is(CustomRoles.Solsticer)) continue;
+            if (target.IsPolice() && shapeshifter.Is(CustomRoles.Narc) && ImpostorsSurviveBombs.GetBool()) continue;
 
             var pos = shapeshifter.transform.position;
             var dis = Utils.GetDistance(pos, target.transform.position);
