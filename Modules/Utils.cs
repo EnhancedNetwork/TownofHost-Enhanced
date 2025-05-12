@@ -666,7 +666,8 @@ public static class Utils
                 case CustomRoles.Rascal:
                     hasTasks &= !ForRecompute;
                     break;
-                case CustomRoles.Rebel when !(role.IsTaskBasedCrewmate() || role is CustomRoles.Oracle or
+                case CustomRoles.Rebel:
+                    hasTasks = (role.IsTaskBasedCrewmate() || role is CustomRoles.Oracle or
                     CustomRoles.FortuneTeller or
                     CustomRoles.Inspector or
                     CustomRoles.Veteran or
@@ -678,23 +679,7 @@ public static class Utils
                     CustomRoles.Spy or
                     CustomRoles.Pacifist or
                     CustomRoles.Grenadier or
-                    CustomRoles.Lighter):
-                    hasTasks = false;
-                    break;
-                case CustomRoles.Rebel when role.IsTaskBasedCrewmate() || role is CustomRoles.Oracle or
-                    CustomRoles.FortuneTeller or
-                    CustomRoles.Inspector or
-                    CustomRoles.Veteran or
-                    CustomRoles.TimeMaster or
-                    CustomRoles.Ventguard or
-                    CustomRoles.Bastion or
-                    CustomRoles.Coroner or
-                    CustomRoles.Medium or
-                    CustomRoles.Spy or
-                    CustomRoles.Pacifist or
-                    CustomRoles.Grenadier or
-                    CustomRoles.Lighter:
-                    hasTasks = !ForRecompute;
+                    CustomRoles.Lighter) ? !ForRecompute : false;
                     break;
                 case CustomRoles.Mundane:
                     if (!hasTasks) hasTasks = !ForRecompute;
