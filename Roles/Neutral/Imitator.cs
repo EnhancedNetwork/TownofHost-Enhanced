@@ -44,9 +44,9 @@ internal class Imitator : RoleBase
     }
     public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = RememberCooldown.GetFloat();
     public override bool CanUseKillButton(PlayerControl player) => player.GetAbilityUseLimit() > 0;
-    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
     {
-        var role = target.Is(CustomRoles.Narc) ? CustomRoles.Sheriff : target.Is(CustomRoles.Rebel) ? CustomRoles.Taskinator : target.GetCustomRole();
+        var role = target.Is(CustomRoles.Narc) ? CustomRoles.Sheriff : target.GetCustomRole();
 
         if (role is CustomRoles.Jackal
             or CustomRoles.HexMaster
@@ -56,9 +56,7 @@ internal class Imitator : RoleBase
             or CustomRoles.Sheriff)
         {
             killer.RpcRemoveAbilityUse();
-            killer.GetRoleClass().OnRemove(killer.PlayerId);
             killer.RpcSetCustomRole(role);
-            killer.RpcChangeRoleBasis(role);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
 
             if (role.IsCrewmate())
@@ -71,6 +69,8 @@ internal class Imitator : RoleBase
         }
         else if (role.IsAmneMaverick())
         {
+            killer.RpcRemoveAbilityUse();
+
             switch (IncompatibleNeutralMode.GetInt())
             {
                 case 0:
@@ -78,33 +78,21 @@ internal class Imitator : RoleBase
                     break;
                 case 1:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), CustomRoles.Pursuer.ToString())));
-                    killer.RpcRemoveAbilityUse();
-                    killer.GetRoleClass().OnRemove(killer.PlayerId);
-                    killer.RpcChangeRoleBasis(CustomRoles.Pursuer);
                     killer.RpcSetCustomRole(CustomRoles.Pursuer);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
                 case 2:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), CustomRoles.Follower.ToString())));
-                    killer.RpcRemoveAbilityUse();
-                    killer.GetRoleClass().OnRemove(killer.PlayerId);
-                    killer.RpcChangeRoleBasis(CustomRoles.Follower);
                     killer.RpcSetCustomRole(CustomRoles.Follower);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
                 case 3:
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), CustomRoles.Maverick.ToString())));
-                    killer.RpcRemoveAbilityUse();
-                    killer.GetRoleClass().OnRemove(killer.PlayerId);
-                    killer.RpcChangeRoleBasis(CustomRoles.Maverick);
                     killer.RpcSetCustomRole(CustomRoles.Maverick);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
                 case 4: //....................................................................................x100
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), CustomRoles.Amnesiac.ToString())));
-                    killer.RpcRemoveAbilityUse();
-                    killer.GetRoleClass().OnRemove(killer.PlayerId);
-                    killer.RpcChangeRoleBasis(CustomRoles.Amnesiac);
                     killer.RpcSetCustomRole(CustomRoles.Amnesiac);
                     killer.GetRoleClass().OnAdd(killer.PlayerId);
                     break;
@@ -114,8 +102,6 @@ internal class Imitator : RoleBase
         else if (role.IsCrewmate())
         {
             killer.RpcRemoveAbilityUse();
-            killer.GetRoleClass().OnRemove(killer.PlayerId);
-            killer.RpcChangeRoleBasis(CustomRoles.Sheriff);
             killer.RpcSetCustomRole(CustomRoles.Sheriff);
             killer.GetRoleClass().OnAdd(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), CustomRoles.Crewmate.ToString())));
@@ -124,10 +110,7 @@ internal class Imitator : RoleBase
         else if (role.IsImpostor())
         {
             killer.RpcRemoveAbilityUse();
-            killer.GetRoleClass()?.OnRemove(killer.PlayerId);
-            killer.RpcChangeRoleBasis(CustomRoles.Refugee);
             killer.RpcSetCustomRole(CustomRoles.Refugee);
-            killer.GetRoleClass()?.OnAdd(killer.PlayerId);
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), string.Format(GetString("AmnesiacRemembered"), CustomRoles.Impostor.ToString())));
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Imitator), GetString("ImitatorImitated")));
         }
