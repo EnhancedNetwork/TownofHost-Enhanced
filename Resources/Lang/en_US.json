@@ -3325,7 +3325,7 @@
   "SheriffCanBeRebel": "<color=#ffb347>Sheriff</color> can become <color=#ffab1b>Rebel</color>",
   "DictatorCanBeRebel": "<color=#df9b00>Dictator</color> can become <color=#ffab1b>Rebel</color>",
   "MarshallCanBeRebel": "<color=#5573AA>Marshall</color> can become <color=#ffab1b>Rebel</color>",
-  "RetributionistCanBeRebel": "<color=#228B22>Retributionist</color> can become <color=#ff1919>Rebel</color>",
+  "RetributionistCanBeRebel": "<color=#228B22>Retributionist</color> can become <color=#ffab1b>Rebel</color>",
   "OverseerCanBeRebel": "<color=#BA55D3>Overseer</color> can become <color=#ffab1b>Rebel</color>",
   "SwapperCanBeRebel": "<color=#66e666>Swapper</color> can become <color=#ffab1b>Rebel</color>",
   "CleanserCanBeRebel": "<color=#98ff98>Cleanser</color> can become <color=#ffab1b>Rebel</color>",
@@ -4088,7 +4088,7 @@
   "ExorcismLimitMeeting": "Max exorcises per meeting",
   "ExorcismEndOnKill": "End exorcism on kill",
   "ExorcistTryHideMsg": "Try to hide exorcist's commands",
-  
+
   "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
 
   "UseQuickChatSpamCheat": "Use Quick Chat Spam for commands",

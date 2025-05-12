@@ -61,7 +61,7 @@ public static class RebelManager
             .SetHeader(true)
             .SetGameMode(customGameMode) as StringOptionItem;
 
-        RebelSpawnChance = IntegerOptionItem.Create(id + 2, "ChanceToSpawn", new(0, 100, 5), 65, tab, false)
+        RebelSpawnChance = IntegerOptionItem.Create(id + 2, "AdditionRolesSpawnRate", new(0, 100, 5), 65, tab, false)
             .SetParent(spawnOption)
             .SetValueFormat(OptionFormat.Percent)
             .SetGameMode(customGameMode);

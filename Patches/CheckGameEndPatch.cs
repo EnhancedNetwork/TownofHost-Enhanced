@@ -110,8 +110,8 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
-                            || (pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc) && !pc.Is(CustomRoles.Rebel))
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !pc.Is(CustomRoles.Rebel)) 
+                            || pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc)
                            )
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
