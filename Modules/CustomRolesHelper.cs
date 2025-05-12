@@ -411,7 +411,7 @@ public static class CustomRolesHelper
             or CustomRoles.Rascal
             or CustomRoles.Soulless
             or CustomRoles.Enchanted
-            or CustomRoles.Narc;
+            or CustomRoles.Narc
             or CustomRoles.Rebel;
     }
 
