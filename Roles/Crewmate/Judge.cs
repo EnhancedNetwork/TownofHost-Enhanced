@@ -203,7 +203,7 @@ internal class Judge : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("GuessGuardianTask"));
                     return true;
                 }
-                else if (pc.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Soulless)) judgeSuicide = false;
+                else if (pc.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Soulless)) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Rascal)) judgeSuicide = false;
                 else if (target.Is(CustomRoles.Narc)) judgeSuicide = true;
                 else if ((target.Is(CustomRoles.Sidekick) || target.Is(CustomRoles.Recruit)) && CanTrialSidekick.GetBool()) judgeSuicide = false;
