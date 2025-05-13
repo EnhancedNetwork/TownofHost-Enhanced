@@ -28,11 +28,13 @@ internal class Amnesiac : RoleBase
     public override void SetupCustomOption()
     {
         SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Amnesiac);
-        ImpostorVision = BooleanOptionItem.Create(Id + 13, "ImpostorVision", false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
+        ImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         ShowArrows = BooleanOptionItem.Create(Id + 11, "ShowArrows", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
         AmnesiacCanUseVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, false, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]);
-        VentCoolDown = FloatOptionItem.Create(Id + 14, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
-        VentDuration = FloatOptionItem.Create(Id + 16, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent);
+        VentCoolDown = FloatOptionItem.Create(Id + 14, GeneralOption.EngineerBase_VentCooldown, new(0f, 60f, 2.5f), 10f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent)
+            .SetValueFormat(OptionFormat.Seconds);
+        VentDuration = FloatOptionItem.Create(Id + 16, GeneralOption.EngineerBase_InVentMaxTime, new(0f, 180f, 2.5f), 15f, TabGroup.NeutralRoles, false).SetParent(AmnesiacCanUseVent)
+            .SetValueFormat(OptionFormat.Seconds);
         ReportWhenFailedRemember = BooleanOptionItem.Create(Id + 15, "ReportWhenFailedRemember", true, TabGroup.NeutralRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Amnesiac]).SetHidden(true);
     }
     public override void Init()
@@ -120,6 +122,7 @@ internal class Amnesiac : RoleBase
                     __instance.RpcSetCustomRole(role);
                     __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
                     if (targetPlayerStates.SubRoles.Contains(CustomRoles.Narc)) __instance.RpcSetCustomRole(CustomRoles.Narc);
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) __instance.RpcSetCustomRole(CustomRoles.Rebel);
 
                     __instance.RpcGuardAndKill();
                     __instance.ResetKillCooldown();
@@ -127,6 +130,7 @@ internal class Amnesiac : RoleBase
 
                     role.GetActualRoleName(out var rolename);
                     __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                    deadBody.Object.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                     isSuccess = true;
                 }
                 else
@@ -142,6 +146,7 @@ internal class Amnesiac : RoleBase
                 __instance.RpcSetCustomRole(role);
                 __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
                 if (targetPlayerStates.SubRoles.Contains(CustomRoles.Narc)) __instance.RpcSetCustomRole(CustomRoles.Narc);
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Rebel)) __instance.RpcSetCustomRole(CustomRoles.Rebel);
 
                 __instance.RpcGuardAndKill();
                 __instance.ResetKillCooldown();
@@ -149,6 +154,7 @@ internal class Amnesiac : RoleBase
 
                 role.GetActualRoleName(out var rolename);
                 __instance.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), string.Format(GetString("AmnesiacRemembered"), rolename)));
+                deadBody.Object.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Amnesiac), GetString("RememberedYourRole")));
                 isSuccess = true;
             }
         }

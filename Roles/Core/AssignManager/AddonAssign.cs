@@ -1,5 +1,6 @@
 using System;
 using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 
 namespace TOHE.Roles.Core.AssignManager;
@@ -16,17 +17,13 @@ public static class AddonAssign
             case CustomRoles.Workhorse:
             case CustomRoles.LastImpostor:
             case CustomRoles.Narc:
+            case CustomRoles.Rebel:
                 return true;
             case CustomRoles.Autopsy when Options.EveryoneCanSeeDeathReason.GetBool():
             case CustomRoles.Madmate when Madmate.MadmateSpawnMode.GetInt() != 0:
             case CustomRoles.Glow or CustomRoles.Mare when GameStates.FungleIsActive:
                 return true;
         }
-
-        /*else if (Options.IsActiveDleks) // Dleks
-        {
-            if (role is CustomRoles.Nimble or CustomRoles.Burst or CustomRoles.Circumvent) continue;
-        }*/
 
         return false;
     }
@@ -161,7 +158,7 @@ public static class AddonAssign
         foreach (var pc in Main.AllPlayerControls)
         {
             if (pc.Is(CustomRoles.GM)
-                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count >= Options.NoLimitAddonsNumMax.GetInt())
+                || (pc.HasSubRole() && pc.GetCustomSubRoles().Count(x => x is not CustomRoles.Rebel) >= Options.NoLimitAddonsNumMax.GetInt())
                 || pc.Is(CustomRoles.Dictator)
                 || pc.Is(CustomRoles.God)
                 || pc.Is(CustomRoles.Hater)
@@ -178,7 +175,8 @@ public static class AddonAssign
                 || pc.Is(CustomRoles.EvilMini)
                 || (pc.GetCustomRole().IsCrewmate() && !Options.CrewCanBeInLove.GetBool())
                 || (pc.GetCustomRole().IsNeutral() && !Options.NeutralCanBeInLove.GetBool())
-                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool()))
+                || (pc.GetCustomRole().IsImpostor() && !Options.ImpCanBeInLove.GetBool())
+                || (pc.GetCustomRole().IsCoven() && !Options.CovenCanBeInLove.GetBool()))
                 continue;
 
             allPlayers.Add(pc);
@@ -213,5 +211,24 @@ public static class AddonAssign
         // logs the assigning
         var pc = ps.PlayerId.GetPlayer();
         Logger.Info($"Assigned Narc to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName}'s Role: {pc.GetCustomRole()} + Narc", "Assign Narc");
+    }
+
+    public static void StartAssigningRebel()
+    {
+        var ps = RebelManager.AssignedToHost ?
+            Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId] : Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == RebelManager.RoleForRebelToSpawnAs) ?? null;
+        RebelManager.AssignedToHost = false;
+
+        if (ps == null)
+        {
+            RebelManager.RoleForRebelToSpawnAs = CustomRoles.NotAssigned;
+            return;
+        }
+
+        ps.SetSubRole(CustomRoles.Rebel);
+
+        // logs the assigning
+        var pc = ps.PlayerId.GetPlayer();
+        Logger.Info($"Assigned Rebel to {pc?.Data?.PlayerName}({pc.PlayerId}). {pc?.Data?.PlayerName} Role: {pc.GetCustomRole()} + Rebel", "Assign Rebel");
     }
 }

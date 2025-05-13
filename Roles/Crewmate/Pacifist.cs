@@ -56,7 +56,7 @@ internal class Pacifist : RoleBase
             if (!DisableShieldAnimations.GetBool()) pc.RpcGuardAndKill(pc);
 
             Main.AllAlivePlayerControls.Where(x =>
-            pc.Is(CustomRoles.Madmate)
+            pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Rebel)
                 ? (x.CanUseKillButton() && x.IsPlayerCrewmateTeam())
                 : x.CanUseKillButton()
             ).Do(x =>

@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -185,6 +186,11 @@ public class RoleAssign
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
             else if (role.IsNonNK()) Roles[RoleAssignType.NonKillingNeutral].Add(info);
             else if (role.IsCoven()) Roles[RoleAssignType.Coven].Add(info);
+            else if (role == RebelManager.RoleForRebelToSpawnAs)
+            {
+                RoleAssignInfo newinfo = new(role, 100, 1);
+                Roles[RoleAssignType.NonKillingNeutral].Add(newinfo);
+            }
             else Roles[RoleAssignType.Crewmate].Add(info);
         }
 
@@ -304,7 +310,7 @@ public class RoleAssign
                 Roles[RoleAssignType.Coven].Where(x => x.Role == item.Value).Do(x => x.AssignedCount++);
                 readyCovenNum++;
             }
-            else if (item.Value.IsNonNK())
+            else if (item.Value.IsNonNK() || item.Value == RebelManager.RoleForRebelToSpawnAs)
             {
                 Roles[RoleAssignType.NonKillingNeutral].Where(x => x.Role == item.Value).Do(x => x.AssignedCount++);
                 readyNonNeutralKillingNum++;

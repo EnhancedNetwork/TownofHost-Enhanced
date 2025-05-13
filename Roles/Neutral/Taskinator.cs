@@ -19,7 +19,7 @@ internal class Taskinator : RoleBase
 
     private readonly HashSet<int> TaskIndex = [];
 
-    private static int maxTasksMarkedPerRound = new();
+    public static int maxTasksMarkedPerRound = new();
 
     public override void SetupCustomOption()
     {
@@ -85,4 +85,3 @@ internal class Taskinator : RoleBase
         }
     }
 }
-

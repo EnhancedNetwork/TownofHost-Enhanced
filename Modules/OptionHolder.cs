@@ -1,6 +1,7 @@
 using System;
 using TOHE.Modules;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -705,7 +706,7 @@ public static class Options
     private static System.Collections.IEnumerator CoLoadOptions()
     {
         //#######################################
-        // 31800 last id for roles/add-ons (Next use 31900)
+        // 31900 last id for roles/add-ons (Next use 32000)
         // Limit id for roles/add-ons --- "59999"
         //#######################################
 
@@ -1112,6 +1113,9 @@ public static class Options
 
             if (addonType.Key == AddonTypes.Experimental)
                 NarcManager.SetUpOptionsForNarc();
+
+            if (addonType.Key == AddonTypes.Misc)
+                RebelManager.SetUpOptionsForRebel();
 
             foreach (var addon in addonType.Value)
             {

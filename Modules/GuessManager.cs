@@ -121,7 +121,7 @@ public static class GuessManager
         }
         if (!pc.Is(CustomRoles.NiceGuesser))
         {
-            if (pc.GetCustomRole().IsCrewmate() && !Options.CrewmatesCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Judge))
+            if (pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Rebel) && !Options.CrewmatesCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Judge))
             {
                 pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
                 return true;
@@ -141,7 +141,7 @@ public static class GuessManager
             pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
         }
-        if (pc.GetCustomRole().IsNonNK() && !Options.PassiveNeutralsCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer))
+        if ((pc.GetCustomRole().IsNonNK() || pc.Is(CustomRoles.Rebel)) && !Options.PassiveNeutralsCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Doomsayer))
         {
             pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
             return true;
@@ -647,7 +647,7 @@ public static class GuessManager
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.EvilGuesser && !Options.ImpostorsCanGuess.GetBool())
                     CreateGuesserButton(__instance);
 
-                if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsCrewmate() && Options.CrewmatesCanGuess.GetBool())
+                if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsCrewmate() && !PlayerControl.LocalPlayer.Is(CustomRoles.Rebel) && Options.CrewmatesCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 else if (PlayerControl.LocalPlayer.GetCustomRole() is CustomRoles.NiceGuesser && !Options.CrewmatesCanGuess.GetBool())
                     CreateGuesserButton(__instance);
@@ -656,7 +656,7 @@ public static class GuessManager
                     CreateGuesserButton(__instance);
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNA() && Options.NeutralApocalypseCanGuess.GetBool())
                     CreateGuesserButton(__instance);
-                if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsNonNK() && Options.PassiveNeutralsCanGuess.GetBool())
+                if (PlayerControl.LocalPlayer.IsAlive() && (PlayerControl.LocalPlayer.GetCustomRole().IsNonNK() || PlayerControl.LocalPlayer.Is(CustomRoles.Rebel)) && Options.PassiveNeutralsCanGuess.GetBool())
                     CreateGuesserButton(__instance);
                 if (PlayerControl.LocalPlayer.IsAlive() && PlayerControl.LocalPlayer.GetCustomRole().IsCoven() && Options.CovenCanGuess.GetBool())
                     CreateGuesserButton(__instance);

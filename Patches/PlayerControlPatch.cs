@@ -1,3 +1,4 @@
+
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
@@ -1326,6 +1327,12 @@ class FixedUpdateInNormalGamePatch
                     {
                         blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
                         if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
+                        result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                    }
+                    if (player.Is(CustomRoles.Rebel))
+                    {
+                        blankRT.Clear().Append(CustomRoles.Taskinator.ToColoredString());
+                        blankRT.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $" ({Taskinator.maxTasksMarkedPerRound})"));
                         result.Clear().Append($"<size=1.3>{blankRT}</size>");
                     }
                     if (Illusionist.IsNonCovIllusioned(playerId))
