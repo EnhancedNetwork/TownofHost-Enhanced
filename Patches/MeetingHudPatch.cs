@@ -482,7 +482,7 @@ class CheckForEndVotingPatch
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
                     else if (player.Is(CustomRoles.Admired))
                         name = string.Format(GetString("IsGood"), realName);
-                    else if (player.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
+                    else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
                     else if (player.Is(CustomRoles.Enchanted))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
@@ -511,7 +511,7 @@ class CheckForEndVotingPatch
                     {
                         if (player.Is(CustomRoles.Madmate))
                             name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                        else if (player.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
+                        else if (player.IsAnySubRole(x => x.IsConverted() && x is not CustomRoles.Madmate and not CustomRoles.Enchanted))
                             name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
                         else if (player.Is(CustomRoles.Admired) || player.Is(CustomRoles.Narc))
                             name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
@@ -539,11 +539,11 @@ class CheckForEndVotingPatch
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
-            name += "\n";
             if (badnum <= 0)
-                name += GetString("NoImpRemain");
+                name += "\n" + GetString("NoImpRemain");
             else
             {
+                if (impnum > 0) name += "\n";
                 name += impnum switch
                 {
                     1 => GetString("OneImpRemain"),
