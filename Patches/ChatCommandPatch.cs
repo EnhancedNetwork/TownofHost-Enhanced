@@ -2121,11 +2121,8 @@ internal class ChatCommands
 
         bool shouldDevAssign = isDev || isUp;
 
-        if ((result.IsAdditionRole() && result != CustomRoles.Rebel)
-            || result is CustomRoles.GM or CustomRoles.Mini
-            || result.IsGhostRole() && !isDev
-            || result.GetCount() < 1
-            || result.GetMode() == 0)
+        if (CustomRolesHelper.IsAdditionRole(result) || result is CustomRoles.GM or CustomRoles.Mini || result.IsGhostRole() && !isDev
+            || result.GetCount() < 1 || result.GetMode() == 0)
         {
             shouldDevAssign = false;
         }
@@ -2138,32 +2135,6 @@ internal class ChatCommands
             {
                 Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), Translator.GetActualRoleName(result)), playerId);
                 return;
-            }
-
-            if (result is CustomRoles.Rebel)
-            {
-                var RBList = RebelManager.SelectedRebelRoles().Shuffle().ToList();
-                if (!RBList.Any())
-                {
-                    Utils.SendMessage(string.Format(GetString("Message.YTPlanSelectFailed"), Translator.GetActualRoleName(result)), playerId);
-                    return;
-                }
-                RebelManager.AssignedToHost = true;
-                var setrole = RBList.RandomElement();
-
-                GhostRoleAssign.forceRole.Remove(pid);
-                RoleAssign.SetRoles[pid] = setrole;
-                RebelManager.RoleForRebelToSpawnAs = setrole;
-
-                Utils.SendMessage(string.Format(GetString("Message.YTPlanSelected"), Translator.GetActualRoleName(result) + " " + Translator.GetActualRoleName(setrole)), playerId);
-                return;
-            }
-            // if host runs /up again after running "/up rebel"
-            if (RebelManager.AssignedToHost)
-            {
-                if (result.CanBeRebel()) // if result role can be Rebel
-                    RebelManager.RoleForRebelToSpawnAs = result;
-                else RebelManager.AssignedToHost = false;
             }
 
             GhostRoleAssign.forceRole.Remove(pid);
