@@ -2085,6 +2085,12 @@ public static class Utils
                                     blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), GetString($" ({Sheriff.ShotLimitOpt.GetInt()})")));
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
                             }
+                            if (target.Is(CustomRoles.Rebel))
+                            {
+                                blankRT.Clear().Append(CustomRoles.Taskinator.ToColoredString()); // Taskinator
+                                blankRT.Append(ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), GetString($" ({Taskinator.maxTasksMarkedPerRound})"))); // Taskinator progress text
+                                TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
+                            }
                             if (Illusionist.IsNonCovIllusioned(target.PlayerId))
                             {
                                 var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
@@ -2096,13 +2102,6 @@ public static class Utils
                                 TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
                             }
                         }
-                        if (seer.IsAlive() && Overseer.IsRevealedPlayer(seer, target) && target.Is(CustomRoles.Rebel))
-                        {
-                            var blankRT = new StringBuilder();
-                            blankRT.Clear().Append(CustomRoles.Taskinator.ToColoredString()); // Taskinator
-                            blankRT.Append(ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), GetString($" ({Taskinator.maxTasksMarkedPerRound})"))); // Taskinator progress text
-                            TargetRoleName.Clear().Append($"<size={fontSize}>{blankRT}</size>\r\n");
-                    }
 
                         // ====== Target player name ======
 
