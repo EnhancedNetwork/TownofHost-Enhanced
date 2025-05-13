@@ -27,7 +27,6 @@
   "SubText.Madmate": "Help the <color=#ff1919>Impostors</color>",
   "SubText.Lovers": "Stay alive and win together",
   "SubText.Egoist": "Win on your own",
-  "SubText.Rebel": "Make <color=#8cffff>Crewmates</color> lose",
 
   "TypeImpostor": "Impostors",
   "TypeCrewmate": "Crewmates",
@@ -44,7 +43,6 @@
   "TeamLovers": "Lovers",
   "TeamEgoist": "Egoist",
   "TeamApocalypse": "Apocalypse",
-  "TeamRebel": "Rebel",
 
   "Role_NoChange": "Don't change the role",
   "Role_Random": "Random role from list",
@@ -406,7 +404,6 @@
   "Requiter": "Requiter",
   "Narc": "Narc",
   "Rebel": "Rebel",
-  "BracketAddons": "Add Brackets To Add-ons",
   "EngineerTOHEInfo": "Use the vents to catch the <color=#ff1919>Impostors</color>",
   "ScientistTOHEInfo": "Access portable Vitals from anywhere",
   "NoisemakerTOHEInfo": "Send out an alert when killed",
