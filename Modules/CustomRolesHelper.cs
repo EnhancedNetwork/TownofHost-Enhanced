@@ -242,17 +242,6 @@ public static class CustomRolesHelper
             || target.Is(CustomRoles.Nimble);
     }
 
-    /// <summary>
-    /// Get the respective main role from hidden role
-    public static CustomRoles GetRoleFromHiddenRole(this CustomRoles role)
-        => role switch
-        {
-            CustomRoles.Bard => CustomRoles.Arrogance,
-            CustomRoles.Sunnyboy => CustomRoles.Jester,
-            CustomRoles.Requiter => CustomRoles.Knight,
-            CustomRoles.EvilMini or CustomRoles.NiceMini => CustomRoles.Mini,
-            _ => role
-        };
     public static bool IsNeutral(this CustomRoles role)
     {
         if (role is
@@ -358,14 +347,9 @@ public static class CustomRolesHelper
             CustomRoles.Contagious or
             CustomRoles.Soulless or
             CustomRoles.Madmate or
-            CustomRoles.Enchanted;
+            CustomRoles.Enchanted or
+            CustomRoles.Rebel;
 
-    public static bool IsConvertedV2(this CustomRoles role) => (role is CustomRoles.Egoist && Egoist.EgoistCountAsConverted.GetBool())
-        || role is
-            CustomRoles.Charmed or
-            CustomRoles.Recruit or
-            CustomRoles.Infected or
-            CustomRoles.Contagious;
 
     public static bool IsNotKnightable(this CustomRoles role)
     {
@@ -526,7 +510,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Narc or CustomRoles.Rebel) && x is not CustomRoles.Madmate)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Narc) && x is not CustomRoles.Madmate)) return false;
         }
 
         return (player.MainRole.IsImpostor() || player.MainRole.GetCustomRoleType() is Custom_RoleType.Madmate) && !player.IsNecromancer;
@@ -538,7 +522,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Narc)) return true;
-            if (player.SubRoles.Any(x => x.IsConverted() || x is CustomRoles.Rebel)) return false;
+            if (player.SubRoles.Any(x => x.IsConverted())) return false;
         }
 
         return player.MainRole.IsCrewmate() && !player.IsNecromancer;
@@ -550,7 +534,7 @@ public static class CustomRolesHelper
         if (!onlyMainRole)
         {
             if (player.SubRoles.Any(x => x is CustomRoles.Admired or CustomRoles.Madmate or CustomRoles.Enchanted or CustomRoles.Narc)) return false;
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Madmate or CustomRoles.Enchanted)) return true;
+            if (player.SubRoles.Any(x => x.IsConverted() && x is not CustomRoles.Madmate or CustomRoles.Enchanted)) return true;
         }
 
         // Imp roles like crewposter and parasite is counted as netural, but should be treated as impostor team in general
@@ -564,7 +548,7 @@ public static class CustomRolesHelper
         {
             if (player.SubRoles.Contains(CustomRoles.Enchanted)) return true;
             if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Narc)) return false;
-            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Rebel) && x is not CustomRoles.Enchanted)) return false;
+            if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired) && x is not CustomRoles.Enchanted)) return false;
         }
 
         return player.MainRole.IsCoven() || player.IsNecromancer;
