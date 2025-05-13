@@ -475,16 +475,13 @@ class GameEndCheckerForNormal
                         }
                     }
 
-                    foreach (var pc in Main.AllPlayerControls)
+                    foreach (var pc in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rebel)))
                     {
-                        if (RebelManager.CheckWinCondition(WinnerTeam, pc) && CustomRoles.Rebel.RoleExist(countDead: true))
+                        if (RebelManager.CheckWinCondition(WinnerTeam, pc) && !WinnerIds.Contains(pc.PlayerId))
                         {
-                            foreach (var rebel in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rebel)).ToArray())
-                            {
-                                if (WinnerIds.Contains(rebel.PlayerId)) continue;
+                            if (!AdditionalWinnerTeams.Contains(AdditionalWinners.Rebel))
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Rebel);
-                                WinnerIds.Add(rebel.PlayerId);
-                            }
+                            WinnerIds.Add(pc.PlayerId);
                         }
                     }
 
