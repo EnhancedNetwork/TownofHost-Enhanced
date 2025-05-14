@@ -4,6 +4,7 @@ using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Translator;
 
+
 namespace TOHE.Roles.Impostor;
 
 internal class Witch : RoleBase
@@ -20,7 +21,7 @@ internal class Witch : RoleBase
     public static OptionItem ModeSwitchActionOpt;
 
     private static readonly Dictionary<byte, bool> SpellMode = [];
-    private static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
+    public static readonly Dictionary<byte, HashSet<byte>> SpelledPlayer = [];
 
     [Obfuscation(Exclude = true)]
     private enum SwitchTriggerList
@@ -56,7 +57,7 @@ internal class Witch : RoleBase
 
     }
 
-    private static void SendRPC(bool doSpell, byte witchId, byte target = 255)
+    public static void SendRPC(bool doSpell, byte witchId, byte target = 255)
     {
         if (doSpell)
         {

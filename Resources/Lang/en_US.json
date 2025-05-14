@@ -4688,9 +4688,25 @@
   "MeteorKillButtonText": "Enflame",
   "DeathReason.Enflamed": "Enflamed",
 
-  "Nuancer":"Nuancer",
-  "NuancerInfo":"Kill in different ways",
-  "NuancerInfoLong":"Your killing method is Random. \nWhen you use your Kill Button on someone one of the following events happen with equal probability.\n Normal kill.\n Delayed Kill like Vampire.\n Curse like witch.\n Explosion like Bomber.\n You can suicide(if enabled).",
-  "NuancerVampireDelay":"Nuancer Vampire Kill Delay",
-  "NuancerSuicideOption": "Nuancer can Suicide "
+  "Nuancer": "Nuancer",
+  "NuancerInfo": "Kill in different ways",
+  "NuancerInfoLong": "Your killing method is Random. \nWhen you use your Kill Button on someone one of the following events happen with equal probability.\n Normal kill.\n Delayed Kill like Vampire.\n Curse like witch.\n Explosion like Bomber.\n You can suicide(if enabled).",
+  "NuancerVampireDelay": "Nuancer Vampire Kill Delay",
+  "NuancerSuicideOption": "Nuancer can Suicide ",
+
+  "ForensicScientist": "Forensic Scientist",
+  "ForensicScientistInfo": "Analyze bodies to find killers and remove curses.",
+  "ForensicScientistInfoLong": "Report a body to collect a sample and analyze it ,if Analyze is successful the killer will be revealed in next meeting .\nYou can also vote a player to remove hexes and curses depending on host settings.",
+  "ForensicSampleFailChance": "Sample fail chance",
+  "ForensicVitalsDuration": "Vitals duration",
+  "ForensicCanRemoveCurses": "Can remove curses",
+  "ForensicShowArrows": "Show arrows to bodies",
+  "ForensicVitalsCooldown": "Vitals cooldown after tasks",
+  "ForensicAnalysisTitle": "Forensic Analysis",
+  "ForensicAnalysisSuccess": "Analysis complete. Killer: {0}",
+  "ForensicAnalysisFailed": "Sample analysis failed. No results.",
+  "ForensicAnalysisNoKiller": "Analysis complete. No killer detected.",
+  "ForensicCurseRemoved": "You removed a curse from {0}!",
+  "ForensicSampleCollected": "Sample collected from {0}'s body.",
+  "ForensicVitalsText": "Vitals"
 }

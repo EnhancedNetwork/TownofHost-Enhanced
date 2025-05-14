@@ -31,7 +31,7 @@ internal class HexMaster : CovenManager
     public static long? CurrentHexedPlayerTime = new();
     public static long? HexedTime = new();
 
-    private static readonly Dictionary<byte, HashSet<byte>> HexedPlayer = [];
+    public static readonly Dictionary<byte, HashSet<byte>> HexedPlayer = [];
 
     private static readonly Color RoleColorHex = GetRoleColor(CustomRoles.HexMaster);
     private static readonly Color RoleColorSpell = GetRoleColor(CustomRoles.Impostor);
@@ -71,7 +71,7 @@ internal class HexMaster : CovenManager
             SendRPC(playerId);
         }
         }
-    private static void SendRPC(byte hexId, byte target = 255)
+    public static void SendRPC(byte hexId, byte target = 255)
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
