@@ -553,6 +553,9 @@ public static class Options
     // ------------ General Role Settings ------------
 
     // Imp
+    public static OptionItem UseVariableImp;
+    public static OptionItem ImpRolesMinPlayer;
+    public static OptionItem ImpRolesMaxPlayer;
     public static OptionItem ImpsCanSeeEachOthersRoles;
     public static OptionItem ImpsCanSeeEachOthersAddOns;
 
@@ -739,6 +742,17 @@ public static class Options
         //    .SetColor(Utils.GetRoleColor(CustomRoles.GM))
         //    .SetHidden(true)
         //    .SetHeader(true);
+        UseVariableImp = BooleanOptionItem.Create(60037, "UseVariableImp", false, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        ImpRolesMinPlayer = IntegerOptionItem.Create(60038, "ImpRolesMinPlayer", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
+           .SetGameMode(CustomGameMode.Standard)
+           .SetParent(UseVariableImp)
+           .SetValueFormat(OptionFormat.Players);
+        ImpRolesMaxPlayer = IntegerOptionItem.Create(60039, "ImpRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(UseVariableImp)
+            .SetValueFormat(OptionFormat.Players);
 
         ImpsCanSeeEachOthersRoles = BooleanOptionItem.Create(60001, "ImpsCanSeeEachOthersRoles", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
