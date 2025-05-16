@@ -121,7 +121,7 @@ public static class GuessManager
         }
         if (!pc.Is(CustomRoles.NiceGuesser) && !(pc.Is(CustomRoles.EvilGuesser) && pc.Is(CustomRoles.Narc)))
         {
-            if ((pc.Is(Custom_Team.Crewmate) || pc.Is(CustomRoles.Narc)) && !Options.CrewmatesCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Judge))
+            if ((pc.Is(Custom_Team.Crewmate) || pc.Is(CustomRoles.Narc)) && !Options.CrewmatesCanGuess.GetBool() && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Judge) && !pc.Is(CustomRoles.Councillor))
             {
                 pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
                 return true;
