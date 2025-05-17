@@ -158,7 +158,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
-                if (subRole is CustomRoles.Narc) continue;
+                if (subRole is CustomRoles.Narc or CustomRoles.Rebel) continue;
                 RemoveSubRole(subRole);
             }
         }

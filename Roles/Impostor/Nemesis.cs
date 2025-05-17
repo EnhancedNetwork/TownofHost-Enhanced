@@ -31,17 +31,17 @@ internal class Nemesis : RoleBase
         SetupRoleOptions(Id, TabGroup.ImpostorRoles, CustomRoles.Nemesis);
         NemesisCanKillNum = IntegerOptionItem.Create(Id + 10, "NemesisCanKillNum", new(0, 15, 1), 1, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis])
-                .SetValueFormat(OptionFormat.Players);
+            .SetValueFormat(OptionFormat.Players);
         PreventSeeRolesBeforeSkillUsedUp = BooleanOptionItem.Create(Id + 14, "PreventSeeRolesBeforeSkillUsedUp", true, TabGroup.ImpostorRoles, false)
             .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
         LegacyNemesis = BooleanOptionItem.Create(Id + 11, "UseLegacyVersion", false, TabGroup.ImpostorRoles, false)
                 .SetParent(CustomRoleSpawnChances[CustomRoles.Nemesis]);
         NemesisShapeshiftCD = FloatOptionItem.Create(Id + 12, GeneralOption.ShapeshifterBase_ShapeshiftCooldown, new(1f, 180f, 1f), 15f, TabGroup.ImpostorRoles, false)
-                .SetParent(LegacyNemesis)
-                .SetValueFormat(OptionFormat.Seconds);
+            .SetParent(LegacyNemesis)
+            .SetValueFormat(OptionFormat.Seconds);
         NemesisShapeshiftDur = FloatOptionItem.Create(Id + 13, GeneralOption.ShapeshifterBase_ShapeshiftDuration, new(1f, 180f, 1f), 30f, TabGroup.ImpostorRoles, false)
-                .SetParent(LegacyNemesis)
-                .SetValueFormat(OptionFormat.Seconds);
+            .SetParent(LegacyNemesis)
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Init()
     {

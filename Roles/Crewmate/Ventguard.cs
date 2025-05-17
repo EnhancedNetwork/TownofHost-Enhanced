@@ -98,7 +98,7 @@ internal class Ventguard : RoleBase
                 {
                     if (!player.IsAlive()) continue;
                     if (player.NotUnlockVent(ventId)) continue;
-                    if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
+                    if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.IsPlayerCrewmateTeam()) continue;
 
                     CustomRoleManager.BlockedVentsList[player.PlayerId].Remove(ventId);
                 }
@@ -113,7 +113,7 @@ internal class Ventguard : RoleBase
                 {
                     if (!player.IsAlive()) continue;
                     if (player.NotUnlockVent(ventId)) continue;
-                    if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.Is(Custom_Team.Crewmate)) continue;
+                    if (player.PlayerId != _Player?.PlayerId && BlockDoesNotAffectCrew.GetBool() && player.IsPlayerCrewmateTeam()) continue;
 
                     CustomRoleManager.BlockedVentsList[player.PlayerId].Add(ventId);
                 }

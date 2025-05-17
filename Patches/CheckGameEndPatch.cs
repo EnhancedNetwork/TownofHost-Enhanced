@@ -110,7 +110,7 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer && !pc.Is(CustomRoles.Rebel)) 
                             || pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc)
                            )
                         {
@@ -426,12 +426,9 @@ class GameEndCheckerForNormal
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Specter);
                                 break;
-                            case CustomRoles.Provocateur:
-                                if (Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId))
-                                {
-                                    WinnerIds.Add(pc.PlayerId);
-                                    AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
-                                }
+                            case CustomRoles.Provocateur when Provocateur.Provoked.TryGetValue(pc.PlayerId, out var tarId) && !WinnerIds.Contains(tarId):
+                                WinnerIds.Add(pc.PlayerId);
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Provocateur);
                                 break;
                             case CustomRoles.Hater when Hater.isWon:
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Hater);
@@ -448,13 +445,10 @@ class GameEndCheckerForNormal
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Troller);
                                 WinnerIds.Add(pc.PlayerId);
                                 break;
-                            case CustomRoles.Romantic:
-                                if (Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
-                                    && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))))
-                                {
-                                    WinnerIds.Add(pc.PlayerId);
-                                    AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
-                                }
+                            case CustomRoles.Romantic when Romantic.BetPlayer.TryGetValue(pc.PlayerId, out var betTarget)
+                                && (WinnerIds.Contains(betTarget) || (Main.PlayerStates.TryGetValue(betTarget, out var betTargetPS) && WinnerRoles.Contains(betTargetPS.MainRole))):
+                                WinnerIds.Add(pc.PlayerId);
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Romantic);
                                 break;
                             case CustomRoles.VengefulRomantic when VengefulRomantic.hasKilledKiller:
                                 WinnerIds.Add(pc.PlayerId);
@@ -474,10 +468,23 @@ class GameEndCheckerForNormal
                                 }
                                 break;
                             case CustomRoles.Follower when Follower.BetPlayer.TryGetValue(pc.PlayerId, out var followerTarget)
-                               && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):
+                                && (WinnerIds.Contains(followerTarget) || (Main.PlayerStates.TryGetValue(followerTarget, out var followerTargetPS) && WinnerRoles.Contains(followerTargetPS.MainRole))):
                                 WinnerIds.Add(pc.PlayerId);
                                 AdditionalWinnerTeams.Add(AdditionalWinners.Follower);
                                 break;
+                        }
+                    }
+
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        if (RebelManager.CheckWinCondition(WinnerTeam, pc) && CustomRoles.Rebel.RoleExist(countDead: true))
+                        {
+                            foreach (var rebel in Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Rebel)).ToArray())
+                            {
+                                if (WinnerIds.Contains(rebel.PlayerId)) continue;
+                                AdditionalWinnerTeams.Add(AdditionalWinners.Rebel);
+                                WinnerIds.Add(rebel.PlayerId);
+                            }
                         }
                     }
 

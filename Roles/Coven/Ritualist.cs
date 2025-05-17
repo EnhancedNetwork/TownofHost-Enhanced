@@ -178,7 +178,7 @@ internal class Ritualist : CovenManager
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
                 CustomRoles role = roles.RandomElement();
                 msg += rd.Next(1, 100) < 50 ? string.Empty : " ";
-                msg += Utils.GetRoleName(role);
+                msg += GetRoleName(role);
 
             }
             var player = Main.AllAlivePlayerControls.RandomElement();
@@ -243,7 +243,7 @@ internal class Ritualist : CovenManager
             return false;
         }
 
-        PlayerControl target = Utils.GetPlayerById(id);
+        PlayerControl target = GetPlayerById(id);
         if (target == null || target.Data.IsDead)
         {
             error = GetString("GuessNull");

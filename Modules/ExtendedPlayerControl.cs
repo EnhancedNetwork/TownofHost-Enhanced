@@ -1318,7 +1318,8 @@ static class ExtendedPlayerControl
             || sheriff.Is(CustomRoles.Infected)
             || sheriff.Is(CustomRoles.Contagious)
             || sheriff.Is(CustomRoles.Egoist)
-            || sheriff.Is(CustomRoles.Enchanted);
+            || sheriff.Is(CustomRoles.Enchanted)
+            || sheriff.Is(CustomRoles.Rebel);
     }
     public static bool ShouldBeDisplayed(this CustomRoles subRole)
     {
@@ -1333,7 +1334,8 @@ static class ExtendedPlayerControl
             CustomRoles.Infected and not
             CustomRoles.Enchanted and not
             CustomRoles.Contagious and not
-            CustomRoles.Narc;
+            CustomRoles.Narc and not
+            CustomRoles.Rebel;
     }
 
     public static void AddInSwitchAddons(this PlayerControl Killed, PlayerControl target, CustomRoles addOn = CustomRoles.NotAssigned)
@@ -1421,11 +1423,11 @@ static class ExtendedPlayerControl
         && target.Data.IsDead || target.Is(CustomRoles.Gravestone) && target.Data.IsDead;
 
     public static bool KnowDeadTeam(this PlayerControl seer, PlayerControl target)
-        => (seer.Is(CustomRoles.Necroview))
+        => seer.Is(CustomRoles.Necroview)
         && target.Data.IsDead;
 
     public static bool KnowLivingTeam(this PlayerControl seer, PlayerControl target)
-        => (seer.Is(CustomRoles.Visionary))
+        => seer.Is(CustomRoles.Visionary)
         && !target.Data.IsDead;
 
     private readonly static LogHandler logger = Logger.Handler("KnowRoleTarget");
@@ -1483,14 +1485,13 @@ static class ExtendedPlayerControl
         if (seer.PlayerId == target.PlayerId) return true;
         else if (seer.Is(CustomRoles.GM) || target.Is(CustomRoles.GM) || seer.Is(CustomRoles.God) || (seer.AmOwner && Main.GodMode.Value)) return true;
         else if (Options.SeeEjectedRolesInMeeting.GetBool() && Main.PlayerStates[target.PlayerId].deathReason == PlayerState.DeathReason.Vote
-                && (Options.ShowBetrayalAddonsOnEject.GetBool() || subRole is CustomRoles.Narc)// Narc is always shown regardless of the option
+                && (Options.ShowBetrayalAddonsOnEject.GetBool() || subRole is CustomRoles.Narc or CustomRoles.Rebel)
                 && subRole.IsBetrayalAddonV2() && (subRole != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())) return true;
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
         
         else if ((subRole is CustomRoles.Madmate
-                or CustomRoles.Sidekick
                 or CustomRoles.Recruit
                 or CustomRoles.Admired
                 or CustomRoles.Charmed
@@ -1498,7 +1499,8 @@ static class ExtendedPlayerControl
                 or CustomRoles.Contagious
                 or CustomRoles.Egoist
                 or CustomRoles.Enchanted
-                or CustomRoles.Narc)
+                or CustomRoles.Narc
+                or CustomRoles.Rebel)
             && KnowSubRoleTarget(seer, target))
             return true;
         else if (Main.VisibleTasksCount && !seer.IsAlive())
@@ -1660,9 +1662,9 @@ static class ExtendedPlayerControl
 
     public static bool Is(this PlayerControl target, CustomRoles role) =>
         role > CustomRoles.NotAssigned ? target.GetCustomSubRoles().Contains(role) : target.GetCustomRole() == role;
-    public static bool Is(this PlayerControl target, Custom_Team type) { return target.GetCustomRole().GetCustomRoleTeam() == type; }
-    public static bool Is(this PlayerControl target, RoleTypes type) { return target.GetCustomRole().GetRoleTypes() == type; }
-    public static bool Is(this PlayerControl target, CountTypes type) { return target.GetCountTypes() == type; }
+    public static bool Is(this PlayerControl target, Custom_Team type) => target.GetCustomRole().GetCustomRoleTeam() == type;
+    public static bool Is(this PlayerControl target, RoleTypes type) => target.GetCustomRole().GetRoleTypes() == type;
+    public static bool Is(this PlayerControl target, CountTypes type) => target.GetCountTypes() == type;
     public static bool IsAnySubRole(this PlayerControl target, Func<CustomRoles, bool> predicate) => target != null && target.GetCustomSubRoles().Any() && target.GetCustomSubRoles().Any(predicate);
 
     public static bool IsAlive(this PlayerControl target)
