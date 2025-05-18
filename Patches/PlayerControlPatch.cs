@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1591,6 +1592,8 @@ class CoEnterVentPatch
             return true;
         }
 
+        
+
         if (KillTimerManager.AllKillTimers.TryGetValue(__instance.myPlayer.PlayerId, out var timer))
         {
             KillTimerManager.AllKillTimers[__instance.myPlayer.PlayerId] = timer + 0.5f;
@@ -1619,7 +1622,18 @@ class CoEnterVentPatch
             return true;
         }
 
+
         playerRoleClass?.OnCoEnterVent(__instance, id);
+        if (Options.DisableVenting1v1.GetBool() && Main.AllAlivePlayerControls.Length <= 2)
+        {
+            var pc = __instance?.myPlayer;
+            _ = new LateTask(() =>
+            {
+                pc?.Notify(GetString("FFA-NoVentingBecauseTwoPlayers"), 7f);
+                pc?.MyPhysics?.RpcBootFromVent(id);
+            }, 0.5f, "Player No Venting Because Two Players");
+            return true;
+        }
 
         if (playerRoleClass?.BlockMoveInVent(__instance.myPlayer) ?? false)
         {

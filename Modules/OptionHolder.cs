@@ -368,6 +368,7 @@ public static class Options
     public static OptionItem DisableMeeting;
     public static OptionItem DisableSabotage;
     public static OptionItem DisableCloseDoor;
+    public static OptionItem DisableVenting1v1;
 
     public static OptionItem DisableDevices;
     public static OptionItem DisableSkeldDevices;
@@ -552,6 +553,9 @@ public static class Options
     // ------------ General Role Settings ------------
 
     // Imp
+    public static OptionItem UseVariableImp;
+    public static OptionItem ImpRolesMinPlayer;
+    public static OptionItem ImpRolesMaxPlayer;
     public static OptionItem ImpsCanSeeEachOthersRoles;
     public static OptionItem ImpsCanSeeEachOthersAddOns;
 
@@ -738,6 +742,17 @@ public static class Options
         //    .SetColor(Utils.GetRoleColor(CustomRoles.GM))
         //    .SetHidden(true)
         //    .SetHeader(true);
+        UseVariableImp = BooleanOptionItem.Create(60037, "UseVariableImp", false, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetHeader(true);
+        ImpRolesMinPlayer = IntegerOptionItem.Create(60038, "ImpRolesMinPlayer", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
+           .SetGameMode(CustomGameMode.Standard)
+           .SetParent(UseVariableImp)
+           .SetValueFormat(OptionFormat.Players);
+        ImpRolesMaxPlayer = IntegerOptionItem.Create(60039, "ImpRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.ImpostorRoles, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetParent(UseVariableImp)
+            .SetValueFormat(OptionFormat.Players);
 
         ImpsCanSeeEachOthersRoles = BooleanOptionItem.Create(60001, "ImpsCanSeeEachOthersRoles", true, TabGroup.ImpostorRoles, false)
             .SetGameMode(CustomGameMode.Standard)
@@ -1657,6 +1672,9 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableCloseDoor = BooleanOptionItem.Create(60566, "DisableCloseDoor", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 153, 153, byte.MaxValue));
+        DisableVenting1v1 = BooleanOptionItem.Create(60567, "DisableVenting1v1", false, TabGroup.ModSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         // Disable Devices
