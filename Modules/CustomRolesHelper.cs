@@ -740,12 +740,12 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Reach:
-                if (!pc.CanUseKillButton())
+                if (!pc.CanUseKillButton() && !pc.Is(CustomRoles.Narc))
                     return false;
                 break;
 
             case CustomRoles.Overclocked:
-                if (!pc.CanUseKillButton())
+                if (!pc.CanUseKillButton() && !pc.Is(CustomRoles.Narc))
                     return false;
                 if (pc.Is(CustomRoles.Reverie))
                     return false;
@@ -790,7 +790,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.KillingMachine)
                     || (pc.Is(CustomRoles.Rebel) && RebelManager.RebelHasImpVision.GetBool()))
                     return false;
-                if (!pc.GetCustomRole().IsCrewmate())
+                if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Narc))
                     return false;
                 break;
 
@@ -967,7 +967,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Godfather))
+                    || pc.Is(CustomRoles.Godfather)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;
@@ -976,7 +977,8 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Nemesis))
+                if (pc.Is(CustomRoles.Nemesis)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1036,7 +1038,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Flash)
                     || pc.Is(CustomRoles.Sloth)
-                    || pc.Is(CustomRoles.KillingMachine))
+                    || pc.Is(CustomRoles.KillingMachine)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

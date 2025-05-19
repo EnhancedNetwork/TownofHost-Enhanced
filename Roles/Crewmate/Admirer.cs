@@ -84,18 +84,17 @@ internal class Admirer : RoleBase
         var addon = killer.GetBetrayalAddon(true);        
         if (killer.GetAbilityUseLimit() > 0)
         {
-            if (KnowTargetRole.GetBool())
-            {
-                AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-            }
-
             if (target.CanBeRecruitedBy(killer))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(addon);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("AdmirerAdmired")));
+                if (KnowTargetRole.GetBool())
+                {
+                    AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                    SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+                }
             }
             else goto AdmirerFailed;
 

@@ -63,6 +63,20 @@ public class RoleAssign
         }
     }
 
+    public static void GetImpCounts(int ImpmaxOpt, int ImpminOpt, ref int ResultImpnum)
+    {
+        if (!Options.UseVariableImp.GetBool())
+        {
+            ResultImpnum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
+            return;
+        }
+        var rd = IRandom.Instance;
+
+        if (ImpmaxOpt > 0 && ImpmaxOpt >= ImpminOpt)
+        {
+            ResultImpnum = rd.Next(ImpminOpt, ImpmaxOpt + 1);
+        }
+    }
     public static void StartSelect()
     {
         switch (Options.CurrentGameMode)
@@ -106,7 +120,7 @@ public class RoleAssign
 
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Length;
-        int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
+        int optImpNum = 0;
         int optNonNeutralKillingNum = 0;
         int optNeutralKillingNum = 0;
         int optNeutralApocalypseNum = 0;
@@ -114,6 +128,7 @@ public class RoleAssign
 
         GetNeutralCounts(Options.NeutralKillingRolesMaxPlayer.GetInt(), Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NonNeutralKillingRolesMaxPlayer.GetInt(), Options.NonNeutralKillingRolesMinPlayer.GetInt(), Options.NeutralApocalypseRolesMaxPlayer.GetInt(), Options.NeutralApocalypseRolesMinPlayer.GetInt(), ref optNeutralKillingNum, ref optNonNeutralKillingNum, ref optNeutralApocalypseNum);
         GetCovenCounts(Options.CovenRolesMaxPlayer.GetInt(), Options.CovenRolesMinPlayer.GetInt(), ref optCovenNum);
+        GetImpCounts(Options.ImpRolesMaxPlayer.GetInt(), Options.ImpRolesMinPlayer.GetInt(), ref optImpNum);
 
         int readyRoleNum = 0;
         int readyImpNum = 0;
