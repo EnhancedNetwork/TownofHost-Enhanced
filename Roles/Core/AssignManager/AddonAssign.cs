@@ -215,9 +215,7 @@ public static class AddonAssign
 
     public static void StartAssigningRebel()
     {
-        var ps = RebelManager.AssignedToHost ?
-            Main.PlayerStates[PlayerControl.LocalPlayer.PlayerId] : Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == RebelManager.RoleForRebelToSpawnAs) ?? null;
-        RebelManager.AssignedToHost = false;
+        var ps = Main.PlayerStates.Values.FirstOrDefault(x => x.MainRole == RebelManager.RoleForRebelToSpawnAs) ?? null;
 
         if (ps == null)
         {

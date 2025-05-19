@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.Core.AssignManager;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -15,7 +16,7 @@ public static class RebelManager
         foreach (var role in CustomRolesHelper.AllRoles
                                     .Where(r => r.IsEnable() && !r.IsVanilla() && !r.IsGhostRole() && !r.IsAdditionRole()))
         {
-            if (!role.IsCrewmate()) continue;
+            if (!role.IsCrewmate() || RoleAssign.SetRoles.ContainsValue(role)) continue;
             if (role is CustomRoles.Altruist && !CanWinAfterDeath.GetBool()) continue;
             if (role is CustomRoles.Marshall && !MarshallCanBeRebel.GetBool()) continue;
             if (role is CustomRoles.Overseer && !OverseerCanBeRebel.GetBool()) continue;
@@ -32,15 +33,9 @@ public static class RebelManager
         return list;
     }
 
-    /// <summary>
-    /// Checks if a role can be Rebel
-    /// </summary>
-    public static bool CanBeRebel(this CustomRoles role) => SelectedRebelRoles().Contains(role);
-
     //===========================SETUP================================\\
     public static CustomRoles RoleForRebelToSpawnAs;
     public static bool IsRebelAssigned() => RoleForRebelToSpawnAs != CustomRoles.NotAssigned;
-    public static bool AssignedToHost = false;
     //==================================================================\\
 
     public static OptionItem RebelSpawnChance;
@@ -128,7 +123,6 @@ public static class RebelManager
 
     public static void InitForRebel()
     {
-        if (AssignedToHost) return;
         RoleForRebelToSpawnAs = CustomRoles.NotAssigned;
 
         int value = IRandom.Instance.Next(1, 100);
@@ -154,5 +148,5 @@ public static class RebelManager
     }
 
     public static bool CheckWinCondition(CustomWinner winner, PlayerControl pc)
-        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || (pc.IsAlive() && !CanWinAfterDeath.GetBool()));
+        => winner is not CustomWinner.Crewmate && (CanWinAfterDeath.GetBool() || pc.IsAlive());
 }
