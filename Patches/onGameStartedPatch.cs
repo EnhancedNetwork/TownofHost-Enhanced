@@ -7,6 +7,7 @@ using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
 using TOHE.Patches;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using UnityEngine;
@@ -378,6 +379,9 @@ internal class StartGameHostPatch
             // Initialize for Narc
             NarcManager.InitForNarc();
             
+            // Initialize for Rebel
+            RebelManager.InitForRebel();
+
             // Block "RpcSetRole" for set Desync Roles for some players
             RpcSetRoleReplacer.Initialize();
 
@@ -466,6 +470,7 @@ internal class StartGameHostPatch
                 if (Options.CurrentGameMode == CustomGameMode.Standard)
                 {
                     AddonAssign.StartAssigningNarc();
+                    AddonAssign.StartAssigningRebel();
                     AddonAssign.InitAndStartAssignLovers();
                     AddonAssign.StartSortAndAssign();
                 }

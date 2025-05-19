@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -187,15 +188,17 @@ public class RoleAssign
                 continue;
             }
 
-            if (role.IsImpostor())
+            if (role == NarcManager.RoleForNarcToSpawnAs)
             {
-                if (role == NarcManager.RoleForNarcToSpawnAs)
-                {
-                    RoleAssignInfo newinfo = new(role, 100, 1);
-                    Roles[RoleAssignType.Crewmate].Add(newinfo);
-                }
-                else Roles[RoleAssignType.Impostor].Add(info);
+                RoleAssignInfo newinfo = new(role, 100, 1);
+                Roles[RoleAssignType.Crewmate].Add(newinfo);
             }
+            else if (role == RebelManager.RoleForRebelToSpawnAs)
+            {
+                RoleAssignInfo newinfo = new(role, 100, 1);
+                Roles[RoleAssignType.NonKillingNeutral].Add(newinfo);
+            }
+            else if (role.IsImpostor()) Roles[RoleAssignType.Impostor].Add(info);
             else if (role.IsNK()) Roles[RoleAssignType.NeutralKilling].Add(info);
             else if (role.IsNA()) Roles[RoleAssignType.NeutralApocalypse].Add(info);
             else if (role.IsNonNK()) Roles[RoleAssignType.NonKillingNeutral].Add(info);
@@ -319,7 +322,7 @@ public class RoleAssign
                 Roles[RoleAssignType.Coven].Where(x => x.Role == item.Value).Do(x => x.AssignedCount++);
                 readyCovenNum++;
             }
-            else if (item.Value.IsNonNK())
+            else if (item.Value.IsNonNK() || item.Value == RebelManager.RoleForRebelToSpawnAs)
             {
                 Roles[RoleAssignType.NonKillingNeutral].Where(x => x.Role == item.Value).Do(x => x.AssignedCount++);
                 readyNonNeutralKillingNum++;

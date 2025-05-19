@@ -157,7 +157,7 @@ internal class Jailer : RoleBase
 
     private static bool CanBeExecuted(CustomRoles role)
     {
-        return (role.IsNB() && NBCanBeExe.GetBool()) ||
+        return ((role.IsNB() || role == CustomRoles.Rebel) && NBCanBeExe.GetBool()) ||
                 (role.IsNC() && NCCanBeExe.GetBool()) ||
                 (role.IsNE() && NECanBeExe.GetBool()) ||
                 (role.IsNK() && NKCanBeExe.GetBool()) ||
@@ -183,7 +183,7 @@ internal class Jailer : RoleBase
                     CheckForEndVotingPatch.TryAddAfterMeetingDeathPlayers(PlayerState.DeathReason.Execution, targetIdByte);
                     tpc.SetRealKiller(player);
                 }
-                if ((!CanBeExecuted(tpc.GetCustomRole()) && !player.IsAnySubRole(x => x.IsConverted() && x != CustomRoles.Soulless)) || tpc.Is(CustomRoles.Narc))
+                if ((!CanBeExecuted(tpc.GetCustomRole()) && !player.IsAnySubRole(x => (x.IsConverted() || x is CustomRoles.Rebel) && x is not CustomRoles.Soulless)) || tpc.Is(CustomRoles.Narc))
                 {
                     playerId.SetAbilityUseLimit(0);
                 }

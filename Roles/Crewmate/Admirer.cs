@@ -78,7 +78,6 @@ internal class Admirer : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 

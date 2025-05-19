@@ -476,7 +476,7 @@ class CheckForEndVotingPatch
                 name = string.Format(GetString("PlayerExiled"), realName);
                 break;
             case 1:
-                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x != CustomRoles.Narc && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Narc and not CustomRoles.Rebel && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                 {
                     if (player.Is(CustomRoles.Madmate))
                         name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
@@ -491,23 +491,23 @@ class CheckForEndVotingPatch
                 else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Narc))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Impostor), GetString("TeamImpostor")));
 
-                else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc))
+                else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc)) && !player.Is(CustomRoles.Rebel))
                     name = string.Format(GetString("IsGood"), realName);
 
-                else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
+                else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel)) && !player.GetCustomRole().IsMadmate())
                     name = string.Format(GetString("BelongTo"), realName, ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral")));
 
-                else if (player.GetCustomRole().IsCoven())
+                else if (player.GetCustomRole().IsCoven() || player.Is(CustomRoles.Enchanted))
                     name = string.Format(GetString("BelongTo"), realName, ColorString(GetRoleColor(CustomRoles.Coven), GetString("TeamCoven")));
 
                 break;
             case 2:
-                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() || player.Is(CustomRoles.Narc) ? coloredRole : player.GetCustomRole().ToColoredString();
+                var ejectedRoleText = Options.ShowBetrayalAddonsOnEject.GetBool() || player.Is(CustomRoles.Narc) || player.Is(CustomRoles.Rebel) ? coloredRole : player.GetCustomRole().ToColoredString();
                 name = string.Format(GetString("PlayerIsRole"), realName, ejectedRoleText);
                 if (Options.ShowTeamNextToRoleNameOnEject.GetBool())
                 {
                     name += " (";
-                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x != CustomRoles.Narc && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
+                    if (Options.ShowBetrayalAddonsOnEject.GetBool() && player.IsAnySubRole(x => x.IsBetrayalAddonV2() && x is not CustomRoles.Narc and not CustomRoles.Rebel && (x != CustomRoles.Egoist || Egoist.EgoistCountAsConverted.GetBool())))
                     {
                         if (player.Is(CustomRoles.Madmate))
                             name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
@@ -520,9 +520,9 @@ class CheckForEndVotingPatch
                     }
                     else if (player.GetCustomRole().IsImpostorTeamV3() && !player.Is(CustomRoles.Narc))
                         name += ColorString(new Color32(255, 25, 25, byte.MaxValue), GetString("TeamImpostor"));
-                    else if (player.GetCustomRole().IsNeutral() && !player.GetCustomRole().IsMadmate())
+                    else if ((player.GetCustomRole().IsNeutral() || player.Is(CustomRoles.Rebel)) && !player.GetCustomRole().IsMadmate())
                         name += ColorString(new Color32(127, 140, 141, byte.MaxValue), GetString("TeamNeutral"));
-                    else if (player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc))
+                    else if ((player.GetCustomRole().IsCrewmate() || player.Is(CustomRoles.Narc)) && !player.Is(CustomRoles.Rebel))
                         name += ColorString(new Color32(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"));
                     else if (player.GetCustomRole().IsCoven())
                         name += ColorString(new Color32(172, 66, 242, byte.MaxValue), GetString("TeamCoven"));
@@ -539,11 +539,11 @@ class CheckForEndVotingPatch
         if (DecidedWinner) name += "<size=0>";
         if (Options.ShowImpRemainOnEject.GetBool() && !DecidedWinner)
         {
-            name += "\n";
             if (badnum <= 0)
-                name += GetString("NoImpRemain");
+                name += "\n" + GetString("NoImpRemain");
             else
             {
+                if (impnum > 0) name += "\n";
                 name += impnum switch
                 {
                     1 => GetString("OneImpRemain"),
@@ -1025,10 +1025,10 @@ class MeetingHudStartPatch
 
             foreach (var csId in Cyber.CyberDead)
             {
-                if (!Cyber.ImpKnowCyberDead.GetBool() && pc.GetCustomRole().IsImpostor()) continue;
-                if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.GetCustomRole().IsNeutral()) continue;
-                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.GetCustomRole().IsCrewmate()) continue;
-                if (!Cyber.CovenKnowCyberDead.GetBool() && pc.GetCustomRole().IsCoven()) continue;
+                if (!Cyber.ImpKnowCyberDead.GetBool() && pc.IsPlayerImpostorTeam()) continue;
+                if (!Cyber.NeutralKnowCyberDead.GetBool() && pc.IsPlayerNeutralTeam()) continue;
+                if (!Cyber.CrewKnowCyberDead.GetBool() && pc.IsPlayerCrewmateTeam()) continue;
+                if (!Cyber.CovenKnowCyberDead.GetBool() && pc.IsPlayerCovenTeam()) continue;
 
                 AddMsg(string.Format(GetString("CyberDead"), Main.AllPlayerNames[csId]), pc.PlayerId, ColorString(GetRoleColor(CustomRoles.Cyber), GetString("Cyber").ToUpper()));
             }
@@ -1167,6 +1167,12 @@ class MeetingHudStartPatch
                 {
                     blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
                     if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(ColorString(GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
+                    result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
+                }
+                if (target.Is(CustomRoles.Rebel))
+                {
+                    blankRT.Clear().Append(CustomRoles.Taskinator.ToColoredString());
+                    blankRT.Append(ColorString(GetRoleColor(CustomRoles.Taskinator).ShadeColor(0.25f), $" ({Taskinator.maxTasksMarkedPerRound})"));
                     result.Clear().Append($"<size={roleTextMeeting.fontSize}>{blankRT}</size>");
                 }
                 if (Illusionist.IsNonCovIllusioned(targetId))

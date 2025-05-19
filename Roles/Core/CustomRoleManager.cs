@@ -173,6 +173,9 @@ public static class CustomRoleManager
                     case CustomRoles.Narc when !player.Is(CustomRoles.Torch) && !player.Is(CustomRoles.Bewilder):
                         NarcManager.ApplyGameOptions(opt, player);
                         break;
+                    case CustomRoles.Rebel when !player.Is(CustomRoles.Torch) && !player.Is(CustomRoles.Bewilder):
+                        RebelManager.ApplyGameOptions(opt, player);
+                        break;
                 }
             }
 

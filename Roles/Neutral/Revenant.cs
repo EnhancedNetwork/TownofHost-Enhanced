@@ -1,5 +1,7 @@
 using TOHE.Roles.Core;
+using static TOHE.Options;
 using static TOHE.Translator;
+using static TOHE.Utils;
 
 namespace TOHE.Roles.Neutral;
 internal class Revenant : RoleBase
@@ -16,9 +18,9 @@ internal class Revenant : RoleBase
     // private static OptionItem RevenantCanCopyAddons;
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Revenant);
+        SetupRoleOptions(Id, TabGroup.NeutralRoles, CustomRoles.Revenant);
         //RevenantCanCopyAddons = BooleanOptionItem.Create(Id + 10, "RevenantCanCopyAddons", false, TabGroup.NeutralRoles, false)
-        //   .SetParent(Options.CustomRoleSpawnChances[CustomRoles.Revenant]);
+        //   .SetParent(CustomRoleSpawnChances[CustomRoles.Revenant]);
     }
 
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
@@ -33,8 +35,9 @@ internal class Revenant : RoleBase
         target.RpcSetCustomRole(role);
         target.GetRoleClass()?.OnAdd(target.PlayerId);
         if (killer.Is(CustomRoles.Narc)) target.RpcSetCustomRole(CustomRoles.Narc);
+        if (killer.Is(CustomRoles.Rebel)) target.RpcSetCustomRole(CustomRoles.Rebel);
 
-        target.Notify(string.Format(GetString("RevenantTargeted"), Utils.GetRoleName(role)));
+        target.Notify(string.Format(GetString("RevenantTargeted"), GetRoleName(role)));
 
         return false;
     }

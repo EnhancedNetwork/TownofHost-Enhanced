@@ -84,6 +84,7 @@ internal class Oracle : RoleBase
                     if (target.Is(CustomRoles.Admired) || target.Is(CustomRoles.Narc)) text = "Crewmate";
                     else if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
                     else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
+                    else if (target.Is(CustomRoles.Rebel)) text = "Neutral";
                     else if (target.GetCustomRole().IsImpostorTeamV2() || target.GetCustomSubRoles().Any(role => role.IsImpostorTeamV2())) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutralTeamV2() || target.GetCustomSubRoles().Any(role => role.IsNeutralTeamV2())) text = "Neutral";
                     else if (target.IsPlayerCoven() || target.Is(CustomRoles.Enchanted)) text = "Coven";
@@ -94,6 +95,7 @@ internal class Oracle : RoleBase
                     if (Illusionist.IsCovIllusioned(target.PlayerId)) text = "Crewmate";
                     else if (Illusionist.IsNonCovIllusioned(target.PlayerId)) text = "Coven";
                     else if (target.Is(CustomRoles.Narc)) text = "Crewmate";
+                    else if (target.Is(CustomRoles.Rebel)) text = "Neutral";
                     else if (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster)) text = "Impostor";
                     else if (target.GetCustomRole().IsNeutral()) text = "Neutral";
                     else if (target.Is(Custom_Team.Coven)) text = "Coven";
@@ -106,30 +108,38 @@ internal class Oracle : RoleBase
                     if (random_number_1 <= FailChance.GetInt())
                     {
                         int random_number_2 = IRandom.Instance.Next(1, 4);
-                        if (text == "Crewmate")
+                        text = text switch
                         {
-                            if (random_number_2 == 1) text = "Neutral";
-                            if (random_number_2 == 2) text = "Impostor";
-                            if (random_number_2 == 3) text = "Coven";
-                        }
-                        if (text == "Neutral")
-                        {
-                            if (random_number_2 == 1) text = "Crewmate";
-                            if (random_number_2 == 2) text = "Impostor";
-                            if (random_number_2 == 3) text = "Coven";
-                        }
-                        if (text == "Impostor")
-                        {
-                            if (random_number_2 == 1) text = "Neutral";
-                            if (random_number_2 == 2) text = "Crewmate";
-                            if (random_number_2 == 3) text = "Coven";
-                        }
-                        if (text == "Coven")
-                        {
-                            if (random_number_2 == 1) text = "Crewmate";
-                            if (random_number_2 == 2) text = "Impostor";
-                            if (random_number_2 == 3) text = "Neutral";
-                        }
+                            "Crewmate" => random_number_2 switch
+                            {
+                                1 => "Neutral",
+                                2 => "Impostor",
+                                3 => "Coven",
+                                _ => text,
+                            },
+                            "Neutral" => random_number_2 switch
+                            {
+                                1 => "Crewmate",
+                                2 => "Impostor",
+                                3 => "Coven",
+                                _ => text,
+                            },
+                            "Impostor" => random_number_2 switch
+                            {
+                                1 => "Neutral",
+                                2 => "Crewmate",
+                                3 => "Coven",
+                                _ => text,
+                            },
+                            "Coven" => random_number_2 switch
+                            {
+                                1 => "Crewmate",
+                                2 => "Impostor",
+                                3 => "Neutral",
+                                _ => text,
+                            },
+                            _ => text,
+                        };
                     }
                 }
                 msg = string.Format(GetString("OracleCheck." + text), targetName);

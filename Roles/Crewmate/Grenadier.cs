@@ -102,6 +102,14 @@ internal class Grenadier : RoleBase
                     .Where(x => !x.IsPlayerCovenTeam())
                     .Do(x => x.RPCPlayCustomSound("FlashBang"));
             }
+            else if (pc.Is(CustomRoles.Rebel))
+            {
+                MadGrenadierBlinding.Remove(pc.PlayerId);
+                MadGrenadierBlinding.Add(pc.PlayerId, GetTimeStamp());
+                Main.AllPlayerControls.Where(x => x.IsModded())
+                    .Where(x => x.IsPlayerCrewmateTeam())
+                    .Do(x => x.RPCPlayCustomSound("FlashBang"));
+            }
             else
             {
                 GrenadierBlinding.Remove(pc.PlayerId);

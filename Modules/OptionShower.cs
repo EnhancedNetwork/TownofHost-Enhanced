@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using TOHE.Roles.AddOns.Crewmate;
 using UnityEngine;
 using static TOHE.Translator;
 
