@@ -19,6 +19,7 @@ internal class Exorcist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
+    
     private static OptionItem ExorcismActiveFor;
     private static OptionItem ExorcismPerGame;
     private static OptionItem ExorcismDelay;
@@ -128,6 +129,10 @@ internal class Exorcist : RoleBase
         if (ExorcismEndOnKill.GetBool() && IsExorcismActive)
         {
             IsExorcismActive = false;
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                RPC.PlaySoundRPC(pc.PlayerId, Sounds.TaskComplete);
+            }
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
         }
         player.SetDeathReason(PlayerState.DeathReason.Exorcised);
@@ -144,6 +149,7 @@ internal class Exorcist : RoleBase
     {
         var exorcist = (Exorcist)player.GetRoleClass();
         exorcist.ExorcismLimitPerMeeting--;
+        player.RPCPlayCustomSound("Line");
         player.RpcRemoveAbilityUse();
 
         if (TryHideMsg.GetBool())
@@ -157,12 +163,21 @@ internal class Exorcist : RoleBase
         {
             IsExorcismActive = true;
             IsDelayActive = false;
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                RPC.PlaySoundRPC(pc.PlayerId, Sounds.SabotageSound);
+            }
             Utils.SendMessage(string.Format(Translator.GetString("ExorcistStart"), ExorcismActiveFor.GetFloat()));
+            
             _ = new LateTask(() =>
             {
                 if (IsExorcismActive)
                 {
                     IsExorcismActive = false;
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        RPC.PlaySoundRPC(pc.PlayerId, Sounds.TaskComplete);
+                    }
                     Utils.SendMessage(GetString("ExorcistEnd"));
                 }
             }, ExorcismActiveFor.GetFloat(), "ExorcistNotify");
