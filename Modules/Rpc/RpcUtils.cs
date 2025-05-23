@@ -6,6 +6,7 @@ namespace TOHE.Modules.Rpc;
 
 public class RpcUtils
 {
+    // You need to register and cast shit into IGameDataMessage so the game will recoginze it and put it in quque
     public static void LateBroadcastReliableMessage(BaseGameDataMessage message)
     {
         try

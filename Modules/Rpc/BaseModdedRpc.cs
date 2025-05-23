@@ -10,6 +10,7 @@ namespace TOHE.Modules.Rpc
     {
         // https://github.com/BepInEx/Il2CppInterop/blob/master/Documentation/Class-Injection.md
         // Injecting BaseModdedRpc has a very high chance for the game to crash on load!!!
+        // And you need to inject it for all the modded rpc to work!!!
         // Works after injected. No idea how to resolve this problem.
         public BaseModdedRpc(IntPtr ptr) : base(ptr) { }
 

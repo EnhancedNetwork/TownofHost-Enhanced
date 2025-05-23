@@ -1,3 +1,6 @@
+using AmongUs.InnerNet.GameDataMessages;
+using TOHE.Modules.Rpc;
+
 namespace TOHE.Modules;
 
 public static class OutfitManager
@@ -95,76 +98,33 @@ public static class OutfitManager
 
     public static void SetNewOutfit(this PlayerControl player, NetworkedPlayerInfo.PlayerOutfit newOutfit, bool setName = true, bool setNamePlate = true, uint newLevel = 500)
     {
-        // Start to set Outfit
-        var sender = CustomRpcSender.Create(name: $"SetOutfit({player.Data.PlayerName})");
-
         if (setName)
         {
             player.SetName(newOutfit.PlayerName);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetName)
-                .Write(player.Data.NetId)
-                .Write(newOutfit.PlayerName)
-            .EndRpc();
-
             Main.AllPlayerNames[player.PlayerId] = newOutfit.PlayerName;
 
             RPC.SyncAllPlayerNames();
         }
 
-        // Set SequenceId += 10 because stupid code sometimes not sets outfit players
-
         player.SetColor(newOutfit.ColorId);
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetColor)
-            .Write(player.Data.NetId)
-            .Write((byte)newOutfit.ColorId)
-        .EndRpc();
-
         player.SetHat(newOutfit.HatId, newOutfit.ColorId);
-        player.Data.DefaultOutfit.HatSequenceId += 10;
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetHatStr)
-            .Write(newOutfit.HatId)
-            .Write(player.GetNextRpcSequenceId(RpcCalls.SetHatStr))
-        .EndRpc();
-
         player.SetSkin(newOutfit.SkinId, newOutfit.ColorId);
-        player.Data.DefaultOutfit.SkinSequenceId += 10;
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetSkinStr)
-            .Write(newOutfit.SkinId)
-            .Write(player.GetNextRpcSequenceId(RpcCalls.SetSkinStr))
-        .EndRpc();
-
         player.SetVisor(newOutfit.VisorId, newOutfit.ColorId);
-        player.Data.DefaultOutfit.VisorSequenceId += 10;
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetVisorStr)
-            .Write(newOutfit.VisorId)
-            .Write(player.GetNextRpcSequenceId(RpcCalls.SetVisorStr))
-        .EndRpc();
-
         player.SetPet(newOutfit.PetId);
-        player.Data.DefaultOutfit.PetSequenceId += 10;
-        sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetPetStr)
-            .Write(newOutfit.PetId)
-            .Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr))
-        .EndRpc();
 
         if (setNamePlate)
         {
             player.SetNamePlate(newOutfit.NamePlateId);
-            player.Data.DefaultOutfit.NamePlateSequenceId += 10;
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetNamePlateStr)
-                .Write(newOutfit.NamePlateId)
-                .Write(player.GetNextRpcSequenceId(RpcCalls.SetNamePlateStr))
-            .EndRpc();
         }
 
         if (newLevel != 500)
         {
             player.SetLevel(newLevel);
-            sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetLevel)
-                .WritePacked(newLevel)
-            .EndRpc();
+            var setLevel = new RpcSetLevelMessage(player.NetId, newLevel);
+            AmongUsClient.Instance.LateBroadcastReliableMessage(setLevel.Cast<IGameDataMessage>());
         }
 
-        sender.SendMessage();
+        var setOutfit = new RpcSetOutfit(player.NetId, player.Data.NetId, newOutfit, setName, setNamePlate);
+        RpcUtils.LateBroadcastReliableMessage(setOutfit);
     }
 }

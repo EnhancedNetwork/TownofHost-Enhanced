@@ -809,20 +809,8 @@ internal static class RPC
     public static void SyncAllPlayerNames()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAllPlayerNames, SendOption.Reliable, -1);
-        writer.WritePacked(Main.AllPlayerNames.Count);
-        foreach (var name in Main.AllPlayerNames)
-        {
-            writer.Write(name.Key);
-            writer.Write(name.Value);
-        }
-        writer.WritePacked(Main.AllClientRealNames.Count);
-        foreach (var name in Main.AllClientRealNames)
-        {
-            writer.Write(name.Key);
-            writer.Write(name.Value);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var message = new RpcSyncAllPlayerNames(PlayerControl.LocalPlayer.NetId);
+        RpcUtils.LateBroadcastReliableMessage(message);
     }
     public static void ShowPopUp(this PlayerControl pc, string message, string title = "")
     {

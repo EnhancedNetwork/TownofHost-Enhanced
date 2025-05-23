@@ -650,7 +650,11 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         // Injecting BaseModdedRpc has a very high chance for the game to crash on load!!!
+        // And you need to inject it for all the modded rpc to work!!!
+        // Works after injected. No idea how to resolve this problem.
         ClassInjector.RegisterTypeInIl2Cpp<BaseModdedRpc>();
+        ClassInjector.RegisterTypeInIl2Cpp<CustomModdedData>();
+
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<OptionShower>();
         ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
@@ -668,6 +672,7 @@ public class Main : BasePlugin
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
         // InitializeFileHash();
+        FileHash = "niko_is_testing_shit_for_2025_04_15";
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
