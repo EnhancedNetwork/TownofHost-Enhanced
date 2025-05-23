@@ -125,7 +125,6 @@ public static class Options
         "CamouflageMode.Random",
         "CamouflageMode.OnlyRandomColor",
         "CamouflageMode.Karpe",
-        "CamouflageMode.Lauryn",
         "CamouflageMode.Moe",
         "CamouflageMode.Pyro",
         "CamouflageMode.ryuk",

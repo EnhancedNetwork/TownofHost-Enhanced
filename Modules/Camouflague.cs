@@ -102,40 +102,35 @@ public static class Camouflage
                     .Set("", 13, "hat_pk05_Plant", "", "visor_BubbleBumVisor", "", "");
                 break;
 
-            case 5: // Lauryn
-                CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
-                    .Set("", 13, "hat_rabbitEars", "skin_Bananaskin", "visor_BubbleBumVisor", "pet_Pusheen", "");
-                break;
-
-            case 6: // Moe
+            case 5: // Moe
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 0, "hat_mira_headset_yellow", "skin_SuitB", "visor_lollipopCrew", "pet_EmptyPet", "");
                 break;
 
-            case 7: // Pyro
+            case 6: // Pyro
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_pkHW01_Witch", "skin_greedygrampaskin", "visor_Plsno", "pet_Pusheen", "");
                 break;
 
-            case 8: // ryuk
+            case 7: // ryuk
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 7, "hat_theohair", "skin_Theoskin", "visor_Carrot", "pet_Snow", "");
                 break;
 
-            case 9: // Gurge44
+            case 8: // Gurge44
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 7, "hat_pk04_Snowman", "", "", "", "");
                 break;
 
-            case 10: // TommyXL
+            case 9: // TommyXL
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_baseball_Black", "skin_Scientist-Darkskin", "visor_pusheenSmileVisor", "pet_Pip", "");
                 break;
-            case 11: // Sarha, Co-President
+            case 10: // Sarha, Co-President
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 17, "hat_mira_flower", "skin_PusheenPurpleskin", "visor_hl_hmph", "pet_Charles", "");
                 break;
-            case 12: // Marg
+            case 11: // Marg
                 CamouflageOutfit = new NetworkedPlayerInfo.PlayerOutfit()
                     .Set("", 13, "hat_rabbitEars", "skin_hl_pekora", "visor_claws_knife", "pet_claws_spaceCat", "");
                 break;

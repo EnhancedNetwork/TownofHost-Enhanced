@@ -10,6 +10,7 @@ namespace TOHE.Modules.Rpc
         public RpcSetOutfit(uint netId, uint playerInfoNetId, NetworkedPlayerInfo.PlayerOutfit outfit, bool setName, bool setNamePlate) : base()
         {
             this.netId = netId;
+            this.playerInfoNetId = playerInfoNetId;
             this.outfit = outfit;
 
             messages = [];
