@@ -494,7 +494,7 @@ public static class GuessManager
             _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
             writer.Write(pc.PlayerId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
 
             GameEndCheckerForNormal.ShouldNotCheck = false;
         }
@@ -1139,7 +1139,7 @@ public static class GuessManager
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (int)CustomRPC.Guess, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write((int)role);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

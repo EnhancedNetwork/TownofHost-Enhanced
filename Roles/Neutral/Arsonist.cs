@@ -68,7 +68,7 @@ internal class Arsonist : RoleBase
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDousingTarget, SendOption.Reliable);
             writer.Write(arsonistId);
             writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
     }
     public static void ReceiveCurrentDousingTargetRPC(MessageReader reader)
@@ -86,7 +86,7 @@ internal class Arsonist : RoleBase
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDoused);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveSetDousedPlayerRPC(MessageReader reader)
     {

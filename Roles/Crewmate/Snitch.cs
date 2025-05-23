@@ -168,7 +168,7 @@ internal class Snitch : RoleBase
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(RpcTypeId);
         writer.Write(snitchId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

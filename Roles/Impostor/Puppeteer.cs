@@ -56,7 +56,7 @@ internal class Puppeteer : RoleBase
         writer.Write(typeId);
         writer.Write(puppetId);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader)
     {

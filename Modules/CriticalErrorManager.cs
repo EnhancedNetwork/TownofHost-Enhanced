@@ -34,7 +34,7 @@ public static class CriticalErrorManager
             writer.Write(PlayerControl.LocalPlayer.PlayerId);
             writer.Write(reason);
             writer.Write(sourseError);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
     }
     public static void ReadRpc(PlayerControl player, MessageReader reader)

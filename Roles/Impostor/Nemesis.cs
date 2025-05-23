@@ -185,7 +185,7 @@ internal class Nemesis : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NemesisRevenge, SendOption.Reliable, -1);
         writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {

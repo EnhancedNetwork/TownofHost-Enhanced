@@ -110,7 +110,7 @@ internal class Stealth : RoleBase
     {
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write((byte?)roomType ?? byte.MaxValue);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

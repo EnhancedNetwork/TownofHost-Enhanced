@@ -76,7 +76,7 @@ internal class PotionMaster : CovenManager
         writer.Write(target.PlayerId);
         if (typeId == 0) writer.Write(RevealLimit[player.PlayerId]);
         else if (typeId == 1) writer.Write(BarrierLimit[player.PlayerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

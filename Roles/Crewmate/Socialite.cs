@@ -53,7 +53,7 @@ internal class Socialite : RoleBase
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

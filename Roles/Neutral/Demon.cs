@@ -78,7 +78,7 @@ internal class Demon : RoleBase
             writer.Write(DemonHealth[playerId]);
         else
             writer.Write(PlayerHealth[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

@@ -56,7 +56,7 @@ internal class Follower : RoleBase
         var writer = MessageWriter.Get(SendOption.Reliable); //SyncFollowerTargetAndTimes
         writer.Write(playerId);
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

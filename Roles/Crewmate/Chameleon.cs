@@ -59,7 +59,7 @@ internal class Chameleon : RoleBase
         writer.Write(pc.PlayerId);
         writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
         writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC_Custom(MessageReader reader)
     {

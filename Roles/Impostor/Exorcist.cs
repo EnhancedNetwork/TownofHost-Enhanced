@@ -243,7 +243,7 @@ internal class Exorcist : RoleBase
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExorcistExorcise, SendOption.Reliable);
         writer.Write(exorcistId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)

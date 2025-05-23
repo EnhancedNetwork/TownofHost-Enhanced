@@ -66,7 +66,7 @@ internal class Crewpostor : RoleBase
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCrewpostorTasksDone, SendOption.Reliable, -1);
             writer.Write(cpID);
             writer.WritePacked(tasksDone);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
     }
     public static void ReceiveRPC(MessageReader reader)

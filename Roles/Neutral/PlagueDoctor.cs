@@ -111,7 +111,7 @@ internal class PlagueDoctor : RoleBase
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(targetId);
         writer.Write(rate);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

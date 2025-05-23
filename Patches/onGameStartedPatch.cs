@@ -581,7 +581,7 @@ internal class StartGameHostPatch
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, pc.OwnerId);
             writer.Write((ushort)roleType);
             writer.Write(true);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
     }
 

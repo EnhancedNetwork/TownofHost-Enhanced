@@ -108,7 +108,7 @@ internal class Bandit : RoleBase
             writer.Write(targetId);
             writer.WritePacked((int)SelectedAddOn);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

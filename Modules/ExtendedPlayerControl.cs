@@ -122,7 +122,7 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, RpcSendOption, clientId);
         writer.Write((ushort)role);
         writer.Write(true);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static (RoleTypes RoleType, CustomRoles CustomRole) GetRoleMap(this PlayerControl player, byte targetId = byte.MaxValue) => Utils.GetRoleMap(player.PlayerId, targetId);
@@ -302,13 +302,13 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetPetStr, SendOption.Reliable, clientId);
         writer.Write(petId);
         writer.Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr));
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcExile(this PlayerControl player)
     {
         player.Exiled();
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcExileDesync(this PlayerControl player, PlayerControl seer)
     {
@@ -319,7 +319,7 @@ static class ExtendedPlayerControl
             return;
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, clientId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -330,7 +330,7 @@ static class ExtendedPlayerControl
         player.Exiled();
 
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcCastVote(this PlayerControl player, byte suspectIdx)
     {
@@ -414,7 +414,7 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, RpcSendOption, clientId);
         writer.Write(seer.Data.NetId);
         writer.Write(name);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcEnterVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
     {
@@ -429,7 +429,7 @@ static class ExtendedPlayerControl
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.EnterVent, SendOption.Reliable, seer.GetClientId());
         writer.WritePacked(ventId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcExitVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
     {
@@ -444,7 +444,7 @@ static class ExtendedPlayerControl
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.ExitVent, SendOption.Reliable, seer.GetClientId());
         writer.WritePacked(ventId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcBootFromVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
     {
@@ -458,7 +458,7 @@ static class ExtendedPlayerControl
         }
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, seer.GetClientId());
         writer.WritePacked(ventId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     /// <summary>
     /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
@@ -585,7 +585,7 @@ static class ExtendedPlayerControl
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, SendOption.Reliable, player.GetClientId());
                 writer.Write(time);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
             }
             // Check Observer
             if (Observer.HasEnabled)
@@ -627,7 +627,7 @@ static class ExtendedPlayerControl
             {
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, SendOption.Reliable, player.GetClientId());
                 writer.Write(time);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
             }
             // Check Observer
             if (Observer.HasEnabled)
@@ -642,7 +642,7 @@ static class ExtendedPlayerControl
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayGuardAndKill, RpcSendOption, seer.OwnerId);
         writer.WriteNetObject(target);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
     {
@@ -855,7 +855,7 @@ static class ExtendedPlayerControl
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, RpcSendOption, target.GetClientId());
             writer.WriteNetObject(target);
             writer.Write(0);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
         /*
             When a player puts up a barrier, the cooldown of the ability is reset regardless of the player's position.
@@ -897,7 +897,7 @@ static class ExtendedPlayerControl
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(netTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.Reliable, clientId);
         NetHelpers.WriteVector2(position, writer);
         writer.Write(newSid);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcTeleport(this PlayerControl player, Vector2 position, bool isRandomSpawn = false, bool sendInfoInLogs = true)
     {

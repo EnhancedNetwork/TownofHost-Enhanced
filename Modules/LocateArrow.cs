@@ -38,7 +38,7 @@ static class LocateArrow
         writer.WritePacked(index);
         writer.Write(seer);
         writer.Write(vector3);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader)
     {

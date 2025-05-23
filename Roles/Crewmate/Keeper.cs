@@ -71,7 +71,7 @@ internal class Keeper : RoleBase
             writer.Write(keeperId);
             writer.Write(targetId);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC(MessageReader reader)

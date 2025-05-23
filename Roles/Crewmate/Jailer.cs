@@ -81,7 +81,7 @@ internal class Jailer : RoleBase
         writer.WritePacked(JailerTarget[jailerId]);
         writer.Write(JailerHasExe[jailerId]);
         writer.Write(JailerDidVote[jailerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC(MessageReader reader)

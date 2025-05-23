@@ -301,7 +301,7 @@ internal class DoubleAgent : RoleBase
         writer.Write(addData);
         writer.Write(targetId);
         writer.WritePacked((int)CurrentBombedTime);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     // Receive and set bomb timer from Host when active.

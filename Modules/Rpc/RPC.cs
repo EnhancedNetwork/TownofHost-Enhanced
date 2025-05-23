@@ -793,7 +793,7 @@ internal static class RPC
             writer.WritePacked(option.GetValue());
         }
 
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void PlaySoundRPC(byte PlayerID, Sounds sound)
@@ -803,7 +803,7 @@ internal static class RPC
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlaySound, SendOption.Reliable, -1);
         writer.Write(PlayerID);
         writer.Write((byte)sound);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void SyncAllPlayerNames()
     {
@@ -817,13 +817,13 @@ internal static class RPC
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
         writer.Write(message);
         writer.Write(title);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void RpcSetFriendCode(string fc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
         writer.Write(fc);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         SetFriendCode(PlayerControl.LocalPlayer, fc);
     }
     public static void SetFriendCode(PlayerControl target, string fc)
@@ -851,7 +851,7 @@ internal static class RPC
                 writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
                 writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
                 writer.Write(cheating);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
                 */
 
                 var message = new RpcVersionCheck(PlayerControl.LocalPlayer.NetId);
@@ -984,7 +984,7 @@ internal static class RPC
         {
             writer.Write(lp.PlayerId);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void SyncDeadPassedMeetingList()
     {
@@ -995,7 +995,7 @@ internal static class RPC
         {
             writer.Write(dead);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void SendRpcLogger(uint targetNetId, byte callId, SendOption sendOption, int targetClientId = -1)
     {

@@ -111,7 +111,7 @@ internal class Revolutionist : RoleBase
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isDrawed);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveDrawPlayerRPC(MessageReader reader)
     {
@@ -132,7 +132,7 @@ internal class Revolutionist : RoleBase
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
             writer.Write(arsonistId);
             writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
     }
     public static void ReceiveSetCurrentDrawTarget(MessageReader reader)

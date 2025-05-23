@@ -620,14 +620,14 @@ class InnerNetClientSpawnPatch
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
                             writer.WritePacked((int)GameStartManagerPatch.timer);
                             writer.Write(false);
-                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
                         }
                         // Non-host modded client
                         else if (client.Character.IsNonHostModdedClient())
                         {
                             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncLobbyTimer, SendOption.Reliable, client.Id);
                             writer.WritePacked((int)GameStartManagerPatch.timer);
-                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
                         }
                     }
                 }, 3.1f, "Send RPC or Sync Lobby Timer");

@@ -77,7 +77,7 @@ internal class MoonDancer : CovenManager
             foreach (var bl in BlastedOffList[playerId])
                 writer.Write(bl);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

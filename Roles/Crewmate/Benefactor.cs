@@ -70,7 +70,7 @@ internal class Benefactor : RoleBase
         {
             writer.Write(targetId);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
 
     }
 

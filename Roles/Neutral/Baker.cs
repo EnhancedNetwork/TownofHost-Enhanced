@@ -96,7 +96,7 @@ internal class Baker : RoleBase
         writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -380,7 +380,7 @@ internal class Famine : RoleBase
         writer.WriteNetObject(player);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

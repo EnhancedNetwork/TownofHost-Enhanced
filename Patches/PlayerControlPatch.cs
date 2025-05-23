@@ -492,7 +492,7 @@ class MurderPlayerPatch
                 var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
                 writer.Write(Main.FirstDied);
                 writer.Write(Main.FirstDiedPrevious);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
             }
         }
 
