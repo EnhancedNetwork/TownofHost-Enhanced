@@ -15,7 +15,7 @@ namespace TOHE.Modules.Rpc
         public override void SerializeRpcValues(MessageWriter writer)
         {
             writer.Write(playerId);
-            writer.Write((int)role);
+            writer.WritePacked((int)role);
         }
 
         private readonly byte playerId;
