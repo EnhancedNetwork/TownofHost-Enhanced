@@ -91,7 +91,8 @@ internal class Baker : RoleBase
     private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
     {
         if (!player.IsNonHostModdedClient()) return;
-        var writer = MessageWriter.Get(SendOption.Reliable);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(player);
         writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
@@ -375,7 +376,8 @@ internal class Famine : RoleBase
 
     private static void SendRPC(PlayerControl player, PlayerControl target)
     {
-        var writer = MessageWriter.Get(SendOption.Reliable);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(player);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
