@@ -19,7 +19,7 @@ public class RpcUtils
         }
     }
 
-    public static void LateBroadCastUnReliableMessage(BaseGameDataMessage message)
+    public static void LateBroadcastUnReliableMessage(BaseGameDataMessage message)
     {
         try
         {

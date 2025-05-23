@@ -6,6 +6,7 @@ using InnerNet;
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
@@ -50,10 +51,8 @@ static class ExtendedPlayerControl
         }
         if (AmongUsClient.Instance.AmHost)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
-            writer.Write(player.PlayerId);
-            writer.WritePacked((int)role);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var message = new RpcSetCustomRole(PlayerControl.LocalPlayer.NetId, player.PlayerId, role);
+            RpcUtils.LateBroadcastReliableMessage(message);
         }
 
     }

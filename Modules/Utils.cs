@@ -1,5 +1,6 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using Il2CppInterop.Generator.Extensions;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -13,6 +14,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -40,14 +42,12 @@ public static class Utils
         if (!AmongUsClient.Instance.AmHost) return;
         foreach (var player in Main.AllPlayerControls.Where(x => x.GetClient() != null && !x.Data.Disconnected))
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, ExtendedPlayerControl.RpcSendOption, player.OwnerId);
+            var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.OwnerId);
             writer.Write(GetString("NotifyGameEnding"));
             AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
-        var writer2 = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SendChat, SendOption.Reliable, -1);
-        writer2.Write(GetString("NotifyGameEnding"));
-        AmongUsClient.Instance.FinishRpcImmediately(writer2);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSendChatMessage(PlayerControl.LocalPlayer.NetId, GetString("NotifyGameEnding")));
     }
 
     public static ClientData GetClientById(int id)

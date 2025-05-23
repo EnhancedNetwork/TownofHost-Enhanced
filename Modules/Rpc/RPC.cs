@@ -275,8 +275,7 @@ internal class RPCHandlerPatch
 
                     _ = new LateTask(() =>
                     {
-                        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.GetClientId());
-                        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        RpcUtils.SendMessageSpecially(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId), __instance.GetClientId());
                     }, 1f, "Retry Version Check Task");
                 }
                 break;
@@ -869,16 +868,11 @@ internal static class RPC
     public static async void RpcRequestRetryVersionCheck()
     {
         while (PlayerControl.LocalPlayer == null || AmongUsClient.Instance.GetHost() == null) await Task.Delay(500);
-        var hostId = AmongUsClient.Instance.HostId;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, hostId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId));
     }
     public static void SendDeathReason(byte playerId, PlayerState.DeathReason deathReason)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDeathReason, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write((int)deathReason);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSetDeathReason(PlayerControl.LocalPlayer.NetId, playerId, deathReason));
     }
     public static void GetDeathReason(MessageReader reader)
     {
@@ -1034,10 +1028,7 @@ internal static class RPC
         state.RoleofKiller = Main.PlayerStates.TryGetValue(killerId, out var kState) ? kState.MainRole : CustomRoles.NotAssigned;
 
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetRealKiller, SendOption.Reliable, -1);
-        writer.Write(targetId);
-        writer.Write(killerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSetRealKiller(PlayerControl.LocalPlayer.NetId, targetId, killerId));
     }
 }
 

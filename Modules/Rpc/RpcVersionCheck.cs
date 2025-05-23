@@ -3,13 +3,9 @@ using Hazel;
 
 namespace TOHE.Modules.Rpc
 {
-    public class RpcVersionCheck : BaseModdedRpc
+    public class RpcVersionCheck(uint rpcObjectNetId) : BaseModdedRpc(rpcObjectNetId)
     {
         public override CustomRPC RpcType => CustomRPC.VersionCheck;
-
-        public RpcVersionCheck(uint rpcObjectNetId) : base(rpcObjectNetId)
-        {
-        }
 
         public override void SerializeRpcValues(MessageWriter writer)
         {
@@ -20,6 +16,15 @@ namespace TOHE.Modules.Rpc
             writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
             writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
             writer.Write(cheating);
+        }
+    }
+
+    public class RpcRequestRetryVersionCheck(uint rpcObjectNetId) : BaseModdedRpc(rpcObjectNetId)
+    {
+        public override CustomRPC RpcType => CustomRPC.RequestRetryVersionCheck;
+
+        public override void SerializeRpcValues(MessageWriter writer)
+        {
         }
     }
 }
