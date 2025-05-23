@@ -6,6 +6,7 @@ using InnerNet;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -365,7 +366,7 @@ class OnPlayerLeftPatch
                 if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
                 {
                     var message = new DespawnGameDataMessage(netid);
-                    AmongUsClient.Instance.LateBroadcastReliableMessage(message.Cast<IGameDataMessage>());
+                    RpcUtils.LateBroadcastReliableMessage(message);
                 }
             }, 2.5f, "Repeat Despawn", false);
         }

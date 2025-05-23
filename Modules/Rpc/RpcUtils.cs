@@ -11,7 +11,7 @@ public class RpcUtils
     {
         try
         {
-            AmongUsClient.Instance.LateBroadcastReliableMessage(message.Cast<IGameDataMessage>());
+            AmongUsClient.Instance.LateBroadcastReliableMessage(message.CastFast<IGameDataMessage>());
         }
         catch (Exception error)
         {
@@ -23,7 +23,7 @@ public class RpcUtils
     {
         try
         {
-            AmongUsClient.Instance.LateBroadcastUnreliableMessage(message.Cast<IGameDataMessage>());
+            AmongUsClient.Instance.LateBroadcastUnreliableMessage(message.CastFast<IGameDataMessage>());
         }
         catch (Exception error)
         {

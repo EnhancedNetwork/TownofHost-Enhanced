@@ -16,6 +16,7 @@ using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
 using AmongUs.InnerNet.GameDataMessages;
+using TOHE.Modules.Rpc;
 
 
 namespace TOHE;
@@ -3737,7 +3738,7 @@ class RpcSendChatPatch
         */
 
         var message = new RpcSendChatMessage(__instance.NetId, chatText);
-        AmongUsClient.Instance.LateBroadcastReliableMessage(message.Cast<IGameDataMessage>());
+        RpcUtils.LateBroadcastReliableMessage(message);
         __result = true;
         return false;
     }

@@ -121,7 +121,7 @@ public static class OutfitManager
         {
             player.SetLevel(newLevel);
             var setLevel = new RpcSetLevelMessage(player.NetId, newLevel);
-            AmongUsClient.Instance.LateBroadcastReliableMessage(setLevel.Cast<IGameDataMessage>());
+            RpcUtils.LateBroadcastReliableMessage(setLevel);
         }
 
         var setOutfit = new RpcSetOutfit(player.NetId, player.Data.NetId, newOutfit, setName, setNamePlate);

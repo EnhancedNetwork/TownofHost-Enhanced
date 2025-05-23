@@ -45,8 +45,6 @@ namespace TOHE.Modules.Rpc
                 message.Serialize(writer);
             }
 
-            messages.Clear();
-
             writer.StartMessage((byte)GameDataTypes.RpcFlag);
             writer.WritePacked(netId);
             writer.Write((byte)RpcCalls.SetVisorStr);
