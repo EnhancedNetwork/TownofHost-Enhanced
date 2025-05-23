@@ -4,11 +4,11 @@ using Hazel;
 
 namespace TOHE.Modules.Rpc
 {
-    public class RpcSetRoleGruoped : CustomModdedData
+    public class RpcSetRoleGrouped : CustomModdedData
     {
         // Use RpcUtils.SendMessageSpecifically to send this message
         public override GameDataTypes FirstDataType => GameDataTypes.RpcFlag;
-        public RpcSetRoleGruoped(List<(PlayerControl, RoleTypes)> playerRoles) : base()
+        public RpcSetRoleGrouped(List<(PlayerControl, RoleTypes)> playerRoles) : base()
         {
             if (playerRoles.Count == 1)
             {

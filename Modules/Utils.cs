@@ -2234,40 +2234,12 @@ public static class Utils
 
     public static void SendGameData()
     {
-        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
-        writer.StartMessage(5);
-        writer.Write(AmongUsClient.Instance.GameId);
-
-        bool hasValue = false;
         foreach (var playerinfo in GameData.Instance.AllPlayers)
         {
-            writer.StartMessage(1); //0x01 Data
-            {
-                writer.WritePacked(playerinfo.NetId);
-                playerinfo.Serialize(writer, false);
-            }
-            writer.EndMessage();
-            hasValue = true;
-
-            if (writer.Length > 500)
-            {
-                writer.EndMessage();
-                AmongUsClient.Instance.SendOrDisconnect(writer);
-                writer.Recycle();
-                writer = MessageWriter.Get(SendOption.Reliable);
-                hasValue = false;
-                writer.StartMessage(5);
-                writer.Write(AmongUsClient.Instance.GameId);
-            }
+            playerinfo.MarkDirty();
         }
 
-        writer.EndMessage();
-
-        if (hasValue)
-        {
-            AmongUsClient.Instance.SendOrDisconnect(writer);
-        }
-        writer.Recycle();
+        AmongUsClient.Instance.SendAllStreamedObjects();
     }
     public static void SetAllVentInteractions()
     {
