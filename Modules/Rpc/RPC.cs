@@ -844,16 +844,6 @@ internal static class RPC
             var hostId = AmongUsClient.Instance.HostId;
             if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
             {
-                /*
-                bool cheating = Main.VersionCheat.Value;
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
-                writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
-                writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
-                writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
-                writer.Write(cheating);
-                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
-                */
-
                 var message = new RpcVersionCheck(PlayerControl.LocalPlayer.NetId);
                 RpcUtils.LateBroadcastReliableMessage(message);
             }
