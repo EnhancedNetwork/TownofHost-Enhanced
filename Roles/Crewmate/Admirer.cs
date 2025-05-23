@@ -53,10 +53,10 @@ internal class Admirer : RoleBase
     }
     public static void SendRPC(byte playerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAdmiredList, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SyncAdmiredList(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader)
     {

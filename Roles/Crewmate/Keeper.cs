@@ -64,14 +64,14 @@ internal class Keeper : RoleBase
 
     private static void SendRPC(int type, byte keeperId = 0xff, byte targetId = 0xff)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KeeperRPC, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(type);
         if (type == 0)
         {
             writer.Write(keeperId);
             writer.Write(targetId);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.KeeperRPC(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC(MessageReader reader)

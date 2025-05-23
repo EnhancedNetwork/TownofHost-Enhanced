@@ -69,14 +69,14 @@ internal class PotionMaster : CovenManager
     private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
     {
         if (!player.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.WriteNetObject(player);
         writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         if (typeId == 0) writer.Write(RevealLimit[player.PlayerId]);
         else if (typeId == 1) writer.Write(BarrierLimit[player.PlayerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

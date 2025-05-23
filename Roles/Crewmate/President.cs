@@ -202,18 +202,16 @@ internal class President : RoleBase
 
     private static void SendRPC(byte playerId, bool isEnd = true)
     {
-        MessageWriter writer;
+        var writer = MessageWriter.Get(SendOption.Reliable);
         if (!isEnd)
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentReveal, SendOption.Reliable, -1);
             writer.Write(playerId);
             writer.Write(CheckPresidentReveal[playerId]);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new CustomRPC.PresidentReveal(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
             return;
         }
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentEnd, SendOption.Reliable, -1);
         writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.PresidentEnd(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {

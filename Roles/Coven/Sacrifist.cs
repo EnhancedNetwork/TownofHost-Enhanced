@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -75,9 +76,9 @@ internal class Sacrifist : CovenManager
     }
     private static void SendRPC(PlayerControl pc)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, pc.GetClientId());
+        var writer = MessageWriter.Get(SendOption.Reliable, pc.GetClientId());
         writer.Write(DebuffID);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

@@ -54,11 +54,11 @@ internal class Investigator : RoleBase
 
     private static void SendRPC(bool setTarget, byte playerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInvestgatorLimit, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(setTarget);
         writer.Write(playerId);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetInvestgatorLimit(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC(MessageReader reader)

@@ -67,10 +67,10 @@ internal class Inspector : RoleBase
     }
     public static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInspectorLimit, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         writer.WritePacked(RoundCheckLimit[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetInspectorLimit(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader)
     {

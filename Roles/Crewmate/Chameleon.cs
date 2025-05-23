@@ -55,11 +55,11 @@ internal class Chameleon : RoleBase
     public static void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
+        var writer = MessageWriter.Get(ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
         writer.Write(pc.PlayerId);
         writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
         writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetChameleonTimer(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC_Custom(MessageReader reader)
     {

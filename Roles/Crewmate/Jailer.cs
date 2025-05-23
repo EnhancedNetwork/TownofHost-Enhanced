@@ -76,12 +76,12 @@ internal class Jailer : RoleBase
 
     public static void SendRPC(byte jailerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncJailerData, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(jailerId);
         writer.WritePacked(JailerTarget[jailerId]);
         writer.Write(JailerHasExe[jailerId]);
         writer.Write(JailerDidVote[jailerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SyncJailerData(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC(MessageReader reader)

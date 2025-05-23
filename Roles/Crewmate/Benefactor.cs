@@ -2,6 +2,7 @@ using Hazel;
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -48,7 +49,7 @@ internal class Benefactor : RoleBase
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BenefactorRPC, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(type);
         if (type == 0)
         {
@@ -70,7 +71,7 @@ internal class Benefactor : RoleBase
         {
             writer.Write(targetId);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.BenefactorRPC(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
 
     }
 

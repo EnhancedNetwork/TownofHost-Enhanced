@@ -344,9 +344,9 @@ internal class Swapper : RoleBase
     }
     private static void SendSwapRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetSwapperVotes, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetSwapperVotes(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveSwapRPC(MessageReader reader, PlayerControl pc)
     {

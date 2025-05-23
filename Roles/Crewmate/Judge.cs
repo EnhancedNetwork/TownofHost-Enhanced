@@ -310,9 +310,9 @@ internal class Judge : RoleBase
 
     private static void SendRPC(byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Judge, SendOption.Reliable);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.Judge(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {

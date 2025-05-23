@@ -109,7 +109,7 @@ internal class Overseer : RoleBase
 
     private static void SendTimerRPC(byte RpcType, byte overseertId, PlayerControl target = null, float timer = 0)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerTimer, ExtendedPlayerControl.RpcSendOption);
+        var writer = MessageWriter.Get(ExtendedPlayerControl.RpcSendOption);
         writer.Write(RpcType);
         writer.Write(overseertId);
         if (target != null && RpcType == 1)
@@ -117,7 +117,7 @@ internal class Overseer : RoleBase
             writer.WriteNetObject(target);
             writer.Write(timer);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetOverseerTimer(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveTimerRPC(MessageReader reader)
     {
@@ -141,11 +141,11 @@ internal class Overseer : RoleBase
     }
     private static void SetRevealtPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerRevealedPlayer, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isRevealed);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetOverseerRevealedPlayer(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveSetRevealedPlayerRPC(MessageReader reader)
     {

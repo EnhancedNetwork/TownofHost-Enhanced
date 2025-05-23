@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -141,11 +142,11 @@ internal class Alchemist : RoleBase
     private static void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
+        var writer = MessageWriter.Get(ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
         writer.Write(FixNextSabo);
         writer.Write(PotionID);
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetAlchemistTimer(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader)
     {

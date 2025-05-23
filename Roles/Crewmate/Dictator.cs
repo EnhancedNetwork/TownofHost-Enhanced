@@ -133,9 +133,9 @@ internal class Dictator : RoleBase
 
     private void SendDictatorRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DictatorRPC, SendOption.Reliable, -1);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.DictatorRPC(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void OnReceiveDictatorRPC(MessageReader reader, PlayerControl pc)
