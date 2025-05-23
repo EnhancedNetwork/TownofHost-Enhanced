@@ -241,9 +241,9 @@ internal class Exorcist : RoleBase
 
     private static void SendExorcismRPC(byte exorcistId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExorcistExorcise, SendOption.Reliable);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(exorcistId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new CustomRPC.ExorcistExorcise(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)

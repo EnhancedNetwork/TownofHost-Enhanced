@@ -64,17 +64,17 @@ internal class Witch : RoleBase
     {
         if (doSpell)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
+            var writer = MessageWriter.Get(SendOption.Reliable);
             writer.Write(witchId);
             writer.Write(target);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new CustomRPC.DoSpell(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrSpell, SendOption.Reliable, -1);
+            var writer = MessageWriter.Get(SendOption.Reliable);
             writer.Write(witchId);
             writer.Write(SpellMode[witchId]);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            RpcUtils.LateBroadcastReliableMessage(new CustomRPC.SetKillOrSpell(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
 
         }
     }
