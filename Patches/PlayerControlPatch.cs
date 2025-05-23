@@ -1297,211 +1297,200 @@ class FixedUpdateInNormalGamePatch
         }
         else if (inGame)
         {
-            var needUpdateNameTarget = Main.LowLoadUpdateName.GetValueOrDefault(playerId, true);
+            var localPlayerRole = localPlayer.GetCustomRole();
+            var localPlayerRoleClass = localPlayer.GetRoleClass();
 
-            if (needUpdateNameTarget)
+            var (text, color) = Utils.GetRoleAndSubText(localPlayerId, playerId, isMeeting: false);
+
+            roleText.text = Options.CurrentGameMode is CustomGameMode.FFA ? string.Empty : text;
+            roleText.color = color;
+
+            if (playerAmOwner || Options.CurrentGameMode is CustomGameMode.FFA) roleText.enabled = true;
+            else if (ExtendedPlayerControl.KnowRoleTarget(localPlayer, player)) roleText.enabled = true;
+            else roleText.enabled = false;
+
+            if (localPlayer.IsAlive() && Overseer.IsRevealedPlayer(localPlayer, player))
             {
-                var localPlayerRole = localPlayer.GetCustomRole();
-                var localPlayerRoleClass = localPlayer.GetRoleClass();
-
-                var (text, color) = Utils.GetRoleAndSubText(localPlayerId, playerId, isMeeting: false);
-
-                roleText.text = Options.CurrentGameMode is CustomGameMode.FFA ? string.Empty : text;
-                roleText.color = color;
-
-                if (playerAmOwner || Options.CurrentGameMode is CustomGameMode.FFA) roleText.enabled = true;
-                else if (ExtendedPlayerControl.KnowRoleTarget(localPlayer, player)) roleText.enabled = true;
-                else roleText.enabled = false;
-
-                if (localPlayer.IsAlive() && Overseer.IsRevealedPlayer(localPlayer, player))
+                var blankRT = new StringBuilder();
+                var result = new StringBuilder(roleText.text);
+                if ((player.Is(CustomRoles.Trickster) && (!player.Is(CustomRoles.Narc) || localPlayer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(playerId))
                 {
-                    var blankRT = new StringBuilder();
-                    var result = new StringBuilder(roleText.text);
-                    if ((player.Is(CustomRoles.Trickster) && (!player.Is(CustomRoles.Narc) || localPlayer.Is(CustomRoles.Madmate))) || Illusionist.IsCovIllusioned(playerId))
+                    blankRT.Clear().Append(Overseer.GetRandomRole(localPlayerId)); // random role for revealed trickster
+                    blankRT.Append(TaskState.GetTaskState()); // random task count for revealed trickster
+                    result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                }
+                if (player.Is(CustomRoles.Narc) && !localPlayer.Is(CustomRoles.Madmate))
+                {
+                    blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
+                    if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
+                    result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                }
+                if (Illusionist.IsNonCovIllusioned(playerId))
+                {
+                    var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
+                    blankRT.Clear().Append(randomRole.GetColoredTextByRole(GetString(randomRole.ToString())));
+                    if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
                     {
-                        blankRT.Clear().Append(Overseer.GetRandomRole(localPlayerId)); // random role for revealed trickster
-                        blankRT.Append(TaskState.GetTaskState()); // random task count for revealed trickster
-                        result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                        blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(localPlayerId, false));
                     }
-                    if (player.Is(CustomRoles.Narc) && !localPlayer.Is(CustomRoles.Madmate))
+                    result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                }
+                roleText.text = result.ToString();
+            }
+
+            if (!amongUsClient.IsGameStarted && amongUsClient.NetworkMode != NetworkModes.FreePlay)
+            {
+                roleText.enabled = false;
+                if (!playerAmOwner)
+                    player.cosmetics.nameText.text = playerData?.PlayerName;
+            }
+
+            if (Main.VisibleTasksCount)
+                roleText.text += Utils.GetProgressText(player);
+
+            if (!playerAmOwner && localPlayer != DollMaster.DollMasterTarget)
+                player = DollMaster.SwapPlayerInfo(player); // If a player is possessed by the Dollmaster swap each other's controllers.
+
+            RealName.Clear().Append(player.GetRealName());
+
+            if (playerAmOwner && isInTask)
+            {
+                if (Options.CurrentGameMode is CustomGameMode.FFA)
+                {
+                    string FFAName = string.Empty;
+                    FFAManager.GetNameNotify(player, ref FFAName);
+                    RealName.Clear().Append(FFAName);
+                }
+                else
+                {
+                    if (Pelican.IsEaten(localPlayerId))
+                        RealName.Clear().Append(CustomRoles.Pelican.GetColoredTextByRole(GetString("EatenByPelican")));
+
+                    else if (Deathpact.IsInActiveDeathpact(localPlayer))
+                        RealName.Clear().Append(Deathpact.GetDeathpactString(localPlayer));
+                }
+
+                if (NameNotifyManager.GetNameNotify(player, out var name))
+                    RealName.Clear().Append(name);
+            }
+
+            var oldRealName = new StringBuilder(RealName.ToString().ApplyNameColorData(localPlayer, player, false));
+            RealName.Clear().Append(oldRealName);
+
+            Mark.Clear();
+            Suffix.Clear();
+
+            // Add protected player icon from ShieldPersonDiedFirst
+            if (player.CheckFirstDied() && MeetingStates.FirstMeeting)
+            {
+                if (Options.ShowShieldedPlayerToAll.GetBool() || localPlayerId == playerId)
+                {
+                    oldRealName.Clear().Append(RealName);
+                    RealName.Clear().Append("<color=#4fa1ff><u></color>").Append(oldRealName).Append("</u>");
+                    Mark.Append("<color=#4fa1ff>✚</color>");
+                }
+            }
+
+            switch (Options.CurrentGameMode)
+            {
+                case CustomGameMode.FFA:
+                    Suffix.Append(FFAManager.GetPlayerArrow(localPlayer, player));
+                    break;
+
+                default:
+                    Mark.Append(localPlayerRoleClass?.GetMark(localPlayer, player, false));
+                    Mark.Append(CustomRoleManager.GetMarkOthers(localPlayer, player, false));
+
+                    Suffix.Append(CustomRoleManager.GetLowerTextOthers(localPlayer, player, false, false));
+
+                    Suffix.Append(localPlayerRoleClass?.GetSuffix(localPlayer, player, false));
+                    Suffix.Append(CustomRoleManager.GetSuffixOthers(localPlayer, player, false));
+
+                    Suffix.Append(Radar.GetPlayerArrow(localPlayer, player, isForMeeting: false));
+                    Suffix.Append(Necromancer.NecromancerReminder(localPlayer, player, isForMeeting: false));
+                    Suffix.Append(CopyCat.CopycatReminder(localPlayer, player, isForMeeting: false));
+
+                    if (localPlayerRole.IsImpostor() && player.GetPlayerTaskState().IsTaskFinished)
                     {
-                        blankRT.Clear().Append(CustomRoles.Sheriff.ToColoredString());
-                        if (Sheriff.ShowShotLimit.GetBool()) blankRT.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff).ShadeColor(0.25f), $" ({Sheriff.ShotLimitOpt.GetInt()})"));
-                        result.Clear().Append($"<size=1.3>{blankRT}</size>");
+                        if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
+                            Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
                     }
-                    if (Illusionist.IsNonCovIllusioned(playerId))
+                    if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
                     {
-                        var randomRole = CustomRolesHelper.AllRoles.Where(role => role.IsEnable() && !role.IsAdditionRole() && role.IsCoven()).ToList().RandomElement();
-                        blankRT.Clear().Append(randomRole.GetColoredTextByRole(GetString(randomRole.ToString())));
-                        if (randomRole is CustomRoles.CovenLeader or CustomRoles.Jinx or CustomRoles.Illusionist or CustomRoles.VoodooMaster) // Roles with Ability Uses
-                        {
-                            blankRT.Append(randomRole.GetStaticRoleClass().GetProgressText(localPlayerId, false));
-                        }
-                        result.Clear().Append($"<size=1.3>{blankRT}</size>");
-                    }
-                    roleText.text = result.ToString();
-                }
-
-                if (!amongUsClient.IsGameStarted && amongUsClient.NetworkMode != NetworkModes.FreePlay)
-                {
-                    roleText.enabled = false;
-                    if (!playerAmOwner)
-                        player.cosmetics.nameText.text = playerData?.PlayerName;
-                }
-
-                if (Main.VisibleTasksCount)
-                    roleText.text += Utils.GetProgressText(player);
-
-                if (!playerAmOwner && localPlayer != DollMaster.DollMasterTarget)
-                    player = DollMaster.SwapPlayerInfo(player); // If a player is possessed by the Dollmaster swap each other's controllers.
-
-                RealName.Clear().Append(player.GetRealName());
-
-                if (playerAmOwner && isInTask)
-                {
-                    if (Options.CurrentGameMode is CustomGameMode.FFA)
-                    {
-                        string FFAName = string.Empty;
-                        FFAManager.GetNameNotify(player, ref FFAName);
-                        RealName.Clear().Append(FFAName);
-                    }
-                    else
-                    {
-                        if (Pelican.IsEaten(localPlayerId))
-                            RealName.Clear().Append(CustomRoles.Pelican.GetColoredTextByRole(GetString("EatenByPelican")));
-
-                        else if (Deathpact.IsInActiveDeathpact(localPlayer))
-                            RealName.Clear().Append(Deathpact.GetDeathpactString(localPlayer));
-                    }
-
-                    if (NameNotifyManager.GetNameNotify(player, out var name))
-                        RealName.Clear().Append(name);
-                }
-
-                var oldRealName = new StringBuilder(RealName.ToString().ApplyNameColorData(localPlayer, player, false));
-                RealName.Clear().Append(oldRealName);
-
-                Mark.Clear();
-                Suffix.Clear();
-
-                // Add protected player icon from ShieldPersonDiedFirst
-                if (player.CheckFirstDied() && MeetingStates.FirstMeeting)
-                {
-                    if (Options.ShowShieldedPlayerToAll.GetBool() || localPlayerId == playerId)
-                    {
-                        oldRealName.Clear().Append(RealName);
-                        RealName.Clear().Append("<color=#4fa1ff><u></color>").Append(oldRealName).Append("</u>");
-                        Mark.Append("<color=#4fa1ff>✚</color>");
-                    }
-                }
-
-                switch (Options.CurrentGameMode)
-                {
-                    case CustomGameMode.FFA:
-                        Suffix.Append(FFAManager.GetPlayerArrow(localPlayer, player));
-                        break;
-
-                    default:
-                        Mark.Append(localPlayerRoleClass?.GetMark(localPlayer, player, false));
-                        Mark.Append(CustomRoleManager.GetMarkOthers(localPlayer, player, false));
-
-                        Suffix.Append(CustomRoleManager.GetLowerTextOthers(localPlayer, player, false, false));
-
-                        Suffix.Append(localPlayerRoleClass?.GetSuffix(localPlayer, player, false));
-                        Suffix.Append(CustomRoleManager.GetSuffixOthers(localPlayer, player, false));
-
-                        Suffix.Append(Radar.GetPlayerArrow(localPlayer, player, isForMeeting: false));
-                        Suffix.Append(Necromancer.NecromancerReminder(localPlayer, player, isForMeeting: false));
-                        Suffix.Append(CopyCat.CopycatReminder(localPlayer, player, isForMeeting: false));
-
-                        if (localPlayerRole.IsImpostor() && player.GetPlayerTaskState().IsTaskFinished)
-                        {
-                            if (player.Is(CustomRoles.Snitch) && player.Is(CustomRoles.Madmate))
-                                Mark.Append(CustomRoles.Impostor.GetColoredTextByRole("★"));
-                        }
-                        if (((localPlayer.IsPlayerCovenTeam() && player.IsPlayerCovenTeam()) || !localPlayer.IsAlive()) && CovenManager.HasNecronomicon(player))
-                        {
-                            Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
-                        }
-
-                        if (player.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                            Mark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
-
-                        if (player.Is(CustomRoles.Lovers) && localPlayer.Is(CustomRoles.Lovers))
-                        {
-                            Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                        }
-                        else if (player.Is(CustomRoles.Lovers) && localPlayer.Data.IsDead)
-                        {
-                            Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
-                        }
-                        break;
-                }
-
-                // Devourer
-                if (Devourer.HasEnabled)
-                {
-                    bool targetDevoured = Devourer.HideNameOfTheDevoured(playerId);
-                    if (targetDevoured)
-                    {
-                        RealName.Clear().Append(GetString("DevouredName"));
-                    }
-                }
-
-                // Dollmaster, Prevent seeing self in mushroom cloud
-                if (DollMaster.HasEnabled && localPlayerRole != CustomRoles.DollMaster)
-                {
-                    if (DollMaster.IsDoll(localPlayerId))
-                        RealName.Clear().Append("<size=10000%><color=#000000>■</color></size>");
-                }
-
-                // Camouflage
-                if ((Camouflage.IsActive && Utils.IsActive(SystemTypes.Comms)) || Camouflager.AbilityActivated)
-                {
-                    oldRealName = RealName;
-                    RealName.Clear().Append($"<size=0%>{oldRealName}</size> ");
-                }
-                DeathReason.Clear().Append(localPlayer.Data.IsDead && localPlayer.KnowDeathReason(player)
-                    ? $"\n<size=1.7>『{CustomRoles.Doctor.GetColoredTextByRole(Utils.GetVitalText(playerId))}』</size>" : string.Empty);
-
-                // code from EHR (Endless Host Roles by: Gurge44)
-                var currentText = player.cosmetics.nameText.text;
-                var changeTo = $"{RealName}{DeathReason}{Mark}\r\n{Suffix}";
-                bool needUpdate = currentText != changeTo;
-
-                if (needUpdate)
-                {
-                    player.cosmetics.nameText.text = changeTo;
-                    float offset = 0.2f;
-                    float colorBlind = -0.2f;
-
-                    if (NameNotifyManager.Notice.TryGetValue(localPlayerId, out var notify) && notify.Text.Contains('\n'))
-                    {
-                        int count = notify.Text.Count(x => x == '\n');
-                        for (int i = 0; i < count; i++)
-                        {
-                            offset += 0.1f;
-                            colorBlind -= 0.1f;
-                        }
+                        Mark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
                     }
 
-                    if (Suffix.Length > 0)
+                    if (player.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
+                        Mark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
+
+                    if (player.Is(CustomRoles.Lovers) && localPlayer.Is(CustomRoles.Lovers))
                     {
-                        // If the name is on two lines, the job title text needs to be moved up.
-                        offset += 0.15f;
-                        colorBlind -= 0.2f;
+                        Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
                     }
-                    if (!localPlayer.IsAlive() && !player.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
+                    else if (player.Is(CustomRoles.Lovers) && localPlayer.Data.IsDead)
+                    {
+                        Mark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                    }
+                    break;
+            }
 
-                    roleText.transform.SetLocalY(offset);
-                    player.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
-                }
-
-                // For non-host modded client need always upadate name
-                if (amongUsClient.AmHost && needUpdateNameTarget && Options.LowLoadDelayUpdateNames.GetBool())
+            // Devourer
+            if (Devourer.HasEnabled)
+            {
+                bool targetDevoured = Devourer.HideNameOfTheDevoured(playerId);
+                if (targetDevoured)
                 {
-                    Main.LowLoadUpdateName[playerId] = false;
+                    RealName.Clear().Append(GetString("DevouredName"));
                 }
+            }
+
+            // Dollmaster, Prevent seeing self in mushroom cloud
+            if (DollMaster.HasEnabled && localPlayerRole != CustomRoles.DollMaster)
+            {
+                if (DollMaster.IsDoll(localPlayerId))
+                    RealName.Clear().Append("<size=10000%><color=#000000>■</color></size>");
+            }
+
+            // Camouflage
+            if ((Camouflage.IsActive && Utils.IsActive(SystemTypes.Comms)) || Camouflager.AbilityActivated)
+            {
+                oldRealName = RealName;
+                RealName.Clear().Append($"<size=0%>{oldRealName}</size> ");
+            }
+            DeathReason.Clear().Append(localPlayer.Data.IsDead && localPlayer.KnowDeathReason(player)
+                ? $"\n<size=1.7>『{CustomRoles.Doctor.GetColoredTextByRole(Utils.GetVitalText(playerId))}』</size>" : string.Empty);
+
+            // code from EHR (Endless Host Roles by: Gurge44)
+            var currentText = player.cosmetics.nameText.text;
+            var changeTo = $"{RealName}{DeathReason}{Mark}\r\n{Suffix}";
+            bool needUpdate = currentText != changeTo;
+
+            if (needUpdate)
+            {
+                player.cosmetics.nameText.text = changeTo;
+                float offset = 0.2f;
+                float colorBlind = -0.2f;
+
+                if (NameNotifyManager.Notice.TryGetValue(localPlayerId, out var notify) && notify.Text.Contains('\n'))
+                {
+                    int count = notify.Text.Count(x => x == '\n');
+                    for (int i = 0; i < count; i++)
+                    {
+                        offset += 0.1f;
+                        colorBlind -= 0.1f;
+                    }
+                }
+
+                if (Suffix.Length > 0)
+                {
+                    // If the name is on two lines, the job title text needs to be moved up.
+                    offset += 0.15f;
+                    colorBlind -= 0.2f;
+                }
+                if (!localPlayer.IsAlive() && !player.IsAlive()) { offset += 0.1f; colorBlind -= 0.1f; }
+
+                roleText.transform.SetLocalY(offset);
+                player.cosmetics.colorBlindText.transform.SetLocalY(colorBlind);
             }
         }
         else

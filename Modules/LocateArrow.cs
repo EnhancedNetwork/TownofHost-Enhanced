@@ -172,7 +172,7 @@ static class LocateArrow
             }
         }
 
-        if (update && (!seer.IsModded() || (seer.IsHost() && Options.LowLoadDelayUpdateNames.GetBool())))
+        if (update && (!seer.IsModded()))
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
         }

@@ -860,9 +860,6 @@ class IntroCutsceneDestroyPatch
             // Set roleAssigned as false for override role for modded players
             // For override role for vanilla clients we use "Data.Disconnected" while assign
             pc.roleAssigned = false;
-
-            // Update name for all after intro
-            Main.LowLoadUpdateName[pc.PlayerId] = true;
         }
 
         if (!GameStates.AirshipIsActive)
