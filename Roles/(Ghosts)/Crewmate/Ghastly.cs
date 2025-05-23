@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
@@ -63,12 +62,11 @@ internal class Ghastly : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.PlayerId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(KillerIsChosen);
         writer.Write(killertarget.Item1);
         writer.Write(killertarget.Item2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)

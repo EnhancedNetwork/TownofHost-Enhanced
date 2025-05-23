@@ -13,7 +13,8 @@ namespace TOHE.Modules.Rpc
 
         public RpcSetDeathReason(uint rpcObjectNetId, byte playerId, PlayerState.DeathReason deathReason) : base(rpcObjectNetId)
         {
-
+            this.playerId = playerId;
+            this.deathReason = deathReason;
         }
 
         public override void SerializeRpcValues(MessageWriter writer)
