@@ -1,5 +1,6 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using InnerNet;
 using System;
@@ -363,10 +364,8 @@ class OnPlayerLeftPatch
             {
                 if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter messageWriter = AmongUsClient.Instance.Streams[1];
-                    messageWriter.StartMessage(5);
-                    messageWriter.WritePacked(netid);
-                    messageWriter.EndMessage();
+                    var message = new DespawnGameDataMessage(netid);
+                    AmongUsClient.Instance.LateBroadcastReliableMessage(message.Cast<IGameDataMessage>());
                 }
             }, 2.5f, "Repeat Despawn", false);
         }
