@@ -2249,7 +2249,7 @@ public static class Utils
             writer.EndMessage();
             hasValue = true;
 
-            if (writer.Length > 800)
+            if (writer.Length > 500)
             {
                 writer.EndMessage();
                 AmongUsClient.Instance.SendOrDisconnect(writer);

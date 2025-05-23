@@ -575,7 +575,7 @@ class InnerNetClientSpawnPatch
 
         ClientData client = Utils.GetClientById(ownerId);
 
-        Logger.Msg($"Spawn player data: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
+        Logger.Info($"Spawn player: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
 
         if (client == null || client.Character == null // client is null
             || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color

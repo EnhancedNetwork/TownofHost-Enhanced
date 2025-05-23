@@ -588,7 +588,6 @@ class GameEndCheckerForNormal
                 var playerInfo = GameData.Instance.GetPlayerById(playerId);
                 // revive player
                 playerInfo.IsDead = false;
-                AmongUsClient.Instance.SendAllStreamedObjects();
             }
             // sync game data
             Utils.SendGameData();

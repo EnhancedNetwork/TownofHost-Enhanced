@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches.Crowded;
 using TOHE.Roles.AddOns;
 using TOHE.Roles.Core;
@@ -648,6 +649,8 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Sha)}: {ThisAssembly.Git.Sha}");
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
+        // Injecting BaseModdedRpc has a very high chance for the game to crash on load!!!
+        ClassInjector.RegisterTypeInIl2Cpp<BaseModdedRpc>();
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
         ClassInjector.RegisterTypeInIl2Cpp<OptionShower>();
         ClassInjector.RegisterTypeInIl2Cpp<MeetingHudPagingBehaviour>();
@@ -661,10 +664,10 @@ public class Main : BasePlugin
 
         Harmony.PatchAll();
 
-        ConsoleManager.DetachConsole();
+        // ConsoleManager.DetachConsole();
         if (DebugModeManager.AmDebugger) ConsoleManager.CreateConsole();
 
-        InitializeFileHash();
+        // InitializeFileHash();
         TOHE.Logger.Msg("========= TOHE loaded! =========", "Plugin Load");
     }
 }
