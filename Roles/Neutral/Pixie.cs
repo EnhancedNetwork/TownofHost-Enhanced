@@ -80,11 +80,10 @@ internal class Pixie : RoleBase
     }
     public void SendRPC(byte pixieId, byte targetId = 255)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); //SetPixieTargets
+        var writer = MessageWriter.Get(SendOption.Reliable); //SetPixieTargets
         writer.Write(pixieId);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)

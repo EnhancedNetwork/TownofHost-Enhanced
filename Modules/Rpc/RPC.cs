@@ -851,7 +851,7 @@ internal static class RPC
                 writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
                 writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);
                 writer.Write(cheating);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
                 */
 
                 var message = new RpcVersionCheck(PlayerControl.LocalPlayer.NetId);
