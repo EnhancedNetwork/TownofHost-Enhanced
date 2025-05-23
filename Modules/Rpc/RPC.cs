@@ -793,7 +793,7 @@ internal static class RPC
             writer.WritePacked(option.GetValue());
         }
 
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public static void PlaySoundRPC(byte PlayerID, Sounds sound)
@@ -803,7 +803,7 @@ internal static class RPC
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlaySound, SendOption.Reliable, -1);
         writer.Write(PlayerID);
         writer.Write((byte)sound);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncAllPlayerNames()
     {
@@ -817,13 +817,13 @@ internal static class RPC
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
         writer.Write(message);
         writer.Write(title);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void RpcSetFriendCode(string fc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
         writer.Write(fc);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
         SetFriendCode(PlayerControl.LocalPlayer, fc);
     }
     public static void SetFriendCode(PlayerControl target, string fc)
@@ -984,7 +984,7 @@ internal static class RPC
         {
             writer.Write(lp.PlayerId);
         }
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncDeadPassedMeetingList()
     {
@@ -995,7 +995,7 @@ internal static class RPC
         {
             writer.Write(dead);
         }
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SendRpcLogger(uint targetNetId, byte callId, SendOption sendOption, int targetClientId = -1)
     {

@@ -60,7 +60,7 @@ public abstract class CovenManager : RoleBase // NO, THIS IS NOT A ROLE
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Necronomicon, SendOption.Reliable, -1);
         writer.Write(playerId);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveNecroRPC(MessageReader reader)
     {

@@ -44,7 +44,7 @@ public static class Utils
         {
             var writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SendChat, SendOption.None, player.OwnerId);
             writer.Write(GetString("NotifyGameEnding"));
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
         RpcUtils.LateBroadcastReliableMessage(new RpcSendChatMessage(PlayerControl.LocalPlayer.NetId, GetString("NotifyGameEnding")));
@@ -254,7 +254,7 @@ public static class Utils
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.KillFlash, SendOption.Reliable, player.GetClientId());
             writer.Write(playKillSound);
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else if (!ReactorCheck) player.ReactorFlash(0f); //Reactor flash for vanilla
         player.MarkDirtySettings();
@@ -417,7 +417,7 @@ public static class Utils
         writer.WritePacked((int)Main.PlayerStates[player.PlayerId].deathReason);
         writer.Write(Main.AllPlayerKillCooldown[player.PlayerId]);
         writer.Write(Main.AllPlayerSpeed[player.PlayerId]);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncSpeed(this PlayerControl player)
     {
@@ -426,7 +426,7 @@ public static class Utils
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedPlayer, SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(Main.AllPlayerSpeed[player.PlayerId]);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static float GetDistance(Vector2 pos1, Vector2 pos2) => Vector2.Distance(pos1, pos2);
     public static Color GetRoleColor(CustomRoles role)

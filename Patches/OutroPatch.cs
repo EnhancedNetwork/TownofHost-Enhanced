@@ -47,7 +47,7 @@ class EndGamePatch
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
                         writer.Write(pvc);
                         writer.WritePacked((int)prevrole);
-                        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+                        AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }
 
                     if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");

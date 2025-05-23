@@ -70,6 +70,6 @@ internal class NotificationPopperPatch
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPopper, SendOption.Reliable);
         writer.WritePacked(index);
         writer.Write(playSound);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 }

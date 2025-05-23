@@ -58,7 +58,7 @@ public static class NameNotifyManager
             writer.Write(Notice[playerId].TimeStamp - Utils.GetTimeStamp());
         }
         else writer.Write(false);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
