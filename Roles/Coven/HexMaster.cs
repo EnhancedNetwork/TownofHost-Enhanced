@@ -86,7 +86,7 @@ internal class HexMaster : CovenManager
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
             writer.Write(hexId);
             writer.Write(target);
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else
         {
@@ -94,7 +94,7 @@ internal class HexMaster : CovenManager
             writer.WriteNetObject(GetPlayerById(hexId));
             writer.Write(newHex);
             writer.Write(oldHex);
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
 
         }
     }

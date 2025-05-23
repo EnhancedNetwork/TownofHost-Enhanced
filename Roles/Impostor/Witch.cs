@@ -67,15 +67,14 @@ internal class Witch : RoleBase
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
             writer.Write(witchId);
             writer.Write(target);
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
         else
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrSpell, SendOption.Reliable, -1);
             writer.Write(witchId);
             writer.Write(SpellMode[witchId]);
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
-
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
     public static void ReceiveRPC(MessageReader reader, bool doSpell)

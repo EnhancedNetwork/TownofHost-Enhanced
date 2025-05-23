@@ -46,7 +46,7 @@ public static class AbilityUseManager
             var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncAbilityUseLimit, SendOption.Reliable);
             writer.Write(playerId);
             writer.Write(limit);
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
 
         Utils.NotifyRoles(SpecifySeer: player, ForceLoop: false);

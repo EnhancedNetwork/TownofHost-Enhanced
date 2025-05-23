@@ -81,7 +81,7 @@ internal class Fireworker : RoleBase
         writer.Write(playerId);
         writer.Write(nowFireworkerCount[playerId]);
         writer.Write((int)state[playerId]);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public static void ReceiveRPC(MessageReader msg)

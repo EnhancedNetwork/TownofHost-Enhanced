@@ -42,7 +42,7 @@ internal class Greedy : RoleBase
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGreedy, SendOption.Reliable, -1);
         writer.Write(playerId);
         writer.Write(IsOdd[playerId]);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public static void ReceiveRPC(MessageReader reader)

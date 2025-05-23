@@ -77,7 +77,7 @@ internal class Sacrifist : CovenManager
     {
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(DebuffID);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

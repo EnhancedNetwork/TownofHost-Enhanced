@@ -117,7 +117,7 @@ internal class Overseer : RoleBase
             writer.WriteNetObject(target);
             writer.Write(timer);
         }
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveTimerRPC(MessageReader reader)
     {
@@ -145,7 +145,7 @@ internal class Overseer : RoleBase
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         writer.Write(isRevealed);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveSetRevealedPlayerRPC(MessageReader reader)
     {

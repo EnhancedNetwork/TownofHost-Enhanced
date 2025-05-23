@@ -60,7 +60,7 @@ internal class Undertaker : RoleBase
         writer.Write(xLoc);
         var yLoc = MarkedLocation[playerId].y;
         writer.Write(yLoc);
-        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader)
     {

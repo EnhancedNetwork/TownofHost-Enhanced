@@ -173,7 +173,7 @@ public static class SpeedRun
                 {
                     writer.Write(false);
                 }
-                RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
 
             return;
@@ -201,7 +201,7 @@ public static class SpeedRun
                     writer.Write(false);
                 }
             }
-            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
         }
     }
 
