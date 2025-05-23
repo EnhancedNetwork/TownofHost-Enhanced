@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
@@ -564,7 +565,6 @@ internal class StartGameHostPatch
 
     private static void SetRoleSelf()
     {
-        var sender = CustomRpcSender.Create("SetRoleSelf Sender", SendOption.Reliable);
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             RoleTypes roleType;
@@ -578,10 +578,8 @@ internal class StartGameHostPatch
                 roleType = RoleTypes.CrewmateGhost;
             }
 
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, pc.OwnerId);
-            writer.Write((ushort)roleType);
-            writer.Write(true);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var message = new RpcSetRoleMessage(pc.NetId, roleType, true);
+            RpcUtils.LateSpecificSendMessage(message, pc.GetClientId());
         }
     }
 

@@ -30,6 +30,9 @@ class OnGameJoinedPatch
         if (!DebugModeManager.AmDebugger && Main.VersionCheat.Value)
             Main.VersionCheat.Value = false;
 
+        RpcUtils.queuedReliableMessage.Clear();
+        RpcUtils.queuedUnreliableMessage.Clear();
+
         ChatUpdatePatch.DoBlockChat = false;
         Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
         GameStates.InGame = false;
