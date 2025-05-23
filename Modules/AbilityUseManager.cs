@@ -1,5 +1,6 @@
-﻿using Hazel;
+using Hazel;
 using System;
+using TOHE.Modules.Rpc;
 
 namespace TOHE.Modules;
 

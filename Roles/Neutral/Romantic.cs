@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;

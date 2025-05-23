@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 
 namespace TOHE.Roles.Crewmate;

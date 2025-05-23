@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System;
 using System.Text;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;

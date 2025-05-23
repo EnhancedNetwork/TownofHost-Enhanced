@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE.Roles.Impostor;

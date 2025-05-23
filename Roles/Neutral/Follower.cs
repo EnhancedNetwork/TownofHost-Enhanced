@@ -2,6 +2,7 @@ using Hazel;
 using Il2CppSystem;
 using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;

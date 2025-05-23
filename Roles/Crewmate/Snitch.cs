@@ -1,5 +1,6 @@
 using Hazel;
 using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;

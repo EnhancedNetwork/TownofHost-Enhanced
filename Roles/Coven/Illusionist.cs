@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;

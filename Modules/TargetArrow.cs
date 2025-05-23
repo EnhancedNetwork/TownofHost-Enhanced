@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE;

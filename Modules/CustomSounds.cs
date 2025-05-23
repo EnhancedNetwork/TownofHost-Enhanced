@@ -2,6 +2,7 @@ using Hazel;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using TOHE.Modules.Rpc;
 
 namespace TOHE.Modules;
 
