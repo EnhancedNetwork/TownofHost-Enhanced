@@ -90,7 +90,7 @@ internal class HexMaster : CovenManager
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
+            var writer = MessageWriter.Get(SendOption.Reliable);
             writer.WriteNetObject(GetPlayerById(hexId));
             writer.Write(newHex);
             writer.Write(oldHex);
