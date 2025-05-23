@@ -108,8 +108,7 @@ internal class PlagueDoctor : RoleBase
     }
     public void SendRPC(byte targetId, float rate)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(targetId);
         writer.Write(rate);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

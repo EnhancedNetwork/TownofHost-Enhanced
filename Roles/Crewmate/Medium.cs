@@ -46,8 +46,7 @@ internal class Medium : RoleBase
     }
     private void SendRPC(byte playerId, byte targetId = 0xff)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         writer.Write(targetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

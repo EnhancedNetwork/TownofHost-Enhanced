@@ -56,8 +56,7 @@ internal class SoulCollector : RoleBase
 
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(TargetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

@@ -125,8 +125,7 @@ internal class Kamikaze : RoleBase
 
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.WritePacked(KamikazedList.Count);
         foreach (var playerId in KamikazedList)
         {

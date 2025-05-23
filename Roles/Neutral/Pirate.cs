@@ -80,8 +80,7 @@ internal class Pirate : RoleBase
 
     private void SendRPC(byte target = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(target);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

@@ -63,8 +63,7 @@ internal class Altruist : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(IsRevivingMode);
         writer.Write(RevivedPlayerId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

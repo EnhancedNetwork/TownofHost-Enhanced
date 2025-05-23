@@ -199,8 +199,7 @@ internal class Solsticer : RoleBase
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); //SyncSolsticerNotify
+        var writer = MessageWriter.Get(SendOption.Reliable); //SyncSolsticerNotify
         var taskState = Utils.GetPlayerById(playerid).GetPlayerTaskState();
         if (taskState != null)
         {

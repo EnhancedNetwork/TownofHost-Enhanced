@@ -66,8 +66,7 @@ internal class Huntsman : RoleBase
 
     public void SendRPC(bool isSetTarget, byte targetId = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(isSetTarget);
         if (isSetTarget)
         {

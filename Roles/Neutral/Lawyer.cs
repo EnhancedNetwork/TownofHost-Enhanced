@@ -138,8 +138,7 @@ internal class Lawyer : RoleBase
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(HasImpostorVision.GetBool());
     private void SendRPC(bool SetTarget = false)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(SetTarget);
         writer.Write(TargetId);
         AmongUsClient.Instance.FinishRpcImmediately(writer);

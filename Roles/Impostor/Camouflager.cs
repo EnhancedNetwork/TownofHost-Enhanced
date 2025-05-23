@@ -70,8 +70,7 @@ internal class Camouflager : RoleBase
 
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(AbilityActivated);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

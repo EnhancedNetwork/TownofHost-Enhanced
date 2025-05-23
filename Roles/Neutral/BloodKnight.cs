@@ -44,8 +44,7 @@ internal class BloodKnight : RoleBase
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(TimeStamp.ToString());
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }

@@ -35,8 +35,7 @@ internal class SchrodingersCat : RoleBase
 
     private void SendRPC(byte catID)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(catID);
         writer.Write(teammate[catID]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
