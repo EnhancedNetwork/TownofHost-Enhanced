@@ -51,7 +51,8 @@ internal class Dreamweaver : CovenManager
     }
     private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
     {
-        var writer = MessageWriter.Get(SendOption.Reliable);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
+        writer.WriteNetObject(player);
         writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);

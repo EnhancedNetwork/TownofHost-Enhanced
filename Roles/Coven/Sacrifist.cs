@@ -75,7 +75,7 @@ internal class Sacrifist : CovenManager
     }
     private static void SendRPC(PlayerControl pc)
     {
-        var writer = MessageWriter.Get(SendOption.Reliable);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
         writer.Write(DebuffID);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
