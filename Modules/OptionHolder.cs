@@ -142,6 +142,7 @@ public static class Options
         QuickChatSpam_How2PlayHidenSeek,
         QuickChatSpam_Random20,
         QuickChatSpam_EzHacked,
+        QuickChatSpam_Empty
     };
     [Obfuscation(Exclude = true)]
     public enum ShortAddOnNamesMode
