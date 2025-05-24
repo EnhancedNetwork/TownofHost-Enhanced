@@ -1,4 +1,5 @@
 using AmongUs.Data;
+using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -204,6 +205,24 @@ class ExileControllerWrapUpPatch
                 {
                     Utils.NotifyRoles();
                 }
+
+                _ = new LateTask(() =>
+                {
+                    foreach (var player in Main.AllAlivePlayerControls)
+                    {
+                        if (player.GetRoleClass() is not DefaultSetup)
+                        {
+                            if (player.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is RoleTypes.Impostor or RoleTypes.Phantom or RoleTypes.Shapeshifter)
+                            {
+                                player.ResetKillCooldown();
+                                if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                                {
+                                    player.SetKillCooldown(Options.ChangeFirstKillCooldown.GetBool() ? Options.FixKillCooldownValue.GetFloat() - 2f : killTimer - 2f);
+                                }
+                            }
+                        }
+                    }
+                }, 1f, $"Fix Kill Cooldown Task after meeting");
 
                 Main.LastMeetingEnded = Utils.TimeStamp;
             }, 1f, "AfterMeetingDeathPlayers Task");
