@@ -366,7 +366,6 @@ static class ExtendedPlayerControl
         {
             Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         }
-        HudManagerUpdatePatch.LastSetNameDesyncCount++;
 
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for All", "RpcSetNameEx");
         player.RpcSetName(name);
@@ -374,6 +373,7 @@ static class ExtendedPlayerControl
 
     public static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl seer = null, bool force = false)
     {
+        // Logger.Info($"Call:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
         //player: player whose name needs to be changed
         //seer: player who can see name changes
         if (player == null || name == null || !AmongUsClient.Instance.AmHost) return;
@@ -381,11 +381,10 @@ static class ExtendedPlayerControl
 
         if (!force && Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name)
         {
-            Logger.Info($"Cancel:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
+            // Logger.Info($"Cancel:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
             return;
         }
         Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
-        HudManagerUpdatePatch.LastSetNameDesyncCount++;
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
         if (seer == null || player == null) return;

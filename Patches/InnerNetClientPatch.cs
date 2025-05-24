@@ -167,6 +167,7 @@ internal class StartGameHostPatch
     }
     public static void Postfix(AmongUsClient __instance)
     {
+        Logger.Info("StartGameHostPatch: Postfix called", "StartGameHostPatch");
         if (ShipStatus.Instance != null)
             isStartingAsHost = false;
     }

@@ -27,7 +27,7 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         CriticalErrorManager.Initialize();
 
-        Logger.Msg("Is Started", "Initialization");
+        Logger.Info("CoStartGame Is Started", "Initialization");
 
         try
         {

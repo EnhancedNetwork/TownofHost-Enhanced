@@ -1548,15 +1548,18 @@ class FixedUpdateInNormalGamePatch
         }
     }
 }
-[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Start))]
+[HarmonyPatch(typeof(PlayerControl._Start_d__82), nameof(PlayerControl._Start_d__82.MoveNext))]
 class PlayerStartPatch
 {
-    public static void Postfix(PlayerControl __instance)
+    public static void Postfix(PlayerControl._Start_d__82 __instance, ref bool __result)
     {
+        if (__result) return;
+        var instance = __instance.__4__this;
+
         if (GameStates.IsHideNSeek) return;
 
-        var roleText = UnityEngine.Object.Instantiate(__instance.cosmetics.nameText);
-        roleText.transform.SetParent(__instance.cosmetics.nameText.transform);
+        var roleText = UnityEngine.Object.Instantiate(instance.cosmetics.nameText);
+        roleText.transform.SetParent(instance.cosmetics.nameText.transform);
         roleText.fontMaterial.SetFloat("_StencilComp", 7f);
         roleText.fontMaterial.SetFloat("_Stencil", 2f);
         roleText.transform.localPosition = new Vector3(0f, 0.2f, 0f);
@@ -1580,8 +1583,6 @@ class CoEnterVentPatch
         {
             return true;
         }
-
-        
 
         if (KillTimerManager.AllKillTimers.TryGetValue(__instance.myPlayer.PlayerId, out var timer))
         {
@@ -1643,11 +1644,9 @@ class CoEnterVentPatch
             }
             __instance.myPlayer.RpcSetVentInteraction();
         }
-        return true;
-    }
-    public static void Postfix()
-    {
+
         _ = new LateTask(() => VentSystemDeterioratePatch.ForceUpadate = false, 1f, "Set Force Upadate As False", shoudLog: false);
+        return true;
     }
 }
 // Player entered in vent
@@ -1674,15 +1673,19 @@ class EnterVentPatch
         }
     }
 }
-[HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.CoExitVent))]
+[HarmonyPatch(typeof(PlayerPhysics._CoExitVent_d__48), nameof(PlayerPhysics._CoExitVent_d__48.MoveNext))]
 class CoExitVentPatch
 {
-    public static void Postfix(PlayerPhysics __instance, [HarmonyArgument(0)] int id)
+    public static void Postfix(PlayerPhysics._CoExitVent_d__48 __instance, ref bool __result)
     {
-        if (GameStates.IsHideNSeek) return;
-        Logger.Info($" {__instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoExitVent");
+        if (__result) return; // false is end of co
 
-        var player = __instance.myPlayer;
+        var instance = __instance.__4__this;
+        var id = __instance.id;
+        if (GameStates.IsHideNSeek) return;
+        Logger.Info($" {instance.myPlayer.GetNameWithRole().RemoveHtmlTags()}, Vent ID: {id}", "CoExitVent");
+
+        var player = instance.myPlayer;
         if (Options.CurrentGameMode == CustomGameMode.FFA && FFAManager.FFA_DisableVentingWhenKCDIsUp.GetBool())
         {
             FFAManager.CoExitVent(player);
@@ -2121,6 +2124,8 @@ class PlayerControlLocalSetRolePatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] RoleTypes role)
     {
+        Logger.Info($"CoSetRole: {role} for {__instance.GetRealName()}", "PlayerControl.CoSetRole");
+
         if (!AmongUsClient.Instance.AmHost && GameStates.IsNormalGame && !GameStates.IsModHost)
         {
             var modRole = role switch

@@ -1777,8 +1777,13 @@ public static class Utils
     private static readonly StringBuilder TargetMark = new(20);
     public static async void NotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return;
-        if (GameStates.IsMeeting)
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls.Length < 1 || SetUpRoleTextPatch.IsInIntro)
+        { 
+            // Logger.Info(!AmongUsClient.Instance.AmHost + " " + GameStates.IsHideNSeek + " " + (Main.AllPlayerControls.Length < 1) + " " + SetUpRoleTextPatch.IsInIntro, "NotifyRoles");
+            return; 
+        }
+
+        if (MeetingHud.Instance)
         {
             // When the meeting window is active and game is not ended
             if (!GameEndCheckerForNormal.GameIsEnded) return;
@@ -1799,7 +1804,7 @@ public static class Utils
     }
     public static Task DoNotifyRoles(PlayerControl SpecifySeer = null, PlayerControl SpecifyTarget = null, bool isForMeeting = false, bool NoCache = false, bool ForceLoop = true, bool CamouflageIsForMeeting = false, bool MushroomMixupIsActive = false)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls == null || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsHideNSeek || Main.AllPlayerControls.Length < 1 || SetUpRoleTextPatch.IsInIntro) return Task.CompletedTask;
         if (MeetingHud.Instance)
         {
             // When the meeting window is active and game is not ended
@@ -1812,9 +1817,6 @@ public static class Utils
         }
 
         //var logger = Logger.Handler("DoNotifyRoles");
-
-        HudManagerUpdatePatch.NowCallNotifyRolesCount++;
-        HudManagerUpdatePatch.LastSetNameDesyncCount = 0;
 
         PlayerControl[] seerList = SpecifySeer != null
             ? ([SpecifySeer])
