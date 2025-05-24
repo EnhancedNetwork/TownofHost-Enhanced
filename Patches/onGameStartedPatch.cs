@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using InnerNet;
@@ -6,6 +7,7 @@ using System;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
@@ -25,7 +27,7 @@ internal class ChangeRoleSettings
         Main.OverrideWelcomeMsg = "";
         CriticalErrorManager.Initialize();
 
-        Logger.Msg("Is Started", "Initialization");
+        Logger.Info("CoStartGame Is Started", "Initialization");
 
         try
         {
@@ -175,8 +177,6 @@ internal class ChangeRoleSettings
                     var pair = (target.PlayerId, pc.PlayerId);
                     Main.LastNotifyNames[pair] = currentName;
                 }
-
-                Main.LowLoadUpdateName[pc.PlayerId] = true;
 
                 Main.PlayerStates[pc.PlayerId] = new(pc.PlayerId)
                 {
@@ -475,20 +475,19 @@ internal class StartGameHostPatch
                 Logger.Warn($"Error after addons assign - error: {error}", "AddonAssign");
             }
 
-            var setCustomRoleSender = CustomRpcSender.Create("SetCustomRole Release Sender", SendOption.Reliable);
-
             // Sync for non-host modded clients by RPC
             foreach (var pair in Main.PlayerStates)
             {
-                // Set roles
-                setCustomRoleSender.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+                var message = new RpcSetCustomRole(PlayerControl.LocalPlayer.NetId, pair.Key, pair.Value.MainRole);
+                RpcUtils.LateBroadcastReliableMessage(message);
 
                 // Set Add-ons
                 foreach (var subRole in pair.Value.SubRoles.ToArray())
-                    setCustomRoleSender.RpcSetCustomRole(pair.Key, subRole);
+                {
+                    var message2 = new RpcSetCustomRole(PlayerControl.LocalPlayer.NetId, pair.Key, subRole);
+                    RpcUtils.LateBroadcastReliableMessage(message2);
+                }
             }
-
-            setCustomRoleSender.SendMessage();
 
             GhostRoleAssign.Add();
 
@@ -564,7 +563,6 @@ internal class StartGameHostPatch
 
     private static void SetRoleSelf()
     {
-        var sender = CustomRpcSender.Create("SetRoleSelf Sender", SendOption.Reliable);
         foreach (var pc in PlayerControl.AllPlayerControls.GetFastEnumerator())
         {
             RoleTypes roleType;
@@ -578,10 +576,8 @@ internal class StartGameHostPatch
                 roleType = RoleTypes.CrewmateGhost;
             }
 
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, pc.OwnerId);
-            writer.Write((ushort)roleType);
-            writer.Write(true);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var message = new RpcSetRoleMessage(pc.NetId, roleType, true);
+            RpcUtils.LateSpecificSendMessage(message, pc.GetClientId());
         }
     }
 

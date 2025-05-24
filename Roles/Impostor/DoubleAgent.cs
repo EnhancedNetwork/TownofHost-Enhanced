@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
@@ -296,12 +297,11 @@ internal class DoubleAgent : RoleBase
     // Send bomb timer to Modded Clients when active.
     private void SendRPC(bool addData = false, byte targetId = byte.MaxValue)
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(addData);
         writer.Write(targetId);
         writer.WritePacked((int)CurrentBombedTime);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     // Receive and set bomb timer from Host when active.

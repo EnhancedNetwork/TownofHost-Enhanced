@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
 using System.Text;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -450,8 +451,7 @@ public class Runner : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(BasisChanged);
         writer.Write(ProtectState.Item1);
         writer.Write(ProtectState.Item2);
@@ -459,7 +459,7 @@ public class Runner : RoleBase
         writer.Write(SpeedBoostState.Item2);
         writer.Write((byte)LastTaskCount.Item1);
         writer.Write((byte)LastTaskCount.Item2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)

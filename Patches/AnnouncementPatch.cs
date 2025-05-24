@@ -60,6 +60,7 @@ public class ModNews
     {
         static IEnumerator FetchBlacklist()
         {
+            Logger.Info("Fetching Mod News from GitHub", "ModNews");
             if (downloaded)
             {
                 yield break;
