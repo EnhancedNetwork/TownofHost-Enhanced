@@ -1,6 +1,7 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -74,7 +75,6 @@ internal class Witch : RoleBase
             writer.Write(witchId);
             writer.Write(SpellMode[witchId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-
         }
     }
     public static void ReceiveRPC(MessageReader reader, bool doSpell)

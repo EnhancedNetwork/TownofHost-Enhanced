@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using static TOHE.Options;
@@ -44,12 +45,11 @@ internal class Shroud : RoleBase
     }
     private void SendRPC(byte shroudId, byte targetId, byte typeId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); // syncShroud
+        var writer = MessageWriter.Get(SendOption.Reliable);// syncShroud
         writer.Write(typeId);
         writer.Write(shroudId);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

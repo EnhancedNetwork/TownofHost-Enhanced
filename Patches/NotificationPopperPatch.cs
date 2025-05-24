@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE.Patches;

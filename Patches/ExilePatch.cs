@@ -1,4 +1,5 @@
 using AmongUs.Data;
+using AmongUs.GameOptions;
 using System;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
@@ -45,26 +46,27 @@ class ExileControllerWrapUpPatch
         }
     }
 
-    [HarmonyPatch(typeof(AirshipExileController), nameof(AirshipExileController.WrapUpAndSpawn))]
+    [HarmonyPatch(typeof(AirshipExileController._WrapUpAndSpawn_d__11), nameof(AirshipExileController._WrapUpAndSpawn_d__11.MoveNext))]
     class AirshipExileControllerPatch
     {
-        public static void Prefix()
+        public static void Postfix(AirshipExileController._WrapUpAndSpawn_d__11 __instance, ref bool __result)
         {
-            CheckAndDoRandomSpawn();
-        }
-        public static void Postfix(AirshipExileController __instance)
-        {
-            try
+            var instance = __instance.__4__this;
+            if (!__result)
             {
-                WrapUpPostfix(__instance.initData.networkedPlayer);
-            }
-            catch (Exception error)
-            {
-                Logger.Error($"Error after exiled: {error}", "WrapUpAndSpawn");
-            }
-            finally
-            {
-                WrapUpFinalizer(__instance.initData.networkedPlayer);
+                Logger.Info("AirshipExileController WrapUpAndSpawn Postfix", "AirshipExileControllerPatch");
+                try
+                {
+                    WrapUpPostfix(instance.initData.networkedPlayer);
+                }
+                catch (Exception error)
+                {
+                    Logger.Error($"Error after exiled: {error}", "WrapUpAndSpawn");
+                }
+                finally
+                {
+                    WrapUpFinalizer(instance.initData.networkedPlayer);
+                }
             }
         }
     }
@@ -203,6 +205,24 @@ class ExileControllerWrapUpPatch
                 {
                     Utils.NotifyRoles();
                 }
+
+                _ = new LateTask(() =>
+                {
+                    foreach (var player in Main.AllAlivePlayerControls)
+                    {
+                        if (player.GetRoleClass() is not DefaultSetup)
+                        {
+                            if (player.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is RoleTypes.Impostor or RoleTypes.Phantom or RoleTypes.Shapeshifter)
+                            {
+                                player.ResetKillCooldown();
+                                if (Main.AllPlayerKillCooldown.TryGetValue(player.PlayerId, out var killTimer) && (killTimer - 2f) > 0f)
+                                {
+                                    player.SetKillCooldown(Options.ChangeFirstKillCooldown.GetBool() ? Options.FixKillCooldownValue.GetFloat() - 2f : killTimer - 2f);
+                                }
+                            }
+                        }
+                    }
+                }, 1f, $"Fix Kill Cooldown Task after meeting");
 
                 Main.LastMeetingEnded = Utils.TimeStamp;
             }, 1f, "AfterMeetingDeathPlayers Task");

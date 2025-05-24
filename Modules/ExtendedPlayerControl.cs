@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
@@ -6,6 +7,7 @@ using InnerNet;
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
@@ -50,10 +52,8 @@ static class ExtendedPlayerControl
         }
         if (AmongUsClient.Instance.AmHost)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, SendOption.Reliable, -1);
-            writer.Write(player.PlayerId);
-            writer.WritePacked((int)role);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var message = new RpcSetCustomRole(PlayerControl.LocalPlayer.NetId, player.PlayerId, role);
+            RpcUtils.LateBroadcastReliableMessage(message);
         }
 
     }
@@ -120,10 +120,9 @@ static class ExtendedPlayerControl
             player.SetRole(role, true);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, RpcSendOption, clientId);
-        writer.Write((ushort)role);
-        writer.Write(true);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        var message = new RpcSetRoleMessage(player.NetId, role, true);
+        RpcUtils.LateSpecificSendMessage(message, clientId, SendOption.Reliable);
     }
 
     public static (RoleTypes RoleType, CustomRoles CustomRole) GetRoleMap(this PlayerControl player, byte targetId = byte.MaxValue) => Utils.GetRoleMap(player.PlayerId, targetId);
@@ -173,9 +172,8 @@ static class ExtendedPlayerControl
 
         var playerClientId = player.GetClientId();
         var newRoleType = newCustomRole.GetRoleTypes();
-
-        var sender = CustomRpcSender.Create("Change Role Basis." + playerClientId, SendOption.Reliable).StartMessage(playerClientId);
-
+        
+        // sender => player clientid
         if (newCustomRole.IsDesyncRole())
         {
             foreach (var target in Main.AllPlayerControls)
@@ -188,20 +186,16 @@ static class ExtendedPlayerControl
                         continue;
                     }
 
-                    sender.StartRpc(player.NetId, (byte)RpcCalls.SetRole);
-                    sender.Write((ushort)newRoleType);
-                    sender.Write(true);
-                    sender.EndRpc();
+                    var message = new RpcSetRoleMessage(player.NetId, newRoleType, true);
+                    RpcUtils.LateSpecificSendMessage(message, playerClientId, SendOption.Reliable);
 
                     continue;
                 }
 
                 if (target.IsAlive() || !target.Data.IsDead && !target.Data.Disconnected)
                 {
-                    sender.StartRpc(target.NetId, (byte)RpcCalls.SetRole);
-                    sender.Write((ushort)(target.HasImpKillButton() ? RoleTypes.Scientist : (target.GetCustomRole().GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Crewmate)));
-                    sender.Write(true);
-                    sender.EndRpc();
+                    var message = new RpcSetRoleMessage(target.NetId, (target.HasImpKillButton() ? RoleTypes.Scientist : (target.GetCustomRole().GetVNRole() is CustomRoles.Noisemaker ? RoleTypes.Noisemaker : RoleTypes.Crewmate)), true);
+                    RpcUtils.LateSpecificSendMessage(message, playerClientId, SendOption.Reliable);
 
                     if (target.AmOwner)
                     {
@@ -209,10 +203,8 @@ static class ExtendedPlayerControl
                         continue;
                     }
 
-                    var targetsender = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, target.GetClientId());
-                    targetsender.Write((ushort)RoleTypes.Scientist);
-                    targetsender.Write(true);
-                    AmongUsClient.Instance.FinishRpcImmediately(targetsender);
+                    var message2 = new RpcSetRoleMessage(player.NetId, RoleTypes.Scientist, true);
+                    RpcUtils.LateSpecificSendMessage(message2, target.GetClientId(), SendOption.Reliable);
                 }
             }
         }
@@ -228,10 +220,8 @@ static class ExtendedPlayerControl
                         continue;
                     }
 
-                    sender.StartRpc(player.NetId, (byte)RpcCalls.SetRole);
-                    sender.Write((ushort)newRoleType);
-                    sender.Write(true);
-                    sender.EndRpc();
+                    var message = new RpcSetRoleMessage(player.NetId, newRoleType, true);
+                    RpcUtils.LateSpecificSendMessage(message, playerClientId, SendOption.Reliable);
                     continue;
                 }
 
@@ -239,10 +229,8 @@ static class ExtendedPlayerControl
                 {
                     var targetRole = target.GetCustomRole();
 
-                    sender.StartRpc(target.NetId, (byte)RpcCalls.SetRole);
-                    sender.Write((ushort)(targetRole.IsDesyncRole() ? RoleTypes.Scientist : targetRole.GetRoleTypes()));
-                    sender.Write(true);
-                    sender.EndRpc();
+                    var message = new RpcSetRoleMessage(target.NetId, targetRole.IsDesyncRole() ? RoleTypes.Scientist : targetRole.GetRoleTypes(), true);
+                    RpcUtils.LateSpecificSendMessage(message, playerClientId, SendOption.Reliable);
 
                     if (target.AmOwner)
                     {
@@ -250,15 +238,11 @@ static class ExtendedPlayerControl
                         continue;
                     }
 
-                    var targetsender = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetRole, SendOption.Reliable, target.GetClientId());
-                    targetsender.Write((ushort)newRoleType);
-                    targetsender.Write(true);
-                    AmongUsClient.Instance.FinishRpcImmediately(targetsender);
+                    var message2 = new RpcSetRoleMessage(player.NetId, newRoleType, true);
+                    RpcUtils.LateSpecificSendMessage(message2, target.GetClientId(), SendOption.Reliable);
                 }
             }
         }
-
-        sender.SendMessage();
         Logger.Info($"{player.GetNameWithRole()}'s role basis was changed to {newRoleType} ({newCustomRole}) newRoleIsDesync: {newCustomRole.IsDesyncRole()}", "RpcChangeRoleBasis");
     }
 
@@ -382,7 +366,6 @@ static class ExtendedPlayerControl
         {
             Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
         }
-        HudManagerUpdatePatch.LastSetNameDesyncCount++;
 
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for All", "RpcSetNameEx");
         player.RpcSetName(name);
@@ -390,6 +373,7 @@ static class ExtendedPlayerControl
 
     public static void RpcSetNamePrivate(this PlayerControl player, string name, PlayerControl seer = null, bool force = false)
     {
+        // Logger.Info($"Call:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
         //player: player whose name needs to be changed
         //seer: player who can see name changes
         if (player == null || name == null || !AmongUsClient.Instance.AmHost) return;
@@ -397,11 +381,10 @@ static class ExtendedPlayerControl
 
         if (!force && Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] == name)
         {
-            //Logger.info($"Cancel:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
+            // Logger.Info($"Cancel:{player.name}:{name} for {seer.name}", "RpcSetNamePrivate");
             return;
         }
         Main.LastNotifyNames[(player.PlayerId, seer.PlayerId)] = name;
-        HudManagerUpdatePatch.LastSetNameDesyncCount++;
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for {seer.GetNameWithRole().RemoveHtmlTags()}", "RpcSetNamePrivate");
 
         if (seer == null || player == null) return;
@@ -412,11 +395,10 @@ static class ExtendedPlayerControl
         var clientId = seer.GetClientId();
         if (clientId == -1) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, RpcSendOption, clientId);
-        writer.Write(seer.Data.NetId);
-        writer.Write(name);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var message = new RpcSetNameMessage(player.NetId, player.Data.NetId, name);
+        RpcUtils.LateSpecificSendMessage(message, clientId, SendOption.Reliable);
     }
+
     public static void RpcEnterVentDesync(this PlayerPhysics physics, int ventId, PlayerControl seer)
     {
         if (physics == null) return;
@@ -457,9 +439,9 @@ static class ExtendedPlayerControl
             physics.BootFromVent(ventId);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(physics.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, seer.GetClientId());
-        writer.WritePacked(ventId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        var message = new RpcBootFromVentMessage(physics.NetId, ventId);
+        RpcUtils.LateSpecificSendMessage(message, clientId, SendOption.Reliable);
     }
     /// <summary>
     /// ONLY to be used when killer surely may kill the target, please check with killer.RpcCheckAndMurder(target, check: true) for indirect kill.
@@ -505,15 +487,24 @@ static class ExtendedPlayerControl
         // Other Clients
         else
         {
-            var sender = CustomRpcSender.Create("GuardAndKill Sender", SendOption.Reliable, isUnsafe: true);
-            sender.WriteSettingsInSender(killer);
+            var writer = MessageWriter.Get(SendOption.Reliable);
+            writer.StartMessage(6);
+            writer.Write(AmongUsClient.Instance.GameId);
+            writer.WritePacked(killer.OwnerId);
 
-            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.MurderPlayer, killer.OwnerId);
-            sender.WriteNetObject(target);
-            sender.Write((int)MurderResultFlags.FailedProtected);
-            sender.EndRpc();
+            writer.WriteSettingsInWriter(killer);
 
-            sender.SendMessage();
+            writer.StartMessage(2);
+            writer.WritePacked(killer.NetId);
+            writer.Write((byte)RpcCalls.MurderPlayer);
+            writer.WritePacked(target.NetId);
+            writer.Write((int)MurderResultFlags.FailedProtected);
+            writer.EndMessage();
+
+            writer.EndMessage();
+
+            AmongUsClient.Instance.SendOrDisconnect(writer);
+            writer.Recycle();
         }
 
         if (!fromSetKCD) killer.SetKillTimer(half: true);
@@ -802,6 +793,7 @@ static class ExtendedPlayerControl
             player.SetRoleInvisibility(false, shouldAnimate, true);
             return;
         }
+
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, RpcSendOption, seer.GetClientId());
         messageWriter.Write(shouldAnimate);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
@@ -1080,7 +1072,7 @@ static class ExtendedPlayerControl
         PlayerGameOptionsSender.SetDirty(player.PlayerId);
         GameOptionsSender.SendAllGameOptions();
     }
-    public static void WriteSettingsInSender(this CustomRpcSender sender, PlayerControl player)
+    public static void WriteSettingsInWriter(this MessageWriter writer, PlayerControl player)
     {
         var optionsender = PlayerGameOptionsSender.AllSenders.OfType<PlayerGameOptionsSender>().FirstOrDefault(x => x.player.PlayerId == player.PlayerId);
         if (optionsender == null) return;
@@ -1090,15 +1082,12 @@ static class ExtendedPlayerControl
         var logicOptions = GameManager.Instance.LogicOptions;
         var id = GameManager.Instance.LogicComponents.IndexOf(logicOptions);
 
-        sender.StartMessage(player.OwnerId);
-        sender.WriteMessageType(1);
-        sender.WritePacked(GameManager.Instance.NetId);
-        sender.WriteMessageType((byte)id); // LogicOptions is always 4 for normal, 5 for hns
-        sender.stream.WriteBytesAndSize(logicOptions.gameOptionsFactory.ToBytes(options, false));
-        sender.WriteEndMessage();
-        sender.WriteEndMessage();
-        sender.EndMessage();
-
+        writer.StartMessage(1);
+        writer.WritePacked(GameManager.Instance.NetId);
+        writer.StartMessage((byte)id); // LogicOptions is always 4 for normal, 5 for hns
+        writer.WriteBytesAndSize(logicOptions.gameOptionsFactory.ToBytes(options, false));
+        writer.EndMessage();
+        writer.EndMessage();
     }
     public static TaskState GetPlayerTaskState(this PlayerControl player)
     {

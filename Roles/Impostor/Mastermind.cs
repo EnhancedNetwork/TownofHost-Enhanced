@@ -1,3 +1,4 @@
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;

@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
@@ -65,8 +66,7 @@ internal class Pelican : RoleBase
     }
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); // SetPelicanEatenNum
+        var writer = MessageWriter.Get(SendOption.Reliable); // SetPelicanEatenNum
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {
@@ -74,7 +74,7 @@ internal class Pelican : RoleBase
             foreach (var el in eatenList[playerId])
                 writer.Write(el);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {

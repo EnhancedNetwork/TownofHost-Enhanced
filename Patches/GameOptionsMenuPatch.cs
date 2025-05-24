@@ -427,14 +427,18 @@ public static class ToggleOptionPatch
         }
         return true;
     }
-    [HarmonyPatch(nameof(ToggleOption.UpdateValue)), HarmonyPrefix]
+
+    // For unknown reason UpdateValue patch is not called. Have to patch toggle directly
+    [HarmonyPatch(nameof(ToggleOption.Toggle)), HarmonyPrefix]
     private static bool UpdateValuePrefix(ToggleOption __instance)
     {
         if (ModGameOptionsMenu.OptionList.TryGetValue(__instance, out var index))
         {
+            __instance.CheckMark.enabled = !__instance.CheckMark.enabled;
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
             item.SetValue(__instance.GetBool() ? 1 : 0);
+            __instance.OnValueChanged.Invoke(__instance);
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }

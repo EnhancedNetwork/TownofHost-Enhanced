@@ -1,6 +1,7 @@
 using Hazel;
 using System;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;

@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;

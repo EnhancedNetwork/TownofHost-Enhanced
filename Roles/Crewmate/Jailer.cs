@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;

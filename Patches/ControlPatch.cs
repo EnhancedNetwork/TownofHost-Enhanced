@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;

@@ -172,57 +172,7 @@ namespace TOHE.Modules
                 playerControl.notRealPlayer = true;
                 playerControl.NetTransform.SnapTo(new(-200, -200));
 
-                MessageWriter msg = MessageWriter.Get();
-                msg.StartMessage(5);
-                msg.Write(AmongUsClient.Instance.GameId);
-                AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
-                msg.EndMessage();
-
-                /*
-                // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
-                // so it will disable checks regarding it
-                if (GameStates.IsVanillaServer)
-                {
-                    msg.StartMessage(6);
-                    msg.Write(AmongUsClient.Instance.GameId);
-                    msg.WritePacked(int.MaxValue);
-
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(playerControl.NetId);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(playerControl.NetTransform.NetId);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-
-                    msg.StartMessage(4);
-                    msg.WritePacked(2U);
-                    msg.WritePacked(-2);
-                    msg.Write((byte)SpawnFlags.None);
-                    msg.WritePacked(1);
-                    msg.WritePacked(playerControl.MyPhysics.NetId);
-                    msg.StartMessage(1);
-                    msg.EndMessage();
-                    msg.EndMessage();
-
-                    msg.EndMessage();
-                }
-                */
-
-                AmongUsClient.Instance.SendOrDisconnect(msg);
-                msg.Recycle();
+                AmongUsClient.Instance.Spawn(playerControl, -2, SpawnFlags.None);
 
                 if (PlayerControl.AllPlayerControls.Contains(playerControl))
                     PlayerControl.AllPlayerControls.Remove(playerControl);
@@ -355,57 +305,8 @@ namespace TOHE.Modules
             playerControl.notRealPlayer = true;
             playerControl.NetTransform.SnapTo(new(-200, -200));
 
-            MessageWriter msg = MessageWriter.Get(SendOption.Reliable);
-            msg.StartMessage(5);
-            msg.Write(AmongUsClient.Instance.GameId);
-            AmongUsClient.Instance.WriteSpawnMessage(playerControl, -2, SpawnFlags.None, msg);
-            msg.EndMessage();
+            AmongUsClient.Instance.Spawn(playerControl, -2, SpawnFlags.None);
 
-            /*
-            // This makes innersloth dog shit server think PlayerControl and PlayerNetTransform is a LobbyBehavoir,
-            // so it will disable checks regarding it
-            if (GameStates.IsVanillaServer)
-            {
-                msg.StartMessage(6);
-                msg.Write(AmongUsClient.Instance.GameId);
-                msg.WritePacked(int.MaxValue);
-
-                msg.StartMessage(4);
-                msg.WritePacked(2U);
-                msg.WritePacked(-2);
-                msg.Write((byte)SpawnFlags.None);
-                msg.WritePacked(1);
-                msg.WritePacked(playerControl.NetId);
-                msg.StartMessage(1);
-                msg.EndMessage();
-                msg.EndMessage();
-
-                msg.StartMessage(4);
-                msg.WritePacked(2U);
-                msg.WritePacked(-2);
-                msg.Write((byte)SpawnFlags.None);
-                msg.WritePacked(1);
-                msg.WritePacked(playerControl.NetTransform.NetId);
-                msg.StartMessage(1);
-                msg.EndMessage();
-                msg.EndMessage();
-
-                msg.StartMessage(4);
-                msg.WritePacked(2U);
-                msg.WritePacked(-2);
-                msg.Write((byte)SpawnFlags.None);
-                msg.WritePacked(1);
-                msg.WritePacked(playerControl.MyPhysics.NetId);
-                msg.StartMessage(1);
-                msg.EndMessage();
-                msg.EndMessage();
-
-                msg.EndMessage();
-            }
-            */
-
-            AmongUsClient.Instance.SendOrDisconnect(msg);
-            msg.Recycle();
             if (PlayerControl.AllPlayerControls.Contains(playerControl)) PlayerControl.AllPlayerControls.Remove(playerControl);
 
             _ = new LateTask(() =>

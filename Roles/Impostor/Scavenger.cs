@@ -1,3 +1,5 @@
+using TOHE.Modules.Rpc;
+
 namespace TOHE.Roles.Impostor;
 
 internal class Scavenger : RoleBase

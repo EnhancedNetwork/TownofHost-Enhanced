@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
