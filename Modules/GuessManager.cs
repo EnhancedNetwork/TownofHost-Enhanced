@@ -120,7 +120,7 @@ public static class GuessManager
             return true;
         }
         if ((pc.Is(Custom_Team.Crewmate) || pc.Is(CustomRoles.Narc)) && !Options.CrewmatesCanGuess.GetBool())
-        { // Don't ask me why this also checks Evil Guesser and Councillor. They can be Narc
+        {
             if (!pc.Is(CustomRoles.NiceGuesser) && !pc.Is(CustomRoles.EvilGuesser) && !pc.Is(CustomRoles.Guesser) && !pc.Is(CustomRoles.Judge) && !pc.Is(CustomRoles.Councillor))
             {
                 pc.ShowInfoMessage(isUI, GetString("GuessNotAllowed"));
