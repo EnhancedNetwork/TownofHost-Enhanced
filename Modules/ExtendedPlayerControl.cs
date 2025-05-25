@@ -284,10 +284,8 @@ static class ExtendedPlayerControl
             return;
         }
         player.Data.DefaultOutfit.PetSequenceId += 10;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetPetStr, SendOption.Reliable, clientId);
-        writer.Write(petId);
-        writer.Write(player.GetNextRpcSequenceId(RpcCalls.SetPetStr));
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var message = new RpcSetPetStrMessage(player.NetId, petId, player.GetNextRpcSequenceId(RpcCalls.SetPetStr));
+        RpcUtils.LateSpecificSendMessage(message, clientId, SendOption.Reliable);
     }
     public static void RpcExile(this PlayerControl player)
     {
@@ -747,10 +745,9 @@ static class ExtendedPlayerControl
             target.SetScanner(IsActive, cnt);
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, seerClientId);
-        messageWriter.Write(IsActive);
-        messageWriter.Write(cnt);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var message = new RpcSetScannerMessage(target.NetId, IsActive, cnt);
+        RpcUtils.LateSpecificSendMessage(message, seerClientId, SendOption.Reliable);
 
         target.scannerCount = cnt;
     }
