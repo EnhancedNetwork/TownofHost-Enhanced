@@ -177,22 +177,6 @@ internal class KickPlayerPatch
 //    }
 //}
 
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
-internal class InnerNetObjectSerializePatch
-{
-    public static void Prefix()
-    {
-        // This code is sometimes called before the lobby has been created
-        try
-        {
-            if (AmongUsClient.Instance.AmHost)
-                GameOptionsSender.SendAllGameOptions();
-        }
-        catch
-        { }
-    }
-}
-
 //[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.SendClientReady))]
 //internal class SendClientReadyPatch
 //{

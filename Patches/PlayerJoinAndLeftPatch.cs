@@ -1,10 +1,12 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using InnerNet;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -27,6 +29,9 @@ class OnGameJoinedPatch
         Main.HostClientId = AmongUsClient.Instance.HostId;
         if (!DebugModeManager.AmDebugger && Main.VersionCheat.Value)
             Main.VersionCheat.Value = false;
+
+        RpcUtils.queuedReliableMessage.Clear();
+        RpcUtils.queuedUnreliableMessage.Clear();
 
         ChatUpdatePatch.DoBlockChat = false;
         Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
@@ -363,10 +368,8 @@ class OnPlayerLeftPatch
             {
                 if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter messageWriter = AmongUsClient.Instance.Streams[1];
-                    messageWriter.StartMessage(5);
-                    messageWriter.WritePacked(netid);
-                    messageWriter.EndMessage();
+                    var message = new DespawnGameDataMessage(netid);
+                    RpcUtils.LateBroadcastReliableMessage(message);
                 }
             }, 2.5f, "Repeat Despawn", false);
         }
@@ -576,7 +579,7 @@ class InnerNetClientSpawnPatch
 
         ClientData client = Utils.GetClientById(ownerId);
 
-        Logger.Msg($"Spawn player data: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
+        Logger.Info($"Spawn player: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
 
         if (client == null || client.Character == null // client is null
             || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color

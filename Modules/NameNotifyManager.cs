@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE;
@@ -30,6 +31,7 @@ public static class NameNotifyManager
             if (Notice.Any()) Notice.Clear();
             return;
         }
+
         if (Notice.ContainsKey(player.PlayerId) && Notice[player.PlayerId].TimeStamp < Utils.GetTimeStamp())
         {
             Notice.Remove(player.PlayerId);

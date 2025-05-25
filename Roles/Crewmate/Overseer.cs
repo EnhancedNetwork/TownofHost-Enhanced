@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using UnityEngine;

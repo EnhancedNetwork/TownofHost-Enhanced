@@ -111,11 +111,23 @@ public static class AntiBlackout
         IsCached = true;
         if (doSend) SendGameData();
     }
+
     private static void RevivePlayersAndSetDummyImp()
     {
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         PlayerControl dummyImp = PlayerControl.LocalPlayer;
+
+        if (ExilePlayerId == PlayerControl.LocalPlayer.PlayerId)
+        {
+            // Dead > Modded > not Impostor/Shapeshifter/Phantom
+            dummyImp = Main.AllPlayerControls
+                .Where(pc => pc.PlayerId != PlayerControl.LocalPlayer.PlayerId)
+                .OrderByDescending(pc => !pc.IsAlive())
+                .ThenByDescending(pc => pc.IsModded())
+                .ThenByDescending(pc => pc.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is not RoleTypes.Impostor and not RoleTypes.Shapeshifter and not RoleTypes.Phantom)
+                .FirstOrDefault() ?? PlayerControl.LocalPlayer;
+        }
 
         var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp", SendOption.Reliable).StartMessage(-1);
 

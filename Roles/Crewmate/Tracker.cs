@@ -67,7 +67,7 @@ internal class Tracker : RoleBase
         writer.Write(operate);
         if (operate == 0) writer.Write(targetId);
         if (operate == 2) writer.Write(AbilityLimit);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public static void ReceiveRPC(MessageReader reader)
     {

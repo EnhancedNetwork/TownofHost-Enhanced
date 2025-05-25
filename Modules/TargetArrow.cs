@@ -1,5 +1,6 @@
 using Hazel;
 using System;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE;
@@ -186,7 +187,7 @@ static class TargetArrow
             }
         }
 
-        if (update && (!seer.IsModded() || (seer.IsHost() && Options.LowLoadDelayUpdateNames.GetBool())))
+        if (update && (!seer.IsModded()))
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
         }
