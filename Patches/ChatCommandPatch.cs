@@ -488,8 +488,8 @@ internal class ChatCommands
                     {
                         case CustomGameMode.Standard:
                             var allAlivePlayers = Main.AllAlivePlayerControls;
-                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                            int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
+                            int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate));
                             int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                             int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
                             int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
@@ -2545,8 +2545,8 @@ internal class ChatCommands
                 {
                     case CustomGameMode.Standard:
                         var allAlivePlayers = Main.AllAlivePlayerControls;
-                        int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                        int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                        int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
+                        int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate));
                         int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
                         int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                         int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
