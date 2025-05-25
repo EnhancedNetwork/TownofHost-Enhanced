@@ -1,6 +1,7 @@
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
+using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Patches;
 
@@ -206,5 +207,17 @@ internal class AuthTimeoutPatch
                 matchmakerToken = string.Empty,
             };
         }
+    }
+}
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.UpdateName))]
+public class NetworkedPlayerInfoPatch
+{
+    // Prevent mark dirty here
+    public static bool Prefix(NetworkedPlayerInfo __instance, string playerName, ClientData client)
+    {
+        __instance.PlayerName = playerName;
+        client.UpdatePlayerName(playerName);
+        return false;
     }
 }

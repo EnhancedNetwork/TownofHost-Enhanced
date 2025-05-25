@@ -856,7 +856,8 @@ class ReportDeadBodyPatch
         AfterReportTasks(__instance, target);
 
         MeetingRoomManager.Instance.AssignSelf(__instance, target);
-        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
+        // Meeting playernames are setuped when meetingHud is spawned.
+        // Must serialize meetinghud after playernames are synced
 
         // Delay Start Meeting to allow other tasks stop and playerinfo finished
         // Other tasks should stop with Main.MeetingIsStarted bool
@@ -865,9 +866,10 @@ class ReportDeadBodyPatch
         {
             if (AmongUsClient.Instance.AmHost)
             {
+                DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(__instance);
                 __instance.RpcStartMeeting(target);
             }
-        }, 0.12f, "StartMeeting");
+        }, 0.15f, "StartMeeting");
         return false;
     }
     public static void AfterReportTasks(PlayerControl player, NetworkedPlayerInfo target, bool force = false)

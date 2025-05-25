@@ -1353,15 +1353,15 @@ static class ExtendedPlayerControl
         SetUpRoleTextPatch.IsInIntro = false;
         ReportDeadBodyPatch.AfterReportTasks(reporter, target, true);
         MeetingRoomManager.Instance.AssignSelf(reporter, target);
-        DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
 
         _ = new LateTask(() =>
         {
             if (AmongUsClient.Instance.AmHost)
             {
+                DestroyableSingleton<HudManager>.Instance.OpenMeetingRoom(reporter);
                 reporter.RpcStartMeeting(target);
             }
-        }, 0.12f, "No Check StartMeeting");
+        }, 0.15f, "No Check StartMeeting");
     }
     public static bool IsHost(this InnerNetObject innerObject) => innerObject.OwnerId == AmongUsClient.Instance.HostId;
     public static bool IsHost(this byte playerId) => playerId.GetPlayer()?.OwnerId == AmongUsClient.Instance.HostId;
