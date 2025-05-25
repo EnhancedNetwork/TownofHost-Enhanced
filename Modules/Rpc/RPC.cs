@@ -800,10 +800,9 @@ internal static class RPC
     {
         if (AmongUsClient.Instance.AmHost)
             PlaySound(PlayerID, sound);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlaySound, SendOption.Reliable, -1);
-        writer.Write(PlayerID);
-        writer.Write((byte)sound);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        var message = new RpcPlaySound(PlayerControl.LocalPlayer.NetId, PlayerID, sound);
+        RpcUtils.LateBroadcastReliableMessage(message);
     }
     public static void SyncAllPlayerNames()
     {
