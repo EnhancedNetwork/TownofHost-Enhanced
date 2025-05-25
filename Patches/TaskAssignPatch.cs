@@ -118,6 +118,7 @@ class RpcSetTasksPatch
      */
 
     public static List<byte> decidedCommonTasks = [];
+    public static List<byte> decidedMedBayPlayer = [];
     public static bool Prefix(NetworkedPlayerInfo __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return false;

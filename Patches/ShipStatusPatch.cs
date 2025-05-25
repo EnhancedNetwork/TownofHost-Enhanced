@@ -271,6 +271,27 @@ class ShipStatusBeginPatch
     public static void Prefix()
     {
         RpcSetTasksPatch.decidedCommonTasks.Clear();
+        RpcSetTasksPatch.decidedMedBayPlayer.Clear();
+
+        if (Options.OverrideMedbayScan_OnVisualOff.GetBool())
+        {
+            var min = Options.OverrideMedbayScan_MinPlayer.GetInt();
+            var max = Options.OverrideMedbayScan_MaxPlayer.GetInt();
+
+            if (min > max)
+            {
+                max = min;
+            }
+
+            var playerIds = Main.AllPlayerControls
+                .Select(pc => pc.PlayerId)
+                .ToList();
+
+            int count = Math.Clamp(IRandom.Instance.Next(min, max + 1), 0, playerIds.Count);
+
+            var selected = playerIds.OrderBy(_ => IRandom.Instance.Next(0, int.MaxValue)).Take(count);
+            RpcSetTasksPatch.decidedMedBayPlayer.AddRange(selected);
+        }
     }
     public static void Postfix()
     {
