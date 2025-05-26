@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System.Text;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
@@ -157,7 +156,13 @@ public static class SpeedRun
         {
             if (Main.PlayerStates.TryGetValue(specificPlayerId, out var state) && state.MainRole == CustomRoles.Runner)
             {
-                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+                if (GetPlayerById(specificPlayerId) is not PlayerControl player)
+                {
+                    Logger.Error($"Failed to find player with ID {specificPlayerId} for SyncSpeedRunStates.", "RpcSyncSpeedRunStates");
+                    return;
+                }
+
+                var writer = MessageWriter.Get(SendOption.Reliable);
                 writer.Write(StartedAt.ToString());
                 writer.Write((byte)1);
                 writer.Write(specificPlayerId);
@@ -173,7 +178,9 @@ public static class SpeedRun
                 {
                     writer.Write(false);
                 }
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                var sender = new RpcSyncSpeedRunStates(PlayerControl.LocalPlayer.NetId, writer);
+                RpcUtils.LateSpecificSendMessage(sender, player.OwnerId);
             }
 
             return;
@@ -201,7 +208,8 @@ public static class SpeedRun
                     writer.Write(false);
                 }
             }
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var sender = new RpcSyncSpeedRunStates(PlayerControl.LocalPlayer.NetId, writer);
+            RpcUtils.LateBroadcastReliableMessage(sender);
         }
     }
 

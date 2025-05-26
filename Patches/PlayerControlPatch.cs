@@ -1,11 +1,11 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
@@ -1860,8 +1860,8 @@ class PlayerControlCheckNamePatch
         {
             if (__instance != null && !__instance.Data.Disconnected && !__instance.IsModded())
             {
-                var version = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, __instance.OwnerId);
-                AmongUsClient.Instance.FinishRpcImmediately(version);
+                var message = new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId);
+                RpcUtils.LateSpecificSendMessage(message, __instance.OwnerId);
             }
 
             var sender = CustomRpcSender.Create("LobbyTagsSender", SendOption.Reliable);

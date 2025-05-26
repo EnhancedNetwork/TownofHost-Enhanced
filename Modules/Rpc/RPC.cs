@@ -275,7 +275,7 @@ internal class RPCHandlerPatch
 
                     _ = new LateTask(() =>
                     {
-                        RpcUtils.SendMessageImmediately(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId), __instance.GetClientId());
+                        RpcUtils.LateSpecificSendMessage(new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId), __instance.OwnerId);
                     }, 1f, "Retry Version Check Task");
                 }
                 break;

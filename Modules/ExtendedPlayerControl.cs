@@ -172,7 +172,7 @@ static class ExtendedPlayerControl
 
         var playerClientId = player.GetClientId();
         var newRoleType = newCustomRole.GetRoleTypes();
-        
+
         // sender => player clientid
         if (newCustomRole.IsDesyncRole())
         {
@@ -573,9 +573,8 @@ static class ExtendedPlayerControl
             if (player.IsHost()) PlayerControl.LocalPlayer.SetKillTimer(time);
             else
             {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, SendOption.Reliable, player.GetClientId());
-                writer.Write(time);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                var message = new RpcSetKillTimer(PlayerControl.LocalPlayer.NetId, time);
+                RpcUtils.LateSpecificSendMessage(message, player.GetClientId(), SendOption.Reliable);
             }
             // Check Observer
             if (Observer.HasEnabled)
@@ -615,9 +614,8 @@ static class ExtendedPlayerControl
             if (player.IsHost()) PlayerControl.LocalPlayer.SetKillTimer(time);
             else
             {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, SendOption.Reliable, player.GetClientId());
-                writer.Write(time);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                var message = new RpcSetKillTimer(PlayerControl.LocalPlayer.NetId, time);
+                RpcUtils.LateSpecificSendMessage(message, player.GetClientId(), SendOption.Reliable);
             }
             // Check Observer
             if (Observer.HasEnabled)
@@ -1474,7 +1472,7 @@ static class ExtendedPlayerControl
         else if (Options.ImpsCanSeeEachOthersAddOns.GetBool() && seer.CheckImpCanSeeAllies(CheckAsSeer: true) && target.CheckImpCanSeeAllies(CheckAsTarget: true) && !subRole.IsBetrayalAddon() && subRole != CustomRoles.Torch) return true;
         else if (Options.CovenCanSeeEachOthersAddOns.GetBool() && seer.Is(Custom_Team.Coven) && target.Is(Custom_Team.Coven) && !subRole.IsBetrayalAddon()) return true;
         else if (Options.ApocCanSeeEachOthersAddOns.GetBool() && seer.IsNeutralApocalypse() && target.IsNeutralApocalypse() && !subRole.IsBetrayalAddon()) return true;
-        
+
         else if ((subRole is CustomRoles.Madmate
                 or CustomRoles.Sidekick
                 or CustomRoles.Recruit
