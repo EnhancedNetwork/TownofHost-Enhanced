@@ -252,7 +252,7 @@ internal class Pelican : RoleBase
 
                 target.SyncSettings();
 
-                RPC.PlaySoundRPC(tar, Sounds.TaskComplete);
+                RPC.PlaySoundRPC(Sounds.TaskComplete, tar);
                 Utils.NotifyRoles(SpecifySeer: target);
 
                 Logger.Info($"{pelican?.Data?.PlayerName} dead, player return back: {target?.Data?.PlayerName} in {teleportPosition}", "Pelican");

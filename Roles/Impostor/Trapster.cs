@@ -60,7 +60,7 @@ internal class Trapster : RoleBase
             reporter.RpcMurderPlayer(reporter);
             reporter.SetRealKiller(deadBody.Object);
 
-            RPC.PlaySoundRPC(killerId, Sounds.KillSound);
+            RPC.PlaySoundRPC(Sounds.KillSound, killerId);
 
             if (TrapConsecutiveTrapsterBodies.GetBool())
             {
@@ -80,7 +80,7 @@ internal class Trapster : RoleBase
             reporter.RpcMurderPlayer(reporter);
             reporter.SetRealKiller(_Player);
 
-            RPC.PlaySoundRPC(killerId, Sounds.KillSound);
+            RPC.PlaySoundRPC(Sounds.KillSound, killerId);
             if (TrapConsecutiveBodies.GetBool())
             {
                 BoobyTrapBody.Add(reporter.PlayerId);

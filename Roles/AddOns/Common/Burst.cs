@@ -65,7 +65,7 @@ public class Burst : IAddon
                 }
                 else if (GameStates.IsInGame)
                 {
-                    RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                    RPC.PlaySoundRPC(Sounds.TaskComplete, killer.PlayerId);
                     killer.SetKillCooldown(time: Main.AllPlayerKillCooldown[killer.PlayerId] - BurstKillDelay.GetFloat(), forceAnime: true);
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Burst), GetString("BurstFailed")));
                 }

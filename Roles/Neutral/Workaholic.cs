@@ -69,7 +69,7 @@ internal class Workaholic : RoleBase
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
-        RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
+        RPC.PlaySoundRPC(Sounds.KillSound, player.PlayerId);
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId != player.PlayerId)

@@ -104,7 +104,7 @@ internal class Demon : RoleBase
 
         PlayerHealth[target.PlayerId] -= Damage.GetInt();
         SendRPC(target.PlayerId);
-        RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
+        RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer);
 
         Logger.Info($"Demon {killer.GetRealName()} dealt {target.GetRealName()} damage equal to {Damage.GetInt()}", "Demon");
@@ -132,7 +132,7 @@ internal class Demon : RoleBase
 
         DemonHealth[target.PlayerId] = Health - SelfDamage.GetInt();
         SendRPC(target.PlayerId);
-        RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
+        RPC.PlaySoundRPC(Sounds.KillSound, target.PlayerId);
         killer.RpcGuardAndKill(target);
         Utils.NotifyRoles(SpecifySeer: target);
 

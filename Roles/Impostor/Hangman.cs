@@ -47,7 +47,7 @@ internal class Hangman : RoleBase
 
         if (Main.CheckShapeshift.TryGetValue(killer.PlayerId, out var isShapeshift) && isShapeshift)
         {
-            RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
+            RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
             target.SetDeathReason(PlayerState.DeathReason.LossOfHead);
             target.RpcExileV2();
             Main.PlayerStates[target.PlayerId].SetDead();

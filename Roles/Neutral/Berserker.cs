@@ -126,7 +126,7 @@ internal class Berserker : RoleBase
         if (abilityUse >= BerserkerScavengerLevel.GetInt() && BerserkerTwoCanScavenger.GetBool())
         {
             killer.RpcTeleport(target.GetCustomPosition());
-            RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
+            RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
             target.RpcTeleport(ExtendedPlayerControl.GetBlackRoomPosition());
 
             Main.PlayerStates[target.PlayerId].SetDead();

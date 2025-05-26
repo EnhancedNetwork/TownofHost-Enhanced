@@ -123,7 +123,7 @@ internal class Mastermind : RoleBase
                 player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(mastermind);
-                RPC.PlaySoundRPC(mastermind.PlayerId, Sounds.KillSound);
+                RPC.PlaySoundRPC(Sounds.KillSound, mastermind.PlayerId);
             }
 
             var time = TimeLimit.GetInt() - (GetTimeStamp() - x.Value);

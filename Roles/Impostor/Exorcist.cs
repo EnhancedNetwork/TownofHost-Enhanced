@@ -130,10 +130,7 @@ internal class Exorcist : RoleBase
         if (ExorcismEndOnKill.GetBool() && IsExorcismActive)
         {
             IsExorcismActive = false;
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                RPC.PlaySoundRPC(pc.PlayerId, Sounds.TaskComplete);
-            }
+            RPC.PlaySoundRPC(Sounds.SabotageSound, byte.MaxValue);
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
         }
         player.SetDeathReason(PlayerState.DeathReason.Exorcised);
@@ -164,10 +161,7 @@ internal class Exorcist : RoleBase
         {
             IsExorcismActive = true;
             IsDelayActive = false;
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                RPC.PlaySoundRPC(pc.PlayerId, Sounds.SabotageSound);
-            }
+            RPC.PlaySoundRPC(Sounds.SabotageSound, byte.MaxValue);
             Utils.SendMessage(string.Format(Translator.GetString("ExorcistStart"), ExorcismActiveFor.GetFloat()));
             
             _ = new LateTask(() =>
@@ -175,10 +169,8 @@ internal class Exorcist : RoleBase
                 if (IsExorcismActive)
                 {
                     IsExorcismActive = false;
-                    foreach (var pc in Main.AllPlayerControls)
-                    {
-                        RPC.PlaySoundRPC(pc.PlayerId, Sounds.TaskComplete);
-                    }
+
+                    RPC.PlaySoundRPC(Sounds.TaskComplete, byte.MaxValue);
                     Utils.SendMessage(GetString("ExorcistEnd"));
                 }
             }, ExorcismActiveFor.GetFloat(), "ExorcistNotify");

@@ -146,7 +146,7 @@ internal class Solsticer : RoleBase
             if (EveryOneKnowSolsticer.GetBool())
             {
                 killer.Notify(GetString("MurderSolsticer"));
-                RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                RPC.PlaySoundRPC(Sounds.TaskComplete, killer.PlayerId);
             }
             killer.SetKillCooldown(time: 10f, forceAnime: EveryOneKnowSolsticer.GetBool());
             killer.MarkDirtySettings();

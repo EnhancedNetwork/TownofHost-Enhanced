@@ -796,8 +796,9 @@ internal static class RPC
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
-    public static void PlaySoundRPC(byte PlayerID, Sounds sound)
+    public static void PlaySoundRPC(Sounds sound, byte PlayerID = byte.MaxValue)
     {
+        // 255 magic value for broadcast
         if (AmongUsClient.Instance.AmHost)
             PlaySound(PlayerID, sound);
 
@@ -899,7 +900,7 @@ internal static class RPC
     }
     public static void PlaySound(byte playerID, Sounds sound)
     {
-        if (PlayerControl.LocalPlayer.PlayerId == playerID)
+        if (PlayerControl.LocalPlayer.PlayerId == playerID || playerID == byte.MaxValue)
         {
             switch (sound)
             {

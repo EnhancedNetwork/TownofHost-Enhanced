@@ -128,7 +128,7 @@ internal class Shroud : RoleBase
                 {
                     if (shroud.RpcCheckAndMurder(target, true))
                     {
-                        RPC.PlaySoundRPC(shroudId, Sounds.KillSound);
+                        RPC.PlaySoundRPC(Sounds.KillSound, shroudId);
                         target.SetDeathReason(PlayerState.DeathReason.Shrouded);
                         shroud.RpcMurderPlayer(target);
                         target.SetRealKiller(Utils.GetPlayerById(shroudId));
