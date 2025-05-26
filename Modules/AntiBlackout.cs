@@ -308,8 +308,7 @@ public static class AntiBlackout
             var target = targetId.GetPlayer();
 
             if (seer == null || target == null) continue;
-            //if (seer.IsModded()) continue;
-
+            
             var isSelf = seerId == targetId;
             var isDead = target.Data.IsDead;
             var changedRoleType = roletype;
