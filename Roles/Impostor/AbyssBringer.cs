@@ -158,7 +158,8 @@ internal class AbyssBringer : RoleBase
                 {
                     if ((nearestPlayer.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc) && !CanKillImpostors.GetBool()) || (nearestPlayer.IsTransformedNeutralApocalypse() && !CanKillTNA.GetBool())) continue;
                     if (nearestPlayer.IsPolice() && pc.Is(CustomRoles.Narc) && !CanKillImpostors.GetBool()) continue;
-                    
+
+                    RPC.PlaySoundRPC(pc.PlayerId, Sounds.KillSound);
                     blackHole.PlayersConsumed++;
                     Utils.SendRPC(CustomRPC.SyncRoleSkill, _Player, 2, id, (byte)blackHole.PlayersConsumed);
                     Notify();
