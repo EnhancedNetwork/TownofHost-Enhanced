@@ -1,5 +1,4 @@
 using Hazel;
-using InnerNet;
 using System.Text;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;

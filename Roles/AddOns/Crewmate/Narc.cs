@@ -1,4 +1,3 @@
-using System;
 using AmongUs.GameOptions;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -41,10 +40,10 @@ public static class NarcManager
         //MadmateCanBeNarc = BooleanOptionItem.Create(id + 5, "MadmateCanBeNarc", false, tab, false)
         //    .SetParent(spawnOption)
         //    .SetGameMode(customGameMode);
-        
+
         ImpsCanKillEachOther = BooleanOptionItem.Create(id + 6, "ImpsCanKillEachOther", false, tab, false)
             .SetParent(spawnOption)
-            .SetGameMode(customGameMode);        
+            .SetGameMode(customGameMode);
 
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 1, 1), 1, tab, false)
@@ -94,17 +93,17 @@ public static class NarcManager
         }
     }
 
-    public static bool NarcCanUseKillButton(PlayerControl pc) 
+    public static bool NarcCanUseKillButton(PlayerControl pc)
         => !Main.AllAlivePlayerControls.Any(x => x.GetCustomRole().IsImpostorTeamV3() && !x.IsPlayerCrewmateTeam()) || ImpsCanKillEachOther.GetBool();
     public static bool CantUseSabotage(PlayerControl pc) => pc.Is(CustomRoles.Narc) && !NarcCanUseSabotage.GetBool();
 
     public static bool IsPolice(this PlayerControl player)
         => (player.Is(CustomRoles.Sheriff) || player.Is(CustomRoles.ChiefOfPolice))
             && player.IsPlayerCrewmateTeam() && !CopyCat.playerIdList.Contains(player.PlayerId);
-    
+
     public static bool KnowRoleOfTarget(PlayerControl seer, PlayerControl target)
     {
-        return (seer.IsPolice() && target.Is(CustomRoles.Narc)) || 
+        return (seer.IsPolice() && target.Is(CustomRoles.Narc)) ||
             (seer.Is(CustomRoles.Narc) && target.IsPolice());
     }
 
@@ -121,12 +120,12 @@ public static class NarcManager
 
     public static bool CheckMurder(PlayerControl killer, PlayerControl target)
     {
-        if (killer.CheckImpCanSeeAllies(CheckAsSeer: true) 
-            && target.CheckImpCanSeeAllies(CheckAsTarget: true) 
+        if (killer.CheckImpCanSeeAllies(CheckAsSeer: true)
+            && target.CheckImpCanSeeAllies(CheckAsTarget: true)
             && !ImpsCanKillEachOther.GetBool())
             return false;
 
-        if ((killer.IsPolice() && target.Is(CustomRoles.Narc)) || 
+        if ((killer.IsPolice() && target.Is(CustomRoles.Narc)) ||
             (killer.Is(CustomRoles.Narc) && target.IsPolice()))
             return false;
 

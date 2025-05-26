@@ -1,6 +1,5 @@
 using Hazel;
 using TOHE.Modules;
-using TOHE.Modules.Rpc;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 

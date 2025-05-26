@@ -1,7 +1,6 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
-using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Translator;
 

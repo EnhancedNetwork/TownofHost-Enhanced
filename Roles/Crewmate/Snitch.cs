@@ -1,5 +1,4 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Coven;
 using UnityEngine;
@@ -102,10 +101,10 @@ internal class Snitch : RoleBase
     }
 
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && ((target.GetCustomRole().IsImpostorTeamV3() && !target.Is(CustomRoles.Trickster) && !target.Is(CustomRoles.Narc)) 
-        || (target.IsNeutralKiller() && CanFindNeutralKiller) 
-        || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse) 
-        || (target.IsPlayerCoven() && CanFindCoven) 
+        => HasEnabled && ((target.GetCustomRole().IsImpostorTeamV3() && !target.Is(CustomRoles.Trickster) && !target.Is(CustomRoles.Narc))
+        || (target.IsNeutralKiller() && CanFindNeutralKiller)
+        || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse)
+        || (target.IsPlayerCoven() && CanFindCoven)
         || ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal)) && CanFindMadmate));
 
     private void CheckTask(PlayerControl snitch)

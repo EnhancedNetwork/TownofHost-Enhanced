@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.Options;
@@ -83,7 +82,7 @@ internal class PlagueBearer : RoleBase
     public static void SendRPC(PlayerControl player, PlayerControl target)
     {
         var pc = playerIdList.First().GetPlayer();
-        
+
         var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);

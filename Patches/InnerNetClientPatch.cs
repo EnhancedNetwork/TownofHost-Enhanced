@@ -1,7 +1,6 @@
 using Hazel;
 using InnerNet;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Common;
 
 namespace TOHE.Patches;
 

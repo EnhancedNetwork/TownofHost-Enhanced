@@ -1,7 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using InnerNet;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;

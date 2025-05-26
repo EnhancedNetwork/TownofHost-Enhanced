@@ -69,7 +69,7 @@ internal class Cultist : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-      
+
         else if (target.CanBeRecruitedBy(killer))
         {
             var addon = killer.GetBetrayalAddon(true);
@@ -86,7 +86,7 @@ internal class Cultist : RoleBase
             {
                 Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                 Admirer.SendRPC(killer.PlayerId, target.PlayerId);
-            }          
+            }
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();

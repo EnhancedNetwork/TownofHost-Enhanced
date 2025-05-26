@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using UnityEngine;

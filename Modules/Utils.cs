@@ -1733,7 +1733,7 @@ public static class Utils
         }
         else if (player.Is(CustomRoles.Narc))
         {
-            SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(new(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"))}</font> {IconText}</size><size=900%>\n \n</size>\r\n";            
+            SelfTeamName = $"<size=450%>{IconText} {Font}{ColorString(new(140, 255, 255, byte.MaxValue), GetString("TeamCrewmate"))}</font> {IconText}</size><size=900%>\n \n</size>\r\n";
         }
 
         // Format addons

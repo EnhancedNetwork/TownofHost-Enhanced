@@ -1,11 +1,8 @@
 using Hazel;
 using TMPro;
 using TOHE.Modules;
-using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
-using UnityEngine.Events;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -20,7 +17,7 @@ internal class Exorcist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
-    
+
     private static OptionItem ExorcismActiveFor;
     private static OptionItem ExorcismPerGame;
     private static OptionItem ExorcismDelay;
@@ -163,7 +160,7 @@ internal class Exorcist : RoleBase
             IsDelayActive = false;
             RPC.PlaySoundRPC(Sounds.SabotageSound, byte.MaxValue);
             Utils.SendMessage(string.Format(Translator.GetString("ExorcistStart"), ExorcismActiveFor.GetFloat()));
-            
+
             _ = new LateTask(() =>
             {
                 if (IsExorcismActive)
@@ -200,7 +197,7 @@ internal class Exorcist : RoleBase
     public void CreateExorcistButton(MeetingHud __instance)
     {
 
-        if (GameObject.Find("ExorcistButton") != null) 
+        if (GameObject.Find("ExorcistButton") != null)
             GameObject.Destroy(GameObject.Find("ExorcistButton"));
 
         PlayerControl pc = PlayerControl.LocalPlayer;

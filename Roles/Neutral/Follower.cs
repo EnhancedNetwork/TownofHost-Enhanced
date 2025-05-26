@@ -1,6 +1,5 @@
 using Hazel;
 using Il2CppSystem;
-using InnerNet;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using UnityEngine;

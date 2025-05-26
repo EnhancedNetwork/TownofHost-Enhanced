@@ -377,7 +377,7 @@ internal class StartGameHostPatch
         {
             // Initialize for Narc
             NarcManager.InitForNarc();
-            
+
             // Block "RpcSetRole" for set Desync Roles for some players
             RpcSetRoleReplacer.Initialize();
 

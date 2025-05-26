@@ -1,4 +1,3 @@
-using AmongUs.QuickChat;
 using Hazel;
 using System;
 using System.Security.Cryptography;

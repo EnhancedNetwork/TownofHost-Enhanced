@@ -1,12 +1,7 @@
 using Hazel;
 using TOHE.Modules;
-using TOHE.Modules.Rpc;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -83,7 +78,7 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        var addon = killer.GetBetrayalAddon(true);        
+        var addon = killer.GetBetrayalAddon(true);
         if (killer.GetAbilityUseLimit() > 0)
         {
             if (target.CanBeRecruitedBy(killer))

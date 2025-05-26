@@ -3,7 +3,6 @@ using Hazel;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 
 namespace TOHE;
@@ -308,7 +307,7 @@ public static class AntiBlackout
             var target = targetId.GetPlayer();
 
             if (seer == null || target == null) continue;
-            
+
             var isSelf = seerId == targetId;
             var isDead = target.Data.IsDead;
             var changedRoleType = roletype;

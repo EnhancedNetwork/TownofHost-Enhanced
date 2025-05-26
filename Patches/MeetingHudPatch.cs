@@ -1570,7 +1570,7 @@ class NetworkedPlayerInfoSerializePatch
     private static string LastName = string.Empty;
     public static void Prefix(NetworkedPlayerInfo __instance)
     {
-        if (!AmongUsClient.Instance.AmHost) return; 
+        if (!AmongUsClient.Instance.AmHost) return;
 
         if (MeetingHud.Instance || ExileController.Instance)
         {

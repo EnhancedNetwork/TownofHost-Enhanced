@@ -3,7 +3,6 @@ using AmongUs.GameOptions;
 using InnerNet;
 using System;
 using TMPro;
-using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using UnityEngine;
 using static TOHE.Translator;

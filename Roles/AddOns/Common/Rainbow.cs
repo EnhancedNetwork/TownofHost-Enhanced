@@ -61,7 +61,7 @@ public class Rainbow : IAddon
         {
             int color = PickRandomColor();
             player.SetColor(color);
-            
+
             var message = new RpcSetColorMessage(player.NetId, player.Data.NetId, (byte)color);
             RpcUtils.LateBroadcastReliableMessage(message);
         }

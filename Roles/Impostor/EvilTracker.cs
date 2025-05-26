@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
-using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -79,7 +78,7 @@ internal class EvilTracker : RoleBase
 
         ImpostorsId[playerId] = [];
         var pc = playerId.GetPlayer();
-        
+
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;

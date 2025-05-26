@@ -6,8 +6,8 @@ namespace TOHE.Modules.Rpc
     {
         public override CustomRPC RpcType => CustomRPC.SyncAbilityUseLimit;
 
-        public RpcSyncAbilityUseLimit(uint rpcObjectNetId, byte playerId, float limit) : base(rpcObjectNetId) 
-        { 
+        public RpcSyncAbilityUseLimit(uint rpcObjectNetId, byte playerId, float limit) : base(rpcObjectNetId)
+        {
             this.playerId = playerId;
             this.limit = limit;
         }

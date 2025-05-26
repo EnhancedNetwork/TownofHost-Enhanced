@@ -1,5 +1,4 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;

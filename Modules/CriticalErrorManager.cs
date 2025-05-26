@@ -1,5 +1,4 @@
 using Hazel;
-using TOHE.Modules.Rpc;
 using static TOHE.Translator;
 
 namespace TOHE.Modules;

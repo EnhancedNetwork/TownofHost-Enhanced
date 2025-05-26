@@ -1,6 +1,5 @@
 
 using Hazel;
-using InnerNet;
 using System;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;

@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
 using System;
-using System.Collections;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -764,7 +763,7 @@ class BeginImpostorPatch
             return true;
         }
 
-        if ((role.IsCrewmate() && role.HasImpBasis()) 
+        if ((role.IsCrewmate() && role.HasImpBasis())
             || PlayerControl.LocalPlayer.Is(CustomRoles.Narc))
         {
             yourTeam = new();

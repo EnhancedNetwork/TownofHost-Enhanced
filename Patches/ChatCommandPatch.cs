@@ -1,5 +1,5 @@
+using AmongUs.InnerNet.GameDataMessages;
 using Assets.CoreScripts;
-using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.IO;
@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Coven;
@@ -15,8 +16,6 @@ using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Translator;
-using AmongUs.InnerNet.GameDataMessages;
-using TOHE.Modules.Rpc;
 
 
 namespace TOHE;
@@ -2231,7 +2230,7 @@ internal class ChatCommands
         {
             Logger.Info($"This player (id {player.PlayerId}) was Exorcised", "OnReceiveChat");
             Exorcist.ExorcisePlayer(player);
-            canceled=true;
+            canceled = true;
             return;
         }
 

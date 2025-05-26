@@ -1,5 +1,3 @@
-using TOHE.Modules.Rpc;
-
 namespace TOHE.Roles.Impostor;
 
 internal class Trapster : RoleBase

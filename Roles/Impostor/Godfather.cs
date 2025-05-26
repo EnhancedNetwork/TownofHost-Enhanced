@@ -68,11 +68,11 @@ internal class Godfather : RoleBase
             if (!killer.IsAlive() || killer == godfather) return;
             if (GodfatherChangeOpt.GetValue() == 0)
             {
-                if ((killer.GetCustomRole() 
-                    is CustomRoles.NiceMini 
+                if ((killer.GetCustomRole()
+                    is CustomRoles.NiceMini
                     or CustomRoles.EvilMini && Mini.Age < 18)
                     || killer.Is(CustomRoles.Loyal)) return;
-                
+
                 killer.RpcChangeRoleBasis(ChangeRole);
                 killer.GetRoleClass()?.OnRemove(killer.PlayerId);
                 killer.RpcSetCustomRole(ChangeRole);

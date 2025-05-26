@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using TOHE.Modules.Rpc;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;

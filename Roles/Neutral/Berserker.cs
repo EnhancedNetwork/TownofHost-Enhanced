@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using System.Text;
 using TOHE.Modules;
-using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
