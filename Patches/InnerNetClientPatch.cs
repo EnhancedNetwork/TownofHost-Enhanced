@@ -170,6 +170,8 @@ internal class StartGameHostPatch
         Logger.Info("StartGameHostPatch: Postfix called", "StartGameHostPatch");
         if (ShipStatus.Instance != null)
             isStartingAsHost = false;
+
+        GameStates.InGame = true;
     }
 }
 

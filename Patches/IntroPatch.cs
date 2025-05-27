@@ -69,8 +69,8 @@ class CoBeginPatch
         Logger.Info("IntroCutscene.CoBegin.Start", "IntroCutScene.CoBegin");
         CriticalErrorManager.CheckEndGame();
 
-        GameStates.InGame = true;
         RPC.RpcVersionCheck();
+        GameStates.InGame = true;
 
         FFAManager.SetData();
     }

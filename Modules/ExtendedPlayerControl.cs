@@ -485,24 +485,8 @@ static class ExtendedPlayerControl
         // Other Clients
         else
         {
-            var writer = MessageWriter.Get(SendOption.Reliable);
-            writer.StartMessage(6);
-            writer.Write(AmongUsClient.Instance.GameId);
-            writer.WritePacked(killer.OwnerId);
-
-            writer.WriteSettingsInWriter(killer);
-
-            writer.StartMessage(2);
-            writer.WritePacked(killer.NetId);
-            writer.Write((byte)RpcCalls.MurderPlayer);
-            writer.WritePacked(target.NetId);
-            writer.Write((int)MurderResultFlags.FailedProtected);
-            writer.EndMessage();
-
-            writer.EndMessage();
-
-            AmongUsClient.Instance.SendOrDisconnect(writer);
-            writer.Recycle();
+            var message = new RpcGuardAndKill(killer, target);
+            RpcUtils.LateSpecificSendMessage(message, killer.OwnerId, SendOption.Reliable);
         }
 
         if (!fromSetKCD) killer.SetKillTimer(half: true);

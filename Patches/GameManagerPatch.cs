@@ -3,10 +3,12 @@ using Hazel;
 namespace TOHE;
 
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.Serialize))]
-class GameManagerSerializeFix
+public static class GameManagerSerializeFix
 {
+    public static bool InitialState = false;
     public static bool Prefix(GameManager __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
     {
+        InitialState = initialState;
         bool flag = false;
         for (int index = 0; index < __instance.LogicComponents.Count; ++index)
         {
@@ -35,7 +37,7 @@ class LogicOptionsSerializePatch
     public static bool Prefix(ref bool __result)
     {
         // Block all but the first time and synchronize only with CustomSyncSettings
-        if (GameStates.IsInGame)
+        if (!InitialState && GameStates.IsInGame)
         {
             __result = false;
             return false;
