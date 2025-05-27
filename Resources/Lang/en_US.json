@@ -4088,6 +4088,7 @@
   "CrossLanguageGetRole": "Get role names from different languages for commands",
 
   "BypassRateLimitAC": "Experimental Changes to Bypass RateLimit Anticheat",
+  "AntiBlackNotEnoughPlayersWarning": "At least 4 players is needed to bypass blackout!\nYour game does not have enough players and will casue a blackout for vanilla players.",
 
   "Runner": "Runner",
   "ModeSpeedRun": "Gamemode: Speedrun",

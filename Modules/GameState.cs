@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using System;
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -105,7 +105,7 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Admired))
+        if (pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc))
         {
             countTypes = CountTypes.Crew;
         }
@@ -131,8 +131,8 @@ public class PlayerState(byte playerId)
 
             //Some role may be bugged for this, need further testing.
             Logger.Info($"{pc.GetNameWithRole()} previously was {GetRoleName(preMainRole)}, reassign tasks!", "PlayerState.SetMainRole");
-            pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            InitTask(pc);
+
+            pc.RpcResetTasks();
 
             if (!Main.UnShapeShifter.Contains(pc.PlayerId) && pc.GetRoleClass()?.ThisRoleBase == CustomRoles.Shapeshifter && Utils.IsMethodOverridden(pc.GetRoleClass(), "UnShapeShiftButton"))
             {
@@ -158,6 +158,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
+                if (subRole is CustomRoles.Narc) continue;
                 RemoveSubRole(subRole);
             }
         }
@@ -174,12 +175,11 @@ public class PlayerState(byte playerId)
             }
         }
 
-        if (role.IsConverted())
+        if (role.IsBetrayalAddonV2())
         {
-            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
+            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsBetrayalAddonV2());
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
-            SubRoles.Remove(CustomRoles.Admired);
         }
 
         switch (role)
@@ -240,10 +240,8 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Admired:
+            case CustomRoles.Narc:
                 countTypes = CountTypes.Crew;
-                SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Loyal);
                 break;
 
             case CustomRoles.Soulless:
@@ -271,10 +269,10 @@ public class PlayerState(byte playerId)
 
         if (!AmongUsClient.Instance.AmHost) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
         writer.Write(PlayerId);
         writer.WritePacked((int)addOn);
-        writer.EndMessage();
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
 
     public void SetDead()
@@ -319,6 +317,7 @@ public class PlayerState(byte playerId)
         Revenge,
         Execution,
         Fall,
+        Exorcised,
 
         // TOHE
         Gambled,
@@ -422,6 +421,7 @@ public class TaskState
         }
 
         hasTasks = true;
+        CompletedTasksCount = 0;
         AllTasksCount = player.Data.Tasks.Count;
 
         Logger.Info($"{player.GetNameWithRole().RemoveHtmlTags()}: TaskCounts = {CompletedTasksCount}/{AllTasksCount}", "TaskState.Init");
@@ -442,6 +442,12 @@ public class TaskState
         if (player.Is(CustomRoles.Solsticer) && !AmongUsClient.Instance.AmHost) return;
 
         CompletedTasksCount++;
+
+        if (player.IsAlive() && Main.IntroDestroyed)
+        {
+            float add = GetSettingNameAndValueForRole(player.GetCustomRole(), "AbilityUseGainWithEachTaskCompleted");
+            if (Math.Abs(add - float.MaxValue) > 0.5f && add > 0) player.RpcIncreaseAbilityUseLimitBy(add);
+        }
 
         // Display only up to the adjusted task amount
         CompletedTasksCount = Math.Min(AllTasksCount, CompletedTasksCount);
@@ -474,7 +480,7 @@ public static class GameStates
     public static bool IsNormalGame => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.Normal or GameModes.NormalFools;
     public static bool IsHideNSeek => GameOptionsManager.Instance.CurrentGameOptions.GameMode is GameModes.HideNSeek or GameModes.SeekFools;
     public static bool SkeldIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Skeld;
-    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Mira;
+    public static bool MiraHQIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.MiraHQ;
     public static bool PolusIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Polus;
     public static bool DleksIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Dleks;
     public static bool AirshipIsActive => (MapNames)GameOptionsManager.Instance.CurrentGameOptions.MapId == MapNames.Airship;
@@ -493,7 +499,7 @@ public static class GameStates
             const string Domain = "among.us";
 
             // From Reactor.gg
-            return ServerManager.Instance.CurrentRegion?.TryCast<StaticHttpRegionInfo>() is { } regionInfo &&
+            return ServerManager.Instance.CurrentRegion?.CastFast<StaticHttpRegionInfo>() is { } regionInfo &&
                    regionInfo.PingServer.EndsWith(Domain, StringComparison.Ordinal) &&
                    regionInfo.Servers.All(serverInfo => serverInfo.Ip.EndsWith(Domain, StringComparison.Ordinal));
         }

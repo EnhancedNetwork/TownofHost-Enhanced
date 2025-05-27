@@ -315,10 +315,19 @@ internal class DollMaster : RoleBase
         }
 
         // If target is on imp team return.
-        if (!IsControllingPlayer && target.GetCustomRole().IsImpostorTeam())
+        if (!IsControllingPlayer && target.GetCustomRole().IsImpostorTeam() && !pc.Is(CustomRoles.Narc))
         {
             AURoleOptions.ShapeshifterCooldown = 0;
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.DollMaster), GetString("DollMaster_CannotPossessImpTeammate")));
+            return false;
+        }
+
+        // If Dollmaster is Narc and target is Sheriff or ChiefOfPolice and target is not converted
+        if (!IsControllingPlayer
+            && pc.Is(CustomRoles.Narc) && target.IsPolice())
+        {
+            AURoleOptions.ShapeshifterCooldown = 0;
+            pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), GetString("DollMaster_CannotPossessImpTeammate")));
             return false;
         }
 

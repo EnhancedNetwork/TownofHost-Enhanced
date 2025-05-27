@@ -13,6 +13,7 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem DarkTheme;
     private static ClientOptionItem DisableLobbyMusic;
     private static ClientOptionItem ShowTextOverlay;
+    private static ClientOptionItem ShowModdedClientText;
     private static ClientOptionItem HorseMode;
     private static ClientOptionItem LongMode;
     private static ClientOptionItem ForceOwnLanguage;
@@ -81,6 +82,10 @@ public static class OptionsMenuBehaviourStartPatch
         if (ShowTextOverlay == null || ShowTextOverlay.ToggleButton == null)
         {
             ShowTextOverlay = ClientOptionItem.Create("ShowTextOverlay", Main.ShowTextOverlay, __instance);
+        }
+        if (ShowModdedClientText == null || ShowModdedClientText.ToggleButton == null)
+        {
+            ShowModdedClientText = ClientOptionItem.Create("ShowModdedClientText", Main.ShowModdedClientText, __instance);
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
@@ -166,6 +171,7 @@ public static class OptionsMenuBehaviourStartPatch
 #endif
     }
 }
+
 [HarmonyPatch(typeof(OptionsMenuBehaviour), nameof(OptionsMenuBehaviour.Close))]
 public static class OptionsMenuBehaviourClosePatch
 {

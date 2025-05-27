@@ -119,6 +119,7 @@ internal class Amnesiac : RoleBase
                     __instance.RpcChangeRoleBasis(role);
                     __instance.RpcSetCustomRole(role);
                     __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
+                    if (targetPlayerStates.SubRoles.Contains(CustomRoles.Narc)) __instance.RpcSetCustomRole(CustomRoles.Narc);
 
                     __instance.RpcGuardAndKill();
                     __instance.ResetKillCooldown();
@@ -140,6 +141,7 @@ internal class Amnesiac : RoleBase
                 __instance.RpcChangeRoleBasis(role);
                 __instance.RpcSetCustomRole(role);
                 __instance.GetRoleClass()?.OnAdd(__instance.PlayerId);
+                if (targetPlayerStates.SubRoles.Contains(CustomRoles.Narc)) __instance.RpcSetCustomRole(CustomRoles.Narc);
 
                 __instance.RpcGuardAndKill();
                 __instance.ResetKillCooldown();

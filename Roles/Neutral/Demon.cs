@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -71,14 +71,13 @@ internal class Demon : RoleBase
 
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         if (DemonHealth.ContainsKey(playerId))
             writer.Write(DemonHealth[playerId]);
         else
             writer.Write(PlayerHealth[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -104,7 +103,7 @@ internal class Demon : RoleBase
 
         PlayerHealth[target.PlayerId] -= Damage.GetInt();
         SendRPC(target.PlayerId);
-        RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
+        RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
         Utils.NotifyRoles(SpecifySeer: killer);
 
         Logger.Info($"Demon {killer.GetRealName()} dealt {target.GetRealName()} damage equal to {Damage.GetInt()}", "Demon");
@@ -132,7 +131,7 @@ internal class Demon : RoleBase
 
         DemonHealth[target.PlayerId] = Health - SelfDamage.GetInt();
         SendRPC(target.PlayerId);
-        RPC.PlaySoundRPC(target.PlayerId, Sounds.KillSound);
+        RPC.PlaySoundRPC(Sounds.KillSound, target.PlayerId);
         killer.RpcGuardAndKill(target);
         Utils.NotifyRoles(SpecifySeer: target);
 

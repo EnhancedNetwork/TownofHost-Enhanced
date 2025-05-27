@@ -1,9 +1,8 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -45,12 +44,11 @@ internal class Shroud : RoleBase
     }
     private void SendRPC(byte shroudId, byte targetId, byte typeId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); // syncShroud
+        var writer = MessageWriter.Get(SendOption.Reliable);// syncShroud
         writer.Write(typeId);
         writer.Write(shroudId);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -124,12 +122,12 @@ internal class Shroud : RoleBase
             {
                 var min = targetDistance.OrderBy(c => c.Value).FirstOrDefault();
                 var target = min.Key.GetPlayer();
-                var KillRange = NormalGameOptionsV08.KillDistances[Mathf.Clamp(Main.NormalOptions.KillDistance, 0, 2)];
+                var KillRange = ExtendedPlayerControl.GetKillDistances();
                 if (min.Value <= KillRange && !shroud.inVent && !shroud.inMovingPlat && !target.inVent && !target.inMovingPlat)
                 {
                     if (shroud.RpcCheckAndMurder(target, true))
                     {
-                        RPC.PlaySoundRPC(shroudId, Sounds.KillSound);
+                        RPC.PlaySoundRPC(Sounds.KillSound, shroudId);
                         target.SetDeathReason(PlayerState.DeathReason.Shrouded);
                         shroud.RpcMurderPlayer(target);
                         target.SetRealKiller(Utils.GetPlayerById(shroudId));
@@ -159,6 +157,7 @@ internal class Shroud : RoleBase
         {
             PlayerControl shrouded = shroudedId.GetPlayer();
             if (!shrouded.IsAlive()) continue;
+            if (shrouded.IsTransformedNeutralApocalypse()) continue;
 
             shrouded.SetDeathReason(PlayerState.DeathReason.Shrouded);
             shrouded.RpcMurderPlayer(shrouded);
@@ -174,6 +173,6 @@ internal class Shroud : RoleBase
 
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
-        hud.KillButton?.OverrideText($"{GetString("ShroudButtonText")}");
+        hud.KillButton?.OverrideText($"{GetString("Shroud")}");
     }
 }
