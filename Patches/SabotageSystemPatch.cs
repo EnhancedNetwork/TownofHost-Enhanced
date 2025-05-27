@@ -293,7 +293,7 @@ public class SabotageSystemPatch
             if (LastUpdate >= now) return;
             LastUpdate = now;
 
-            Utils.SyncAllSettings();
+            Utils.MarkEveryoneDirtySettings();
 
             if (GameStates.IsInTask)
             {

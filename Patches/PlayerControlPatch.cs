@@ -1249,6 +1249,13 @@ class FixedUpdateInNormalGamePatch
                             PlayerControl closest = !players.Any() ? null : players.First();
                             DestroyableSingleton<HudManager>.Instance.KillButton.SetTarget(closest);
                         }
+
+                        if (timerLowLoad % 6 == 0)
+                        {
+                            GameOptionsSender.SendAllGameOptions();
+                            // Of course we should be updating dirty game options
+                            // This will be triggered by host playerControl every 0.2s
+                        }
                     }
                 }
             }

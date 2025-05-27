@@ -12,6 +12,9 @@ namespace TOHE.Modules.Rpc
         // Injecting BaseModdedRpc has a very high chance for the game to crash on load!!!
         // And you need to inject it for all the modded rpc to work!!!
         // Works after injected. No idea how to resolve this problem.
+
+        // You cant directly use vanilla rpc to build a BaseRpcMessage, you will need to register it like basemoddedrpc
+        // I suggest achieving vanilla calls with BaseModdedRpc
         public BaseModdedRpc(IntPtr ptr) : base(ptr) { }
 
         public override GameDataTypes GameDataType { get; } = GameDataTypes.RpcFlag;
