@@ -290,8 +290,8 @@ static class ExtendedPlayerControl
     public static void RpcExile(this PlayerControl player)
     {
         player.Exiled();
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var message = new RpcExiled(player.NetId);
+        RpcUtils.LateBroadcastReliableMessage(message);
     }
     public static void RpcExileDesync(this PlayerControl player, PlayerControl seer)
     {
@@ -301,8 +301,9 @@ static class ExtendedPlayerControl
             player.Exiled();
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, clientId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        var message = new RpcExiled(player.NetId);
+        RpcUtils.LateSpecificSendMessage(message, clientId, SendOption.Reliable);
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -312,8 +313,8 @@ static class ExtendedPlayerControl
         }
         player.Exiled();
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Exiled, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var message = new RpcExiled(player.NetId);
+        RpcUtils.LateBroadcastReliableMessage(message);
     }
     public static void RpcCastVote(this PlayerControl player, byte suspectIdx)
     {
@@ -792,10 +793,9 @@ static class ExtendedPlayerControl
         {
             killer.ProtectPlayer(target, colorId);
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.ProtectPlayer, SendOption.Reliable, killer.GetClientId());
-        messageWriter.WriteNetObject(target);
-        messageWriter.Write(colorId);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var message = new RpcProtectPlayer(killer.NetId, target.NetId, colorId);
+        RpcUtils.LateSpecificSendMessage(message, killer.GetClientId(), SendOption.Reliable);
     }
     public static void RpcResetAbilityCooldown(this PlayerControl target)
     {
@@ -814,10 +814,8 @@ static class ExtendedPlayerControl
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.ProtectPlayer, RpcSendOption, target.GetClientId());
-            writer.WriteNetObject(target);
-            writer.Write(0);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var message = new RpcProtectPlayer(target.NetId, target.NetId, 0);
+            RpcUtils.LateSpecificSendMessage(message, target.GetClientId(), SendOption.Reliable);
         }
         /*
             When a player puts up a barrier, the cooldown of the ability is reset regardless of the player's position.

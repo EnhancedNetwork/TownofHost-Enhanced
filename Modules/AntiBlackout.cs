@@ -1,8 +1,10 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using System;
 using System.Runtime.CompilerServices;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 
 namespace TOHE;
@@ -294,8 +296,6 @@ public static class AntiBlackout
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default) return;
 
         RpcSetRoleReplacer.ResetRoleMapMidGame();
-
-        Dictionary<int, CustomRpcSender> sendersByOwnerId = [];
         List<PlayerControl> selfExiled = [];
 
         foreach (var ((seerId, targetId), (roletype, _)) in RpcSetRoleReplacer.RoleMap)
@@ -314,7 +314,6 @@ public static class AntiBlackout
 
             if (isDead)
             {
-
                 if (isSelf)
                 {
                     selfExiled.Add(seer);
@@ -342,42 +341,24 @@ public static class AntiBlackout
                 continue;
             }
 
-            int ownerId = seer.OwnerId;
-            if (!sendersByOwnerId.TryGetValue(ownerId, out var sender))
-            {
-                sender = CustomRpcSender.Create($"AntiBlackout.SetRealPlayerRoles.OwnerId{ownerId}", SendOption.Reliable);
-                sendersByOwnerId[ownerId] = sender;
-            }
-
-            sender.RpcSetRole(target, changedRoleType, ownerId);
+            var message = new RpcSetRoleMessage(target.NetId, changedRoleType, true);
+            RpcUtils.LateSpecificSendMessage(message, seer.OwnerId);
         }
 
         foreach (var pc in selfExiled)
         {
             int ownerId = pc.OwnerId;
-            if (!sendersByOwnerId.TryGetValue(ownerId, out var sender))
-            {
-                sender = CustomRpcSender.Create($"AntiBlackout.SetRealPlayerRoles.OwnerId{ownerId}", SendOption.Reliable);
-                sendersByOwnerId[ownerId] = sender;
-            }
 
-            sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.Exiled, ownerId);
-            sender.EndRpc();
+            var message1 = new RpcExiled(pc.NetId);
+            RpcUtils.LateSpecificSendMessage(message1, ownerId);
 
             if (!pc.IsModded() && pc.PlayerId == ExileControllerWrapUpPatch.AntiBlackout_LastExiled?.PlayerId)
             {
-                sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.MurderPlayer, ownerId);
-                sender.WriteNetObject(pc);
-                sender.Write((int)MurderResultFlags.Succeeded);
-                sender.EndRpc();
+                var message2 = new RpcMurderPlayer(pc.NetId, pc.NetId, MurderResultFlags.Succeeded);
+                RpcUtils.LateSpecificSendMessage(message2, ownerId);
 
                 pc.ReactorFlash(0.2f);
             }
-        }
-
-        foreach (var sender in sendersByOwnerId.Values)
-        {
-            sender.SendMessage(dispose: false);
         }
 
         ResetAllCooldown();
