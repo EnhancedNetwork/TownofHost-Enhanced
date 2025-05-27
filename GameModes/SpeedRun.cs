@@ -187,7 +187,7 @@ public static class SpeedRun
         }
 
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+            var writer = MessageWriter.Get(SendOption.Reliable);
             var amount = Main.PlayerStates.Count(x => x.Value.MainRole == CustomRoles.Runner);
             writer.Write(StartedAt.ToString());
             writer.Write((byte)amount);
