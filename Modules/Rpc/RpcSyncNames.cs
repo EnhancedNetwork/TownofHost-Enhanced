@@ -5,7 +5,7 @@ namespace TOHE.Modules.Rpc
 {
     public class RpcSyncAllPlayerNames : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncAllPlayerNames;
+        public override byte RpcType => (byte)CustomRPC.SyncAllPlayerNames;
 
         public RpcSyncAllPlayerNames(uint rpcObjectNetId) : base(rpcObjectNetId)
         {
@@ -30,7 +30,7 @@ namespace TOHE.Modules.Rpc
 
     public class RpcSyncNameNotify : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncNameNotify;
+        public override byte RpcType => (byte)CustomRPC.SyncNameNotify;
         public RpcSyncNameNotify(uint rpcObjectNetId, byte playerId, bool addOrRemove, string name, float time) : base(rpcObjectNetId)
         {
             this.playerId = playerId;

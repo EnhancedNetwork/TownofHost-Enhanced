@@ -12,13 +12,7 @@ namespace TOHE.Modules.Rpc
         // Refer BaseModdedRpc for how to code this dogshit framework
         public CustomModdedData(IntPtr ptr) : base(ptr) { }
 
-        public override GameDataTypes GameDataType
-        {
-            get
-            {
-                return FirstDataType;
-            }
-        }
+        public override GameDataTypes GameDataType => GameDataTypes.Invalid;
 
         [HideFromIl2Cpp]
         public abstract GameDataTypes FirstDataType { get; }
@@ -30,6 +24,9 @@ namespace TOHE.Modules.Rpc
 
         public override void SerializeValues(MessageWriter msg)
         {
+            msg.CancelMessage();
+            msg.StartMessage((byte)this.FirstDataType);
+            // Logger.Info($"Serializing CustomModdedData: {this.FirstDataType}", "CustomModdedData.SerializeValues");
             SerializeCustomValues(msg);
         }
 

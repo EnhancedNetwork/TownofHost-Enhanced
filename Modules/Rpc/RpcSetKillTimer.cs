@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     class RpcSetKillTimer : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SetKillTimer;
+        public override byte RpcType => (byte)CustomRPC.SetKillTimer;
 
         public RpcSetKillTimer(uint rpcObjectNetId, float timer) : base(rpcObjectNetId)
         {

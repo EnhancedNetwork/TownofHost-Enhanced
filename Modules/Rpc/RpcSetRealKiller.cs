@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     class RpcSetRealKiller : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SetRealKiller;
+        public override byte RpcType => (byte)CustomRPC.SetRealKiller;
         public RpcSetRealKiller(uint rpcObjectNetId, byte playerId, byte killerId) : base(rpcObjectNetId)
         {
             this.playerId = playerId;

@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     class RpcSetDeathReason : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SetDeathReason;
+        public override byte RpcType => (byte)CustomRPC.SetDeathReason;
 
         public RpcSetDeathReason(uint rpcObjectNetId, byte playerId, PlayerState.DeathReason deathReason) : base(rpcObjectNetId)
         {

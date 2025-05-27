@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     public class RpcSetCustomRole : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SetCustomRole;
+        public override byte RpcType => (byte)CustomRPC.SetCustomRole;
 
         public RpcSetCustomRole(uint rpcObjectNetId, byte playerId, CustomRoles role) : base(rpcObjectNetId)
         {
@@ -24,7 +24,7 @@ namespace TOHE.Modules.Rpc
 
     public class RpcSyncPlayerSetting : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncPlayerSetting;
+        public override byte RpcType => (byte)CustomRPC.SyncPlayerSetting;
         public RpcSyncPlayerSetting(uint rpcObjectNetId, byte playerId, CustomRoles role) : base(rpcObjectNetId)
         {
             this.playerId = playerId;

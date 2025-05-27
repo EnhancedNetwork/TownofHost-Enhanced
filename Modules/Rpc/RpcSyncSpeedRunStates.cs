@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     public class RpcSyncSpeedRunStates : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncSpeedRunStates;
+        public override byte RpcType => (byte)CustomRPC.SyncSpeedRunStates;
 
         public RpcSyncSpeedRunStates(uint rpcObjectNetId, MessageWriter writer) : base(rpcObjectNetId)
         {

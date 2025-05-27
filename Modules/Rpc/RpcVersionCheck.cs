@@ -5,7 +5,7 @@ namespace TOHE.Modules.Rpc
 {
     public class RpcVersionCheck(uint rpcObjectNetId) : BaseModdedRpc(rpcObjectNetId)
     {
-        public override CustomRPC RpcType => CustomRPC.VersionCheck;
+        public override byte RpcType => (byte)CustomRPC.VersionCheck;
 
         public override void SerializeRpcValues(MessageWriter writer)
         {
@@ -21,7 +21,7 @@ namespace TOHE.Modules.Rpc
 
     public class RpcRequestRetryVersionCheck(uint rpcObjectNetId) : BaseModdedRpc(rpcObjectNetId)
     {
-        public override CustomRPC RpcType => CustomRPC.RequestRetryVersionCheck;
+        public override byte RpcType => (byte)CustomRPC.RequestRetryVersionCheck;
 
         public override void SerializeRpcValues(MessageWriter writer)
         {

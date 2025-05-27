@@ -3,9 +3,9 @@ using Hazel;
 
 namespace TOHE.Modules.Rpc
 {
-    public class RpcMurderPlayer : BaseRpcMessage
+    public class RpcMurderPlayer : BaseModdedRpc
     {
-        public override RpcCalls RpcType => RpcCalls.MurderPlayer;
+        public override byte RpcType => (byte)RpcCalls.MurderPlayer;
         public RpcMurderPlayer(uint rpcObjectNetId, uint targetNetId, MurderResultFlags flags) : base(rpcObjectNetId)
         {
             this.targetNetId = targetNetId;
@@ -22,9 +22,9 @@ namespace TOHE.Modules.Rpc
         private readonly MurderResultFlags flags;
     }
 
-    public class RpcExiled(uint rpcObjectNetId) : BaseRpcMessage(rpcObjectNetId)
+    public class RpcExiled(uint rpcObjectNetId) : BaseModdedRpc(rpcObjectNetId)
     {
-        public override RpcCalls RpcType => RpcCalls.Exiled;
+        public override byte RpcType => (byte)RpcCalls.Exiled;
 
         public override void SerializeRpcValues(MessageWriter msg)
         {

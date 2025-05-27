@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     public class RpcSyncRoleSkill : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncRoleSkill;
+        public override byte RpcType => (byte)CustomRPC.SyncRoleSkill;
         public RpcSyncRoleSkill(uint rpcObjectNetId, uint player, MessageWriter writer) : base(rpcObjectNetId)
         {
             this.player = player;

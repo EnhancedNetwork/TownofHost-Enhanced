@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     class RpcPlayCustomSound : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.PlayCustomSound;
+        public override byte RpcType => (byte)CustomRPC.PlayCustomSound;
         public RpcPlayCustomSound(uint rpcObjectNetId, string soundName) : base(rpcObjectNetId)
         {
             this.soundName = soundName;

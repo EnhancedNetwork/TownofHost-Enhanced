@@ -87,7 +87,7 @@ public class RpcUtils
             {
                 var msg = message.Value[0];
                 message.Value.RemoveAt(0);
-                msg.Serialize(writer);
+                msg.CastFast<IGameDataMessage>().Serialize(writer);
 
                 if (writer.Length > 500)
                 {

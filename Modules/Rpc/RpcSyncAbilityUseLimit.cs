@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     public class RpcSyncAbilityUseLimit : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncAbilityUseLimit;
+        public override byte RpcType => (byte)CustomRPC.SyncAbilityUseLimit;
 
         public RpcSyncAbilityUseLimit(uint rpcObjectNetId, byte playerId, float limit) : base(rpcObjectNetId)
         {

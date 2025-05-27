@@ -3,9 +3,9 @@ using Hazel;
 
 namespace TOHE.Modules.Rpc
 {
-    public class RpcSyncLobbyTimerVanilla : BaseRpcMessage
+    public class RpcSyncLobbyTimerVanilla : BaseModdedRpc
     {
-        public override RpcCalls RpcType => RpcCalls.LobbyTimeExpiring;
+        public override byte RpcType => (byte)RpcCalls.LobbyTimeExpiring;
 
         public RpcSyncLobbyTimerVanilla(uint rpcObjectNetId, int timer, bool flag) : base(rpcObjectNetId)
         {
@@ -25,7 +25,7 @@ namespace TOHE.Modules.Rpc
 
     public class RpcSyncLobbyTimerModded : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncLobbyTimer;
+        public override byte RpcType => (byte)CustomRPC.SyncLobbyTimer;
 
         public RpcSyncLobbyTimerModded(uint rpcObjectNetId, int timer) : base(rpcObjectNetId)
         {

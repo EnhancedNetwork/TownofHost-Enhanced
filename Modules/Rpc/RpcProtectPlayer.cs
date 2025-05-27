@@ -3,9 +3,9 @@ using Hazel;
 
 namespace TOHE.Modules.Rpc
 {
-    public class RpcProtectPlayer : BaseRpcMessage
+    public class RpcProtectPlayer : BaseModdedRpc
     {
-        public override RpcCalls RpcType => RpcCalls.ProtectPlayer;
+        public override byte RpcType => (byte)RpcCalls.ProtectPlayer;
 
         public RpcProtectPlayer(uint rpcObjectNetId, uint targetNetId, int colorId) : base(rpcObjectNetId)
         {

@@ -270,7 +270,7 @@ public class SabotageSystemPatch
             if (LastUpdate >= now) return;
             LastUpdate = now;
 
-            Utils.MarkEveryoneDirtySettings();
+            Utils.SyncAllSettings();
 
             if (GameStates.IsInTask)
             {
@@ -293,7 +293,7 @@ public class SabotageSystemPatch
             if (LastUpdate >= now) return;
             LastUpdate = now;
 
-            Utils.MarkEveryoneDirtySettings();
+            Utils.SyncAllSettings();
 
             if (GameStates.IsInTask)
             {

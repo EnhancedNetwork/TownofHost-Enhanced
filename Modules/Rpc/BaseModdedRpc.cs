@@ -17,7 +17,7 @@ namespace TOHE.Modules.Rpc
         public override GameDataTypes GameDataType { get; } = GameDataTypes.RpcFlag;
 
         [HideFromIl2Cpp]
-        public abstract CustomRPC RpcType { get; }
+        public abstract byte RpcType { get; }
 
         public BaseModdedRpc(uint rpcObjectNetId) : base(ClassInjector.DerivedConstructorPointer<BaseModdedRpc>())
         {
@@ -28,7 +28,8 @@ namespace TOHE.Modules.Rpc
         public override void SerializeValues(MessageWriter msg)
         {
             msg.WritePacked(this.rpcObjectNetId);
-            msg.Write((byte)this.RpcType);
+            msg.Write(this.RpcType);
+            // Logger.Info($"Serializing RPC: {this.RpcType} for object with NetId: {this.rpcObjectNetId}", "BaseModdedRpc.SerializeValues");
             SerializeRpcValues(msg);
         }
 

@@ -128,6 +128,14 @@ public static class AntiBlackout
                 .ThenByDescending(pc => pc.IsModded())
                 .ThenByDescending(pc => pc.GetRoleClass().ThisRoleBase.GetRoleTypesDirect() is not RoleTypes.Impostor and not RoleTypes.Shapeshifter and not RoleTypes.Phantom)
                 .FirstOrDefault() ?? PlayerControl.LocalPlayer;
+
+            Logger.Info($"Dummy Impostor is set to ({dummyImp.PlayerId}){dummyImp.Data.PlayerName}", "AntiBlackout.RevivePlayersAndSetDummyImp");
+        }
+
+        if (Main.AllPlayerControls.Length < 4 && !(ExilePlayerId == -1 && Main.AllPlayerControls.Length >= 3))
+        {
+            Logger.Warn("Not enough players to revive and set dummy Impostor..", "AntiBlackout.RevivePlayersAndSetDummyImp");
+            Logger.SendInGame(Translator.GetString("AntiBlackNotEnoughPlayersWarning"));
         }
 
         var sender = CustomRpcSender.Create("AntiBlackout.RevivePlayersAndSetDummyImp", SendOption.Reliable).StartMessage(-1);

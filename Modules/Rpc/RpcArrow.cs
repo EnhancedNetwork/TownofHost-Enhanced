@@ -5,7 +5,7 @@ namespace TOHE.Modules.Rpc
 {
     class RpcArrow : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.Arrow;
+        public override byte RpcType => (byte)CustomRPC.Arrow;
         public RpcArrow(uint rpcObjectNetId, bool isTargetArrow, int index, byte playerId, byte? targetId, Vector3? vector) : base(rpcObjectNetId)
         {
             this.isTargetArrow = isTargetArrow;

@@ -4,7 +4,7 @@ namespace TOHE.Modules.Rpc
 {
     class RpcSyncSpeed : BaseModdedRpc
     {
-        public override CustomRPC RpcType => CustomRPC.SyncSpeedPlayer;
+        public override byte RpcType => (byte)CustomRPC.SyncSpeedPlayer;
 
         public RpcSyncSpeed(uint rpcObjectNetId, byte playerId, float speed) : base(rpcObjectNetId)
         {
