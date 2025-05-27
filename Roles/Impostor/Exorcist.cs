@@ -127,7 +127,7 @@ internal class Exorcist : RoleBase
         if (ExorcismEndOnKill.GetBool() && IsExorcismActive)
         {
             IsExorcismActive = false;
-            RPC.PlaySoundRPC(Sounds.SabotageSound, byte.MaxValue);
+            RPC.PlaySoundRPC(Sounds.TaskComplete, byte.MaxValue);
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
         }
         player.SetDeathReason(PlayerState.DeathReason.Exorcised);
