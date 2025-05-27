@@ -37,7 +37,7 @@ class LogicOptionsSerializePatch
     public static bool Prefix(ref bool __result)
     {
         // Block all but the first time and synchronize only with CustomSyncSettings
-        if (!InitialState && GameStates.IsInGame)
+        if (!GameManagerSerializeFix.InitialState && GameStates.IsInGame)
         {
             __result = false;
             return false;
