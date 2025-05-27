@@ -535,16 +535,8 @@ static class ExtendedPlayerControl
                 time = (Main.AllPlayerKillCooldown[player.PlayerId] /= 2);
                 player.SetKillTimer(time);
 
-                var sender = CustomRpcSender.Create("SetKillCoolDown_SheildForModded", SendOption.Reliable);
-                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayGuardAndKill, player.OwnerId);
-                sender.WriteNetObject(target);
-                sender.EndRpc();
-
-                sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillTimer, player.OwnerId);
-                sender.Write(time);
-                sender.EndRpc();
-
-                sender.SendMessage();
+                var message = new RpcGuardAndKillModded(player, target, time);
+                RpcUtils.LateSpecificSendMessage(message, player.OwnerId, SendOption.Reliable);
             }
             else
             {
@@ -575,7 +567,6 @@ static class ExtendedPlayerControl
         player.SetKillTimer(CD: time);
         if (time >= 0f) Main.AllPlayerKillCooldown[player.PlayerId] = time * 2;
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
-        player.SyncSettings();
         player.RpcGuardAndKill(fromSetKCD: true);
         player.ResetKillCooldown();
     }
@@ -589,7 +580,6 @@ static class ExtendedPlayerControl
         else Main.AllPlayerKillCooldown[player.PlayerId] *= 2;
         if (forceAnime || !player.IsModded())
         {
-            player.SyncSettings();
             player.RpcGuardAndKill(target, fromSetKCD: true);
         }
         else
