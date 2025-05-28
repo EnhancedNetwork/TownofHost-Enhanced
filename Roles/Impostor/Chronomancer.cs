@@ -167,6 +167,7 @@ internal class Chronomancer : RoleBase
         if (IsInMassacre && ChargedTime < 1)
         {
             IsInMassacre = false;
+            RPC.PlaySoundRPC(Sounds.TaskComplete, player.PlayerId);
             player.MarkDirtySettings();
         }
 
