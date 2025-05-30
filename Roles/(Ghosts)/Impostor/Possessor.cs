@@ -67,6 +67,7 @@ internal class Possessor : RoleBase
                     if (Utils.GetDistance(target.GetCustomPosition(), allPlayers.GetCustomPosition()) < AlertRange.GetFloat())
                     {
                         controllingPlayer = false;
+                        RPC.PlaySoundRPC(Sounds.TaskComplete, target.PlayerId);
                     }
                 }
 
@@ -115,6 +116,7 @@ internal class Possessor : RoleBase
                     }
                     if (checkPos >= FocusRange.GetFloat() && !target.IsTransformedNeutralApocalypse())
                     {
+                        RPC.PlaySoundRPC(Sounds.KillSound, _Player.PlayerId);
                         target.SetDeathReason(PlayerState.DeathReason.Curse);
                         target.RpcMurderPlayer(target);
                         target.SetRealKiller(_Player);
