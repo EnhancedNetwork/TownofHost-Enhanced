@@ -1,8 +1,7 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
-using TOHE.Roles.Crewmate;
 using TOHE.Roles.Core;
-using TOHE.Roles.Double;
+using TOHE.Roles.Crewmate;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -179,17 +178,17 @@ internal class Jackal : RoleBase
             CustomRoles.Madmate => CustomRoles.Refugee,
             _ => CustomRoles.Sidekick
         };
-        
+
         if (target.Is(CustomRoles.Jackal)) return false;
         if (target.Is(addon) || target.Is(role)) return JackalCanKillSidekick.GetBool();
-        
+
         if (!CanRecruitSidekick.GetBool() || !CanRecruit())
         {
             Logger.Info("Jackal run out of recruits or Recruit disabled?", "Jackal");
             return true;
         }
-        bool TargetCanBeSidekick = (CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam()) 
-        || (CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() && !target.GetCustomRole().IsNA()) 
+        bool TargetCanBeSidekick = (CanRecruitCoven.GetBool() && target.IsPlayerCovenTeam())
+        || (CanRecruitNeutral.GetBool() && target.IsPlayerNeutralTeam() && !target.GetCustomRole().IsNA())
         || (CanRecruitImpostor.GetBool() && target.IsPlayerImpostorTeam())
         || target.IsPlayerCrewmateTeam();
 
@@ -200,7 +199,7 @@ internal class Jackal : RoleBase
                 {
                     killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("Jackal_RecruitFailed")));
                     return true;
-                }                
+                }
                 killer.RpcRemoveAbilityUse();
 
                 Logger.Info($"Jackal {killer.GetNameWithRole()} assigned {role} to {target.GetNameWithRole()}", "Jackal");
@@ -252,7 +251,7 @@ internal class Jackal : RoleBase
                 {
                     Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                     Admirer.SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-                } 
+                }
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
@@ -274,13 +273,13 @@ internal class Jackal : RoleBase
                             Main.PlayerStates[target.PlayerId].RemoveSubRole(x);
                             Main.PlayerStates[target.PlayerId].SubRoles.Remove(CustomRoles.Rascal);
                         }
-                    }                
+                    }
                     target.GetRoleClass()?.OnRemove(target.PlayerId);
                     target.RpcChangeRoleBasis(role);
                     target.RpcSetCustomRole(role);
                     target.GetRoleClass()?.OnAdd(target.PlayerId);
                     if (role is CustomRoles.Sidekick && killer.GetBetrayalAddon() != CustomRoles.NotAssigned)
-                        target.RpcSetCustomRole(addon);                    
+                        target.RpcSetCustomRole(addon);
                 }
                 else if (!target.CanBeRecruitedBy(killer))
                 {
@@ -300,7 +299,7 @@ internal class Jackal : RoleBase
                 {
                     Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
                     Admirer.SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-                }                 
+                }
 
                 Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
                 Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);

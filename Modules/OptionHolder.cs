@@ -142,6 +142,7 @@ public static class Options
         QuickChatSpam_How2PlayHidenSeek,
         QuickChatSpam_Random20,
         QuickChatSpam_EzHacked,
+        QuickChatSpam_Empty
     };
     [Obfuscation(Exclude = true)]
     public enum ShortAddOnNamesMode
@@ -530,6 +531,10 @@ public static class Options
     public static OptionItem DisableThrowFisbee;
     public static OptionItem DisableLiftWeights;
     public static OptionItem DisableCollectShells;
+
+    public static OptionItem OverrideMedbayScan_OnVisualOff;
+    public static OptionItem OverrideMedbayScan_MinPlayer;
+    public static OptionItem OverrideMedbayScan_MaxPlayer;
 
     // Guesser Mode
     public static OptionItem GuesserMode;
@@ -1123,7 +1128,7 @@ public static class Options
                 Madmate.SetupCustomMenuOptions();
 
             if (addonType.Key == AddonTypes.Misc)
-                SetupLoversRoleOptionsToggle(23600); 
+                SetupLoversRoleOptionsToggle(23600);
 
             if (addonType.Key == AddonTypes.Experimental)
                 NarcManager.SetUpOptionsForNarc();
@@ -1257,8 +1262,6 @@ public static class Options
         LowLoadMode = BooleanOptionItem.Create(60230, "LowLoadMode", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
             .SetColor(Color.green);
-        LowLoadDelayUpdateNames = BooleanOptionItem.Create(60231, "LowLoad_DelayUpdateNames", true, TabGroup.SystemSettings, false)
-            .SetParent(LowLoadMode);
         EndWhenPlayerBug = BooleanOptionItem.Create(60240, "EndWhenPlayerBug", true, TabGroup.SystemSettings, false)
             .SetColor(Color.blue);
         HideExileChat = BooleanOptionItem.Create(60292, "HideExileChat", true, TabGroup.SystemSettings, false)
@@ -1925,6 +1928,15 @@ public static class Options
         DisableActivateWeatherNodes = BooleanOptionItem.Create(60670, "DisableActivateWeatherNodes", false, TabGroup.ModSettings, false)
             .SetParent(DisableOtherTasks);
 
+        OverrideMedbayScan_OnVisualOff = BooleanOptionItem.Create(60671, "OverrideMedbayScan_OnVisualOff", false, TabGroup.ModSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(239, 89, 175, byte.MaxValue));
+        OverrideMedbayScan_MinPlayer = IntegerOptionItem.Create(60672, "OverrideMedbayScan_MinPlayer", new(1, 15, 1), 1, TabGroup.ModSettings, false)
+            .SetParent(OverrideMedbayScan_OnVisualOff)
+            .SetValueFormat(OptionFormat.Players);
+        OverrideMedbayScan_MaxPlayer = IntegerOptionItem.Create(60673, "OverrideMedbayScan_MaxPlayer", new(1, 100, 1), 3, TabGroup.ModSettings, false)
+            .SetParent(OverrideMedbayScan_OnVisualOff)
+            .SetValueFormat(OptionFormat.Players);
 
         // Meeting Settings
         TextOptionItem.Create(10000034, "MenuTitle.Meeting", TabGroup.ModSettings)

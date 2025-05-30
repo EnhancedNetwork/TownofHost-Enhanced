@@ -2,9 +2,7 @@ using Hazel;
 using TMPro;
 using TOHE.Modules;
 using TOHE.Roles.Core;
-using TOHE.Roles.Crewmate;
 using UnityEngine;
-using UnityEngine.Events;
 using static TOHE.Translator;
 
 namespace TOHE.Roles.Impostor;
@@ -19,6 +17,7 @@ internal class Exorcist : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorKilling;
     //==================================================================\\
+
     private static OptionItem ExorcismActiveFor;
     private static OptionItem ExorcismPerGame;
     private static OptionItem ExorcismDelay;
@@ -128,6 +127,7 @@ internal class Exorcist : RoleBase
         if (ExorcismEndOnKill.GetBool() && IsExorcismActive)
         {
             IsExorcismActive = false;
+            RPC.PlaySoundRPC(Sounds.SabotageSound, byte.MaxValue);
             Utils.SendMessage(Translator.GetString("ExorcistEnd"));
         }
         player.SetDeathReason(PlayerState.DeathReason.Exorcised);
@@ -144,6 +144,7 @@ internal class Exorcist : RoleBase
     {
         var exorcist = (Exorcist)player.GetRoleClass();
         exorcist.ExorcismLimitPerMeeting--;
+        player.RPCPlayCustomSound("Line");
         player.RpcRemoveAbilityUse();
 
         if (TryHideMsg.GetBool())
@@ -157,12 +158,16 @@ internal class Exorcist : RoleBase
         {
             IsExorcismActive = true;
             IsDelayActive = false;
+            RPC.PlaySoundRPC(Sounds.SabotageSound, byte.MaxValue);
             Utils.SendMessage(string.Format(Translator.GetString("ExorcistStart"), ExorcismActiveFor.GetFloat()));
+
             _ = new LateTask(() =>
             {
                 if (IsExorcismActive)
                 {
                     IsExorcismActive = false;
+
+                    RPC.PlaySoundRPC(Sounds.TaskComplete, byte.MaxValue);
                     Utils.SendMessage(GetString("ExorcistEnd"));
                 }
             }, ExorcismActiveFor.GetFloat(), "ExorcistNotify");
@@ -192,7 +197,7 @@ internal class Exorcist : RoleBase
     public void CreateExorcistButton(MeetingHud __instance)
     {
 
-        if (GameObject.Find("ExorcistButton") != null) 
+        if (GameObject.Find("ExorcistButton") != null)
             GameObject.Destroy(GameObject.Find("ExorcistButton"));
 
         PlayerControl pc = PlayerControl.LocalPlayer;

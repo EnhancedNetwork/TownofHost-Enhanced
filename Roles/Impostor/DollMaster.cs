@@ -323,7 +323,7 @@ internal class DollMaster : RoleBase
         }
 
         // If Dollmaster is Narc and target is Sheriff or ChiefOfPolice and target is not converted
-        if (!IsControllingPlayer 
+        if (!IsControllingPlayer
             && pc.Is(CustomRoles.Narc) && target.IsPolice())
         {
             AURoleOptions.ShapeshifterCooldown = 0;

@@ -208,7 +208,7 @@ internal class Nemesis : RoleBase
 
         // if Nemesis is Narc, they can use kill buttom when all Sheriffs are dead
         // if not, they can use kill button when LivingImpostorNum is 0
-        return pc.Is(CustomRoles.Narc) ? !CustomRoles.Sheriff.RoleExist() :  LivingImpostorsNum <= 0;
+        return pc.Is(CustomRoles.Narc) ? !CustomRoles.Sheriff.RoleExist() : LivingImpostorsNum <= 0;
     }
 
     private static void NemesisOnClick(byte playerId /*, MeetingHud __instance*/)

@@ -126,7 +126,7 @@ internal class Poisoner : CovenManager
             Logger.Info($"{target.GetRealName()} Died by Poison", "Poisoner");
             if (!isButton && poisoner.IsAlive())
             {
-                RPC.PlaySoundRPC(poisoner.PlayerId, Sounds.KillSound);
+                RPC.PlaySoundRPC(Sounds.KillSound, poisoner.PlayerId);
                 if (target.Is(CustomRoles.Trapper))
                     poisoner.TrapperKilled(target);
                 poisoner.Notify(GetString("PoisonerTargetDead"));

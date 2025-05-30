@@ -32,7 +32,7 @@ internal class GameDataHandlerPatch
             case GameDataTag.DataFlag:
                 {
                     var netId = reader.ReadPackedUInt32();
-                    if (__instance.allObjectsFast.TryGetValue(netId, out var obj))
+                    if (__instance.allObjects.allObjectsFast.TryGetValue(netId, out var obj))
                     {
                         if (obj.AmOwner)
                         {
@@ -167,8 +167,11 @@ internal class StartGameHostPatch
     }
     public static void Postfix(AmongUsClient __instance)
     {
+        Logger.Info("StartGameHostPatch: Postfix called", "StartGameHostPatch");
         if (ShipStatus.Instance != null)
             isStartingAsHost = false;
+
+        GameStates.InGame = true;
     }
 }
 
@@ -192,18 +195,30 @@ internal class AuthTimeoutPatch
 
     // If you dont patch this, u still need to wait for 5s
     // I have no idea why this is happening
-    [HarmonyPatch(typeof(AmongUsClient._CoJoinOnlinePublicGame_d__1), nameof(AmongUsClient._CoJoinOnlinePublicGame_d__1.MoveNext))]
+    [HarmonyPatch(typeof(AmongUsClient._CoJoinOnlinePublicGame_d__49), nameof(AmongUsClient._CoJoinOnlinePublicGame_d__49.MoveNext))]
     [HarmonyPrefix]
-    public static void EnableUdpMatchmakingPrefix(AmongUsClient._CoJoinOnlinePublicGame_d__1 __instance)
+    public static void EnableUdpMatchmakingPrefix(AmongUsClient._CoJoinOnlinePublicGame_d__49 __instance)
     {
         // Skip to state 1 which just calls CoJoinOnlineGameDirect
         if (__instance.__1__state == 0 && !ServerManager.Instance.IsHttp)
         {
             __instance.__1__state = 1;
-            __instance.__8__1 = new AmongUsClient.__c__DisplayClass1_0
+            __instance.__8__1 = new AmongUsClient.__c__DisplayClass49_0
             {
                 matchmakerToken = string.Empty,
             };
         }
+    }
+}
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.UpdateName))]
+public class NetworkedPlayerInfoPatch
+{
+    // Prevent mark dirty here
+    public static bool Prefix(NetworkedPlayerInfo __instance, string playerName, ClientData client)
+    {
+        __instance.PlayerName = playerName;
+        client.UpdatePlayerName(playerName);
+        return false;
     }
 }

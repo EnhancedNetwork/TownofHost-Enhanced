@@ -78,7 +78,7 @@ internal class EvilTracker : RoleBase
 
         ImpostorsId[playerId] = [];
         var pc = playerId.GetPlayer();
-        
+
         foreach (var target in Main.AllAlivePlayerControls)
         {
             var targetId = target.PlayerId;
