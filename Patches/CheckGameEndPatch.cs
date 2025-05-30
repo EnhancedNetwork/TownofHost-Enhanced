@@ -110,7 +110,7 @@ class GameEndCheckerForNormal
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             || pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc)
                            )
                         {
@@ -145,7 +145,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Cultist:
-                        if ((pc.Is(CustomRoles.Cultist) && (countType == CountTypes.Cultist || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
+                        if ((pc.Is(CustomRoles.Cultist) && (countType == CountTypes.Cultist || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             || pc.Is(CustomRoles.Charmed))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -158,7 +158,7 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Infectious:
-                        if ((pc.Is(CustomRoles.Infectious) && (countType == CountTypes.Infectious || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
+                        if ((pc.Is(CustomRoles.Infectious) && (countType == CountTypes.Infectious || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             || pc.Is(CustomRoles.Infected))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -171,14 +171,14 @@ class GameEndCheckerForNormal
                         }
                         break;
                     case CustomWinner.Virus:
-                        if ((pc.Is(CustomRoles.Virus) && (countType == CountTypes.Virus || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
+                        if ((pc.Is(CustomRoles.Virus) && (countType == CountTypes.Virus || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             || pc.Is(CustomRoles.Contagious))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Jackal:
-                        if (((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Jackal)) && (countType == CountTypes.Jackal || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) 
+                        if (((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Jackal)) && (countType == CountTypes.Jackal || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
                             || pc.Is(CustomRoles.Recruit))
                         {
                             WinnerIds.Add(pc.PlayerId);
@@ -195,13 +195,14 @@ class GameEndCheckerForNormal
 
             if (WinnerTeam is CustomWinner.RuthlessRomantic)
             {
-                Romantic.BetPlayer.Do(x => {
+                Romantic.BetPlayer.Do(x =>
+                {
                     if (Main.PlayerStates[x.Key].MainRole == CustomRoles.RuthlessRomantic
                         && WinnerIds.Contains(x.Key) && !WinnerIds.Contains(x.Value))
                         WinnerIds.Add(x.Value);
                 });
             }
-            
+
             if (WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
                 foreach (PlayerControl pc in Main.AllPlayerControls)
@@ -587,7 +588,6 @@ class GameEndCheckerForNormal
                 var playerInfo = GameData.Instance.GetPlayerById(playerId);
                 // revive player
                 playerInfo.IsDead = false;
-                AmongUsClient.Instance.SendAllStreamedObjects();
             }
             // sync game data
             Utils.SendGameData();

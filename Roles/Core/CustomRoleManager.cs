@@ -85,13 +85,13 @@ public static class CustomRoleManager
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
-    public static bool HasDesyncRole(this PlayerControl player) 
-        => player != null && 
-        (player.GetRoleClass().IsDesyncRole 
-        || Main.DesyncPlayerList.Contains(player.Data.PlayerId) 
+    public static bool HasDesyncRole(this PlayerControl player)
+        => player != null &&
+        (player.GetRoleClass().IsDesyncRole
+        || Main.DesyncPlayerList.Contains(player.Data.PlayerId)
         || player.Is(CustomRoles.Killer)
         || (player.GetCustomRole().IsImpostor() && NarcManager.IsNarcAssigned()));
-    
+
     /// If the role protects others players
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)

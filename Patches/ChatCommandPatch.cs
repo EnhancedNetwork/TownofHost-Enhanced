@@ -1,5 +1,5 @@
+using AmongUs.InnerNet.GameDataMessages;
 using Assets.CoreScripts;
-using AmongUs.GameOptions;
 using Hazel;
 using System;
 using System.IO;
@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Coven;
@@ -370,6 +371,7 @@ internal class ChatCommands
                 case "/faction":
                     canceled = true;
                     var impCount = $"{GetString("NumberOfImpostors")}: {GameOptionsManager.Instance.GameHostOptions.NumImpostors}";
+                    if (Options.UseVariableImp.GetBool()) impCount = $"{GetString("ImpRolesMinPlayer")}: {Options.ImpRolesMinPlayer.GetInt()}\n{GetString("ImpRolesMaxPlayer")}: {Options.ImpRolesMaxPlayer.GetInt()}";
                     var nnkCount = $"{GetString("NonNeutralKillingRolesMinPlayer")}: {Options.NonNeutralKillingRolesMinPlayer.GetInt()}\n{GetString("NonNeutralKillingRolesMaxPlayer")}: {Options.NonNeutralKillingRolesMaxPlayer.GetInt()}";
                     var nkCount = $"{GetString("NeutralKillingRolesMinPlayer")}: {Options.NeutralKillingRolesMinPlayer.GetInt()}\n{GetString("NeutralKillingRolesMaxPlayer")}: {Options.NeutralKillingRolesMaxPlayer.GetInt()}";
                     var apocCount = $"{GetString("NeutralApocalypseRolesMinPlayer")}: {Options.NeutralApocalypseRolesMinPlayer.GetInt()}\n{GetString("NeutralApocalypseRolesMaxPlayer")}: {Options.NeutralApocalypseRolesMaxPlayer.GetInt()}";
@@ -485,8 +487,8 @@ internal class ChatCommands
                     {
                         case CustomGameMode.Standard:
                             var allAlivePlayers = Main.AllAlivePlayerControls;
-                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                            int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                            int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
+                            int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate));
                             int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                             int apocnum = allAlivePlayers.Count(pc => pc.IsNeutralApocalypse() || pc.IsTransformedNeutralApocalypse());
                             int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
@@ -1204,7 +1206,7 @@ internal class ChatCommands
                     canceled = true;
                     subArgs = text.Remove(0, 3);
                     if (args.Length < 1 || !int.TryParse(args[1], out int sound1)) break;
-                    RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, (Sounds)sound1);
+                    RPC.PlaySoundRPC((Sounds)sound1, PlayerControl.LocalPlayer.PlayerId);
                     break;
 
                 case "/poll":
@@ -2228,7 +2230,7 @@ internal class ChatCommands
         {
             Logger.Info($"This player (id {player.PlayerId}) was Exorcised", "OnReceiveChat");
             Exorcist.ExorcisePlayer(player);
-            canceled=true;
+            canceled = true;
             return;
         }
 
@@ -2542,8 +2544,8 @@ internal class ChatCommands
                 {
                     case CustomGameMode.Standard:
                         var allAlivePlayers = Main.AllAlivePlayerControls;
-                        int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor));
-                        int madnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsMadmate() || pc.Is(CustomRoles.Madmate));
+                        int impnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Impostor) && !pc.Is(CustomRoles.Narc));
+                        int madnum = allAlivePlayers.Count(pc => (pc.GetCustomRole().IsMadmate() && !pc.Is(CustomRoles.Narc)) || pc.Is(CustomRoles.Madmate));
                         int apocnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNA());
                         int neutralnum = allAlivePlayers.Count(pc => pc.GetCustomRole().IsNK());
                         int covnum = allAlivePlayers.Count(pc => pc.Is(Custom_Team.Coven));
@@ -3728,9 +3730,14 @@ class RpcSendChatPatch
             DestroyableSingleton<HudManager>.Instance.Chat.AddChat(__instance, chatText);
         if (chatText.Contains("who", StringComparison.OrdinalIgnoreCase))
             DestroyableSingleton<UnityTelemetry>.Instance.SendWho();
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SendChat, SendOption.None);
+        /*
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.SendChat, SendOption.None);
         messageWriter.Write(chatText);
-        messageWriter.EndMessage();
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        */
+
+        var message = new RpcSendChatMessage(__instance.NetId, chatText);
+        RpcUtils.LateBroadcastReliableMessage(message);
         __result = true;
         return false;
     }

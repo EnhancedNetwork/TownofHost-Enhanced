@@ -1061,7 +1061,7 @@
   "ApocalypseInfoLong": "(Apocalypse):\nApocalypse members are on a separate team that works together and wins together. If there are multiple Apocalypse roles in the game, they can see each other's roles.\nDepending on the Host's settings, Apocalypse roles can guess or be guessed.",
   "RevenantInfoLong": "(Neutral):\nAs the Revenant, your goal is to be killed. If you are killed, you will take your killer's role and kill your killer instead. You cannot win before being killed.\nNote that Revenant only works when being directly killed.",
   "RequiterInfoLong": "(Crewmates):\nThe Requiter has no bullets at the beginning.\nFor each Crewmate ejected,the Requiter gains one bullet.\nThe Requiter can kill when they have bullets.",
-  "NarcInfoLong": "(Betrayal Add-ons):\nImpostors and Madmates see Narc as their teammate,but Narc themselves don't know who the Impostors and Madmates are.\nNarc appears as a Sheriff to Crewmates(Copycat becomes Sheriff for copying Narc,Overseer sees Narc as Sheriff,etc.).\n\nNarc has to trick Impostors and Madmates into believing that Narc is their teammate,and instead of Impostors,Narc has to help Crewmates win.\n\nNote:Depending on the settings,Impostors may kill each other when Narc is in a game,\nIf the settings is disabled,Narc won't be able to use their kill button until the other Impostors die.\n\nThe effects of the roles below will change when they are Narc:\nBounty Hunter: Impostors can be Narc Bounty Hunter's target\nCouncillor: Narc Councillor can judge non-Crewmates. Judging Crewmates will make Narc Councillor suicide\nDouble Agent: Narc Double Agent's role will change to Parasite instead of Traitor\nGangster/Godfather/Time Thief: same as Admired\nInstigator: Narc Instigator will kill non-Crewmates instead\nNemesis: Narc Nemesis can kill when Sheriff is dead",
+  "NarcInfoLong": "(Betrayal Add-ons):\nImpostors and Madmates see Narc as their teammate,but Narc themselves don't know who the Impostors and Madmates are.\nNarc appears as a Sheriff to Crewmates\n\nNote:Depending on the settings,Impostors may kill each other when Narc is in a game.\nIf the respective option is disabled,Narc won't be able to use their kill button until the other Impostors die.",
   "ShowTextOverlay": "Text Overlay",
   "ShowModdedClientText": "Modded Client Text",
   "DisableShieldAnimations": "Disable Unnecessary Shield Animations",
@@ -1086,6 +1086,7 @@
   "WraithVentNormallyOnCooldown": "<color=#4b0082>Wraith</color> Vents normally when Invisibility is on Cooldown",
   "DisableMeeting": "Disable Meetings",
   "DisableCloseDoor": "Disable Doors Sabotage",
+  "DisableVenting1v1": "Disable Venting in 1v1s",
   "DisableSabotage": "Disable Sabotages",
   "NoGameEnd": "No Game End",
   "AllowConsole": "BepInEx Console",
@@ -1458,6 +1459,9 @@
   "TNACanBeGuessed": "<color=#2B0804>Transformed</color> <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles can be guessed",
   "CanKillTNA": "Can kill <color=#2B0804>Transformed</color> <color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> Roles",
   "ApocCanSeeEachOthersAddOns": "<color=#7f8c8d>Neutral</color> <color=#ff174f>Apocalypse</color> can see each other's Add-ons",
+  "UseVariableImp": "Variable <color=#ff1919>Impostor</color> Count <size=75%>(makes vanilla option useless)</size>",
+  "ImpRolesMinPlayer": "<color=#00a5ff>Minimum</color> amount of <color=#ff1919>Impostors</color>",
+  "ImpRolesMaxPlayer": "<color=#00a5ff>Maximum</color> amount of <color=#ff1919>Impostors</color>",
   "ImpsCanSeeEachOthersRoles": "<color=#ff1919>Impostors</color> know the roles of other <color=#ff1919>Impostors</color>",
   "ImpsCanSeeEachOthersAddOns": "<color=#ff1919>Impostors</color> can see each other's Add-ons",
   "ImpKnowWhosMadmate": "<color=#ff1919>Impostors</color> know <color=#ff1919>Madmates</color>",
@@ -4072,7 +4076,7 @@
   "ExorcismLimitMeeting": "Max exorcises per meeting",
   "ExorcismEndOnKill": "End exorcism on kill",
   "ExorcistTryHideMsg": "Try to hide exorcist's commands",
-  
+
   "PreventSeeRolesBeforeSkillUsedUp": "Prevent seeing others roles before skill used up",
 
   "UseQuickChatSpamCheat": "Use Quick Chat Spam for commands",
@@ -4081,9 +4085,11 @@
   "QuickChatSpam_How2PlayHidenSeek": "How2Play HnS",
   "QuickChatSpam_Random20": "Random Strings",
   "QuickChatSpam_EzHacked": "Ducked Ezly",
+  "QuickChatSpam_Empty": "Empty String",
   "CrossLanguageGetRole": "Get role names from different languages for commands",
 
   "BypassRateLimitAC": "Experimental Changes to Bypass RateLimit Anticheat",
+  "AntiBlackNotEnoughPlayersWarning": "At least 4 players is needed to bypass blackout!\nYour game does not have enough players and will casue a blackout for vanilla players.",
 
   "Runner": "Runner",
   "ModeSpeedRun": "Gamemode: Speedrun",

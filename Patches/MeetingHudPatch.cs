@@ -1563,3 +1563,30 @@ class MeetingHudHandleRpcPatch
         return true;
     }
 }
+
+[HarmonyPatch(typeof(NetworkedPlayerInfo), nameof(NetworkedPlayerInfo.Serialize))]
+class NetworkedPlayerInfoSerializePatch
+{
+    private static string LastName = string.Empty;
+    public static void Prefix(NetworkedPlayerInfo __instance)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+
+        if (MeetingHud.Instance || ExileController.Instance)
+        {
+            if (CheckForEndVotingPatch.TempExiledPlayer != null && CheckForEndVotingPatch.TempExiledPlayer.PlayerId == __instance.PlayerId)
+            {
+                LastName = __instance.PlayerName;
+                __instance.PlayerName = CheckForEndVotingPatch.TempExileMsg;
+            }
+        }
+    }
+
+    public static void Postfix(NetworkedPlayerInfo __instance)
+    {
+        if (__instance.PlayerName == CheckForEndVotingPatch.TempExileMsg)
+        {
+            __instance.PlayerName = LastName;
+        }
+    }
+}

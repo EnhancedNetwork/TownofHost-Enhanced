@@ -1,10 +1,12 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using InnerNet;
 using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Patches;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -27,6 +29,9 @@ class OnGameJoinedPatch
         Main.HostClientId = AmongUsClient.Instance.HostId;
         if (!DebugModeManager.AmDebugger && Main.VersionCheat.Value)
             Main.VersionCheat.Value = false;
+
+        RpcUtils.queuedReliableMessage.Clear();
+        RpcUtils.queuedUnreliableMessage.Clear();
 
         ChatUpdatePatch.DoBlockChat = false;
         Main.CurrentServerIsVanilla = GameStates.IsVanillaServer && !GameStates.IsLocalGame;
@@ -224,8 +229,8 @@ public static class OnPlayerJoinedPatch
 
                 if (AmongUsClient.Instance.AmHost && !Main.playerVersion.TryGetValue(client.Id, out _))
                 {
-                    var retry = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.None, client.Id);
-                    AmongUsClient.Instance.FinishRpcImmediately(retry);
+                    var message = new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId);
+                    RpcUtils.LateSpecificSendMessage(message, client.Id);
                 }
             }
             catch { }
@@ -363,10 +368,8 @@ class OnPlayerLeftPatch
             {
                 if (GameStates.IsOnlineGame && AmongUsClient.Instance.AmHost)
                 {
-                    MessageWriter messageWriter = AmongUsClient.Instance.Streams[1];
-                    messageWriter.StartMessage(5);
-                    messageWriter.WritePacked(netid);
-                    messageWriter.EndMessage();
+                    var message = new DespawnGameDataMessage(netid);
+                    RpcUtils.LateBroadcastReliableMessage(message);
                 }
             }, 2.5f, "Repeat Despawn", false);
         }
@@ -576,7 +579,7 @@ class InnerNetClientSpawnPatch
 
         ClientData client = Utils.GetClientById(ownerId);
 
-        Logger.Msg($"Spawn player data: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
+        Logger.Info($"Spawn player: ID {ownerId}: {client.PlayerName}", "InnerNetClientSpawn");
 
         if (client == null || client.Character == null // client is null
             || client.ColorId < 0 || Palette.PlayerColors.Length <= client.ColorId) // invalid client color
@@ -604,8 +607,8 @@ class InnerNetClientSpawnPatch
                     return;
                 }
 
-                var sender = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RequestRetryVersionCheck, SendOption.Reliable, client.Character.OwnerId);
-                AmongUsClient.Instance.FinishRpcImmediately(sender);
+                var message = new RpcRequestRetryVersionCheck(PlayerControl.LocalPlayer.NetId);
+                RpcUtils.LateSpecificSendMessage(message, client.Id);
             }, 3f, "RPC Request Retry Version Check");
 
             if (GameStates.IsOnlineGame)
@@ -617,17 +620,14 @@ class InnerNetClientSpawnPatch
                         // Only for vanilla
                         if (!client.Character.IsModded())
                         {
-                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(LobbyBehaviour.Instance.NetId, (byte)RpcCalls.LobbyTimeExpiring, SendOption.None, client.Id);
-                            writer.WritePacked((int)GameStartManagerPatch.timer);
-                            writer.Write(false);
-                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                            var message = new RpcSyncLobbyTimerVanilla(LobbyBehaviour.Instance.NetId, (int)GameStartManagerPatch.timer, false);
+                            RpcUtils.LateSpecificSendMessage(message, client.Id);
                         }
                         // Non-host modded client
                         else if (client.Character.IsNonHostModdedClient())
                         {
-                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncLobbyTimer, SendOption.Reliable, client.Id);
-                            writer.WritePacked((int)GameStartManagerPatch.timer);
-                            AmongUsClient.Instance.FinishRpcImmediately(writer);
+                            var message = new RpcSyncLobbyTimerModded(PlayerControl.LocalPlayer.NetId, (int)GameStartManagerPatch.timer);
+                            RpcUtils.LateBroadcastReliableMessage(message);
                         }
                     }
                 }, 3.1f, "Send RPC or Sync Lobby Timer");

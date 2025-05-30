@@ -1,11 +1,7 @@
 using Hazel;
 using TOHE.Modules;
-using TOHE.Roles.AddOns.Crewmate;
-using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
-using TOHE.Roles.Coven;
 using TOHE.Roles.Double;
-using TOHE.Roles.Neutral;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -82,21 +78,20 @@ internal class Admirer : RoleBase
         if (!AdmiredList.ContainsKey(killer.PlayerId))
             AdmiredList.Add(killer.PlayerId, []);
 
-        var addon = killer.GetBetrayalAddon(true);        
+        var addon = killer.GetBetrayalAddon(true);
         if (killer.GetAbilityUseLimit() > 0)
         {
-            if (KnowTargetRole.GetBool())
-            {
-                AdmiredList[killer.PlayerId].Add(target.PlayerId);
-                SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
-            }
-
             if (target.CanBeRecruitedBy(killer))
             {
                 Logger.Info("Set converted: " + target.GetNameWithRole().RemoveHtmlTags() + " to " + addon.ToString(), "Admirer Assign");
                 target.RpcSetCustomRole(addon);
                 killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("AdmiredPlayer")));
                 target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("AdmirerAdmired")));
+                if (KnowTargetRole.GetBool())
+                {
+                    AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                    SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+                }
             }
             else goto AdmirerFailed;
 

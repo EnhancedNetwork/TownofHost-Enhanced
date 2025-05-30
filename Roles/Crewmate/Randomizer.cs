@@ -100,7 +100,7 @@ internal class Randomizer : RoleBase
                 Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed;
                 ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
                 killer.MarkDirtySettings();
-                RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                RPC.PlaySoundRPC(Sounds.TaskComplete, killer.PlayerId);
             }, BecomeTrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
         }
         else if (Randomizer == 3)

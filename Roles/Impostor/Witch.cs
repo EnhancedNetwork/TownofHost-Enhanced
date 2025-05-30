@@ -74,7 +74,6 @@ internal class Witch : RoleBase
             writer.Write(witchId);
             writer.Write(SpellMode[witchId]);
             AmongUsClient.Instance.FinishRpcImmediately(writer);
-
         }
     }
     public static void ReceiveRPC(MessageReader reader, bool doSpell)

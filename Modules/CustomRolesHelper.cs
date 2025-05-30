@@ -76,9 +76,9 @@ public static class CustomRolesHelper
     public static bool HasGhostRole(this PlayerControl player) => player.GetCustomRole().IsGhostRole() || player.IsAnySubRole(x => x.IsGhostRole());
 
     // Role's basis role is an Impostor (regular imp,shapeshifter,phantom) role
-    public static bool HasImpBasis(this CustomRoles role,bool ForDesyncRole = true)
-        => role.GetVNRole() is CustomRoles.Impostor 
-            or CustomRoles.Shapeshifter 
+    public static bool HasImpBasis(this CustomRoles role, bool ForDesyncRole = true)
+        => role.GetVNRole() is CustomRoles.Impostor
+            or CustomRoles.Shapeshifter
             or CustomRoles.Phantom
             || (ForDesyncRole && role.GetDYRole() is RoleTypes.Impostor
                 or RoleTypes.Shapeshifter
@@ -465,7 +465,7 @@ public static class CustomRolesHelper
                     _ => addon
                 };
         }
-        
+
         return addon;
     }
 
@@ -477,7 +477,7 @@ public static class CustomRolesHelper
 
         //loyal can't be recruited
         if (target.Is(CustomRoles.Loyal)) return false;
-                         
+
         //target already has this addon
         else if (target.Is(addon)) return false;
 
@@ -486,7 +486,7 @@ public static class CustomRolesHelper
 
         //Coven Leader cant be recruited when they have the necronomicon
         else if (CovenManager.HasNecronomicon(target.PlayerId) && target.Is(CustomRoles.CovenLeader)) return false;
-        
+
         return addon switch
         {
             CustomRoles.Charmed => Cultist.CanBeCharmed(target),
@@ -499,14 +499,14 @@ public static class CustomRolesHelper
             CustomRoles.Soulless => CursedSoul.CanBeSoulless(target),//Cursed Soul recruits players to Soulless by default
             _ => false
         };
-    }    
+    }
 
     public static bool IsPlayerImpostorTeam(this PlayerControl player, bool onlyMainRole = false) => Main.PlayerStates.TryGetValue(player.PlayerId, out var state) && state.IsPlayerImpostorTeam(onlyMainRole);
     public static bool IsPlayerImpostorTeam(this PlayerState player, bool onlyMainRole = false)
     {
         if (!onlyMainRole)
         {
-            if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;            
+            if (player.SubRoles.Contains(CustomRoles.Madmate)) return true;
             if (player.SubRoles.Any(x => (x.IsConverted() || x is CustomRoles.Admired or CustomRoles.Narc) && x is not CustomRoles.Madmate)) return false;
         }
 
@@ -518,7 +518,7 @@ public static class CustomRolesHelper
     {
         if (!onlyMainRole)
         {
-            if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Narc)) 
+            if (player.SubRoles.Contains(CustomRoles.Admired) || player.SubRoles.Contains(CustomRoles.Narc))
                 return true;
             if (player.SubRoles.Any(x => (x.IsConverted()))) return false;
         }
@@ -738,12 +738,12 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Reach:
-                if (!pc.CanUseKillButton())
+                if (!pc.CanUseKillButton() && !pc.Is(CustomRoles.Narc))
                     return false;
                 break;
 
             case CustomRoles.Overclocked:
-                if (!pc.CanUseKillButton())
+                if (!pc.CanUseKillButton() && !pc.Is(CustomRoles.Narc))
                     return false;
                 if (pc.Is(CustomRoles.Reverie))
                     return false;
@@ -785,7 +785,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
                     || pc.Is(CustomRoles.KillingMachine))
                     return false;
-                if (!pc.GetCustomRole().IsCrewmate())
+                if (!pc.GetCustomRole().IsCrewmate() && !pc.Is(CustomRoles.Narc))
                     return false;
                 break;
 
@@ -961,7 +961,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Admirer)
                     || pc.Is(CustomRoles.NiceMini)
                     || pc.Is(CustomRoles.GuardianAngelTOHE)
-                    || pc.Is(CustomRoles.Godfather))
+                    || pc.Is(CustomRoles.Godfather)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (pc.GetCustomRole().IsNeutral() || pc.GetCustomRole().IsMadmate() || pc.IsAnySubRole(sub => sub.IsConverted()) || pc.GetCustomRole().IsCoven())
                     return false;
@@ -970,7 +971,8 @@ public static class CustomRolesHelper
                 break;
 
             case CustomRoles.Mimic:
-                if (pc.Is(CustomRoles.Nemesis))
+                if (pc.Is(CustomRoles.Nemesis)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;
@@ -1029,7 +1031,8 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Tired)
                     || pc.Is(CustomRoles.Flash)
                     || pc.Is(CustomRoles.Sloth)
-                    || pc.Is(CustomRoles.KillingMachine))
+                    || pc.Is(CustomRoles.KillingMachine)
+                    || pc.Is(CustomRoles.Narc))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())
                     return false;

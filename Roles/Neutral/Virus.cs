@@ -97,17 +97,17 @@ internal class Virus : RoleBase
         else
         {
             if (!reporter.CanBeRecruitedBy(_Player)) return;
-            
+
             var addon = _Player.GetBetrayalAddon(true);
             _Player.RpcRemoveAbilityUse();
             reporter.RpcSetCustomRole(addon);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
-            
+
             if (addon is CustomRoles.Admired)
             {
                 Admirer.AdmiredList[_Player.PlayerId].Add(reporter.PlayerId);
                 Admirer.SendRPC(_Player.PlayerId, reporter.PlayerId); //Sync playerId list
-            }             
+            }
         }
 
         Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());
