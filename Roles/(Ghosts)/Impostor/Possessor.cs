@@ -15,6 +15,7 @@ internal class Possessor : RoleBase
     public override CustomRoles ThisRoleBase => CustomRoles.GuardianAngel;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorGhosts;
     //==================================================================\\
+    
     private static bool controllingPlayer = false;
     private static byte controllingTargetId = byte.MaxValue;
     private static float controllingLastSpeed = float.MinValue;
