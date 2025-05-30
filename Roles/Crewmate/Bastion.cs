@@ -69,6 +69,7 @@ internal class Bastion : RoleBase
             _ = new LateTask(() =>
             {
                 var bastion = _Player;
+                bastion.RPCPlayCustomSound("Boom");
                 bastion.Notify(GetString("BastionNotify"));
                 pc.Notify(GetString("EnteredBombedVent"));
 
@@ -84,6 +85,7 @@ internal class Bastion : RoleBase
     {
         if (pc.GetAbilityUseLimit() >= 1)
         {
+            pc.RPCPlayCustomSound("Line");
             pc.RpcRemoveAbilityUse();
             BombedVents.Add(vent.Id);
             pc.Notify(GetString("VentBombSuccess"));
