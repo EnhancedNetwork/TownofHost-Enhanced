@@ -71,6 +71,7 @@ internal class Bastion : RoleBase
                 var bastion = _Player;
                 bastion.RPCPlayCustomSound("Boom");
                 bastion.Notify(GetString("BastionNotify"));
+                pc.RPCPlayCustomSound("Boom");
                 pc.Notify(GetString("EnteredBombedVent"));
 
                 pc.SetDeathReason(PlayerState.DeathReason.Bombed);
