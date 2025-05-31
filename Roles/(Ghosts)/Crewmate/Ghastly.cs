@@ -123,6 +123,7 @@ internal class Ghastly : RoleBase
             LastTime.Add(killer, GetTimeStamp());
 
             KillerIsChosen = false;
+            RPC.PlaySoundRPC(Sounds.TaskUpdateSound, killer);
             GetPlayerById(killer)?.Notify(GetString("GhastlyYouvePosses"));
             angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 

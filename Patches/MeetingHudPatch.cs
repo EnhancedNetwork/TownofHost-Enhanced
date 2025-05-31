@@ -424,6 +424,8 @@ class CheckForEndVotingPatch
         var exileId = exiledPlayer.PlayerId;
         if (exileId is < 0 or > 254) return;
 
+        CustomSoundsManager.RPCPlayCustomSoundAll("Dramatic");
+
         var realName = Main.AllPlayerNames[exiledPlayer.PlayerId];
         Main.LastVotedPlayer = realName;
 

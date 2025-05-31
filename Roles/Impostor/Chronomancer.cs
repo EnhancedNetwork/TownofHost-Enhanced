@@ -133,6 +133,7 @@ internal class Chronomancer : RoleBase
             LastNowF = countnowF + Dtime.GetFloat();
             _ = new LateTask(() =>
             {
+                RPC.PlaySoundRPC(Sounds.ImpTransform, killer.PlayerId);
                 killer.Notify(GetString("ChronomancerStartMassacre"));
             }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
             IsInMassacre = true;
@@ -166,6 +167,7 @@ internal class Chronomancer : RoleBase
         if (IsInMassacre && ChargedTime < 1)
         {
             IsInMassacre = false;
+            RPC.PlaySoundRPC(Sounds.TaskComplete, player.PlayerId);
             player.MarkDirtySettings();
         }
 
