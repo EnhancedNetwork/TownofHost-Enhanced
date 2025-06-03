@@ -951,6 +951,7 @@ public static class CustomRolesHelper
                     || pc.Is(CustomRoles.Lightning)
                     || pc.Is(CustomRoles.Swift)
                     || pc.Is(CustomRoles.Swooper)
+                    || pc.Is(CustomRoles.Nuancer)
                     || pc.Is(CustomRoles.DoubleAgent))
                     return false;
                 if (!pc.GetCustomRole().IsImpostor())

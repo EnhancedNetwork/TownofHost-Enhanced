@@ -291,5 +291,7 @@
   "Red": "#D71E22",
   "Blue": "#1D3CE9",
   "Survivalist": "#08A045",
-  "Meteor": "#dc2c2c"
+  "Meteor": "#dc2c2c",
+  "Nuancer": "#b30000",
+  "ForensicScientist": "#00ff7f"
 }
