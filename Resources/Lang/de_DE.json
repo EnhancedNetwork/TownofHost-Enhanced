@@ -52,7 +52,7 @@
   "ImpCanGuessImp": "<color=#ff1919>Verräter</color> kann andere <color=#ff1919>Verräter</color> guessen",
   "ApocCanGuessApoc": "<color=#7f8c8d>Neutraler</color> <color=#ff174f>Apokalypser</color> Kann Rollen von <color=#7f8c8d>Neutralem</color> <color=#ff174f>Apokalypser</color> guessen",
   "CovenCanGuessCoven": "<color=#ac42f2>Hexenzirkel</color> kann Rollen von <color=#ac42f2>Hexenzirkel</color> guessen",
-  "GuessImmune": "Sorry, but that role is immune to being guessed!",
+  "GuessImmune": "Sorry, aber diese Rolle ist immun um erraten zu werden!",
   "GM": "Spielmeister",
   "Sunnyboy": "Sonniger",
   "Bard": "Barde",
