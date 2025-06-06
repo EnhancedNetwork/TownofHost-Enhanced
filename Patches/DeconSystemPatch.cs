@@ -12,7 +12,7 @@ public static class DeconSystemUpdateSystemPatch
             // Temp decon time
             var deconTime = Utils.GetActiveMapName() switch
             {
-                MapNames.Mira => Options.DecontaminationTimeOnMiraHQ.GetFloat(),
+                MapNames.MiraHQ => Options.DecontaminationTimeOnMiraHQ.GetFloat(),
                 MapNames.Polus => Options.DecontaminationTimeOnPolus.GetFloat(),
                 _ => 3f,
             };

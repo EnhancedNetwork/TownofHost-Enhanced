@@ -119,6 +119,7 @@ internal class Vampire : RoleBase
     private static void KillBitten(PlayerControl vampire, PlayerControl target)
     {
         if (target.Data.Disconnected) return;
+        if (target.IsTransformedNeutralApocalypse()) return;
 
         if (target.IsAlive())
         {
@@ -129,7 +130,7 @@ internal class Vampire : RoleBase
             Logger.Info($"{target.name} self-kill while being bitten by Vampire.", "Vampire");
             if (vampire.IsAlive())
             {
-                RPC.PlaySoundRPC(vampire.PlayerId, Sounds.KillSound);
+                RPC.PlaySoundRPC(Sounds.KillSound, vampire.PlayerId);
 
                 if (target.Is(CustomRoles.Trapper))
                     vampire.TrapperKilled(target);

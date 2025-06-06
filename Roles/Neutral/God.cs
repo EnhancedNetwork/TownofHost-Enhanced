@@ -37,7 +37,7 @@ internal class God : RoleBase
     public override void OnMeetingHudStart(PlayerControl pc)
     {
         if (pc.IsAlive() && NotifyGodAlive.GetBool())
-            AddMsg(Translator.GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), Translator.GetString("GodAliveTitle")));
+            AddMsg(Translator.GetString("GodNoticeAlive"), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.God), Translator.GetString("God").ToUpper()));
     }
 
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target) => seer.Is(CustomRoles.God);

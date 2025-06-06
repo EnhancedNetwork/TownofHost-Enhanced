@@ -1,6 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -57,10 +57,9 @@ internal class Penguin : RoleBase
 
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(AbductVictim?.PlayerId ?? 255);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -110,7 +109,7 @@ internal class Penguin : RoleBase
         bool doKill = true;
         if (AbductVictim != null)
         {
-            if (target != AbductVictim)
+            if (target != AbductVictim && !target.IsTransformedNeutralApocalypse())
             {
                 // During an abduction, only the abductee can be killed.
                 killer?.RpcMurderPlayer(AbductVictim);
@@ -144,15 +143,21 @@ internal class Penguin : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         stopCount = true;
+        if (AbductVictim == null) return;
         // If you meet a meeting with time running out, kill it even if you're on a ladder.
-        if (AbductVictim != null && AbductTimer <= 0f)
+        if (AbductVictim.IsTransformedNeutralApocalypse())
+        {
+            RemoveVictim();
+            Logger.Info($"{AbductVictim.GetRealName()} is TNA, no meeting kill", "Penguin");
+            return;
+        }
+        if (AbductTimer <= 0f)
         {
             _Player?.RpcMurderPlayer(AbductVictim);
         }
         if (MeetingKill)
         {
             if (!AmongUsClient.Instance.AmHost) return;
-            if (AbductVictim == null) return;
             _Player?.RpcMurderPlayer(AbductVictim);
         }
         RemoveVictim();
@@ -216,12 +221,11 @@ internal class Penguin : RoleBase
                 RemoveVictim();
                 return;
             }
-            if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+            if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation() && !AbductVictim.IsTransformedNeutralApocalypse())
             {
                 // Set IsDead to true first (prevents ladder chase)
                 AbductVictim.Data.IsDead = true;
                 AbductVictim.Data.MarkDirty();
-
                 // If the penguin himself is on a ladder, kill him after getting off the ladder.
                 if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
                 {
@@ -245,6 +249,34 @@ internal class Penguin : RoleBase
                             {
                                 sender.WriteNetObject(abductVictim);
                                 sender.Write((int)ExtendedPlayerControl.ResultFlags);
+                            }
+                            sender.EndRpc();
+                        }
+                        sender.SendMessage();
+
+                    }, 0.3f, "PenguinMurder");
+                    RemoveVictim();
+                }
+            }
+            else if (AbductTimer <= 0f && !penguin.MyPhysics.Animations.IsPlayingAnyLadderAnimation() && AbductVictim.IsTransformedNeutralApocalypse())
+            {
+                // If the penguin himself is on a ladder, kill him after getting off the ladder.
+                if (!AbductVictim.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+                {
+                    var abductVictim = AbductVictim;
+                    _ = new LateTask(() =>
+                    {
+                        var sId = abductVictim.NetTransform.lastSequenceId + 5;
+                        //Host side
+                        abductVictim.NetTransform.SnapTo(penguin.transform.position, (ushort)sId);
+                        penguin.MurderPlayer(abductVictim, ExtendedPlayerControl.ResultFlags);
+
+                        var sender = CustomRpcSender.Create("PenguinMurder");
+                        {
+                            sender.AutoStartRpc(abductVictim.NetTransform.NetId, (byte)RpcCalls.SnapTo);
+                            {
+                                NetHelpers.WriteVector2(penguin.transform.position, sender.stream);
+                                sender.Write(abductVictim.NetTransform.lastSequenceId);
                             }
                             sender.EndRpc();
                         }

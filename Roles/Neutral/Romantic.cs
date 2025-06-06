@@ -1,6 +1,6 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using UnityEngine;
@@ -80,12 +80,11 @@ internal class Romantic : RoleBase
 
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         writer.Write(BetTimes.TryGetValue(playerId, out var times) ? times : 1);
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -258,8 +257,9 @@ internal class Romantic : RoleBase
         {
             pc.SetDeathReason(PlayerState.DeathReason.FollowingSuicide);
             pc.RpcMurderPlayer(pc);
+            return;
         }
-        else if (player.GetCustomRole().IsImpostorTeamV3())
+        if (player.GetCustomRole().IsImpostorTeamV3())
         {
             Logger.Info($"Impostor Romantic Partner Died changing {pc.GetNameWithRole()} to Refugee", "Romantic");
             pc.GetRoleClass()?.OnRemove(pc.PlayerId);
@@ -272,6 +272,7 @@ internal class Romantic : RoleBase
         else if (player.IsNeutralKiller())
         {
             Logger.Info($"Neutral Romantic Partner Died changing {pc.GetNameWithRole()} to Ruthless Romantic", "Romantic");
+            pc.GetRoleClass()?.OnRemove(pc.PlayerId);
             pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
             pc.GetRoleClass().OnAdd(pc.PlayerId);
             Utils.NotifyRoles(SpecifyTarget: pc);
@@ -289,6 +290,7 @@ internal class Romantic : RoleBase
                     || killer == player //or if partner dies by suicide
                     || !killer.IsAlive()) //or if killer is dead,romantic will become ruthless romantic
                 {
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcSetCustomRole(CustomRoles.RuthlessRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
                     Logger.Info($"No real killer for {player.GetRealName().RemoveHtmlTags()}, role changed to ruthless romantic", "Romantic");
@@ -297,6 +299,7 @@ internal class Romantic : RoleBase
                 {
                     VengefulTargetId = killer.PlayerId;
 
+                    pc.GetRoleClass()?.OnRemove(pc.PlayerId);
                     pc.RpcSetCustomRole(CustomRoles.VengefulRomantic);
                     pc.GetRoleClass().OnAdd(pc.PlayerId);
                     if (pc.GetRoleClass() is VengefulRomantic VR) VR.SendRPC(pc.PlayerId);
@@ -351,6 +354,12 @@ internal class VengefulRomantic : RoleBase
             return false;
         }
     }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        hud.KillButton.OverrideText(GetString("VengefulRomanticButtonText"));
+    }
+    public override Sprite GetKillButtonSprite(PlayerControl player, bool shapeshifting) => CustomButton.Get("RomanticKill");
+
     public override string GetProgressText(byte playerId, bool cooms)
     {
         var player = Utils.GetPlayerById(playerId);
@@ -359,11 +368,10 @@ internal class VengefulRomantic : RoleBase
     }
     public void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); //SyncVengefulRomanticTarget
+        var writer = MessageWriter.Get(SendOption.Reliable); //SyncVengefulRomanticTarget
         writer.Write(playerId);
         writer.Write(VengefulTarget.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
