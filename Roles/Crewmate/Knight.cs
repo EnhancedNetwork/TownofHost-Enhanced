@@ -1,6 +1,8 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using TOHE.Roles.Core;
-using UnityEngine;
+using TOHE.Roles.Double;
+using static TOHE.Options;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -15,19 +17,28 @@ internal class Knight : RoleBase
     public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
     //==================================================================\\
 
-    private static OptionItem CanVent;
-    private static OptionItem KillCooldown;
+    public static OptionItem CanVent;
+    public static OptionItem KillCooldown;
+    public static OptionItem RequiterChance;
+    public static OptionItem RequiterIgnoresShields;
 
     public override void SetupCustomOption()
     {
-        Options.SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Knight);
-        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight])
+        SetupRoleOptions(Id, TabGroup.CrewmateRoles, CustomRoles.Knight);
+        KillCooldown = FloatOptionItem.Create(Id + 10, GeneralOption.KillCooldown, new(0f, 60f, 2.5f), 15f, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Knight])
             .SetValueFormat(OptionFormat.Seconds);
-        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, false, TabGroup.CrewmateRoles, false).SetParent(Options.CustomRoleSpawnChances[CustomRoles.Knight]);
+        CanVent = BooleanOptionItem.Create(Id + 11, GeneralOption.CanVent, false, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Knight]);
+        RequiterChance = IntegerOptionItem.Create(Id + 12, "RequiterChance", new(0, 100, 5), 0, TabGroup.CrewmateRoles, false)
+            .SetParent(CustomRoleSpawnChances[CustomRoles.Knight])
+            .SetValueFormat(OptionFormat.Percent);
+        RequiterIgnoresShields = BooleanOptionItem.Create(Id + 13, "RequiterIgnoresShields", false, TabGroup.CrewmateRoles, false)
+            .SetParent(RequiterChance);
     }
     public override void Add(byte playerId)
     {
-        AbilityLimit = 1;
+        playerId.SetAbilityUseLimit(1);
     }
 
     public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
@@ -38,17 +49,72 @@ internal class Knight : RoleBase
     public override bool CanUseKillButton(PlayerControl pc)
         => !IsKilled(pc.PlayerId);
 
-    public override string GetProgressText(byte id, bool comms)
-        => Utils.ColorString(!IsKilled(id) ? Utils.GetRoleColor(CustomRoles.Knight).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
-
-    private bool IsKilled(byte playerId) => AbilityLimit <= 0;
+    private static bool IsKilled(byte playerId) => playerId.GetAbilityUseLimit() <= 0;
     public override bool OnCheckMurderAsKiller(PlayerControl killer, PlayerControl banana)
     {
-        AbilityLimit--;
-        SendSkillRPC();
+        killer.RpcRemoveAbilityUse();
         Logger.Info($"{killer.GetNameWithRole()} : " + "Kill chance used", "Knight");
         killer.ResetKillCooldown();
         killer.SetKillCooldown();
         return true;
+    }
+}
+
+internal class Requiter : RoleBase
+{
+    //===========================SETUP================================\\
+    public override CustomRoles Role => CustomRoles.Requiter;
+    public override bool IsDesyncRole => true;
+    public override CustomRoles ThisRoleBase => CustomRoles.Impostor;
+    public override Custom_RoleType ThisRoleType => Custom_RoleType.CrewmateKilling;
+    //==================================================================\\
+
+    public override void Add(byte playerId)
+    {
+        playerId.SetAbilityUseLimit(0);
+    }
+
+    public static bool CheckSpawn()
+    {
+        var Rand = IRandom.Instance;
+        return Rand.Next(1, 100) <= Knight.RequiterChance.GetInt();
+    }
+
+    public override void ApplyGameOptions(IGameOptions opt, byte playerId) => opt.SetVision(false);
+    public override bool CanUseImpostorVentButton(PlayerControl pc) => Knight.CanVent.GetBool();
+
+    public override void SetKillCooldown(byte id) => Main.AllPlayerKillCooldown[id] = Knight.KillCooldown.GetFloat();
+    public override bool CanUseKillButton(PlayerControl pc)
+        => pc.GetAbilityUseLimit() > 0;
+
+    public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
+    {
+        if (exiled == null || exiled.Object == null || exiled.Object == player || !player.IsAlive()) return;
+        if (exiled.Object.IsPlayerCrewmateTeam())
+            player.RpcIncreaseAbilityUseLimitBy(1);
+    }
+
+    public override bool ForcedCheckMurderAsKiller(PlayerControl killer, PlayerControl target)
+    {
+        // options disabled,requiter doesn't ignore protections
+        if (!Knight.RequiterIgnoresShields.GetBool()) return true;
+
+        // requiter should never ignore Solsticer and Mini protections
+        if (target.Is(CustomRoles.Solsticer)) return true;
+        if ((target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)) && Mini.Age < 18) return true;
+
+        // TNAs
+        if (target.GetCustomRole().IsTNA()) return true;
+
+        killer.RpcMurderPlayer(target);
+        killer.ResetKillCooldown();
+        return false;
+    }
+
+    public override void OnMurderPlayerAsKiller(PlayerControl killer, PlayerControl target, bool inMeeting, bool isSuicide)
+    {
+        if (inMeeting || isSuicide) return;
+        killer.RpcRemoveAbilityUse();
+        target.SetDeathReason(PlayerState.DeathReason.Retribution);
     }
 }

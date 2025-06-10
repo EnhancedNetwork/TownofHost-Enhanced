@@ -1,5 +1,5 @@
 using AmongUs.GameOptions;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TOHE.Modules;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -29,9 +29,9 @@ internal class Shocker : RoleBase
     private static OptionItem ShockerCanShockHimself;
     private static OptionItem ShockerImpostorVision;
 
-    private static List<Collider2D> markedRooms = new();
-    private static List<Collider2D> shockedRooms = new();
-    private static List<Collider2D> customRooms = new();
+    private static readonly List<Collider2D> markedRooms = [];
+    private static List<Collider2D> shockedRooms = [];
+    private static readonly List<Collider2D> customRooms = [];
     private static bool isShocking = false;
 
     public override void SetupCustomOption()
@@ -76,7 +76,8 @@ internal class Shocker : RoleBase
     public override void Add(byte playerId)
     {
         Shocker.playerId = playerId;
-        AbilityLimit = ShockerAbilityPerRound.GetValue();
+        playerId.SetAbilityUseLimit(ShockerAbilityPerRound.GetValue());
+
         if (AmongUsClient.Instance.AmHost)
             CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateShocker);
     }
@@ -99,8 +100,10 @@ internal class Shocker : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        AbilityLimit = ShockerAbilityPerRound.GetValue();
-        SendSkillRPC();
+        if (_Player == null) return;
+
+        _Player.SetAbilityUseLimit(ShockerAbilityPerRound.GetValue());
+
         if (ShockerAbilityResetAfterMeeting.GetBool())
         {
             isShocking = false;
@@ -110,22 +113,24 @@ internal class Shocker : RoleBase
     }
     public override void ApplyGameOptions(IGameOptions opt, byte playerId)
     {
-        AURoleOptions.EngineerCooldown = AbilityLimit > 0 ? ShockerAbilityCooldown.GetFloat() : 300;
+        AURoleOptions.EngineerCooldown = playerId.GetAbilityUseLimit() > 0 ? ShockerAbilityCooldown.GetFloat() : 300;
         AURoleOptions.EngineerInVentMaxTime = 1;
         opt.SetVision(ShockerImpostorVision.GetBool());
     }
     public override void OnEnterVent(PlayerControl pc, Vent vent)
     {
-        if (AbilityLimit < 1 || playerId != pc.PlayerId)
+        if (pc.GetAbilityUseLimit() < 1 || playerId != pc.PlayerId)
             return;
+
         if (isShocking)
         {
             pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerIsShocking")));
             return;
         }
-        AbilityLimit--;
-        SendSkillRPC();
+
+        pc.RpcRemoveAbilityUse();
         pc.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker), GetString("ShockerAbilityActivate")));
+
         isShocking = true;
         shockedRooms = new List<Collider2D>(markedRooms);
         markedRooms.Clear();
@@ -140,10 +145,7 @@ internal class Shocker : RoleBase
     {
         if (completedTaskCount == totalTaskCount)
         {
-            TaskState taskState = player.GetPlayerTaskState();
-            player.Data.RpcSetTasks(new Il2CppStructArray<byte>(0));
-            taskState.CompletedTasksCount = 0;
-            taskState.AllTasksCount = player.Data.Tasks.Count;
+            player.RpcResetTasks();
         }
         if (player.GetPlainShipRoom() != null)
         {
@@ -168,9 +170,8 @@ internal class Shocker : RoleBase
     public override void SetAbilityButtonText(HudManager hud, byte playerId)
     {
         hud.AbilityButton.OverrideText(GetString("ShockerVentButtonText"));
-        hud.AbilityButton.SetUsesRemaining((int)AbilityLimit);
+        hud.AbilityButton.SetUsesRemaining((int)playerId.GetAbilityUseLimit());
     }
-    public override string GetProgressText(byte playerId, bool comms) => Utils.ColorString(Utils.GetRoleColor(CustomRoles.Shocker).ShadeColor(0.25f), $"({AbilityLimit})");
     public override bool HasTasks(NetworkedPlayerInfo player, CustomRoles role, bool ForRecompute) => !ForRecompute && _Player.IsAlive();
     private void OnFixedUpdateShocker(PlayerControl player, bool lowLoad, long nowTime)
     {
@@ -182,6 +183,8 @@ internal class Shocker : RoleBase
 
         if (!ShockerCanShockHimself.GetBool() && playerId == player.PlayerId)
             return;
+
+        if (player.IsTransformedNeutralApocalypse()) return;
 
         if (isShocking)
         {

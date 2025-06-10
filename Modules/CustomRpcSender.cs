@@ -31,6 +31,8 @@ public class CustomRpcSender
     //-2: 未設定
     private int currentRpcTarget;
 
+    private int rootMessageCount;
+
     private CustomRpcSender() { }
     public CustomRpcSender(string name, SendOption sendOption, bool isUnsafe)
     {
@@ -43,6 +45,7 @@ public class CustomRpcSender
         onSendDelegate = () => Logger.Info($"{this.name}'s onSendDelegate =>", "CustomRpcSender");
 
         currentState = State.Ready;
+        rootMessageCount = 0;
         Logger.Info($"\"{name}\" is ready", "CustomRpcSender");
     }
     public static CustomRpcSender Create(string name = "No Name Sender", SendOption sendOption = SendOption.None, bool isUnsafe = false)
@@ -82,6 +85,12 @@ public class CustomRpcSender
 
         currentRpcTarget = targetClientId;
         currentState = State.InRootMessage;
+        rootMessageCount++;
+
+        if (rootMessageCount > 1)
+        {
+            Logger.Info($"\"{name}\" has {rootMessageCount} root messages.", "CustomRpcSender");
+        }
         return this;
     }
     public CustomRpcSender EndMessage()
@@ -164,7 +173,7 @@ public class CustomRpcSender
 
         return this;
     }
-    public void SendMessage()
+    public void SendMessage(bool dispose = false)
     {
         if (currentState == State.InRootMessage) this.EndMessage();
         if (currentState != State.Ready)
@@ -176,12 +185,17 @@ public class CustomRpcSender
                 throw new InvalidOperationException(errorMsg);
         }
 
-        AmongUsClient.Instance.SendOrDisconnect(stream);
-        onSendDelegate();
+        if (!dispose)
+        {
+            AmongUsClient.Instance.SendOrDisconnect(stream);
+            onSendDelegate();
+        }
         currentState = State.Finished;
-        Logger.Info($"\"{name}\" is finished", "CustomRpcSender");
+        Logger.Info($"\"{name}\" is " + (dispose ? "disposed" : "finished"), "CustomRpcSender");
         stream.Recycle();
     }
+
+    public int Length => stream.Length;
 
     // Write
     #region PublicWriteMethods
@@ -235,6 +249,14 @@ public static class CustomRpcSenderExtensions
         sender.AutoStartRpc(player.NetId, (byte)RpcCalls.SetRole, targetClientId)
             .Write((ushort)role)
             .Write(true) // canOverride
+            .EndRpc();
+    }
+
+    public static void RpcSetCustomRole(this CustomRpcSender sender, byte playerId, CustomRoles role, int targetClientId = -1)
+    {
+        sender.AutoStartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCustomRole, targetClientId)
+            .Write(playerId)
+            .WritePacked((int)role)
             .EndRpc();
     }
 }

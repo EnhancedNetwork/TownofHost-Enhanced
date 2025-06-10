@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
+using TOHE.Roles.Core;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -13,6 +14,7 @@ internal class Devourer : RoleBase
     //===========================SETUP================================\\
     public override CustomRoles Role => CustomRoles.Devourer;
     private const int Id = 5500;
+    public static bool HasEnabled => CustomRoleManager.HasEnabled(CustomRoles.Devourer);
     public override CustomRoles ThisRoleBase => CustomRoles.Shapeshifter;
     public override Custom_RoleType ThisRoleType => Custom_RoleType.ImpostorHindering;
     //==================================================================\\
