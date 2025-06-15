@@ -3293,6 +3293,7 @@
   "CyberKnown": "Everyone can see Cyber",
   "KillerGetBewilderVision": "Killer gets <color=#c894f5>Bewilder</color>'s vision",
   "OiiaiCanPassOn": "OIIAI can pass on to the killer",
+  "ShouldNeutralChangeRolesForOiiai": "Should Neutral change roles on killing OIIAI",
   "NeutralChangeRolesForOiiai": "Neutrals turns to ",
   "LostRoleByOiiai": "You got erased by OIIAI!",
   "ImpCanBeLoyal": "<color=#ff1919>Impostors</color> can become <color=#B71556>Loyal</color>",
@@ -4087,7 +4088,11 @@
   "QuickChatSpam_Empty": "Empty String",
   "CrossLanguageGetRole": "Get role names from different languages for commands",
 
-  "BypassRateLimitAC": "Experimental Changes to Bypass RateLimit Anticheat",
+  "BypassRateLimitAC": "Bypass RateLimit Anticheat (Only needed on Officials)",
+  "MaxSpiltReliablePacketsPerTick": "Max Reliable calls to send per tick",
+  "MaxSpiltNonePacketsPerTick": "Max None calls to send per tick (useless)",
+
+  "AntiBlackNotEnoughPlayersWarning": "At least 4 players is needed to bypass blackout!\nYour game does not have enough players and will casue a blackout for vanilla players.",
 
   "Runner": "Runner",
   "ModeSpeedRun": "Gamemode: Speedrun",
