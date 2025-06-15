@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using Il2CppInterop.Runtime.InteropTypes.Arrays;
-using InnerNet;
+using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
@@ -93,6 +93,7 @@ internal class Solsticer : RoleBase
         var taskState = player.GetPlayerTaskState();
         if (taskState.IsTaskFinished)
         {
+            CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Solsticer);
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
@@ -144,7 +145,7 @@ internal class Solsticer : RoleBase
             if (EveryOneKnowSolsticer.GetBool())
             {
                 killer.Notify(GetString("MurderSolsticer"));
-                RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+                RPC.PlaySoundRPC(Sounds.TaskComplete, killer.PlayerId);
             }
             killer.SetKillCooldown(time: 10f, forceAnime: EveryOneKnowSolsticer.GetBool());
             killer.MarkDirtySettings();
@@ -197,8 +198,7 @@ internal class Solsticer : RoleBase
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); //SyncSolsticerNotify
+        var writer = MessageWriter.Get(SendOption.Reliable); //SyncSolsticerNotify
         var taskState = Utils.GetPlayerById(playerid).GetPlayerTaskState();
         if (taskState != null)
         {
@@ -211,7 +211,7 @@ internal class Solsticer : RoleBase
             writer.Write(0);
         }
         writer.Write(playerid);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -236,9 +236,7 @@ internal class Solsticer : RoleBase
     public void ResetTasks(PlayerControl pc)
     {
         SetShortTasksToAdd();
-        var taskState = pc.GetPlayerTaskState();
-        pc.Data.RpcSetTasks(new Il2CppStructArray<byte>(0)); //Let taskassign patch decide the tasks
-        taskState.CompletedTasksCount = 0;
+        pc.RpcResetTasks(); //Let taskassign patch decide the tasks
         pc.RpcGuardAndKill();
         pc.Notify(GetString("SolsticerTasksReset"));
         Main.AllPlayerControls.Do(x => TargetArrow.Remove(x.PlayerId, pc.PlayerId));
@@ -292,7 +290,7 @@ internal class Solsticer : RoleBase
             SetShortTasksToAdd();
             if (MurderMessage == "")
                 MurderMessage = string.Format(GetString("SolsticerOnMeeting"), AddShortTasks);
-            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("SolsticerTitle")));
+            AddMsg(MurderMessage, pc.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Solsticer), GetString("Solsticer").ToUpper()));
         }
     }
 }

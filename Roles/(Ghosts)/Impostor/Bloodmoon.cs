@@ -1,9 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -42,9 +42,9 @@ internal class Bloodmoon : RoleBase
         PlayerDie.Clear();
         LastTime.Clear();
     }
-    public override void Add(byte PlayerId)
+    public override void Add(byte playerId)
     {
-        AbilityLimit = CanKillNum.GetInt();
+        playerId.SetAbilityUseLimit(CanKillNum.GetInt());
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixedUpdateOther);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
     }
@@ -57,21 +57,15 @@ internal class Bloodmoon : RoleBase
     }
     private void SendRPC(byte targetId, bool add)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(add);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        float Limit = reader.ReadSingle();
         bool add = reader.ReadBoolean();
         byte targetId = reader.ReadByte();
-
-
-        AbilityLimit = Limit;
 
         if (add)
             PlayerDie.Add(targetId, TimeTilDeath.GetInt());
@@ -86,23 +80,22 @@ internal class Bloodmoon : RoleBase
             return true;
         }
 
-        if (AbilityLimit > 0
+        if (killer.GetAbilityUseLimit() > 0
             && !target.Is(CustomRoles.Jinx)
             && !target.Is(CustomRoles.CursedWolf)
             && !target.IsNeutralApocalypse()
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
+            RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
             PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
             LastTime.Add(target.PlayerId, GetTimeStamp());
             killer.RpcResetAbilityCooldown();
-            AbilityLimit--;
+            killer.RpcRemoveAbilityUse();
             SendRPC(target.PlayerId, true);
         }
         return false;
     }
-    public override string GetProgressText(byte playerId, bool cooms)
-        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Bloodmoon).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 
     private void OnFixedUpdateOther(PlayerControl player, bool lowLoad, long nowTime)
     {
@@ -117,6 +110,7 @@ internal class Bloodmoon : RoleBase
             {
                 PlayerDie.Remove(playerid);
                 LastTime.Remove(playerid);
+                RPC.PlaySoundRPC(Sounds.KillSound, _Player.PlayerId);
                 player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(_Player);

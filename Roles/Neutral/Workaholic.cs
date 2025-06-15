@@ -68,7 +68,7 @@ internal class Workaholic : RoleBase
             CustomWinnerHolder.WinnerIds.Add(player.PlayerId);
         }
 
-        RPC.PlaySoundRPC(player.PlayerId, Sounds.KillSound);
+        RPC.PlaySoundRPC(Sounds.KillSound, player.PlayerId);
         foreach (var pc in Main.AllAlivePlayerControls)
         {
             if (pc.PlayerId != player.PlayerId)
@@ -98,7 +98,7 @@ internal class Workaholic : RoleBase
                 workaholicAliveList.Add(Main.AllPlayerNames[whId]);
             }
             string separator = TranslationController.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? "], [" : "】, 【";
-            AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("WorkaholicAliveTitle")));
+            AddMsg(string.Format(GetString("WorkaholicAdviceAlive"), string.Join(separator, workaholicAliveList)), 255, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Workaholic), GetString("Workaholic").ToUpper()));
         }
     }
     public override bool OnRoleGuess(bool isUI, PlayerControl target, PlayerControl pc, CustomRoles role, ref bool guesserSuicide)

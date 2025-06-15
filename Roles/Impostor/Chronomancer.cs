@@ -1,8 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System;
 using System.Text;
+using TOHE.Modules.Rpc;
+using TOHE.Roles.AddOns.Common;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -130,7 +131,11 @@ internal class Chronomancer : RoleBase
         if (ChargedTime >= FullCharge)
         {
             LastNowF = countnowF + Dtime.GetFloat();
-            killer.Notify(GetString("ChronomancerStartMassacre"));
+            _ = new LateTask(() =>
+            {
+                RPC.PlaySoundRPC(Sounds.ImpTransform, killer.PlayerId);
+                killer.Notify(GetString("ChronomancerStartMassacre"));
+            }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
             IsInMassacre = true;
         }
         killer.SetKillCooldown();
@@ -162,6 +167,7 @@ internal class Chronomancer : RoleBase
         if (IsInMassacre && ChargedTime < 1)
         {
             IsInMassacre = false;
+            RPC.PlaySoundRPC(Sounds.TaskComplete, player.PlayerId);
             player.MarkDirtySettings();
         }
 
@@ -177,10 +183,9 @@ internal class Chronomancer : RoleBase
     {
         // Cant directly write Ability Limit, create another method to send it
         // Only send to the target to prevent logging in other's
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.None, _Player.OwnerId);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(ChargedTime);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
