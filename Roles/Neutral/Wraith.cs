@@ -212,6 +212,7 @@ internal class Wraith : RoleBase
     {
         if (!IsInvis(killer.PlayerId)) return true;
 
+        RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown();
 

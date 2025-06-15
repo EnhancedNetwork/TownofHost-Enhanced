@@ -150,6 +150,7 @@ internal class Grenadier : RoleBase
             {
                 player.RpcResetAbilityCooldown();
             }
+            RPC.PlaySoundRPC(Sounds.TaskComplete, byte.MaxValue);
             player.Notify(string.Format(GetString("AbilityExpired"), player.GetAbilityUseLimit()));
             MarkEveryoneDirtySettings();
             stopGrenadierSkill = false;

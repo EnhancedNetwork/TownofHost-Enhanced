@@ -62,6 +62,7 @@ internal class Warden : RoleBase
             }, 2f, "Warden: Set Speed to default");
 
         Notifiers:
+            RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
             target.Notify(Utils.ColorString(new Color32(179, 0, 0, byte.MaxValue), GetString("WardenWarn")));
 
             killer.RpcResetAbilityCooldown();

@@ -25,7 +25,6 @@ internal class Ritualist : CovenManager
     public static OptionItem EnchantedKnowsCoven;
     public static OptionItem EnchantedKnowsEnchanted;
 
-
     private static readonly Dictionary<byte, int> RitualLimit = [];
     private static readonly Dictionary<byte, List<byte>> EnchantedPlayers = [];
 
@@ -124,6 +123,7 @@ internal class Ritualist : CovenManager
             }
             if (!target.Is(role))
             {
+                RPC.PlaySoundRPC(Sounds.SabotageSound, pc.PlayerId);
                 pc.ShowInfoMessage(isUI, GetString("RitualistRitualFail"));
                 RitualLimit[pc.PlayerId] = 0;
                 return true;
@@ -139,7 +139,9 @@ internal class Ritualist : CovenManager
             RitualLimit[pc.PlayerId]--;
 
             EnchantedPlayers[pc.PlayerId].Add(target.PlayerId);
+            RPC.PlaySoundRPC(Sounds.TaskUpdateSound, target.PlayerId);
             SendMessage(string.Format(GetString("RitualistConvertNotif"), CustomRoles.Ritualist.ToColoredString()), target.PlayerId);
+            RPC.PlaySoundRPC(Sounds.TaskComplete, pc.PlayerId);
             SendMessage(string.Format(GetString("RitualistRitualSuccess"), target.GetRealName()), pc.PlayerId);
             return true;
         }
