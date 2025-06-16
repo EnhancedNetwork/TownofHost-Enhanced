@@ -814,11 +814,19 @@ internal static class RPC
     public static void ShowPopUp(this PlayerControl pc, string message, string title = "")
     {
         if (!AmongUsClient.Instance.AmHost) return;
+        var msg = new RpcShowPopUp(pc.NetId, message, title);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+    }
+    /*
+    public static void ShowPopUp(this PlayerControl pc, string message, string title = "")
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ShowPopUp, SendOption.Reliable, pc.GetClientId());
         writer.Write(message);
         writer.Write(title);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
+    */
     public static void RpcSetFriendCode(string fc)
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
