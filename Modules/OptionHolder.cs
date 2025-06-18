@@ -264,6 +264,7 @@ public static class Options
 
     public static OptionItem PlayerCanSetColor;
     public static OptionItem PlayerCanSetName;
+    public static OptionItem SetNameMaxLength;
     public static OptionItem PlayerCanUseQuitCommand;
     public static OptionItem PlayerCanUseTP;
     public static OptionItem CanPlayMiniGames;
@@ -1301,6 +1302,8 @@ public static class Options
         PlayerCanSetColor = BooleanOptionItem.Create(60330, "PlayerCanSetColor", false, TabGroup.SystemSettings, false);
         PlayerCanUseQuitCommand = BooleanOptionItem.Create(60331, "PlayerCanUseQuitCommand", false, TabGroup.SystemSettings, false);
         PlayerCanSetName = BooleanOptionItem.Create(60332, "PlayerCanSetName", false, TabGroup.SystemSettings, false);
+        SetNameMaxLength = IntegerOptionItem.Create(60335, "SetNameMaxLength", new(10, 50, 1), 15, TabGroup.SystemSettings, false)
+            .SetParent(PlayerCanSetName);
         PlayerCanUseTP = BooleanOptionItem.Create(60333, "PlayerCanUseTP", false, TabGroup.SystemSettings, false);
         CanPlayMiniGames = BooleanOptionItem.Create(60334, "CanPlayMiniGames", false, TabGroup.SystemSettings, false);
         FormatNameMode = StringOptionItem.Create(60340, "FormatNameMode", formatNameModes, 0, TabGroup.SystemSettings, false);
@@ -1440,10 +1443,9 @@ public static class Options
             .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
-
         CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
-            .SetHeader(true)
             .SetGameMode(CustomGameMode.Standard);
+            .SetColor(Color.cyan);
 
         //Maps Settings
         TextOptionItem.Create(10000025, "MenuTitle.MapsSettings", TabGroup.ModSettings)
