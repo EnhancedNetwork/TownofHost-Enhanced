@@ -103,6 +103,7 @@ internal class TaskManager : RoleBase
             randomPlayer.RpcCompleteTask(allNotCompletedTasks.RandomElement().Id);
 
             taskManager.Notify(GetString("TaskManager_YouCompletedRandomTask"));
+            RPC.PlaySoundRPC(Sounds.TaskUpdateSound, randomPlayer.PlayerId);
             randomPlayer.Notify(GetString("TaskManager_CompletedRandomTaskForPlayer"));
         }
         return true;
@@ -124,6 +125,7 @@ internal class TaskManager : RoleBase
 
         if (Addons.Count == 0)
         {
+            RPC.PlaySoundRPC(Sounds.SabotageSound, taskManager.PlayerId);
             taskManager.Notify(GetString("TaskManager_FailGetAddon"), time: 10);
         }
         else
@@ -133,6 +135,7 @@ internal class TaskManager : RoleBase
             var randomAddOn = Addons.RandomElement();
 
             taskManager.RpcSetCustomRole(randomAddOn, false, false);
+            RPC.PlaySoundRPC(Sounds.TaskComplete, taskManager.PlayerId);
             taskManager.Notify(string.Format(GetString("TaskManager_YouGetAddon"), abilityLimit), time: 10);
         }
     }
