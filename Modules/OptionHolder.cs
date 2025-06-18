@@ -1444,7 +1444,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
         CanOnlyGuessEnabled = BooleanOptionItem.Create(60696, "CanOnlyGuessEnabled", true, TabGroup.ModSettings, false)
-            .SetGameMode(CustomGameMode.Standard);
+            .SetGameMode(CustomGameMode.Standard)
             .SetColor(Color.cyan);
 
         //Maps Settings
