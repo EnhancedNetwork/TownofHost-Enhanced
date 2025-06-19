@@ -2,8 +2,11 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
+using UnityEngine.Rendering;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 
@@ -93,15 +96,8 @@ internal class Sniper : RoleBase
     private static void SendRPC(byte playerId)
     {
         Logger.Info($"Player{playerId}:SendRPC", "Sniper");
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SniperSync, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        var snList = shotNotify[playerId];
-        writer.Write(snList.Count);
-        foreach (var sn in snList)
-        {
-            writer.Write(sn);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSniperSync(PlayerControl.LocalPlayer.NetId, playerId, shotNotify[playerId]);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader msg)
     {

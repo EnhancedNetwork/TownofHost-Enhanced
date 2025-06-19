@@ -1,4 +1,3 @@
-using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 
 namespace TOHE.Modules.Rpc

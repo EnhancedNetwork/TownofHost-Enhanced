@@ -12,7 +12,9 @@ using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
+using UnityEngine.Rendering;
 using static TOHE.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -73,7 +75,6 @@ public enum CustomRPC : byte // 175/255 USED
     SetBountyTarget,
     SyncPuppet,
     SetKillOrSpell,
-    SetKillOrHex,
     SetDousedPlayer,
     DoSpell,
     DoHex,
@@ -392,9 +393,6 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetKillOrSpell:
                 Witch.ReceiveRPC(reader, false);
-                break;
-            case CustomRPC.SetKillOrHex:
-                HexMaster.ReceiveRPC(reader, false);
                 break;
             case CustomRPC.ShowChat:
                 var clientId = reader.ReadPackedUInt32();
@@ -976,13 +974,9 @@ internal static class RPC
     public static void SyncLoversPlayers()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetLoversPlayers, SendOption.Reliable, -1);
-        writer.Write(Main.LoversPlayers.Count);
-        foreach (var lp in Main.LoversPlayers)
-        {
-            writer.Write(lp.PlayerId);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        var msg = new RpcSetLoversPlayers(PlayerControl.LocalPlayer.NetId, Main.LoversPlayers.Count, Main.LoversPlayers);
+        RpcUtils.LateBroadcastReliableMessage(msg);        
     }
     public static void SyncDeadPassedMeetingList()
     {
