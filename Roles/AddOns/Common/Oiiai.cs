@@ -36,7 +36,7 @@ public class Oiiai : IAddon
         ChangeRoles.Clear();
         NRoleChangeRoles.ForEach(x => ChangeRoles.Add(x.ToColoredString()));
         ShouldChangeRoleOnNeutral = BooleanOptionItem.Create(Id + 16, "ShouldNeutralChangeRolesForOiiai", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Oiiai]);
-        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", [.. ChangeRoles], 1, TabGroup.Addons, false).SetParent(ShouldChangeRoleOnNeutral);
+        ChangeNeutralRole = StringOptionItem.Create(Id + 15, "NeutralChangeRolesForOiiai", [.. ChangeRoles], 1, TabGroup.Addons, false, useGetString: false).SetParent(ShouldChangeRoleOnNeutral);
     }
     public void Init()
     {
