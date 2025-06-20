@@ -25,7 +25,7 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.735" Private="false" ExcludeAssets="runtime;native" />
+		<PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.692" Private="false" ExcludeAssets="runtime;native" />
 	</ItemGroup>
 
 	<ItemGroup>
