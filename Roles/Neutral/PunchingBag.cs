@@ -46,9 +46,9 @@ internal class PunchingBag : RoleBase
     public override bool OnCheckMurderAsTarget(PlayerControl killer, PlayerControl target)
     {
         killer.SetKillCooldown(target: target, forceAnime: true);
-        killer.RpcIncreaseAbilityUseLimitBy(1);
+        target.RpcIncreaseAbilityUseLimitBy(1);
 
-        target.Notify(string.Format(GetString("PunchingBagKill"), killer.GetAbilityUseLimit()));
+        target.Notify(string.Format(GetString("PunchingBagKill"), target.GetAbilityUseLimit()));
         CheckWin();
         return false;
     }
