@@ -767,12 +767,6 @@ internal static class RPC
         {
             amountAllOptions = OptionItem.AllOptions.Count;
         }
-
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncCustomSettings, SendOption.Reliable, targetId);
-
-        writer.WritePacked(startAmount);
-        writer.WritePacked(lastAmount);
-
         List<OptionItem> listOptions = [];
         List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
 
@@ -781,17 +775,12 @@ internal static class RPC
         {
             listOptions.Add(allOptionsList[option]);
         }
-
         var countListOptions = listOptions.Count;
         //Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
 
         // Sync Settings
-        foreach (var option in listOptions.ToArray())
-        {
-            writer.WritePacked(option.GetValue());
-        }
-
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSyncCustomSettings(PlayerControl.LocalPlayer.NetId, startAmount, lastAmount, listOptions);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void PlaySoundRPC(Sounds sound, byte PlayerID = byte.MaxValue)
@@ -827,9 +816,9 @@ internal static class RPC
     */
     public static void RpcSetFriendCode(string fc)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetFriendCode, SendOption.None);
-        writer.Write(fc);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetFriendCode(PlayerControl.LocalPlayer.NetId, fc);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
         SetFriendCode(PlayerControl.LocalPlayer, fc);
     }
     public static void SetFriendCode(PlayerControl target, string fc)
@@ -981,13 +970,9 @@ internal static class RPC
     public static void SyncDeadPassedMeetingList()
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncDeadPassedMeetingList, SendOption.Reliable, -1);
-        writer.WritePacked(Main.DeadPassedMeetingPlayers.Count);
-        foreach (var dead in Main.DeadPassedMeetingPlayers)
-        {
-            writer.Write(dead);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSyncDeadPassedMeetingList(PlayerControl.LocalPlayer.NetId, Main.DeadPassedMeetingPlayers);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
     }
     public static void SendRpcLogger(uint targetNetId, byte callId, SendOption sendOption, int targetClientId = -1)
     {
