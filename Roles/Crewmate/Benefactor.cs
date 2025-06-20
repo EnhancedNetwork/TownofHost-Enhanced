@@ -2,6 +2,7 @@ using Hazel;
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -48,30 +49,8 @@ internal class Benefactor : RoleBase
 
     private static void SendRPC(int type, byte benefactorId = 0xff, byte targetId = 0xff, int taskIndex = -1)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.BenefactorRPC, SendOption.Reliable, -1);
-        writer.Write(type);
-        if (type == 0)
-        {
-            writer.Write(benefactorId);
-        }
-        if (type == 2)
-        {
-            writer.Write(benefactorId);
-            writer.Write(taskIndex);
-        }
-        if (type == 3)
-        {
-            writer.Write(benefactorId);
-            writer.Write(taskIndex);
-            writer.Write(targetId);
-            writer.Write(shieldedPlayers[targetId].ToString());
-        }
-        if (type == 4)
-        {
-            writer.Write(targetId);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-
+        var msg = new RpcBenefactor(PlayerControl.LocalPlayer.NetId, type, benefactorId, taskIndex, targetId, shieldedPlayers[targetId].ToString());
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC(MessageReader reader)

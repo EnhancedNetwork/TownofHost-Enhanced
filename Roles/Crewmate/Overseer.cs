@@ -1,12 +1,14 @@
 using AmongUs.GameOptions;
 using Hazel;
 using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Neutral;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Crewmate;
 
@@ -108,15 +110,8 @@ internal class Overseer : RoleBase
 
     private static void SendTimerRPC(byte RpcType, byte overseertId, PlayerControl target = null, float timer = 0)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerTimer, ExtendedPlayerControl.RpcSendOption);
-        writer.Write(RpcType);
-        writer.Write(overseertId);
-        if (target != null && RpcType == 1)
-        {
-            writer.WriteNetObject(target);
-            writer.Write(timer);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetOverseerTimer(PlayerControl.LocalPlayer.NetId, RpcType, overseertId, target, timer);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveTimerRPC(MessageReader reader)
     {
@@ -138,13 +133,10 @@ internal class Overseer : RoleBase
                 break;
         }
     }
-    private static void SetRevealtPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
+    private static void SetRevealPlayerRPC(PlayerControl player, PlayerControl target, bool isRevealed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetOverseerRevealedPlayer, SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
-        writer.Write(target.PlayerId);
-        writer.Write(isRevealed);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetOverseerRevealedPlayer(PlayerControl.LocalPlayer.NetId, player.PlayerId, target.PlayerId, isRevealed);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveSetRevealedPlayerRPC(MessageReader reader)
     {
@@ -216,7 +208,7 @@ internal class Overseer : RoleBase
                 farTarget.RpcSetSpecificScanner(player, false);
 
                 IsRevealed[(playerId, farTarget.PlayerId)] = true;
-                SetRevealtPlayerRPC(player, farTarget, true);
+                SetRevealPlayerRPC(player, farTarget, true);
 
                 NotifyRoles(SpecifySeer: player);
 

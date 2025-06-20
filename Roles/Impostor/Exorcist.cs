@@ -1,6 +1,7 @@
 using Hazel;
 using TMPro;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -245,9 +246,8 @@ internal class Exorcist : RoleBase
 
     private static void SendExorcismRPC(byte exorcistId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ExorcistExorcise, SendOption.Reliable);
-        writer.Write(exorcistId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcExorcistExorcise(PlayerControl.LocalPlayer.NetId, exorcistId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)

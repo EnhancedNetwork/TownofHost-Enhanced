@@ -1,6 +1,5 @@
 using Hazel;
-using Il2CppInterop.Generator.Extensions;
-using TOHE.Roles.Crewmate;
+using InnerNet;
 
 namespace TOHE.Modules.Rpc
 {
@@ -432,6 +431,365 @@ namespace TOHE.Modules.Rpc
         private readonly int type;
         private readonly byte playerId;
         private readonly byte targetId;
+    }
+    class RpcSetAlchemistTimer : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetAlchemistTimer;
+        public RpcSetAlchemistTimer(uint netId, bool fixSabo, byte potionId, string invisTime) : base(netId)
+        {
+            this.fixSabo = fixSabo;
+            this.potionId = potionId;
+            this.invisTime = invisTime;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(fixSabo);
+            msg.Write(potionId);
+            msg.Write(invisTime);
+
+        }
+
+        private readonly bool fixSabo;
+        private readonly byte potionId;
+        private readonly string invisTime;
+    }
+    class RpcUndertakerLocationSync : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.UndertakerLocationSync;
+        public RpcUndertakerLocationSync(uint netId, byte playerId, float xLoc, float yLoc) : base(netId)
+        {
+            this.playerId = playerId;
+            this.xLoc = xLoc;
+            this.yLoc = yLoc;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(xLoc);
+            msg.Write(yLoc);
+        }
+
+        private readonly byte playerId;
+        private readonly float xLoc;
+        private readonly float yLoc;
+    }
+    class RpcLightningSetGhostPlayer : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.LightningSetGhostPlayer;
+        public RpcLightningSetGhostPlayer(uint netId, byte playerId, bool isGhost) : base(netId)
+        {
+            this.playerId = playerId;
+            this.isGhost = isGhost;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(isGhost);
+        }
+
+        private readonly byte playerId;
+        private readonly bool isGhost;
+    }
+    class RpcSetConsigliere : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetConsigliere;
+        public RpcSetConsigliere(uint netId, byte playerId, byte targetId) : base(netId)
+        {
+            this.playerId = playerId;
+            this.targetId = targetId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(targetId);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+    }
+    class RpcSetGreedy : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetGreedy;
+        public RpcSetGreedy(uint netId, byte playerId, bool isOdd) : base(netId)
+        {
+            this.playerId = playerId;
+            this.isOdd = isOdd;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(isOdd);
+        }
+
+        private readonly byte playerId;
+        private readonly bool isOdd;
+    }
+    class RpcBenefactor : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.BenefactorRPC;
+        public RpcBenefactor(uint netId, int type, byte playerId, int taskIndex, byte targetId, string shieldedPlayers) : base(netId)
+        {
+            this.type = type;
+            this.playerId = playerId;
+            this.taskIndex = taskIndex;
+            this.targetId = targetId;
+            this.shieldedPlayers = shieldedPlayers;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(type);
+            if (type == 0)
+            {
+                msg.Write(playerId);
+            }
+            if (type == 2)
+            {
+                msg.Write(playerId);
+                msg.Write(taskIndex);
+            }
+            if (type == 3)
+            {
+                msg.Write(playerId);
+                msg.Write(taskIndex);
+                msg.Write(targetId);
+                msg.Write(shieldedPlayers);
+            }
+            if (type == 4)
+            {
+                msg.Write(targetId);
+            }
+        }
+
+        private readonly int type;
+        private readonly byte playerId;
+        private readonly int taskIndex;
+        private readonly byte targetId;
+        private readonly string shieldedPlayers;
+    }
+    class RpcSetSwapperVotes : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetSwapperVotes;
+        public RpcSetSwapperVotes(uint netId, byte playerId) : base(netId)
+        {
+            this.playerId = playerId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+        }
+
+        private readonly byte playerId;
+    }
+    class RpcSetMarkedPlayer : BaseModdedRpc // Ninja
+    {
+        public override byte RpcType => (byte)CustomRPC.SetMarkedPlayer;
+        public RpcSetMarkedPlayer(uint netId, byte playerId, byte targetId) : base(netId)
+        {
+            this.playerId = playerId;
+            this.targetId = targetId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(targetId);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+    }
+    class RpcPresidentEnd : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.PresidentEnd;
+        public RpcPresidentEnd(uint netId, byte playerId) : base(netId)
+        {
+            this.playerId = playerId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+        }
+
+        private readonly byte playerId;
+    }
+    class RpcPresidentReveal : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.PresidentReveal;
+        public RpcPresidentReveal(uint netId, byte playerId, bool checkReveal) : base(netId)
+        {
+            this.playerId = playerId;
+            this.checkReveal = checkReveal;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(checkReveal);
+        }
+
+        private readonly byte playerId;
+        private readonly bool checkReveal;
+    }
+    class RpcSetInvestigatorLimit : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetInvestgatorLimit;
+        public RpcSetInvestigatorLimit(uint netId, bool setTarget, byte playerId, byte targetId) : base(netId)
+        {
+            this.setTarget = setTarget;
+            this.playerId = playerId;
+            this.targetId = targetId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(setTarget);
+            msg.Write(playerId);
+            msg.Write(targetId);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+        private readonly bool setTarget;
+    }
+    class RpcSetOverseerRevealedPlayer : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetOverseerRevealedPlayer;
+        public RpcSetOverseerRevealedPlayer(uint netId, byte playerId, byte targetId, bool isRevealed) : base(netId)
+        {
+            this.playerId = playerId;
+            this.targetId = targetId;
+            this.isRevealed = isRevealed;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(targetId);
+            msg.Write(isRevealed);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+        private readonly bool isRevealed;
+    }
+    class RpcSetOverseerTimer : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetOverseerTimer;
+        public RpcSetOverseerTimer(uint netId, byte type, byte playerId, PlayerControl target, float timer) : base(netId)
+        {
+            this.type = type;
+            this.playerId = playerId;
+            this.target = target;
+            this.timer = timer;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(type);
+            msg.Write(playerId);
+            if (target != null && type == 1)
+            {
+                msg.WriteNetObject(target);
+                msg.Write(timer);
+            }
+        }
+
+        private readonly byte type;
+        private readonly byte playerId;
+        private readonly PlayerControl target;
+        private readonly float timer;
+    }
+    class RpcSetChameleonTimer : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetChameleonTimer;
+        public RpcSetChameleonTimer(uint netId, byte playerId, string invisCooldown, string invisDuration) : base(netId)
+        {
+            this.playerId = playerId;
+            this.invisCooldown = invisCooldown;
+            this.invisDuration = invisDuration;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(invisCooldown);
+            msg.Write(invisDuration);
+        }
+
+        private readonly byte playerId;
+        private readonly string invisCooldown;
+        private readonly string invisDuration;
+    }
+    class RpcSyncAdmiredList : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SyncAdmiredList;
+        public RpcSyncAdmiredList(uint netId, byte playerId, byte targetId) : base(netId)
+        {
+            this.playerId = playerId;
+            this.targetId = targetId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(targetId);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+    }
+    class RpcDictator : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.DictatorRPC;
+        public RpcDictator(uint netId, byte playerId) : base(netId)
+        {
+            this.playerId = playerId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+        }
+
+        private readonly byte playerId;
+    }
+    class RpcNecronomicon : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.Necronomicon;
+        public RpcNecronomicon(uint netId, byte playerId) : base(netId)
+        {
+            this.playerId = playerId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+        }
+
+        private readonly byte playerId;
+    }
+    class RpcExorcistExorcise : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.ExorcistExorcise;
+        public RpcExorcistExorcise(uint netId, byte playerId) : base(netId)
+        {
+            this.playerId = playerId;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+        }
+
+        private readonly byte playerId;
     }
     class RpcGuess : BaseModdedRpc
     {
