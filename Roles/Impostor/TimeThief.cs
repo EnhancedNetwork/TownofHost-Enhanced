@@ -52,10 +52,10 @@ internal class TimeThief : RoleBase
     {
         var timethief = Utils.GetPlayerById(id);
         bool isalive = playerIdList.Contains(id) && (timethief.IsAlive() || !ReturnStolenTimeUponDeath.GetBool());
-        bool iscrew = timethief.Is(CustomRoles.Admired);
+
         int decreased = DecreaseMeetingTime.GetInt() * Main.PlayerStates[id].GetKillCount(true);
         int increased = 0 - decreased;
-        return isalive ? (iscrew ? increased : decreased) : 0;
+        return isalive ? (timethief.IsPlayerCrewmateTeam() ? increased : decreased) : 0;
     }
 
     public static int TotalDecreasedMeetingTime()

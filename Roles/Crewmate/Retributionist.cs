@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.MeetingHudStartPatch;
@@ -105,7 +106,7 @@ internal class Retributionist : RoleBase
             bool canSeeRoles = PreventSeeRolesBeforeSkillUsedUp.GetBool();
             string text = GetString("PlayerIdList");
             foreach (var npc in Main.AllAlivePlayerControls)
-                text += $"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false)}) " : string.Empty) + npc.GetRealName();
+                text += $"\n{npc.PlayerId} → " + (canSeeRoles ? $"({npc.GetDisplayRoleAndSubName(npc, false, false)}) " : string.Empty) + npc.GetRealName();
             SendMessage(text, pc.PlayerId);
             return true;
         }
@@ -190,7 +191,7 @@ internal class Retributionist : RoleBase
 
             _ = new LateTask(() =>
             {
-                SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("RetributionistRevengeTitle")), true);
+                SendMessage(string.Format(GetString("RetributionistKillSucceed"), Name), 255, ColorString(GetRoleColor(CustomRoles.Retributionist), GetString("Retributionist").ToUpper()), true);
             }, 0.6f, "Retributionist Kill");
 
         }, 0.2f, "Retributionist Start Kill");
@@ -199,9 +200,8 @@ internal class Retributionist : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RetributionistRevenge, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcRetributionistRevenge(PlayerControl.LocalPlayer.NetId, playerId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {

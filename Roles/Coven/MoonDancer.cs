@@ -1,7 +1,8 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using TOHE.Roles.Impostor;
@@ -67,8 +68,7 @@ internal class MoonDancer : CovenManager
     }
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(playerId);
         if (playerId != byte.MaxValue)
         {
@@ -76,7 +76,7 @@ internal class MoonDancer : CovenManager
             foreach (var bl in BlastedOffList[playerId])
                 writer.Write(bl);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -183,7 +183,10 @@ internal class MoonDancer : CovenManager
             }
             else
             {
-                killer.Notify(GetString("MoonDancerNormalKill"));
+                _ = new LateTask(() =>
+                {
+                    killer.Notify(GetString("MoonDancerNormalKill"));
+                }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
                 return true;
             }
         }
@@ -228,9 +231,11 @@ internal class MoonDancer : CovenManager
                 continue;
             }
 
+            player.CheckConflictedAddOnsFromList(ref addons);
+
             var addon = addons.RandomElement();
-            var helpful = GroupedAddons[AddonTypes.Helpful].Where(x => addons.Contains(x)).ToList();
-            var harmful = GroupedAddons[AddonTypes.Harmful].Where(x => addons.Contains(x)).ToList();
+            var helpful = GroupedAddons[AddonTypes.Helpful].Where(addons.Contains).ToList();
+            var harmful = GroupedAddons[AddonTypes.Harmful].Where(addons.Contains).ToList();
             if (player.GetCustomRole().IsCovenTeam() || (player.Is(CustomRoles.Lovers) && md.Is(CustomRoles.Lovers)))
             {
                 if (helpful.Count <= 0)
@@ -251,9 +256,12 @@ internal class MoonDancer : CovenManager
                 }
                 addon = harmful.RandomElement();
             }
-            player.RpcSetCustomRole(addon);
-            player.AddInSwitchAddons(player, addon);
-            Logger.Info("Addon Passed.", "MoonDancer");
+
+            if (addon != 0) // not default value
+            {
+                player.RpcSetCustomRole(addon, false, false);
+                Logger.Info("Addon Passed.", "MoonDancer");
+            }
         }
         BatonPassList[md.PlayerId].Clear();
     }
@@ -289,6 +297,17 @@ internal class MoonDancer : CovenManager
             pc.SetRealKiller(moonDancer);
             pc.RpcExileV2();
             pc.SetDeathReason(PlayerState.DeathReason.BlastedOff);
+        }
+    }
+    public override void SetAbilityButtonText(HudManager hud, byte playerId)
+    {
+        if (HasNecronomicon(playerId))
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerNecroKillButton"));
+        }
+        else
+        {
+            hud.KillButton.OverrideText(GetString("MoonDancerKillButton"));
         }
     }
 }

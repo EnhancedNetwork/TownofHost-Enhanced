@@ -105,7 +105,7 @@ internal class RunLoginPatch
         }
         try
         {
-            if (Main.canaryRelease ||  Main.fullRelease)
+            if (Main.canaryRelease || Main.fullRelease)
                 ModUpdater.ShowAvailableUpdate();
         }
         catch (System.Exception error)
@@ -176,22 +176,6 @@ internal class KickPlayerPatch
 //            MainMenuManagerPatch.updateButton.transform.localPosition = MainMenuManagerPatch.template.transform.localPosition + new Vector3(0.25f, 0.75f);
 //    }
 //}
-
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
-internal class InnerNetObjectSerializePatch
-{
-    public static void Prefix()
-    {
-        // This code is sometimes called before the lobby has been created
-        try
-        {
-            if (AmongUsClient.Instance.AmHost)
-                GameOptionsSender.SendAllGameOptions();
-        }
-        catch
-        { }
-    }
-}
 
 //[HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.SendClientReady))]
 //internal class SendClientReadyPatch

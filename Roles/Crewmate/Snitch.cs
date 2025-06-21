@@ -1,5 +1,5 @@
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Coven;
 using UnityEngine;
 using static TOHE.Options;
@@ -101,7 +101,11 @@ internal class Snitch : RoleBase
     }
 
     private static bool IsSnitchTarget(PlayerControl target)
-        => HasEnabled && (target.Is(Custom_Team.Impostor) && !target.Is(CustomRoles.Trickster) || (target.IsNeutralKiller() && CanFindNeutralKiller) || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse) || (target.IsPlayerCoven() && CanFindCoven) || (target.Is(CustomRoles.Madmate) && CanFindMadmate) || (target.Is(CustomRoles.Rascal) && CanFindMadmate));
+        => HasEnabled && ((target.GetCustomRole().IsImpostorTeamV3() && !target.Is(CustomRoles.Trickster) && !target.Is(CustomRoles.Narc))
+        || (target.IsNeutralKiller() && CanFindNeutralKiller)
+        || (target.IsNeutralApocalypse() && CanFindNeutralApocalypse)
+        || (target.IsPlayerCoven() && CanFindCoven)
+        || ((target.Is(CustomRoles.Madmate) || target.Is(CustomRoles.Rascal)) && CanFindMadmate));
 
     private void CheckTask(PlayerControl snitch)
     {
@@ -160,11 +164,10 @@ internal class Snitch : RoleBase
 
     private void SendRPC(byte RpcTypeId, byte snitchId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(RpcTypeId);
         writer.Write(snitchId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
