@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using TOHE.Modules.Rpc;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using static TOHE.Options;

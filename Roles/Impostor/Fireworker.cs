@@ -3,9 +3,7 @@ using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using UnityEngine;
-using UnityEngine.Rendering;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 

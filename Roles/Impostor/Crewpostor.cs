@@ -4,7 +4,6 @@ using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Impostor;
 using UnityEngine;
 using static TOHE.Options;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE.Roles.Impostor;
 

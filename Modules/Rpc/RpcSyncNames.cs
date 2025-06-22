@@ -1,5 +1,4 @@
 using Hazel;
-using Il2CppInterop.Generator.Extensions;
 
 namespace TOHE.Modules.Rpc
 {

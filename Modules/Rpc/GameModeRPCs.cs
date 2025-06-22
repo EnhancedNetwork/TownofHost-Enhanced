@@ -1,5 +1,4 @@
 using Hazel;
-using InnerNet;
 
 namespace TOHE.Modules.Rpc
 {

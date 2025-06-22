@@ -12,9 +12,7 @@ using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
 using TOHE.Roles.Impostor;
 using TOHE.Roles.Neutral;
-using UnityEngine.Rendering;
 using static TOHE.Translator;
-using static UnityEngine.GraphicsBuffer;
 
 namespace TOHE;
 
@@ -965,7 +963,7 @@ internal static class RPC
         if (!AmongUsClient.Instance.AmHost) return;
 
         var msg = new RpcSetLoversPlayers(PlayerControl.LocalPlayer.NetId, Main.LoversPlayers.Count, Main.LoversPlayers);
-        RpcUtils.LateBroadcastReliableMessage(msg);        
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void SyncDeadPassedMeetingList()
     {

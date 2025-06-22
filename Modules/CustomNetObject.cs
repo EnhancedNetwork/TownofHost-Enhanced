@@ -1,6 +1,8 @@
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using InnerNet;
 using System;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 
@@ -142,18 +144,8 @@ namespace TOHE.Modules
                 sender.SendMessage();
             }, 0.4f, "Send RPC FixModdedClientCNOText", shoudLog: false);
 
-            MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
-            writer.StartMessage(6);
-            writer.Write(AmongUsClient.Instance.GameId);
-            writer.WritePacked(player.GetClientId());
-
-            writer.StartMessage(5);
-            writer.WritePacked(playerControl.NetId);
-            writer.EndMessage();
-
-            writer.EndMessage();
-            AmongUsClient.Instance.SendOrDisconnect(writer);
-            writer.Recycle();
+            var message = new DespawnGameDataMessage(playerControl.NetId);
+            RpcUtils.LateSpecificSendMessage(message, player.GetClientId());
         }
 
         protected virtual void OnFixedUpdate(bool lowload, int timerLowLoad)

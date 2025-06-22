@@ -2,7 +2,6 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
-using InnerNet;
 using TOHE.Modules.Rpc;
 
 namespace TOHE.Modules;

@@ -1,4 +1,3 @@
-using Hazel;
 using TOHE.Modules.Rpc;
 using UnityEngine;
 
