@@ -10,6 +10,13 @@ public static class GameManagerSerializeFix
     {
         InitialState = initialState;
         bool flag = false;
+
+        if (!AmongUsClient.Instance.AmHost)
+        {
+            __result = flag;
+            return false;
+        }
+
         for (int index = 0; index < __instance.LogicComponents.Count; ++index)
         {
             GameLogicComponent logicComponent = __instance.LogicComponents[index];
