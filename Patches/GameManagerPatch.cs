@@ -1,21 +1,27 @@
 using Hazel;
+using UnityEngine.UIElements.StyleSheets;
 
 namespace TOHE;
 
 [HarmonyPatch(typeof(GameManager), nameof(GameManager.Serialize))]
-class GameManagerSerializeFix
+internal static class GameManagerSerializeFix
 {
+    public static bool InitialState = true;
     public static bool Prefix(GameManager __instance, [HarmonyArgument(0)] MessageWriter writer, [HarmonyArgument(1)] bool initialState, ref bool __result)
     {
+
+        InitialState = initialState;
+
+
         bool flag = false;
-        for (int index = 0; index < __instance.LogicComponents.Count; ++index)
+        for (var index = 0; index < __instance.LogicComponents.Count; ++index)
         {
             GameLogicComponent logicComponent = __instance.LogicComponents[index];
             if (initialState || logicComponent.IsDirty)
             {
                 flag = true;
                 writer.StartMessage((byte)index);
-                var hasBody = logicComponent.Serialize(writer, !GameStates.IsInGame);
+                bool hasBody = logicComponent.Serialize(writer, initialState);
                 if (hasBody) writer.EndMessage();
                 else writer.CancelMessage();
                 logicComponent.ClearDirtyFlag();
