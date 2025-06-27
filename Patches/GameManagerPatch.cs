@@ -1,4 +1,5 @@
 using Hazel;
+using HarmonyLib;
 using UnityEngine.UIElements.StyleSheets;
 
 namespace TOHE;
@@ -21,7 +22,7 @@ internal static class GameManagerSerializeFix
             {
                 flag = true;
                 writer.StartMessage((byte)index);
-                bool hasBody = logicComponent.Serialize(writer, initialState);
+                bool hasBody = logicComponent.Serialize(writer);
                 if (hasBody) writer.EndMessage();
                 else writer.CancelMessage();
                 logicComponent.ClearDirtyFlag();
