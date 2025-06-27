@@ -126,21 +126,6 @@ internal class KickPlayerPatch
 //    }
 //}
 
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.SendAllStreamedObjects))]
-internal class InnerNetObjectSerializePatch
-{
-    public static void Prefix()
-    {
-        // This code is sometimes called before the lobby has been created
-        try
-        {
-            if (AmongUsClient.Instance.AmHost)
-                GameOptionsSender.SendAllGameOptions();
-        }
-        catch
-        { }
-    }
-}
 // Next 4: https://github.com/Rabek009/MoreGamemodes/blob/master/Patches/ClientPatch.cs
 
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CheckOnlinePermissions))]
@@ -149,40 +134,6 @@ static class CheckOnlinePermissionsPatch
     public static void Prefix()
     {
         DataManager.Player.Ban.banPoints = 0f;
-    }
-}
-
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Spawn))]
-static class SpawnPatch
-{
-    public static void Prefix(InnerNetClient __instance)
-    {
-        MessageWriter writer = __instance.Streams[1];
-        if (writer.Length > 800)
-        {
-            writer.EndMessage();
-            __instance.SendOrDisconnect(writer);
-            writer.Clear(SendOption.Reliable);
-            writer.StartMessage(5);
-            writer.Write(__instance.GameId);
-        }
-    }
-}
-
-[HarmonyPatch(typeof(InnerNetClient), nameof(InnerNetClient.Despawn))]
-static class DespawnPatch
-{
-    public static void Prefix(InnerNetClient __instance)
-    {
-        MessageWriter writer = __instance.Streams[1];
-        if (writer.Length > 800)
-        {
-            writer.EndMessage();
-            __instance.SendOrDisconnect(writer);
-            writer.Clear(SendOption.Reliable);
-            writer.StartMessage(5);
-            writer.Write(__instance.GameId);
-        }
     }
 }
 
