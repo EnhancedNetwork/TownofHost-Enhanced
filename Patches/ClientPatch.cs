@@ -170,12 +170,14 @@ internal class IsMinorByDatePatch
 { 
     public static bool Prefix(EOSManager __instance, ref bool __result)
     {
+        /*
         if (DebugModeManager.AmDebugger)
         {
             Logger.Info("Skipped Eos is minor check", "IsMinorByDatePatch");
             __result = false;
             return false;
         }
+        */
 
         return true;
     }
