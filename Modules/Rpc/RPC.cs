@@ -290,8 +290,26 @@ internal class RPCHandlerPatch
             case CustomRPC.SyncCustomSettings:
                 if (AmongUsClient.Instance.AmHost) break;
 
+                var isSingle = reader.ReadBoolean();
+
+                if (isSingle)
+                {
+                    var id = reader.ReadPackedInt32();
+                    var value = reader.ReadPackedInt32();
+
+                    if (OptionItem.FastOptions.TryGetValue(id, out var optionItem))
+                    {
+                        optionItem.SetValue(value, false);
+                    }
+
+                    // Reset pages in OptionShower
+                    OptionShower.GetText();
+
+                    return;
+                }
+
                 List<OptionItem> listOptions = [];
-                List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
+                List<OptionItem> allOptionsList = [.. OptionItem.FastOptions.OrderBy(kv => kv.Key).Select(kv => kv.Value)];
 
                 var startAmount = reader.ReadPackedInt32();
                 var lastAmount = reader.ReadPackedInt32();
@@ -305,13 +323,13 @@ internal class RPCHandlerPatch
                 }
 
                 var countOptions = listOptions.Count;
-                Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countOptions}/{countAllOptions}", "CustomRPC.SyncCustomSettings");
+                Logger.Msg($"Handling StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countOptions}/{countAllOptions}", "CustomRPC.SyncCustomSettings");
 
                 // Sync Settings
                 foreach (var option in listOptions.ToArray())
                 {
                     // Set Value Options
-                    option.SetValue(reader.ReadPackedInt32());
+                    option.SetValue(reader.ReadPackedInt32(), false);
 
                     // Set Preset 5 for modded non-host players
                     if (startAmount == 0 && option.Name == "Preset" && option.CurrentValue != 4)
@@ -319,6 +337,9 @@ internal class RPCHandlerPatch
                         option.SetValue(4); // 4 => Preset 5
                     }
                 }
+
+                // Reset pages in OptionShower
+                OptionShower.GetText();
                 break;
 
             case CustomRPC.RemoveSubRole:
@@ -766,7 +787,7 @@ internal static class RPC
             amountAllOptions = OptionItem.AllOptions.Count;
         }
         List<OptionItem> listOptions = [];
-        List<OptionItem> allOptionsList = [.. OptionItem.AllOptions];
+        List<OptionItem> allOptionsList = [.. OptionItem.FastOptions.OrderBy(kv => kv.Key).Select(kv => kv.Value)];
 
         // Add Options
         for (var option = startAmount; option < amountAllOptions && option <= lastAmount; option++)
@@ -774,7 +795,8 @@ internal static class RPC
             listOptions.Add(allOptionsList[option]);
         }
         var countListOptions = listOptions.Count;
-        //Logger.Msg($"StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
+        
+        Logger.Msg($"Sending StartAmount/LastAmount: {startAmount}/{lastAmount} :--: ListOptionsCount/AllOptions: {countListOptions}/{amountAllOptions}", "SyncOptionsBetween");
 
         // Sync Settings
         var msg = new RpcSyncCustomSettings(PlayerControl.LocalPlayer.NetId, startAmount, lastAmount, listOptions);

@@ -15,6 +15,8 @@ namespace TOHE.Modules.Rpc
 
         public override void SerializeRpcValues(MessageWriter writer)
         {
+            // is single
+            writer.Write(false);
             writer.WritePacked(startAmount);
             writer.WritePacked(lastAmount);
             foreach (var option in options.ToArray())
@@ -25,5 +27,26 @@ namespace TOHE.Modules.Rpc
 
         private readonly int startAmount, lastAmount;
         private readonly List<OptionItem> options;
+    }
+    
+    class RpcSyncCustomSettingsSingle : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SyncCustomSettings;
+
+        public RpcSyncCustomSettingsSingle(uint rpcObjectNetId, int id, int value) : base(rpcObjectNetId)
+        {
+            this.id = id;
+            this.value = value;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(true);
+            msg.WritePacked(id);
+            msg.WritePacked(value);
+        }
+
+        private readonly int id;
+        private readonly int value;
     }
 }

@@ -437,7 +437,7 @@ public static class ToggleOptionPatch
             __instance.CheckMark.enabled = !__instance.CheckMark.enabled;
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "ToggleOption.UpdateValue.TryGetValue");
-            item.SetValue(__instance.GetBool() ? 1 : 0);
+            item.SetValue(__instance.GetBool() ? 1 : 0, true, true, true);
             __instance.OnValueChanged.Invoke(__instance);
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
@@ -510,12 +510,13 @@ public static class NumberOptionPatch
 
             if (item is IntegerOptionItem integerOptionItem)
             {
-                integerOptionItem.SetValue(integerOptionItem.Rule.GetNearestIndex(__instance.GetInt()));
+                integerOptionItem.SetValue(integerOptionItem.Rule.GetNearestIndex(__instance.GetInt()), true, true, true);
             }
             else if (item is FloatOptionItem floatOptionItem)
             {
-                floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()));
+                floatOptionItem.SetValue(floatOptionItem.Rule.GetNearestIndex(__instance.GetFloat()), true, true, true);
             }
+
             NotificationPopperPatch.AddSettingsChangeMessage(index, item, false);
             return false;
         }
@@ -675,7 +676,7 @@ public static class StringOptionPatch
             var item = OptionItem.AllOptions[index];
             //Logger.Info($"{item.Name}, {index}", "StringOption.UpdateValue.TryAdd");
 
-            item.SetValue(__instance.GetInt());
+            item.SetValue(__instance.GetInt(), true, true, true);
 
             if (item is PresetOptionItem || (item is StringOptionItem && item.Name == "GameMode"))
             {
