@@ -2,18 +2,19 @@ using System;
 
 namespace TOHE;
 
-public class StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections, bool vanilla) : OptionItem(id, name, defaultValue, tab, isSingleValue, vanillaStr: vanilla)
+public class StringOptionItem(int id, string name, int defaultValue, TabGroup tab, bool isSingleValue, string[] selections, bool vanilla, bool useGetString) : OptionItem(id, name, defaultValue, tab, isSingleValue, vanillaStr: vanilla)
 {
     public IntegerValueRule Rule = (0, selections.Length - 1, 1);
     public string[] Selections = selections;
+    public bool UseGetString = useGetString;
 
-    public static StringOptionItem Create(int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static StringOptionItem Create(int id, string name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false, bool useGetString = true)
     {
-        return new StringOptionItem(id, name, defaultIndex, tab, isSingleValue, selections, vanillaText);
+        return new StringOptionItem(id, name, defaultIndex, tab, isSingleValue, selections, vanillaText, useGetString);
     }
-    public static StringOptionItem Create(int id, Enum name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false)
+    public static StringOptionItem Create(int id, Enum name, string[] selections, int defaultIndex, TabGroup tab, bool isSingleValue, bool vanillaText = false, bool useGetString = true)
     {
-        return new StringOptionItem(id, name.ToString(), defaultIndex, tab, isSingleValue, selections, vanillaText);
+        return new StringOptionItem(id, name.ToString(), defaultIndex, tab, isSingleValue, selections, vanillaText, useGetString);
     }
 
     // Getter
@@ -21,6 +22,7 @@ public class StringOptionItem(int id, string name, int defaultValue, TabGroup ta
     public override float GetFloat() => Rule.GetValueByIndex(CurrentValue);
     public override string GetString()
     {
+        if (!UseGetString) return Selections[Rule.GetValueByIndex(CurrentValue)];
         return Translator.GetString(Selections[Rule.GetValueByIndex(CurrentValue)]);
     }
     public int GetChance()

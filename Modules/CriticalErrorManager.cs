@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules.Rpc;
 using static TOHE.Translator;
 
 namespace TOHE.Modules;
@@ -29,11 +30,8 @@ public static class CriticalErrorManager
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AntiBlackout, SendOption.Reliable);
-            writer.Write(PlayerControl.LocalPlayer.PlayerId);
-            writer.Write(reason);
-            writer.Write(sourseError);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcAntiBlackout(PlayerControl.LocalPlayer.NetId, PlayerControl.LocalPlayer.PlayerId, reason, sourseError);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
     }
     public static void ReadRpc(PlayerControl player, MessageReader reader)

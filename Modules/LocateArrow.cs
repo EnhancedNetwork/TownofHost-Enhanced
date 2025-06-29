@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE;
@@ -32,12 +33,9 @@ static class LocateArrow
 
         var seer = seerId.GetPlayer();
         if (!seer.IsNonHostModdedClient()) return;
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.Arrow, SendOption.Reliable, seer.GetClientId());
-        writer.Write(false);
-        writer.WritePacked(index);
-        writer.Write(seer);
-        writer.Write(vector3);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+        var message = new RpcArrow(PlayerControl.LocalPlayer.NetId, false, index, seer.PlayerId, null, vector3);
+        RpcUtils.LateSpecificSendMessage(message, seer.OwnerId);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
@@ -171,7 +169,7 @@ static class LocateArrow
             }
         }
 
-        if (update && (!seer.IsModded() || (seer.IsHost() && Options.LowLoadDelayUpdateNames.GetBool())))
+        if (update && (!seer.IsModded()))
         {
             Utils.NotifyRoles(SpecifySeer: seer, ForceLoop: false);
         }
