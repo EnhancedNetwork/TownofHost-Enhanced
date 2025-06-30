@@ -1,6 +1,7 @@
 using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -201,18 +202,16 @@ internal class President : RoleBase
 
     private static void SendRPC(byte playerId, bool isEnd = true)
     {
-        MessageWriter writer;
+
         if (!isEnd)
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentReveal, SendOption.Reliable, -1);
-            writer.Write(playerId);
-            writer.Write(CheckPresidentReveal[playerId]);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg1 = new RpcPresidentReveal(PlayerControl.LocalPlayer.NetId, playerId, CheckPresidentReveal[playerId]);
+            RpcUtils.LateBroadcastReliableMessage(msg1);
             return;
         }
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentEnd, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg2 = new RpcPresidentEnd(PlayerControl.LocalPlayer.NetId, playerId);
+        RpcUtils.LateBroadcastReliableMessage(msg2);
+
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {

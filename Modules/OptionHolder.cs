@@ -177,6 +177,9 @@ public static class Options
 
     // ------------ System Settings Tab ------------
     public static OptionItem BypassRateLimitAC;
+    public static OptionItem MaxSpiltReliablePacketsPerTick;
+    public static OptionItem MaxSpiltNonePacketsPerTick;
+
     public static OptionItem GradientTagsOpt;
     public static OptionItem EnableKillerLeftCommand;
     public static OptionItem ShowMadmatesInLeftCommand;
@@ -1169,6 +1172,13 @@ public static class Options
         #region System Settings
         BypassRateLimitAC = BooleanOptionItem.Create(60049, "BypassRateLimitAC", true, TabGroup.SystemSettings, false)
             .SetHeader(true);
+        MaxSpiltReliablePacketsPerTick = IntegerOptionItem.Create(60048, "MaxSpiltReliablePacketsPerTick", new(1, 100, 1), 3, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Pieces)
+            .SetParent(BypassRateLimitAC);
+        MaxSpiltNonePacketsPerTick = IntegerOptionItem.Create(60047, "MaxSpiltNonePacketsPerTick", new(1, 100, 1), 5, TabGroup.SystemSettings, false)
+            .SetValueFormat(OptionFormat.Pieces)
+            .SetParent(BypassRateLimitAC);
+
         GradientTagsOpt = BooleanOptionItem.Create(60031, "EnableGadientTags", false, TabGroup.SystemSettings, false)
             .SetHeader(true);
         EnableKillerLeftCommand = BooleanOptionItem.Create(60040, "EnableKillerLeftCommand", true, TabGroup.SystemSettings, false)

@@ -60,7 +60,7 @@ public static class PhantomRolePatch
             // Set Phantom when his start vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
             // Check vanish again for desync role
-            phantom.RpcCheckVanishDesync(target);
+            phantom.RpcCheckVanishDesync(target); // This doesnt work for vanilla clients i think?
 
             _ = new LateTask(() =>
             {

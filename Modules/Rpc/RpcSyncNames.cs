@@ -1,5 +1,4 @@
 using Hazel;
-using Il2CppInterop.Generator.Extensions;
 
 namespace TOHE.Modules.Rpc
 {
@@ -55,4 +54,27 @@ namespace TOHE.Modules.Rpc
         private readonly string name;
         private readonly float time;
     }
+
+    class RpcSetNameColorData : BaseModdedRpc
+    {
+        public override byte RpcType => (byte)CustomRPC.SetNameColorData;
+        public RpcSetNameColorData(uint netId, byte playerId, byte targetId, string colorCode) : base(netId)
+        {
+            this.playerId = playerId;
+            this.targetId = targetId;
+            this.colorCode = colorCode;
+        }
+
+        public override void SerializeRpcValues(MessageWriter msg)
+        {
+            msg.Write(playerId);
+            msg.Write(targetId);
+            msg.Write(colorCode);
+        }
+
+        private readonly byte playerId;
+        private readonly byte targetId;
+        private readonly string colorCode;
+    }
+
 }

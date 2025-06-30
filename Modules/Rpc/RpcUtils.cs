@@ -70,12 +70,22 @@ public class RpcUtils
     {
         Dictionary<int, List<BaseGameDataMessage>> queuedMessage = sendOption == SendOption.Reliable ? queuedReliableMessage : queuedUnreliableMessage;
 
-        var top2Queues = queuedMessage
-            .Where(x => x.Value.Count > 0)
-            .OrderByDescending(x => x.Value.Count)
-            .Take(2);
+        IEnumerable<KeyValuePair<int, List<BaseGameDataMessage>>> topQueues;
 
-        foreach (var message in top2Queues)
+        if (!Options.BypassRateLimitAC.GetBool())
+        {
+            topQueues = queuedMessage.Where(x => x.Value.Count > 0);
+        }
+        else
+        {
+            var limit = sendOption == SendOption.Reliable ? Options.MaxSpiltReliablePacketsPerTick.GetInt() : Options.MaxSpiltNonePacketsPerTick.GetInt();
+            topQueues = queuedMessage
+                .Where(x => x.Value.Count > 0)
+                .OrderByDescending(x => x.Value.Count)
+                .Take(limit);
+        }
+
+        foreach (var message in topQueues)
         {
             var writer = MessageWriter.Get(sendOption);
 

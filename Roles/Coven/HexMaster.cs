@@ -82,10 +82,8 @@ internal class HexMaster : CovenManager
     {
         if (regularHex)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
-            writer.Write(hexId);
-            writer.Write(target);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcDoHex(PlayerControl.LocalPlayer.NetId, hexId, target);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
         else
         {

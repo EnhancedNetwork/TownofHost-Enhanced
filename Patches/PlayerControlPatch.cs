@@ -1,6 +1,5 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -489,10 +488,8 @@ class MurderPlayerPatch
             // Sync protected player from being killed first info for modded clients
             if (PlayerControl.LocalPlayer.IsHost())
             {
-                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncShieldPersonDiedFirst, SendOption.None, -1);
-                writer.Write(Main.FirstDied);
-                writer.Write(Main.FirstDiedPrevious);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                var msg = new RpcSyncShieldPersonDiedFirst(PlayerControl.LocalPlayer.NetId, Main.FirstDied, Main.FirstDiedPrevious);
+                RpcUtils.LateBroadcastReliableMessage(msg);
             }
         }
 
@@ -552,10 +549,9 @@ class RpcMurderPlayerPatch
         {
             __instance.MurderPlayer(target, murderResultFlags);
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, -1);
-        messageWriter.WriteNetObject(target);
-        messageWriter.Write((int)murderResultFlags);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var message = new RpcMurderPlayer(__instance.NetId, target.NetId, murderResultFlags);
+        RpcUtils.LateBroadcastReliableMessage(message);
 
         return false;
         // There is no need to include DecisionByHost in Succeeded kill attempt. DecisionByHost will make client check protection locally and cause confusion.

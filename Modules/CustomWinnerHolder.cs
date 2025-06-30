@@ -83,24 +83,6 @@ public static class CustomWinnerHolder
         return false;
     }
 
-    public static MessageWriter WriteTo(MessageWriter writer)
-    {
-        writer.WritePacked((int)WinnerTeam);
-
-        writer.WritePacked(AdditionalWinnerTeams.Count);
-        foreach (var wt in AdditionalWinnerTeams)
-            writer.WritePacked((int)wt);
-
-        writer.WritePacked(WinnerRoles.Count);
-        foreach (var wr in WinnerRoles)
-            writer.WritePacked((int)wr);
-
-        writer.WritePacked(WinnerIds.Count);
-        foreach (var id in WinnerIds)
-            writer.Write(id);
-
-        return writer;
-    }
     public static void ReadFrom(MessageReader reader)
     {
         WinnerTeam = (CustomWinner)reader.ReadPackedInt32();

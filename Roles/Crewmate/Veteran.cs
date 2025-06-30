@@ -102,6 +102,7 @@ internal class Veteran : RoleBase
                 player.RpcResetAbilityCooldown();
             }
 
+            RPC.PlaySoundRPC(Sounds.TaskComplete, player.PlayerId);
             player.Notify(string.Format(GetString("AbilityExpired"), player.GetAbilityUseLimit()));
         }
     }

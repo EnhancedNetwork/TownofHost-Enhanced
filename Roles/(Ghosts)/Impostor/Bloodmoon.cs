@@ -87,6 +87,7 @@ internal class Bloodmoon : RoleBase
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
+            RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
             PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
             LastTime.Add(target.PlayerId, GetTimeStamp());
             killer.RpcResetAbilityCooldown();
@@ -109,6 +110,7 @@ internal class Bloodmoon : RoleBase
             {
                 PlayerDie.Remove(playerid);
                 LastTime.Remove(playerid);
+                RPC.PlaySoundRPC(Sounds.KillSound, _Player.PlayerId);
                 player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(_Player);

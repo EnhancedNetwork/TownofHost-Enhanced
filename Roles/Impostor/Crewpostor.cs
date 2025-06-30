@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Impostor;
 using UnityEngine;
 using static TOHE.Options;
@@ -63,10 +64,8 @@ internal class Crewpostor : RoleBase
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCrewpostorTasksDone, SendOption.Reliable, -1);
-            writer.Write(cpID);
-            writer.WritePacked(tasksDone);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcSetCrewpostorTasksDone(PlayerControl.LocalPlayer.NetId, cpID, tasksDone);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
     }
     public static void ReceiveRPC(MessageReader reader)

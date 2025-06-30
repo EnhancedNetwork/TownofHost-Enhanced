@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using Hazel;
 using System.Collections;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -523,9 +523,9 @@ class GameEndCheckerForNormal
     public static void StartEndGame(GameOverReason reason)
     {
         // Sync of CustomWinnerHolder info
-        var winnerWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
-        WriteTo(winnerWriter);
-        AmongUsClient.Instance.FinishRpcImmediately(winnerWriter);
+        var msg = new RpcEndGame(PlayerControl.LocalPlayer.NetId, WinnerTeam, AdditionalWinnerTeams, WinnerRoles, WinnerIds);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
 
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }

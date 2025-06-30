@@ -731,9 +731,9 @@ static class ExtendedPlayerControl
             player.CheckVanish();
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckVanish, RpcSendOption, seer.GetClientId());
-        messageWriter.Write(0); // not used, lol
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var message = new RpcCheckVanish(player.NetId);
+        RpcUtils.LateSpecificSendMessage(message, seer.OwnerId);
     }
     public static void RpcStartVanishDesync(this PlayerControl player, PlayerControl seer)
     {
@@ -742,8 +742,9 @@ static class ExtendedPlayerControl
             player.SetRoleInvisibility(true, false, true);
             return;
         }
-        MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartVanish, RpcSendOption, seer.GetClientId());
-        AmongUsClient.Instance.FinishRpcImmediately(msg);
+
+        var message = new RpcVanish(player.NetId);
+        RpcUtils.LateSpecificSendMessage(message, seer.OwnerId);
     }
     public static void RpcCheckAppearDesync(this PlayerControl player, bool shouldAnimate, PlayerControl seer)
     {
@@ -752,9 +753,9 @@ static class ExtendedPlayerControl
             player.CheckAppear(shouldAnimate);
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.CheckAppear, RpcSendOption, seer.GetClientId());
-        messageWriter.Write(shouldAnimate);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var message = new RpcCheckAppear(player.NetId, shouldAnimate);
+        RpcUtils.LateSpecificSendMessage(message, seer.OwnerId);
     }
     public static void RpcStartAppearDesync(this PlayerControl player, bool shouldAnimate, PlayerControl seer)
     {
@@ -764,9 +765,8 @@ static class ExtendedPlayerControl
             return;
         }
 
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.StartAppear, RpcSendOption, seer.GetClientId());
-        messageWriter.Write(shouldAnimate);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        var message = new RpcAppear(player.NetId, shouldAnimate);
+        RpcUtils.LateSpecificSendMessage(message, seer.OwnerId);
     }
     public static void RpcCheckAppear(this PlayerControl player, bool shouldAnimate)
     {
@@ -782,10 +782,9 @@ static class ExtendedPlayerControl
             killer.MurderPlayer(target, MurderResultFlags.Succeeded);
             return;
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, seer.GetClientId());
-        messageWriter.WriteNetObject(target);
-        messageWriter.Write((int)MurderResultFlags.Succeeded);
-        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+
+        var message = new RpcMurderPlayer(killer.NetId, target.NetId, MurderResultFlags.Succeeded);
+        RpcUtils.LateSpecificSendMessage(message, seer.GetClientId(), SendOption.Reliable);
     } //Must provide seer, target
     public static void RpcSpecificProtectPlayer(this PlayerControl killer, PlayerControl target = null, int colorId = 0)
     {

@@ -1,11 +1,11 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules;
 using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
-
 
 namespace TOHE.Roles.Neutral;
 
@@ -87,6 +87,7 @@ internal class Shroud : RoleBase
             return false;
         }
 
+        killer.RPCPlayCustomSound("Line");
         ShroudList[target.PlayerId] = killer.PlayerId;
         SendRPC(killer.PlayerId, target.PlayerId, 1);
 

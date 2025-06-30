@@ -16,7 +16,7 @@ public static class CustomSoundsManager
             Play(sound);
             return;
         }
-        RpcUtils.SendMessageImmediately(new RpcPlayCustomSound(pc.NetId, sound), pc.GetClientId());
+        RpcUtils.LateSpecificSendMessage(new RpcPlayCustomSound(pc.NetId, sound), pc.GetClientId());
     }
     public static void RPCPlayCustomSoundAll(string sound)
     {
