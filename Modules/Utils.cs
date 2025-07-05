@@ -2171,8 +2171,7 @@ public static class Utils
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
-            }
-        }
+            }        
         //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
         Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
