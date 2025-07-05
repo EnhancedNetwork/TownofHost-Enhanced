@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using static TOHE.Options;
@@ -62,12 +62,11 @@ internal class Ghastly : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.PlayerId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(KillerIsChosen);
         writer.Write(killertarget.Item1);
         writer.Write(killertarget.Item2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
@@ -124,6 +123,7 @@ internal class Ghastly : RoleBase
             LastTime.Add(killer, GetTimeStamp());
 
             KillerIsChosen = false;
+            RPC.PlaySoundRPC(Sounds.TaskUpdateSound, killer);
             GetPlayerById(killer)?.Notify(GetString("GhastlyYouvePosses"));
             angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 

@@ -3,6 +3,7 @@ using System;
 using System.Text.RegularExpressions;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Crewmate;
@@ -161,7 +162,7 @@ internal class Councillor : RoleBase
                     return true;
                 }
                 else if (target.Is(CustomRoles.Pestilence)) CouncillorSuicide = true;
-                else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
+                // else if (target.Is(CustomRoles.Trickster)) CouncillorSuicide = true;
                 else if (target.IsTransformedNeutralApocalypse() && !target.Is(CustomRoles.Pestilence))
                 {
                     pc.ShowInfoMessage(isUI, GetString("ApocalypseImmune"));
@@ -187,8 +188,12 @@ internal class Councillor : RoleBase
                     pc.ShowInfoMessage(isUI, GetString("EGGuessSnitchTaskDone"));
                     return true;
                 }
-                else if ((target.Is(CustomRoles.Madmate) ||
-                        target.Is(CustomRoles.Refugee) || target.Is(CustomRoles.Parasite) || target.Is(CustomRoles.Crewpostor)))
+                else if (pc.Is(CustomRoles.Narc))
+                {
+                    if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
+                    else CouncillorSuicide = target.IsPlayerCrewmateTeam();
+                }
+                else if (target.Is(CustomRoles.Madmate) || target.GetCustomRole().IsMadmate())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -209,7 +214,7 @@ internal class Councillor : RoleBase
                         CouncillorSuicide = true;
                     }
                 }
-                else if ((target.GetCustomRole().IsImpostor()))
+                else if (target.GetCustomRole().IsImpostor())
                 {
                     if (pc.Is(CustomRoles.Admired) || (pc.IsAnySubRole(x => x.IsConverted()) && !pc.Is(CustomRoles.Madmate)))
                     {
@@ -333,9 +338,8 @@ internal class Councillor : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CouncillorJudge, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcCouncillorJudge(PlayerControl.LocalPlayer.NetId, playerId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC_Custom(MessageReader reader, PlayerControl pc)
     {

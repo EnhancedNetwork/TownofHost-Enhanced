@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
@@ -80,7 +80,8 @@ internal class Bandit : RoleBase
             if (subRole is CustomRoles.Cleansed or // making Bandit unable to steal Cleansed for obvious reasons. Although it can still be cleansed by cleanser.
                 CustomRoles.LastImpostor or
                 CustomRoles.Lovers or // Causes issues involving Lovers Suicide
-                CustomRoles.Nimble && CanVent.GetBool()
+                CustomRoles.Narc
+                || (subRole is CustomRoles.Nimble && CanVent.GetBool())
                 || (subRole.IsImpOnlyAddon() && !CanStealImpOnlyAddon.GetBool())
                 || ((subRole.IsBetrayalAddon() || subRole is CustomRoles.Lovers) && !CanStealBetrayalAddon.GetBool()))
             {
@@ -99,15 +100,14 @@ internal class Bandit : RoleBase
     }
     public void SendRPC(byte targetId, CustomRoles SelectedAddOn, bool removeNow)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(removeNow);
         if (removeNow)
         {
             writer.Write(targetId);
             writer.WritePacked((int)SelectedAddOn);
         }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

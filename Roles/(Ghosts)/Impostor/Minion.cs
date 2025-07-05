@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using TOHE.Modules;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -48,11 +49,13 @@ internal class Minion : RoleBase
         if (!ImpPVC || killer.IsAnySubRole(x => x.IsConverted() && !killer.Is(CustomRoles.Madmate)))
         {
             Main.PlayerStates[target.PlayerId].IsBlackOut = true;
+            target.RPCPlayCustomSound("FlashBang");
             target.MarkDirtySettings();
 
             _ = new LateTask(() =>
             {
                 Main.PlayerStates[target.PlayerId].IsBlackOut = false;
+                RPC.PlaySoundRPC(Sounds.TaskComplete, target.PlayerId);
                 target.MarkDirtySettings();
             }, AbilityTime.GetFloat(), "Minion: return vision");
             killer.RpcResetAbilityCooldown();

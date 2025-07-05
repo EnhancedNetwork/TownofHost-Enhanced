@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Coven;
 using static TOHE.Options;
 
@@ -53,11 +54,8 @@ internal class Investigator : RoleBase
 
     private static void SendRPC(bool setTarget, byte playerId = byte.MaxValue, byte targetId = byte.MaxValue)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetInvestgatorLimit, SendOption.Reliable, -1);
-        writer.Write(setTarget);
-        writer.Write(playerId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetInvestigatorLimit(PlayerControl.LocalPlayer.NetId, setTarget, playerId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC(MessageReader reader)

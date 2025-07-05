@@ -1,8 +1,8 @@
 using Hazel;
-using InnerNet;
 using System;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -143,11 +143,12 @@ internal class EvilHacker : RoleBase
     }
     private static void SendRPC(byte RpcTypeId, SystemTypes room)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(Utils.GetPlayerById(player));
+        var pc = Utils.GetPlayerById(player);
+
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(RpcTypeId);
         writer.Write((byte)room);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, pc.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

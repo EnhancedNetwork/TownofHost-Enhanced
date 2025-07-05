@@ -1,6 +1,7 @@
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -68,16 +69,24 @@ internal class Cultist : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        else if (CanBeCharmed(target) && Mini.Age == 18 || CanBeCharmed(target) && Mini.Age < 18 && !(target.Is(CustomRoles.NiceMini) || target.Is(CustomRoles.EvilMini)))
-        {
-            killer.RpcRemoveAbilityUse();
-            target.RpcSetCustomRole(CustomRoles.Charmed);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistCharmedPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CharmedByCultist")));
+        else if (target.CanBeRecruitedBy(killer))
+        {
+            var addon = killer.GetBetrayalAddon(true);
+            killer.RpcRemoveAbilityUse();
+            target.RpcSetCustomRole(addon);
+
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CultistCharmedPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CharmedByCultist")));
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
+
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId);
+            }
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -85,7 +94,7 @@ internal class Cultist : RoleBase
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
 
-            Logger.Info(target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Charmed.ToString(), "Assign " + CustomRoles.Charmed.ToString());
+            Logger.Info(target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
             return false;
         }
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CultistInvalidTarget")));

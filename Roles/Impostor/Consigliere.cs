@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 
 namespace TOHE.Roles.Impostor;
@@ -15,6 +16,7 @@ internal class Consigliere : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem DivinationMaxCount;
+    private static OptionItem ImpsCanSeeReveals;
 
     private static readonly Dictionary<byte, HashSet<byte>> DivinationTarget = [];
 
@@ -25,6 +27,7 @@ internal class Consigliere : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         DivinationMaxCount = IntegerOptionItem.Create(Id + 11, "ConsigliereDivinationMaxCount", new(1, 15, 1), 5, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere])
             .SetValueFormat(OptionFormat.Times);
+        ImpsCanSeeReveals = BooleanOptionItem.Create(Id + 12, "ConsigliereImpsCanSeeReveals", true, TabGroup.ImpostorRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.Consigliere]);
     }
     public override void Init()
     {
@@ -42,10 +45,9 @@ internal class Consigliere : RoleBase
 
     private static void SendRPC(byte playerId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetConsigliere, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetConsigliere(PlayerControl.LocalPlayer.NetId, playerId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
     }
     public static void ReceiveRPC(MessageReader reader)
     {
@@ -84,4 +86,19 @@ internal class Consigliere : RoleBase
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
         => seer.PlayerId != target.PlayerId && seer.IsAlive() && IsDivination(seer.PlayerId, target.PlayerId);
+
+    public static bool ImpKnowRoleTarget(PlayerControl imp, PlayerControl target)
+    {
+        if (imp == null || !(imp.IsPlayerImpostorTeam() || imp.IsPolice())) return false;
+        if (!ImpsCanSeeReveals.GetBool()) return false;
+        bool result = false;
+        foreach (var cs in DivinationTarget.Keys)
+        {
+            if (DivinationTarget[cs].Contains(target.PlayerId)) result = true;
+
+            // when seer is Sheriff or ChiefOfPolice and Consigliere is not Narc,seer shouldn't see target's role
+            if (imp.IsPolice() && !cs.GetPlayer().Is(CustomRoles.Narc)) result = false;
+        }
+        return result;
+    }
 }

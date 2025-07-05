@@ -1,6 +1,6 @@
 using Hazel;
-using InnerNet;
 using System.Text;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -21,6 +21,7 @@ internal class PotionMaster : CovenManager
     private static OptionItem KillCooldown;
     private static OptionItem RevealMaxCount;
     private static OptionItem BarrierMaxCount;
+    private static OptionItem CovenCanSeeReveals;
     //private static OptionItem CanVent;
     //private static OptionItem HasImpostorVision;
 
@@ -41,6 +42,7 @@ internal class PotionMaster : CovenManager
             .SetValueFormat(OptionFormat.Times);
         BarrierMaxCount = IntegerOptionItem.Create(Id + 15, "PotionMasterMaxBarriers", new(1, 100, 1), 5, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster])
             .SetValueFormat(OptionFormat.Times);
+        CovenCanSeeReveals = BooleanOptionItem.Create(Id + 12, "PotionMasterCovenCanSeeReveals", true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
         //CanVent = BooleanOptionItem.Create(Id + 12, GeneralOption.CanVent, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
         //HasImpostorVision = BooleanOptionItem.Create(Id + 13, GeneralOption.ImpostorVision, true, TabGroup.CovenRoles, false).SetParent(CustomRoleSpawnChances[CustomRoles.PotionMaster]);
     }
@@ -66,14 +68,13 @@ internal class PotionMaster : CovenManager
     private static void SendRPC(byte typeId, PlayerControl player, PlayerControl target)
     {
         if (!player.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(typeId);
         writer.Write(player.PlayerId);
         writer.Write(target.PlayerId);
         if (typeId == 0) writer.Write(RevealLimit[player.PlayerId]);
         else if (typeId == 1) writer.Write(BarrierLimit[player.PlayerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -209,6 +210,17 @@ internal class PotionMaster : CovenManager
                 IsWatch = true;
         });
         return IsWatch;
+    }
+    public static bool CovenKnowRoleTarget(PlayerControl coven, PlayerControl target)
+    {
+        if (coven == null || !coven.IsPlayerCovenTeam()) return false;
+        if (!CovenCanSeeReveals.GetBool()) return false;
+        bool result = false;
+        foreach (var pm in RevealList.Keys)
+        {
+            if (RevealList[pm].Contains(target.PlayerId)) result = true;
+        }
+        return result;
     }
     public override bool CheckMurderOnOthersTarget(PlayerControl killer, PlayerControl target)
     {

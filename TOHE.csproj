@@ -23,13 +23,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.3.25" PrivateAssets="all" />
+		<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.4.15" PrivateAssets="all" />
 
 		<!--For PC build-->
-		<!--<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.3.25" PrivateAssets="all" Condition="'$(Configuration)' == 'DebugWindows' Or '$(Configuration)' == 'BetaWindows' Or '$(Configuration)' == 'ReleaseWindows'" />-->
+		<!--<PackageReference Include="AmongUs.GameLibs.Steam" Version="2025.4.15" PrivateAssets="all" Condition="'$(Configuration)' == 'DebugWindows' Or '$(Configuration)' == 'BetaWindows' Or '$(Configuration)' == 'ReleaseWindows'" />-->
 		<!--For Android build-->
-		<!--<PackageReference Include="AmongUs.GameLibs.Android" Version="2025.3.25" PrivateAssets="all" Condition="'$(Configuration)' == 'DebugAndroid' Or '$(Configuration)' == 'BetaAndroid' Or '$(Configuration)' == 'ReleaseAndroid'" />-->
+		<!--<PackageReference Include="AmongUs.GameLibs.Android" Version="2025.4.15" PrivateAssets="all" Condition="'$(Configuration)' == 'DebugAndroid' Or '$(Configuration)' == 'BetaAndroid' Or '$(Configuration)' == 'ReleaseAndroid'" />-->
 		
+
 		<PackageReference Include="BepInEx.IL2CPP.MSBuild" Version="2.1.0-rc.1">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -49,8 +50,8 @@
 	</ItemGroup>
 
 	<Target Name="EnsureTokenEnvExists" BeforeTargets="BeforeBuild">
-		<Exec Condition=" '$(OS)' == 'Windows_NT' " Command="if not exist token.env (echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env)" />
-		<Exec Condition=" '$(OS)' != 'Windows_NT' " Command="if [ ! -f token.env ]; then echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN > token.env; fi" />
+		<Exec Condition=" '$(OS)' == 'Windows_NT' " Command="if not exist token.env (echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN &gt; token.env)" />
+		<Exec Condition=" '$(OS)' != 'Windows_NT' " Command="if [ ! -f token.env ]; then echo API_TOKEN=REPLACE THIS ONLY IF YOU GOT YOUR OWN API TOKEN &gt; token.env; fi" />
 	</Target>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

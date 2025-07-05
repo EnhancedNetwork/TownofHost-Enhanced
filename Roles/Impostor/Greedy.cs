@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules.Rpc;
 
 namespace TOHE.Roles.Impostor;
 
@@ -38,10 +39,8 @@ internal class Greedy : RoleBase
 
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetGreedy, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(IsOdd[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetGreedy(PlayerControl.LocalPlayer.NetId, playerId, IsOdd[playerId]);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC(MessageReader reader)

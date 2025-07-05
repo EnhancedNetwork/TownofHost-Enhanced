@@ -1,8 +1,8 @@
 using AmongUs.GameOptions;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
-using Hazel;
 using System.Collections;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
@@ -104,13 +104,15 @@ class GameEndCheckerForNormal
 
             foreach (var pc in Main.AllPlayerControls)
             {
+                if (WinnerIds.Contains(pc.PlayerId)) continue;
                 var countType = Main.PlayerStates[pc.PlayerId].countTypes;
 
                 switch (WinnerTeam)
                 {
                     case CustomWinner.Crewmate:
-                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer) ||
-                            pc.Is(CustomRoles.Admired) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(Custom_Team.Crewmate) && (countType == CountTypes.Crew || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            || pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc)
+                           )
                         {
                             // When admired neutral win, set end game reason "HumansByVote"
                             if (reason is not GameOverReason.CrewmatesByVote and not GameOverReason.CrewmatesByTask)
@@ -122,74 +124,83 @@ class GameEndCheckerForNormal
                         break;
                     case CustomWinner.Impostor:
                         if (((pc.Is(Custom_Team.Impostor) || pc.GetCustomRole().IsMadmate()) && (countType == CountTypes.Impostor || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
-                            || pc.Is(CustomRoles.Madmate) && !WinnerIds.Contains(pc.PlayerId))
+                            || pc.Is(CustomRoles.Madmate)
+                            )
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Coven:
                         if (((pc.Is(Custom_Team.Coven) || pc.Is(CustomRoles.Enchanted) || Main.PlayerStates[pc.PlayerId].IsNecromancer) && (countType == CountTypes.Coven || pc.Is(CustomRoles.Soulless)))
-                            || pc.Is(CustomRoles.Enchanted) && !WinnerIds.Contains(pc.PlayerId))
+                            || pc.Is(CustomRoles.Enchanted)
+                           )
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Apocalypse:
-                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
-                            && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.IsNeutralApocalypse()) && (countType == CountTypes.Apocalypse || pc.Is(CustomRoles.Soulless) && !Main.PlayerStates[pc.PlayerId].IsNecromancer))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Cultist:
-                        if ((pc.Is(CustomRoles.Charmed) || pc.Is(CustomRoles.Cultist)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Cultist) && (countType == CountTypes.Cultist || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            || pc.Is(CustomRoles.Charmed))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.CursedSoul:
-                        if (pc.Is(CustomRoles.Soulless) && !WinnerIds.Contains(pc.PlayerId))
+                        if (pc.Is(CustomRoles.Soulless))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Infectious:
-                        if ((pc.Is(CustomRoles.Infected) || pc.Is(CustomRoles.Infectious)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Infectious) && (countType == CountTypes.Infectious || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            || pc.Is(CustomRoles.Infected))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.PlagueDoctor:
-                        if (pc.Is(CustomRoles.PlagueDoctor) && !WinnerIds.Contains(pc.PlayerId))
+                        if (pc.Is(CustomRoles.PlagueDoctor))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Virus:
-                        if ((pc.Is(CustomRoles.Contagious) || pc.Is(CustomRoles.Virus)) && !WinnerIds.Contains(pc.PlayerId))
+                        if ((pc.Is(CustomRoles.Virus) && (countType == CountTypes.Virus || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            || pc.Is(CustomRoles.Contagious))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Jackal:
-                        if ((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Recruit) || pc.Is(CustomRoles.Jackal)) && !WinnerIds.Contains(pc.PlayerId))
+                        if (((pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Jackal)) && (countType == CountTypes.Jackal || pc.Is(CustomRoles.Soulless)) && !Main.PlayerStates[pc.PlayerId].IsNecromancer)
+                            || pc.Is(CustomRoles.Recruit))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
                     case CustomWinner.Spiritcaller:
-                        if (pc.Is(CustomRoles.EvilSpirit) && !WinnerIds.Contains(pc.PlayerId))
+                        if (pc.Is(CustomRoles.EvilSpirit))
                         {
                             WinnerIds.Add(pc.PlayerId);
                         }
                         break;
-                    case CustomWinner.RuthlessRomantic:
-                        if (pc.Is(CustomRoles.RuthlessRomantic) && !WinnerIds.Contains(Romantic.BetPlayer[pc.PlayerId]))
-                        {
-                            WinnerIds.Add(Romantic.BetPlayer[pc.PlayerId]);
-                        }
-                        break;
                 }
+            }
+
+            if (WinnerTeam is CustomWinner.RuthlessRomantic)
+            {
+                Romantic.BetPlayer.Do(x =>
+                {
+                    if (Main.PlayerStates[x.Key].MainRole == CustomRoles.RuthlessRomantic
+                        && WinnerIds.Contains(x.Key) && !WinnerIds.Contains(x.Value))
+                        WinnerIds.Add(x.Value);
+                });
             }
 
             if (WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
@@ -512,9 +523,9 @@ class GameEndCheckerForNormal
     public static void StartEndGame(GameOverReason reason)
     {
         // Sync of CustomWinnerHolder info
-        var winnerWriter = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.EndGame, SendOption.Reliable);
-        WriteTo(winnerWriter);
-        AmongUsClient.Instance.FinishRpcImmediately(winnerWriter);
+        var msg = new RpcEndGame(PlayerControl.LocalPlayer.NetId, WinnerTeam, AdditionalWinnerTeams, WinnerRoles, WinnerIds);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
 
         AmongUsClient.Instance.StartCoroutine(CoEndGame(AmongUsClient.Instance, reason).WrapToIl2Cpp());
     }
@@ -577,10 +588,9 @@ class GameEndCheckerForNormal
                 var playerInfo = GameData.Instance.GetPlayerById(playerId);
                 // revive player
                 playerInfo.IsDead = false;
-                AmongUsClient.Instance.SendAllStreamedObjects();
             }
             // sync game data
-            Utils.SendGameDataAll();
+            Utils.SendGameData();
             // Delay to ensure that the end of the game is delivered at the end of the game
             yield return new WaitForSeconds(0.3f);
         }

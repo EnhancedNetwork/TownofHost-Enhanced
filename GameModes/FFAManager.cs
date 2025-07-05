@@ -1,6 +1,7 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Translator;
 
@@ -124,10 +125,8 @@ internal static class FFAManager
     }
     private static void SendRPCSyncFFAPlayer(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncFFAPlayer, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(KBScore[playerId]);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSyncFFAPlayer(PlayerControl.LocalPlayer.NetId, playerId, KBScore[playerId]);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPCSyncFFAPlayer(MessageReader reader)
     {
@@ -137,11 +136,10 @@ internal static class FFAManager
     public static void SendRPCSyncNameNotify(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncFFANameNotify, SendOption.Reliable, pc.GetClientId());
-        if (NameNotify.ContainsKey(pc.PlayerId))
-            writer.Write(NameNotify[pc.PlayerId].TEXT);
-        else writer.Write(string.Empty);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var notif = NameNotify.ContainsKey(pc.PlayerId) ? NameNotify[pc.PlayerId].TEXT : string.Empty;
+        var msg = new RpcSyncFFANameNotify(PlayerControl.LocalPlayer.NetId, notif);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
     }
     public static void ReceiveRPCSyncNameNotify(MessageReader reader)
     {

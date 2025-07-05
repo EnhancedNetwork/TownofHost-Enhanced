@@ -1,3 +1,4 @@
+using TOHE.Modules;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Crewmate;
 using static TOHE.Options;
@@ -68,6 +69,7 @@ internal class Mastermind : RoleBase
 
         return killer.CheckDoubleTrigger(target, () =>
         {
+            killer.RPCPlayCustomSound("Line");
             killer.SetKillCooldown(time: ManipulateCD);
             if (target.HasKillButton() || CopyCat.playerIdList.Contains(target.PlayerId) || Main.TasklessCrewmate.Contains(target.PlayerId))
             {
@@ -122,7 +124,7 @@ internal class Mastermind : RoleBase
                 player.SetDeathReason(PlayerState.DeathReason.Suicide);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(mastermind);
-                RPC.PlaySoundRPC(mastermind.PlayerId, Sounds.KillSound);
+                RPC.PlaySoundRPC(Sounds.KillSound, mastermind.PlayerId);
             }
 
             var time = TimeLimit.GetInt() - (GetTimeStamp() - x.Value);

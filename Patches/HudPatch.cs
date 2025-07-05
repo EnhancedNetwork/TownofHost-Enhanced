@@ -21,7 +21,6 @@ class HudManagerUpdatePatch
 {
     public static bool ShowDebugText = false;
     public static int LastCallNotifyRolesPerSecond = 0;
-    public static int NowCallNotifyRolesCount = 0;
     public static int LastSetNameDesyncCount = 0;
     public static int LastFPS = 0;
     public static int NowFrameCount = 0;

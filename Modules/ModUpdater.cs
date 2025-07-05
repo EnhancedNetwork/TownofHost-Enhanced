@@ -48,6 +48,9 @@ public class ModUpdater
 
     public static IEnumerator PrefixCoroutine()
     {
+        Logger.Info("User Facing Version: " + DestroyableSingleton<ReferenceDataManager>.Instance.Refdata.userFacingVersion + " " + Constants.extraBuildVersionInfo, "CheckRelease");
+        Logger.Info("Constants Version: " + string.Format("{0}.{1}.{2}.{3}", Constants.Year, Constants.Month, Constants.Day, Constants.Revision) + " " + Constants.GetBroadcastVersion(), "CheckRelease");
+
         CheckCustomRegions();
         NewVersionCheck();
         DeleteOldFiles();

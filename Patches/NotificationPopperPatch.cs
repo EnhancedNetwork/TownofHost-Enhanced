@@ -1,4 +1,4 @@
-using Hazel;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 
 namespace TOHE.Patches;
@@ -66,9 +66,8 @@ internal class NotificationPopperPatch
         if (!AmongUsClient.Instance.AmHost || Options.HideGameSettings.GetBool()) return;
         if (!Main.AllPlayerControls.Any(pc => pc.IsNonHostModdedClient())) return;
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.NotificationPopper, SendOption.Reliable);
-        writer.WritePacked(index);
-        writer.Write(playSound);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcNotificationPopper(PlayerControl.LocalPlayer.NetId, index, playSound);
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
     }
 }

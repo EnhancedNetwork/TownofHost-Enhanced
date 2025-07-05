@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Neutral;
 using UnityEngine;
@@ -141,11 +142,8 @@ internal class Alchemist : RoleBase
     private static void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetAlchemistTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
-        writer.Write(FixNextSabo);
-        writer.Write(PotionID);
-        writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetAlchemistTimer(PlayerControl.LocalPlayer.NetId, FixNextSabo, PotionID, (InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
@@ -198,7 +196,7 @@ internal class Alchemist : RoleBase
                     if (player.RpcCheckAndMurder(target, true))
                     {
                         var bloodthirstId = BloodthirstList[player.PlayerId];
-                        RPC.PlaySoundRPC(bloodthirstId, Sounds.KillSound);
+                        RPC.PlaySoundRPC(Sounds.KillSound, bloodthirstId);
                         player.RpcMurderPlayer(target);
                         target.SetRealKiller(Utils.GetPlayerById(bloodthirstId));
                         player.MarkDirtySettings();

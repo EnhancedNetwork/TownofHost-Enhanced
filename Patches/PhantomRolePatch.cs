@@ -55,12 +55,12 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer || phantom.HasDesyncRole())) continue;
 
             // Set Phantom when his start vanish
             phantom.RpcSetRoleDesync(RoleTypes.Phantom, target.GetClientId());
             // Check vanish again for desync role
-            phantom.RpcCheckVanishDesync(target);
+            phantom.RpcCheckVanishDesync(target); // This doesnt work for vanilla clients i think?
 
             _ = new LateTask(() =>
             {
@@ -93,7 +93,7 @@ public static class PhantomRolePatch
 
         foreach (var target in Main.AllPlayerControls)
         {
-            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer)) continue;
+            if (!target.IsAlive() || phantom == target || target.AmOwner || !(target.HasDesyncRole() || Main.PlayerStates[target.PlayerId].IsNecromancer || phantom.HasDesyncRole())) continue;
 
             var clientId = target.GetClientId();
 
