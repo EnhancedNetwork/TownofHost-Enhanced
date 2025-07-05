@@ -4143,5 +4143,10 @@
   "ChiefOfPoliceKillButtonText": "Recruitment",
   "PolicPreventRecruitNonKiller": "Prevent recruit players without Kill button",
   "PolicSuidiceWhenTargetNotKiller": "Suicides when recruit a non-Killer or non-<color=#8cffff>Crewmate</color>",
-  "PolicPassConverted": "Can pass Converted Add-on to <color=#ffb347>Sheriff</color>"
+  "PolicPassConverted": "Can pass Converted Add-on to <color=#ffb347>Sheriff</color>",
+
+  "OverrideMedbayScan_OnVisualOff": "Show Medbay Scan when Visual Tasks are off",
+  "OverrideMedbayScan_MinPlayer": "Minimum Players",
+  "OverrideMedbayScan_MaxPlayer": "Maximum Players"
+
 }

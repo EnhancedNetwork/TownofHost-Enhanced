@@ -118,7 +118,7 @@ internal class Poisoner : CovenManager
     private static void KillPoisoned(PlayerControl poisoner, PlayerControl target, bool isButton = false)
     {
         if (poisoner == null || target == null || target.Data.Disconnected) return;
-        if (target.IsAlive())
+        if (target.IsAlive() && !target.IsTransformedNeutralApocalypse())
         {
             target.SetDeathReason(PlayerState.DeathReason.Poison);
             target.RpcMurderPlayer(target);
@@ -126,7 +126,7 @@ internal class Poisoner : CovenManager
             Logger.Info($"{target.GetRealName()} Died by Poison", "Poisoner");
             if (!isButton && poisoner.IsAlive())
             {
-                RPC.PlaySoundRPC(poisoner.PlayerId, Sounds.KillSound);
+                RPC.PlaySoundRPC(Sounds.KillSound, poisoner.PlayerId);
                 if (target.Is(CustomRoles.Trapper))
                     poisoner.TrapperKilled(target);
                 poisoner.Notify(GetString("PoisonerTargetDead"));
@@ -166,7 +166,7 @@ internal class Poisoner : CovenManager
         if (pc == null) return false;
         if (IsRoleblocked(pc.PlayerId))
         {
-            if (pc.GetCustomRole() is 
+            if (pc.GetCustomRole() is
                 CustomRoles.SerialKiller or
                 CustomRoles.Pursuer or
                 CustomRoles.Deputy or

@@ -1,8 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System;
 using System.Text;
+using TOHE.Modules.Rpc;
+using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using static TOHE.Options;
 
@@ -40,10 +41,9 @@ internal class Wildling : RoleBase
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(TimeStamp.ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -79,7 +79,10 @@ internal class Wildling : RoleBase
         TimeStamp = Utils.GetTimeStamp(DateTime.Now) + (long)ProtectDuration.GetFloat();
         SendRPC();
 
-        killer.Notify(Translator.GetString("BKInProtect"));
+        _ = new LateTask(() =>
+        {
+            killer.Notify(Translator.GetString("BKInProtect"));
+        }, target.Is(CustomRoles.Burst) ? Burst.BurstKillDelay.GetFloat() : 0f, "BurstKillCheck");
     }
     public override void OnFixedUpdate(PlayerControl player, bool lowLoad, long nowTime, int timerLowLoad)
     {

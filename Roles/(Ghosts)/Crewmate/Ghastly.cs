@@ -1,9 +1,9 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
+using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
-using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
 using static TOHE.Utils;
@@ -54,7 +54,7 @@ internal class Ghastly : RoleBase
 
     public override void Add(byte playerId)
     {
-        AbilityLimit = MaxPossesions.GetInt();
+        playerId.SetAbilityUseLimit(MaxPossesions.GetInt());
 
         CustomRoleManager.OnFixedUpdateOthers.Add(OnFixUpdateOthers);
         CustomRoleManager.CheckDeadBodyOthers.Add(CheckDeadBody);
@@ -62,18 +62,15 @@ internal class Ghastly : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.PlayerId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
-        writer.Write(AbilityLimit);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(KillerIsChosen);
         writer.Write(killertarget.Item1);
         writer.Write(killertarget.Item2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
-        AbilityLimit = reader.ReadSingle();
         KillerIsChosen = reader.ReadBoolean();
         var item1 = reader.ReadByte();
         var item2 = reader.ReadByte();
@@ -93,7 +90,7 @@ internal class Ghastly : RoleBase
             return true;
         }
 
-        if (AbilityLimit <= 0)
+        if (angel.GetAbilityUseLimit() <= 0)
         {
             SendRPC();
             angel.Notify(GetString("GhastlyNoMorePossess"));
@@ -122,10 +119,11 @@ internal class Ghastly : RoleBase
         else if (KillerIsChosen && Target == byte.MaxValue && target.PlayerId != killer)
         {
             Target = target.PlayerId;
-            AbilityLimit--;
+            angel.RpcRemoveAbilityUse();
             LastTime.Add(killer, GetTimeStamp());
 
             KillerIsChosen = false;
+            RPC.PlaySoundRPC(Sounds.TaskUpdateSound, killer);
             GetPlayerById(killer)?.Notify(GetString("GhastlyYouvePosses"));
             angel.Notify($"\n<size=65%>〘{string.Format(GetString("GhastlyPossessedUser"), "</size>" + GetPlayerById(killer).GetRealName())}<size=65%> 〙</size>\n");
 
@@ -201,7 +199,7 @@ internal class Ghastly : RoleBase
 
         if (killer == seen.PlayerId && target != byte.MaxValue)
         {
-            var arrows = TargetArrow.GetArrows(GetPlayerById(killer), target);
+            var arrows = TargetArrow.GetArrows(killer.GetPlayer(), target);
             var tar = target.GetPlayer().GetRealName();
             if (tar == null) return string.Empty;
 
@@ -225,7 +223,4 @@ internal class Ghastly : RoleBase
             SendRPC();
         }
     }
-
-    public override string GetProgressText(byte playerId, bool cooms)
-        => ColorString(AbilityLimit > 0 ? GetRoleColor(CustomRoles.Ghastly).ShadeColor(0.25f) : Color.gray, $"({AbilityLimit})");
 }
