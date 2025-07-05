@@ -427,6 +427,7 @@ public static class CustomRolesHelper
     {
         if (pc.Is(CustomRoles.Narc) && CheckAsSeer) return false; // Narc cannot see Impostors
         if (Main.PlayerStates[pc.PlayerId].IsNecromancer) return false; // Necromancer
+        if (Main.PlayerStates[pc.PlayerId].IsRandomizer) return false; // Randomizer
 
         //bool OnlyOneImp = Main.AliveImpostorCount < 2;
         return pc.GetCustomRole() switch
@@ -1463,6 +1464,8 @@ public static class CustomRolesHelper
            var r when r.IsNA() => CountTypes.Apocalypse,
            var r when r.IsCoven() => CountTypes.Coven,
            CustomRoles.Enchanted => CountTypes.Coven,
+           CustomRoles.Summoner => CountTypes.Coven,
+           CustomRoles.Summoned => CountTypes.None,
            CustomRoles.Agitater => CountTypes.Agitater,
            CustomRoles.Parasite => CountTypes.Impostor,
            CustomRoles.SerialKiller => CountTypes.SerialKiller,

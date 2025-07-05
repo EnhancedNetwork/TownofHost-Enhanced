@@ -95,7 +95,7 @@ internal class Medusa : CovenManager
         if (killer == null || target == null) return false;
         if (killer.CheckDoubleTrigger(target, () => { SetStoned(killer, target); }))
         {
-            if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || (Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer)))
             {
                 killer.RpcMurderPlayer(target);
                 killer.ResetKillCooldown();

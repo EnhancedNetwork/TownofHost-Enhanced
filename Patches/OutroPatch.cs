@@ -40,14 +40,27 @@ class EndGamePatch
                         if (!Main.PlayerStates.TryGetValue(pvc, out var state) || !state.MainRole.IsGhostRole()) continue;
                         if (!GhostRoleAssign.GhostGetPreviousRole.TryGetValue(pvc, out CustomRoles prevrole)) continue;
 
+
                         Main.PlayerStates[pvc].MainRole = prevrole;
 
-                        var message = new RpcSyncPlayerSetting(PlayerControl.LocalPlayer.NetId, pvc, prevrole);
-                        RpcUtils.LateBroadcastReliableMessage(message);
-                    }
+                        if (state.MainRole == CustomRoles.Summoned)
+                        {
+                            Logger.Info($"Player {Utils.GetPlayerById(pvc).GetRealName()} is Summoned. Skipping role reversion.", "OutroPatch");
+                            continue;
+                        }
+                        if (state.IsRandomizer)
+                        {
+                            // Ensure Randomizer role persists
+                            state.MainRole = CustomRoles.Randomizer;
+                            var message = new RpcSyncPlayerSetting(PlayerControl.LocalPlayer.NetId, pvc, prevrole);
+                            RpcUtils.LateBroadcastReliableMessage(message);
 
-                    if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+                        }
+
+                        if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
                 }
+            }
+
             }
         }
         catch (Exception e)

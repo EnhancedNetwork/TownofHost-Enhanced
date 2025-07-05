@@ -54,7 +54,7 @@ internal class CovenLeader : CovenManager
         if (killer == null || target == null) return false;
         if (killer.CheckDoubleTrigger(target, () => { Retrain(killer, target); }))
         {
-            if (HasNecronomicon(killer) && !target.GetCustomRole().IsCovenTeam())
+            if (HasNecronomicon(killer) && (!target.GetCustomRole().IsCovenTeam() || Main.PlayerStates[killer.PlayerId].IsRandomizer || Main.PlayerStates[target.PlayerId].IsRandomizer))
             {
                 return true;
             }

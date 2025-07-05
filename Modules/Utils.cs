@@ -1837,7 +1837,7 @@ public static class Utils
             var seerRoleClass = seer.GetRoleClass();
 
             // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
+            if (!CamouflageIsForMeeting && MushroomMixupIsActive && seer.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[seer.PlayerId].IsRandomizer) && seer.HasDesyncRole())
             {
                 seer.RpcSetNamePrivate("<size=0%>", force: NoCache);
             }
@@ -1868,8 +1868,10 @@ public static class Utils
                 SelfSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, seer, isForMeeting: isForMeeting));
 
                 SelfSuffix.Append(Radar.GetPlayerArrow(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Necromancer.NecromancerReminder(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(CopyCat.CopycatReminder(seer, seer, isForMeeting: isForMeeting));
+                SelfSuffix.Append(Randomizer.RandomizerReminder(seer, seer, isForMeeting: isForMeeting));
                 SelfSuffix.Append(Spurt.GetSuffix(seer, isformeeting: isForMeeting));
-
 
                 switch (Options.CurrentGameMode)
                 {
@@ -1987,7 +1989,7 @@ public static class Utils
                     //logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                     // Hide player names in during Mushroom Mixup if seer is alive and desync impostor
-                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer) && seer.HasDesyncRole())
+                    if (!CamouflageIsForMeeting && MushroomMixupIsActive && target.IsAlive() && (!seer.Is(Custom_Team.Impostor) || Main.PlayerStates[seer.PlayerId].IsNecromancer || Main.PlayerStates[seer.PlayerId].IsRandomizer) && seer.HasDesyncRole())
                     {
                         realTarget.RpcSetNamePrivate("<size=0%>", seer, force: NoCache);
                     }
@@ -2003,21 +2005,31 @@ public static class Utils
                         if (seer.Is(Custom_Team.Impostor) && target.Is(CustomRoles.Snitch) && target.Is(CustomRoles.Madmate) && target.GetPlayerTaskState().IsTaskFinished)
                             TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Impostor), "★"));
 
-                        if ((seer.IsPlayerCoven() && target.IsPlayerCoven()) && (CovenManager.HasNecronomicon(target)))
-                        {
-                            TargetMark.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Coven), "♣"));
-                        }
+                                if (((seer.IsPlayerCovenTeam() && target.IsPlayerCovenTeam()) || !seer.IsAlive()) && CovenManager.HasNecronomicon(target))
+                                {
+                                    TargetMark.Append(CustomRoles.Coven.GetColoredTextByRole("♣"));
+                                }
+                                if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
+                                    TargetMark.Append(CustomRoles.Cyber.GetColoredTextByRole("★"));
 
-                        if (target.Is(CustomRoles.Cyber) && Cyber.CyberKnown.GetBool())
-                            TargetMark.Append(ColorString(GetRoleColor(CustomRoles.Cyber), "★"));
+                                if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
+                                {
+                                    TargetMark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                                }
+                                else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
+                                {
+                                    TargetMark.Append(CustomRoles.Lovers.GetColoredTextByRole("♥"));
+                                }
 
-                        if (seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
-                        }
-                        else if (seer.Data.IsDead && !seer.Is(CustomRoles.Lovers) && target.Is(CustomRoles.Lovers))
-                        {
-                            TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♥</color>");
+                                TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
+
+                                TargetSuffix.Append(seerRoleClass?.GetSuffix(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(CustomRoleManager.GetSuffixOthers(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(Necromancer.NecromancerReminder(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(CopyCat.CopycatReminder(seer, target, isForMeeting: isForMeeting));
+                                TargetSuffix.Append(Randomizer.RandomizerReminder(seer, target, isForMeeting: isForMeeting));
+
+                                break;
                         }
 
                         // ====== Seer know target role ======
@@ -2159,8 +2171,7 @@ public static class Utils
                         realTarget.RpcSetNamePrivate(TargetName, seer, force: NoCache);
                     }
                 }
-            }
-        }
+            }        
         //Logger.Info($" Loop for Targets: {}", "DoNotifyRoles", force: true);
         Logger.Info($" END", "DoNotifyRoles");
         return Task.CompletedTask;
@@ -2232,6 +2243,7 @@ public static class Utils
         return checkbanned ? !BannedReason(reason) : reason switch
         {
             PlayerState.DeathReason.Eaten => (CustomRoles.Pelican.IsEnable()),
+            PlayerState.DeathReason.Expired => (CustomRoles.Summoner.IsEnable()),
             PlayerState.DeathReason.Spell => (CustomRoles.Witch.IsEnable()),
             PlayerState.DeathReason.Hex => (CustomRoles.HexMaster.IsEnable()),
             PlayerState.DeathReason.Curse => (CustomRoles.CursedWolf.IsEnable()),
@@ -2339,6 +2351,7 @@ public static class Utils
 
             if (CustomRoles.CopyCat.HasEnabled()) CopyCat.UnAfterMeetingTasks(); // All crew hast to be before this
             if (CustomRoles.Necromancer.HasEnabled()) Necromancer.UnAfterMeetingTasks();
+            if (CustomRoles.Randomizer.HasEnabled()) Randomizer.UnAfterMeetingTasks();
         }
         catch (Exception error)
         {
