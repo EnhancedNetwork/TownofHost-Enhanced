@@ -1,7 +1,7 @@
 using Hazel;
 using Il2CppSystem;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using UnityEngine;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -52,11 +52,10 @@ internal class Follower : RoleBase
     }
     private void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player); //SyncFollowerTargetAndTimes
+        var writer = MessageWriter.Get(SendOption.Reliable); //SyncFollowerTargetAndTimes
         writer.Write(playerId);
         writer.Write(BetPlayer.TryGetValue(playerId, out var player) ? player : byte.MaxValue);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

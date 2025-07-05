@@ -1,6 +1,7 @@
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -63,18 +64,13 @@ internal class Witch : RoleBase
     {
         if (doSpell)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoSpell, SendOption.Reliable, -1);
-            writer.Write(witchId);
-            writer.Write(target);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcDoSpell(PlayerControl.LocalPlayer.NetId, witchId, target);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetKillOrSpell, SendOption.Reliable, -1);
-            writer.Write(witchId);
-            writer.Write(SpellMode[witchId]);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
+            var msg = new RpcSetKillOrSpell(PlayerControl.LocalPlayer.NetId, witchId, SpellMode[witchId]);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
     }
     public static void ReceiveRPC(MessageReader reader, bool doSpell)

@@ -1,6 +1,8 @@
 using AmongUs.GameOptions;
+using AmongUs.InnerNet.GameDataMessages;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Impostor;
@@ -116,6 +118,7 @@ class RpcSetTasksPatch
      */
 
     public static List<byte> decidedCommonTasks = [];
+    public static List<byte> decidedMedBayPlayer = [];
     public static bool Prefix(NetworkedPlayerInfo __instance)
     {
         if (!AmongUsClient.Instance.AmHost) return false;
@@ -349,9 +352,7 @@ class RpcSetTasksPatch
             __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());
         }
 
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SetTasks, SendOption.Reliable);
-        messageWriter.WriteBytesAndSize((Il2CppStructArray<byte>)TasksList.ToArray());
-        messageWriter.EndMessage();
+        RpcUtils.LateBroadcastReliableMessage(new RpcSetTasksMessage(__instance.NetId, (Il2CppStructArray<byte>)TasksList.ToArray()));
         return false;
     }
 }

@@ -2,6 +2,7 @@ using Hazel;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using TOHE.Modules.Rpc;
 
 namespace TOHE.Modules;
 
@@ -15,16 +16,12 @@ public static class CustomSoundsManager
             Play(sound);
             return;
         }
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayCustomSound, SendOption.Reliable, pc.GetClientId());
-        writer.Write(sound);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateSpecificSendMessage(new RpcPlayCustomSound(pc.NetId, sound), pc.GetClientId());
     }
     public static void RPCPlayCustomSoundAll(string sound)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PlayCustomSound, SendOption.Reliable, -1);
-        writer.Write(sound);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcPlayCustomSound(PlayerControl.LocalPlayer.NetId, sound));
         Play(sound);
     }
     public static void ReceiveRPC(MessageReader reader) => Play(reader.ReadString());

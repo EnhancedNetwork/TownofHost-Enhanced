@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System.Text;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -50,11 +50,10 @@ internal class Wraith : RoleBase
     private void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
-        writer.WriteNetObject(_Player);//SetWraithTimer
+        var writer = MessageWriter.Get(SendOption.Reliable);//SetWraithTimer
         writer.Write((InvisTime.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
         writer.Write((lastTime.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -213,6 +212,7 @@ internal class Wraith : RoleBase
     {
         if (!IsInvis(killer.PlayerId)) return true;
 
+        RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown();
 

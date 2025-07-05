@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using TOHE.Roles.Neutral;
@@ -51,11 +52,8 @@ internal class Puppeteer : RoleBase
 
     private static void SendRPC(byte puppetId, byte targetId, byte typeId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPuppet, SendOption.Reliable, -1);
-        writer.Write(typeId);
-        writer.Write(puppetId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSyncPuppet(PlayerControl.LocalPlayer.NetId, typeId, puppetId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader reader)
     {
@@ -130,7 +128,7 @@ internal class Puppeteer : RoleBase
                     if (puppet.RpcCheckAndMurder(target, true))
                     {
                         var puppeteerId = PuppeteerList[puppet.PlayerId];
-                        RPC.PlaySoundRPC(puppeteerId, Sounds.KillSound);
+                        RPC.PlaySoundRPC(Sounds.KillSound, puppeteerId);
                         puppet.RpcMurderPlayer(target);
                         target.SetRealKiller(Utils.GetPlayerById(puppeteerId));
                         Utils.MarkEveryoneDirtySettings();

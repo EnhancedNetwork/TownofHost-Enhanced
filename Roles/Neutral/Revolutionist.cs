@@ -1,4 +1,5 @@
 using Hazel;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using UnityEngine;
@@ -106,11 +107,8 @@ internal class Revolutionist : RoleBase
     }
     private static void SetDrawPlayerRPC(PlayerControl player, PlayerControl target, bool isDrawed)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetDrawPlayer, SendOption.Reliable, -1);
-        writer.Write(player.PlayerId);
-        writer.Write(target.PlayerId);
-        writer.Write(isDrawed);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetDrawPlayer(PlayerControl.LocalPlayer.NetId, player.PlayerId, target.PlayerId, isDrawed);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveDrawPlayerRPC(MessageReader reader)
     {
@@ -120,18 +118,16 @@ internal class Revolutionist : RoleBase
         IsDraw[(RevolutionistId, DrawId)] = drawed;
     }
 
-    private static void SetCurrentDrawTargetRPC(byte arsonistId, byte targetId)
+    private static void SetCurrentDrawTargetRPC(byte revoId, byte targetId)
     {
-        if (PlayerControl.LocalPlayer.PlayerId == arsonistId)
+        if (PlayerControl.LocalPlayer.PlayerId == revoId)
         {
             CurrentDrawTarget = targetId;
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetCurrentDrawTarget, SendOption.Reliable, -1);
-            writer.Write(arsonistId);
-            writer.Write(targetId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcSetCurrentDrawTarget(PlayerControl.LocalPlayer.NetId, revoId, targetId);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
     }
     public static void ReceiveSetCurrentDrawTarget(MessageReader reader)

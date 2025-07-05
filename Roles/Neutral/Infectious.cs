@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using TOHE.Modules;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -62,16 +63,23 @@ internal class Infectious : RoleBase
 
     private static bool InfectOrMurder(PlayerControl killer, PlayerControl target)
     {
-        if (CanBeBitten(target))
+        var addon = killer.GetBetrayalAddon(true);
+        if (target.CanBeRecruitedBy(killer))
         {
             killer.RpcRemoveAbilityUse();
-            target.RpcSetCustomRole(CustomRoles.Infected);
+            target.RpcSetCustomRole(addon);
+
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+            }
 
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("InfectiousBittenPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Infectious), GetString("BittenByInfectious")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("InfectiousBittenPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("BittenByInfectious")));
 
             killer.ResetKillCooldown();
             killer.SetKillCooldown();
@@ -81,7 +89,7 @@ internal class Infectious : RoleBase
 
             target.RpcGuardAndKill(killer);
             target.RpcGuardAndKill(target);
-            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + CustomRoles.Infected.ToString(), "Assign " + CustomRoles.Infected.ToString());
+            Logger.Info("设置职业:" + target?.Data?.PlayerName + " = " + target.GetCustomRole().ToString() + " + " + addon.ToString(), "Assign " + addon.ToString());
 
             if (killer.GetAbilityUseLimit() < 0)
             {
@@ -91,7 +99,7 @@ internal class Infectious : RoleBase
             return true;
         }
 
-        if (!CanBeBitten(target) && !target.Is(CustomRoles.Infected) && !target.IsTransformedNeutralApocalypse())
+        if (!target.CanBeRecruitedBy(killer) && !target.Is(addon) && !target.IsTransformedNeutralApocalypse())
         {
             killer.RpcMurderPlayer(target);
         }
@@ -127,13 +135,13 @@ internal class Infectious : RoleBase
     }
     public override void OnPlayerExiled(PlayerControl player, NetworkedPlayerInfo exiled)
     {
-        if (!player.IsAlive())
+        if (!player.IsAlive() && player.GetBetrayalAddon(true) is CustomRoles.Infected)
         {
             foreach (var alivePlayer in Main.AllAlivePlayerControls.Where(pc => pc.Is(CustomRoles.Infected)))
             {
                 alivePlayer.SetDeathReason(PlayerState.DeathReason.Infected);
                 alivePlayer.RpcMurderPlayer(alivePlayer);
-                alivePlayer.SetRealKiller(Utils.GetPlayerById(PlayerIds.First()));
+                alivePlayer.SetRealKiller(player);
             }
         }
     }

@@ -1,6 +1,6 @@
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Utils;
 
@@ -50,22 +50,20 @@ internal class Spy : RoleBase
     }
     public void SendRPC(byte susId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write((byte)1);
         writer.Write(susId);
         writer.Write(SpyRedNameList[susId].ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public void SendRPC(byte susId, bool changeColor)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write((byte)2);
         writer.Write(susId);
         writer.Write(changeColor);
         Logger.Info($"RPC to remove player {susId} from red name list and change `change` to {changeColor}", "Spy");
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl player)
     {

@@ -1,5 +1,5 @@
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
 using static TOHE.Options;
@@ -58,12 +58,11 @@ internal class Psychic : RoleBase
     }
     private void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(RedPlayer.Count);
         foreach (var pc in RedPlayer)
             writer.Write(pc);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
@@ -97,7 +96,7 @@ internal class Psychic : RoleBase
         if (_Player == null || !_Player.IsAlive() || !AmongUsClient.Instance.AmHost) return;
 
         List<PlayerControl> BadListPc = [.. Main.AllAlivePlayerControls.Where(x => Illusionist.IsNonCovIllusioned(x.PlayerId) ||
-        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired)) ||
+        (x.Is(Custom_Team.Impostor) && !x.Is(CustomRoles.Trickster) && !x.Is(CustomRoles.Admired) && !x.Is(CustomRoles.Narc)) ||
         x.IsAnySubRole(x => x.IsConverted()) ||
         (x.GetCustomRole().IsCrewKiller() && CkshowEvil.GetBool()) ||
         (x.GetCustomRole().IsNE() && NEshowEvil.GetBool()) ||

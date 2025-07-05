@@ -19,8 +19,8 @@ internal class Sheriff : RoleBase
 
     private static OptionItem KillCooldown;
     private static OptionItem MisfireKillsTarget;
-    private static OptionItem ShotLimitOpt;
-    private static OptionItem ShowShotLimit;
+    public static OptionItem ShotLimitOpt;
+    public static OptionItem ShowShotLimit;
     private static OptionItem CanKillAllAlive;
     private static OptionItem CanKillCoven;
     private static OptionItem MisfireOnAdmired;
@@ -134,43 +134,39 @@ internal class Sheriff : RoleBase
     public static bool CanBeKilledBySheriff(PlayerControl player)
     {
         var cRole = player.GetCustomRole();
-        var subRole = player.GetCustomSubRoles();
         bool CanKill = false;
-        foreach (var SubRoleTarget in subRole)
-        {
-            if (SubRoleTarget == CustomRoles.Madmate)
-                CanKill = CanKillMadmate.GetBool();
-            if (SubRoleTarget == CustomRoles.Charmed)
-                CanKill = CanKillCharmed.GetBool();
-            if (SubRoleTarget == CustomRoles.Lovers)
-                CanKill = CanKillLovers.GetBool();
-            if (SubRoleTarget == CustomRoles.Recruit)
-                CanKill = CanKillSidekicks.GetBool();
-            if (SubRoleTarget == CustomRoles.Egoist)
-                CanKill = CanKillEgoists.GetBool();
-            if (SubRoleTarget == CustomRoles.Infected)
-                CanKill = CanKillInfected.GetBool();
-            if (SubRoleTarget == CustomRoles.Contagious)
-                CanKill = CanKillContagious.GetBool();
-            if (SubRoleTarget == CustomRoles.Enchanted)
-                CanKill = CanKillEnchanted.GetBool();
-            if (SubRoleTarget == CustomRoles.Rascal)
-                CanKill = true;
-            if (SubRoleTarget == CustomRoles.Admired)
-                CanKill = false;
-        }
+        if (player.Is(CustomRoles.Madmate) && CanKillMadmate.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Charmed) && CanKillCharmed.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Lovers) && CanKillLovers.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Recruit) && CanKillSidekicks.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Egoist) && CanKillEgoists.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Infected) && CanKillInfected.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Contagious) && CanKillContagious.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Enchanted) && CanKillEnchanted.GetBool())
+            CanKill = true;
+        if (player.Is(CustomRoles.Rascal))
+            CanKill = true;
 
-        bool CanKillAdmired = !(player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool());
+        if (CanKill) return true;
+        else if (player.Is(CustomRoles.Admired) && MisfireOnAdmired.GetBool()) return false;
+        else if (player.Is(CustomRoles.Narc)) return false; //copycat sheriff can still kill narc so this exists
         return cRole switch
         {
             CustomRoles.Trickster => false,
             var _ when cRole.IsTNA() => false,
             _ => cRole.GetCustomRoleTeam() switch
             {
-                Custom_Team.Impostor => CanKillAdmired,
-                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())) && CanKillAdmired,
-                Custom_Team.Coven => CanKillCoven.GetBool() && CanKillAdmired,
-                _ => CanKill,
+                Custom_Team.Impostor => true,
+                Custom_Team.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
+                Custom_Team.Coven => CanKillCoven.GetBool(),
+                _ => false,
             }
         };
     }

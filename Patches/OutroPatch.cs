@@ -1,9 +1,9 @@
-using Hazel;
 using System;
 using System.Text;
 using TMPro;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Core.AssignManager;
 using TOHE.Roles.Crewmate;
@@ -52,17 +52,12 @@ class EndGamePatch
                         {
                             // Ensure Randomizer role persists
                             state.MainRole = CustomRoles.Randomizer;
+                            var message = new RpcSyncPlayerSetting(PlayerControl.LocalPlayer.NetId, pvc, prevrole);
+                            RpcUtils.LateBroadcastReliableMessage(message);
 
-
-
-                            // PlayerControl is already destoryed here. bruh wtf
-                            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncPlayerSetting, SendOption.Reliable, -1);
-                            writer.Write(pvc);
-                            writer.WritePacked((int)prevrole);
-                            AmongUsClient.Instance.FinishRpcImmediately(writer);
                         }
 
-                    if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
+                        if (GhostRoleAssign.GhostGetPreviousRole.Any()) Logger.Info(string.Join(", ", GhostRoleAssign.GhostGetPreviousRole.Select(x => $"{Utils.GetPlayerInfoById(x.Key).PlayerName}/{x.Value}")), "OutroPatch.GhostGetPreviousRole");
                 }
             }
 

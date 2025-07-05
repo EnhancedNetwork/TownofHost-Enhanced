@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using System.Text;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -54,11 +55,10 @@ internal class Chameleon : RoleBase
     public static void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetChameleonTimer, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
-        writer.Write(pc.PlayerId);
-        writer.Write((InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString());
-        writer.Write((InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var cooldown = (InvisCooldown.TryGetValue(pc.PlayerId, out var y) ? y : -1).ToString();
+        var duration = (InvisDuration.TryGetValue(pc.PlayerId, out var x) ? x : -1).ToString();
+        var msg = new RpcSetChameleonTimer(PlayerControl.LocalPlayer.NetId, pc.PlayerId, cooldown, duration);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC_Custom(MessageReader reader)
     {

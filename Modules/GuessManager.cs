@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Common;
 using TOHE.Roles.Core;
 using TOHE.Roles.Coven;
@@ -239,6 +240,7 @@ public static class GuessManager
                     pc.ShowInfoMessage(isUI, GetString("GuessShielded"));
                     return true;
                 }
+                if (NarcManager.CheckBlockGuesses(pc, target, isUI)) return true;
 
                 if (!role.IsEnable() && !role.RoleExist(true) && Options.CanOnlyGuessEnabled.GetBool())
                 {
@@ -491,9 +493,8 @@ public static class GuessManager
                 meetingHud.CheckForEndVoting();
             }
             _ = new LateTask(() => hudManager.SetHudActive(false), 0.3f, "SetHudActive in GuesserMurderPlayer", shoudLog: false);
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.GuessKill, SendOption.Reliable, -1);
-            writer.Write(pc.PlayerId);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcGuessKill(pc.NetId, pc.PlayerId);
+            RpcUtils.LateBroadcastReliableMessage(msg);
 
             GameEndCheckerForNormal.ShouldNotCheck = false;
         }
@@ -1133,12 +1134,10 @@ public static class GuessManager
     }
 
     // Modded non-host client guess role/add-on
-    private static void SendRPC(int playerId, CustomRoles role)
+    private static void SendRPC(byte playerId, CustomRoles role)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (int)CustomRPC.Guess, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write((int)role);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcGuess(PlayerControl.LocalPlayer.NetId, playerId, role);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {

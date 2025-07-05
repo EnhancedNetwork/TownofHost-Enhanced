@@ -271,6 +271,27 @@ class ShipStatusBeginPatch
     public static void Prefix()
     {
         RpcSetTasksPatch.decidedCommonTasks.Clear();
+        RpcSetTasksPatch.decidedMedBayPlayer.Clear();
+
+        if (Options.OverrideMedbayScan_OnVisualOff.GetBool())
+        {
+            var min = Options.OverrideMedbayScan_MinPlayer.GetInt();
+            var max = Options.OverrideMedbayScan_MaxPlayer.GetInt();
+
+            if (min > max)
+            {
+                max = min;
+            }
+
+            var playerIds = Main.AllPlayerControls
+                .Select(pc => pc.PlayerId)
+                .ToList();
+
+            int count = Math.Clamp(IRandom.Instance.Next(min, max + 1), 0, playerIds.Count);
+
+            var selected = playerIds.OrderBy(_ => IRandom.Instance.Next(0, int.MaxValue)).Take(count);
+            RpcSetTasksPatch.decidedMedBayPlayer.AddRange(selected);
+        }
     }
     public static void Postfix()
     {
@@ -355,9 +376,7 @@ class ShipStatusSerializePatch
 
             if (ReactorFlashList.Count > 0 && !Saboteur.IsCriticalSabotage())
             {
-                var sysSkip = Utils.GetCriticalSabotageSystemType();
-
-                if (systemTypes == sysSkip)
+                if (systemTypes is SystemTypes.Reactor or SystemTypes.LifeSupp or SystemTypes.Laboratory or SystemTypes.HeliSabotage)
                 {
                     num++;
                     continue;
@@ -422,56 +441,6 @@ class ShipStatusSerializePatch
                 }
                 ventilationSystem.IsDirty = false;
             }
-        }
-
-        // Reactor Flash
-        {
-            var rwriter = MessageWriter.Get(SendOption.Reliable);
-            var reactor = Utils.GetCriticalSabotageSystemType();
-
-            foreach (var player in Main.AllPlayerControls)
-            {
-                if (player.AmOwner) continue;
-
-                rwriter.StartMessage(6);
-                rwriter.Write(AmongUsClient.Instance.GameId);
-                rwriter.WritePacked(player.OwnerId);
-
-                rwriter.StartMessage(1);
-                rwriter.WritePacked(__instance.NetId);
-                rwriter.StartMessage((byte)reactor);
-
-                if (ReactorFlashList.Contains(player.OwnerId) && !player.IsModded())
-                {
-                    switch (reactor)
-                    {
-                        case SystemTypes.Reactor:
-                        case SystemTypes.Laboratory:
-                            rwriter.Write((float)60f);
-                            rwriter.WritePacked(0);
-                            break;
-                        case SystemTypes.HeliSabotage:
-                            rwriter.Write((float)60f);
-                            rwriter.Write((float)60f);
-                            rwriter.WritePacked(0);
-                            rwriter.WritePacked(0);
-                            break;
-                    }
-
-                }
-                else
-                {
-                    __instance.Systems.TryGetValue(reactor, out ISystemType systemType);
-                    systemType.Serialize(rwriter, false);
-                }
-                rwriter.EndMessage();
-                rwriter.EndMessage();
-
-                rwriter.EndMessage();
-            }
-
-            AmongUsClient.Instance.SendOrDisconnect(rwriter);
-            rwriter.Recycle();
         }
         return false;
     }

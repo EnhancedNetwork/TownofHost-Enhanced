@@ -1,6 +1,7 @@
 using Hazel;
 using TOHE.Modules;
 using TOHE.Modules.ChatManager;
+using TOHE.Modules.Rpc;
 using static TOHE.Options;
 using static TOHE.Translator;
 
@@ -163,8 +164,8 @@ internal class President : RoleBase
             foreach (var tar in Main.AllAlivePlayerControls)
             {
                 if (!MadmatesSeePresident.GetBool() && tar.Is(CustomRoles.Madmate) && tar != pc) continue;
-                if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral()) continue;
-                if (!ImpsSeePresident.GetBool() && (tar.GetCustomRole().IsImpostor() || tar.Is(CustomRoles.Crewpostor))) continue;
+                if (!NeutralsSeePresident.GetBool() && tar.GetCustomRole().IsNeutral() && !tar.GetCustomRole().IsMadmate()) continue;
+                if (!ImpsSeePresident.GetBool() && tar.GetCustomRole().IsImpostorTeamV3() && !tar.Is(CustomRoles.Narc)) continue;
                 if (!CovenSeePresident.GetBool() && tar.GetCustomRole().IsCoven()) continue;
                 Utils.SendMessage(string.Format(GetString("PresidentRevealed"), pc.GetRealName()), tar.PlayerId, Utils.ColorString(Utils.GetRoleColor(CustomRoles.President), GetString("PresidentRevealTitle")));
             }
@@ -201,18 +202,16 @@ internal class President : RoleBase
 
     private static void SendRPC(byte playerId, bool isEnd = true)
     {
-        MessageWriter writer;
+
         if (!isEnd)
         {
-            writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentReveal, SendOption.Reliable, -1);
-            writer.Write(playerId);
-            writer.Write(CheckPresidentReveal[playerId]);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg1 = new RpcPresidentReveal(PlayerControl.LocalPlayer.NetId, playerId, CheckPresidentReveal[playerId]);
+            RpcUtils.LateBroadcastReliableMessage(msg1);
             return;
         }
-        writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.PresidentEnd, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg2 = new RpcPresidentEnd(PlayerControl.LocalPlayer.NetId, playerId);
+        RpcUtils.LateBroadcastReliableMessage(msg2);
+
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {
@@ -236,7 +235,7 @@ internal class President : RoleBase
         return false;
     }
     public override bool KnowRoleTarget(PlayerControl seer, PlayerControl target)
-        => (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCrewmate() && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
+        => (target.Is(CustomRoles.President) && (seer.GetCustomRole().IsCrewmate() && seer.Is(CustomRoles.Narc)) && !seer.Is(CustomRoles.Madmate) && CheckPresidentReveal[target.PlayerId] == true) ||
             (target.Is(CustomRoles.President) && seer.Is(CustomRoles.Madmate) && MadmatesSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
             (target.Is(CustomRoles.President) && seer.GetCustomRole().IsNeutral() && NeutralsSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||
             (target.Is(CustomRoles.President) && seer.GetCustomRole().IsCoven() && CovenSeePresident.GetBool() && CheckPresidentReveal[target.PlayerId] == true) ||

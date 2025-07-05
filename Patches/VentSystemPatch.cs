@@ -99,7 +99,7 @@ static class VentSystemDeterioratePatch
     /// </summary>
     private static void RpcCloseVent(this PlayerControl pc, VentilationSystem __instance)
     {
-        MessageWriter writer = MessageWriter.Get(SendOption.None);
+        MessageWriter writer = MessageWriter.Get(ExtendedPlayerControl.RpcSendOption);
         writer.StartMessage(6);
         writer.Write(AmongUsClient.Instance.GameId);
         writer.WritePacked(pc.GetClientId());
@@ -151,7 +151,7 @@ static class VentSystemDeterioratePatch
 
     private static void RpcSerializeVent(this PlayerControl pc, VentilationSystem __instance)
     {
-        MessageWriter writer = MessageWriter.Get(SendOption.None);
+        MessageWriter writer = MessageWriter.Get(ExtendedPlayerControl.RpcSendOption);
         writer.StartMessage(6);
         writer.Write(AmongUsClient.Instance.GameId);
         writer.WritePacked(pc.GetClientId());

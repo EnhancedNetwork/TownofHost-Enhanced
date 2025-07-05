@@ -1,5 +1,5 @@
 using Hazel;
-using InnerNet;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -82,19 +82,18 @@ internal class HexMaster : CovenManager
     {
         if (regularHex)
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.DoHex, SendOption.Reliable, -1);
-            writer.Write(hexId);
-            writer.Write(target);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var msg = new RpcDoHex(PlayerControl.LocalPlayer.NetId, hexId, target);
+            RpcUtils.LateBroadcastReliableMessage(msg);
         }
         else
         {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-            writer.WriteNetObject(GetPlayerById(hexId));
+            var player = Utils.GetPlayerById(hexId);
+            if (player == null) return;
+
+            var writer = MessageWriter.Get(SendOption.Reliable);
             writer.Write(newHex);
             writer.Write(oldHex);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-
+            RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, player.NetId, writer));
         }
     }
     public static void ReceiveRPC(MessageReader reader, bool regularHex)

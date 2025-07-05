@@ -37,7 +37,7 @@ public static class TrapperExtension
             Main.AllPlayerSpeed[killer.PlayerId] = Main.AllPlayerSpeed[killer.PlayerId] - Main.MinSpeed + tmpSpeed;
             ReportDeadBodyPatch.CanReport[killer.PlayerId] = true;
             killer.MarkDirtySettings();
-            RPC.PlaySoundRPC(killer.PlayerId, Sounds.TaskComplete);
+            RPC.PlaySoundRPC(Sounds.TaskComplete, killer.PlayerId);
         }, Trapper.TrapperBlockMoveTime.GetFloat(), "Trapper BlockMove");
     }
 }

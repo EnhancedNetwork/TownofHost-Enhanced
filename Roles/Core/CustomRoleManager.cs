@@ -85,9 +85,13 @@ public static class CustomRoleManager
         return (RoleBase)Activator.CreateInstance(role.GetStaticRoleClass().GetType()); // Converts this.RoleBase back to its type and creates an unique one.
     }
 
-    public static bool HasDesyncRole(this PlayerControl player) => player != null && (player.GetRoleClass().IsDesyncRole || Main.DesyncPlayerList.Contains(player.Data.PlayerId) || player.Is(CustomRoles.Killer));
+    public static bool HasDesyncRole(this PlayerControl player)
+        => player != null &&
+        (player.GetRoleClass().IsDesyncRole
+        || Main.DesyncPlayerList.Contains(player.Data.PlayerId)
+        || player.Is(CustomRoles.Killer)
+        || (player.GetCustomRole().IsImpostor() && NarcManager.IsNarcAssigned()));
 
-    /// <summary>
     /// If the role protects others players
     /// </summary>
     public static bool OnCheckMurderAsTargetOnOthers(PlayerControl killer, PlayerControl target)
@@ -166,6 +170,9 @@ public static class CustomRoleManager
                     case CustomRoles.Mare:
                         Mare.ApplyGameOptions(player.PlayerId);
                         break;
+                    case CustomRoles.Narc when !player.Is(CustomRoles.Torch) && !player.Is(CustomRoles.Bewilder):
+                        NarcManager.ApplyGameOptions(opt, player);
+                        break;
                 }
             }
 
@@ -204,6 +211,15 @@ public static class CustomRoleManager
         if (CustomRoles.PlagueBearer.RoleExist(true) && !killer.Is(CustomRoles.PlagueBearer))
         {
             PlagueBearer.CheckAndInfect(killer, target);
+        }
+
+        Logger.Info("Start", "NarcManager.CheckMurder");
+
+        if (!NarcManager.CheckMurder(killer, target))
+        {
+            __state = true;
+            Logger.Info("Killer trying to kill teammate,canceled", "NarcManager.CheckMurder");
+            return false;
         }
 
         Logger.Info("Start", "ForcedCheckMurderAsKiller");

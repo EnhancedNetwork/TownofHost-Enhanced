@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using TOHE.Roles.Double;
 using static TOHE.Options;
@@ -57,11 +57,10 @@ internal class Bloodmoon : RoleBase
     }
     private void SendRPC(byte targetId, bool add)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, SendOption.Reliable, -1);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(add);
         writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)
     {
@@ -88,6 +87,7 @@ internal class Bloodmoon : RoleBase
             && killer.RpcCheckAndMurder(target, true)
             && !PlayerDie.ContainsKey(target.PlayerId))
         {
+            RPC.PlaySoundRPC(Sounds.SabotageSound, target.PlayerId);
             PlayerDie.Add(target.PlayerId, TimeTilDeath.GetInt());
             LastTime.Add(target.PlayerId, GetTimeStamp());
             killer.RpcResetAbilityCooldown();
@@ -110,6 +110,7 @@ internal class Bloodmoon : RoleBase
             {
                 PlayerDie.Remove(playerid);
                 LastTime.Remove(playerid);
+                RPC.PlaySoundRPC(Sounds.KillSound, _Player.PlayerId);
                 player.SetDeathReason(PlayerState.DeathReason.BloodLet);
                 player.RpcMurderPlayer(player);
                 player.SetRealKiller(_Player);

@@ -1,4 +1,5 @@
 using TOHE.Modules;
+using TOHE.Roles.Crewmate;
 using TOHE.Roles.Double;
 using UnityEngine;
 using static TOHE.Options;
@@ -51,13 +52,20 @@ internal class CursedSoul : RoleBase
             killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Cultist), GetString("CantRecruit")));
             return false;
         }
-        if (CanBeSoulless(target))
+        if (target.CanBeRecruitedBy(killer))
         {
+            var addon = killer.GetBetrayalAddon(true);
             killer.RpcRemoveAbilityUse();
-            target.RpcSetCustomRole(CustomRoles.Soulless);
+            target.RpcSetCustomRole(addon);
 
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulSoullessPlayer")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("SoullessByCursedSoul")));
+            killer.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("CursedSoulSoullessPlayer")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(addon), GetString("SoullessByCursedSoul")));
+
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[killer.PlayerId].Add(target.PlayerId);
+                Admirer.SendRPC(killer.PlayerId, target.PlayerId); //Sync playerId list
+            }
 
             Utils.NotifyRoles(SpecifySeer: target, SpecifyTarget: killer, ForceLoop: true);
             Utils.NotifyRoles(SpecifySeer: killer, SpecifyTarget: target, ForceLoop: true);
@@ -68,7 +76,7 @@ internal class CursedSoul : RoleBase
             if (!DisableShieldAnimations.GetBool())
                 killer.RpcGuardAndKill(target);
 
-            Logger.Info($"{target?.Data?.PlayerName} = {target.GetCustomRole()} + {CustomRoles.Soulless}", $"Assign {CustomRoles.Soulless}");
+            Logger.Info($"{target?.Data?.PlayerName} = {target.GetCustomRole()} + {addon}", $"Assign {addon}");
             return false;
         }
         killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.CursedSoul), GetString("CursedSoulInvalidTarget")));
@@ -80,7 +88,7 @@ internal class CursedSoul : RoleBase
     public override string PlayerKnowTargetColor(PlayerControl seer, PlayerControl target)
         => KnowRoleTarget(seer, target) ? Main.roleColors[CustomRoles.Soulless] : string.Empty;
 
-    private static bool CanBeSoulless(PlayerControl pc)
+    public static bool CanBeSoulless(PlayerControl pc)
     {
         return pc != null && (pc.GetCustomRole().IsCrewmate() || pc.GetCustomRole().IsImpostor() ||
             (CanCurseNeutral.GetBool() && pc.GetCustomRole().IsNeutral()) ||

@@ -1,5 +1,6 @@
 using Hazel;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Neutral;
 using static TOHE.Options;
 
@@ -38,10 +39,9 @@ internal class Lightning : RoleBase
     }
     private static void SendRPC(byte playerId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.LightningSetGhostPlayer, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(IsGhost(playerId));
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcLightningSetGhostPlayer(PlayerControl.LocalPlayer.NetId, playerId, IsGhost(playerId));
+        RpcUtils.LateBroadcastReliableMessage(msg);
+
     }
     public static void ReceiveRPC(MessageReader reader)
     {

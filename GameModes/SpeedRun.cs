@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
-using InnerNet;
 using System.Text;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Translator;
@@ -156,7 +156,13 @@ public static class SpeedRun
         {
             if (Main.PlayerStates.TryGetValue(specificPlayerId, out var state) && state.MainRole == CustomRoles.Runner)
             {
-                var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+                if (GetPlayerById(specificPlayerId) is not PlayerControl player)
+                {
+                    Logger.Error($"Failed to find player with ID {specificPlayerId} for SyncSpeedRunStates.", "RpcSyncSpeedRunStates");
+                    return;
+                }
+
+                var writer = MessageWriter.Get(SendOption.Reliable);
                 writer.Write(StartedAt.ToString());
                 writer.Write((byte)1);
                 writer.Write(specificPlayerId);
@@ -172,14 +178,16 @@ public static class SpeedRun
                 {
                     writer.Write(false);
                 }
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+
+                var sender = new RpcSyncSpeedRunStates(PlayerControl.LocalPlayer.NetId, writer);
+                RpcUtils.LateSpecificSendMessage(sender, player.OwnerId);
             }
 
             return;
         }
 
         {
-            var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncSpeedRunStates, ExtendedPlayerControl.RpcSendOption);
+            var writer = MessageWriter.Get(SendOption.Reliable);
             var amount = Main.PlayerStates.Count(x => x.Value.MainRole == CustomRoles.Runner);
             writer.Write(StartedAt.ToString());
             writer.Write((byte)amount);
@@ -200,7 +208,8 @@ public static class SpeedRun
                     writer.Write(false);
                 }
             }
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            var sender = new RpcSyncSpeedRunStates(PlayerControl.LocalPlayer.NetId, writer);
+            RpcUtils.LateBroadcastReliableMessage(sender);
         }
     }
 
@@ -450,8 +459,7 @@ public class Runner : RoleBase
 
     public void SendRPC()
     {
-        var writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption);
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(BasisChanged);
         writer.Write(ProtectState.Item1);
         writer.Write(ProtectState.Item2);
@@ -459,7 +467,7 @@ public class Runner : RoleBase
         writer.Write(SpeedBoostState.Item2);
         writer.Write((byte)LastTaskCount.Item1);
         writer.Write((byte)LastTaskCount.Item2);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
 
     public override void ReceiveRPC(MessageReader reader, PlayerControl pc)

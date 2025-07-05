@@ -3,6 +3,7 @@ using System;
 using TOHE.Modules;
 using TOHE.Roles.AddOns.Crewmate;
 using TOHE.Roles.Core;
+using TOHE.Roles.Crewmate;
 using static TOHE.MeetingHudStartPatch;
 using static TOHE.Options;
 using static TOHE.Translator;
@@ -83,19 +84,30 @@ internal class Virus : RoleBase
     public override void OnReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
         if (target == null || !InfectedBodies.Contains(target.PlayerId)) return;
-        if (_Player == null || !reporter.CanBeInfected()) return;
-
-        _Player.RpcRemoveAbilityUse();
+        if (_Player == null) return;
 
         if (KillInfectedPlayerAfterMeeting.GetBool())
         {
+            if (!reporter.CanBeInfected()) return;
+
+            _Player.RpcRemoveAbilityUse();
             InfectedPlayer.Add(reporter.PlayerId);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage2");
         }
         else
         {
-            reporter.RpcSetCustomRole(CustomRoles.Contagious);
+            if (!reporter.CanBeRecruitedBy(_Player)) return;
+
+            var addon = _Player.GetBetrayalAddon(true);
+            _Player.RpcRemoveAbilityUse();
+            reporter.RpcSetCustomRole(addon);
             VirusNotify[reporter.PlayerId] = GetString("VirusNoticeMessage");
+
+            if (addon is CustomRoles.Admired)
+            {
+                Admirer.AdmiredList[_Player.PlayerId].Add(reporter.PlayerId);
+                Admirer.SendRPC(_Player.PlayerId, reporter.PlayerId); //Sync playerId list
+            }
         }
 
         Logger.Info("Setting up a career:" + reporter?.Data?.PlayerName + " = " + reporter.GetCustomRole().ToString() + " + " + CustomRoles.Contagious.ToString(), "Assign " + CustomRoles.Contagious.ToString());

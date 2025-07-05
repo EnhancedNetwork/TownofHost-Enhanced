@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Coven;
 using TOHE.Roles.Neutral;
@@ -61,10 +62,8 @@ internal class BountyHunter : RoleBase
     }
     private static void SendRPC(byte bountyId, byte targetId)
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetBountyTarget, SendOption.Reliable, -1);
-        writer.Write(bountyId);
-        writer.Write(targetId);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        var msg = new RpcSetBountyTarget(PlayerControl.LocalPlayer.NetId, bountyId, targetId);
+        RpcUtils.LateBroadcastReliableMessage(msg);
     }
 
     public static void ReceiveRPC(MessageReader reader)
@@ -180,11 +179,13 @@ internal class BountyHunter : RoleBase
         if (player.Is(CustomRoles.Enchanted)
             && target.IsPlayerCoven() || (target.Is(CustomRoles.Enchanted) && Ritualist.EnchantedKnowsEnchanted.GetBool())) return false;
 
-        if (target.GetCustomRole().IsImpostor()
-            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool())) return false;
+        if (!player.Is(CustomRoles.Narc) &&
+            (target.CheckImpCanSeeAllies()
+            || ((target.GetCustomRole().IsMadmate() || target.Is(CustomRoles.Madmate)) && Madmate.ImpKnowWhosMadmate.GetBool()))) return false;
+
+        if (player.Is(CustomRoles.Narc) && target.IsPolice()) return false;
 
         return true;
-
     }
     private static byte ResetTarget(PlayerControl player)
     {

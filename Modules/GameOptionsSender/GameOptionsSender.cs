@@ -2,7 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem;
-using InnerNet;
+using TOHE.Modules.Rpc;
 
 namespace TOHE.Modules;
 
@@ -29,6 +29,8 @@ public abstract class GameOptionsSender
 
     public virtual void SendGameOptions()
     {
+        if (!AmongUsClient.Instance.AmHost) return;
+
         var opt = BuildGameOptions();
         var currentGameMode = AprilFoolsMode.IsAprilFoolsModeToggledOn //April fools mode toggled on by host
             ? opt.AprilFoolsOnMode : opt.GameMode; //Change game mode, same as well as in "RpcSyncSettings()"
@@ -78,27 +80,18 @@ public abstract class GameOptionsSender
     }
     protected virtual void SendOptionsArray(Il2CppStructArray<byte> optionArray, byte LogicOptionsIndex, int targetClientId)
     {
-        var writer = MessageWriter.Get(SendOption.Reliable);
+        if (!AmongUsClient.Instance.AmHost) return;
 
-        writer.StartMessage(targetClientId == -1 ? Tags.GameData : Tags.GameDataTo);
+        var message = new SendOptionsArray(optionArray);
+
+        if (targetClientId < 0)
         {
-            writer.Write(AmongUsClient.Instance.GameId);
-            if (targetClientId != -1) writer.WritePacked(targetClientId);
-            writer.StartMessage(1);
-            {
-                writer.WritePacked(GameManager.Instance.NetId);
-                writer.StartMessage(LogicOptionsIndex);
-                {
-                    writer.WriteBytesAndSize(optionArray);
-                }
-                writer.EndMessage();
-            }
-            writer.EndMessage();
+            RpcUtils.LateBroadcastReliableMessage(message);
         }
-        writer.EndMessage();
-
-        AmongUsClient.Instance.SendOrDisconnect(writer);
-        writer.Recycle();
+        else
+        {
+            RpcUtils.LateSpecificSendMessage(message, targetClientId);
+        }
     }
     public abstract IGameOptions BuildGameOptions();
 

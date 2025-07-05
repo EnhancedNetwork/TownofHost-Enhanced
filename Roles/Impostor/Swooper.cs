@@ -1,6 +1,6 @@
 using Hazel;
-using InnerNet;
 using System.Text;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.Core;
 using UnityEngine;
 using static TOHE.Options;
@@ -48,11 +48,10 @@ internal class Swooper : RoleBase
     private void SendRPC(PlayerControl pc)
     {
         if (!pc.IsNonHostModdedClient()) return;
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SyncRoleSkill, ExtendedPlayerControl.RpcSendOption, pc.GetClientId());
-        writer.WriteNetObject(_Player);
+        var writer = MessageWriter.Get(SendOption.Reliable);
         writer.Write(InvisCooldown.GetValueOrDefault(pc.PlayerId, -1).ToString());
         writer.Write(InvisDuration.GetValueOrDefault(pc.PlayerId, -1).ToString());
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        RpcUtils.LateBroadcastReliableMessage(new RpcSyncRoleSkill(PlayerControl.LocalPlayer.NetId, _Player.NetId, writer));
     }
     public override void ReceiveRPC(MessageReader reader, PlayerControl NaN)
     {
@@ -168,6 +167,7 @@ internal class Swooper : RoleBase
     {
         if (!IsInvis(killer.PlayerId)) return true;
 
+        RPC.PlaySoundRPC(Sounds.KillSound, killer.PlayerId);
         killer.RpcGuardAndKill(target);
         killer.SetKillCooldown();
 

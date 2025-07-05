@@ -127,7 +127,7 @@ internal class Spiritcaller : RoleBase
                 Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] - Main.MinSpeed + tmpSpeed;
                 ReportDeadBodyPatch.CanReport[target.PlayerId] = true;
                 target.MarkDirtySettings();
-                RPC.PlaySoundRPC(target.PlayerId, Sounds.TaskComplete);
+                RPC.PlaySoundRPC(Sounds.TaskComplete, target.PlayerId);
             }, SpiritFreezeTime.GetFloat(), "Spirit UnFreeze");
         }
     }

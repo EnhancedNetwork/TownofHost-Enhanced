@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
-using Hazel;
 using System;
 using TOHE.Modules;
+using TOHE.Modules.Rpc;
 using TOHE.Roles.AddOns.Impostor;
 using TOHE.Roles.Core;
 using TOHE.Roles.Impostor;
@@ -110,7 +110,7 @@ public class PlayerState(byte playerId)
                 _ => throw new NotImplementedException()
             };
         }
-        if (pc.Is(CustomRoles.Admired))
+        if (pc.Is(CustomRoles.Admired) || pc.Is(CustomRoles.Narc))
         {
             countTypes = CountTypes.Crew;
         }
@@ -296,6 +296,7 @@ public class PlayerState(byte playerId)
 
             foreach (var subRole in SubRoles.ToArray())
             {
+                if (subRole is CustomRoles.Narc) continue;
                 RemoveSubRole(subRole);
             }
         }
@@ -312,12 +313,11 @@ public class PlayerState(byte playerId)
             }
         }
 
-        if (role.IsConverted())
+        if (role.IsBetrayalAddonV2())
         {
-            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
+            SubRoles.RemoveAll(AddON => AddON != role && AddON.IsBetrayalAddonV2());
             SubRoles.Remove(CustomRoles.Rascal);
             SubRoles.Remove(CustomRoles.Loyal);
-            SubRoles.Remove(CustomRoles.Admired);
         }
 
         switch (role)
@@ -378,10 +378,8 @@ public class PlayerState(byte playerId)
                 break;
 
             case CustomRoles.Admired:
+            case CustomRoles.Narc:
                 countTypes = CountTypes.Crew;
-                SubRoles.RemoveAll(AddON => AddON != role && AddON.IsConverted());
-                SubRoles.Remove(CustomRoles.Rascal);
-                SubRoles.Remove(CustomRoles.Loyal);
                 break;
 
             case CustomRoles.Soulless:
@@ -408,11 +406,9 @@ public class PlayerState(byte playerId)
         }
 
         if (!AmongUsClient.Instance.AmHost) return;
+        var msg = new RpcRemoveSubRole(PlayerControl.LocalPlayer.NetId, playerId, addOn);
+        RpcUtils.LateBroadcastReliableMessage(msg);
 
-        MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.RemoveSubRole, SendOption.Reliable);
-        writer.Write(PlayerId);
-        writer.WritePacked((int)addOn);
-        writer.EndMessage();
     }
 
     public void SetDead()
@@ -458,6 +454,7 @@ public class PlayerState(byte playerId)
         Revenge,
         Execution,
         Fall,
+        Exorcised,
 
 
         // TOHE
