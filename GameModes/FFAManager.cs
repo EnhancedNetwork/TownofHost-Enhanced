@@ -135,7 +135,7 @@ internal static class FFAManager
     }
     public static void SendRPCSyncNameNotify(PlayerControl pc)
     {
-        if (!pc.IsNonHostModdedClient()) return;      
+        if (!pc.IsNonHostModdedClient()) return;
         var notif = NameNotify.ContainsKey(pc.PlayerId) ? NameNotify[pc.PlayerId].TEXT : string.Empty;
         var msg = new RpcSyncFFANameNotify(PlayerControl.LocalPlayer.NetId, notif);
         RpcUtils.LateBroadcastReliableMessage(msg);

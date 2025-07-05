@@ -202,7 +202,7 @@ internal class President : RoleBase
 
     private static void SendRPC(byte playerId, bool isEnd = true)
     {
-        
+
         if (!isEnd)
         {
             var msg1 = new RpcPresidentReveal(PlayerControl.LocalPlayer.NetId, playerId, CheckPresidentReveal[playerId]);
@@ -211,7 +211,7 @@ internal class President : RoleBase
         }
         var msg2 = new RpcPresidentEnd(PlayerControl.LocalPlayer.NetId, playerId);
         RpcUtils.LateBroadcastReliableMessage(msg2);
-         
+
     }
     public static void ReceiveRPC(MessageReader reader, PlayerControl pc, bool isEnd = true)
     {

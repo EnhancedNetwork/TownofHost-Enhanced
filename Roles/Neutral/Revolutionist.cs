@@ -125,7 +125,7 @@ internal class Revolutionist : RoleBase
             CurrentDrawTarget = targetId;
         }
         else
-        {            
+        {
             var msg = new RpcSetCurrentDrawTarget(PlayerControl.LocalPlayer.NetId, revoId, targetId);
             RpcUtils.LateBroadcastReliableMessage(msg);
         }

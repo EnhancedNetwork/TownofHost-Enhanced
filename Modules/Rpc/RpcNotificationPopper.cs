@@ -13,7 +13,7 @@ namespace TOHE.Modules.Rpc
 
         public override void SerializeRpcValues(MessageWriter msg)
         {
-            msg.Write(index);
+            msg.WritePacked(index);
             msg.Write(playSound);
         }
 

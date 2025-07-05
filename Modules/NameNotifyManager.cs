@@ -51,10 +51,10 @@ public static class NameNotifyManager
         if (player == null || !AmongUsClient.Instance.AmHost || !player.IsNonHostModdedClient()) return;
 
         var message = new RpcSyncNameNotify(
-            PlayerControl.LocalPlayer.NetId, 
+            PlayerControl.LocalPlayer.NetId,
             playerId,
             Notice.ContainsKey(playerId),
-            Notice.ContainsKey(playerId) ? Notice[playerId].Text : string.Empty, 
+            Notice.ContainsKey(playerId) ? Notice[playerId].Text : string.Empty,
             Notice.ContainsKey(playerId) ? Notice[playerId].TimeStamp - Utils.GetTimeStamp() : 0f);
         RpcUtils.LateSpecificSendMessage(message, player.OwnerId);
     }

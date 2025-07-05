@@ -1,7 +1,6 @@
 using Hazel;
-using TOHE.Modules.Rpc;
 using TOHE;
-using Il2CppInterop.Generator.Extensions;
+using TOHE.Modules.Rpc;
 
 class RpcSyncDeadPassedMeetingList : BaseModdedRpc
 {

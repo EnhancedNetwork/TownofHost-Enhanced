@@ -1,5 +1,4 @@
 using AmongUs.GameOptions;
-using Hazel;
 using System;
 using TOHE.Modules;
 using TOHE.Modules.Rpc;

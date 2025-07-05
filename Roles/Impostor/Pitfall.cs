@@ -171,7 +171,7 @@ internal class Pitfall : RoleBase
         ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
         RPC.PlaySoundRPC(Sounds.SabotageSound, player.PlayerId);
         player.MarkDirtySettings();
-        
+
         _ = new LateTask(() =>
         {
             Main.AllPlayerSpeed[player.PlayerId] = DefaultSpeed;
