@@ -19,7 +19,7 @@ public class DevUser(string code = "", string color = "null", string userType = 
     //public string GetTag() => Color == "null" ? $"<size=1.2>{Tag}</size>\r\n" : $"<color={Color}><size=1.2>{(Tag == "#Dev" ? Translator.GetString("Developer") : Tag)}</size></color>\r\n";
     public string GetTag()
     {
-        string tagColorFilePath = @$"./TOHE-DATA/Tags/SPONSOR_TAGS/{Code}.txt";
+        string tagColorFilePath = @$"{Main.TOHE_Initial_Path}/Tags/SPONSOR_TAGS/{Code}.txt";
 
         if (Color == "null" || Color == string.Empty) return $"<size=1.2>{Tag}</size>\r\n";
         var startColor = Color.TrimStart('#');
@@ -35,7 +35,7 @@ public class DevUser(string code = "", string color = "null", string userType = 
     }
     //public string GetTag() 
     //{
-    //    string tagColorFilePath = @$"./TOHE-DATA/Tags/SPONSOR_TAGS/{Code}.txt";
+    //    string tagColorFilePath = Main.StartPath + "Tags/SPONSOR_TAGS/{Code}.txt";
 
     //    if (Color == "null" || Color == string.Empty) return $"<size=1.2>{Tag}</size>\r\n";
     //    var startColor = "FFFF00";
