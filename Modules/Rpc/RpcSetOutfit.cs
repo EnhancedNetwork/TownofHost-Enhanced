@@ -61,7 +61,7 @@ namespace TOHE.Modules.Rpc
             {
                 if (obj is PlayerControl player)
                 {
-                    // Add 10 to prevent cancelled shange outfit due to delay
+                    // Add 10 to prevent cancelled сhange outfit due to delay
                     return (byte)(player.GetNextRpcSequenceId(call) + 10);
                 }
             }
