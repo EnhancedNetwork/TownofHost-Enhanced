@@ -17,6 +17,7 @@ public static class NarcManager
     private static OptionItem NarcHasCrewVision;
     //public static OptionItem MadmateCanBeNarc;
     public static OptionItem ImpsCanKillEachOther;
+    public static OptionItem ShareGuessAccessWithCrew;
 
     public static void SetUpOptionsForNarc(int id = 31400, CustomRoles role = CustomRoles.Narc, CustomGameMode customGameMode = CustomGameMode.Standard, TabGroup tab = TabGroup.Addons)
     {
@@ -45,6 +46,9 @@ public static class NarcManager
             .SetParent(spawnOption)
             .SetGameMode(customGameMode);
 
+        ShareGuessAccessWithCrew = BooleanOptionItem.Create(id + 7, "NarcSharesGuessAccessWithCrew", false, tab, false)
+            .SetParent(spawnOption)
+            .SetGameMode(customGameMode);
 
         var countOption = IntegerOptionItem.Create(id + 1, "Maximum", new(1, 1, 1), 1, tab, false)
             .SetParent(spawnOption)
