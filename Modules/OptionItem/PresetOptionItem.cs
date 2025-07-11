@@ -35,9 +35,9 @@ public class PresetOptionItem(int defaultValue, TabGroup tab, bool vanilla) : Op
         base.SetValue(Rule.RepeatIndex(value), doSync);
         SwitchPreset(Rule.RepeatIndex(value));
     }
-    public override void SetValue(int afterValue, bool doSave, bool doSync = true)
+    public override void SetValue(int afterValue, bool doSave, bool doSync = true, bool isSingle = false)
     {
-        base.SetValue(Rule.RepeatIndex(afterValue), doSave, doSync);
+        base.SetValue(Rule.RepeatIndex(afterValue), doSave, doSync, isSingle);
         SwitchPreset(Rule.RepeatIndex(afterValue));
     }
 }
