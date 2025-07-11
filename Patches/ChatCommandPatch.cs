@@ -246,9 +246,9 @@ internal class ChatCommands
                 case "/命名为":
                     canceled = true;
                     if (args.Length < 1) break;
-                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    if (args.Skip(1).Join(delimiter: " ").Length >= Options.SetNameMaxLength.GetInt())
                     {
-                        Utils.SendMessage(GetString("Message.AllowNameLength"), PlayerControl.LocalPlayer.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("Message.AllowNameLength"), Options.SetNameMaxLength.GetInt()), PlayerControl.LocalPlayer.PlayerId);
                         break;
                     }
                     else
@@ -2400,9 +2400,9 @@ internal class ChatCommands
                         break;
                     }
                     if (args.Length < 1) break;
-                    if (args.Skip(1).Join(delimiter: " ").Length is > 10 or < 1)
+                    if (args.Skip(1).Join(delimiter: " ").Length >= Options.SetNameMaxLength.GetInt())
                     {
-                        Utils.SendMessage(GetString("Message.AllowNameLength"), player.PlayerId);
+                        Utils.SendMessage(string.Format(GetString("Message.AllowNameLength"), Options.SetNameMaxLength.GetInt()), player.PlayerId);
                         break;
                     }
                     Main.AllPlayerNames[player.PlayerId] = args.Skip(1).Join(delimiter: " ");
