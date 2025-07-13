@@ -861,7 +861,7 @@ internal static class RPC
             if (Main.playerVersion.ContainsKey(hostId) || !Main.VersionCheat.Value)
             {
                 bool cheating = Main.VersionCheat.Value;
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
+                MessageWriter writer = AmongUsClient.Instance.StartRpc(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VersionCheck, SendOption.Reliable);
                 writer.Write(cheating ? Main.playerVersion[hostId].version.ToString() : Main.PluginVersion);
                 writer.Write(cheating ? Main.playerVersion[hostId].tag : $"{ThisAssembly.Git.Commit}({ThisAssembly.Git.Branch})");
                 writer.Write(cheating ? Main.playerVersion[hostId].forkId : Main.ForkId);

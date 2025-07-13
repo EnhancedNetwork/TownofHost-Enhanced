@@ -322,7 +322,7 @@ class RpcSetTasksPatch
             __instance.SetTasks((Il2CppStructArray<byte>)TasksList.ToArray());
         }
 
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.SetTasks, SendOption.Reliable);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpc(__instance.NetId, (byte)RpcCalls.SetTasks, SendOption.Reliable);
         messageWriter.WriteBytesAndSize((Il2CppStructArray<byte>)TasksList.ToArray());
         messageWriter.EndMessage();
         return false;
