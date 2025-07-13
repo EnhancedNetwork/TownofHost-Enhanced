@@ -15,7 +15,7 @@ class GameManagerSerializeFix
             {
                 flag = true;
                 writer.StartMessage((byte)index);
-                var hasBody = logicComponent.Serialize(writer, !GameStates.IsInGame);
+                var hasBody = logicComponent.Serialize(writer, initialState);
                 if (hasBody) writer.EndMessage();
                 else writer.CancelMessage();
                 logicComponent.ClearDirtyFlag();
@@ -29,10 +29,10 @@ class GameManagerSerializeFix
 [HarmonyPatch(typeof(LogicOptions), nameof(LogicOptions.Serialize))]
 class LogicOptionsSerializePatch
 {
-    public static bool Prefix(ref bool __result)
+    public static bool Prefix(ref bool __result, [HarmonyArgument(1)] bool initialState)
     {
         // Block all but the first time and synchronize only with CustomSyncSettings
-        if (GameStates.IsInGame)
+        if (!initialState)
         {
             __result = false;
             return false;
